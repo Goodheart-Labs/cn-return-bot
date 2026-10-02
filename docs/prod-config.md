@@ -336,6 +336,14 @@ requests fail.
 | Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (public, version 0.3.1, on 2026-10-01) | `extension@commonnotes.net` |
 | Safari | no listing yet | |
 
+How to release a new version, and which credentials the store APIs need, is
+in [extension-release.md](extension-release.md). Those credentials are
+`AMO_JWT_ISSUER` and `AMO_JWT_SECRET` from AMO's API key page, and
+`CWS_PUBLISHER_ID` and `CWS_SERVICE_ACCOUNT_KEY_FILE` for a Google Cloud
+service account that the Chrome Web Store dashboard grants API access. All
+four are in `~/dev/env/cn-return-bot/env`. Both listings link to
+https://commonnotes.net as their homepage.
+
 Microsoft Edge installs from the Chrome Web Store listing. The website's
 install buttons link to these listings from
 [src/everything-web/src/lib/extensionStores.ts](../src/everything-web/src/lib/extensionStores.ts).

@@ -1,0 +1,8 @@
+Notes can exist on any site, so the extension checks pages against a locally cached list before any lookup. Anonymous visit counting on Substack/YouTube/LessWrong is asked as a yes/no question on a welcome page shown once after install (per-site checkboxes in the settings); recording is inert before that.
+
+Build environment: Bun 1.3 (bun.sh). To reproduce from the source zip:
+1. bun install
+2. Create a .env file in the repo root with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (these are the public backend URL and the public anon key; both are visible verbatim inside the shipped bundle, nothing secret is needed).
+3. bun run zip-ext. This builds the Firefox package into src/everything-extension/.output/.
+
+The build is not minified (vite minify is disabled in wxt.config.ts), so the shipped files are readable.
