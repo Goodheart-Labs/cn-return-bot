@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
 import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
 import { fetchNotesForItem } from "@cn/core/notes";
-import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import { COMMONNOTES_ORIGIN, extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import type { NoteRow } from "@cn/core/types";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines } from "@cn/core/requestProgress";

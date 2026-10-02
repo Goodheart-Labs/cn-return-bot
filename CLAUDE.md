@@ -41,6 +41,7 @@ One always-on Linux server (the "services box") runs these systemd services, des
 - `cn-intake`: picks up reader requests for Common Notes at once and drives them through the other two.
 - `cn-fetch`: fetches every outside page and image in a sandbox without keys.
 - `cn-pot-provider`: a Docker container that hands out YouTube PO tokens on 127.0.0.1:4416 (see "Fetching sources").
+- `cn-notify`: posts new notes and votes to four Slack channels as the bot "Claudy" (see "Slack announcements" in `ops/README.md`).
 
 The X bot run and the Common Notes feed run are thin callers. They first check that the services they use are reachable and not stuck, and fail if not. Then they send the work over HTTP (`src/service/client.ts`, URLs in `CLAIM_CHECK_URL` and `EXTRACTION_URL`). The X bot uses only claim-check. So a change to note writing or claim checking reaches production only once the services box has deployed it. Deploying is a pull: a systemd timer runs `ops/autodeploy.sh` every 5 minutes, which pulls the checkout's branch and restarts the services once they are idle. A new unit file must be installed by hand once.
 
@@ -107,7 +108,7 @@ An item stranded in `processing` by a killed run is resumed, not lost. Every cla
 
 ### Data model
 
-`everything_projects → everything_items → everything_claims → everything_notes`, plus `everything_note_sources` (one row per supporting quote), `everything_votes`, `everything_note_not_needed` and its votes, `everything_note_requests` (reader requests, which the intake service turns into tier-2 items within seconds), `everything_donations`, `everything_events`, `everything_link_visits` (visits), `everything_pipeline_runs` (one row per LLM step with its cost), `everything_passage_highlights` and `everything_passage_questions`, and the walk's caches `everything_top_posts` and `everything_youtube_channels`. A claim stores the highlighted `context_quote`, the wider `context_paragraph`, and `image_urls` when it rests on an image (then `context_quote` may be null). `everything_items.full_text` is the item's body.
+`everything_projects → everything_items → everything_claims → everything_notes`, plus `everything_note_sources` (one row per supporting quote), `everything_votes`, `everything_note_not_needed` and its votes, `everything_note_requests` (reader requests, which the intake service turns into tier-2 items within seconds), `everything_donations`, `everything_events`, `everything_link_visits` (visits), `everything_pipeline_runs` (one row per LLM step with its cost), `everything_passage_highlights` and `everything_passage_questions`, the walk's caches `everything_top_posts` and `everything_youtube_channels`, and `everything_slack_announcements` (what cn-notify already posted). A claim stores the highlighted `context_quote`, the wider `context_paragraph`, and `image_urls` when it rests on an image (then `context_quote` may be null). `everything_items.full_text` is the item's body.
 
 The website ships the anon key, so the anon role is locked out of every table except what the public site and the extension need. After a migration, regenerate the frontend's types with `bun run gen-db-types`.
 
