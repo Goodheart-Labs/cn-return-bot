@@ -9,7 +9,7 @@ right-click menu.
 mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts 8007
 ```
 
-- `js/logos.js` holds the five candidates: their controls, defaults, presets
+- `js/logos.js` holds the six candidates: their controls, defaults, presets
   and the function that draws them.
 - `js/geometry.js` builds the shapes with Paper.js, which the page loads from
   a CDN.
@@ -17,11 +17,12 @@ mac-tunnel serve 8007 bun run src/scripts_jim/2026_09_30_logo_explorer/server.ts
   browser window and the menu are drawn in `js/previews.js`. Each mock marks
   the logo's place with `<span class="logo-slot" data-role="R" data-px="N">`,
   where R names which file goes there: store, header, favicon, toolbar or menu.
-- "In context" and "Compare all five" show each candidate as the extension
+- "In context" and "Compare all six" show each candidate as the extension
   would ship it (`shippedForms` in `js/logos.js`, the same rules as
   `scripts/generate-logo-assets.ts` in PR #532). A mark without a backdrop
   fills its whole square, sits on a black tile for the dark toolbar and the
-  dark favicon, and on a white tile in the right-click menu.
+  dark favicon, and on a white tile in the right-click menu. The two squares
+  (candidate 6) skip the tiles and look the same everywhere.
 - The view "The two PRs" shows the real icon files of the two logo pull
   requests side by side: #532 (stacked notes) and #533 (today's logo with the
   boxes in the order green, yellow, red). `js/pullRequests.js` says which file

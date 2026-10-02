@@ -1,4 +1,4 @@
-/* The five logo candidates.
+/* The six logo candidates.
  *
  * A candidate is a list of controls, their default values, some presets, and
  * a render function that turns the current values into SVG markup on a
@@ -163,13 +163,18 @@ const MENU_TILE = WHITE;
 /** The logo's files as the extension and the website would ship them:
  *  `icon` alone, `storeIcon` inside the store's margin, and the mark on the
  *  dark mode tile and on the menu's tile. A candidate with its own backdrop
- *  ships as designed in every place, as today's logo does (PR #533). */
-export function shippedForms(rendered, values, storeArtworkShare) {
+ *  ships as designed in every place, as today's logo does (PR #533). A
+ *  candidate with `noTiles` ships its plain icon where the others take a
+ *  tile. */
+export function shippedForms(candidate, rendered, values, storeArtworkShare) {
   if (values["bg.shape"] !== "none" || !rendered.bounds) {
     const asDesigned = composeSvg(rendered, values);
     return { icon: asDesigned, storeIcon: composeSvg(rendered, values, { artworkShare: storeArtworkShare }), darkTile: asDesigned, menuTile: asDesigned };
   }
   const filled = { ...values, ...placementFor(rendered.bounds, CANVAS) };
+  const icon = composeSvg(rendered, filled);
+  const storeIcon = composeSvg(rendered, filled, { artworkShare: storeArtworkShare });
+  if (candidate.noTiles) return { icon, storeIcon, darkTile: icon, menuTile: icon };
   const onTile = (fill) =>
     composeSvg(rendered, {
       ...values,
@@ -180,29 +185,29 @@ export function shippedForms(rendered, values, storeArtworkShare) {
       "bg.inset": 0,
       "bg.strokeWidth": 0,
     });
-  return {
-    icon: composeSvg(rendered, filled),
-    storeIcon: composeSvg(rendered, filled, { artworkShare: storeArtworkShare }),
-    darkTile: onTile(DARK_TILE),
-    menuTile: onTile(MENU_TILE),
-  };
+  return { icon, storeIcon, darkTile: onTile(DARK_TILE), menuTile: onTile(MENU_TILE) };
 }
 
 // ---------------------------------------------------------------------------
-// The speech bubble, used by three candidates.
+// The speech bubble, used by four candidates. Without its tail it is a
+// rounded square.
 // ---------------------------------------------------------------------------
 
-const bubbleControls = (prefix) => [
+const bodyControls = (prefix) => [
   color(`${prefix}.color`, "Colour"),
   range(`${prefix}.x`, "Position X", 0, 128, 0.5),
   range(`${prefix}.y`, "Position Y", 0, 128, 0.5),
   range(`${prefix}.rotation`, "Rotation", -180, 180, 1),
   range(`${prefix}.scale`, "Size", 0.3, 2, 0.01),
-  toggle(`${prefix}.flipH`, "Flip left to right"),
-  toggle(`${prefix}.flipV`, "Flip top to bottom"),
   range(`${prefix}.width`, "Body width", 20, 128, 0.5),
   range(`${prefix}.height`, "Body height", 20, 128, 0.5),
   range(`${prefix}.radius`, "Corner radius", 0, 64, 0.5),
+];
+
+const bubbleControls = (prefix) => [
+  ...bodyControls(prefix),
+  toggle(`${prefix}.flipH`, "Flip left to right"),
+  toggle(`${prefix}.flipV`, "Flip top to bottom"),
   range(`${prefix}.tailPosition`, "Tail position along the edge", 0, 1, 0.01),
   range(`${prefix}.tailWidth`, "Tail width", 0, 60, 0.5),
   range(`${prefix}.tailLength`, "Tail length", 0, 50, 0.5),
@@ -329,17 +334,21 @@ const PAIR_DEFAULTS = {
 
 const mirrorAcrossTheMiddle = (bubble) => ({ ...bubble, x: CANVAS - bubble.x, rotation: -bubble.rotation, flipH: !bubble.flipH });
 
+const MIRROR_ACTION = {
+  type: "action",
+  label: "Make the second a mirror image of the first",
+  run: (values) => prefixed("b", { ...mirrorAcrossTheMiddle(group(values, "a")), color: values["b.color"] }),
+};
+
+const swapColorsAction = (shapes) => ({
+  type: "action",
+  label: `Swap the two ${shapes}' colours`,
+  run: (values) => ({ "a.color": values["b.color"], "b.color": values["a.color"] }),
+});
+
 const pairActions = (otherId, otherName) => [
-  {
-    type: "action",
-    label: "Make the second a mirror image of the first",
-    run: (values) => prefixed("b", { ...mirrorAcrossTheMiddle(group(values, "a")), color: values["b.color"] }),
-  },
-  {
-    type: "action",
-    label: "Swap the two bubbles' colours",
-    run: (values) => ({ "a.color": values["b.color"], "b.color": values["a.color"] }),
-  },
+  MIRROR_ACTION,
+  swapColorsAction("bubbles"),
   {
     type: "action",
     label: `Copy both bubbles from "${otherName}"`,
@@ -724,8 +733,39 @@ const noteCard = {
   render: renderNoteCard,
 };
 
-// The bubbles are laid out by eye, so their defaults start fitted to the
-// canvas. Otherwise they would be small next to the two marks that fill it.
-for (const candidate of [stripedBubble, splitPair, blendPair]) Object.assign(candidate.defaults, fitPlacement(candidate, candidate.defaults));
+// ---------------------------------------------------------------------------
+// 6. Two rounded squares with a yellow overlap: the bubbles of candidate 3
+// without their tails. Jim wants this one without the dark mode and menu
+// tiles, so it ships as the plain mark everywhere.
+// ---------------------------------------------------------------------------
 
-export const CANDIDATES = [stripedBubble, splitPair, blendPair, stackedNotes, noteCard];
+const PAIR_SQUARE = { ...PAIR_BUBBLE, width: 60, height: 60, radius: 16, tailLength: 0, tailWidth: 0 };
+
+const squarePair = {
+  id: "square-pair",
+  name: "Two squares, yellow overlap",
+  summary: "Two rounded squares, green and red, with the area they share in yellow. It keeps its plain look in dark mode and in the menu.",
+  presets: [],
+  noTiles: true,
+  defaults: {
+    ...prefixed("a", { ...PAIR_SQUARE, x: 52, y: 52, rotation: -9, color: GREEN }),
+    ...prefixed("b", { ...PAIR_SQUARE, x: 76, y: 70, rotation: 9, color: RED }),
+    "overlap.color": AMBER,
+    ...PLACEMENT_DEFAULTS,
+  },
+  sections: [
+    { title: "The overlap", controls: [color("overlap.color", "Overlap colour")] },
+    { title: "Both squares", controls: [MIRROR_ACTION, swapColorsAction("squares")] },
+    { title: "First square", controls: bodyControls("a") },
+    { title: "Second square", controls: bodyControls("b") },
+    PLACEMENT_CONTROLS,
+  ],
+  render: renderBlendPair,
+};
+
+// The bubbles and squares are laid out by eye, so their defaults start fitted
+// to the canvas. Otherwise they would be small next to the two marks that
+// fill it.
+for (const candidate of [stripedBubble, splitPair, blendPair, squarePair]) Object.assign(candidate.defaults, fitPlacement(candidate, candidate.defaults));
+
+export const CANDIDATES = [stripedBubble, splitPair, blendPair, stackedNotes, noteCard, squarePair];

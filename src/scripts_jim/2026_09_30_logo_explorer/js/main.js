@@ -1,4 +1,4 @@
-/* The logo explorer: five logo candidates, a panel of sliders for the one that
+/* The logo explorer: six logo candidates, a panel of sliders for the one that
  * is selected, and previews of how each looks where it will be used. One more
  * view puts the files of the two logo pull requests side by side. */
 
@@ -39,7 +39,7 @@ const STAGE_BACKGROUNDS = [
 const VIEWS = [
   ["design", "Design"],
   ["context", "In context"],
-  ["compare", "Compare all five"],
+  ["compare", "Compare all six"],
   ["pull-requests", "The two PRs"],
 ];
 
@@ -115,7 +115,7 @@ function drawCandidate(candidate) {
     plain: composeSvg(rendered, values),
     store: composeSvg(rendered, values, { artworkShare: storeArtworkShare }),
     guides: composeSvg(rendered, values, { guides: true }),
-    ...shippedForms(rendered, values, storeArtworkShare),
+    ...shippedForms(candidate, rendered, values, storeArtworkShare),
   };
 }
 
@@ -338,7 +338,7 @@ function shippedForm(role, theme) {
 const contextsOf = (candidateId) => contexts((pixels, role, theme) => logoImage(candidateId, pixels, shippedForm(role, theme)));
 
 const SHIPPED_FORMS_HINT =
-  "Shown as the extension would ship it. A mark without a backdrop fills its whole square, whatever the placement sliders say. In dark mode the toolbar icon and the favicon put it on a black tile, and the right-click menu always puts it on a white tile. A logo with its own backdrop looks the same everywhere.";
+  "Shown as the extension would ship it. A mark without a backdrop fills its whole square, whatever the placement sliders say. In dark mode the toolbar icon and the favicon put it on a black tile, and the right-click menu always puts it on a white tile. A logo with its own backdrop, and the two squares, look the same everywhere.";
 
 function contextView() {
   return [
@@ -364,7 +364,7 @@ function sideBySide(columns, decorate = () => {}) {
   });
 }
 
-/** The five candidates side by side. Clicking a candidate selects it, so its
+/** The six candidates side by side. Clicking a candidate selects it, so its
  *  sliders are one click away. */
 function compareView() {
   const columns = CANDIDATES.map((candidate, index) => ({ title: `${index + 1}. ${candidate.name}`, places: contextsOf(candidate.id) }));
