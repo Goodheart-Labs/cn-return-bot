@@ -87,7 +87,11 @@ CWS_SERVICE_ACCOUNT_KEY_FILE=/home/jim/dev/env/cn-return-bot/cws-service-account
    listing". The store icon is `src/everything-extension/public/icon/128.png`,
    which keeps the 16 pixel transparent margin Google asks for. Replace the
    screenshots with the same files as for Firefox. The homepage link is under
-   "Additional fields", "Homepage URL". Save the draft.
+   "Additional fields", "Homepage URL". The small promo tile (440x280) and
+   the marquee (1400x560) are `promo-small-440x280.png` and
+   `promo-marquee-1400x560.png` in `src/everything-extension/store-assets/`.
+   `bun run src/everything-extension/scripts/storePromoTiles.ts` redraws them
+   from the logo and the first screenshot. Save the draft.
 8. **Chrome submit.** `bun run release-ext chrome-publish` submits the draft,
    package and listing together, for review. It goes live by itself once
    approved.
@@ -109,7 +113,10 @@ ssh -N -L 9223:localhost:9222 jimmaar@jims-macbook-air   # then Playwright's con
 ```
 
 Copy the upload files to the same absolute path on the Mac, so file uploads
-find them whether Playwright sends the path or the contents. Two traps:
+find them whether Playwright sends the path or the contents. Run the
+Playwright scripts with `node`, because over this connection they hung under
+Bun. If the Chrome window only shows its profile picker, open an empty tab
+over the debugging connection first. Two traps:
 
 - On AMO, pressing "Continue" after the package upload already creates the
   version and puts it into the review queue. The source archive and reviewer
