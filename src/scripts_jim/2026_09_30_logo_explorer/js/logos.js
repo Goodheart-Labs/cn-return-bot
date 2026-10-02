@@ -2,7 +2,9 @@
  *
  * A candidate is a list of controls, their default values, some presets, and
  * a render function that turns the current values into SVG markup on a
- * 128 by 128 canvas. Values are stored flat under keys such as "a.rotation",
+ * 128 by 128 canvas. A candidate whose controls changed meaning has an
+ * `upgrade` function, which turns values saved before the change into the
+ * current ones. Values are stored flat under keys such as "a.rotation",
  * so a settings export is one readable object. */
 
 import {
@@ -438,16 +440,50 @@ const blendPair = {
 // that path's 24 unit grid: 96 of the 128 units here.
 // ---------------------------------------------------------------------------
 
+const DEFAULT_NOTES = {
+  frontColor: BLUE,
+  backColor: BLUE,
+  lines: "cut",
+  lineColor: WHITE,
+  frontSize: 70.71,
+  frontRadius: 14.45,
+  backSize: 74.32,
+  backRadius: 11.87,
+  shiftRight: 25.29,
+  shiftUp: 25.29,
+  gap: 10.32,
+  innerCorner: "square",
+  lineInset: 14.45,
+  lineThickness: 15.48,
+  line1Y: 24.77,
+  line1Length: 40.77,
+  line2Y: 48,
+  line2Length: 25.81,
+};
+
+/** Where the front note's top right corner sits on the canvas when the mark
+ *  is centred. Both notes are laid out from top right corners: the back
+ *  note's corner is `shiftRight` and `shiftUp` away from the front note's. */
+function centredFrontCorner(notes) {
+  const left = Math.min(-notes.frontSize, notes.shiftRight - notes.backSize);
+  const right = Math.max(0, notes.shiftRight);
+  const top = Math.min(0, -notes.shiftUp);
+  const bottom = Math.max(notes.frontSize, notes.backSize - notes.shiftUp);
+  return { x: (CANVAS - (right - left)) / 2 - left, y: (CANVAS - (bottom - top)) / 2 - top };
+}
+
+// The front note's top right corner stays where the default mark puts it.
+// So a size slider grows its note to the left and downwards, and a shift
+// slider moves only the back note. "Fit to canvas" centres the mark again.
+const FRONT_CORNER = centredFrontCorner(DEFAULT_NOTES);
+
 function renderStackedNotes(values) {
   const notes = group(values, "notes");
-  const spanX = Math.max(notes.frontSize, notes.offsetX + notes.backSize);
-  const top = Math.min(0, -notes.offsetY);
-  const spanY = Math.max(notes.frontSize, notes.backSize - notes.offsetY) - top;
-  const frontX = (CANVAS - spanX) / 2;
-  const frontY = (CANVAS - spanY) / 2 - top;
+  const frontX = FRONT_CORNER.x - notes.frontSize;
+  const frontY = FRONT_CORNER.y;
 
   const front = roundedRect(frontX, frontY, notes.frontSize, notes.frontSize, notes.frontRadius);
-  const back = roundedRect(frontX + notes.offsetX, frontY - notes.offsetY, notes.backSize, notes.backSize, notes.backRadius);
+  const back = roundedRect(FRONT_CORNER.x + notes.shiftRight - notes.backSize, frontY - notes.shiftUp, notes.backSize, notes.backSize, notes.backRadius);
   // The back note stops a gap's width before the front note, so the two read
   // as separate sheets at 16 pixels.
   const keepClear =
@@ -467,6 +503,19 @@ function renderStackedNotes(values) {
   return { markup: fillPath(backShown, notes.backColor) + fillPath(front, notes.frontColor) + drawnLines, bounds };
 }
 
+/** Values saved before 2026-10-02 measured the back note's shift from the
+ *  front note's top left corner, as `offsetX` and `offsetY`. They are turned
+ *  into the shift between the top right corners. That draws the same pair of
+ *  notes, though not always at the same place on the canvas, since the old
+ *  layout centred the mark after every change. */
+function measureShiftsFromTopRightCorners(values) {
+  if (!("notes.offsetX" in values)) return values;
+  const { "notes.offsetX": offsetX, "notes.offsetY": offsetY, ...rest } = values;
+  const shiftRight = offsetX + values["notes.backSize"] - values["notes.frontSize"];
+  // Rounded to hundredths, so the sum's floating point noise stays out of the number box.
+  return { ...rest, "notes.shiftRight": Math.round(shiftRight * 100) / 100, "notes.shiftUp": offsetY };
+}
+
 /** The marker glyph as it was before GOO-299, in the same units as the
  *  defaults. */
 const OLD_MARKER_GEOMETRY = prefixed("notes", {
@@ -474,8 +523,8 @@ const OLD_MARKER_GEOMETRY = prefixed("notes", {
   frontRadius: 14,
   backSize: 72,
   backRadius: 11.5,
-  offsetX: 24,
-  offsetY: 27.5,
+  shiftRight: 27.5,
+  shiftUp: 27.5,
   gap: 16,
   lineInset: 14,
   lineThickness: 15,
@@ -501,29 +550,8 @@ const stackedNotes = {
     { name: "Blue on a black tile, the dark mode icon", values: { "bg.shape": "square", "bg.fill": "#000000", "bg.strokeWidth": 0, "bg.inset": 0, "bg.radius": 28, "notes.frontColor": BLUE, "notes.backColor": BLUE, "notes.lines": "cut", "art.scale": 0.83, "art.x": 0, "art.y": 0 } },
     { name: "Green in front of red", values: { "bg.shape": "none", "notes.frontColor": GREEN, "notes.backColor": RED, "notes.lines": "cut", "art.scale": 1 } },
   ],
-  defaults: {
-    ...prefixed("notes", {
-      frontColor: BLUE,
-      backColor: BLUE,
-      lines: "cut",
-      lineColor: WHITE,
-      frontSize: 70.71,
-      frontRadius: 14.45,
-      backSize: 74.32,
-      backRadius: 11.87,
-      offsetX: 21.68,
-      offsetY: 25.29,
-      gap: 10.32,
-      innerCorner: "square",
-      lineInset: 14.45,
-      lineThickness: 15.48,
-      line1Y: 24.77,
-      line1Length: 40.77,
-      line2Y: 48,
-      line2Length: 25.81,
-    }),
-    ...PLACEMENT_DEFAULTS,
-  },
+  defaults: { ...prefixed("notes", DEFAULT_NOTES), ...PLACEMENT_DEFAULTS },
+  upgrade: measureShiftsFromTopRightCorners,
   sections: [
     {
       title: "Notes",
@@ -534,8 +562,8 @@ const stackedNotes = {
         range("notes.frontRadius", "Front note corners", 0, 40, 0.5),
         range("notes.backSize", "Back note size", 30, 110, 0.5),
         range("notes.backRadius", "Back note corners", 0, 40, 0.5),
-        range("notes.offsetX", "Back note shift right", 0, 60, 0.5),
-        range("notes.offsetY", "Back note shift up", 0, 60, 0.5),
+        range("notes.shiftRight", "Back note shift right", 0, 60, 0.5),
+        range("notes.shiftUp", "Back note shift up", 0, 60, 0.5),
         range("notes.gap", "Gap between the notes", 0, 30, 0.5),
         select("notes.innerCorner", "Inner corner of the back note", [
           ["square", "Square"],

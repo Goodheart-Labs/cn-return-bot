@@ -59,6 +59,13 @@ function readStoredState() {
   }
 }
 
+/** Saved values on top of the defaults, so a control added later still gets
+ *  its default, and upgraded if the candidate's controls changed meaning. */
+function withDefaults(candidate, values) {
+  const merged = { ...candidate.defaults, ...values };
+  return candidate.upgrade ? candidate.upgrade(merged) : merged;
+}
+
 function initialState() {
   const stored = readStoredState();
   if (stored.values && stored.version !== STATE_VERSION) delete stored.values[RESET_BY_VERSION_2];
@@ -69,9 +76,7 @@ function initialState() {
     showGuides: stored.showGuides ?? false,
     storeMargin: stored.storeMargin ?? true,
     version: STATE_VERSION,
-    // Stored values go on top of the defaults, so a control added later
-    // still gets its default.
-    values: Object.fromEntries(CANDIDATES.map((candidate) => [candidate.id, { ...candidate.defaults, ...stored.values?.[candidate.id] }])),
+    values: Object.fromEntries(CANDIDATES.map((candidate) => [candidate.id, withDefaults(candidate, stored.values?.[candidate.id])])),
   };
 }
 
@@ -434,7 +439,7 @@ async function downloadPngs() {
 
 function applySettings({ candidate, values }) {
   if (!candidateById(candidate)) throw new Error(`There is no candidate called "${candidate}".`);
-  state.values[candidate] = { ...candidateById(candidate).defaults, ...values };
+  state.values[candidate] = withDefaults(candidateById(candidate), values);
   redraw(candidate);
   select(candidate);
 }
