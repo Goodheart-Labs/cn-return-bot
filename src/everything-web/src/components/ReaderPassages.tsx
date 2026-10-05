@@ -6,6 +6,7 @@ import type { PageItem } from "@cn/core/items";
 import { highlightSentence, parseHighlightDraft, validHighlight, type HighlightDraft, type PassageHighlight } from "@cn/core/passageHighlights";
 import { askPassageQuestion, deletePassageHighlight, fetchHighlightVotes, fetchPassageQuestions, postPassageHighlight, subscribeToPassages, voteOnHighlight } from "@cn/core/passages";
 import { useSession } from "@cn/features/auth/useSession";
+import { ratingQuestion } from "@cn/features/notes/NoteBox";
 import { VoteRatings } from "@cn/features/notes/VoteRatings";
 import { Button } from "@cn/ui/Button";
 import { Checkbox, Input, Textarea } from "@cn/ui/Field";
@@ -138,7 +139,8 @@ export function ReaderHighlights({ highlights, onChanged }: { highlights: Passag
   return <>{highlights.map((highlight) => <section className="reader-highlight-card" key={highlight.id}>
     <p>{highlightSentence(highlight)}</p>
     <p className="reader-highlight-author">{highlight.author_name || "Anonymous reader"}</p>
-    <VoteRatings spelledOut helpful={highlight.helpful_count} somewhatHelpful={highlight.somewhat_helpful_count} notHelpful={highlight.not_helpful_count} myVote={votes.data?.get(highlight.id)} onVote={(vote) => void change(async () => {
+    <p className="text-sm font-semibold text-fg">{ratingQuestion(highlight.kind === "forecast" ? "forecast" : "key point")}</p>
+    <VoteRatings helpful={highlight.helpful_count} somewhatHelpful={highlight.somewhat_helpful_count} notHelpful={highlight.not_helpful_count} myVote={votes.data?.get(highlight.id)} onVote={(vote) => void change(async () => {
       const user = await ensureUser();
       if (!user) { setLogin(true); return; }
       await voteOnHighlight(highlight.id, user.id, votes.data?.get(highlight.id) === vote ? null : vote);

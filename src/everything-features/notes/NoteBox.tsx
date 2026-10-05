@@ -25,8 +25,9 @@ export const statusLabel = (status: NoteStatus): string => STATUS[status].label;
  *  always agree. */
 export const statusColorClass = (status: NoteStatus): string => STATUS[status].dot;
 
-/** The one question every note's rating panel asks, whatever its status. */
-export const RATING_QUESTION = "Is this note helpful?";
+/** The one question every rating panel asks, whatever its status: notes, and
+ *  the reader's key points and forecasts. */
+export const ratingQuestion = (thing: "note" | "key point" | "forecast") => `Is this ${thing} helpful?`;
 
 /** The status badge shown above a note. It is a filled circle followed by the
  *  Community Notes copy for that status. A status that has been decided also
@@ -129,7 +130,7 @@ export function NoteBox({ note, status, sourcesOpen, question, children }: {
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
       {children && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
-          <div className="text-sm text-fg">{question ?? <span className="font-semibold">{RATING_QUESTION}</span>}</div>
+          <div className="text-sm text-fg">{question ?? <span className="font-semibold">{ratingQuestion("note")}</span>}</div>
           {children}
         </div>
       )}

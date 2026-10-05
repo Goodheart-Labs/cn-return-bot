@@ -4,11 +4,11 @@ import type { Vote } from "@cn/core/votes";
 import { CheckIcon, CloseIcon, WaveIcon } from "@cn/ui/icons";
 import { PillPaletteContext } from "./pillPalette";
 
-/* The pills answer the question "Is this note helpful?", so they read Yes,
- * Somewhat and No, as on X's Community Notes. The full pills sit in the note's
- * rating panel. The compact icon chips rate note-not-needed entries, where an
- * icon without a label would read as pressed if it were coloured, so they stay
- * grey until chosen in either palette. */
+/* The pills answer the question "Is this note helpful?" (or key point, or
+ * forecast), so they read Yes, Somewhat and No, as on X's Community Notes. The
+ * full pills sit in the rating panel. The compact icon chips rate
+ * note-not-needed entries, where an icon without a label would read as pressed
+ * if it were coloured, so they stay grey until chosen in either palette. */
 const votePillVariants = cva(
   "inline-flex items-center justify-center gap-1.5 rounded-control border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
   {
@@ -56,7 +56,7 @@ const VOTE_OPTIONS = [
  *  Clicking a pill casts a vote, and the highlighted pill is the viewer's own
  *  vote. The pills render even when every count is zero, because somebody has
  *  to be able to cast the first vote. */
-export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined, compact = false, spelledOut = false }: {
+export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined, compact = false }: {
   helpful: number;
   somewhatHelpful: number;
   notHelpful: number;
@@ -72,10 +72,6 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
    *  tooltip and the aria label. Both variants share one style table, so the
    *  two cannot drift apart again. */
   compact?: boolean;
-  /** Spells each pill out as "Helpful", "Somewhat helpful" and "Not helpful"
-   *  for surfaces with no "Is this helpful?" question above the pills, such as
-   *  the reader's key points and forecasts. */
-  spelledOut?: boolean;
 }) {
   const palette = useContext(PillPaletteContext);
   const counts: Record<Vote, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
@@ -89,11 +85,11 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           aria-pressed={myVote === value}
           // "Yes" and "No" alone would be ambiguous to a screen reader that
           // reaches the pills without the question, so the name says both.
-          aria-label={`${spelledOut ? meaning : `${label}, ${meaning.toLowerCase()}`}${showCounts ? `: ${counts[value]} ratings` : ""}`}
+          aria-label={showCounts ? `${label}, ${meaning.toLowerCase()}: ${counts[value]} ratings` : `${label}, ${meaning.toLowerCase()}`}
           onClick={() => onVote(value)}
           className={votePillVariants({ size: compact ? "compact" : "full", palette, tone, selected: myVote === value })}
         >
-          {compact ? icon : spelledOut ? meaning : label}
+          {compact ? icon : label}
           {showCounts && counts[value] > 0 && <span className="tabular-nums">{counts[value].toLocaleString("en-US")}</span>}
         </button>
       ))}
