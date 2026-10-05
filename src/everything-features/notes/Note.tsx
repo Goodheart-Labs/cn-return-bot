@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import type { MintedDonation } from "@cn/core/donations";
-import { noteStatus, noteTallyVisible } from "@cn/core/noteScore";
+import { noteStatus } from "@cn/core/noteScore";
 import type { NoteRow } from "@cn/core/types";
 import { VoteDonation } from "../donations/VoteDonation";
 import { takeMintedDonation } from "../donations/mintedDonations";
@@ -30,18 +30,13 @@ export function Note({ note, shareUrl, onDeleted, children }: {
   const nudge = useVotingNudge();
   const myVote = useMyVotes().get(note.id);
   const voteOnNote = useVoteOnNote();
-  // The badge, the box tint, the reveal of the counts and the donation payout
-  // all read this one status.
+  // The badge, the box tint and the donation payout all read this one status.
   const status = noteStatus(note);
   return (
     <div>
       <NoteBox note={note} status={status} sourcesOpen={sourcesOpen} question={nudge.show ? <VotingNudge onDismiss={nudge.dismiss} /> : undefined}>
         <VoteRatings
-          helpful={note.helpful_count}
-          somewhatHelpful={note.somewhat_helpful_count}
-          notHelpful={note.not_helpful_count}
           myVote={myVote}
-          showCounts={noteTallyVisible(status, myVote, note.created_at)}
           onVote={(vote) => {
             if (nudge.show) nudge.dismiss();
             void voteOnNote(note, vote).then(setCast);

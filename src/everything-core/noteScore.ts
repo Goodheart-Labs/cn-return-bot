@@ -1,23 +1,5 @@
 import { noteTally, probabilityHelpful, type NoteTallyFields } from "./noteBelief";
 import type { NoteRow } from "./types";
-import type { Vote } from "./votes";
-
-/** Vote tallies stay hidden until the viewer has voted. That way the crowd's
- *  counts cannot anchor the rating they are about to give. Once an item has been
- *  up this long the tally is public record, and it shows to everyone. */
-export const TALLY_REVEAL_AFTER_DAYS = 7;
-
-export const tallyVisible = (myVote: Vote | undefined, createdAt: string) =>
-  myVote !== undefined ||
-  Date.now() - new Date(createdAt).getTime() > TALLY_REVEAL_AFTER_DAYS * 86_400_000;
-
-/** Notes get one extra reveal on top of that. Once a note is rated, its counts
- *  show to everyone straight away. Anchoring only matters while the outcome is
- *  still open. After that the tally is the result, and hiding it just makes a
- *  settled note look unread. This takes the already-computed status instead of
- *  working it out again, because working it out evaluates a continued fraction. */
-export const noteTallyVisible = (status: NoteStatus, myVote: Vote | undefined, createdAt: string) =>
-  status !== "needs_ratings" || tallyVisible(myVote, createdAt);
 
 export const totalVotes = (n: NoteRow) =>
   n.helpful_count + n.somewhat_helpful_count + n.not_helpful_count;

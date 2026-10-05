@@ -54,19 +54,11 @@ const VOTE_OPTIONS = [
  *  scale, so a rating is helpful, somewhat helpful, or not helpful. A
  *  somewhat-helpful rating counts half as much when the note is scored.
  *  Clicking a pill casts a vote, and the highlighted pill is the viewer's own
- *  vote. The pills render even when every count is zero, because somebody has
- *  to be able to cast the first vote. */
-export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVote, showCounts = myVote !== undefined, compact = false, spelledOut = false }: {
-  helpful: number;
-  somewhatHelpful: number;
-  notHelpful: number;
+ *  vote. The pills never show counts, before or after voting: Nathan's bet
+ *  (2026-10-05) is that bare pills draw more votes. */
+export function VoteRatings({ myVote, onVote, compact = false, spelledOut = false }: {
   myVote?: Vote;
   onVote: (vote: Vote) => void;
-  /** Tallies stay hidden until the viewer has cast their own vote, so the crowd
-   *  cannot anchor them. The aria labels drop the counts too, so a screen reader
-   *  does not leak them either. Callers can widen the rule, for example to show
-   *  the counts on old notes. */
-  showCounts?: boolean;
   /** The compact variant shrinks the pills to icon chips for secondary
    *  surfaces such as note-not-needed entries. The meaning moves into the
    *  tooltip and the aria label. Both variants share one style table, so the
@@ -78,7 +70,6 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
   spelledOut?: boolean;
 }) {
   const palette = useContext(PillPaletteContext);
-  const counts: Record<Vote, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
   return (
     <span className="inline-flex flex-wrap items-center gap-1.5">
       {VOTE_OPTIONS.map(({ value, label, meaning, tone, icon }) => (
@@ -89,12 +80,11 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
           aria-pressed={myVote === value}
           // "Yes" and "No" alone would be ambiguous to a screen reader that
           // reaches the pills without the question, so the name says both.
-          aria-label={`${spelledOut ? meaning : `${label}, ${meaning.toLowerCase()}`}${showCounts ? `: ${counts[value]} ratings` : ""}`}
+          aria-label={spelledOut ? meaning : `${label}, ${meaning.toLowerCase()}`}
           onClick={() => onVote(value)}
           className={votePillVariants({ size: compact ? "compact" : "full", palette, tone, selected: myVote === value })}
         >
           {compact ? icon : spelledOut ? meaning : label}
-          {showCounts && counts[value] > 0 && <span className="tabular-nums">{counts[value].toLocaleString("en-US")}</span>}
         </button>
       ))}
     </span>

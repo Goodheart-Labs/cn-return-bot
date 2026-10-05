@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { tallyVisible } from "@cn/core/noteScore";
 import type { NnnRow } from "@cn/core/types";
 import { cn } from "@cn/ui/cn";
 import { ChevronIcon, MoreIcon, TrashIcon } from "@cn/ui/icons";
@@ -74,11 +73,7 @@ export function NoteNotNeeded({ entries }: {
           <div className="mt-1 -ml-2 flex items-center gap-1">
             <VoteRatings
               compact
-              helpful={entry.helpful_count}
-              somewhatHelpful={entry.somewhat_helpful_count}
-              notHelpful={entry.not_helpful_count}
               myVote={myVotes.get(entry.id)}
-              showCounts={tallyVisible(myVotes.get(entry.id), entry.created_at)}
               onVote={(vote) => void voteOnEntry(entry, vote)}
             />
             {!!session && session.user.id === entry.author_id && (
