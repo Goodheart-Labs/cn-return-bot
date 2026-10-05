@@ -26,22 +26,22 @@ export const SCREENSHOTS: readonly Screenshot[] = [
   {
     src: noteOnAPost,
     alt: "A Substack post with one claim highlighted. Beside it a note rated helpful corrects the figure and asks whether it is helpful, with Yes, Somewhat and No buttons.",
-    caption: "A note beside the claim it is about.",
+    caption: "A note on Substack",
   },
   {
     src: noteOnAVideo,
     alt: "A YouTube interview with a note card over the video. The note quotes the sentence it is about and is rated helpful.",
-    caption: "A note over the video while the claim plays.",
+    caption: "A note on YouTube",
   },
   {
     src: writeANote,
     alt: "A news article with a sentence selected and a Write a note box open over it.",
-    caption: "Select a sentence on any site to write a note of your own.",
+    caption: "Write notes on any webpage",
   },
   {
     src: requestNotes,
     alt: "A Substack post we have not checked yet. The extension's toolbar menu offers to request notes on this page and to check the author's new posts.",
-    caption: "Ask for notes on a page we have not checked yet.",
+    caption: "Request notes on any webpage",
   },
 ];
 
