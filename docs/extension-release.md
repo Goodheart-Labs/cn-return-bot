@@ -105,11 +105,13 @@ prod-config.md.
 store dashboards, using the files `package` wrote. A Claude session can do
 that in a Chrome on the Mac: start Chrome there with a remote debugging port,
 which lets a program control it, and with its own profile, because Chrome
-refuses remote debugging on the everyday profile.
+refuses remote debugging on the everyday profile. `mac` is the VPS's name for
+the Mac, through a tunnel the Mac keeps open (devbox README, section
+"mac-tunnel").
 
 ```bash
-ssh jimmaar@jims-macbook-air 'open -na "Google Chrome" --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile'
-ssh -N -L 9223:localhost:9222 jimmaar@jims-macbook-air   # then Playwright's connectOverCDP("http://localhost:9223")
+ssh mac 'open -na "Google Chrome" --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile'
+ssh -N -L 9223:localhost:9222 mac   # then Playwright's connectOverCDP("http://localhost:9223")
 ```
 
 Copy the upload files to the same absolute path on the Mac, so file uploads
