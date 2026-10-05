@@ -16,6 +16,7 @@ import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
 
 const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
+const BADGE_INSET = "6px";
 
 // The fallback for links that do not wrap a picture themselves: such a link
 // only gets a badge when it sits inside a listing card or is one itself (see
@@ -77,7 +78,8 @@ function createBadge(mark: { count: number } | { checked: true }): HTMLElement {
   badge.className = BADGE_CLASS;
   badge.setAttribute(
     "style",
-    "position:absolute;top:6px;right:6px;z-index:10;display:inline-flex;align-items:center;justify-content:center;" +
+    `position:absolute;right:${BADGE_INSET};z-index:10;` +
+      "display:inline-flex;align-items:center;justify-content:center;" +
       "gap:2px;height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:9999px;" +
       `font-size:12px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:${MARKER_SHADOW};` +
       `color:${palette.glyph};background:${palette.body};` +
@@ -141,7 +143,9 @@ function pictureFrame(image: HTMLElement): HTMLElement {
 // each post row in one link, inside plain divs that match no card selector. A
 // row whose post has no cover picture then had nowhere to put its badge. Such
 // a link is told apart from a text link by its box: it lays out as a block and
-// is at least as tall as a few lines of text.
+// is at least as tall as a few lines of text. The row shows its date in its
+// upper right corner, so the badge goes into the lower right one, which
+// Substack leaves empty.
 const MIN_CARD_LINK_HEIGHT_PX = 80;
 
 function isCardLink(anchor: HTMLAnchorElement): boolean {
@@ -151,6 +155,10 @@ function isCardLink(anchor: HTMLAnchorElement): boolean {
     anchor.offsetHeight <= CARD_MAX_HEIGHT_PX
   );
 }
+
+/** Where a badge sits: the element it is pinned to, and that element's right
+ *  hand corner it takes. */
+type BadgeSpot = { surface: HTMLElement; corner: "top" | "bottom" };
 
 /** The element the badge is pinned to, or null when this link should carry no
  *  badge. The preferred surface is the frame of the tile's picture, so the
@@ -163,19 +171,19 @@ function isCardLink(anchor: HTMLAnchorElement): boolean {
  *  tag-name list silently missed the logged-in ones. A text link falls back to
  *  its listing card, where the badge sits on the card's picture if it has one
  *  and on the card's corner otherwise. A link that is a card by itself, with
- *  no picture, carries the badge in its own corner. */
-function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
+ *  no picture, carries the badge in its own lower corner. */
+function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
   const linkPicture = coverImage(anchor);
-  if (linkPicture) return pictureFrame(linkPicture);
+  if (linkPicture) return { surface: pictureFrame(linkPicture), corner: "top" };
   const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
-  if (!card && isCardLink(anchor)) return anchor;
+  if (!card && isCardLink(anchor)) return { surface: anchor, corner: "bottom" };
   if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
   const cardPicture = coverImage(card);
-  return cardPicture ? pictureFrame(cardPicture) : card;
+  return { surface: cardPicture ? pictureFrame(cardPicture) : card, corner: "top" };
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
- *  badge, placed where surfaceFor says. The scan re-runs debounced on DOM changes,
+ *  badge, placed where spotFor says. The scan re-runs debounced on DOM changes,
  *  which covers infinite scroll and single-page-app navigations. Every card
  *  that links a noted page gets one badge, however often the page is listed.
  *  A badge the host page threw away in a re-render is simply placed again on
@@ -276,7 +284,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
    *  again is harmless, and that matters: cover images lazy-load, so the first
    *  scan can run while the picture still has no size. The badge then starts
    *  on the card's corner, and a later scan moves it onto the picture. */
-  const seat = (badge: HTMLElement, surface: HTMLElement) => {
+  const seat = (badge: HTMLElement, { surface, corner }: BadgeSpot) => {
+    badge.style.top = corner === "top" ? BADGE_INSET : "";
+    badge.style.bottom = corner === "bottom" ? BADGE_INSET : "";
     if (badge.parentElement === surface) return;
     // The badge is positioned against the surface, so the surface must be a
     // containing block. Almost every one already is; for the rare static one
@@ -294,9 +304,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   const pruneAndReseat = () => {
     for (const [anchor, { badge, key }] of badges) {
       const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key;
-      const surface = valid ? surfaceFor(anchor) : null;
-      if (surface && (badge.parentElement === surface || !hasBadge(surface))) {
-        seat(badge, surface);
+      const spot = valid ? spotFor(anchor) : null;
+      if (spot && (badge.parentElement === spot.surface || !hasBadge(spot.surface))) {
+        seat(badge, spot);
       } else {
         badge.remove();
         badges.delete(anchor);
@@ -312,12 +322,12 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     if (!key || currentKeys.has(key)) return "not-listed";
     const count = countByKey.get(key);
     if (!count && !checkedNoNotesKeys.has(key)) return "not-listed";
-    const surface = surfaceFor(anchor);
-    if (!surface) return "no-surface";
+    const spot = spotFor(anchor);
+    if (!spot) return "no-surface";
     // Another link in the same card already put its badge here.
-    if (hasBadge(surface)) return "badged";
+    if (hasBadge(spot.surface)) return "badged";
     const badge = createBadge(count ? { count } : { checked: true });
-    seat(badge, surface);
+    seat(badge, spot);
     badges.set(anchor, { badge, key });
     return "badged";
   };
