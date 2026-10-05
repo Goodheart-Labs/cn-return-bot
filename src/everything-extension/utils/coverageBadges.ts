@@ -18,8 +18,8 @@ const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
 
 // The fallback for links that do not wrap a picture themselves: such a link
-// only gets a badge when it sits inside a listing card, and the badge goes on
-// that card's picture or corner. Substack wraps each feed entry in
+// only gets a badge when it sits inside a listing card or is one itself (see
+// isCardLink), and the badge goes on that card's picture or corner. Substack wraps each feed entry in
 // role="article"; article and li catch listings on generic sites. YouTube
 // never needs this path, because its tiles always contain a thumbnail link.
 // The height cap tells a card apart from a full article body that merely
@@ -137,6 +137,21 @@ function pictureFrame(image: HTMLElement): HTMLElement {
   return frame;
 }
 
+// A link can also be the card itself. A Substack profile's Posts tab wraps
+// each post row in one link, inside plain divs that match no card selector. A
+// row whose post has no cover picture then had nowhere to put its badge. Such
+// a link is told apart from a text link by its box: it lays out as a block and
+// is at least as tall as a few lines of text.
+const MIN_CARD_LINK_HEIGHT_PX = 80;
+
+function isCardLink(anchor: HTMLAnchorElement): boolean {
+  return (
+    !WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(anchor).display) &&
+    anchor.offsetHeight >= MIN_CARD_LINK_HEIGHT_PX &&
+    anchor.offsetHeight <= CARD_MAX_HEIGHT_PX
+  );
+}
+
 /** The element the badge is pinned to, or null when this link should carry no
  *  badge. The preferred surface is the frame of the tile's picture, so the
  *  badge sits in the picture's corner, clear of the card's dates and menus.
@@ -147,11 +162,13 @@ function pictureFrame(image: HTMLElement): HTMLElement {
  *  YouTube renders different tile components logged in than logged out, and a
  *  tag-name list silently missed the logged-in ones. A text link falls back to
  *  its listing card, where the badge sits on the card's picture if it has one
- *  and on the card's corner otherwise. */
+ *  and on the card's corner otherwise. A link that is a card by itself, with
+ *  no picture, carries the badge in its own corner. */
 function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
   const linkPicture = coverImage(anchor);
   if (linkPicture) return pictureFrame(linkPicture);
   const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
+  if (!card && isCardLink(anchor)) return anchor;
   if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
   const cardPicture = coverImage(card);
   return cardPicture ? pictureFrame(cardPicture) : card;
