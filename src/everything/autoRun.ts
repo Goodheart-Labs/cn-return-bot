@@ -83,14 +83,16 @@ async function assertMachineHealthy(): Promise<void> {
   }
 }
 
-/** Tidies the queue and processes one feed item. Returns whether an item was
- *  started, which is what the alarm is measured from. The pacing block is
- *  printed here too, so the log shows the budget before the walk. */
-async function processOneFeedItem(): Promise<boolean> {
+type FeedRunOutcome = Awaited<ReturnType<typeof processNextFeedItem>> | "budget_reached";
+
+/** Tidies the queue and processes one feed item. Returns how the item ended,
+ *  or "budget_reached" when the day's feed budget allowed no item. The pacing
+ *  block is printed here too, so the log shows the budget before the walk. */
+async function processOneFeedItem(): Promise<FeedRunOutcome> {
   await triageQueue();
   if (await feedBudgetExhausted()) {
     console.log(`Feed budget reached (${describeSpend(await todaySpendUsd())}) — not enqueueing or processing today`);
-    return false;
+    return "budget_reached";
   }
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
@@ -99,7 +101,7 @@ async function processOneFeedItem(): Promise<boolean> {
   if (!feedItemsQueued(queue)) await runAutoEnqueue();
   const ended = await processNextFeedItem();
   if (ended === "empty") console.log("Nothing to process · every creator we walk is caught up");
-  return ended !== "empty";
+  return ended;
 }
 
 /** Sets the alarm the database starts the next run on. The snapshot is read
@@ -120,13 +122,14 @@ async function main() {
   // empty, the database's backstop starts another run 45 minutes later, and
   // that red run every 45 minutes is how the sickness stays visible.
   await assertMachineHealthy();
-  let started = false;
+  let ended: FeedRunOutcome | undefined;
   try {
-    started = await processOneFeedItem();
+    ended = await processOneFeedItem();
   } finally {
     // Whatever the item did, the next run must be scheduled, or the pipeline
-    // would sleep until the backstop.
-    await setNextAlarm(started);
+    // would sleep until the backstop. The alarm is measured from the item's
+    // start, so it needs to know whether an item was started.
+    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error");
   }
   // Creator pictures for the website cost no LLM money, so they refresh even
   // on a capped day. They run last, after the alarm is set, so a slow source
@@ -142,6 +145,14 @@ async function main() {
   // noticed. So the run fails here, after its item and its alarm.
   if (quotaRanOutThisRun()) {
     throw new Error("The YouTube Data API quota is used up until 07:00 UTC. No YouTube channel could be listed. Failing the run so this is seen.");
+  }
+  // A failed item is recorded on its row, and the run used to end green. On
+  // 1 October 2026 every item failed for 16 hours while every run stayed
+  // green, and nobody noticed until someone read the logs. So a failed item
+  // fails the run too, after the alarm is set. Every error counts, including
+  // a video without a transcript.
+  if (ended === "error") {
+    throw new Error("This run's item failed. The reason is in the log above and in everything_items.error. Failing the run so this is seen.");
   }
 }
 
