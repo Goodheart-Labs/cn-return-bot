@@ -499,6 +499,11 @@ export async function setItemProgress(id: string, progress: ItemProgress | null)
   throwOnError(await getSupabaseClient().from("everything_items").update({ progress }).eq("id", id));
 }
 
+/** Whom a pipeline cost was spent for: a reader who asked for a page or a
+ *  passage, or the feed. The reader share has its own daily ceiling in
+ *  spendCap.ts. */
+export type SpendFor = "reader" | "feed";
+
 /** One fact-check run of a claim. This is the everything pipeline's counterpart
  *  of a pipeline_runs row. */
 export interface ClaimPipelineRun {
@@ -513,6 +518,7 @@ export interface ClaimPipelineRun {
   bot_config: Record<string, unknown> | null;
   logs: Record<string, unknown> | null;
   cost: number | null;
+  work_priority: SpendFor;
 }
 
 /** We scrub NUL characters here, the same way pipeline_runs does. Model output
@@ -535,13 +541,14 @@ const ITEM_RUN_ROW = {
  *  Extraction and rating each write one such row per item, and so does the
  *  cleanup of a reader request's captured text. Until these rows existed the
  *  cap silently undercounted by exactly that spend. */
-export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number): Promise<void> {
+export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number, spendFor: SpendFor): Promise<void> {
   throwOnError(
     await getSupabaseClient().from("everything_pipeline_runs").insert({
       ...ITEM_RUN_ROW[stage],
       item_id: itemId,
       claim_id: null,
       cost: costUsd,
+      work_priority: spendFor,
     }),
   );
 }
@@ -921,6 +928,15 @@ export async function fetchCreatorAttention(since: Date, minPages: number): Prom
 export async function fetchCostSinceUsd(since: Date): Promise<number> {
   const total = throwOnError(
     await getSupabaseClient().rpc("everything_cost_since", { since: since.toISOString() }),
+  ) as number | string | null;
+  return Number(total ?? 0);
+}
+
+/** The part of fetchCostSinceUsd that was spent on readers' requests
+ *  (migration 114). */
+export async function fetchReaderCostSinceUsd(since: Date): Promise<number> {
+  const total = throwOnError(
+    await getSupabaseClient().rpc("everything_reader_cost_since", { since: since.toISOString() }),
   ) as number | string | null;
   return Number(total ?? 0);
 }

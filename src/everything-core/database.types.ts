@@ -758,6 +758,7 @@ export type Database = {
           logs: Json | null
           outcome: string | null
           outcome_reason: string | null
+          work_priority: string | null
         }
         Insert: {
           ab_test_picks?: Json | null
@@ -773,6 +774,7 @@ export type Database = {
           logs?: Json | null
           outcome?: string | null
           outcome_reason?: string | null
+          work_priority?: string | null
         }
         Update: {
           ab_test_picks?: Json | null
@@ -788,6 +790,7 @@ export type Database = {
           logs?: Json | null
           outcome?: string | null
           outcome_reason?: string | null
+          work_priority?: string | null
         }
         Relationships: [
           {
@@ -2221,6 +2224,7 @@ export type Database = {
           vote_score: number
         }[]
       }
+      everything_reader_cost_since: { Args: { since: string }; Returns: number }
       everything_recent_posts: {
         Args: { max_posts: number; min_pages: number; window_days: number }
         Returns: {

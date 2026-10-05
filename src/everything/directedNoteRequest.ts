@@ -33,7 +33,7 @@ export async function consumeDirectedNoteRequest(request: NoteRequestRow, existi
   }]);
   try {
     const { check, run } = await requestClaimCheck({ priority: "reader", post: buildClaimPost({ claim, source: item.source as ItemSource, itemId: item.id, index: 0, publishedAt: item.published_at ?? undefined }) });
-    await recordClaimRun(claimId!, run);
+    await recordClaimRun(claimId!, run, "reader");
     if (check.kind === "note") await insertNote(claimId!, check.note, check.sources);
     await setClaimStatus(claimId!, check.kind, check.kind === "no_note" ? check.reason : null);
     await resolveNoteRequest(request.id, "done", null, item.id);
