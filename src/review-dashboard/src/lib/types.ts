@@ -102,7 +102,9 @@ export type ProductionFailureType =
   | "underwater"
   | "filtered_low_eval_score"
   | "filtered_no_slot"
-  | "draft_check_failed";
+  | "draft_check_failed"
+  // Any other run in the every-run list. It has no pill of its own.
+  | "pipeline_run";
 
 // The version-2 categories for dataset runs. They are produced by
 // categorizeRowV2 in evaluateResults.ts.
@@ -143,6 +145,9 @@ export interface FilterState {
   // it is always visible in the filter bar. Nothing is overridden behind the
   // interface.
   highValueOnly: boolean;
+  // When this is on, the list is every pipeline run, newest first, whether or not
+  // it posted a note. Only the seen filter and the A/B filters still apply.
+  everyRun?: boolean;
 }
 
 export interface FailureTypeConfig {
@@ -175,6 +180,7 @@ export const FAILURE_TYPE_CONFIG: Record<FailureType, FailureTypeConfig> = {
   // to look at the drafts.
   filtered_no_slot: { label: "Filtered (no posting slots)", defaultOn: false, production: true, datasetRun: false, color: "bg-slate-100 text-slate-600" },
   draft_check_failed: { label: "Draft (check failed)", defaultOn: false, production: true, datasetRun: false, color: "bg-stone-100 text-stone-600" },
+  pipeline_run: { label: "Pipeline run", defaultOn: false, production: false, datasetRun: false, color: "bg-zinc-100 text-zinc-600" },
 
   // --- V2 dataset categories: noteworthy ---
   nw_success:                   { label: "Success",              defaultOn: true,  production: false, datasetRun: true, color: "bg-green-100 text-green-800",  group: "noteworthy" },

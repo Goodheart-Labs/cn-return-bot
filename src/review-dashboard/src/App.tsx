@@ -243,6 +243,7 @@ function serializeFilters(f: FilterState): string {
     failureModes: [...f.failureModes],
     topicSets: [...f.topicSets],
     highValueOnly: f.highValueOnly,
+    everyRun: !!f.everyRun,
   });
 }
 
@@ -257,6 +258,7 @@ function loadSavedFilters(): FilterState | null {
       failureModes: new Set(o.failureModes ?? []),
       topicSets: new Set(o.topicSets ?? []),
       highValueOnly: !!o.highValueOnly,
+      everyRun: !!o.everyRun,
     };
   } catch {
     return null;
@@ -1158,7 +1160,9 @@ export function App() {
           {loading && items.length === 0
             ? "Loading..."
             : dataset.type === "production"
-              ? filters.highValueOnly
+              ? filters.everyRun
+                ? `${visible.length} runs loaded · every run, newest first`
+                : filters.highValueOnly
                 ? `${totalItems ?? visible.length} high-value notes · all time ★`
                 : tagFilterActive
                   ? `${totalItems ?? visible.length} notes · all time, tagged`

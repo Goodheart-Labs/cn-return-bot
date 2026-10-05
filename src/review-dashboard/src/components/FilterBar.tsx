@@ -37,14 +37,15 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
     const next = new Set(filters.failureTypes);
     if (next.has(ft)) next.delete(ft);
     else next.add(ft);
-    onFiltersChange({ ...filters, failureTypes: next });
+    // Picking a pill leaves the every-run list, which has no pills of its own.
+    onFiltersChange({ ...filters, failureTypes: next, everyRun: false });
   };
 
   const toggleTopicSet = (id: string) => {
     const next = new Set(filters.topicSets);
     if (next.has(id)) next.delete(id);
     else next.add(id);
-    onFiltersChange({ ...filters, topicSets: next });
+    onFiltersChange({ ...filters, topicSets: next, everyRun: false });
   };
 
   const cycleSeen = () => {
@@ -62,6 +63,16 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
     } else {
       // We are turning the star filter off. The view goes back to the standard
       // defaults rather than whatever narrowing was applied while it was on.
+      onFiltersChange(defaultFilters(source));
+    }
+  };
+
+  // Every run is its own list, so switching it on clears the narrowing filters,
+  // and switching it off goes back to the defaults, the same way the star does.
+  const toggleEveryRun = () => {
+    if (!filters.everyRun) {
+      onFiltersChange({ seen: "all", failureTypes: new Set(), failureModes: new Set(), topicSets: new Set(), highValueOnly: false, everyRun: true });
+    } else {
       onFiltersChange(defaultFilters(source));
     }
   };
@@ -108,6 +119,20 @@ export function FilterBar({ source, filters, counts, topicSetCounts, onFiltersCh
           }`}
         >
           {filters.highValueOnly ? "★" : "☆"} High-value notes
+        </button>
+      )}
+
+      {source === "production" && (
+        <button
+          onClick={toggleEveryRun}
+          title="Show every pipeline run, newest first, including the ones that never posted a note"
+          className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+            filters.everyRun
+              ? "bg-zinc-800 text-white border-zinc-800"
+              : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+          }`}
+        >
+          Every run, including unposted
         </button>
       )}
 
