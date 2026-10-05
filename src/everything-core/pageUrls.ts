@@ -3,7 +3,11 @@
  *  pipeline can import this file without pulling in the browser-only client
  *  setup in supabase.ts. */
 
-const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si"];
+// Query parameters that only record how the reader arrived, never which page
+// they see. Substack's logged-in reader adds lli=1 ("logged-in link") to every
+// post link it shows, for example on a profile's Posts tab, next to its utm_
+// parameters.
+const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli"];
 
 /** Canonicalizes a page URL so it can be looked up in `everything_items.url`,
  *  with the page's canonical link passed in as a plain string. Callers that
