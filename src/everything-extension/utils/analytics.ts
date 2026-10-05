@@ -104,12 +104,17 @@ async function capture(event: string, props?: Record<string, unknown>): Promise<
   // An anonymous session carries no user_id: it is not a signed-in user, and
   // stamping its events would flatten the sign-up funnel.
   const user = await signedInUser();
+  // The install type is "normal" for a store install and "development" for an
+  // unpacked build. The dashboard counts only store installs, so our own test
+  // browsers stay out of its numbers. Safari has no management API, so its
+  // events carry no install type.
+  const installType = (await browser.management?.getSelf())?.installType;
   return insertEvent({
     event,
     platform: "extension",
     deviceId: await deviceId(),
     userId: user && !user.is_anonymous ? user.id : null,
-    props: { browser: import.meta.env.BROWSER, app_version: browser.runtime.getManifest().version, ...props },
+    props: { browser: import.meta.env.BROWSER, app_version: browser.runtime.getManifest().version, install_type: installType, ...props },
   });
 }
 
