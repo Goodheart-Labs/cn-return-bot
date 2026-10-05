@@ -5,7 +5,7 @@
  */
 import "dotenv/config";
 import { getSupabaseClient } from "../../api/supabaseClient";
-import { fetchAllRows } from "../../api/paging";
+import { fetchAllRows } from "../../everything-core/paging";
 
 const SINCE = "2026-05-28T00:00:00Z";
 

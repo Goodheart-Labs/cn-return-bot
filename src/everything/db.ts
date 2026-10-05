@@ -3,6 +3,7 @@
 
 import { getSupabaseClient } from "../api/supabaseClient";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
@@ -24,6 +25,7 @@ export const QUEUE_PRIORITY = {
 } as const;
 
 export interface EverythingItem {
+  request_steer?: string | null;
   id: string;
   project_id: string | null;
   source: ItemSource;
@@ -41,7 +43,7 @@ export interface EverythingItem {
   full_text: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -112,9 +114,17 @@ async function freeSlug(base: string): Promise<string> {
   }
 }
 
+/** A string as an ilike pattern that matches only itself, ignoring case. A
+ *  YouTube handle such as @ericsrealm_ contains an underscore, which ilike
+ *  would otherwise read as "any one character". */
+const escapeLikePattern = (text: string): string => text.replace(/[\\%_]/g, "\\$&");
+
 /** Returns the project id for a creator or a slug, creating the project if we
  *  have never seen it. A creator is looked up by feed URL first, because that
- *  is the key everything shares, and by slug second.
+ *  is the key everything shares, and by slug second. Feed URLs are compared
+ *  ignoring letter case, as the database's own functions do (migration 086).
+ *  The same YouTube handle arrives as @DwarkeshPatel from a watch page and as
+ *  @dwarkeshpatel from the Data API.
  *
  *  Two different creators can derive the same slug, such as a YouTube channel
  *  and a Substack that both go by the same handle. When the slug is taken by a
@@ -136,7 +146,7 @@ export async function resolveProjectId(params: {
 
   if (feedUrl) {
     const byFeed = throwOnError(
-      await db.from("everything_projects").select(PROJECT_COLUMNS).eq("feed_url", feedUrl).maybeSingle(),
+      await db.from("everything_projects").select(PROJECT_COLUMNS).ilike("feed_url", escapeLikePattern(feedUrl)).maybeSingle(),
     ) as ProjectRow | null;
     if (byFeed) {
       await fillDisplayName(byFeed, displayName, "feed");
@@ -147,7 +157,7 @@ export async function resolveProjectId(params: {
   const bySlug = throwOnError(
     await db.from("everything_projects").select(PROJECT_COLUMNS).eq("slug", slug).maybeSingle(),
   ) as ProjectRow | null;
-  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url === feedUrl);
+  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url.toLowerCase() === feedUrl.toLowerCase());
   if (bySlug && sameCreator) {
     if (feedUrl && !bySlug.feed_url) {
       throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id));
@@ -198,6 +208,7 @@ export type CheckedScope = "page" | "paragraph" | null;
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
+  request_steer?: string | null;
   project_id: string;
   source: ItemSource;
   url: string;
@@ -274,7 +285,7 @@ export async function promoteItemToWholePage(id: string, fullText: string | null
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
+      .update({ checked_scope: "page", full_text: fullText, request_steer: null, status: "queued", error: null })
       .eq("id", id),
   );
   await raiseItemPriority(id, priority);
@@ -379,13 +390,15 @@ export interface ItemClaimRow {
 /** Returns all claims of an item, in insertion order. A non-empty result means
  *  claim extraction for that item finished. */
 export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
-  return throwOnError(
-    await getSupabaseClient()
+  const claims = await fetchAllRows<ItemClaimRow & { created_at: string }>(
+    () => getSupabaseClient()
       .from("everything_claims")
-      .select("id, claim, judgement, context_quote, context_paragraph, image_urls, status")
-      .eq("item_id", itemId)
-      .order("created_at"),
-  ) as ItemClaimRow[];
+      .select("id, claim, judgement, context_quote, context_paragraph, image_urls, status, created_at")
+      .eq("item_id", itemId),
+    "id",
+    { label: "itemClaims" },
+  );
+  return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
 /** Moves the next queued item to `processing` and returns it. The highest
@@ -450,13 +463,21 @@ export async function markItemError(id: string, error: string): Promise<void> {
   );
 }
 
+/** How many claim rows one insert request carries. An item can hold hundreds
+ *  of claims, and one request per chunk keeps each body and each returned id
+ *  list well under the API's row cap. */
+const CLAIM_INSERT_CHUNK_SIZE = 200;
+
 /** Inserts the claim rows and returns their ids in input order. */
 export async function insertClaims(rows: NewClaimRow[]): Promise<string[]> {
-  if (rows.length === 0) return [];
-  const inserted = throwOnError(
-    await getSupabaseClient().from("everything_claims").insert(rows).select("id"),
-  );
-  return (inserted ?? []).map((r: { id: string }) => r.id);
+  const ids: string[] = [];
+  for (let i = 0; i < rows.length; i += CLAIM_INSERT_CHUNK_SIZE) {
+    const inserted = throwOnError(
+      await getSupabaseClient().from("everything_claims").insert(rows.slice(i, i + CLAIM_INSERT_CHUNK_SIZE)).select("id"),
+    ) as { id: string }[];
+    ids.push(...inserted.map((r) => r.id));
+  }
+  return ids;
 }
 
 export async function setClaimStatus(id: string, status: ClaimStatus, reason: string | null): Promise<void> {
@@ -531,10 +552,12 @@ export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN
  *  claim is finalized rather than rechecked, because rechecking it would insert
  *  a second note. */
 export async function fetchClaimIdsWithAiNotes(claimIds: string[]): Promise<Set<string>> {
-  if (claimIds.length === 0) return new Set();
-  const rows = throwOnError(
-    await getSupabaseClient().from("everything_notes").select("claim_id").is("author_id", null).in("claim_id", claimIds),
-  ) as { claim_id: string }[];
+  const rows = await fetchInBatches<{ id: string; claim_id: string }>(
+    (chunk) => getSupabaseClient().from("everything_notes").select("id, claim_id").is("author_id", null).in("claim_id", chunk),
+    claimIds,
+    "id",
+    { label: "claimIdsWithAiNotes" },
+  );
   return new Set(rows.map((r) => r.claim_id));
 }
 
@@ -550,6 +573,11 @@ export interface NoteRequestRow {
   page_title: string;
   selection: string | null;
   page_text: string | null;
+  steer?: string | null;
+  passage_question_id?: string | null;
+  /** The creator's feed URL as the extension worked it out. Untrusted input:
+   *  the consumer uses it only when it parses as a creator feed. */
+  feed_url?: string | null;
 }
 
 export type NoteRequestStatus = "enqueued" | "done" | "skipped" | "error";
@@ -591,7 +619,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text")
+      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];
@@ -653,12 +681,14 @@ export interface CreatorProject {
  *  creator walked on visits alone still has to be recognised as their existing
  *  project, or their notes would land in a second one under a derived slug. */
 export async function fetchCreatorProjects(): Promise<CreatorProject[]> {
-  const rows = throwOnError(
-    await getSupabaseClient()
+  const rows = await fetchAllRows<{ slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null; top_posts_attempted_at: string | null }>(
+    () => getSupabaseClient()
       .from("everything_projects")
-      .select("slug, feed_url, priority_until, top_posts_refreshed_at, top_posts_attempted_at")
+      .select("id, slug, feed_url, priority_until, top_posts_refreshed_at, top_posts_attempted_at")
       .not("feed_url", "is", null),
-  ) as { slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null; top_posts_attempted_at: string | null }[];
+    "id",
+    { label: "creatorProjects" },
+  );
   return rows.map((r) => ({
     project_slug: r.slug,
     feed_url: r.feed_url,
@@ -726,13 +756,12 @@ export interface TopPostRow {
 /** Every cached top post, most popular first within each feed. The whole
  *  table is a few rows per followed creator. */
 export async function fetchAllTopPosts(): Promise<TopPostRow[]> {
-  return throwOnError(
-    await getSupabaseClient()
-      .from("everything_top_posts")
-      .select("feed_url, source, url, title, published_at, popularity, rank")
-      .order("feed_url")
-      .order("rank"),
-  ) as TopPostRow[];
+  const rows = await fetchAllRows<TopPostRow & { id: string }>(
+    () => getSupabaseClient().from("everything_top_posts").select("id, feed_url, source, url, title, published_at, popularity, rank"),
+    "id",
+    { label: "topPosts" },
+  );
+  return rows.sort((a, b) => a.feed_url.localeCompare(b.feed_url) || a.rank - b.rank);
 }
 
 /** Replaces one feed's cached top list with a fresh one and stamps the feed
@@ -847,15 +876,28 @@ export interface QueuedItemSummary {
  *  It names its columns rather than selecting everything, so it never pulls the
  *  large full_text bodies. */
 export async function fetchQueueOverview(): Promise<QueuedItemSummary[]> {
-  return throwOnError(
-    await getSupabaseClient()
+  const items = await fetchAllRows<QueuedItemSummary & { published_at: string | null }>(
+    () => getSupabaseClient()
       .from("everything_items")
-      .select("id, status, source, url, title, priority, created_at")
-      .in("status", ["queued", "processing"])
-      .order("priority", { ascending: false })
-      .order("published_at", { ascending: false, nullsFirst: true })
-      .order("created_at"),
-  ) as QueuedItemSummary[];
+      .select("id, status, source, url, title, priority, published_at, created_at")
+      .in("status", ["queued", "processing"]),
+    "id",
+    { label: "queueOverview" },
+  );
+  return items.sort(inWorkerOrder);
+}
+
+/** The order claimNextQueuedItem takes items in: the highest priority tier
+ *  first, then the newest published content, with undated items ahead of the
+ *  dated ones, and the oldest request first among equals. */
+function inWorkerOrder(a: { priority: number; published_at: string | null; created_at: string }, b: typeof a): number {
+  if (a.priority !== b.priority) return b.priority - a.priority;
+  if (a.published_at !== b.published_at) {
+    if (a.published_at === null) return -1;
+    if (b.published_at === null) return 1;
+    return b.published_at.localeCompare(a.published_at);
+  }
+  return a.created_at.localeCompare(b.created_at);
 }
 
 /** What browsers did with each creator's pages since the given time, counted in
@@ -863,12 +905,14 @@ export async function fetchQueueOverview(): Promise<QueuedItemSummary[]> {
  *  is how many different pages of a creator one browser must have opened to
  *  count as a reader. */
 export async function fetchCreatorAttention(since: Date, minPages: number): Promise<CreatorAttention[]> {
-  return (throwOnError(
-    await getSupabaseClient().rpc("everything_creator_attention", {
-      since: since.toISOString(),
-      min_pages: minPages,
-    }),
-  ) ?? []) as CreatorAttention[];
+  // One row per creator anyone visited, which passed 1,000 rows in September
+  // 2026. PostgREST can order and filter a function's rows, and feed_url is
+  // unique among them, so the rows page by it like a table.
+  return fetchAllRows<CreatorAttention>(
+    () => getSupabaseClient().rpc("everything_creator_attention", { since: since.toISOString(), min_pages: minPages }),
+    "feed_url",
+    { label: "creatorAttention" },
+  );
 }
 
 /** Total LLM cost in USD recorded in everything_pipeline_runs since the given

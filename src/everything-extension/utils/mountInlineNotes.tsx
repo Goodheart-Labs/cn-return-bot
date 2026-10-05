@@ -2,9 +2,9 @@ import { createRoot, type Root } from "react-dom/client";
 import { QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import type { NoteSet } from "@cn/features/notes/noteSet";
 import { queryClient } from "@cn/features/query/queryClient";
-import { createShadowRootUi } from "#imports";
+
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked } from "@cn/core/items";
+import { fetchItemForUrl } from "@cn/core/items";
 import { normalizePageUrl } from "@cn/core/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { anchorGroups } from "./anchorGroups";
@@ -12,18 +12,17 @@ import { applyHighlights, ensureHighlightStyle, hasHighlightApi, HIGHLIGHT_NAME 
 import { claimGroups, itemNoteSetQuery, noteCounts } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
-import { isSubstackPostPage } from "./pageShape";
-import { jumpToNextNote } from "./jumpBus";
 import { recordPageVisit } from "./linkVisits";
-import { mountStatusOverlay } from "./mountStatusOverlay";
+import { getClosedClaims } from "./closedNotes";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
 import { listenForRequestInfo } from "./requestInfo";
-import { getNoteFilters, getSettings, onNoteFiltersChanged, onSettingsChanged, type NoteStyle } from "./settings";
+import { getNoteDisplay, getSettings, onNoteDisplayChanged, onSettingsChanged, type NoteStyle } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp } from "../components/InlineNotes";
 import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { track } from "@cn/core/analytics";
+import { createOverlayUi } from "./overlayUi";
 
 const REANCHOR_DEBOUNCE_MS = 600;
 
@@ -76,8 +75,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // works on any ingested page, and the cache observer below brings the new
   // note in.
   const notesQuery = itemNoteSetQuery(item.id);
-  // The same rule as the lookup: a failed notes fetch mounts no status card,
-  // because "found nothing to note" must never be an outage in disguise.
+  // The same rule as the lookup: a failed notes fetch mounts nothing.
   let noteSet: NoteSet;
   try {
     noteSet = await queryClient.fetchQuery(notesQuery);
@@ -85,35 +83,23 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     console.warn(`[common-notes] ${pageUrl} → notes fetch failed, mounting nothing:`, err);
     return null;
   }
-  let filters = await getNoteFilters();
-  const counts = () => noteCounts(noteSet.notes.values(), filters);
+  let display = await getNoteDisplay();
   // The extension's top of funnel: notes were actually displayed to a reader.
   // Once per page by construction — mountForUrl runs once per URL.
-  if (counts().visible > 0) {
+  const visibleNotes = noteCounts(noteSet.notes.values(), display).visible;
+  if (visibleNotes > 0) {
     track("notes_shown", {
       surface: "inline",
       item_id: item.id,
-      claim_count: claimGroups(noteSet, filters).length,
-      note_count: counts().visible,
+      claim_count: claimGroups(noteSet, display).length,
+      note_count: visibleNotes,
     });
   }
 
   // The note style is read once here and kept fresh by the settings listener
   // below, so flipping it in the settings applies without a reload.
   let noteStyle: NoteStyle = (await getSettings()).noteStyle;
-
-  // The transient status card tells the reader how this page stands: checked
-  // in full, carrying notes, or holding only a reader's note with the whole
-  // page still uncheckable. That last state matters most, because nothing
-  // else on the page says the check is still worth asking for.
-  const statusCard = (await getSettings()).showNoteCountOverlay
-    ? await mountStatusOverlay(ctx, {
-        noun: isSubstackPostPage(pageUrl) ? "post" : "page",
-        counts: counts(),
-        wholePageChecked: isWholePageChecked(item),
-        onOpenNotes: jumpToNextNote,
-      })
-    : null;
+  const closedClaims = await getClosedClaims();
 
   let reactRoot: Root | null = null;
   let themeRoot: HTMLElement | null = null;
@@ -129,7 +115,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // containing block, and those can sit outside the inner scroller. The anchor is a
   // function, so it is resolved again on every mount(). That way, if the page swaps
   // the article element out, appending the host again lands it in the new article.
-  const inlineUi = await createShadowRootUi(ctx, {
+  const inlineUi = await createOverlayUi(ctx, {
     name: "common-notes-inline",
     position: "inline",
     anchor: () => findContainer(),
@@ -165,31 +151,31 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     // the debounced observer once, and then everything settles.
     if (!inlineUi.shadowHost.isConnected) inlineUi.mount();
     const container = findContainer();
-    const anchored = anchorGroups(container, claimGroups(noteSet, filters));
-    applyHighlights(anchored.map((g) => g.range));
+    const anchored = anchorGroups(container, claimGroups(noteSet, display));
+    // A claim set to dot only gets its marker and no tint.
+    applyHighlights(anchored.filter((g) => g.display !== "dot").map((g) => g.range));
     reactRoot?.render(
       <QueryClientProvider client={queryClient}>
         <PillPaletteFromSettings>
-          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} />
+          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} initiallyClosed={closedClaims} />
         </PillPaletteFromSettings>
       </QueryClientProvider>,
     );
   };
 
   // A vote, a new note or a deletion changes the page's cached notes. The
-  // observer hears every such change, and the status card and the markers
-  // follow it on the spot.
+  // observer hears every such change, and the markers follow it on the
+  // spot.
   const stopNotes = new QueryObserver(queryClient, notesQuery).subscribe(({ data }) => {
     if (!data || data === noteSet) return;
     noteSet = data;
-    statusCard?.updateCounts(counts());
     render();
   });
-  // A flipped tickbox in the settings applies straight away.
-  const stopFilters = onNoteFiltersChanged(() => {
-    void getNoteFilters().then((next) => {
-      filters = next;
-      statusCard?.updateCounts(counts());
+  // A changed display choice applies straight away, whether it was made in
+  // the settings or with the link on an unhelpful note.
+  const stopDisplay = onNoteDisplayChanged(() => {
+    void getNoteDisplay().then((next) => {
+      display = next;
       render();
     });
   });
@@ -202,7 +188,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     });
   });
 
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-ui",
     position: "inline",
     anchor: "body",
@@ -250,12 +236,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
 
   return () => {
     stopNotes();
-    stopFilters();
+    stopDisplay();
     stopSettings();
     stopTheme();
     observer.disconnect();
     clearTimeout(timer);
-    statusCard?.teardown();
     ui.remove();
     inlineUi.remove();
   };

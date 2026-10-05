@@ -109,7 +109,7 @@ async function checkAndRecordClaim(
   try {
     const { check, run } = await requestClaimCheck({
       priority: workPriorityOf(item),
-      post: buildClaimPost({ claim, source: item.source, itemId: item.id, index, publishedAt }),
+      post: buildClaimPost({ claim: item.request_steer ? { ...claim, steer: item.request_steer } : claim, source: item.source, itemId: item.id, index, publishedAt }),
     });
     // The service cannot store anything, so recording the run is ours to do.
     await recordClaimRun(claimId, run);

@@ -13,6 +13,10 @@ export const GROK_MODEL = "grok-4-fast";
 export const PERPLEXITY_MODEL = "perplexity/sonar";
 export const GEMINI_MODEL = "google/gemini-3-flash-preview";
 
+export const OPENROUTER_PRICING: Record<string, { in: number; out: number }> = {
+  "anthropic/claude-opus-5.5": { in: 4, out: 20 },
+};
+
 // --- Grok pricing ---
 // The rates come from https://docs.x.ai/docs/models. xAI bills every xSearch tool
 // call at the same flat rate, whichever model made the call.

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ClaimRef, NnnRow, NoteRow } from "@cn/core/types";
+import type { ClaimRef, FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
 import { chipVariants } from "@cn/ui/Chip";
@@ -19,26 +19,36 @@ import { ClaimContent, type NotedContent } from "./ClaimContent";
  *  is not source text. It is a self-contained restatement, written so the claim
  *  can be fact-checked on its own. A claim grounded in an image has no excerpt,
  *  so it falls back to that restatement, which is rendered without quote marks
- *  and captioned as coming from the image. */
-function claimContent(claim: ClaimRef): NotedContent {
+ *  and captioned as coming from the image.
+ *
+ *  An article citation names `post` when it is given. A clip does not need it,
+ *  because the embedded player already shows the video and links to it. */
+function claimContent(claim: ClaimRef, post: FeedItemRow | undefined): NotedContent {
   const url = claim.context_url;
   const quote = claim.context_quote || claim.claim;
-  const fragmentText = claim.context_quote ? undefined : claim.claim;
-  const imageGrounded = !claim.context_quote && (claim.image_urls?.length ?? 0) > 0;
+  const restated = !claim.context_quote;
+  const imageGrounded = restated && (claim.image_urls?.length ?? 0) > 0;
   const updatedQuote = claim.updated_quote ?? undefined;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
     return {
       kind: "youtube",
       url,
       quote,
-      fragmentText,
+      restated,
       updatedQuote,
       imageGrounded,
       startSeconds: claim.start_seconds,
       endSeconds: claim.end_seconds,
     };
   }
-  return { kind: "article", url, quote, fragmentText, updatedQuote, imageGrounded };
+  return {
+    kind: "article",
+    quote,
+    restated,
+    updatedQuote,
+    imageGrounded,
+    post: post && { title: post.title ?? "Untitled", url },
+  };
 }
 
 /** The images a claim is grounded in, which are usually Substack charts or
@@ -211,8 +221,12 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 /** One card of the website's feed: the claim in its source, the note on it,
  *  and the claim's note-not-needed list. On a wide screen the paragraph around
  *  the claim sits beside the card. */
-export function FeedNoteCard({ note, improvements, nnnEntries, shareUrl }: {
+export function FeedNoteCard({ note, post, improvements, nnnEntries, shareUrl }: {
   note: NoteRow;
+  /** The post the note is on. The project's All page passes it, so each card
+   *  names its post. A page for one post leaves it out, because the page's
+   *  heading already names the post. */
+  post?: FeedItemRow;
   /** The notes that improve this one. This is the reverse of
    *  improved_from_note_id. */
   improvements: NoteRow[];
@@ -251,14 +265,14 @@ export function FeedNoteCard({ note, improvements, nnnEntries, shareUrl }: {
         </div>
       )}
       <Card ref={cardColRef} className="p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
-      <div className="mb-3">
+      <div className="mb-4">
         {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
         {paragraph && (
           <Button variant="link" className="xl:hidden text-xs mb-2" onClick={() => setCtxOpen((o) => !o)}>
             {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
           </Button>
         )}
-        <ClaimContent content={claimContent(claim)} />
+        <ClaimContent content={claimContent(claim, post)} />
       </div>
 
       <Note note={note} shareUrl={shareUrl}>

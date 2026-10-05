@@ -95,3 +95,43 @@ describe("consumeNoteRequest", () => {
     expect(dbState.calls.insertItemRun).toBeUndefined();
   });
 });
+
+test("a new steered request preserves the steer beside the queued passage", async () => {
+  await consumeNoteRequest(request({ selection: "A bridge opened in 1932.", steer: "the opening date" }) as never);
+  expect(dbState.calls.insertQueuedItem?.[0]?.[0]).toMatchObject({ request_steer: "the opening date", full_text: "A bridge opened in 1932.", checked_scope: "paragraph" });
+});
+
+/* A newly requested page goes under its creator's project, or under "Around
+ * the web" when it has no creator we follow (GOO-290). */
+describe("the project a new requested page goes under", () => {
+  const projectLookup = () => dbState.calls.resolveProjectId?.[0]?.[0];
+
+  test("a custom-domain Substack post goes to the publication the extension named", async () => {
+    await consumeNoteRequest(
+      request({ page_url: "https://www.verysane.ai/p/is-metr-a-meaningful-check-on-anthropic", feed_url: "https://verysane.substack.com" }) as never,
+    );
+    expect(projectLookup()).toEqual({ slug: "verysane", feedUrl: "https://verysane.substack.com" });
+  });
+
+  test("a YouTube video goes to the channel the extension named", async () => {
+    await consumeNoteRequest(
+      request({ page_url: "https://www.youtube.com/watch?v=abcdefghijk", feed_url: "https://www.youtube.com/@DwarkeshPatel" }) as never,
+    );
+    expect(projectLookup()).toEqual({ slug: "dwarkeshpatel", feedUrl: "https://www.youtube.com/@DwarkeshPatel" });
+  });
+
+  test("a request that names no creator still finds a *.substack.com publication from the address", async () => {
+    await consumeNoteRequest(request({ page_url: "https://thezvi.substack.com/p/ai-120" }) as never);
+    expect(projectLookup()).toEqual({ slug: "thezvi", feedUrl: "https://thezvi.substack.com" });
+  });
+
+  test("a creator value that is not a feed we know is ignored", async () => {
+    await consumeNoteRequest(request({ feed_url: "https://example.com/" }) as never);
+    expect(projectLookup()).toEqual({ slug: "web" });
+  });
+
+  test("a page with no creator goes to Around the web", async () => {
+    await consumeNoteRequest(request() as never);
+    expect(projectLookup()).toEqual({ slug: "web" });
+  });
+});

@@ -89,17 +89,21 @@ function isRetryableStatus(status: number): boolean {
   return status === 403 || status === 429 || status >= 500;
 }
 
-/** GETs a URL through the residential proxy and parses the answer as JSON.
- *  The body is read inside the retry, so a connection that drops halfway
- *  through the answer is retried too. */
-export async function fetchJsonViaResidentialProxy(url: string): Promise<any> {
+/** GETs a URL through the residential proxy and reads the answer with
+ *  `read`. The body is read inside the retry, so a connection that drops
+ *  halfway through the answer is retried too. */
+async function fetchViaResidentialProxy<T>(url: string, read: (res: Response) => Promise<T>): Promise<T> {
   return withResidentialProxy(
     url,
     async (proxy) => {
       const res = await fetch(url, { proxy, signal: AbortSignal.timeout(PROXY_FETCH_TIMEOUT_MS) } as RequestInit);
       if (!res.ok) throw new HttpStatusError(res.status, url, res.statusText);
-      return res.json();
+      return read(res);
     },
     (err) => !(err instanceof HttpStatusError) || isRetryableStatus(err.status),
   );
 }
+
+export const fetchJsonViaResidentialProxy = (url: string): Promise<any> => fetchViaResidentialProxy(url, (res) => res.json());
+
+export const fetchTextViaResidentialProxy = (url: string): Promise<string> => fetchViaResidentialProxy(url, (res) => res.text());

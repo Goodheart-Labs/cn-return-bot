@@ -1,4 +1,5 @@
 import type { ProgressClaimRow, ProgressItemRow, RequestStatusRow } from "./requestProgress";
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 
 /* The reads behind the extension's live progress card for a requested page.
@@ -25,9 +26,11 @@ export async function fetchProgressItemRow(itemId: string): Promise<ProgressItem
 
 /** The status of every claim on a requested item. */
 export async function fetchProgressClaimRows(itemId: string): Promise<ProgressClaimRow[]> {
-  const { data, error } = await supabase.from("everything_claims").select("id, status").eq("item_id", itemId);
-  if (error) throw error;
-  return data as ProgressClaimRow[];
+  return fetchAllRows<ProgressClaimRow>(
+    () => supabase.from("everything_claims").select("id, status").eq("item_id", itemId),
+    "id",
+    { label: "progressClaims" },
+  );
 }
 
 /** Calls `onChange` whenever the item, one of its claims, or any note changes,

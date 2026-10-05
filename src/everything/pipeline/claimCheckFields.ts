@@ -23,6 +23,7 @@ export function claimCheckFields(claim: ExtractedClaim, source: ItemSource): Rec
   if (highlighted) fields[`Highlighted claim from ${origin}`] = highlighted;
   else fields["Claim"] = claim.claim;
   if (paragraph) fields["Surrounding context"] = paragraph;
+  if (claim.steer) fields["A reader asked for a note about"] = claim.steer.replace(/\s+/g, " ").trim();
   return fields;
 }
 

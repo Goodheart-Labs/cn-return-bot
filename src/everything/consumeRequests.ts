@@ -20,7 +20,9 @@
  */
 
 import "dotenv/config";
+import { consumeDirectedNoteRequest } from "./directedNoteRequest";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { canonicalFeed, substackFeedOfPage, type CanonicalFeed } from "./feedUrls";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { group } from "./logFormat";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
@@ -47,6 +49,26 @@ function classifyRequestSource(pageUrl: string): ItemSource {
   return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
 }
 
+/** The creator a requested page belongs to. The extension names the creator
+ *  when it can tell, which covers custom-domain Substacks, YouTube videos and
+ *  forum posts. That value comes from an anonymous client, so it counts only
+ *  when it parses as a creator feed. A request that names no creator, such as
+ *  one from an extension copy older than migration 110, still gets its
+ *  creator when the page sits on a *.substack.com subdomain. */
+function creatorOfRequest(request: NoteRequestRow): CanonicalFeed | null {
+  return (request.feed_url ? canonicalFeed(request.feed_url) : null) ?? substackFeedOfPage(request.page_url);
+}
+
+/** The project a newly requested page goes under: its creator's, created if we
+ *  have never met them, or the catch-all "Around the web" for a page that has
+ *  no creator we know how to follow. */
+async function projectForRequest(request: NoteRequestRow): Promise<string> {
+  const creator = creatorOfRequest(request);
+  return creator
+    ? resolveProjectId({ slug: creator.project_slug, feedUrl: creator.feed_url })
+    : resolveProjectId({ slug: WEB_PROJECT_SLUG });
+}
+
 /** What became of one reader request. `queued` covers every way a page ends up
  *  waiting for the worker: enqueued fresh, promoted to a whole-page check, or
  *  bumped up the queue. `deferred` is a page a worker is holding right now, so
@@ -60,6 +82,7 @@ export type NoteRequestOutcome = {
  *  underneath it. */
 export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteRequestOutcome> {
   const existing = await findItemForPageUrl(request.page_url);
+  if (existing && (request.steer || request.passage_question_id)) return consumeDirectedNoteRequest(request, existing);
   if (existing) {
     // Only a finished whole-page check refuses the request. An item that
     // exists because a reader wrote a note on the page, or because one
@@ -120,13 +143,14 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
   }
 
   const itemId = await insertQueuedItem({
-    project_id: await resolveProjectId({ slug: WEB_PROJECT_SLUG }),
+    project_id: await projectForRequest(request),
     source,
     url: request.page_url,
     title: request.page_title || undefined,
     full_text: fullText,
     priority: QUEUE_PRIORITY.requested,
     checked_scope: request.selection ? "paragraph" : "page",
+    ...(request.steer ? { request_steer: request.steer } : {}),
   });
   await recordCaptureCost(itemId, captureCostUsd);
   await resolveNoteRequest(request.id, "enqueued", null, itemId);

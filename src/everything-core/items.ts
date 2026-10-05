@@ -1,6 +1,7 @@
 import { noteStatus } from "./noteScore";
 import { extractYoutubeVideoId } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 import type { FeedItemRow, ItemRow } from "./types";
 
@@ -9,12 +10,11 @@ import type { FeedItemRow, ItemRow } from "./types";
 /** One project's items, with the columns the website renders. The body text in
  *  particular is the largest column we have, and the website never shows it. */
 export async function fetchProjectItems(projectId: string): Promise<FeedItemRow[]> {
-  const { data, error } = await supabase
-    .from("everything_items")
-    .select("id, project_id, url, title, published_at, created_at")
-    .eq("project_id", projectId);
-  if (error) throw error;
-  return data;
+  return fetchAllRows<FeedItemRow>(
+    () => supabase.from("everything_items").select("id, project_id, url, title, published_at, created_at").eq("project_id", projectId),
+    "id",
+    { label: "projectItems" },
+  );
 }
 
 /** An ItemRow plus the two extra fields the extension needs. `full_text` is the
@@ -74,9 +74,13 @@ export interface CoveredPages {
  *  that has no notes must never reach our backend. Returns null when the query
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
 export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
-  const { data, error } = await supabase.from("everything_items").select("url, status, checked_scope");
-  if (error) return null;
-  const rows = (data as Pick<ItemRow, "url" | "status" | "checked_scope">[]).filter((r) => !r.url.startsWith("local:"));
+  let allRows: Pick<ItemRow, "id" | "url" | "status" | "checked_scope">[];
+  try {
+    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, status, checked_scope"), "id", { label: "coveredPages" });
+  } catch {
+    return null;
+  }
+  const rows = allRows.filter((r) => !r.url.startsWith("local:"));
   return {
     all: rows.map((r) => r.url),
     wholePageChecked: rows.filter(isWholePageChecked).map((r) => r.url),
@@ -91,14 +95,31 @@ export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
  *  for "nothing has notes". */
 export type PageNoteStatusCounts = { helpful: number; needsRatings: number; notHelpful: number };
 
+type NoteWithPageUrl = {
+  id: string;
+  helpful_count: number;
+  somewhat_helpful_count: number;
+  not_helpful_count: number;
+  author_id: string | null;
+  claim: { item: { url: string } };
+};
+
 export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteStatusCounts> | null> {
-  const { data, error } = await supabase
-    .from("everything_notes")
-    .select("helpful_count, somewhat_helpful_count, not_helpful_count, author_id, claim:everything_claims!inner(item:everything_items!inner(url))")
-    .neq("status", "hidden");
-  if (error) return null;
+  let notes: NoteWithPageUrl[];
+  try {
+    notes = await fetchAllRows(
+      () => supabase
+        .from("everything_notes")
+        .select("id, helpful_count, somewhat_helpful_count, not_helpful_count, author_id, claim:everything_claims!inner(item:everything_items!inner(url))")
+        .neq("status", "hidden"),
+      "id",
+      { label: "notedPageCounts" },
+    );
+  } catch {
+    return null;
+  }
   const counts: Record<string, PageNoteStatusCounts> = {};
-  for (const row of data) {
+  for (const row of notes) {
     const url = row.claim.item.url;
     if (url.startsWith("local:")) continue;
     const page = (counts[url] ??= { helpful: 0, needsRatings: 0, notHelpful: 0 });
@@ -112,23 +133,36 @@ export async function fetchNotedPageCounts(): Promise<Record<string, PageNoteSta
 
 const POSTGRES_UNIQUE_VIOLATION = "23505";
 
+/** The project a page's new item goes under: its creator's when the caller
+ *  knows the creator, otherwise the catch-all "Around the web". A creator we
+ *  have never met gets a project here, without priority (migration 111). */
+async function projectIdForPage(creatorFeedUrl: string | null | undefined): Promise<string> {
+  if (creatorFeedUrl) {
+    const { data, error } = await supabase.rpc("everything_creator_project", { creator_feed_url: creatorFeedUrl });
+    if (error) throw new Error(`creator project lookup failed: ${error.message}`);
+    return data;
+  }
+  const { data: project } = await supabase.from("everything_projects").select("id").eq("slug", WEB_PROJECT_SLUG).maybeSingle();
+  if (!project) throw new Error("the 'web' project is missing. Run migration 068");
+  return project.id;
+}
+
 /** Finds or creates the everything_items row for any web page, and returns its
  *  id. The write-anywhere flow needs this first, because a note hangs off a
  *  claim and a claim hangs off an item. Row level security only lets a client
- *  insert rows with source='web' under the catch-all project, which migration
- *  068 set up. The `url` column is unique, so when two clients race, the loser
+ *  insert rows with source='web' (migrations 068 and 081). `creatorFeedUrl` is
+ *  the feed of the page's creator when the caller could tell, and decides the
+ *  project. The `url` column is unique, so when two clients race, the loser
  *  simply reads the winner's row. */
-export async function ensureWebItem(params: { url: string; title: string }): Promise<string> {
+export async function ensureWebItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
   const url = params.url.replace(/\/$/, "");
   const existing = await supabase.from("everything_items").select("id").in("url", [url, `${url}/`]).limit(1);
   if (existing.data?.[0]) return existing.data[0].id;
 
-  const { data: project } = await supabase.from("everything_projects").select("id").eq("slug", WEB_PROJECT_SLUG).maybeSingle();
-  if (!project) throw new Error("the 'web' project is missing. Run migration 068");
-
+  const projectId = await projectIdForPage(params.creatorFeedUrl);
   const inserted = await supabase
     .from("everything_items")
-    .insert({ project_id: project.id, source: "web", url, title: params.title || null, status: "done" })
+    .insert({ project_id: projectId, source: "web", url, title: params.title || null, status: "done" })
     .select("id")
     .single();
   if (inserted.data) return inserted.data.id;

@@ -34,7 +34,10 @@ function CharityPicker({ charity, onPick, open, setOpen }: {
 
   return (
     <span ref={ref} className="relative">
-      <Button variant="link" className="font-medium" onClick={() => setOpen(!open)} title="Choose a different charity">
+      {/* A plain inline run of text rather than the button's usual inline box,
+          so a long charity name wraps like the sentence around it and the
+          full stop stays right after it. */}
+      <Button variant="link" className="inline text-left font-medium" onClick={() => setOpen(!open)} title="Choose a different charity">
         {charityLabel(charity)}
       </Button>
       {open && (

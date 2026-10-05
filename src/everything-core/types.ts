@@ -106,7 +106,7 @@ export interface NoteRow {
   note: string;
   sources: NoteSourceRow[]; // The note's citation links, joined from everything_note_sources.
   /** Whether any of this note's sources carries a supporting quote. It decides
-   *  whether the "Show source details" button appears. The quotes themselves are
+   *  whether the "Source details" button appears. The quotes themselves are
    *  fetched only when the reader presses that button. */
   has_source_details: boolean;
   helpful_count: number;

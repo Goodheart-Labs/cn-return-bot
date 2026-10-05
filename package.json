@@ -3,6 +3,7 @@
     "@ai-sdk/xai": "^3.0.56",
     "@google/genai": "^2.0.0",
     "@mozilla/readability": "^0.6.0",
+    "@remixicon/react": "^4.9.0",
     "@supabase/supabase-js": "^2.47.0",
     "@tanstack/react-query": "^5.104.0",
     "@types/p-queue": "^3.2.1",
@@ -25,7 +26,6 @@
     "exa-js": "^2.13.0",
     "linkedom": "^0.18.12",
     "linkify-it": "^5.0.0",
-    "lucide-react": "^1.48.0",
     "oauth-1.0a": "^2.2.6",
     "openai": "^5.10.1",
     "p-queue": "^8.1.0",
@@ -87,6 +87,8 @@
     "prepare": "husky",
     "update-feedback": "bun run src/production/updateNoteFeedback.ts",
     "replay-ranking": "bun run src/scripts/replayRanking.ts",
+    "slack-send": "bun run src/scripts/slackSend.ts",
+    "trending-posts": "bun run src/production/postTrendingPosts.ts",
     "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
     "build-review": "cd src/review-dashboard && bunx vite build",
@@ -114,9 +116,11 @@
     "build-everything-web": "cd src/everything-web && bunx vite build --mode prod-backend",
     "dev-ext": "cd src/everything-extension && bunx wxt --mode prod-backend",
     "build-ext-dev": "cd src/everything-extension && CN_BUILD=$(date +%H:%M:%S) && VITE_CN_DEV_RELOAD=1 VITE_CN_BUILD=$CN_BUILD bunx wxt build --mode prod-backend && echo $CN_BUILD > .output/chrome-mv3-prod-backend/build-id.txt",
+    "build-ext-safari-dev": "cd src/everything-extension && CN_BUILD=$(date +%H:%M:%S) && VITE_CN_DEV_RELOAD=1 VITE_CN_BUILD=$CN_BUILD bunx wxt build -b safari --mv3 --mode prod-backend && echo $CN_BUILD > .output/safari-mv3-prod-backend/build-id.txt",
     "dev-ext-local": "cd src/everything-extension && bunx wxt",
-    "build-ext": "cd src/everything-extension && bunx wxt build --mode prod-backend && bunx wxt build -b firefox --mode prod-backend",
-    "zip-ext": "cd src/everything-extension && bunx wxt zip --mode prod-backend && bunx wxt zip -b firefox --mode prod-backend"
+    "build-ext": "cd src/everything-extension && bunx wxt build --mode prod-backend && bunx wxt build -b firefox --mode prod-backend && bunx wxt build -b safari --mv3 --mode prod-backend",
+    "release-ext": "bun run src/everything-extension/scripts/release.ts",
+    "zip-ext": "cd src/everything-extension && bunx wxt zip --mode prod-backend && bunx wxt zip -b firefox --mode prod-backend && bunx wxt zip -b safari --mv3 --mode prod-backend"
   },
   "knip": {
     "ignoreBinaries": [

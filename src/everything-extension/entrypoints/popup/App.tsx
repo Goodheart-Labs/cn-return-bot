@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
 import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
 import { fetchNotesForItem } from "@cn/core/notes";
-import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import { COMMONNOTES_ORIGIN, extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import type { NoteRow } from "@cn/core/types";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines } from "@cn/core/requestProgress";
@@ -14,14 +14,16 @@ import { noteCounts, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";
 import { priorityActiveLabel, type CreatorTarget } from "../../utils/creatorTarget";
-import { buildPriorityAction, headline } from "../../utils/mountStatusOverlay";
+import { buildPriorityAction, headline } from "../../utils/pageStatus";
 import { isSubstackPostPage, requestMakesSenseForUrl } from "../../utils/pageShape";
 import { capturePageFromTab } from "../../utils/pageCapture";
 import { addRequestedPage, getRequestedPages } from "../../utils/settings";
-import { ActionButton, type StatusAction } from "../../components/StatusOverlay";
+import { ActionButton, type StatusAction } from "../../components/ActionButton";
 import { Button, buttonVariants } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
 import { STATIC_SITE_HOSTNAME } from "../../utils/staticSites";
-import { useNoteFilters } from "../../components/NoteFilterToggles";
+import { BOOK_CALL_URLS, FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
+import { useNoteDisplay } from "../../components/NoteDisplayChoices";
 
 // Requesting notes makes no sense on these pages. They are searches and
 // portals rather than content. Pages that are not http or https are already
@@ -137,9 +139,11 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
  *  checked, it reads "Check this page" so the two meanings stay apart.
  *  Requested pages are remembered in storage rather than in component state,
  *  so closing and reopening the popup cannot submit the same page twice. */
-function RequestNoteButton({ label, doneLabel, onLive }: {
+function RequestNoteButton({ label, doneLabel, creatorFeedUrl, onLive }: {
   label: string;
   doneLabel: string;
+  /** The page's creator, so the pipeline files the page under their project. */
+  creatorFeedUrl: string | null;
   onLive: (entry: LiveRequest) => void;
 }) {
   const [phase, setPhase] = useState<"loading" | "idle" | "busy" | "done" | "error">("loading");
@@ -163,7 +167,7 @@ function RequestNoteButton({ label, doneLabel, onLive }: {
       // cannot fetch arbitrary pages itself. A page we may not inject into
       // still gets a text-less request.
       const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
-      const token = await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text });
+      const token = await submitNoteRequest({ pageUrl, pageTitle: tab.title ?? "", selection: null, pageText: captured?.text, creatorFeedUrl });
       // This is only a local reminder. The request itself is already saved.
       await addRequestedPage(pageUrl).catch(() => {});
       // The token is the handle for live progress. Storing the entry is what
@@ -277,9 +281,8 @@ function PriorityButton({ target }: { target: CreatorTarget }) {
   return <ActionButton action={action} />;
 }
 
-/** The popup for the current page leads with the same status sentence the
- *  in-page card shows: how many notes there are, that we found nothing, or
- *  that the page is unchecked. On a page with notes the sentence itself is
+/** The popup for the current page leads with a status sentence: how many
+ *  notes there are, that we found nothing, or that the page is unchecked. On a page with notes the sentence itself is
  *  the link that jumps to them, first enabling the site if the sync has not
  *  registered it yet. Blue buttons are kept for actions only: requesting a
  *  check and following an author. */
@@ -345,8 +348,8 @@ function PrimaryAction({ state, counts, jumped, access }: {
     (authorFeed.kind === "prioritized" && authorFeed.feed.feedType === "substack");
   const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
   const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
+  const creatorFeedUrl = authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null;
 
-  // The same sentence the in-page card shows, from the same function.
   const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
   const statusLine = headline({
     noun,
@@ -371,37 +374,53 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // submit noise.
           <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>
         ) : state.kind === "item" ? (
-          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" onLive={setLiveEntry} />
+          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
         ) : (
-          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" onLive={setLiveEntry} />
+          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
         ))}
-      {/* The press must not depend on catching a transient in-page card, so the
-          popup offers it on covered pages too. */}
+      {/* The popup offers the press on covered pages too. */}
       {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
     </div>
   );
 }
 
+/** The ways to reach the team, unfolded under the footer by "Give feedback". */
+function FeedbackLinks() {
+  const links = [{ label: "Feedback form", url: FEEDBACK_FORM_URL }, ...BOOK_CALL_URLS.map(({ label, url }) => ({ label: `Book a call: ${label}`, url }))];
+  return (
+    <ul className="space-y-1">
+      {links.map(({ label, url }) => (
+        <li key={url}>
+          <a href={url} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "link" }), "text-sm")}>
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function PopupApp() {
   const state = usePageState();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const jumped = useJumped(state);
   const access = usePageAccess(state);
-  // The filters are edited on the settings page; the popup only reads them to
-  // count the notes the reader would actually see.
-  const [filters] = useNoteFilters();
+  // The display choices are edited on the settings page; the popup only reads
+  // them to count the notes a jump can reach.
+  const [display] = useNoteDisplay();
   // A fresh site should reach this session now, not on the next scheduled tick.
   useEffect(() => {
     void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
   }, []);
-  // The same tallies the in-page card shows: the status counts report what
-  // exists and ignore the filters, while `visible` is what a jump can reach.
-  const counts = state.kind === "item" && filters ? noteCounts(state.notes, filters) : null;
+  // The status counts report what exists and ignore the display choices,
+  // while `visible` is what a jump can reach.
+  const counts = state.kind === "item" && display ? noteCounts(state.notes, display) : null;
 
   return (
     <div className="p-4 space-y-4 bg-canvas min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
 
-      <div className="border-t border-line pt-4">
+      <div className="flex items-center gap-4 border-t border-line pt-4">
         <Button
           variant="quiet"
           className="text-sm"
@@ -412,7 +431,11 @@ export function PopupApp() {
         >
           Settings
         </Button>
+        <Button variant="quiet" className="text-sm" aria-expanded={feedbackOpen} onClick={() => setFeedbackOpen((open) => !open)}>
+          Give feedback
+        </Button>
       </div>
+      {feedbackOpen && <FeedbackLinks />}
     </div>
   );
 }

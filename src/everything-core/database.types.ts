@@ -261,6 +261,7 @@ export type Database = {
           progress: Json | null
           project_id: string | null
           published_at: string | null
+          request_steer: string | null
           retries: number
           skip_reason: string | null
           source: string
@@ -280,6 +281,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          request_steer?: string | null
           retries?: number
           skip_reason?: string | null
           source: string
@@ -299,6 +301,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          request_steer?: string | null
           retries?: number
           skip_reason?: string | null
           source?: string
@@ -439,40 +442,49 @@ export type Database = {
         Row: {
           client_token: string | null
           created_at: string
+          feed_url: string | null
           id: string
           item_id: string | null
           page_text: string | null
           page_title: string
           page_url: string
+          passage_question_id: string | null
           selection: string | null
           status: string
           status_reason: string | null
+          steer: string | null
           user_id: string | null
         }
         Insert: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
           page_title?: string
           page_url: string
+          passage_question_id?: string | null
           selection?: string | null
           status?: string
           status_reason?: string | null
+          steer?: string | null
           user_id?: string | null
         }
         Update: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
           page_title?: string
           page_url?: string
+          passage_question_id?: string | null
           selection?: string | null
           status?: string
           status_reason?: string | null
+          steer?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -481,6 +493,13 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_note_requests_passage_question_id_fkey"
+            columns: ["passage_question_id"]
+            isOneToOne: true
+            referencedRelation: "everything_passage_questions"
             referencedColumns: ["id"]
           },
         ]
@@ -576,6 +595,150 @@ export type Database = {
             columns: ["improved_from_note_id"]
             isOneToOne: false
             referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_passage_highlight_votes: {
+        Row: {
+          created_at: string
+          entry_id: string
+          vote: number
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          vote: number
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          vote?: number
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_passage_highlight_votes_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "everything_passage_highlights"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_passage_highlights: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          context_paragraph: string
+          created_at: string
+          helpful_count: number
+          id: string
+          item_id: string
+          kind: string
+          not_helpful_count: number
+          probability: number | null
+          quote: string
+          somewhat_helpful_count: number
+          statement: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          context_paragraph: string
+          created_at?: string
+          helpful_count?: number
+          id?: string
+          item_id: string
+          kind: string
+          not_helpful_count?: number
+          probability?: number | null
+          quote: string
+          somewhat_helpful_count?: number
+          statement: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          context_paragraph?: string
+          created_at?: string
+          helpful_count?: number
+          id?: string
+          item_id?: string
+          kind?: string
+          not_helpful_count?: number
+          probability?: number | null
+          quote?: string
+          somewhat_helpful_count?: number
+          statement?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_passage_highlights_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_passage_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          author_id: string
+          cost_usd: number
+          created_at: string
+          draft: Json | null
+          error: string | null
+          id: string
+          item_id: string
+          model: string | null
+          passage: string
+          question: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          author_id: string
+          cost_usd?: number
+          created_at?: string
+          draft?: Json | null
+          error?: string | null
+          id?: string
+          item_id: string
+          model?: string | null
+          passage: string
+          question: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          author_id?: string
+          cost_usd?: number
+          created_at?: string
+          draft?: Json | null
+          error?: string | null
+          id?: string
+          item_id?: string
+          model?: string | null
+          passage?: string
+          question?: string
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_passage_questions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
             referencedColumns: ["id"]
           },
         ]
@@ -706,6 +869,24 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_slack_announcements: {
+        Row: {
+          channel: string
+          posted_at: string
+          subject_id: string
+        }
+        Insert: {
+          channel: string
+          posted_at?: string
+          subject_id: string
+        }
+        Update: {
+          channel?: string
+          posted_at?: string
+          subject_id?: string
+        }
+        Relationships: []
+      }
       everything_top_posts: {
         Row: {
           feed_url: string
@@ -746,6 +927,7 @@ export type Database = {
           note_id: string
           platform: string | null
           reasoning: string | null
+          updated_at: string
           vote: number
           voter_id: string
         }
@@ -755,6 +937,7 @@ export type Database = {
           note_id: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote: number
           voter_id: string
         }
@@ -764,6 +947,7 @@ export type Database = {
           note_id?: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote?: number
           voter_id?: string
         }
@@ -776,6 +960,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      everything_youtube_channels: {
+        Row: {
+          channel_id: string
+          feed_url: string
+          listed_at: string | null
+          notified_at: string | null
+          subscribed_at: string | null
+          title: string
+          uploads: Json
+        }
+        Insert: {
+          channel_id: string
+          feed_url: string
+          listed_at?: string | null
+          notified_at?: string | null
+          subscribed_at?: string | null
+          title: string
+          uploads?: Json
+        }
+        Update: {
+          channel_id?: string
+          feed_url?: string
+          listed_at?: string | null
+          notified_at?: string | null
+          subscribed_at?: string | null
+          title?: string
+          uploads?: Json
+        }
+        Relationships: []
       }
       fact_check_usage: {
         Row: {
@@ -1642,6 +1856,24 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_posts: {
+        Row: {
+          post_id: string
+          posted_at: string
+          topic: string
+        }
+        Insert: {
+          post_id: string
+          posted_at?: string
+          topic: string
+        }
+        Update: {
+          post_id?: string
+          posted_at?: string
+          topic?: string
+        }
+        Relationships: []
+      }
       tweets: {
         Row: {
           author_description: string | null
@@ -1903,6 +2135,10 @@ export type Database = {
           readers: number
           visits: number
         }[]
+      }
+      everything_creator_project: {
+        Args: { creator_feed_url: string }
+        Returns: string
       }
       everything_daily_activity: {
         Args: { window_days?: number }

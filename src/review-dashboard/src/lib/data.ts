@@ -9,7 +9,7 @@ import type {
   FailureModeInfo,
 } from "./types";
 import { resultToFailureType, FAILURE_TYPE_CONFIG } from "./types";
-import { fetchAllRows, fetchInBatches } from "../../../dashboard-shared/supabasePaging";
+import { fetchAllRows, fetchInBatches } from "../../../everything-core/paging";
 import { csvRowToReviewItemInsert } from "../../../dashboard-shared/reviewUpload";
 import { topicSetFor, topicIdsForSets } from "../../../dashboard-shared/topicSets";
 import type { ABFilters } from "../../../dashboard-shared/abFilters";
@@ -243,13 +243,10 @@ export async function fetchDashboardCounts(filters: PageFilters): Promise<Dashbo
 export async function fetchLogsForRuns(runIds: string[]): Promise<Map<string, Record<string, unknown>>> {
   if (runIds.length === 0) return new Map();
   const rows = await fetchInBatches<{ id: string; logs: Record<string, unknown> | null }>(
-    supabase,
-    "pipeline_runs",
-    "id, logs",
-    "id",
+    (chunk) => supabase.from("pipeline_runs").select("id, logs").in("id", chunk),
     runIds,
-    undefined,
-    "logs",
+    "id",
+    { label: "logs" },
   );
   const map = new Map<string, Record<string, unknown>>();
   for (const r of rows) if (r.logs) map.set(r.id, r.logs);
@@ -275,19 +272,20 @@ export async function fetchUploads(): Promise<UploadInfo[]> {
 
 export async function fetchDatasetRunItems(uploadId: string): Promise<ReviewItem[]> {
   const data = await fetchAllRows<any>(
-    supabase
-      .from("review_dashboard_items")
-      .select("*")
-      .eq("upload_id", uploadId)
-      .order("created_at", { ascending: true })
+    () => supabase.from("review_dashboard_items").select("*").eq("upload_id", uploadId),
+    "id",
+    { label: "dataset_run_items" },
   );
+  data.sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
 
   if (data.length === 0) return [];
 
   const itemIds = data.map((d: any) => d.id);
   const annotations = await fetchInBatches<any>(
-    supabase, "review_dashboard_annotations", "*", "target_id", itemIds,
-    (q) => q.eq("source", "dataset_run"), "dataset_run_annotations",
+    (chunk) => supabase.from("review_dashboard_annotations").select("*").eq("source", "dataset_run").in("target_id", chunk),
+    itemIds,
+    "id",
+    { label: "dataset_run_annotations" },
   );
 
   const annotationMap = new Map<string, Annotation>();
@@ -330,12 +328,13 @@ export async function fetchDatasetRunCounts(uploadId: string): Promise<Record<Fa
     Object.keys(FAILURE_TYPE_CONFIG).map((k) => [k, 0]),
   ) as Record<FailureType, number>;
 
-  const { data } = await supabase
-    .from("review_dashboard_items")
-    .select("result")
-    .eq("upload_id", uploadId);
+  const rows = await fetchAllRows<{ id: string; result: string }>(
+    () => supabase.from("review_dashboard_items").select("id, result").eq("upload_id", uploadId),
+    "id",
+    { label: "dataset_run_counts" },
+  );
 
-  for (const row of data ?? []) {
+  for (const row of rows) {
     const ft = resultToFailureType(row.result);
     counts[ft]++;
   }
@@ -408,12 +407,15 @@ export async function setFailureModeFixed(name: string, fixed: boolean): Promise
 
 /** Delete catalog entries not referenced by any annotation. Returns surviving entries. */
 export async function pruneUnusedFailureModes(): Promise<FailureModeInfo[]> {
-  const { data: annotations, error: annErr } = await supabase
-    .from("review_dashboard_annotations")
-    .select("failure_modes");
-  if (annErr) throw annErr;
+  // This read must see every annotation. A tag missing from it looks unused
+  // and gets deleted below.
+  const annotations = await fetchAllRows<{ id: string; failure_modes: string[] | null }>(
+    () => supabase.from("review_dashboard_annotations").select("id, failure_modes"),
+    "id",
+    { label: "failure_modes_in_use" },
+  );
 
-  const used = new Set((annotations ?? []).flatMap((a: any) => a.failure_modes ?? []));
+  const used = new Set(annotations.flatMap((a) => a.failure_modes ?? []));
 
   const { data: catalog, error: catErr } = await supabase
     .from("review_dashboard_failure_modes")

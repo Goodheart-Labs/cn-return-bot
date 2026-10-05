@@ -31,7 +31,6 @@
     "src/scripts_rob/**",
     "src/pipeline/misinfo-monitoring/**",
     "src/dashboard-shared/topicSets.ts",
-    "src/dashboard-shared/supabasePaging.ts",
     "src/dashboard-shared/CompetingNoteCard.tsx",
     "src/everything-core/database.types.ts"
   ],

@@ -322,12 +322,14 @@ def main():
     # Keep only the note_ids that already exist in `notes`, so the upsert cannot
     # fail on a foreign key. PostgREST caps a response at 1000 rows per request,
     # so we have to paginate. A plain `.execute()` would silently truncate and
-    # drop every row past the first 1000.
+    # drop every row past the first 1000. Offset paging also needs a stable
+    # order, or rows shift between pages and some are skipped, so we order by
+    # the primary key.
     existing_ids: set[str] = set()
     page = 1000
     offset = 0
     while True:
-        resp = client.table("notes").select("note_id").range(offset, offset + page - 1).execute()
+        resp = client.table("notes").select("note_id").order("note_id").range(offset, offset + page - 1).execute()
         batch = resp.data or []
         existing_ids.update(r["note_id"] for r in batch)
         if len(batch) < page:

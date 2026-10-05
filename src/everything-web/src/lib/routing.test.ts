@@ -1,9 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 import type { Route } from "./routing";
 
-// Vite sets the base address at build time, and analytics needs the Supabase
-// client, so the test provides the one and stubs the other before loading.
-process.env.BASE_URL = "/";
+// Analytics needs the Supabase client, so the test stubs it before loading.
 void mock.module("./analytics", () => ({ capturePageview: () => {} }));
 const { readRoute, routeHref } = await import("./routing");
 
@@ -15,6 +13,8 @@ const ROUTES: [string, Route][] = [
   ["/notes/zvi/item-1", { view: "notes", project: "zvi", item: "item-1", note: null }],
   ["/notes/zvi?note=n-1", { view: "notes", project: "zvi", item: null, note: "n-1" }],
   ["/leaderboard", { view: "leaderboard" }],
+  ["/read?url=https%3A%2F%2Fexample.com%2Fp", { view: "read", url: "https://example.com/p", full: null }],
+  ["/read?url=https%3A%2F%2Fexample.com%2Fp&full=https%3A%2F%2Fexample.com%2Fp.pdf", { view: "read", url: "https://example.com/p", full: "https://example.com/p.pdf" }],
 ];
 
 describe("routing", () => {

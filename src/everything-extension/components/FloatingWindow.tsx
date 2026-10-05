@@ -2,7 +2,6 @@ import { useRef, useState, type CSSProperties, type HTMLAttributes, type ReactNo
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { CloseIcon } from "@cn/ui/icons";
-import { eyebrowVariants } from "@cn/ui/typography";
 import { IconButton } from "@cn/ui/IconButton";
 
 /** A card's box in page coordinates. Page coordinates are viewport
@@ -74,7 +73,7 @@ function resized(start: Box, edge: Edge, dx: number, dy: number): Box {
   return box;
 }
 
-/** A card that behaves like a desktop window. Its title bar drags it anywhere
+/** A card that behaves like a desktop window. Its top bar drags it anywhere
  *  on the page, and its edges and corners resize it. Until the reader touches
  *  it, the card sits where `restingStyle` puts it and takes the height of its
  *  content, capped at most of the viewport. The first drag or resize freezes
@@ -82,8 +81,12 @@ function resized(start: Box, edge: Edge, dx: number, dy: number): Box {
  *  from then on the card keeps its own size and the body scrolls inside it.
  *  The card itself remembers nothing. It reports its box after every gesture
  *  through `onPlaced`, and the caller decides what the next card inherits. */
-export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, restingStyle, className = "", children, ...divProps }: {
-  title: string;
+export function FloatingWindow({ label, header, dismissLabel, onDismiss, onPlaced, restingStyle, className = "", children, ...divProps }: {
+  /** The card's name for screen readers. It is not shown. */
+  label: string;
+  /** What the top bar shows on the left, opposite the dismiss button. The
+   *  bar is also the handle that drags the card. */
+  header?: ReactNode;
   dismissLabel: string;
   onDismiss: () => void;
   onPlaced: (box: Box) => void;
@@ -91,7 +94,7 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
    *  and optionally a `transform` that aligns the card to that point. */
   restingStyle: CSSProperties;
   children: ReactNode;
-} & Omit<HTMLAttributes<HTMLDivElement>, "title" | "style">) {
+} & Omit<HTMLAttributes<HTMLDivElement>, "style">) {
   const outer = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<Box | null>(null);
   /** Runs one press-move-release gesture. Pointer capture, a browser feature,
@@ -145,15 +148,17 @@ export function FloatingWindow({ title, dismissLabel, onDismiss, onPlaced, resti
     <div
       ref={outer}
       {...divProps}
+      role="complementary"
+      aria-label={label}
       style={style}
       className={cn(cardVariants({ elevation: "floating" }), "flex flex-col", !box && "max-w-[85vw] max-h-[70vh]", className)}
     >
       <div
         onPointerDown={startDrag}
-        className="flex items-start justify-between gap-2 px-4 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
+        className="flex items-center justify-between px-4 pt-3 pb-3 cursor-grab active:cursor-grabbing select-none"
       >
-        <span className={eyebrowVariants()}>{title}</span>
-        <IconButton label={dismissLabel} onClick={onDismiss}><CloseIcon size={14} aria-hidden /></IconButton>
+        {header}
+        <IconButton label={dismissLabel} className="-mr-1.5 ml-auto" onClick={onDismiss}><CloseIcon size={14} aria-hidden /></IconButton>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">{children}</div>
       {GRIPS.map(({ edge, cursor, style: gripStyle }) => (

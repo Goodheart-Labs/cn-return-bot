@@ -13,7 +13,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { createClient } from "@supabase/supabase-js";
-import { fetchAllRows } from "../api/paging";
+import { fetchAllRows } from "../everything-core/paging";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,

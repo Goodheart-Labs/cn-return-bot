@@ -151,6 +151,10 @@
   --cn-negative-line: rgb(var(--cn-red-300));
   --cn-negative-solid: rgb(var(--cn-red-500));
 
+  /* Pending: a note that still needs more ratings. Only a solid fill for
+   * dots, to sit beside the positive and negative ones. */
+  --cn-pending-solid: rgb(var(--cn-blue-500));
+
   /* Type. The extension uses this scale. The website reads at a larger size,
    * see .cn-reading-scale below. */
   /* The type of Substack, where most of our readers read (Jim, 2026-09-28).
@@ -186,9 +190,12 @@
   --cn-text-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
   --cn-leading-display: 1.05;
 
-  /* Shape */
+  /* Shape. The corner radii follow Substack, which rounds its cards, fields
+     and buttons by 8px. Most of our readers meet the notes on Substack, so the
+     notes should not look rounder than the page. Only true circles such as
+     markers and avatars are fully round. */
   --cn-radius-control: 0.5rem;
-  --cn-radius-card: 0.75rem;
+  --cn-radius-card: 0.5rem;
   --cn-shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --cn-shadow-floating: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
@@ -255,4 +262,5 @@
   --cn-negative-selected-fg: rgb(var(--cn-red-300));
   --cn-negative-line: rgb(var(--cn-red-700));
   --cn-negative-solid: rgb(var(--cn-red-500));
+  --cn-pending-solid: rgb(var(--cn-blue-500));
 }

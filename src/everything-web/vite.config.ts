@@ -5,10 +5,8 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "tailwindcss";
 import { CN_ALIASES } from "../cnAliases";
 
-/* The GitHub Pages workflow sets BASE_PATH to "/cn-return-bot/notes/" so that
- * asset URLs carry the project-pages subpath. Local development uses "/"
- * instead. envDir points at the repo root, so the root .env feeds local
- * development. Only variables prefixed with VITE_ reach the client. */
+/* envDir points at the repo root, so the root .env feeds local development.
+ * Only variables prefixed with VITE_ reach the client. */
 const envDir = path.resolve(__dirname, "../..");
 
 /* The static pages in public/, such as /privacy/, are folders with an
@@ -55,7 +53,6 @@ export default defineConfig(({ command, mode }) => {
   }
   return {
     plugins: [react(), publicFolderPages],
-    base: process.env.BASE_PATH ?? "/",
     resolve: { alias: CN_ALIASES },
     envDir,
     /* Tailwind is wired inline instead of via a postcss.config file, whose

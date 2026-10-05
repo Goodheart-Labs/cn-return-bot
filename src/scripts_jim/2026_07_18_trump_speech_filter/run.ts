@@ -24,7 +24,7 @@ import { createClient } from "@supabase/supabase-js";
 import * as fs from "fs";
 import * as path from "path";
 import type { Post } from "../../api/fetchEligiblePosts";
-import { fetchAllRows } from "../../api/paging";
+import { fetchAllRows } from "../../everything-core/paging";
 import { MISINFO_TOPICS } from "../../pipeline/misinfo-monitoring/topics";
 import { blob } from "../../pipeline/misinfo-monitoring/keywordFilter";
 import { selectPostsNeedingNote, type SelectedPost } from "../../pipeline/misinfo-monitoring/selectPostsNeedingNote";

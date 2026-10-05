@@ -40,11 +40,13 @@ export async function postClaimWithNote(params: {
   itemId: string;
   itemUrl: string;
   anchorText: string;
+  contextParagraph?: string | null;
   note: string;
   session: Session;
   signed: boolean;
 }): Promise<PostedNote> {
   const anchorText = params.anchorText.trim();
+  const contextParagraph = params.contextParagraph?.trim();
   const { data: claim, error } = await supabase
     .from("everything_claims")
     .insert({
@@ -52,6 +54,7 @@ export async function postClaimWithNote(params: {
       claim: anchorText.slice(0, CLAIM_PREVIEW_CHARS),
       judgement: "user",
       context_quote: anchorText,
+      ...(contextParagraph ? { context_paragraph: contextParagraph } : {}),
       context_url: params.itemUrl,
       status: "note",
       created_by: params.session.user.id,

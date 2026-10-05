@@ -29,7 +29,8 @@ const pendingEmailStore: PendingEmailStore = {
 
 /** X sign-in runs launchWebAuthFlow in the background script, so the session
  *  ends up in chrome.storage.local and reaches every other context through
- *  the session store's storage listener. */
+ *  the session store's storage listener. Safari has no launchWebAuthFlow, so
+ *  the Safari build offers the email code only. */
 async function signInWithX(): Promise<{ error?: string }> {
   const result = (await browser.runtime.sendMessage({ type: "cn-signin-x" })) as { ok: boolean; error?: string } | undefined;
   return result?.ok ? {} : { error: result?.error ?? "X sign-in failed" };
@@ -47,7 +48,7 @@ export function LoginPanel({ surface = "settings", onDismiss }: { surface?: "set
         <p className="text-sm font-medium text-fg-secondary">Sign in to keep your votes and notes across devices</p>
         {onDismiss && <IconButton label="Not now" onClick={onDismiss}><CloseIcon size={14} aria-hidden /></IconButton>}
       </div>
-      <SignInForm surface={surface} signInWithX={signInWithX} pendingEmail={pendingEmailStore} />
+      <SignInForm surface={surface} signInWithX={import.meta.env.SAFARI ? undefined : signInWithX} pendingEmail={pendingEmailStore} />
     </div>
   );
 }

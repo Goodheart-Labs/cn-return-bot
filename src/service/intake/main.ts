@@ -23,6 +23,7 @@
  */
 
 import "dotenv/config";
+import { consumePassageQuestions } from "./passageQuestions";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { consumeNoteRequests } from "../../everything/consumeRequests";
 import { claimNextQueuedItem, markRequestedQueueBudgetExhausted } from "../../everything/db";
@@ -40,6 +41,7 @@ const POLL_INTERVAL_MS = 60_000;
 /** Wakes the loop early. Realtime events and the timer both call it; the loop
  *  never cares which one did. */
 let wake: () => void = () => {};
+let wakeQuestions: () => void = () => {};
 
 function sleepUntilWoken(): Promise<void> {
   return new Promise((resolve) => {
@@ -52,6 +54,7 @@ function subscribeToRequests(): void {
   getSupabaseClient()
     .channel("intake-note-requests")
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "everything_note_requests" }, () => wake())
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "everything_passage_questions" }, () => wakeQuestions())
     .subscribe((status) => console.log(`[intake] realtime channel: ${status}`));
 }
 
@@ -83,6 +86,20 @@ async function main() {
   ensureYtDlp();
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
+  await Promise.all([questionLoop(), noteLoop()]);
+}
+
+async function questionLoop() {
+  for (;;) {
+    await consumePassageQuestions();
+    await new Promise<void>((resolve) => {
+      const timer = setTimeout(resolve, POLL_INTERVAL_MS);
+      wakeQuestions = () => { clearTimeout(timer); resolve(); };
+    });
+  }
+}
+
+async function noteLoop() {
   for (;;) {
     // A thrown iteration crashes the process on purpose. systemd restarts it,
     // and a crash loop is a loud signal where a swallowed error would be a
