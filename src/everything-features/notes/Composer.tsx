@@ -8,6 +8,10 @@ import { createLocalPreference } from "../hooks/createLocalPreference";
  *  the post button stays disabled until the text is longer. */
 const MIN_TEXT_LENGTH = 10;
 
+/** The database refuses a reader's note or argument longer than this
+ *  (migration 114), so the text area stops there. */
+const MAX_TEXT_LENGTH = 2000;
+
 /** Bylines are opt-in, so posting is anonymous by default, the way X's own
  *  Community Notes work. Nathan made this change on 2026-07-14, because note
  *  writing is adversarial work and attaching a name without being asked was a
@@ -38,7 +42,7 @@ export function Composer({ session, text, onTextChange, placeholder, rows, submi
   const [signed, setSigned] = useSignedByline();
   return (
     <div className="mt-2 space-y-2">
-      <Textarea autoGrow value={text} onChange={(e) => onTextChange(e.target.value)} rows={rows} autoFocus placeholder={placeholder} />
+      <Textarea autoGrow value={text} onChange={(e) => onTextChange(e.target.value)} rows={rows} maxLength={MAX_TEXT_LENGTH} autoFocus placeholder={placeholder} />
       <div className="flex gap-2 items-center">
         <Button onClick={() => onSubmit(signed)} disabled={pending || text.trim().length < MIN_TEXT_LENGTH}>
           {pending ? "Posting…" : submitLabel}
