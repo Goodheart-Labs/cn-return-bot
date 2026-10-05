@@ -104,3 +104,11 @@
 .reader-highlight-probability { width: 4.5rem; text-align: right; }
 .reader-form-actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
 .reader-form-spacer { flex: 1; }
+.reader-answer { white-space: pre-line; }
+.reader-answer > * + * { margin-top: 0.5rem; }
+.reader-answer ul { padding-left: 1.25rem; list-style: disc; }
+.reader-answer li + li { margin-top: 0.25rem; }
+.reader-answer a { color: var(--cn-link); text-decoration: underline; text-underline-offset: 2px; }
+.reader-draft-card { padding: 0.75rem; border: 1px solid var(--cn-tint-line); border-radius: var(--cn-radius-control); background: var(--cn-tint); white-space: normal; }
+.reader-question-answer .reader-draft-card { margin-top: 0.5rem; }
+.reader-draft-label { margin-bottom: 0.25rem; color: var(--cn-fg-muted); font-size: var(--cn-text-xs); font-weight: 600; }
