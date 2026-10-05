@@ -52,26 +52,33 @@ function stackCards(wanted: { id: string; top: number }[], heights: Map<string, 
   return tops;
 }
 
-/** Re-renders whenever the article's layout can have moved: a window resize,
- *  or an image finishing loading above an anchor. The re-render is what makes
- *  the margin cards measure their passages again. */
-function useRerenderOnLayoutShift(container: React.RefObject<HTMLElement | null>): void {
+/** Re-renders whenever the layout can have moved, because that is what makes
+ *  the margin cards measure their passages and their own heights again. The
+ *  triggers are a window resize, an image finishing loading above an anchor,
+ *  and a card growing or shrinking, for example when its research is opened.
+ *  The returned function starts watching a card's size, and stops watching the
+ *  card it was given before when called with null. */
+function useRerenderOnLayoutShift(container: React.RefObject<HTMLElement | null>): (card: HTMLElement, watch: boolean) => void {
   const [, setVersion] = useState(0);
+  const sizeObserver = useRef<ResizeObserver | null>(null);
   useEffect(() => {
     let frame = 0;
     const bump = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => setVersion((v) => v + 1));
     };
+    sizeObserver.current = new ResizeObserver(bump);
     const element = container.current;
     // Image load events do not bubble, so they are caught on the way down.
     element?.addEventListener("load", bump, true);
     window.addEventListener("resize", bump);
     return () => {
+      sizeObserver.current?.disconnect();
       element?.removeEventListener("load", bump, true);
       window.removeEventListener("resize", bump);
     };
   }, [container]);
+  return (card, watch) => (watch ? sizeObserver.current?.observe(card) : sizeObserver.current?.unobserve(card));
 }
 
 export function ArticleView({ article, run, showAll }: { article: Article; run: LabRun; showAll: boolean }) {
@@ -83,7 +90,7 @@ export function ArticleView({ article, run, showAll }: { article: Article; run: 
    *  clicking one without notes opens a card for it. */
   const [selected, setSelected] = useState<string[]>([]);
   const [cardTops, setCardTops] = useState(new Map<string, number>());
-  useRerenderOnLayoutShift(wrapperRef);
+  const watchCardSize = useRerenderOnLayoutShift(wrapperRef);
 
   const visible = useMemo(
     () => new Set(run.claims.filter((c) => showAll || c.notes.length > 0).map((c) => c.id)),
@@ -154,8 +161,13 @@ export function ArticleView({ article, run, showAll }: { article: Article; run: 
             <div
               key={claim.id}
               ref={(el) => {
-                if (el) cardRefs.current.set(claim.id, el);
-                else cardRefs.current.delete(claim.id);
+                if (el) {
+                  cardRefs.current.set(claim.id, el);
+                  watchCardSize(el, true);
+                } else {
+                  watchCardSize(cardRefs.current.get(claim.id)!, false);
+                  cardRefs.current.delete(claim.id);
+                }
               }}
               className="absolute left-0 right-0 transition-[top] duration-200"
               style={{ top: top ?? 0, visibility: top === undefined ? "hidden" : "visible" }}
