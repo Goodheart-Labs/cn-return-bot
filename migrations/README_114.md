@@ -1,6 +1,6 @@
 # Testing migration 114 before it touches production
 
-Migration 114 changes what readers may write to nine tables. It is tested
+Migration 114 changes what readers may write to ten tables. It is tested
 against a schema-only copy of the production tables. `scripts/schema_fixture.py`
 reads that copy from production's catalog with read-only queries. It contains
 the real columns, constraints, policies, grants, triggers and functions, but no
@@ -46,6 +46,9 @@ everything it wrote. Every value in that result should be true. It checks that:
 6. The 101st note request in a day is refused.
 7. A press grants at most seven days, even when the helper is called directly.
 8. The reader-cost sum counts passage questions and leaves feed checks out.
+9. A vote's donation is saved and re-priced through the client's upsert, and
+   its charity can be changed. An amount above 13 USD, or a write to the
+   payout amount, is refused.
 
 The fixture is not checked in. It is regenerated from production each time, so
 it always matches what the migration will meet.

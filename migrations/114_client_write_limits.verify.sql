@@ -180,6 +180,39 @@ begin
     values (null, 'everything-bot', 'note', 1.5, 'check', 'feed');
   r := r || jsonb_build_object('reader_cost_counts_only_reader_rows', everything_reader_cost_since(now() - interval '1 minute') = 0.4);
 
+  -- 10. Donations: a vote's pair is saved and re-priced through the same
+  --     upsert saveDonation sends, but an amount beyond what the formula can
+  --     produce, or a payout amount, is refused.
+  perform set_config('request.jwt.claims', json_build_object('sub', x_user, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  insert into everything_donations (vote_id, charity, amount_if_helpful, amount_if_not_helpful)
+    select id, 'givewell', 1.2, 0.4 from everything_votes where note_id = v_note and voter_id = x_user
+    on conflict (vote_id) do update set vote_id = excluded.vote_id, charity = excluded.charity,
+      amount_if_helpful = excluded.amount_if_helpful, amount_if_not_helpful = excluded.amount_if_not_helpful;
+  insert into everything_donations (vote_id, charity, amount_if_helpful, amount_if_not_helpful)
+    select id, 'ace', 2.5, 0.3 from everything_votes where note_id = v_note and voter_id = x_user
+    on conflict (vote_id) do update set vote_id = excluded.vote_id, charity = excluded.charity,
+      amount_if_helpful = excluded.amount_if_helpful, amount_if_not_helpful = excluded.amount_if_not_helpful;
+  update everything_donations set charity = 'givewell'
+   where vote_id in (select id from everything_votes where note_id = v_note and voter_id = x_user);
+  refused := false;
+  begin
+    update everything_donations set amount_if_helpful = 1000000
+     where vote_id in (select id from everything_votes where note_id = v_note and voter_id = x_user);
+  exception when check_violation then refused := true; end;
+  r := r || jsonb_build_object('donation_over_range_refused', refused);
+  refused := false;
+  begin
+    update everything_donations set amount_usd = 5
+     where vote_id in (select id from everything_votes where note_id = v_note and voter_id = x_user);
+  exception when insufficient_privilege then refused := true; end;
+  reset role;
+  r := r || jsonb_build_object(
+    'donation_payout_amount_refused', refused,
+    'donation_upsert_and_charity_change_work', (select charity = 'givewell' and amount_if_helpful = 2.5 from everything_donations d
+                                                  join everything_votes v on v.id = d.vote_id where v.note_id = v_note and v.voter_id = x_user)
+  );
+
   raise exception 'RESULT %', r;
 end;
 $$;

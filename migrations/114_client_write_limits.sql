@@ -11,6 +11,7 @@
 -- 4. Every pipeline cost row says whether it was spent for a reader or for the
 --    feed, so the pipeline can stop reader work at its own daily ceiling.
 -- 5. A press on a creator never grants more than seven days of priority.
+-- 6. A vote's donation amounts stay within what the formula can produce.
 
 -- ---------------------------------------------------------------------------
 -- 1. Column grants.
@@ -241,3 +242,22 @@ begin
   return true;
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- 6. Donation amounts.
+--
+--    The client prices a vote's donation pair with donationPair() in
+--    everything-core/donationScoring.ts and saves it with an upsert. A changed
+--    vote updates the pair, so readers keep the right to update the amounts.
+--    They may never write amount_usd, the amount actually paid out.
+--
+--    The formula's largest possible amount is 12.75 USD: the 0.25 USD tip, plus
+--    6.25 USD for the largest stake, plus 6.25 USD for the largest score change.
+--    The largest real amount so far is 3.08 USD (checked 2026-10-05).
+
+revoke insert, update on everything_donations from authenticated;
+grant insert (vote_id, charity, amount_if_helpful, amount_if_not_helpful) on everything_donations to authenticated;
+grant update (vote_id, charity, amount_if_helpful, amount_if_not_helpful) on everything_donations to authenticated;
+
+alter table everything_donations add constraint everything_donations_amount_range
+  check (amount_if_helpful between 0 and 13 and amount_if_not_helpful between 0 and 13);
