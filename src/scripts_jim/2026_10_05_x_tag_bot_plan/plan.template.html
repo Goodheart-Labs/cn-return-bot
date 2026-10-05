@@ -1,0 +1,953 @@
+<title>Tag-to-Note Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column for prose, a wide band for the flow diagram and the threads, a side drawer for step details. */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --ink: #15191f;
+  --muted: #5a6472;
+  --line: #d9dee5;
+  --bot: #0b6f66;
+  --bot-soft: #e2f3f1;
+  --human: #9a5a00;
+  --human-soft: #fbefdc;
+  --opus: #5b45c9;
+  --opus-soft: #ece8fb;
+  --muse: #18794a;
+  --muse-soft: #e1f3e8;
+  --other-model: #4d5d78;
+  --other-soft: #e6eaf1;
+  --code: #374151;
+  --code-soft: #eceef1;
+  --warn: #a4400a;
+  --warn-soft: #fde9dd;
+  --skip: #6b7480;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --surface: #171b21; --surface-2: #1e232b; --ink: #e6e9ee; --muted: #9aa4b2; --line: #2b313a;
+    --bot: #4cc4b6; --bot-soft: #13302d; --human: #e5a54a; --human-soft: #34270f;
+    --opus: #a796ff; --opus-soft: #262142; --muse: #5fd394; --muse-soft: #15301f;
+    --other-model: #9fb0cc; --other-soft: #212836; --code: #c3cad4; --code-soft: #22272e;
+    --warn: #f28b54; --warn-soft: #3a2116; --skip: #8a93a0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --surface: #171b21; --surface-2: #1e232b; --ink: #e6e9ee; --muted: #9aa4b2; --line: #2b313a;
+  --bot: #4cc4b6; --bot-soft: #13302d; --human: #e5a54a; --human-soft: #34270f;
+  --opus: #a796ff; --opus-soft: #262142; --muse: #5fd394; --muse-soft: #15301f;
+  --other-model: #9fb0cc; --other-soft: #212836; --code: #c3cad4; --code-soft: #22272e;
+  --warn: #f28b54; --warn-soft: #3a2116; --skip: #8a93a0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.page { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; }
+.prose { max-width: 70ch; }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 64px; margin-bottom: 12px; }
+h3 { font-size: 1.15rem; font-weight: 600; margin-top: 32px; margin-bottom: 8px; }
+h4 { font-size: 1rem; font-weight: 600; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 12px; }
+a { color: var(--bot); }
+code { overflow-wrap: anywhere; font-family: var(--font-mono); font-size: 0.86em; background: var(--surface-2); padding: 2px 6px; border-radius: 4px; }
+.eyebrow { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.lede { font-size: 1.15rem; color: var(--ink); max-width: 68ch; margin-top: 16px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; color: var(--muted); font-size: 0.92rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
+.chip.opus { background: var(--opus-soft); color: var(--opus); }
+.chip.muse { background: var(--muse-soft); color: var(--muse); }
+.chip.other { background: var(--other-soft); color: var(--other-model); }
+.chip.code { background: var(--code-soft); color: var(--code); }
+.chip.x { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+.chip.new { background: var(--bot-soft); color: var(--bot); }
+.chip.reused { background: var(--surface-2); color: var(--muted); }
+.chip.changed { background: var(--human-soft); color: var(--human); }
+.chip.skip { background: transparent; color: var(--skip); border-color: var(--skip); text-decoration: line-through; }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+ul, ol { margin: 0 0 12px; padding-left: 1.3em; }
+li { margin-bottom: 6px; }
+.callout { border: 1px solid var(--warn); background: var(--warn-soft); padding: 14px 18px; border-radius: 10px; margin: 16px 0; max-width: 72ch; }
+.callout.good { border-color: var(--bot); background: var(--bot-soft); }
+.callout p:last-child { margin-bottom: 0; }
+
+/* Flow diagram */
+.flow-wrap { margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.flow-wrap svg { display: block; width: 100%; min-width: 860px; height: auto; }
+.flow-wrap .phase { font: 600 13px var(--font-body); fill: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.node { cursor: pointer; }
+.node rect.box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; transition: stroke 120ms, fill 120ms; }
+.node:hover rect.box, .node:focus-visible rect.box, .node.active rect.box { stroke: var(--ink); fill: var(--surface-2); }
+.node:focus { outline: none; }
+.node:focus-visible rect.box { stroke-width: 2.5; }
+.node text.title { font: 600 14px var(--font-body); fill: var(--ink); }
+.node text.sub { font: 500 12px var(--font-body); fill: var(--muted); }
+.node rect.tag { stroke: none; }
+.node text.tagtext { font: 700 10px var(--font-body); letter-spacing: 0.04em; }
+.edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.edge.dash { stroke-dasharray: 5 5; }
+.edge-label { font: 600 12px var(--font-body); fill: var(--muted); }
+.skipnode rect { fill: none; stroke: var(--skip); stroke-dasharray: 4 4; }
+.skipnode text { font: 500 12px var(--font-body); fill: var(--skip); text-decoration: line-through; }
+.skipnode { cursor: pointer; }
+.arrowhead { fill: var(--muted); }
+.flow-hint { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+
+/* Tooltip on hover */
+.tip { position: fixed; z-index: 30; max-width: 320px; background: var(--ink); color: var(--bg); padding: 10px 12px; border-radius: 8px; font-size: 0.86rem; line-height: 1.45; pointer-events: none; box-shadow: 0 6px 24px rgb(0 0 0 / 0.25); }
+
+/* Drawer with step details */
+.drawer-backdrop { position: fixed; inset: 0; background: rgb(10 12 16 / 0.45); z-index: 40; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(760px, 100%); background: var(--surface); z-index: 50; overflow-y: auto; border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgb(0 0 0 / 0.2); padding: calc(20px + env(safe-area-inset-top, 0px)) 24px calc(40px + env(safe-area-inset-bottom, 0px)); }
+.drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.drawer h2 { margin: 4px 0 8px; font-size: 1.4rem; }
+.close { font: 600 0.9rem var(--font-body); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.close:focus-visible, .copy:focus-visible, .tabs button:focus-visible { outline: 2px solid var(--bot); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-size: 0.92rem; margin: 12px 0 16px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; font-variant-numeric: tabular-nums; min-width: 0; }
+details.block { border: 1px solid var(--line); border-radius: 10px; margin: 12px 0; background: var(--surface); }
+details.block > summary { cursor: pointer; padding: 10px 14px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+details.block > summary::-webkit-details-marker { display: none; }
+details.block > summary::after { content: "Show"; color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+details.block[open] > summary::after { content: "Hide"; }
+details.block > summary .hint { color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+pre.text { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--surface-2); font: 12.5px/1.55 var(--font-mono); white-space: pre-wrap; word-break: break-word; max-height: 520px; overflow-y: auto; border-radius: 0 0 10px 10px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 16px 0 4px; }
+.tabs button { font: 600 0.85rem var(--font-body); border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* Threads */
+.threads { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-top: 20px; }
+.thread { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+.thread h3 { margin: 0 0 4px; }
+.thread .caption { color: var(--muted); font-size: 0.88rem; margin-bottom: 12px; }
+.post { display: grid; grid-template-columns: 36px 1fr; gap: 10px; padding: 10px 0; position: relative; }
+.post + .post { border-top: 1px solid var(--line); }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 0.9rem; color: var(--surface); background: var(--muted); }
+.post.bot .avatar { background: var(--bot); }
+.post.human .avatar { background: var(--human); }
+.post.root .avatar { background: var(--other-model); }
+.post .who { font-weight: 600; font-size: 0.92rem; }
+.post .who span { color: var(--muted); font-weight: 500; }
+.post .body { white-space: pre-wrap; word-break: break-word; font-size: 0.93rem; min-width: 0; }
+.post .body a { word-break: break-all; }
+.post .note-box { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 6px 0; background: var(--surface-2); }
+.post .step-link { display: inline-flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.step-link button { font: 600 0.75rem var(--font-body); border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+.step-link button:hover { color: var(--ink); border-color: var(--ink); }
+.silent { color: var(--muted); font-style: italic; font-size: 0.88rem; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 12px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--surface-2); font-weight: 600; font-size: 0.85rem; }
+tr:last-child td { border-bottom: none; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td code { white-space: nowrap; }
+
+/* Decision cards */
+.decisions { display: grid; gap: 16px; margin-top: 16px; }
+.decision { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+.decision h3 { margin-top: 0; }
+.decision p:last-child, .decision ul:last-child { margin-bottom: 0; }
+
+/* Approval tree */
+.tree { font-size: 0.92rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+.tree ul { list-style: none; padding-left: 22px; border-left: 1px solid var(--line); margin: 4px 0 4px 8px; }
+.tree > ul { border-left: none; padding-left: 0; margin-left: 0; }
+.tree li { margin: 4px 0; }
+.tree .ok { color: var(--bot); font-weight: 600; }
+.tree .no { color: var(--warn); font-weight: 600; }
+
+.copy-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; }
+.copy { font: 600 0.85rem var(--font-body); background: var(--ink); color: var(--bg); border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.request { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin: 12px 0; }
+.request pre { margin: 0; padding: 14px; border-top: 1px solid var(--line); font: 13px/1.6 var(--font-body); white-space: pre-wrap; }
+
+.steps-list { counter-reset: s; list-style: none; padding: 0; }
+.steps-list > li { counter-increment: s; position: relative; padding-left: 36px; margin-bottom: 12px; }
+.steps-list > li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line); font-size: 0.8rem; font-weight: 700; display: grid; place-items: center; }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 20px; font-size: 0.92rem; }
+
+@media (max-width: 640px) {
+  h1 { font-size: 1.9rem; }
+  .page { padding-inline: 16px; }
+  .drawer { padding-inline: 16px; }
+  .threads { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Plan for GOO-212 · in review · 5 October 2026</div>
+    <h1>Tag-to-Note Bot</h1>
+    <p class="lede">Someone replies under a post on X and tags our bot. The bot researches the post with our existing note pipeline and answers in the thread with a draft Community Note, or with an explanation of why no note is needed. Anyone in the thread can suggest changes, and the bot answers each suggestion with a revised draft or a reason to keep it. When someone who asked for the note replies "approve", our AI Note Writer submits it and the bot replies with a link to the note.</p>
+    <div class="meta">
+      <a href="https://linear.app/goodheart-labs/issue/GOO-212/make-a-twitter-bot-that-automatically-posts-community-notes-when">Linear ticket GOO-212</a>
+      <a href="https://github.com/Goodheart-Labs/cn-return-bot/pull/560">Draft PR #560</a>
+      <span>Every model output on this page is real. The two posts and their comments are real production data. The replies under them are written by hand.</span>
+    </div>
+    <nav class="toc" aria-label="Sections">
+      <a href="#flow">The steps</a><a href="#threads">Two example threads</a><a href="#behaviour">Behaviour</a><a href="#costs">Costs</a><a href="#limits">X's rules and limits</a><a href="#approval">X's approval</a><a href="#decisions">Implementation decisions</a><a href="#risks">Risks and open questions</a><a href="#build">Build pieces</a>
+    </nav>
+  </header>
+
+  <section id="flow">
+    <h2>The steps</h2>
+    <div class="prose">
+      <p>Two things start the bot. A new tag starts a conversation, shown in the top half. A reply to one of the bot's own posts continues a conversation, shown in the bottom half. Hover over a step for a one-line summary. Click it to see its full prompt, the real input it got and the real output it gave.</p>
+    </div>
+    <div class="legend" aria-label="Legend">
+      <span class="chip opus">Opus 5.5</span><span class="chip muse">Muse Spark 1.3</span><span class="chip other">Other model</span><span class="chip code">Plain code</span><span class="chip x">X API call</span><span class="chip skip">Skipped for this bot</span>
+    </div>
+    <div class="flow-wrap">
+      <svg id="flow-svg" viewBox="0 0 1060 1000" role="img" aria-label="Flow diagram of the bot's steps"></svg>
+    </div>
+    <p class="flow-hint">On a phone, scroll the diagram sideways. Every step is also reachable with the Tab key and Enter.</p>
+  </section>
+
+  <section id="threads">
+    <h2>Two example threads</h2>
+    <div class="prose">
+      <p>These are the two conversations the plan's examples come from. The first is a post with a false side claim, where the bot drafts a note, revises it after a suggestion and gets approved. The second is a post whose numbers are right, where the bot says no note is needed and holds its ground when someone pushes back. The small buttons under each bot post open the step that wrote it.</p>
+    </div>
+    <div class="threads">
+      <div class="thread" id="thread-mumbai"></div>
+      <div class="thread" id="thread-gdp"></div>
+    </div>
+  </section>
+
+  <section id="behaviour" class="prose">
+    <h2>Behaviour</h2>
+    <h3>Starting a conversation</h3>
+    <ul>
+      <li>A person replies to a post and writes <code>@CommonNotesBot</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post. The handle is a placeholder until we pick one.</li>
+      <li>The bot answers within about a minute: the watcher looks for new mentions every 15 seconds, and the research takes 20 to 40 seconds.</li>
+      <li>The person's own words go into the research. If they point at one claim, the bot checks that claim even when it is not the post's main argument. This turned out to matter, see <a href="#d-requester">the decision on the tagger's comment</a>.</li>
+      <li>The answer is one reply: a draft note with its sources, or two or three sentences on why no note is needed. Either way the reply ends with how to continue.</li>
+      <li>If a second person tags the bot under the same post, the bot does not research again. It answers with the newest answer it already has. If their tag also contains a suggestion, it is handled like any other suggestion.</li>
+    </ul>
+    <h3>Continuing a conversation</h3>
+    <ul>
+      <li>Anyone may reply to one of the bot's posts. The bot sorts each reply into an approval, feedback or anything else.</li>
+      <li>Feedback gets one answer: a new draft, or a short reason why the current answer stands. The bot can search the web and open links the person posted.</li>
+      <li>Everything else, such as thanks, jokes and insults, gets no reply at all. That also stops two bots from talking to each other forever.</li>
+      <li>An approval submits the exact draft it replies to, as long as the approver is someone who asked for this note or suggested a change that led to it. The <a href="#d-approvers">approval rule</a> shows who that is.</li>
+      <li>After submission the bot replies "Submitted" with the note's link. If X's daily limit for our AI notes is used up, it first replies that the note is queued, and later replies again once it went through.</li>
+    </ul>
+  </section>
+
+  <section id="costs">
+    <h2>Costs</h2>
+    <div class="prose">
+      <p>Model costs below are what the example runs actually cost through OpenRouter. The cost of reading a post's comments comes from the production run of the same post, because the examples reused that input. X costs follow X's pay-per-use price list as of today.</p>
+    </div>
+    <div class="table-wrap" id="cost-table"></div>
+    <div class="prose">
+      <p><strong>Fixed costs:</strong> X Premium for the bot account is $8 a month. Mentions read through X's "owned reads" price cost $0.001 each, so polling is free when nobody tags us: X bills per post returned, not per request.</p>
+      <p><strong>At scale:</strong> 20 conversations a day at about $1.50 each is about $900 a month. The revision step is the one to watch. A revision that searches and opens pages cost $1.36 in the example, because Opus reads every fetched page as input. The plan caps the fetch tool at 8,000 tokens per page and two pages per call, which should bring that to roughly $0.30.</p>
+    </div>
+    <div class="callout">
+      <p><strong>One price is unclear.</strong> X lists $0.01 for a "summoned" post (a reply to someone who tagged us) and $0.20 for a post with a link. A draft reply is both. X's docs don't say which wins. The table assumes $0.20, the worse case. We will know from the billing console after the first day.</p>
+    </div>
+  </section>
+
+  <section id="limits" class="prose">
+    <h2>X's rules and limits</h2>
+    <h3>Who the bot may reply to</h3>
+    <p>Since 23 February 2026, an app on X's self-serve API can only reply to a post whose author tagged the app's account or quoted one of its posts. Our design never breaks this rule: every post the bot answers either tags it directly or is a reply to one of its posts. When you reply to someone on X, the app puts their handle at the start of your reply, so replies to the bot tag the bot automatically. If someone deletes that handle from their reply, X does not show it to us as a mention, and the bot could not legally answer anyway.</p>
+    <p>X's developer guidelines add three conditions for automated accounts: at most one reply per interaction, the "Automated" label on the profile, and a bio that says who runs the bot. The bot replies once per post it is tagged in, so it meets the first.</p>
+    <h3>Character limits</h3>
+    <ul>
+      <li><strong>A Community Note</strong> may have 280 characters, and each link counts as 1 character. Our writer already works to this limit.</li>
+      <li><strong>A post</strong> from a normal account may have 280 characters, and each link counts as 23 characters, because X rewrites every link to a <code>t.co</code> short link of that length. A draft with two sources plus the line "Reply approve..." is usually 380 to 450 characters.</li>
+      <li><strong>X Premium</strong> allows posts of up to 25,000 characters. The API needs no special flag for this: <code>POST /2/tweets</code> accepts the longer text when the account has Premium, and refuses it otherwise. We decided to buy Premium for the bot. Premium also adds a checkmark, which ranks the bot's replies higher in a thread.</li>
+    </ul>
+    <h3>Rate limits</h3>
+    <p>Reading mentions is limited to 300 requests per 15 minutes per account, so polling every 15 seconds uses 60. Posting is limited to 100 posts per 15 minutes and 10,000 per day, far above what we need.</p>
+  </section>
+
+  <section id="approval" class="prose">
+    <h2>X's approval for an AI reply bot</h2>
+    <h3>How the process works</h3>
+    <ol class="steps-list">
+      <li><strong>What the rules say.</strong> X's developer guidelines and Automation Rules, last updated in April 2026, say that an app which "generates and posts replies" with AI needs "prior written approval" from X before launch. Launching without it can get the account suspended, even when the replies are helpful.</li>
+      <li><strong>What X staff say.</strong> There is no form for this approval. On X's developer forum in August and September 2026, X staff told several developers that replies which are triggered by a mention, answer once per interaction, carry the Automated label and never reach out unasked do not need a separate approval. The policy page was not updated to say so. So the written rule and the staff answers disagree.</li>
+      <li><strong>What people do.</strong> Developers post an approval request in the "Rules and Policies" category of the developer forum at devcommunity.x.com, with their App ID and a description of the use case. X staff answer in the thread. That answer, in writing, is the record we want.</li>
+      <li><strong>What we should also do.</strong> We already write notes through the Community Notes API, so the Community Notes team knows our account. If we have a contact there, sending them the same text is likely faster than the forum.</li>
+      <li><strong>What we set up in the meantime.</strong> Create the bot account, buy Premium, and turn on the Automated label (Settings, Your account, Account information, Automation, then pick our main account as the managing account). Create a developer app for it in a Project in the developer console, give it read and write permission, add pay-per-use credits and set a monthly spending limit. Build and test with the bot account replying only to our own test posts until X answers.</li>
+    </ol>
+    <h3>Draft request</h3>
+    <p>For the forum or the Community Notes team. The parts in angle brackets need our real values.</p>
+  </section>
+  <div class="request" style="max-width: 78ch;">
+    <div class="copy-row"><strong>Approval request: summoned-only AI reply bot that drafts Community Notes</strong><button class="copy" id="copy-request" type="button">Copy text</button></div>
+    <pre id="request-text">Hello X team,
+
+We run an AI Note Writer through the Community Notes API (account &lt;notewriter handle&gt;). We would like to add a companion account, @&lt;bot handle&gt; (App ID &lt;app id&gt;), that answers only when people tag it, and we want to make sure this fits the Automation Rules before launch.
+
+How it works:
+1. A person replies to a post and tags @&lt;bot handle&gt;.
+2. The bot researches the post and replies once to that person. The reply is either a draft Community Note with its sources or a short explanation of why no note is needed.
+3. People can reply to the bot's post with corrections or sources. The bot answers each such reply once, with a revised draft or an explanation.
+4. When a person who asked for the note replies "approve", our AI Note Writer submits the draft through the Community Notes API, where contributors rate it like any other note. The bot then replies with a link to the note.
+
+What the bot never does: reply to anyone who did not tag it or reply to it, watch keywords, post unsolicited replies, like, follow or send DMs, or reply more than once to one post.
+
+Transparency: the account carries the Automated label, and its bio says "Bot by @&lt;our account&gt;. Drafts Community Notes when you tag it."
+
+The drafts are written by large language models (Anthropic Claude Opus and Meta Muse Spark) with web search. We expect tens of conversations a day at first.
+
+Our question: do summoned-only AI replies like these need prior written approval under the Automation Rules? If they do, could you grant it for this app, or tell us the right channel?
+
+Thank you,
+&lt;name&gt;, Goodheart Labs</pre>
+  </div>
+
+  <section id="decisions">
+    <h2>Implementation decisions</h2>
+    <div class="decisions">
+
+      <div class="decision">
+        <h3>Where it runs: one new service on the services box</h3>
+        <p>The bot is a long-running program, a <em>daemon</em>, that runs as a new systemd service called <code>cn-x-tag-bot</code> on the services box. systemd is Linux's service manager: it starts the program at boot and restarts it if it crashes. The box's existing autodeploy timer pulls new code and restarts it, like the other <code>cn-*</code> services.</p>
+        <p>It polls X for new mentions every 15 seconds with <code>GET /2/users/:id/mentions?since_id=…</code>. X also offers webhooks, where X calls our server when something happens. Polling needs no public web server and costs nothing extra, and 15 seconds of delay doesn't matter for a reply that takes 30 seconds of research anyway.</p>
+        <p>It runs the pipeline steps in its own process, the way the Signal bot does, rather than calling the claim-check service. The claim-check service's tweet endpoint runs the full production gate chain, and this bot needs a different chain (no prefilter, no verifier, a requester section, Opus everywhere). Running in-process reuses <code>createBotInput</code>, <code>runSearch</code>, <code>runTimingStage</code> and <code>runWriter</code> unchanged.</p>
+      </div>
+
+      <div class="decision">
+        <h3>What it reuses from the Signal bot</h3>
+        <p>The Signal bot (<code>src/signal-bot/</code>) already drafts a note for a pasted tweet, discusses it, takes an approval and submits through a priority queue. Its chat parts are specific to Signal: local SQLite storage, numbered conversations, regex commands. The bot reuses the parts that are not:</p>
+        <ul>
+          <li><code>validateSignalDraft</code>, which checks a draft has one to five public source URLs and fits 280 characters. It moves to a shared place and is renamed <code>validateApprovedDraft</code>.</li>
+          <li>The submission path in <code>submission.ts</code>, which writes a <code>pipeline_runs</code> row and calls <code>submitNoteForTweet</code> in a priority lane. It becomes shared code for "notes a human approved".</li>
+          <li>The database's capacity gate (<code>claim_note_submission</code>), which already gives human-approved notes priority over the automatic pipeline.</li>
+        </ul>
+      </div>
+
+      <div class="decision">
+        <h3>Database changes</h3>
+        <p>Two new tables keep the conversations. A thread is one tag and everything below it. Every post in it, ours and theirs, is one row in the second table, so the tree of replies can be rebuilt from <code>parent_tweet_id</code>.</p>
+        <h4><code>x_tag_threads</code> (new)</h4>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Column</th><th>Type</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>uuid</td><td>Primary key.</td></tr>
+            <tr><td><code>target_tweet_id</code></td><td>text</td><td>The post a note would go on.</td></tr>
+            <tr><td><code>request_tweet_id</code></td><td>text, unique</td><td>The post that tagged the bot.</td></tr>
+            <tr><td><code>requester_id</code>, <code>requester_handle</code></td><td>text</td><td>Who tagged the bot.</td></tr>
+            <tr><td><code>post_context</code></td><td>text</td><td>The full input the first research got. Revisions get the same input, so they see the same post, media descriptions and comments.</td></tr>
+            <tr><td><code>findings</code></td><td>text</td><td>The research findings of the first run.</td></tr>
+            <tr><td><code>status</code></td><td>text</td><td><code>researching</code>, <code>answered</code>, <code>queued</code>, <code>submitted</code>, <code>failed</code>.</td></tr>
+            <tr><td><code>approved_post_id</code></td><td>text</td><td>The bot's draft post that was approved, so the queue knows which draft to submit.</td></tr>
+            <tr><td><code>note_id</code></td><td>text</td><td>The Community Note id once X accepted it.</td></tr>
+            <tr><td><code>pipeline_run_id</code></td><td>uuid</td><td>The <code>pipeline_runs</code> row with the full log and cost, <code>bot_name = 'x-tag'</code>.</td></tr>
+            <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
+          </tbody>
+        </table></div>
+        <h4><code>x_tag_posts</code> (new)</h4>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Column</th><th>Type</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>tweet_id</code></td><td>text, primary key</td><td>The post's X id.</td></tr>
+            <tr><td><code>thread_id</code></td><td>uuid</td><td>Which thread it belongs to.</td></tr>
+            <tr><td><code>parent_tweet_id</code></td><td>text</td><td>The post it replies to.</td></tr>
+            <tr><td><code>author_id</code>, <code>author_handle</code></td><td>text</td><td>Who wrote it.</td></tr>
+            <tr><td><code>role</code></td><td>text</td><td><code>human</code> or <code>bot</code>.</td></tr>
+            <tr><td><code>kind</code></td><td>text</td><td>For a human post: <code>request</code>, <code>approve</code>, <code>feedback</code>, <code>other</code>. For a bot post: <code>draft</code>, <code>no_note</code>, <code>answer</code>, <code>queued</code>, <code>submitted</code>, <code>error</code>.</td></tr>
+            <tr><td><code>text</code></td><td>text</td><td>The full text as posted.</td></tr>
+            <tr><td><code>draft</code></td><td>jsonb</td><td>On a draft post, <code>{text, sources}</code>: exactly what an approval of this post submits.</td></tr>
+            <tr><td><code>answered_by</code></td><td>text</td><td>On a human post, the id of the bot's reply to it. Empty means not answered yet. The bot writes a placeholder before it posts, so a crash can never make it reply twice.</td></tr>
+            <tr><td><code>llm_cost_usd</code></td><td>numeric</td><td>What the step that handled this post spent.</td></tr>
+            <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
+          </tbody>
+        </table></div>
+        <h4>Changes to existing tables</h4>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Table</th><th>Change</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>signal_submission_queue</code></td><td>Renamed to <code>approved_submission_queue</code>, with a new <code>lane</code> column.</td><td>It now holds notes a human approved in Signal or on X. Both get priority over the automatic pipeline.</td></tr>
+            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions.</td></tr>
+            <tr><td><code>pipeline_state</code></td><td>New key <code>x_tag_mentions_since_id</code>.</td><td>The newest mention already seen, so a restart does not reread old mentions.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="decision" id="d-requester">
+        <h3>The tagger's comment can move the focus to a side claim</h3>
+        <p>The search step's prompt says to look for errors in the post's <em>main</em> claim. On the Mumbai post, the first test run kept the shared prompts unchanged and only added the tagger's comment ("is this true? ... Dharavi definitely still exists"). Opus 5.5 found that the claim "the slums are largely gone" is false, agreed with the tagger, and still answered no note, because it is a side claim. Our production note on exactly that claim was rated helpful by Community Notes raters.</p>
+        <p>So the section that carries the comment now says: "If it points at a specific claim in the post, decide whether that claim needs a note, even when it is not the post's main argument." With that sentence the same run wrote a draft. The shared search and writer prompts stay unchanged, so the production bot is not affected. <button class="close" type="button" data-open="searchFirstTry">See the first run's findings</button></p>
+      </div>
+
+      <div class="decision" id="d-approvers">
+        <h3>Who may approve a draft</h3>
+        <p>The ticket says the person who tagged the bot can approve, and that when there are several drafts, "every user who's above in the tree can approve". The plan reads this as: a person may approve a draft if they wrote any post on the path from the tag down to that draft. That is the tagger and everyone whose suggestion led to the draft. Someone who only replied elsewhere in the thread may still suggest changes, but not approve.</p>
+        <div class="tree" aria-label="Example of who may approve">
+          <ul><li>@priya_k_writes tags the bot
+            <ul><li>Bot: draft 1 <span class="ok">(priya may approve)</span>
+              <ul>
+                <li>@redpill_raj: "lol imagine needing a bot..." (no reply)</li>
+                <li>@mvaidya: "newkerala is a pretty weak source..."
+                  <ul><li>Bot: draft 2 <span class="ok">(priya and mvaidya may approve)</span>, <span class="no">(redpill_raj may not)</span></li></ul>
+                </li>
+              </ul>
+            </li></ul>
+          </li></ul>
+        </div>
+        <p>An approval always submits the exact draft it replies to, never "the latest draft". An approval from someone not on the path gets one reply that explains the rule and suggests they tag the bot themselves. Your answer in the question round was "anyone". If you meant that literally anyone in the thread may approve, the check is one line to remove.</p>
+      </div>
+
+      <div class="decision">
+        <h3>One note per post</h3>
+        <p>Our AI Note Writer can submit only one note per post. Once a note is submitted on a post, every later approval on that post, in any thread, gets the reply that a note is already submitted, with its link. Two people tagging the bot under the same post therefore share one note.</p>
+      </div>
+
+      <div class="decision">
+        <h3>Waiting for X's daily limit: retry every 2 minutes, for 3 hours instead of 60 minutes</h3>
+        <p>X lets our AI Note Writer submit only so many notes per 24 hours. Right now the limit is 73, and 68 of those slots were used when this plan was written. On 4 October we hit the limit at 50. The automatic pipeline fills the limit most days, so an approved note will often have to wait.</p>
+        <p>The database already decides when a submission may go out (<code>claim_note_submission</code>). A slot frees up when a note submitted 24 hours earlier drops out of the window, which happens every 20 to 30 minutes on a typical day. After X actually refuses a note for the limit, the gate waits 95 minutes and then lets one test submission through. Approved notes from the bot jump ahead of the automatic pipeline, like Signal approvals do today.</p>
+        <p>The bot checks the queue every 2 minutes, as the ticket suggests, but it asks the database gate rather than X, so waiting costs nothing. A 60-minute window would fail every approval that arrives just after a refusal, because the gate alone waits 95 minutes. So the plan keeps trying for 3 hours. After that, the bot replies that the limit stayed full and that replying "approve" again restarts the wait.</p>
+      </div>
+
+      <div class="decision">
+        <h3>Approvals are read by Muse, not by a fixed list of words</h3>
+        <p>The Signal bot deliberately never lets a model decide what counts as an approval. It only accepts exact phrases such as "yes post". On X people write freely ("looks good, ship it", "approve but drop the second link"), so a word list would either miss approvals or accept "approve but change X". Muse handles these well in the examples, including the "approve but..." case, which it correctly calls feedback.</p>
+        <p>The risk is a wrong approval, and a submitted note cannot be taken back through the API. The plan limits the risk two ways: only a reply to a draft can count as an approval, and only from someone on the draft's path.</p>
+      </div>
+
+      <div class="decision">
+        <h3>No source check means people in the thread are the check</h3>
+        <p>The ticket drops the source verifier. The revision example shows what that costs. Asked for an official source, Opus rewrote the note around the 2011 census and cited <code>en.wikipedia.org/wiki/Slums_in_Chennai</code> for a claim about Mumbai. The verifier would likely have caught that the page does not support the claim. Without it, the wrong link goes into the draft, and only a careful reader in the thread would notice before approving.</p>
+        <p>Options, cheapest first:</p>
+        <ul>
+          <li>Keep it as the ticket says, and rely on the people in the thread.</li>
+          <li>Accept a source in a revised note only if Opus actually opened it or found it in this conversation's search results. This is plain code and catches invented links, but not a real page that says something else.</li>
+          <li>Run the existing source verifier on revised drafts only. It costs about $0.01 and 10 seconds per revision.</li>
+        </ul>
+      </div>
+
+      <div class="decision">
+        <h3>The bot's fixed text is never written by a model</h3>
+        <p>The lines around a draft ("Draft Community Note:", "Reply approve..."), and every status reply ("Submitted", "Queued", "Already submitted"), are fixed templates in code. A model writes only the explanation in a no-note reply and the reply to feedback. So a model can never claim a note was submitted. The Signal bot's <code>safeReply</code> filter, which replaces any model text that claims a submission, stays on as a second guard.</p>
+        <p>Everything people write in the thread, and every page the bot reads, goes into the prompts as evidence, never as instructions. Each prompt says so.</p>
+      </div>
+
+      <div class="decision">
+        <h3>Models</h3>
+        <ul>
+          <li>Research, writing and revision use Opus 5.5 (<code>anthropic/claude-opus-5.5</code> on OpenRouter, $4 per million input tokens and $20 per million output tokens). It is newer and slightly cheaper than the Opus 5 the production search uses.</li>
+          <li>Sorting replies and writing the no-note explanation use Muse Spark 1.3 Contributor, the model Common Notes runs on. It costs about $0.0002 per call.</li>
+          <li>Image and video descriptions and the comment reading stay as they are in production (Muse or Gemini for media, Grok's X search for comments).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="risks" class="prose">
+    <h2>Risks and open questions</h2>
+    <ul>
+      <li><strong>Will X accept notes on any post?</strong> The AI Note Writer API officially offers notes on posts in its eligibility feed, mostly posts where people requested a note. The Signal bot submitted one note on a hand-picked post on 20 September, and X accepted it. That is one data point. When X refuses a post as ineligible, the bot will say so in the thread.</li>
+      <li><strong>Will such notes get rated?</strong> A note on a post outside the feed may be shown to fewer raters. The Signal note is still "Needs more ratings" two weeks later. We cannot tell yet whether that is unusual, because our scraper does not record rating counts.</li>
+      <li><strong>The notewriter's API keys.</strong> An investigation on 1 October found that the notewriter app's keys are refused for reading posts, because that app is not attached to an X "Project". Submitting notes still works in production. The bot account gets its own app inside a Project, so this does not block us, but it is worth knowing.</li>
+      <li><strong>Our AI writer's track record.</strong> You said not to worry about limits. One effect to keep in mind: every submitted note counts toward the AI writer's rating history, which X uses to set the daily limit. If many approved notes get rated unhelpful, the main pipeline's limit shrinks too.</li>
+      <li><strong>The bot's handle.</strong> <code>@CommonNotesBot</code> is a placeholder. Anything with "Community Notes" in it would look like X's own account, so we should avoid it.</li>
+      <li><strong>Harassment.</strong> People will tag the bot under posts by people they dislike. The bot replies under the tagger's comment, not under the original post, which keeps it out of the author's direct line. Reports against the bot account could still get it limited by X.</li>
+      <li><strong>Replies to replies.</strong> If someone tags the bot under a reply rather than under the original post, the bot checks that reply. The input does not yet include the post above it, which the bot may need for context. The first version adds the parent post as a section of the input.</li>
+    </ul>
+  </section>
+
+  <section id="build" class="prose">
+    <h2>Build pieces</h2>
+    <p>One ticket and one pull request, with these parts as sub-issues.</p>
+    <ol class="steps-list">
+      <li><strong>X account and approval.</strong> Bot account, Premium, Automated label, developer app in a Project with credits and a spending limit, the approval request. This needs a human with a phone number and a card.</li>
+      <li><strong>Mentions and threads.</strong> The migration, the mention watcher, routing a mention to "new thread" or "reply in a thread", and posting replies with the double-reply guard.</li>
+      <li><strong>First answer.</strong> The tagger section, the bot's pipeline config, the draft template, the no-note reply, and reusing an existing answer when a second person tags the same post.</li>
+      <li><strong>Replies to the bot.</strong> The classifier, the revision call with capped search and fetch, and the approval rule.</li>
+      <li><strong>Submission.</strong> The shared approved-submission path, the queue rename, the <code>x_tag</code> lane, the 3-hour retry and the status replies.</li>
+      <li><strong>Service and tests.</strong> The systemd unit, a dry-run mode that prints replies instead of posting them, tests for routing, approval and the templates, and the docs (CLAUDE.md, <code>ops/README.md</code>, <code>docs/prod-config.md</code>).</li>
+    </ol>
+  </section>
+</div>
+
+<div class="tip" id="tip" hidden></div>
+<div class="drawer-backdrop" id="backdrop" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="drawer-title"></aside>
+
+<script>
+const DATA = /*PLAN_DATA*/;
+
+const fmtUsd = (value, digits) => "$" + Number(value).toFixed(digits ?? (value < 0.01 ? 4 : 2));
+const fmtSec = (value) => Math.round(value) + " s";
+const M = DATA.mumbai;
+const G = DATA.gdp;
+
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs || {})) {
+    if (key === "class") node.className = value;
+    else if (key === "text") node.textContent = value;
+    else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  for (const child of children) if (child != null) node.append(child);
+  return node;
+}
+
+function textBlock(title, text, hint, open) {
+  const details = el("details", { class: "block" });
+  if (open) details.open = true;
+  const summary = el("summary", {}, el("span", {}, title, hint ? el("span", { class: "hint", text: "  " + hint }) : null));
+  details.append(summary, el("pre", { class: "text", text }));
+  return details;
+}
+
+function json(value) { return JSON.stringify(value, null, 2); }
+
+function classifierExamples() {
+  const all = [...M.classifications, { ...M.approvalClassification, reply: M.approval }, { ...G.classification, reply: G.feedback }];
+  return all.map((c, i) => ({
+    label: "Reply " + (i + 1) + ": " + c.result.kind,
+    input: c.userMessage,
+    output: json(c.result),
+    cost: c.costUsd,
+    seconds: c.seconds,
+  }));
+}
+
+const STEPS = {
+  watch: {
+    title: "Mention watcher", chips: [["code", "Plain code"], ["x", "X API"], ["new", "New"]],
+    summary: "Every 15 seconds, asks X for new posts that mention the bot, then decides whether each one starts a thread or continues one.",
+    body: [
+      "Calls GET /2/users/:id/mentions with since_id set to the newest mention already seen. X returns each post with the post it replies to and the post it quotes.",
+      "Routing is plain code. A mention whose parent is one of the bot's own posts continues that thread and goes to the classifier. Any other mention starts a new thread, and the post it replies to (or quotes) becomes the post to check. The bot's own posts and reposts are ignored.",
+      "Before doing anything, the watcher records the mention in x_tag_posts. A mention that already has a row is skipped, so a restart never handles a post twice.",
+    ],
+    facts: [["Cost", "$0.001 per mention returned (X's owned-read price). Empty polls are free."], ["Rate", "60 of the allowed 300 requests per 15 minutes"]],
+  },
+  read: {
+    title: "Read the post", chips: [["reused", "Existing code"], ["other", "Grok, Muse or Gemini"], ["x", "X API"]],
+    summary: "Fetches the post, describes its images and videos, reads its comments with Grok, and looks up the author's past notes. Exactly what production does today.",
+    body: [
+      "This is createBotInput from the production pipeline, unchanged. It fetches the post and its quoted post from X, describes media with a vision model, asks Grok's X search for the comments under the post, and adds the author's earlier notes.",
+      "The bot then adds one new section to the end: the tagger's comment. The search and the writer both see it. The full text the research got for the Mumbai example is below. Everything above the last section is real production input for that post.",
+    ],
+    blocks: [["New section added to the input", DATA.prompts.requesterSection, "the template"], ["Full input of the Mumbai example", M.postContext, "real"]],
+    facts: [["Cost", "Grok comments $0.06 to $0.16 per post, media description under $0.001, X post reads $0.005 each"], ["Time", "10 to 20 s"]],
+  },
+  search: {
+    title: "Search", chips: [["opus", "Opus 5.5"], ["reused", "Existing prompt"], ["changed", "Opus 5.5 instead of the A/B mix"]],
+    summary: "Opus 5.5 with web search decides whether the post needs a note and writes research findings with source links.",
+    body: [
+      "The production search step, unchanged, with Opus 5.5 and Anthropic's web search tool. It returns findings with inline links and a yes or no on whether a note is needed.",
+      "If the answer is no, the bot goes to the no-note reply. If yes, it goes on to the timing check and the writer.",
+    ],
+    tabs: [
+      { label: "Mumbai: yes", blocks: [["System prompt", DATA.prompts.search, "word for word"], ["Output", json({ correction_needed: M.search.result.correctionNeeded, findings: M.search.result.findings }), "real"]], facts: [["Cost", fmtUsd(M.search.costUsd)], ["Time", fmtSec(M.search.seconds)]] },
+      { label: "GDP: no", blocks: [["System prompt", DATA.prompts.search, "word for word"], ["Input", G.postContext, "real"], ["Output", json({ correction_needed: G.search.result.correctionNeeded, findings: G.search.result.findings }), "real"]], facts: [["Cost", fmtUsd(G.search.costUsd)], ["Time", fmtSec(G.search.seconds)]] },
+    ],
+  },
+  searchFirstTry: {
+    title: "Search, first try without the side-claim sentence", chips: [["opus", "Opus 5.5"], ["warn", "Superseded"]],
+    summary: "The first test run, before the tagger section told the model to check side claims.",
+    body: ["Same post, same comment, same prompts, but the tagger section did not yet say to check a claim the tagger points at. Read the last paragraph: the model agrees the claim is false and still declines."],
+    blocks: [["Output", json({ correction_needed: M.searchFirstTry.result.correctionNeeded, findings: M.searchFirstTry.result.findings }), "real", true]],
+    facts: [["Cost", fmtUsd(M.searchFirstTry.costUsd)], ["Time", fmtSec(M.searchFirstTry.seconds)]],
+  },
+  timing: {
+    title: "Timing check", chips: [["other", "Gemini 3 Flash"], ["reused", "Existing"]],
+    summary: "A cheap Gemini call that adds a warning block for the writer when the post describes a live event. Not a gate.",
+    body: ["Production code, unchanged. It asks when the described event happened. If the post was written within hours of the event, the writer gets a note about how fast facts change. For the Mumbai post the answer was \"pass\", so nothing was added."],
+    blocks: [["System prompt", DATA.prompts.timing, "word for word"], ["Output", json(M.timing.result), "real"]],
+    facts: [["Cost", fmtUsd(M.timing.costUsd)], ["Time", fmtSec(M.timing.seconds)]],
+  },
+  writer: {
+    title: "Writer", chips: [["opus", "Opus 5.5"], ["reused", "Existing prompt"]],
+    summary: "Opus 5.5 writes one note of at most 280 characters from the findings, or an empty note.",
+    body: ["The production writer, unchanged except for the model. An empty note means no note is needed, and the bot goes to the no-note reply. The prompt's last section mentions a checker that this bot does not run. The advice in it still makes notes better, so it stays."],
+    blocks: [["System prompt", DATA.prompts.writer, "word for word"], ["User message", M.writerUserMessage, "real"], ["Output", json(M.writer.result), "real", true]],
+    facts: [["Cost", fmtUsd(M.writer.costUsd)], ["Time", fmtSec(M.writer.seconds)]],
+  },
+  noNote: {
+    title: "No-note reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
+    summary: "Muse turns the research findings into two or three sentences that tell the tagger why no note is needed.",
+    body: ["The findings are written for the writer, not for a reader on X: long, dense and full of links. This small call turns them into a reply. The fixed line about replying with a source is added by code."],
+    blocks: [["System prompt", DATA.prompts.noNote, "new"], ["User message", G.noNoteUserMessage, "real"], ["Output", json(G.reason.result), "real", true], ["Posted reply", G.noNoteText, "real"]],
+    facts: [["Cost", fmtUsd(G.reason.costUsd)], ["Time", fmtSec(G.reason.seconds)]],
+  },
+  postAnswer: {
+    title: "Post the answer", chips: [["code", "Plain code"], ["x", "X API"], ["new", "New"]],
+    summary: "Posts the draft or the no-note explanation as a reply to the person who tagged the bot, using a fixed template.",
+    body: ["POST /2/tweets with reply.in_reply_to_tweet_id set to the tagger's post. The template is fixed in code. Before posting, the bot marks the tagger's post as being answered, so a crash between posting and saving cannot cause a second reply."],
+    blocks: [["Draft template", DATA.prompts.draftTemplate, "fixed text"], ["No-note template", DATA.prompts.noNoteTemplate, "fixed text"], ["Posted draft (Mumbai)", M.draftReply, "real", true]],
+    facts: [["Cost", "$0.20 with a link, $0.01 without (see the note under Costs)"]],
+  },
+  watch2: {
+    title: "Mention watcher", chips: [["code", "Plain code"], ["x", "X API"]],
+    summary: "The same watcher. A mention whose parent is one of the bot's posts continues that thread.",
+    body: ["Replies to the bot's posts carry the bot's handle automatically, so X lists them as mentions. The watcher looks up the parent in x_tag_posts and hands the reply to the classifier together with the bot post it answers."],
+  },
+  classify: {
+    title: "Sort the reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
+    summary: "Muse decides whether a reply is an approval, feedback or anything else.",
+    body: ["One small call per reply. The examples below are all five real classifications from the two threads, including \"approve but drop the newkerala link\", which correctly counts as feedback."],
+    blocks: [["System prompt", DATA.prompts.classifier, "new"]],
+    examples: classifierExamples,
+  },
+  approvalCheck: {
+    title: "Approval check", chips: [["code", "Plain code"], ["new", "New"]],
+    summary: "Checks that the reply answers a draft, that the approver is on the draft's path, and that no note is already submitted on the post.",
+    body: [
+      "Plain code over x_tag_posts. It walks from the approved draft up to the tag and collects the human authors on that path. The approver must be one of them.",
+      "If the post already has a note from us, the bot replies with that note's link instead. Otherwise the thread goes to the submission queue with the approved draft's id.",
+    ],
+  },
+  queue: {
+    title: "Submission queue", chips: [["code", "Plain code"], ["reused", "Existing gate"], ["changed", "New lane"]],
+    summary: "Asks the database's capacity gate every 2 minutes for up to 3 hours. Approved notes go ahead of the automatic pipeline.",
+    body: [
+      "The existing claim_note_submission function decides when a note may go out. If there is room, the note is submitted at once and the bot does not post a \"queued\" reply.",
+      "If there is no room, the bot replies once that the note is queued, then checks every 2 minutes. Checking the database costs nothing and never calls X.",
+    ],
+  },
+  submit: {
+    title: "Submit and reply", chips: [["code", "Plain code"], ["x", "X API"], ["reused", "Existing submit"]],
+    summary: "Submits the approved draft through the Community Notes API and replies with the note's link.",
+    body: ["The existing submitNoteForTweet, in the x_tag lane. On success the bot replies with a fixed text: \"Submitted. Community Notes contributors now rate it before it can show on the post.\" followed by https://x.com/i/communitynotes/<note id>. If X refuses the post as ineligible, or the post was deleted, the bot says so instead."],
+    facts: [["Cost", "$0.20 for the reply with the link"]],
+  },
+  revise: {
+    title: "Revise", chips: [["opus", "Opus 5.5"], ["new", "New prompt"], ["other", "Web search and web fetch"]],
+    summary: "Opus 5.5 reads the whole thread, can search and open links, and answers with a new draft, a reason to keep the answer, or a withdrawal.",
+    body: [
+      "One call with Anthropic's web search and web fetch tools, run by the provider inside the call. It gets the same input as the first research, the first findings, the current answer and the thread from the tag down to the reply.",
+      "A new draft is checked in code before posting: at most 280 characters with links counted as 1, one to five public links. The reply text is posted above the draft, as in the template.",
+    ],
+    tabs: [
+      { label: "Mumbai: revise", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", M.revision.userMessage, "real"], ["Output", json(M.revision.revision), "real", true], ["Posted reply", M.revisedReply, "real"]], facts: [["Cost", fmtUsd(M.revision.costUsd) + " (323,000 input tokens, 2 searches, pages opened)"], ["Time", fmtSec(M.revision.seconds)], ["Note length", M.revision.noteLength + " of 280"]] },
+      { label: "GDP: keep", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", G.revision.userMessage, "real"], ["Output", json(G.revision.revision), "real", true]], facts: [["Cost", fmtUsd(G.revision.costUsd) + " (no search needed)"], ["Time", fmtSec(G.revision.seconds)]] },
+    ],
+  },
+  postRevision: {
+    title: "Post the new answer", chips: [["code", "Plain code"], ["x", "X API"]],
+    summary: "Posts the revision's reply, with the new draft below it when there is one, as a reply to the person who gave feedback.",
+    body: ["The same posting code as the first answer. A new draft is a new draft post, which people can approve or reply to in turn."],
+    blocks: [["Posted reply (Mumbai)", M.revisedReply, "real", true]],
+  },
+  silent: {
+    title: "Stay silent", chips: [["code", "Plain code"]],
+    summary: "Replies sorted as \"other\" get no answer. This also ends any loop with another bot.",
+    body: ["The reply is saved with kind \"other\" and nothing is posted. Example: \"lol imagine needing a bot to tell you India has slums\"."],
+  },
+  skipped: {
+    title: "Steps this bot skips", chips: [["skip", "Skipped"]],
+    summary: "Production gates the ticket asked to drop.",
+    body: [
+      "Topic filter: a cheap call that blocks topics we decided not to note. Dropped as part of \"no precheck\".",
+      "Note-needed prefilter: a DeepSeek search and judge before the main search. In production it rejects about 57% of posts. Dropped, because a person explicitly asked about this post.",
+      "Source verifier: checks that each cited page supports the note. Dropped as the ticket asks. The revision example shows what it would have caught, see the decision on source checks.",
+      "Materiality judge, X's evaluate_note score and the note rater: they rank and filter notes for the automatic pipeline's limited daily slots. A human approval replaces them.",
+    ],
+  },
+};
+
+function openStep(id, tabIndex) {
+  const step = STEPS[id];
+  if (!step) return;
+  const drawer = document.getElementById("drawer");
+  drawer.replaceChildren();
+  const head = el("div", { class: "drawer-head" },
+    el("div", {}, el("div", { class: "eyebrow", text: "Step" }), el("h2", { id: "drawer-title", text: step.title })),
+    el("button", { class: "close", type: "button", onclick: closeDrawer, text: "Close" }));
+  drawer.append(head);
+  const chips = el("div", { class: "chips" });
+  for (const [kind, label] of step.chips) chips.append(el("span", { class: "chip " + kind, text: label }));
+  drawer.append(chips);
+  for (const paragraph of step.body) drawer.append(el("p", { text: paragraph }));
+  appendFacts(drawer, step.facts);
+  for (const block of step.blocks || []) drawer.append(textBlock(block[0], block[1], block[2], block[3]));
+  const tabs = step.tabs || (step.examples ? step.examples().map((example) => ({
+    label: example.label,
+    blocks: [["User message", example.input, "real"], ["Output", example.output, "real", true]],
+    facts: [["Cost", fmtUsd(example.cost)], ["Time", fmtSec(example.seconds)]],
+  })) : null);
+  if (tabs) renderTabs(drawer, tabs, tabIndex || 0);
+  document.getElementById("drawer").hidden = false;
+  document.getElementById("backdrop").hidden = false;
+  document.querySelectorAll(".node").forEach((node) => node.classList.toggle("active", node.dataset.step === id));
+  drawer.querySelector(".close").focus();
+}
+
+function appendFacts(parent, facts) {
+  if (!facts || !facts.length) return;
+  const list = el("dl", { class: "facts" });
+  for (const [key, value] of facts) list.append(el("dt", { text: key }), el("dd", { text: value }));
+  parent.append(list);
+}
+
+function renderTabs(parent, tabs, selected) {
+  const bar = el("div", { class: "tabs", role: "tablist" });
+  const panel = el("div", { role: "tabpanel" });
+  tabs.forEach((tab, index) => {
+    const button = el("button", { type: "button", role: "tab", "aria-selected": String(index === selected), text: tab.label });
+    button.addEventListener("click", () => {
+      bar.querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", "false"));
+      button.setAttribute("aria-selected", "true");
+      fillPanel(panel, tab);
+    });
+    bar.append(button);
+  });
+  parent.append(bar, panel);
+  fillPanel(panel, tabs[selected]);
+}
+
+function fillPanel(panel, tab) {
+  panel.replaceChildren();
+  appendFacts(panel, tab.facts);
+  for (const block of tab.blocks) panel.append(textBlock(block[0], block[1], block[2], block[3]));
+}
+
+function closeDrawer() {
+  document.getElementById("drawer").hidden = true;
+  document.getElementById("backdrop").hidden = true;
+  document.querySelectorAll(".node.active").forEach((node) => node.classList.remove("active"));
+}
+document.getElementById("backdrop").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
+document.querySelectorAll("[data-open]").forEach((button) => button.addEventListener("click", () => openStep(button.dataset.open)));
+
+/* ---------- Flow diagram ---------- */
+const SVG_NS = "http://www.w3.org/2000/svg";
+const NODE_W = 200, NODE_H = 58;
+const KIND_STYLE = {
+  opus: ["--opus", "--opus-soft", "OPUS 5.5"],
+  muse: ["--muse", "--muse-soft", "MUSE"],
+  other: ["--other-model", "--other-soft", "MODEL"],
+  code: ["--code", "--code-soft", "CODE"],
+  x: ["--ink", "--surface-2", "X API"],
+};
+const NODES = [
+  { id: "watch", x: 30, y: 60, title: "Mention watcher", sub: "every 15 s", kind: "code" },
+  { id: "read", x: 290, y: 60, title: "Read the post", sub: "media, comments, author", kind: "other" },
+  { id: "search", x: 550, y: 60, title: "Search", sub: "web search, findings", kind: "opus" },
+  { id: "timing", x: 550, y: 200, title: "Timing check", sub: "Gemini 3 Flash", kind: "other" },
+  { id: "writer", x: 550, y: 320, title: "Writer", sub: "one note, 280 chars", kind: "opus" },
+  { id: "noNote", x: 820, y: 60, title: "No-note reply", sub: "2 or 3 sentences", kind: "muse" },
+  { id: "postAnswer", x: 820, y: 320, title: "Post the answer", sub: "draft or no-note", kind: "x" },
+  { id: "watch2", x: 30, y: 560, title: "Mention watcher", sub: "reply to a bot post", kind: "code" },
+  { id: "classify", x: 290, y: 560, title: "Sort the reply", sub: "approve, feedback, other", kind: "muse" },
+  { id: "approvalCheck", x: 550, y: 560, title: "Approval check", sub: "on the draft's path?", kind: "code" },
+  { id: "queue", x: 820, y: 560, title: "Submission queue", sub: "every 2 min, up to 3 h", kind: "code" },
+  { id: "submit", x: 820, y: 680, title: "Submit and reply", sub: "note link", kind: "x" },
+  { id: "revise", x: 550, y: 790, title: "Revise", sub: "search, fetch, new draft", kind: "opus" },
+  { id: "postRevision", x: 820, y: 790, title: "Post the new answer", sub: "draft or reason", kind: "x" },
+  { id: "silent", x: 290, y: 790, title: "Stay silent", sub: "no reply", kind: "code" },
+];
+const center = (id) => { const n = NODES.find((node) => node.id === id); return { x: n.x + NODE_W / 2, y: n.y + NODE_H / 2, n }; };
+const EDGES = [
+  { d: "M230,89 H286" },
+  { d: "M490,89 H546" },
+  { d: "M750,89 H816", label: "no note", lx: 758, ly: 80 },
+  { d: "M650,118 V196", label: "note needed", lx: 658, ly: 162 },
+  { d: "M650,258 V316" },
+  { d: "M750,349 H816", label: "note", lx: 762, ly: 340 },
+  { d: "M750,330 C790,330 790,140 816,110", label: "empty note", lx: 798, ly: 262 },
+  { d: "M920,118 V316" },
+  { d: "M230,589 H286" },
+  { d: "M490,589 H546", label: "approve", lx: 498, ly: 580 },
+  { d: "M750,589 H816" },
+  { d: "M920,618 V676" },
+  { d: "M390,618 V786", label: "other", lx: 398, ly: 700 },
+  { d: "M450,618 C450,760 500,819 546,819", label: "feedback", lx: 460, ly: 760 },
+  { d: "M750,819 H816" },
+  { d: "M1020,349 C1050,349 1050,520 130,520 L130,556", dash: true, label: "people reply to the bot's post", lx: 520, ly: 512 },
+  { d: "M920,848 V900 H130 V622", dash: true, label: "people reply to the new draft", lx: 470, ly: 892 },
+];
+const SKIPPED = ["Topic filter", "Note-needed prefilter", "Source verifier", "Materiality judge", "X evaluate_note", "Note rater"];
+
+function svgEl(tag, attrs, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (text != null) node.textContent = text;
+  return node;
+}
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function drawFlow() {
+  const svg = document.getElementById("flow-svg");
+  svg.replaceChildren();
+  const defs = svgEl("defs", {});
+  const marker = svgEl("marker", { id: "arrow", viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" });
+  marker.append(svgEl("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }));
+  defs.append(marker);
+  svg.append(defs);
+  svg.append(svgEl("text", { x: 30, y: 36, class: "phase" }, "Someone tags the bot under a post"));
+  svg.append(svgEl("text", { x: 30, y: 490, class: "phase" }, "Someone replies to one of the bot's posts"));
+  for (const edge of EDGES) {
+    svg.append(svgEl("path", { d: edge.d, class: "edge" + (edge.dash ? " dash" : ""), "marker-end": "url(#arrow)" }));
+    if (edge.label) svg.append(svgEl("text", { x: edge.lx, y: edge.ly, class: "edge-label" }, edge.label));
+  }
+  const skipGroup = svgEl("g", { class: "skipnode", tabindex: "0", role: "button", "aria-label": "Steps this bot skips" });
+  skipGroup.append(svgEl("text", { x: 30, y: 418, class: "phase", style: "text-decoration:none" }, "Skipped production steps"));
+  let sx = 30;
+  for (const name of SKIPPED) {
+    const width = name.length * 7.2 + 24;
+    skipGroup.append(svgEl("rect", { x: sx, y: 430, width, height: 28, rx: 14 }));
+    skipGroup.append(svgEl("text", { x: sx + 12, y: 448 }, name));
+    sx += width + 10;
+  }
+  bindNode(skipGroup, "skipped");
+  svg.append(skipGroup);
+  for (const node of NODES) {
+    const [color, soft, tag] = KIND_STYLE[node.kind];
+    const group = svgEl("g", { class: "node", tabindex: "0", role: "button", "data-step": node.id, "aria-label": node.title + ", " + node.sub });
+    group.append(svgEl("rect", { class: "box", x: node.x, y: node.y, width: NODE_W, height: NODE_H, rx: 10 }));
+    group.append(svgEl("rect", { class: "tag", x: node.x, y: node.y, width: 6, height: NODE_H, rx: 3, fill: cssVar(color) }));
+    group.append(svgEl("text", { class: "title", x: node.x + 18, y: node.y + 25 }, node.title));
+    group.append(svgEl("text", { class: "sub", x: node.x + 18, y: node.y + 44 }, node.sub));
+    const tagWidth = tag.length * 6.6 + 12;
+    group.append(svgEl("rect", { class: "tag", x: node.x + NODE_W - tagWidth - 8, y: node.y - 9, width: tagWidth, height: 18, rx: 9, fill: cssVar(soft), stroke: cssVar(color), "stroke-width": "1" }));
+    group.append(svgEl("text", { class: "tagtext", x: node.x + NODE_W - tagWidth - 2, y: node.y + 4, fill: cssVar(color) }, tag));
+    bindNode(group, node.id);
+    svg.append(group);
+  }
+}
+
+const tip = document.getElementById("tip");
+function bindNode(group, id) {
+  group.addEventListener("click", () => openStep(id));
+  group.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openStep(id); } });
+  group.addEventListener("mouseenter", () => { tip.textContent = STEPS[id].summary + " Click for the full prompt and real output."; tip.hidden = false; });
+  group.addEventListener("mousemove", (event) => {
+    const x = Math.min(event.clientX + 14, window.innerWidth - 340);
+    tip.style.left = x + "px";
+    tip.style.top = (event.clientY + 16) + "px";
+  });
+  group.addEventListener("mouseleave", () => { tip.hidden = true; });
+}
+drawFlow();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawFlow);
+new MutationObserver(drawFlow).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+/* ---------- Threads ---------- */
+function linkify(text) {
+  const fragment = document.createDocumentFragment();
+  const parts = text.split(/(https?:\/\/\S+)/g);
+  for (const part of parts) {
+    if (/^https?:\/\//.test(part)) fragment.append(el("a", { href: part, target: "_blank", rel: "noopener", text: part }));
+    else fragment.append(part);
+  }
+  return fragment;
+}
+
+function post({ role, name, handle, text, steps, silent }) {
+  const initial = (name || handle).replace(/[^A-Za-z]/g, "").charAt(0).toUpperCase() || "?";
+  const body = el("div", { class: "body" }, linkify(text));
+  const content = el("div", { style: "min-width:0" },
+    el("div", { class: "who" }, name ? name + " " : "", el("span", { text: "@" + handle })), body);
+  if (steps) {
+    const links = el("div", { class: "step-link" });
+    for (const [id, label, tab] of steps) links.append(el("button", { type: "button", text: label, onclick: () => openStep(id, tab) }));
+    content.append(links);
+  }
+  if (silent) content.append(el("div", { class: "silent", text: silent }));
+  return el("div", { class: "post " + role }, el("div", { class: "avatar", "aria-hidden": "true", text: initial }), content);
+}
+
+function postText(context) {
+  const start = context.indexOf("## Post\n\n") + 9;
+  const end = context.indexOf("\n\n## ", start);
+  return context.slice(start, end).trim();
+}
+function quotedText(context) {
+  const marker = "## Quoted post\n\n";
+  const start = context.indexOf(marker);
+  if (start < 0) return null;
+  const end = context.indexOf("\n\n## ", start + marker.length);
+  return context.slice(start + marker.length, end).trim();
+}
+
+const submittedTemplate = "Submitted. Community Notes contributors now rate it before it can show on the post.\nhttps://x.com/i/communitynotes/<note id>";
+
+const mumbaiThread = document.getElementById("thread-mumbai");
+mumbaiThread.append(
+  el("h3", { text: "A false side claim: draft, revise, approve" }),
+  el("div", { class: "caption", text: "Real post from 29 September 2026, which quotes a post claiming that virtually everywhere Indians live looks like a garbage-filled canal." }),
+  post({ role: "root", name: "Dinesh D'Souza", handle: "DineshDSouza", text: postText(M.postContext) + "\n\nQuoting: " + quotedText(M.postContext) }),
+  post({ role: "human", handle: M.requester.handle, text: M.requester.text, steps: [["watch", "Mention watcher"], ["read", "Read the post"]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: M.draftReply, steps: [["search", "Search", 0], ["writer", "Writer"], ["postAnswer", "Template"]] }),
+  post({ role: "human", handle: M.classifications[0].reply.handle, text: M.classifications[0].reply.text, steps: [["classify", "Sorted as other", 0]], silent: "The bot does not answer." }),
+  post({ role: "human", handle: M.classifications[1].reply.handle, text: M.classifications[1].reply.text, steps: [["classify", "Sorted as feedback", 1]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: M.revisedReply, steps: [["revise", "Revise", 0]] }),
+  post({ role: "human", handle: M.approval.handle, text: M.approval.text, steps: [["classify", "Sorted as approve", 3], ["approvalCheck", "Approval check"]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: submittedTemplate, steps: [["submit", "Submit and reply"]], silent: "Fixed template. The example did not really submit anything." }),
+);
+
+const gdpThread = document.getElementById("thread-gdp");
+gdpThread.append(
+  el("h3", { text: "Numbers that hold up: no note, and the bot holds its ground" }),
+  el("div", { class: "caption", text: "Real post from 5 October 2026 by the US Treasury Secretary." }),
+  post({ role: "root", name: "Treasury Secretary Scott Bessent", handle: "SecScottBessent", text: postText(G.postContext) }),
+  post({ role: "human", handle: G.requester.handle, text: G.requester.text, steps: [["watch", "Mention watcher"], ["read", "Read the post"]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: G.noNoteText, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
+  post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, steps: [["classify", "Sorted as feedback", 4]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: G.revision.revision.reply, steps: [["revise", "Revise", 1]] }),
+);
+
+/* ---------- Cost table ---------- */
+const commentsCost = { mumbai: 0.157, gdp: 0.057 };
+const classifierCost = M.classifications[0].costUsd;
+const rows = [
+  ["Tag that gets a draft, nobody replies", [
+    ["Read comments (Grok) and media", commentsCost.mumbai], ["Search (Opus 5.5)", M.search.costUsd], ["Timing check", M.timing.costUsd], ["Writer (Opus 5.5)", M.writer.costUsd],
+    ["X: mention, post reads", 0.016], ["X: draft reply with links", 0.20]]],
+  ["Tag that gets a no-note answer", [
+    ["Read comments and media", commentsCost.gdp], ["Search (Opus 5.5)", G.search.costUsd], ["No-note reply (Muse)", G.reason.costUsd],
+    ["X: mention, post reads", 0.011], ["X: reply with one link", 0.20]]],
+  ["The full Mumbai thread", [
+    ["First draft, as above", commentsCost.mumbai + M.search.costUsd + M.timing.costUsd + M.writer.costUsd], ["Sorting 3 replies (Muse)", 3 * classifierCost], ["Revision with search (Opus 5.5)", M.revision.costUsd],
+    ["X: mentions and reads", 0.019], ["X: draft, revised draft, submitted reply", 0.60]]],
+  ["The full GDP thread", [
+    ["No-note answer, as above", commentsCost.gdp + G.search.costUsd + G.reason.costUsd], ["Sorting 1 reply (Muse)", G.classification.costUsd], ["Revision without search", G.revision.costUsd],
+    ["X: mentions and reads", 0.012], ["X: no-note reply, answer without link", 0.21]]],
+];
+const table = el("table", {});
+table.append(el("thead", {}, el("tr", {}, el("th", { text: "Conversation" }), el("th", { text: "Parts" }), el("th", { class: "num", text: "Models" }), el("th", { class: "num", text: "X API" }), el("th", { class: "num", text: "Total" }))));
+const tbody = el("tbody", {});
+for (const [name, parts] of rows) {
+  const modelCost = parts.filter(([label]) => !label.startsWith("X:")).reduce((sum, [, value]) => sum + value, 0);
+  const xCost = parts.filter(([label]) => label.startsWith("X:")).reduce((sum, [, value]) => sum + value, 0);
+  const list = el("ul", { style: "margin:0;padding-left:1.1em" });
+  for (const [label, value] of parts) list.append(el("li", { style: "margin:0", text: label + ": " + fmtUsd(value) }));
+  tbody.append(el("tr", {}, el("td", { text: name }), el("td", {}, list), el("td", { class: "num", text: fmtUsd(modelCost) }), el("td", { class: "num", text: fmtUsd(xCost) }), el("td", { class: "num", text: fmtUsd(modelCost + xCost) })));
+}
+table.append(tbody);
+document.getElementById("cost-table").append(table);
+
+/* ---------- Copy button ---------- */
+document.getElementById("copy-request").addEventListener("click", async (event) => {
+  const text = document.getElementById("request-text").textContent;
+  try { await navigator.clipboard.writeText(text); event.target.textContent = "Copied"; }
+  catch {
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById("request-text"));
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    event.target.textContent = "Text selected. Press Ctrl+C";
+  }
+});
+</script>
