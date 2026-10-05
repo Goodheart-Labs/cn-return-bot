@@ -178,8 +178,8 @@ async function mumbaiExample() {
   const draftReply = renderDraftReply(draft);
   const replies: ThreadPost[] = [
     { handle: "redpill_raj", text: `@${BOT_HANDLE} @priya_k_writes lol imagine needing a bot to tell you India has slums` },
-    { handle: "mvaidya", text: `@${BOT_HANDLE} The census figure is from 2011, that's 15 years old. Is there nothing more recent? Also the Dharavi redevelopment has started, so the 700k-1M number might be outdated too.` },
-    { handle: "priya_k_writes", text: `@${BOT_HANDLE} approve but drop the wikipedia link, use something better` },
+    { handle: "mvaidya", text: `@${BOT_HANDLE} newkerala is a pretty weak source, and "described as" is vague. The post says the slums are "largely gone", so say how many people in Mumbai still live in slums overall, from something official.` },
+    { handle: "priya_k_writes", text: `@${BOT_HANDLE} approve but drop the newkerala link, use something better` },
   ];
   const classifications = [];
   for (const reply of replies) classifications.push({ reply, ...(await classify(draftReply, reply)) });
