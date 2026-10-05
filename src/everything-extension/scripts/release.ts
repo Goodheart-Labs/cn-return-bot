@@ -15,6 +15,7 @@ import { execFileSync } from "node:child_process";
 import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { parse } from "dotenv";
 
 const EXTENSION_DIR = path.resolve(import.meta.dir, "..");
 const REPO_ROOT = path.resolve(EXTENSION_DIR, "../..");
@@ -34,6 +35,9 @@ const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const AMO_TOKEN_LIFETIME_SECONDS = 60;
 const GOOGLE_TOKEN_LIFETIME_SECONDS = 600;
 const POLL_INTERVAL_MS = 5_000;
+// A package's unpacked code is a few megabytes, more than execFileSync's
+// default output limit of one megabyte.
+const PACKAGE_CODE_MAX_BYTES = 64 * 1024 * 1024;
 const MAX_POLLS = 60;
 
 type ReleaseFiles = { chromeZip: string; firefoxZip: string; sourceZip: string };
@@ -88,6 +92,18 @@ function writeChromeStoreZip(builtZip: string, target: string): void {
   run("zip", [target, "manifest.json"], workDir);
 }
 
+/** Version 0.4.0 went to both stores pointing at the local database (GOO-356).
+ *  So every store package must contain the production address from
+ *  .env.prod-backend before it can be uploaded. */
+function assertBuiltForProduction(zipPath: string): void {
+  const productionUrl = parse(readFileSync(path.join(REPO_ROOT, ".env.prod-backend"))).VITE_SUPABASE_URL;
+  if (!productionUrl) throw new Error(".env.prod-backend has no VITE_SUPABASE_URL");
+  const code = execFileSync("unzip", ["-p", zipPath, "*.js"], { encoding: "utf8", maxBuffer: PACKAGE_CODE_MAX_BYTES });
+  if (!code.includes(productionUrl)) {
+    throw new Error(`${zipPath} does not talk to the production database ${productionUrl}. Do not upload it.`);
+  }
+}
+
 function packageRelease(): void {
   assertCleanTree();
   run("bun", ["run", "zip-ext"]);
@@ -96,6 +112,8 @@ function packageRelease(): void {
   mkdirSync(path.dirname(files.chromeZip), { recursive: true });
   writeChromeStoreZip(path.join(OUTPUT_DIR, `everything-extension-${version}-chrome.zip`), files.chromeZip);
   copyFileSync(path.join(OUTPUT_DIR, `everything-extension-${version}-firefox.zip`), files.firefoxZip);
+  assertBuiltForProduction(files.chromeZip);
+  assertBuiltForProduction(files.firefoxZip);
   run("git", ["archive", "--format=zip", "-o", files.sourceZip, "HEAD"]);
   console.log(`Version ${version} packaged in ${path.dirname(files.chromeZip)}`);
 }
