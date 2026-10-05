@@ -29,7 +29,7 @@ import { consumeNoteRequests } from "../../everything/consumeRequests";
 import { claimNextQueuedItem, markRequestedQueueBudgetExhausted } from "../../everything/db";
 import { clip } from "../../everything/logFormat";
 import { ensureYtDlp } from "../../everything/sources/youtube";
-import { describeSpend, requestBudgetExhausted, todaySpendUsd } from "../../everything/spendCap";
+import { describeTodaySpend, requestBudgetExhausted } from "../../everything/spendCap";
 import { processQueuedItem } from "../../everything/worker";
 import { FETCH_SERVICE_SOCKET_VARIABLE } from "../contract";
 import { requiredEnv } from "../serve";
@@ -66,7 +66,7 @@ async function handlePendingWork(): Promise<void> {
   await consumeNoteRequests();
   for (;;) {
     if (await requestBudgetExhausted()) {
-      console.log(`[intake] request budget spent (${describeSpend(await todaySpendUsd())}) — marking the queue`);
+      console.log(`[intake] request budget spent (${await describeTodaySpend()}) — marking the queue`);
       await markRequestedQueueBudgetExhausted();
       return;
     }

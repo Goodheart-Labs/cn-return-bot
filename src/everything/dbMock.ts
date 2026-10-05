@@ -85,6 +85,7 @@ export const dbMock = () => ({
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   fetchFeedPacing: () => Promise.resolve(dbState.feedPacing),
   fetchCostSinceUsd: () => Promise.resolve(0),
+  fetchReaderCostSinceUsd: () => Promise.resolve(0),
   setFeedAlarm: record("setFeedAlarm"),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
   stampTopPostsAttempt: record("stampTopPostsAttempt"),

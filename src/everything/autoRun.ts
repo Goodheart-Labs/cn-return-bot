@@ -44,7 +44,7 @@ import {
   MEAN_COST_RULE,
   nextAlarm,
 } from "./pacing";
-import { describeSpend, FEED_BUDGET_USD, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
+import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
 import { feedItemsQueued, logQueue, processNextFeedItem } from "./worker";
 
 /** How long a reader request may sit unconsumed before this run fails. Intake
@@ -89,7 +89,7 @@ async function assertMachineHealthy(): Promise<void> {
 async function processOneFeedItem(): Promise<boolean> {
   await triageQueue();
   if (await feedBudgetExhausted()) {
-    console.log(`Feed budget reached (${describeSpend(await todaySpendUsd())}) — not enqueueing or processing today`);
+    console.log(`Feed budget reached (${await describeTodaySpend()}) — not enqueueing or processing today`);
     return false;
   }
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
@@ -115,7 +115,7 @@ async function setNextAlarm(started: boolean): Promise<void> {
 
 async function main() {
   ensureYtDlp();
-  console.log(`today so far: ${describeSpend(await todaySpendUsd())}`);
+  console.log(`today so far: ${await describeTodaySpend()}`);
   // A sick machine fails the run before any alarm is set. The alarm then stays
   // empty, the database's backstop starts another run 45 minutes later, and
   // that red run every 45 minutes is how the sickness stays visible.
@@ -132,7 +132,7 @@ async function main() {
   // on a capped day. They run last, after the alarm is set, so a slow source
   // never delays the item or the schedule.
   await refreshStaleAvatars(AVATARS_PER_RUN);
-  console.log(`\nrun done · today so far: ${describeSpend(await todaySpendUsd())}`);
+  console.log(`\nrun done · today so far: ${await describeTodaySpend()}`);
   try {
     await closeBrowser();
   } catch {}
