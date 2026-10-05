@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { capturePageview } from "./analytics";
 
-/* Every page has its own path under the site's base address. The base is "/"
- * on commonnotes.net and localhost, and "/cn-return-bot/notes/" on GitHub
- * Pages.
+/* Every page has its own path.
  *   /                     the homepage
  *   /install              the homepage, scrolled to the install section
  *   /notes                the overview of all projects
@@ -15,9 +13,8 @@ import { capturePageview } from "./analytics";
  * A link to one note adds ?note=<id> to its project's path. The static pages
  * /privacy/ and /terms/ sit beside the app.
  *
- * Both hosts answer a path they have no file for with the app. Cloudflare
- * Pages does that for any build without a 404.html. On GitHub Pages the deploy
- * workflow copies index.html to 404.html.
+ * Cloudflare Pages answers a path it has no file for with the app, because
+ * the build has no 404.html.
  *
  * Links made before the paths existed carried the page in query parameters
  * (?view=notes, ?project=…&item=…&note=…, ?section=install). The app still
@@ -37,8 +34,6 @@ export type Route =
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
-
-const BASE = import.meta.env.BASE_URL;
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
 const LEGACY_PARAMS = ["view", "project", "item", "episode", "section"];
@@ -66,8 +61,7 @@ export const READING_EDITIONS: Record<string, { url: string; full: string | null
 export function readRoute(pathname: string, search: string): Route {
   const q = new URLSearchParams(search);
   if (LEGACY_PARAMS.some((name) => q.has(name))) return readLegacyRoute(q);
-  const within = pathname.startsWith(BASE) ? pathname.slice(BASE.length) : "";
-  const [page, project, item] = within.split("/").filter(Boolean).map(decodeURIComponent);
+  const [page, project, item] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "read") return { view: "read", url: q.get("url"), full: q.get("full") };
   const edition = page ? READING_EDITIONS[page] : undefined;
@@ -79,17 +73,17 @@ export function readRoute(pathname: string, search: string): Route {
 
 /** The address of a route, for the href of a link that navigates in-app. */
 export function routeHref(route: Route): string {
-  if (route.view === "leaderboard") return `${BASE}leaderboard`;
+  if (route.view === "leaderboard") return "/leaderboard";
   if (route.view === "read") {
     const q = new URLSearchParams();
     if (route.url) q.set("url", route.url);
     if (route.full) q.set("full", route.full);
-    return `${BASE}read${q.size ? `?${q}` : ""}`;
+    return `/read${q.size ? `?${q}` : ""}`;
   }
-  if (route.view === "home") return route.section ? `${BASE}${route.section}` : BASE;
+  if (route.view === "home") return route.section ? `/${route.section}` : "/";
   const segments = ["notes", route.project, route.project && route.item].filter((segment) => !!segment) as string[];
   const note = route.note ? `?note=${encodeURIComponent(route.note)}` : "";
-  return BASE + segments.map(encodeURIComponent).join("/") + note;
+  return "/" + segments.map(encodeURIComponent).join("/") + note;
 }
 
 /** Swaps an old query-parameter address for its path, without a new history

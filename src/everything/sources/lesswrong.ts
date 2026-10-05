@@ -60,14 +60,15 @@ async function graphql(origin: string, query: string): Promise<any> {
  *  Cloudinary for a square crop around the face, the size of a thumbnail. */
 const profileImageUrl = (imageId: string) => `https://res.cloudinary.com/lesswrong-2-0/image/upload/c_fill,g_face,w_240,h_240/${imageId}`;
 
-/** An author's profile picture, or null when they never uploaded one. */
-export async function fetchAuthorProfileImage(feedUrl: string): Promise<string | null> {
+/** An author's display name and profile picture. The picture is null when they
+ *  never uploaded one. */
+export async function fetchAuthorProfile(feedUrl: string): Promise<{ displayName?: string; imageUrl: string | null }> {
   const author = parseAuthorFeedUrl(feedUrl);
   if (!author) throw new Error(`Not a LessWrong or Alignment Forum author URL: ${feedUrl}`);
-  const data = await graphql(author.origin, `{ user(input: {selector: {slug: "${author.slug}"}}) { result { _id profileImageId } } }`);
+  const data = await graphql(author.origin, `{ user(input: {selector: {slug: "${author.slug}"}}) { result { _id displayName profileImageId } } }`);
   const user = data.user?.result;
   if (!user?._id) throw new Error(`No user found for ${feedUrl}`);
-  return user.profileImageId ? profileImageUrl(user.profileImageId) : null;
+  return { displayName: user.displayName ?? undefined, imageUrl: user.profileImageId ? profileImageUrl(user.profileImageId) : null };
 }
 
 export interface ForumPost {

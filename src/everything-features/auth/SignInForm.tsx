@@ -17,11 +17,13 @@ export interface PendingEmailStore {
 /** The sign-in form of both apps. The reader types their email and then the
  *  code we send them, which needs no redirect and works across devices, or
  *  signs in with X. Each app starts the X flow its own way: the website
- *  redirects, the extension opens a popup from its background script.
+ *  redirects, the extension opens a popup from its background script. An app
+ *  that cannot run the X flow passes no `signInWithX`, and the button is left
+ *  out. The Safari extension is that app, because Safari has no identity API.
  *  `surface` names where the form sits, for the sign-in funnel. */
 export function SignInForm({ surface, signInWithX, pendingEmail, onSignedIn }: {
   surface: "web" | "settings" | "overlay";
-  signInWithX: () => Promise<{ error?: string | null }>;
+  signInWithX?: () => Promise<{ error?: string | null }>;
   pendingEmail?: PendingEmailStore;
   onSignedIn?: () => void;
 }) {
@@ -88,10 +90,10 @@ export function SignInForm({ surface, signInWithX, pendingEmail, onSignedIn }: {
     setError(null);
   };
 
-  const startX = () =>
+  const startX = (startXFlow: NonNullable<typeof signInWithX>) =>
     run(async () => {
       track("sign_in_started", { method: "twitter", surface });
-      return (await signInWithX()).error;
+      return (await startXFlow()).error;
     });
 
   return (
@@ -139,9 +141,11 @@ export function SignInForm({ surface, signInWithX, pendingEmail, onSignedIn }: {
           </Button>
         </form>
       )}
-      <Button variant="secondary" className="w-full" onClick={() => void startX()} disabled={busy}>
-        Sign in with 𝕏
-      </Button>
+      {signInWithX && (
+        <Button variant="secondary" className="w-full" onClick={() => void startX(signInWithX)} disabled={busy}>
+          Sign in with 𝕏
+        </Button>
+      )}
       {error && <p className="text-sm text-negative">{error}</p>}
     </div>
   );

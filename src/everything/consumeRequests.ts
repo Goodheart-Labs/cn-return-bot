@@ -3,7 +3,9 @@
  * workflow runs this at the start of every cycle, before anything is enqueued
  * from the feeds. Both consumers are cheap and run even on a day whose spend
  * cap is already reached. The one exception to "no LLM here" is the small
- * Flash call that trims a captured page text down to its article.
+ * Flash call that trims a captured page text down to its article. That call is
+ * skipped once the day's reader budget is spent, and the item keeps the raw
+ * capture.
  *
  * Note requests ("check this page") become queue items at the requested
  * priority tier, so the worker takes them before any feed backlog. A request
@@ -22,9 +24,11 @@
 import "dotenv/config";
 import { consumeDirectedNoteRequest } from "./directedNoteRequest";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { canonicalFeed, substackFeedOfPage, type CanonicalFeed } from "./feedUrls";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { group } from "./logFormat";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
+import { requestBudgetExhausted } from "./spendCap";
 import {
   fetchPendingNoteRequests,
   findItemForPageUrl,
@@ -46,6 +50,26 @@ import type { ItemSource } from "./types";
  *  web-fetch ladder, Substack posts included — no special-casing. */
 function classifyRequestSource(pageUrl: string): ItemSource {
   return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
+}
+
+/** The creator a requested page belongs to. The extension names the creator
+ *  when it can tell, which covers custom-domain Substacks, YouTube videos and
+ *  forum posts. That value comes from an anonymous client, so it counts only
+ *  when it parses as a creator feed. A request that names no creator, such as
+ *  one from an extension copy older than migration 110, still gets its
+ *  creator when the page sits on a *.substack.com subdomain. */
+function creatorOfRequest(request: NoteRequestRow): CanonicalFeed | null {
+  return (request.feed_url ? canonicalFeed(request.feed_url) : null) ?? substackFeedOfPage(request.page_url);
+}
+
+/** The project a newly requested page goes under: its creator's, created if we
+ *  have never met them, or the catch-all "Around the web" for a page that has
+ *  no creator we know how to follow. */
+async function projectForRequest(request: NoteRequestRow): Promise<string> {
+  const creator = creatorOfRequest(request);
+  return creator
+    ? resolveProjectId({ slug: creator.project_slug, feedUrl: creator.feed_url })
+    : resolveProjectId({ slug: WEB_PROJECT_SLUG });
 }
 
 /** What became of one reader request. `queued` covers every way a page ends up
@@ -83,7 +107,7 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
       const source = classifyRequestSource(request.page_url);
       let fullText = source === "youtube" ? null : (request.page_text ?? null);
       if (fullText) {
-        const cleaned = await cleanCapturedPageText(fullText);
+        const cleaned = await cleanCaptureWithinBudget(fullText);
         fullText = cleaned.text;
         await recordCaptureCost(existing.id, cleaned.costUsd);
       }
@@ -116,13 +140,13 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
   let fullText = request.selection ?? (source === "youtube" ? undefined : request.page_text ?? undefined);
   let captureCostUsd = 0;
   if (fullText && fullText === request.page_text) {
-    const cleaned = await cleanCapturedPageText(fullText);
+    const cleaned = await cleanCaptureWithinBudget(fullText);
     fullText = cleaned.text;
     captureCostUsd = cleaned.costUsd;
   }
 
   const itemId = await insertQueuedItem({
-    project_id: await resolveProjectId({ slug: WEB_PROJECT_SLUG }),
+    project_id: await projectForRequest(request),
     source,
     url: request.page_url,
     title: request.page_title || undefined,
@@ -136,10 +160,18 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
   return { kind: "queued", detail: `enqueued [${source}]: ${request.page_url}` };
 }
 
+/** The capture cleanup is reader spend, so it waits for the reader budget like
+ *  every other paid step of a request. A day without budget left keeps the raw
+ *  capture instead. */
+async function cleanCaptureWithinBudget(pageText: string): Promise<{ text: string; costUsd: number }> {
+  if (await requestBudgetExhausted()) return { text: pageText, costUsd: 0 };
+  return cleanCapturedPageText(pageText);
+}
+
 /** Writes what the capture cleanup cost against the item, so the daily spend cap
  *  counts it. Nothing is written when no cleanup call was made. */
 async function recordCaptureCost(itemId: string, costUsd: number): Promise<void> {
-  if (costUsd > 0) await insertItemRun(itemId, "capture_cleanup", costUsd);
+  if (costUsd > 0) await insertItemRun(itemId, "capture_cleanup", costUsd, "reader");
 }
 
 export async function consumeNoteRequests(): Promise<void> {

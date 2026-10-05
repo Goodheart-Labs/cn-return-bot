@@ -1,5 +1,6 @@
 import noteOnAPost from "../../assets/screenshots/note-on-a-post.webp";
-import noteOnAVideo from "../../assets/screenshots/note-on-a-video.jpg";
+import noteOnAVideo from "../../assets/screenshots/note-on-a-video.webp";
+import requestNotes from "../../assets/screenshots/request-notes.webp";
 import writeANote from "../../assets/screenshots/write-a-note.webp";
 
 /* The words and pictures of the homepage. */
@@ -24,18 +25,23 @@ export interface Screenshot {
 export const SCREENSHOTS: readonly Screenshot[] = [
   {
     src: noteOnAPost,
-    alt: "A Substack post with one claim highlighted. Below it a note rated helpful corrects the figures and offers Helpful, Somewhat helpful and Not helpful buttons.",
-    caption: "A note beside the claim it is about.",
+    alt: "A Substack post with one claim highlighted. Beside it a note rated helpful corrects the figure and asks whether it is helpful, with Yes, Somewhat and No buttons.",
+    caption: "A note on Substack",
   },
   {
     src: noteOnAVideo,
-    alt: "A YouTube interview with a note card over the video, next to the quoted sentence, waiting for more ratings.",
-    caption: "A note over the video while the claim plays.",
+    alt: "A YouTube interview with a note card over the video. The note quotes the sentence it is about and is rated helpful.",
+    caption: "A note on YouTube",
   },
   {
     src: writeANote,
     alt: "A news article with a sentence selected and a Write a note box open over it.",
-    caption: "Select a sentence on any site to write a note of your own.",
+    caption: "Write notes on any webpage",
+  },
+  {
+    src: requestNotes,
+    alt: "A Substack post we have not checked yet. The extension's toolbar menu offers to request notes on this page and to check the author's new posts.",
+    caption: "Request notes on any webpage",
   },
 ];
 

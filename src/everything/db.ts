@@ -114,9 +114,17 @@ async function freeSlug(base: string): Promise<string> {
   }
 }
 
+/** A string as an ilike pattern that matches only itself, ignoring case. A
+ *  YouTube handle such as @ericsrealm_ contains an underscore, which ilike
+ *  would otherwise read as "any one character". */
+const escapeLikePattern = (text: string): string => text.replace(/[\\%_]/g, "\\$&");
+
 /** Returns the project id for a creator or a slug, creating the project if we
  *  have never seen it. A creator is looked up by feed URL first, because that
- *  is the key everything shares, and by slug second.
+ *  is the key everything shares, and by slug second. Feed URLs are compared
+ *  ignoring letter case, as the database's own functions do (migration 086).
+ *  The same YouTube handle arrives as @DwarkeshPatel from a watch page and as
+ *  @dwarkeshpatel from the Data API.
  *
  *  Two different creators can derive the same slug, such as a YouTube channel
  *  and a Substack that both go by the same handle. When the slug is taken by a
@@ -138,7 +146,7 @@ export async function resolveProjectId(params: {
 
   if (feedUrl) {
     const byFeed = throwOnError(
-      await db.from("everything_projects").select(PROJECT_COLUMNS).eq("feed_url", feedUrl).maybeSingle(),
+      await db.from("everything_projects").select(PROJECT_COLUMNS).ilike("feed_url", escapeLikePattern(feedUrl)).maybeSingle(),
     ) as ProjectRow | null;
     if (byFeed) {
       await fillDisplayName(byFeed, displayName, "feed");
@@ -149,7 +157,7 @@ export async function resolveProjectId(params: {
   const bySlug = throwOnError(
     await db.from("everything_projects").select(PROJECT_COLUMNS).eq("slug", slug).maybeSingle(),
   ) as ProjectRow | null;
-  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url === feedUrl);
+  const sameCreator = bySlug && (!feedUrl || !bySlug.feed_url || bySlug.feed_url.toLowerCase() === feedUrl.toLowerCase());
   if (bySlug && sameCreator) {
     if (feedUrl && !bySlug.feed_url) {
       throwOnError(await db.from("everything_projects").update({ feed_url: feedUrl }).eq("id", bySlug.id));
@@ -491,6 +499,11 @@ export async function setItemProgress(id: string, progress: ItemProgress | null)
   throwOnError(await getSupabaseClient().from("everything_items").update({ progress }).eq("id", id));
 }
 
+/** Whom a pipeline cost was spent for: a reader who asked for a page or a
+ *  passage, or the feed. The reader share has its own daily ceiling in
+ *  spendCap.ts. */
+export type SpendFor = "reader" | "feed";
+
 /** One fact-check run of a claim. This is the everything pipeline's counterpart
  *  of a pipeline_runs row. */
 export interface ClaimPipelineRun {
@@ -505,6 +518,7 @@ export interface ClaimPipelineRun {
   bot_config: Record<string, unknown> | null;
   logs: Record<string, unknown> | null;
   cost: number | null;
+  work_priority: SpendFor;
 }
 
 /** We scrub NUL characters here, the same way pipeline_runs does. Model output
@@ -527,13 +541,14 @@ const ITEM_RUN_ROW = {
  *  Extraction and rating each write one such row per item, and so does the
  *  cleanup of a reader request's captured text. Until these rows existed the
  *  cap silently undercounted by exactly that spend. */
-export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number): Promise<void> {
+export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number, spendFor: SpendFor): Promise<void> {
   throwOnError(
     await getSupabaseClient().from("everything_pipeline_runs").insert({
       ...ITEM_RUN_ROW[stage],
       item_id: itemId,
       claim_id: null,
       cost: costUsd,
+      work_priority: spendFor,
     }),
   );
 }
@@ -567,6 +582,9 @@ export interface NoteRequestRow {
   page_text: string | null;
   steer?: string | null;
   passage_question_id?: string | null;
+  /** The creator's feed URL as the extension worked it out. Untrusted input:
+   *  the consumer uses it only when it parses as a creator feed. */
+  feed_url?: string | null;
 }
 
 export type NoteRequestStatus = "enqueued" | "done" | "skipped" | "error";
@@ -608,7 +626,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id")
+      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];
@@ -910,6 +928,15 @@ export async function fetchCreatorAttention(since: Date, minPages: number): Prom
 export async function fetchCostSinceUsd(since: Date): Promise<number> {
   const total = throwOnError(
     await getSupabaseClient().rpc("everything_cost_since", { since: since.toISOString() }),
+  ) as number | string | null;
+  return Number(total ?? 0);
+}
+
+/** The part of fetchCostSinceUsd that was spent on readers' requests
+ *  (migration 114). */
+export async function fetchReaderCostSinceUsd(since: Date): Promise<number> {
+  const total = throwOnError(
+    await getSupabaseClient().rpc("everything_reader_cost_since", { since: since.toISOString() }),
   ) as number | string | null;
   return Number(total ?? 0);
 }

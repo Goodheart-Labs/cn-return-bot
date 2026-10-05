@@ -1,9 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 import type { Route } from "./routing";
 
-// Vite sets the base address at build time, and analytics needs the Supabase
-// client, so the test provides the one and stubs the other before loading.
-process.env.BASE_URL = "/";
+// Analytics needs the Supabase client, so the test stubs it before loading.
 void mock.module("./analytics", () => ({ capturePageview: () => {} }));
 const { readRoute, routeHref } = await import("./routing");
 

@@ -442,6 +442,7 @@ export type Database = {
         Row: {
           client_token: string | null
           created_at: string
+          feed_url: string | null
           id: string
           item_id: string | null
           page_text: string | null
@@ -457,6 +458,7 @@ export type Database = {
         Insert: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
@@ -472,6 +474,7 @@ export type Database = {
         Update: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
@@ -486,17 +489,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "everything_note_requests_passage_question_id_fkey"
-            columns: ["passage_question_id"]
-            isOneToOne: true
-            referencedRelation: "everything_passage_questions"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "everything_note_requests_item_id_fkey"
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_note_requests_passage_question_id_fkey"
+            columns: ["passage_question_id"]
+            isOneToOne: true
+            referencedRelation: "everything_passage_questions"
             referencedColumns: ["id"]
           },
         ]
@@ -596,61 +599,31 @@ export type Database = {
           },
         ]
       }
-      everything_passage_questions: {
+      everything_passage_highlight_votes: {
         Row: {
-          answer: string | null
-          answered_at: string | null
-          author_id: string
-          cost_usd: number
           created_at: string
-          draft: Json | null
-          error: string | null
-          id: string
-          item_id: string
-          model: string | null
-          passage: string
-          question: string
-          started_at: string | null
-          status: string
+          entry_id: string
+          vote: number
+          voter_id: string
         }
         Insert: {
-          answer?: string | null
-          answered_at?: string | null
-          author_id: string
-          cost_usd?: number
           created_at?: string
-          draft?: Json | null
-          error?: string | null
-          id?: string
-          item_id: string
-          model?: string | null
-          passage: string
-          question: string
-          started_at?: string | null
-          status?: string
+          entry_id: string
+          vote: number
+          voter_id: string
         }
         Update: {
-          answer?: string | null
-          answered_at?: string | null
-          author_id?: string
-          cost_usd?: number
           created_at?: string
-          draft?: Json | null
-          error?: string | null
-          id?: string
-          item_id?: string
-          model?: string | null
-          passage?: string
-          question?: string
-          started_at?: string | null
-          status?: string
+          entry_id?: string
+          vote?: number
+          voter_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "everything_passage_questions_item_id_fkey"
-            columns: ["item_id"]
+            foreignKeyName: "everything_passage_highlight_votes_entry_id_fkey"
+            columns: ["entry_id"]
             isOneToOne: false
-            referencedRelation: "everything_items"
+            referencedRelation: "everything_passage_highlights"
             referencedColumns: ["id"]
           },
         ]
@@ -711,31 +684,61 @@ export type Database = {
           },
         ]
       }
-      everything_passage_highlight_votes: {
+      everything_passage_questions: {
         Row: {
+          answer: string | null
+          answered_at: string | null
+          author_id: string
+          cost_usd: number
           created_at: string
-          entry_id: string
-          vote: number
-          voter_id: string
+          draft: Json | null
+          error: string | null
+          id: string
+          item_id: string
+          model: string | null
+          passage: string
+          question: string
+          started_at: string | null
+          status: string
         }
         Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          author_id: string
+          cost_usd?: number
           created_at?: string
-          entry_id: string
-          vote: number
-          voter_id: string
+          draft?: Json | null
+          error?: string | null
+          id?: string
+          item_id: string
+          model?: string | null
+          passage: string
+          question: string
+          started_at?: string | null
+          status?: string
         }
         Update: {
+          answer?: string | null
+          answered_at?: string | null
+          author_id?: string
+          cost_usd?: number
           created_at?: string
-          entry_id?: string
-          vote?: number
-          voter_id?: string
+          draft?: Json | null
+          error?: string | null
+          id?: string
+          item_id?: string
+          model?: string | null
+          passage?: string
+          question?: string
+          started_at?: string | null
+          status?: string
         }
         Relationships: [
           {
-            foreignKeyName: "everything_passage_highlight_votes_entry_id_fkey"
-            columns: ["entry_id"]
+            foreignKeyName: "everything_passage_questions_item_id_fkey"
+            columns: ["item_id"]
             isOneToOne: false
-            referencedRelation: "everything_passage_highlights"
+            referencedRelation: "everything_items"
             referencedColumns: ["id"]
           },
         ]
@@ -755,6 +758,7 @@ export type Database = {
           logs: Json | null
           outcome: string | null
           outcome_reason: string | null
+          work_priority: string | null
         }
         Insert: {
           ab_test_picks?: Json | null
@@ -770,6 +774,7 @@ export type Database = {
           logs?: Json | null
           outcome?: string | null
           outcome_reason?: string | null
+          work_priority?: string | null
         }
         Update: {
           ab_test_picks?: Json | null
@@ -785,6 +790,7 @@ export type Database = {
           logs?: Json | null
           outcome?: string | null
           outcome_reason?: string | null
+          work_priority?: string | null
         }
         Relationships: [
           {
@@ -866,6 +872,24 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_slack_announcements: {
+        Row: {
+          channel: string
+          posted_at: string
+          subject_id: string
+        }
+        Insert: {
+          channel: string
+          posted_at?: string
+          subject_id: string
+        }
+        Update: {
+          channel?: string
+          posted_at?: string
+          subject_id?: string
+        }
+        Relationships: []
+      }
       everything_top_posts: {
         Row: {
           feed_url: string
@@ -906,6 +930,7 @@ export type Database = {
           note_id: string
           platform: string | null
           reasoning: string | null
+          updated_at: string
           vote: number
           voter_id: string
         }
@@ -915,6 +940,7 @@ export type Database = {
           note_id: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote: number
           voter_id: string
         }
@@ -924,6 +950,7 @@ export type Database = {
           note_id?: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote?: number
           voter_id?: string
         }
@@ -936,6 +963,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      everything_youtube_channels: {
+        Row: {
+          channel_id: string
+          feed_url: string
+          listed_at: string | null
+          notified_at: string | null
+          subscribed_at: string | null
+          title: string
+          uploads: Json
+        }
+        Insert: {
+          channel_id: string
+          feed_url: string
+          listed_at?: string | null
+          notified_at?: string | null
+          subscribed_at?: string | null
+          title: string
+          uploads?: Json
+        }
+        Update: {
+          channel_id?: string
+          feed_url?: string
+          listed_at?: string | null
+          notified_at?: string | null
+          subscribed_at?: string | null
+          title?: string
+          uploads?: Json
+        }
+        Relationships: []
       }
       fact_check_usage: {
         Row: {
@@ -1802,6 +1859,24 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_posts: {
+        Row: {
+          post_id: string
+          posted_at: string
+          topic: string
+        }
+        Insert: {
+          post_id: string
+          posted_at?: string
+          topic: string
+        }
+        Update: {
+          post_id?: string
+          posted_at?: string
+          topic?: string
+        }
+        Relationships: []
+      }
       tweets: {
         Row: {
           author_description: string | null
@@ -2064,6 +2139,10 @@ export type Database = {
           visits: number
         }[]
       }
+      everything_creator_project: {
+        Args: { creator_feed_url: string }
+        Returns: string
+      }
       everything_daily_activity: {
         Args: { window_days?: number }
         Returns: {
@@ -2145,6 +2224,7 @@ export type Database = {
           vote_score: number
         }[]
       }
+      everything_reader_cost_since: { Args: { since: string }; Returns: number }
       everything_recent_posts: {
         Args: { max_posts: number; min_pages: number; window_days: number }
         Returns: {

@@ -9,14 +9,18 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
 }
 
 /** A multi-line text field. With `autoGrow` it grows with its text instead of
- *  scrolling, which suits the short composers under a note. */
+ *  scrolling, which suits the short composers under a note.
+ *  The height is measured on every render. A field that is not displayed yet,
+ *  such as one inside a dialog that opens right after this render, measures
+ *  zero. Setting that would collapse the field to nothing, so it then keeps
+ *  the height its `rows` give it until the next render measures for real. */
 export function Textarea({ autoGrow, className, ...props }: ComponentProps<"textarea"> & { autoGrow?: boolean }) {
   return (
     <textarea
       ref={autoGrow ? (el) => {
         if (!el) return;
         el.style.height = "auto";
-        el.style.height = `${el.scrollHeight}px`;
+        if (el.scrollHeight > 0) el.style.height = `${el.scrollHeight}px`;
       } : undefined}
       className={cn(FIELD, "w-full", autoGrow && "resize-none overflow-hidden", className)}
       {...props}
