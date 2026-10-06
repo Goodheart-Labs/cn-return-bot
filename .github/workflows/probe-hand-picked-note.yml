@@ -2,7 +2,7 @@ name: Probe Hand-Picked Note
 # Throwaway probe for GOO-212, deleted after one run. Jim asked for one real note
 # ("Test https://en.wikipedia.org/wiki/Test") on a hand-picked post, submitted with
 # the production notewriter secrets, to learn whether X accepts notes outside the
-# eligibility feed.
+# eligibility feed. Second run: evaluate_note on the same post, which publishes nothing.
 on:
   push:
     branches: [feature/twitter-tag-note-bot]
@@ -20,4 +20,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
-      - run: bun run src/scripts_jim/2026_10_05_x_tag_bot_plan/submitTestNote.ts
+      - run: bun run src/scripts_jim/2026_10_05_x_tag_bot_plan/evaluateTestNote.ts
