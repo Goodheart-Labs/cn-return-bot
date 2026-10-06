@@ -35,7 +35,10 @@ export function MinisitesPage({ navigate }: { navigate: (route: Route) => void }
   const minisites = useQuery({ queryKey: ["minisites"], queryFn: fetchMinisites });
   return <main className="minisites-page">
     <div className="minisites-head">
-      <h1>Minisites</h1>
+      <div>
+        <h1>Minisites</h1>
+        <p>Articles with notes, forecasts and key points beside the text. Select any words to add your own or to ask Opus about them.</p>
+      </div>
       {admin && <RouteLink to={{ view: "newMinisite" }} navigate={navigate} className={buttonVariants({ variant: "primary" })}>Create a minisite</RouteLink>}
     </div>
     {minisites.isPending ? <p className="minisites-empty" role="status">Loading minisites…</p>

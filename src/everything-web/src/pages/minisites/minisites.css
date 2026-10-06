@@ -2,6 +2,7 @@
 .minisites-page { max-width: 60rem; margin: 0 auto; padding: 2.5rem 1rem 5rem; }
 .minisites-page h1 { font-family: var(--cn-font-title); font-size: var(--cn-text-3xl); line-height: var(--cn-leading-3xl); font-weight: 700; color: var(--cn-fg); }
 .minisites-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem 2rem; margin-bottom: 2rem; }
+.minisites-head p { max-width: 36rem; margin-top: 0.5rem; color: var(--cn-fg-secondary); }
 .minisites-empty { color: var(--cn-fg-muted); }
 .minisites-retry { color: var(--cn-link); text-decoration: underline; text-underline-offset: 3px; }
 
