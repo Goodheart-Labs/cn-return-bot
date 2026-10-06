@@ -204,8 +204,8 @@ export async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[
  *  This only runs while no worker is active. Inside the workflow that is
  *  guaranteed by its concurrency group; for local runs see the warning in
  *  CLAUDE.md. */
-async function triageOrphanedItems(): Promise<void> {
-  for (const item of await fetchOrphanedProcessingItems()) {
+export async function triageOrphanedItems(tier: "requested" | "feed"): Promise<void> {
+  for (const item of await fetchOrphanedProcessingItems(tier)) {
     if ((await fetchItemClaims(item.id)).length > 0) {
       await requeueItem(item.id);
       console.log(`Orphaned in processing → requeued for resume: ${item.url}`);
@@ -263,7 +263,7 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
  *  walk. Both steps assume no worker is active, which the workflow's
  *  concurrency group guarantees. */
 export async function triageQueue(): Promise<void> {
-  await triageOrphanedItems();
+  await triageOrphanedItems("feed");
   await retryErroredItems();
 }
 

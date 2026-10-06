@@ -320,12 +320,15 @@ export async function fetchItemUrlsContaining(fragments: string[]): Promise<Know
   ) as KnownItemUrl[];
 }
 
-/** Returns the items that a killed run left stranded in `processing`. This is
- *  only meaningful while no worker is running. The workflow's concurrency group
- *  guarantees that. */
-export async function fetchOrphanedProcessingItems(): Promise<{ id: string; url: string }[]> {
+/** Returns the items of one tier that a killed run left stranded in
+ *  `processing`. This is only meaningful while no worker of that tier is
+ *  running. Each tier has its own worker: the feed run, whose concurrency group
+ *  guarantees there is one, and the intake service, which is a single process.
+ *  Looking at the other tier would take items its worker is still checking. */
+export async function fetchOrphanedProcessingItems(tier: "requested" | "feed"): Promise<{ id: string; url: string }[]> {
+  const query = getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing");
   return throwOnError(
-    await getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"),
+    await (tier === "requested" ? query.gte("priority", QUEUE_PRIORITY.requested) : query.lt("priority", QUEUE_PRIORITY.requested)),
   ) as { id: string; url: string }[];
 }
 

@@ -94,7 +94,7 @@ export const dbMock = () => ({
   countYoutubeNotifications: () => Promise.resolve({ notified: 0, subscribed: 0 }),
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),
-  fetchOrphanedProcessingItems: () => Promise.resolve([]),
+  fetchOrphanedProcessingItems: (_tier: "requested" | "feed") => Promise.resolve([]),
   fetchRetryableErrorItems: () => Promise.resolve([]),
   requeueErroredItem: record("requeueErroredItem"),
   fetchPendingNoteRequests: () => Promise.resolve([]),

@@ -31,6 +31,7 @@ import { consumeMinisiteJobs } from "./minisiteJobs";
 import { consumePassageQuestions } from "./passageQuestions";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { consumeNoteRequests } from "../../everything/consumeRequests";
+import { triageOrphanedItems } from "../../everything/autoEnqueue";
 import { claimNextQueuedItem, markRequestedQueueBudgetExhausted } from "../../everything/db";
 import { clip } from "../../everything/logFormat";
 import { ensureYtDlp } from "../../everything/sources/youtube";
@@ -100,6 +101,10 @@ async function main() {
   // this process, next to our keys, so it refuses to start instead.
   requiredEnv(FETCH_SERVICE_SOCKET_VARIABLE);
   ensureYtDlp();
+  // The intake service is the only worker of the requested tier, so at start
+  // nothing can still be checking an item of that tier that sits in
+  // processing. A previous run of this service left it there.
+  await triageOrphanedItems("requested");
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
   await Promise.all([questionLoop(), minisiteJobLoop(), noteLoop()]);
