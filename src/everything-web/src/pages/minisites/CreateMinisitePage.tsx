@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useLoginPrompt } from "@cn/features/auth/loginPrompt";
 import { fetchItemForUrl } from "@cn/core/items";
 import { ALL_FEATURES } from "@cn/core/minisiteFeatures";
 import {
@@ -86,6 +87,7 @@ function Preview({ result }: { result: PageReadResult }) {
  *  database refuses everyone else anyway. */
 export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => void }) {
   const admin = useIsAdmin();
+  const openLogin = useLoginPrompt();
   const client = useQueryClient();
   const [address, setAddress] = useState("");
   const [jobId, setJobId] = useState<string | null>(null);
@@ -116,7 +118,7 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
     setStep("check");
   }
 
-  if (!admin) return <main className="minisites-page"><h1>Create a minisite</h1><p className="minisites-empty">Only admins can create minisites. Sign in with an admin email address to continue.</p></main>;
+  if (!admin) return <main className="minisites-page"><h1>Create a minisite</h1><p className="minisites-empty">Only admins can create minisites. Sign in with an admin email address to continue.</p><Button className="mt-4" onClick={openLogin}>Sign in</Button></main>;
 
   async function read() {
     const url = webAddress(address);

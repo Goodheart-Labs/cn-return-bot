@@ -113,7 +113,7 @@ function OriginalLink({ url }: { url: string }) {
 function JumpButton({ count, onJump }: { count: number; onJump: () => void }) {
   return <button type="button" className="reader-jump" onClick={onJump}>
     <span className="reader-jump-arrow" aria-hidden="true">↓</span>
-    <span>Jump to the first note</span>
+    <span>Jump to the notes</span>
     <span className="reader-jump-count" aria-label={`${count} on this article`}>{count}</span>
   </button>;
 }
@@ -138,7 +138,7 @@ function Passage({ block, quotes, actions, entryCount, label, open, onToggle, ch
     {actions.length > 0 && <div className="reader-passage-actions">
       {actions.map((action) => <button key={action.key} type="button" aria-label={action.accessibleName} onClick={action.onSelect}>{action.label}</button>)}
     </div>}
-    {!wide && entryCount > 0 && <button type="button" className="reader-count-pill" aria-expanded={open} onClick={onToggle}>{label}</button>}
+    {!wide && label && <button type="button" className="reader-count-pill" aria-expanded={open} onClick={onToggle}>{label}</button>}
     {entryCount > 0 && (wide || open) && <div className="reader-margin-group" data-margin-group={wide ? "" : undefined}>{children}</div>}
   </section>;
 }
@@ -190,7 +190,7 @@ export function Reader({ item, content, header, features, scope }: {
     openAsk: (block, quote) => { setAsking({ blockId: block.id, quote }); setOpenBlock(block.id); document.getSelection()?.removeAllRanges(); },
     closeAsk: () => setAsking(null),
     dialog,
-    openDialog: (next) => setDialog(next),
+    openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),
     notify,
     reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId); },
@@ -279,7 +279,7 @@ export function Reader({ item, content, header, features, scope }: {
               return <div key={block.id} className="reader-block">
                 {block.id === firstFootnote && <h2 className="reader-footnotes-heading">Footnotes</h2>}
                 <Passage block={block} quotes={quotesByBlock.get(block.id) ?? []} actions={actions} entryCount={count}
-                  label={countLabel(notesByBlock.get(block.id) ?? [], highlightsByBlock.get(block.id) ?? []) || "Ask Opus"}
+                  label={countLabel(notesByBlock.get(block.id) ?? [], highlightsByBlock.get(block.id) ?? [])}
                   open={openBlock === block.id} onToggle={() => setOpenBlock((current) => (current === block.id ? null : block.id))}>
                   {entries(block.id)}
                 </Passage>

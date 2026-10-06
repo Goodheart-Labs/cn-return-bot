@@ -23,7 +23,7 @@ export function SelectionToolbar({ range, actions }: { range: Range; actions: re
       const { width, height } = element.getBoundingClientRect();
       const below = coarsePointer() || rect.top - height - GAP_PX < EDGE_PX;
       const top = below ? rect.bottom + GAP_PX : rect.top - height - GAP_PX;
-      const left = Math.min(Math.max(rect.left + rect.width / 2 - width / 2, EDGE_PX), window.innerWidth - width - EDGE_PX);
+      const left = Math.max(EDGE_PX, Math.min(rect.left + rect.width / 2 - width / 2, window.innerWidth - width - EDGE_PX));
       setPosition({ top, left });
     };
     place();
