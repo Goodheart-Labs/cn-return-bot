@@ -64,7 +64,10 @@ function useKnownPage(url: string | null) {
       const item = await fetchItemForUrl(url!);
       if (!item) return null;
       const [notes, highlights] = await Promise.all([fetchNotesForItem(item.id), fetchPassageHighlights(item.id)]);
-      return { checked: item.checked_scope === "page" && item.status === "done", notes: notes.length, highlights: highlights.length };
+      const known = { checked: item.checked_scope === "page" && item.status === "done", notes: notes.length, highlights: highlights.length };
+      // An article row with nothing on it, for example one left behind by a
+      // deleted minisite, is not worth a line.
+      return known.checked || known.notes || known.highlights ? known : null;
     },
   }).data ?? null;
 }
@@ -121,8 +124,9 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
   const [filledFrom, setFilledFrom] = useState<string | null>(null);
   if (result && job && filledFrom !== job.id) {
     setFilledFrom(job.id);
-    setTitle(result.title);
-    setDescription(result.description);
+    // Results read before the page reader collapsed line breaks still carry them.
+    setTitle(result.title.replace(/\s+/g, " ").trim());
+    setDescription(result.description.replace(/\s+/g, " ").trim());
     setSlug(slugForTitle(result.title));
     setSlugEdited(false);
     setStep("check");
@@ -173,7 +177,7 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
     </form>}
 
     {step === "check" && result && <section className="create-check">
-      {known && <p className="create-known">This page is already on Common Notes: {known.notes} {known.notes === 1 ? "note" : "notes"}, {known.highlights} {known.highlights === 1 ? "key point or forecast" : "key points and forecasts"}{known.checked ? ", fact-checked" : ""}. They will show on the minisite.</p>}
+      {known && <p className="create-known">This page is already on Common Notes: {known.notes} {known.notes === 1 ? "note" : "notes"}, {known.highlights} {known.highlights === 1 ? "key point or forecast" : "key points and forecasts"}{known.checked ? ", fact-checked" : ""}.</p>}
       <div className="create-columns">
         <div className="create-fields">
           <label htmlFor="create-title">Title</label>

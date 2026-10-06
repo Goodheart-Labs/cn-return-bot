@@ -73,11 +73,15 @@ function articleContent(blocks: string[], header: (string | null)[]): string {
   return blocks.slice(skipped).join("\n\n");
 }
 
+const oneLine = (text: string) => text.replace(/\s+/g, " ").trim();
+
 function buildPage(fields: Omit<MinisitePage, "plain_text">): MinisitePage {
   return {
     ...fields,
-    title: clip(fields.title.trim(), MAX_TITLE_CHARS),
-    description: clip(fields.description.trim(), MAX_DESCRIPTION_CHARS),
+    // Pages often wrap these over several lines in their HTML. The breaks are
+    // layout, not content, so they collapse into single spaces.
+    title: clip(oneLine(fields.title), MAX_TITLE_CHARS),
+    description: clip(oneLine(fields.description), MAX_DESCRIPTION_CHARS),
     byline: fields.byline && clip(fields.byline, MAX_BYLINE_CHARS),
     plain_text: plainText(fields.content),
   };

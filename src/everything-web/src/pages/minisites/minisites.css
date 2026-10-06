@@ -44,14 +44,15 @@
 .create-paste-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .create-paste-row > :first-child { flex: 1 1 18rem; }
 .create-known { margin-bottom: 1.5rem; padding: 0.625rem 0.875rem; border: 1px solid var(--cn-positive-line); border-radius: var(--cn-radius-control); background: var(--cn-positive-soft); color: var(--cn-positive-selected-fg); font-size: var(--cn-text-sm); }
-.create-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem; align-items: start; }
+.create-page { max-width: 80rem; }
+.create-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: start; }
 @media (max-width: 767px) { .create-columns { grid-template-columns: minmax(0, 1fr); } }
 .create-fields { display: grid; gap: 0.5rem; }
 .create-fields label:not(:first-child) { margin-top: 0.75rem; }
-.create-slug { display: flex; flex-wrap: wrap; align-items: center; border: 1px solid var(--cn-line-strong); border-radius: var(--cn-radius-control); background: var(--cn-surface); overflow: hidden; }
+.create-slug { display: flex; flex-wrap: nowrap; align-items: center; border: 1px solid var(--cn-line-strong); border-radius: var(--cn-radius-control); background: var(--cn-surface); overflow: hidden; }
 .create-slug span { padding: 0 0.25rem 0 0.75rem; color: var(--cn-fg-muted); font-size: var(--cn-text-sm); white-space: nowrap; }
-.create-slug input { flex: 1 1 12rem; min-width: 0; border: 0 !important; box-shadow: none !important; padding-left: 0; }
-@media (max-width: 639px) { .create-slug span { padding-top: 0.5rem; font-size: var(--cn-text-xs); } .create-slug input { padding-left: 0.75rem; } }
+.create-slug input { flex: 1 1 auto; min-width: 6rem; border: 0 !important; box-shadow: none !important; padding-left: 0; }
+@media (max-width: 639px) { .create-slug { flex-wrap: wrap; } .create-slug span { padding-top: 0.5rem; font-size: var(--cn-text-xs); } .create-slug input { flex-basis: 100%; padding-left: 0.75rem; } }
 .create-field-label { margin-top: 0.75rem; font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); }
 .create-byline { font-size: var(--cn-text-sm); color: var(--cn-fg-secondary); }
 .create-preview { max-height: 32rem; overflow-y: auto; padding: 1.25rem 1.5rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); }
