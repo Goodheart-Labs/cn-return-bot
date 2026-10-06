@@ -97,9 +97,9 @@ function renderCrops() {
   const twoOneHeight = IMAGE.width / 2;
   document.getElementById("crop-stage").innerHTML = `
     <img src="${imageUrl(state.optionId)}" alt="The selected preview image at full size">
-    <div class="crop-box crop-twoone" style="${percentBox(0, (IMAGE.height - twoOneHeight) / 2, IMAGE.width, twoOneHeight)}"><span>2:1, X large card</span></div>
-    <div class="crop-box crop-square" style="${percentBox((IMAGE.width - square) / 2, 0, square, square)}"><span>Square: Slack small card, X small card, WhatsApp, Telegram</span></div>
-    <div class="crop-box crop-safe" style="${percentBox((IMAGE.width - SAFE_SIDE) / 2, (IMAGE.height - SAFE_SIDE) / 2, SAFE_SIDE, SAFE_SIDE)}"><span>Safe area 560 × 560</span></div>`;
+    <div class="crop-box crop-twoone" style="${percentBox(0, (IMAGE.height - twoOneHeight) / 2, IMAGE.width, twoOneHeight)}"><span>2:1 crop</span></div>
+    <div class="crop-box crop-square" style="${percentBox((IMAGE.width - square) / 2, 0, square, square)}"><span>Square crop</span></div>
+    <div class="crop-box crop-safe" style="${percentBox((IMAGE.width - SAFE_SIDE) / 2, (IMAGE.height - SAFE_SIDE) / 2, SAFE_SIDE, SAFE_SIDE)}"><span>Safe area</span></div>`;
 }
 
 function rulesHtml(app) {
@@ -112,12 +112,12 @@ function rulesHtml(app) {
     .join("");
 }
 
-function mockHtml(app, option) {
+function mockHtml(app, option, { showRules = true } = {}) {
   return `
     <article class="mock">
       <div class="mock-head"><h3>${app.name}</h3><span class="opt-name">${option.name}</span></div>
       <div class="stage" style="background:${app.stageBackground}">${app.render(imageUrl(option.id))}</div>
-      <ul class="rules">${rulesHtml(app)}</ul>
+      ${showRules ? `<ul class="rules">${rulesHtml(app)}</ul>` : ""}
     </article>`;
 }
 
@@ -127,7 +127,9 @@ function renderMocks() {
   selectWrap.hidden = state.view !== "compare";
   if (state.view === "compare") {
     const app = APPS.find((candidate) => candidate.id === state.appId) ?? APPS[0];
-    container.innerHTML = OPTIONS.map((option) => mockHtml(app, option)).join("");
+    /* Every card shows the same app, so its rules are listed once, under the
+     * first card. */
+    container.innerHTML = OPTIONS.map((option, index) => mockHtml(app, option, { showRules: index === 0 })).join("");
   } else {
     const option = optionById(state.optionId);
     container.innerHTML = APPS.map((app) => mockHtml(app, option)).join("");

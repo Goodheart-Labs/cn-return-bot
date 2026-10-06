@@ -30,6 +30,7 @@ section { margin-top: 40px; }
 .top h1 { display: flex; align-items: center; gap: 10px; font-size: 24px; }
 .top h1 img { width: 34px; height: 34px; }
 .lede { margin: 8px 0 0; max-width: 70ch; color: var(--fg-secondary); }
+.lede a { color: var(--primary); }
 .hint { margin: 6px 0 14px; color: var(--fg-muted); max-width: 75ch; }
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
 
@@ -41,6 +42,7 @@ section { margin-top: 40px; }
 }
 .view-switch button[aria-selected="true"] { background: var(--fg); color: #fff; }
 .app-select { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+.app-select[hidden] { display: none; }
 .app-select select { font: inherit; font-weight: 400; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface); }
 
 /* Image options */
@@ -98,5 +100,5 @@ section { margin-top: 40px; }
 
 @media (max-width: 520px) {
   main { padding: 0 16px 60px; }
-  .mocks { grid-template-columns: 1fr; }
+  .mocks { grid-template-columns: minmax(0, 1fr); }
 }
