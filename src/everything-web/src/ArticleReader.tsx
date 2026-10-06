@@ -180,7 +180,7 @@ function ArticleEdition({ source, scope }: { source: string; scope: string }) {
     if (!margin) return;
     const base = margin.getBoundingClientRect().top;
     let floor = 0;
-    for (const group of margin.querySelectorAll<HTMLElement>("[data-margin-for]")) {
+    for (const group of Array.from(margin.querySelectorAll<HTMLElement>("[data-margin-for]"))) {
       const passage = document.getElementById(group.dataset.marginFor ?? "");
       const top = Math.max(passage ? passage.getBoundingClientRect().top - base : floor, floor);
       group.style.top = `${top}px`;
