@@ -21,6 +21,9 @@ import "./minisites.css";
 
 /** How often an unfinished job is checked, in case the realtime update is missed. */
 const JOB_POLL_MS = 3000;
+/** Reading a page normally takes a few seconds. After this long without an
+ *  answer, the flow says so instead of waiting silently. */
+const PAGE_READ_TIMEOUT_MS = 45_000;
 
 type Step = "paste" | "check" | "features";
 
@@ -104,6 +107,13 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
   const result = job?.status === "done" ? (job.result as unknown as PageReadResult) : null;
   const known = useKnownPage(result && job ? job.url : null);
   const reading = !!jobId && (!job || job.status === "pending" || job.status === "running");
+  const [slowJob, setSlowJob] = useState<string | null>(null);
+  useEffect(() => {
+    if (!jobId) return;
+    const timer = setTimeout(() => setSlowJob(jobId), PAGE_READ_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [jobId]);
+  const unanswered = reading && slowJob === jobId;
 
   // When the page has been read, its title and description fill the form once.
   // Setting state while rendering is React's pattern for state derived from a
@@ -158,6 +168,7 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
         <Button type="submit" disabled={reading || !address.trim()}>{reading ? "Reading the page…" : "Read the page"}</Button>
       </div>
       {requestError && <p role="alert" className="factcheck-error">{requestError}</p>}
+      {unanswered && <p role="alert" className="factcheck-error">The page reader hasn't answered. It may be restarting. <button type="button" className="minisites-retry" onClick={() => void read()}>Try again</button></p>}
       {job?.status === "error" && <p role="alert" className="factcheck-error">{job.error ?? "We couldn't read this page."} <button type="button" className="minisites-retry" onClick={() => void read()}>Try again</button></p>}
     </form>}
 
