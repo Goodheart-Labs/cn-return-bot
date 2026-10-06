@@ -27,11 +27,24 @@ const FLASH_MS = 1600;
  *  note arrives from the database. */
 const REVEAL_TIMEOUT_MS = 8000;
 
-/** Scrolls an element into the middle of the screen and outlines it briefly. */
+/** The outline starts after this long even when the browser never reports
+ *  the end of the scroll (Safari before 18 has no scrollend event). */
+const SCROLL_SETTLE_FALLBACK_MS = 900;
+
+/** Scrolls an element into the middle of the screen and outlines it briefly
+ *  once the scroll has stopped, so a long jump does not use up the outline. */
 function flash(element: HTMLElement) {
+  let started = false;
+  const outline = () => {
+    if (started) return;
+    started = true;
+    window.removeEventListener("scrollend", outline);
+    element.classList.add("reader-flash");
+    setTimeout(() => element.classList.remove("reader-flash"), FLASH_MS);
+  };
+  window.addEventListener("scrollend", outline, { once: true });
+  setTimeout(outline, SCROLL_SETTLE_FALLBACK_MS);
   element.scrollIntoView({ block: "center", behavior: "smooth" });
-  element.classList.add("reader-flash");
-  setTimeout(() => element.classList.remove("reader-flash"), FLASH_MS);
 }
 
 /** Flashes the element with this id as soon as it is in the page. */
