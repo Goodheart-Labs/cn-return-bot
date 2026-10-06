@@ -19,7 +19,10 @@ import {
   renderDraftReply,
   renderNoNoteReply,
   REVISION_SYSTEM_PROMPT,
+  STATUS_REPLIES,
+  TAG_BOT_PICKS,
 } from "./prompts";
+import { SIGNAL_PICKS } from "../../signal-bot/drafting";
 
 const OUTPUT_DIR = `${import.meta.dir}/output`;
 const read = (name: string) => JSON.parse(readFileSync(`${OUTPUT_DIR}/${name}`, "utf8"));
@@ -27,6 +30,7 @@ const read = (name: string) => JSON.parse(readFileSync(`${OUTPUT_DIR}/${name}`, 
 const mumbai = read("examples_mumbai.json").mumbai;
 const mumbaiFirstTry = read("examples_mumbai_v1_main_claim_only.json").mumbai;
 const gdp = read("examples_gdp.json").gdp;
+const improve = read("examples_improve.json");
 const costs = [...read("examples_mumbai.json").costs, ...read("examples_gdp.json").costs];
 
 const planData = {
@@ -40,6 +44,14 @@ const planData = {
     revision: REVISION_SYSTEM_PROMPT,
     draftTemplate: renderDraftReply({ lead: "<the revision call's reply, only on a revised draft>", text: "<note text>", sources: ["<source 1>", "<source 2>"] }),
     noNoteTemplate: renderNoNoteReply("<the no-note reply>"),
+    statusReplies: STATUS_REPLIES,
+    tagBotPicks: JSON.stringify(TAG_BOT_PICKS, null, 2),
+    signalPicks: JSON.stringify(SIGNAL_PICKS, null, 2),
+  },
+  improve: {
+    classifications: improve.classifications.map((c: any) => ({ ...c, userMessage: buildClassifierUserMessage({ botPost: c.botPost, reply: c.reply }) })),
+    request: improve.improveRequest,
+    revision: improve.revision,
   },
   mumbai: {
     tweetId: mumbai.tweetId,
