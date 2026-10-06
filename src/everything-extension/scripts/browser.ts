@@ -23,7 +23,15 @@ export async function openPageWithExtension(url: string): Promise<{ context: Bro
       : {}),
   };
 
-  const context = await chromium.launchPersistentContext(path.join(os.homedir(), ".cache/cn-preview-profile"), {
+  // Chromium caches the background service worker's script in the profile and
+  // keeps running that copy when a new build has the same manifest version. A
+  // preview then ran last month's background, whose sync wrote storage keys
+  // the current content scripts no longer read, so no badge ever showed
+  // (GOO-365). Removing the cache makes every launch start the current build.
+  const profileDir = path.join(os.homedir(), ".cache/cn-preview-profile");
+  fs.rmSync(path.join(profileDir, "Default/Service Worker"), { recursive: true, force: true });
+
+  const context = await chromium.launchPersistentContext(profileDir, {
     // Extensions need the real Chromium in its new headless mode. The default
     // headless shell silently ignores --load-extension.
     channel: "chromium",
