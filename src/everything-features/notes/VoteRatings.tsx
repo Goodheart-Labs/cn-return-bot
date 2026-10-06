@@ -4,11 +4,11 @@ import type { Vote } from "@cn/core/votes";
 import { CheckIcon, CloseIcon, WaveIcon } from "@cn/ui/icons";
 import { PillPaletteContext } from "./pillPalette";
 
-/* The pills answer the question "Is this note helpful?", so they read Yes,
- * Somewhat and No, as on X's Community Notes. The full pills sit in the note's
- * rating panel. The compact icon chips rate note-not-needed entries, where an
- * icon without a label would read as pressed if it were coloured, so they stay
- * grey until chosen in either palette. */
+/* The pills answer the question "Is this note helpful?" (or key point, or
+ * forecast), so they read Yes, Somewhat and No, as on X's Community Notes. The
+ * full pills sit in the rating panel. The compact icon chips rate
+ * note-not-needed entries, where an icon without a label would read as pressed
+ * if it were coloured, so they stay grey until chosen in either palette. */
 const votePillVariants = cva(
   "inline-flex items-center justify-center gap-1.5 rounded-control border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
   {
