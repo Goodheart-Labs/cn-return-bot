@@ -94,6 +94,10 @@ export interface BotConfig {
    * SIMPLE_BOT_SEARCH_TEST sets it.
    */
   search_reasoning_effort?: "low" | "medium" | "high";
+  /** The same for the writer call only. When it is unset, `reasoning_effort`
+   *  applies, and when that is unset too, the model's own default.
+   *  SIMPLE_BOT_WRITER_TEST sets it. */
+  writer_reasoning_effort?: "low" | "medium" | "high";
   /**
    * When this is set, it is passed through to OpenRouter as `temperature` for
    * every LLM call this bot makes. The note-needed prefilter pins it to 0, so

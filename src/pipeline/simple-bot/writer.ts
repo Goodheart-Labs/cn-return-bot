@@ -97,6 +97,7 @@ export async function runWriter(
       messages,
       responseFormat: WRITER_RESPONSE_FORMAT,
       schemaHint: `{ "note_text": string, "sources": string[] }`,
+      reasoningEffort: config.writer_reasoning_effort,
     });
     const noteText = parsed.note_text ?? "";
     const sources = parsed.sources ?? [];

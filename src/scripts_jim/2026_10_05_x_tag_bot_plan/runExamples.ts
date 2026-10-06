@@ -53,8 +53,8 @@ async function mumbaiExample() {
   const draftReply = renderDraftReply(draft);
   const replies: ThreadPost[] = [
     { handle: "redpill_raj", text: `@${BOT_HANDLE} @priya_k_writes lol imagine needing a bot to tell you India has slums` },
-    { handle: "mvaidya", text: `@${BOT_HANDLE} newkerala is a pretty weak source, and "described as" is vague. The post says the slums are "largely gone", so say how many people in Mumbai still live in slums overall, from something official.` },
-    { handle: "priya_k_writes", text: `@${BOT_HANDLE} approve but drop the newkerala link, use something better` },
+    { handle: "mvaidya", text: `@${BOT_HANDLE} Is that really the best source? The post says the slums are "largely gone", so say how many people in Mumbai still live in slums overall, from something official.` },
+    { handle: "priya_k_writes", text: `@${BOT_HANDLE} approve but use an official source instead of that link` },
   ];
   const classifications = [];
   for (const reply of replies) classifications.push({ reply, ...(await classify(draftReply, reply)) });

@@ -25,7 +25,8 @@ import {
   type ThreadPost,
 } from "./prompts";
 
-export const OPUS = "anthropic/claude-opus-5.5";
+export const SONNET = "anthropic/claude-sonnet-5.5";
+const REASONING_EFFORT = "medium";
 const MUSE = "meta/muse-spark-1.3-contributor";
 const MAX_FETCH_USES = 3;
 const MAX_FETCH_CONTENT_TOKENS = 20_000;
@@ -39,10 +40,12 @@ const WEB_FETCH_TOOL = {
 export const TAG_BOT_CONFIG: BotConfig = {
   ...DEFAULT_CONFIG,
   botId: "simple-bot",
-  model: OPUS,
+  model: SONNET,
   web_search: "native",
-  search_model: OPUS,
-  writer_model: OPUS,
+  search_model: SONNET,
+  search_reasoning_effort: REASONING_EFFORT,
+  writer_model: SONNET,
+  writer_reasoning_effort: REASONING_EFFORT,
 };
 
 /** The cap the plan proposes after the first revision run cost $1.36: two pages
@@ -108,7 +111,7 @@ export async function revise(
       ],
       schemaHint: REVISION_SCHEMA_HINT,
       call: async (messages) => {
-        const response = await llm.create({ model: OPUS, messages, tools: [WEB_SEARCH_TOOL, fetchTool] } as any);
+        const response = await llm.create({ model: SONNET, reasoning_effort: REASONING_EFFORT, messages, tools: [WEB_SEARCH_TOOL, fetchTool] } as any);
         costUsd += extractOpenRouterCost(response).cost;
         const message = response.choices?.[0]?.message as any;
         toolUse = { usage: (response as any).usage, annotations: message?.annotations?.map((a: any) => a?.url_citation?.url) };

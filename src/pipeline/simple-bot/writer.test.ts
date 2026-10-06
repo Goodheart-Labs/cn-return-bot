@@ -20,6 +20,12 @@ describe("writer prompt assembly", () => {
 
   afterEach(() => call?.mockRestore());
 
+  test("writer_reasoning_effort reaches the writer call", async () => {
+    call = spyOn(llm, "runJsonLlmCall").mockResolvedValue({ note_text: "", sources: [] });
+    await withBotConfig({ ...DEFAULT_CONFIG, writer_reasoning_effort: "medium" }, () => runWriter("The post", "The findings"));
+    expect(call.mock.calls[0]![0].reasoningEffort).toBe("medium");
+  });
+
   for (const enabled of [true, false, undefined]) {
     test(`writer_central_claim ${String(enabled)} selects the rule and logs the treatment`, async () => {
       call = spyOn(llm, "runJsonLlmCall").mockResolvedValue({ note_text: "", sources: [] });

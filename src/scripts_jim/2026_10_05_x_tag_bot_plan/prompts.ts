@@ -181,13 +181,14 @@ export const STATUS_REPLIES = {
 
 /** The tag bot's chain of steps, forced on the claim-check service. A person
  *  asked about the post and a person approves the note, so every gate before
- *  and after the writer is off. Research and writing run on Opus 5.5. */
+ *  and after the writer is off. Research and writing run on Sonnet 5.5 at medium
+ *  reasoning effort. */
 export const TAG_BOT_PICKS: Record<string, string> = {
   bot: "simple-bot",
   topic_filter: "off",
   note_prefilter: "off",
-  simple_bot_search: "opus55-native",
-  simple_bot_writer: "opus55",
+  simple_bot_search: "sonnet55-native-medium",
+  simple_bot_writer: "sonnet55-medium",
   simple_bot_verifier: "off",
   materiality_treatment: "off",
   eval_submit_threshold: "off",

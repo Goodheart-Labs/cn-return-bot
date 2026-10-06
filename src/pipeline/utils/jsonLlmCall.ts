@@ -90,6 +90,8 @@ export async function runJsonLlmCall<T>(params: {
    *  `{ "queries": string[] }`. */
   schemaHint: string;
   maxAttempts?: number;
+  /** Overrides the bot config's `reasoning_effort` for this call only. */
+  reasoningEffort?: "low" | "medium" | "high";
 }): Promise<T> {
   const config = getBotConfig();
   return parseJsonWithRetry<T>({
@@ -104,6 +106,7 @@ export async function runJsonLlmCall<T>(params: {
         messages,
         response_format: params.responseFormat,
         ...llmTuningParams(config),
+        ...(params.reasoningEffort ? { reasoning_effort: params.reasoningEffort } : {}),
       } as any);
       trackLlmCall(costEntry);
       const content = response.choices?.[0]?.message?.content ?? "{}";
