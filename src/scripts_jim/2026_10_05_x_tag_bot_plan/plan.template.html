@@ -234,7 +234,7 @@ td code { white-space: nowrap; }
     <h3>Starting a conversation</h3>
     <ul>
       <li>A person replies to a post and writes <code>@CommonNotesBot</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post. The handle is a placeholder until we pick one.</li>
-      <li>The bot answers within about a minute: the watcher looks for new mentions every 15 seconds, and the research takes 20 to 40 seconds.</li>
+      <li>The bot answers within about 30 to 60 seconds. X pushes the tag to us within a second, and the research takes 20 to 40 seconds.</li>
       <li>The person's own words go into the research. If they point at one claim, the bot checks that claim even when it is not the post's main argument. This turned out to matter, see <a href="#d-requester">the decision on the tagger's comment</a>.</li>
       <li>The answer is one reply: a draft note with its sources, or two or three sentences on why no note is needed. Either way the reply ends with how to continue.</li>
       <li>If a second person tags the bot under the same post, the bot does not research again. It answers with the newest answer it already has. If their tag also contains a suggestion, it is handled like any other suggestion.</li>
@@ -256,7 +256,7 @@ td code { white-space: nowrap; }
     </div>
     <div class="table-wrap" id="cost-table"></div>
     <div class="prose">
-      <p><strong>Fixed costs:</strong> X Premium for the bot account is $8 a month. Mentions read through X's "owned reads" price cost $0.001 each, so polling is free when nobody tags us: X bills per post returned, not per request.</p>
+      <p><strong>Fixed costs:</strong> X Premium for the bot account is $8 a month. Every tag and every reply X pushes to us costs $0.005, and nothing is charged while nobody writes to the bot.</p>
       <p><strong>At scale:</strong> 20 conversations a day at about $1.50 each is about $900 a month. The revision step is the one to watch. A revision that searches and opens pages cost $1.36 in the example, because Opus reads every fetched page as input. The plan caps the fetch tool at 8,000 tokens per page and two pages per call, which should bring that to roughly $0.30.</p>
     </div>
     <div class="callout">
@@ -276,7 +276,7 @@ td code { white-space: nowrap; }
       <li><strong>X Premium</strong> allows posts of up to 25,000 characters. The API needs no special flag for this: <code>POST /2/tweets</code> accepts the longer text when the account has Premium, and refuses it otherwise. We decided to buy Premium for the bot. Premium also adds a checkmark, which ranks the bot's replies higher in a thread.</li>
     </ul>
     <h3>Rate limits</h3>
-    <p>Reading mentions is limited to 300 requests per 15 minutes per account, so polling every 15 seconds uses 60. Posting is limited to 100 posts per 15 minutes and 10,000 per day, far above what we need.</p>
+    <p>A self-serve app may hold 1,500 event subscriptions; the bot needs two. Posting is limited to 100 posts per 15 minutes and 10,000 per day, far above what we need.</p>
   </section>
 
   <section id="approval" class="prose">
@@ -323,12 +323,8 @@ Thank you,
       <div class="decision">
         <h3>Where it runs: one new service on the services box</h3>
         <p>The bot is a long-running program, a <em>daemon</em>, that runs as a new systemd service called <code>cn-x-tag-bot</code> on the services box. systemd is Linux's service manager: it starts the program at boot and restarts it if it crashes. The box's existing autodeploy timer pulls new code and restarts it, like the other <code>cn-*</code> services.</p>
-        <p>It polls X for new mentions every 15 seconds with <code>GET /2/users/:id/mentions?since_id=…</code>. X also pushes events, and pay-per-use apps may use it, in two ways:</p>
-        <ul>
-          <li><strong>The X Activity API</strong> (X's name, "XAA") sends the events <code>post.mention.create</code> (someone writes our handle in a post) and <code>post.reply.create</code> (someone replies directly to one of our posts) within a second. It delivers them either to a webhook, which is a public web address of ours that X calls, or over a persistent HTTP stream, a connection our service opens and keeps open. The stream needs no public address, so it fits the services box. Each event costs $0.005.</li>
-          <li><strong>The Account Activity API</strong> is the older webhook product. Pay-per-use apps get one webhook and three subscribed accounts, and it needs a public web address that answers X's security check (a "CRC challenge", where X sends a random token and we answer with its signature).</li>
-        </ul>
-        <p>The plan uses polling because it heals itself: after any outage, the next poll asks for everything since the last mention we saw. A stream or webhook drops events while we are disconnected, so it needs a catch-up poll after every reconnect anyway, which means two mechanisms instead of one. The price of polling is up to 15 seconds of delay on a reply that takes 30 seconds of research. If we later want replies to feel instant, the XAA stream can be added in front of the same routing code.</p>
+        <p>X pushes the bot's mentions to it through the X Activity API (X's name, "XAA"). The service subscribes once to two events for the bot's account: <code>post.mention.create</code>, which fires when someone writes the bot's handle in a post, and <code>post.reply.create</code>, which fires when someone replies directly to one of the bot's posts. It then opens one persistent HTTP stream (<code>GET /2/activity/stream</code>), a connection that the service opens and X keeps open, and X sends each event down it within a second. The stream needs no public web address, so it fits the services box, and it needs no cursor or schedule of our own.</p>
+        <p>The plan deliberately does not try to be robust against outages. A tag that arrives while the service is down gets no answer, and the person can tag again. The one exception costs a single parameter: when the stream connects, it asks for <code>backfill_minutes=5</code>, so X resends the last five minutes. That covers the restart the autodeploy timer does after every code change. X also offers webhooks, where X calls a public address of ours, and polling the mentions timeline. Both need more code for no gain here.</p>
         <p>It runs the pipeline steps in its own process, the way the Signal bot does, rather than calling the claim-check service. The claim-check service's tweet endpoint runs the full production gate chain, and this bot needs a different chain (no prefilter, no verifier, a requester section, Opus everywhere). Running in-process reuses <code>createBotInput</code>, <code>runSearch</code>, <code>runTimingStage</code> and <code>runWriter</code> unchanged.</p>
       </div>
 
@@ -385,7 +381,6 @@ Thank you,
           <tbody>
             <tr><td><code>signal_submission_queue</code></td><td>Renamed to <code>approved_submission_queue</code>, with a new <code>lane</code> column.</td><td>It now holds notes a human approved in Signal or on X. Both get priority over the automatic pipeline.</td></tr>
             <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions.</td></tr>
-            <tr><td><code>pipeline_state</code></td><td>New key <code>x_tag_mentions_since_id</code>.</td><td>The newest mention already seen, so a restart does not reread old mentions.</td></tr>
           </tbody>
         </table></div>
       </div>
@@ -466,7 +461,7 @@ Thank you,
       <li><strong>Will X accept notes on any post?</strong> The AI Note Writer API officially offers notes on posts in its eligibility feed, mostly posts where people requested a note. The Signal bot submitted one note on a hand-picked post on 20 September, and X accepted it. That is one data point. When X refuses a post as ineligible, the bot will say so in the thread.</li>
       <li><strong>Will such notes get rated?</strong> A note on a post outside the feed may be shown to fewer raters. The Signal note is still "Needs more ratings" two weeks later. We cannot tell yet whether that is unusual, because our scraper does not record rating counts.</li>
       <li><strong>The notewriter's API keys.</strong> An investigation on 1 October found that the notewriter app's keys are refused for reading posts, because that app is not attached to an X "Project". Submitting notes still works in production. The bot account gets its own app inside a Project, so this does not block us, but it is worth knowing.</li>
-      <li><strong>Does a reply to the bot count as tagging it?</strong> X's rule says an app may reply when the author "@mentions" it. A reply to one of our posts carries our handle as an implicit mention: X lists it in our mentions timeline, but its text may not contain the handle. X's own event list treats the two apart (<code>post.mention.create</code> "does not fire for implicit mentions carried by replies"). If X's reply check does the same, the bot could answer the first tag but not the feedback under its drafts, unless the person writes the handle again. The first test with the real account must check this. If it fails, the draft's last line asks people to tag the bot in their reply.</li>
+      <li><strong>Does a reply to the bot count as tagging it?</strong> X's rule says an app may reply when the author "@mentions" it. A reply to one of our posts carries our handle as an implicit mention: X delivers it to us as a reply event, but its text may not contain the handle. X's own event list treats the two apart (<code>post.mention.create</code> "does not fire for implicit mentions carried by replies"). If X's reply check does the same, the bot could answer the first tag but not the feedback under its drafts, unless the person writes the handle again. The first test with the real account must check this. If it fails, the draft's last line asks people to tag the bot in their reply.</li>
       <li><strong>Our AI writer's track record.</strong> You said not to worry about limits. One effect to keep in mind: every submitted note counts toward the AI writer's rating history, which X uses to set the daily limit. If many approved notes get rated unhelpful, the main pipeline's limit shrinks too.</li>
       <li><strong>The bot's handle.</strong> <code>@CommonNotesBot</code> is a placeholder. Anything with "Community Notes" in it would look like X's own account, so we should avoid it.</li>
       <li><strong>Harassment.</strong> People will tag the bot under posts by people they dislike. The bot replies under the tagger's comment, not under the original post, which keeps it out of the author's direct line. Reports against the bot account could still get it limited by X.</li>
@@ -479,7 +474,7 @@ Thank you,
     <p>One ticket and one pull request, with these parts as sub-issues.</p>
     <ol class="steps-list">
       <li><strong>X account and approval.</strong> Bot account, Premium, Automated label, developer app in a Project with credits and a spending limit, the approval request. This needs a human with a phone number and a card.</li>
-      <li><strong>Mentions and threads.</strong> The migration, the mention watcher, routing a mention to "new thread" or "reply in a thread", and posting replies with the double-reply guard.</li>
+      <li><strong>Event stream and threads.</strong> The migration, the two XAA subscriptions and the stream connection, routing an event to "new thread" or "reply in a thread", and posting replies with the double-reply guard.</li>
       <li><strong>First answer.</strong> The tagger section, the bot's pipeline config, the draft template, the no-note reply, and reusing an existing answer when a second person tags the same post.</li>
       <li><strong>Replies to the bot.</strong> The classifier, the revision call with capped search and fetch, and the approval rule.</li>
       <li><strong>Submission.</strong> The shared approved-submission path, the queue rename, the <code>x_tag</code> lane, the 3-hour retry and the status replies.</li>
@@ -535,14 +530,13 @@ function classifierExamples() {
 
 const STEPS = {
   watch: {
-    title: "Mention watcher", chips: [["code", "Plain code"], ["x", "X API"], ["new", "New"]],
-    summary: "Every 15 seconds, asks X for new posts that mention the bot, then decides whether each one starts a thread or continues one.",
+    title: "Event stream", chips: [["code", "Plain code"], ["x", "X Activity API"], ["new", "New"]],
+    summary: "X pushes every post that tags the bot within a second. Plain code decides whether it starts a thread or continues one.",
     body: [
-      "Calls GET /2/users/:id/mentions with since_id set to the newest mention already seen. X returns each post with the post it replies to and the post it quotes. X could also push these events through its X Activity API, see the decision on where the bot runs for why the plan polls.",
-      "Routing is plain code. A mention whose parent is one of the bot's own posts continues that thread and goes to the classifier. Any other mention starts a new thread, and the post it replies to (or quotes) becomes the post to check. The bot's own posts and reposts are ignored.",
-      "Before doing anything, the watcher records the mention in x_tag_posts. A mention that already has a row is skipped, so a restart never handles a post twice.",
+      "One persistent HTTP stream from GET /2/activity/stream, subscribed to post.mention.create and post.reply.create for the bot's account. It connects with backfill_minutes=5, so a restart by the autodeploy timer loses nothing. A longer outage loses the tags that arrived meanwhile, which is accepted.",
+      "Routing is plain code. A post whose parent is one of the bot's own posts continues that thread and goes to the classifier. Any other post starts a new thread, and the post it replies to (or quotes) becomes the post to check. A reply that also writes the bot's handle arrives as both events, and the second copy is skipped because x_tag_posts already has its id.",
     ],
-    facts: [["Cost", "$0.001 per mention returned (X's owned-read price). Empty polls are free."], ["Rate", "60 of the allowed 300 requests per 15 minutes"]],
+    facts: [["Cost", "$0.005 per delivered event. Nothing while nobody writes to the bot."], ["Delay", "Under a second"]],
   },
   read: {
     title: "Read the post", chips: [["reused", "Existing code"], ["other", "Grok, Muse or Gemini"], ["x", "X API"]],
@@ -602,9 +596,9 @@ const STEPS = {
     facts: [["Cost", "$0.20 with a link, $0.01 without (see the note under Costs)"]],
   },
   watch2: {
-    title: "Mention watcher", chips: [["code", "Plain code"], ["x", "X API"]],
-    summary: "The same watcher. A mention whose parent is one of the bot's posts continues that thread.",
-    body: ["Replies to the bot's posts carry the bot's handle automatically, so X lists them as mentions. The watcher looks up the parent in x_tag_posts and hands the reply to the classifier together with the bot post it answers."],
+    title: "Event stream", chips: [["code", "Plain code"], ["x", "X Activity API"]],
+    summary: "The same stream. A direct reply to one of the bot's posts arrives as a post.reply.create event and continues that thread.",
+    body: ["The event names the post it replies to. The service looks that post up in x_tag_posts and hands the reply to the classifier together with the bot post it answers."],
   },
   classify: {
     title: "Sort the reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
@@ -746,14 +740,14 @@ const KIND_STYLE = {
   x: ["--ink", "--surface-2", "X API"],
 };
 const NODES = [
-  { id: "watch", x: 30, y: 60, title: "Mention watcher", sub: "every 15 s", kind: "code" },
+  { id: "watch", x: 30, y: 60, title: "Event stream", sub: "post.mention.create", kind: "code" },
   { id: "read", x: 290, y: 60, title: "Read the post", sub: "media, comments, author", kind: "other" },
   { id: "search", x: 550, y: 60, title: "Search", sub: "web search, findings", kind: "opus" },
   { id: "timing", x: 550, y: 200, title: "Timing check", sub: "Gemini 3 Flash", kind: "other" },
   { id: "writer", x: 550, y: 320, title: "Writer", sub: "one note, 280 chars", kind: "opus" },
   { id: "noNote", x: 820, y: 60, title: "No-note reply", sub: "2 or 3 sentences", kind: "muse" },
   { id: "postAnswer", x: 820, y: 320, title: "Post the answer", sub: "draft or no-note", kind: "x" },
-  { id: "watch2", x: 30, y: 560, title: "Mention watcher", sub: "reply to a bot post", kind: "code" },
+  { id: "watch2", x: 30, y: 560, title: "Event stream", sub: "post.reply.create", kind: "code" },
   { id: "classify", x: 290, y: 560, title: "Sort the reply", sub: "approve, feedback, other", kind: "muse" },
   { id: "approvalCheck", x: 550, y: 560, title: "Approval check", sub: "on the draft's path?", kind: "code" },
   { id: "queue", x: 820, y: 560, title: "Submission queue", sub: "every 2 min, up to 3 h", kind: "code" },
@@ -893,7 +887,7 @@ mumbaiThread.append(
   el("h3", { text: "A false side claim: draft, revise, approve" }),
   el("div", { class: "caption", text: "Real post from 29 September 2026, which quotes a post claiming that virtually everywhere Indians live looks like a garbage-filled canal." }),
   post({ role: "root", name: "Dinesh D'Souza", handle: "DineshDSouza", text: postText(M.postContext) + "\n\nQuoting: " + quotedText(M.postContext) }),
-  post({ role: "human", handle: M.requester.handle, text: M.requester.text, steps: [["watch", "Mention watcher"], ["read", "Read the post"]] }),
+  post({ role: "human", handle: M.requester.handle, text: M.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
   post({ role: "bot", handle: "CommonNotesBot", text: M.draftReply, steps: [["search", "Search", 0], ["writer", "Writer"], ["postAnswer", "Template"]] }),
   post({ role: "human", handle: M.classifications[0].reply.handle, text: M.classifications[0].reply.text, steps: [["classify", "Sorted as other", 0]], silent: "The bot does not answer." }),
   post({ role: "human", handle: M.classifications[1].reply.handle, text: M.classifications[1].reply.text, steps: [["classify", "Sorted as feedback", 1]] }),
@@ -907,7 +901,7 @@ gdpThread.append(
   el("h3", { text: "Numbers that hold up: no note, and the bot holds its ground" }),
   el("div", { class: "caption", text: "Real post from 5 October 2026 by the US Treasury Secretary." }),
   post({ role: "root", name: "Treasury Secretary Scott Bessent", handle: "SecScottBessent", text: postText(G.postContext) }),
-  post({ role: "human", handle: G.requester.handle, text: G.requester.text, steps: [["watch", "Mention watcher"], ["read", "Read the post"]] }),
+  post({ role: "human", handle: G.requester.handle, text: G.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
   post({ role: "bot", handle: "CommonNotesBot", text: G.noNoteText, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
   post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, steps: [["classify", "Sorted as feedback", 4]] }),
   post({ role: "bot", handle: "CommonNotesBot", text: G.revision.revision.reply, steps: [["revise", "Revise", 1]] }),
@@ -919,16 +913,16 @@ const classifierCost = M.classifications[0].costUsd;
 const rows = [
   ["Tag that gets a draft, nobody replies", [
     ["Read comments (Grok) and media", commentsCost.mumbai], ["Search (Opus 5.5)", M.search.costUsd], ["Timing check", M.timing.costUsd], ["Writer (Opus 5.5)", M.writer.costUsd],
-    ["X: mention, post reads", 0.016], ["X: draft reply with links", 0.20]]],
+    ["X: tag event, post reads", 0.020], ["X: draft reply with links", 0.20]]],
   ["Tag that gets a no-note answer", [
     ["Read comments and media", commentsCost.gdp], ["Search (Opus 5.5)", G.search.costUsd], ["No-note reply (Muse)", G.reason.costUsd],
-    ["X: mention, post reads", 0.011], ["X: reply with one link", 0.20]]],
+    ["X: tag event, post reads", 0.015], ["X: reply with one link", 0.20]]],
   ["The full Mumbai thread", [
     ["First draft, as above", commentsCost.mumbai + M.search.costUsd + M.timing.costUsd + M.writer.costUsd], ["Sorting 3 replies (Muse)", 3 * classifierCost], ["Revision with search (Opus 5.5)", M.revision.costUsd],
-    ["X: mentions and reads", 0.019], ["X: draft, revised draft, submitted reply", 0.60]]],
+    ["X: 4 events and post reads", 0.035], ["X: draft, revised draft, submitted reply", 0.60]]],
   ["The full GDP thread", [
     ["No-note answer, as above", commentsCost.gdp + G.search.costUsd + G.reason.costUsd], ["Sorting 1 reply (Muse)", G.classification.costUsd], ["Revision without search", G.revision.costUsd],
-    ["X: mentions and reads", 0.012], ["X: no-note reply, answer without link", 0.21]]],
+    ["X: 2 events and post reads", 0.020], ["X: no-note reply, answer without link", 0.21]]],
 ];
 const table = el("table", {});
 table.append(el("thead", {}, el("tr", {}, el("th", { text: "Conversation" }), el("th", { text: "Parts" }), el("th", { class: "num", text: "Models" }), el("th", { class: "num", text: "X API" }), el("th", { class: "num", text: "Total" }))));
