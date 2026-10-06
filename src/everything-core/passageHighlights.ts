@@ -12,8 +12,8 @@ export function validHighlight(kind: string, probability: number | null, stateme
 
 export function highlightSentence(highlight: { kind: string; probability?: number | null; statement: string }): string {
   return highlight.kind === "forecast"
-    ? `This is a forecast of a ${highlight.probability}% chance of "${highlight.statement}"`
-    : `A key point in this article is "${highlight.statement}"`;
+    ? `This is a forecast of a ${highlight.probability}% chance of “${highlight.statement}”`
+    : `A key point in this article is “${highlight.statement}”`;
 }
 
 export function parseHighlightDraft(value: unknown): HighlightDraft | null {

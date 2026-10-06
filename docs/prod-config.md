@@ -48,11 +48,35 @@ Paste-ready allow-list:
 https://commonnotes.net/**
 https://www.commonnotes.net/**
 https://goodheart-labs.github.io/cn-return-bot/notes/**
+http://localhost:3000/**
+http://localhost:3001/**
+http://localhost:3002/**
+http://localhost:3003/**
+http://localhost:3004/**
+http://localhost:3005/**
+http://localhost:3006/**
+http://localhost:3007/**
+http://localhost:3008/**
+http://localhost:3009/**
+http://localhost:3118/**
+http://localhost:5173/**
+http://localhost:8000/**
+http://localhost:8001/**
+http://localhost:8002/**
 http://localhost:8003/**
 http://localhost:8004/**
-https://jodkhmefbcmgldokmeicpdogkepmcnij.chromiumapp.org/**
+http://localhost:8005/**
+http://localhost:8006/**
+http://localhost:8007/**
+http://localhost:8008/**
+http://localhost:8009/**
+http://localhost:8010/**
+https://*.chromiumapp.org/**
+https://*.extensions.allizom.org/**
 https://edc17663d98cd6a49556fdc1882c73dace1728c1.extensions.allizom.org/**
 ```
+
+The localhost lines are every port the Mac tunnel forwards (devbox README, section "mac-tunnel"), so X sign-in returns to whichever local server it started from. They were widened from 8003 and 8004 on 2026-10-06 (GOO-374). The production site never returns to localhost, because a sign-in always asks to return to the address it started on.
 
 The first three lines are the website on its own domain and on GitHub Pages.
 The website asks X sign-in to return to the page the reader was on, in

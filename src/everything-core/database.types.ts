@@ -98,6 +98,21 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_admins: {
+        Row: {
+          added_at: string
+          email: string
+        }
+        Insert: {
+          added_at?: string
+          email: string
+        }
+        Update: {
+          added_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       everything_claims: {
         Row: {
           claim: string
@@ -357,6 +372,112 @@ export type Database = {
             foreignKeyName: "everything_link_visits_item_id_fkey"
             columns: ["item_id"]
             isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_minisite_jobs: {
+        Row: {
+          created_at: string
+          error: string | null
+          finished_at: string | null
+          id: string
+          kind: string
+          minisite_id: string | null
+          requested_by: string | null
+          result: Json | null
+          started_at: string | null
+          status: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          kind: string
+          minisite_id?: string | null
+          requested_by?: string | null
+          result?: Json | null
+          started_at?: string | null
+          status?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          kind?: string
+          minisite_id?: string | null
+          requested_by?: string | null
+          result?: Json | null
+          started_at?: string | null
+          status?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_minisite_jobs_minisite_id_fkey"
+            columns: ["minisite_id"]
+            isOneToOne: false
+            referencedRelation: "everything_minisites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_minisites: {
+        Row: {
+          byline: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          description: string
+          features: string[]
+          id: string
+          image_url: string | null
+          item_id: string
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          byline?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          features?: string[]
+          id?: string
+          image_url?: string | null
+          item_id: string
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          byline?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          features?: string[]
+          id?: string
+          image_url?: string | null
+          item_id?: string
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_minisites_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: true
             referencedRelation: "everything_items"
             referencedColumns: ["id"]
           },
@@ -920,6 +1041,39 @@ export type Database = {
           source?: string
           title?: string | null
           url?: string
+        }
+        Relationships: []
+      }
+      everything_vote_history: {
+        Row: {
+          action: string
+          at: string
+          id: number
+          new_vote: number | null
+          old_vote: number | null
+          target_id: string
+          vote_table: string
+          voter_id: string
+        }
+        Insert: {
+          action: string
+          at?: string
+          id?: never
+          new_vote?: number | null
+          old_vote?: number | null
+          target_id: string
+          vote_table: string
+          voter_id: string
+        }
+        Update: {
+          action?: string
+          at?: string
+          id?: never
+          new_vote?: number | null
+          old_vote?: number | null
+          target_id?: string
+          vote_table?: string
+          voter_id?: string
         }
         Relationships: []
       }
@@ -2130,6 +2284,16 @@ export type Database = {
         Returns: Json
       }
       everything_cost_since: { Args: { since: string }; Returns: number }
+      everything_create_minisite: {
+        Args: {
+          job_id: string
+          new_description: string
+          new_features: string[]
+          new_slug: string
+          new_title: string
+        }
+        Returns: string
+      }
       everything_creator_attention: {
         Args: { min_pages: number; since: string }
         Returns: {
@@ -2182,6 +2346,7 @@ export type Database = {
           users: number
         }[]
       }
+      everything_is_admin: { Args: never; Returns: boolean }
       everything_leaderboard: {
         Args: never
         Returns: {
@@ -2261,6 +2426,10 @@ export type Database = {
           hour: string
           runs: number
         }[]
+      }
+      everything_start_minisite_check: {
+        Args: { target_minisite: string }
+        Returns: undefined
       }
       everything_visit_page: { Args: { url: string }; Returns: string }
       fact_check_consume: {
