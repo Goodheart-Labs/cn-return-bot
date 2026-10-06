@@ -255,7 +255,7 @@ export function Reader({ item, content, header, features, scope }: {
   const headerElement = <header className="reader-header">
     <h1>{header.title}</h1>
     {header.description && <p className="reader-subtitle">{header.description}</p>}
-    <p className="reader-byline">{bylineParts.map((part, index) => <span key={index}>{part}</span>)}</p>
+    <p className="reader-byline">{bylineParts.join(" · ")}</p>
     {!wide && <div className="reader-header-links"><OriginalLink url={item.url} />{totalEntries > 0 && <JumpButton count={totalEntries} onJump={jumpToFirst} />}</div>}
   </header>;
 
@@ -291,7 +291,7 @@ export function Reader({ item, content, header, features, scope }: {
               <div className="reader-margin-group" data-margin-group={wide ? "" : undefined}>{entries(UNANCHORED)}</div>
             </section>}
             <footer className="reader-end">
-              {totalEntries > 0 && <p>Readers' ratings decide which notes count. Rate the ones you read above.</p>}
+              {totalEntries > 0 && <p>Readers’ ratings decide which notes count. Rate the ones you read above.</p>}
               <OriginalLink url={item.url} />
             </footer>
           </article>

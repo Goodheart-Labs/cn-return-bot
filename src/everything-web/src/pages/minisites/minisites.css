@@ -27,7 +27,7 @@
 .minisite-checklist input { width: 1rem; height: 1rem; margin-top: 0.2rem; accent-color: var(--cn-primary); cursor: pointer; }
 .minisite-checklist-row label { font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); cursor: pointer; }
 .minisite-checklist-row p { grid-column: 2; margin-top: 0.125rem; font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); color: var(--cn-fg-muted); }
-.minisite-checklist-off > .minisite-checklist-row label, .minisite-checklist-off > .minisite-checklist-row p { opacity: 0.5; }
+.minisite-checklist-off > .minisite-checklist-row > * { opacity: 0.45; }
 
 .minisite-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--cn-line); }
 
@@ -51,9 +51,12 @@
 @media (max-width: 767px) { .create-columns { grid-template-columns: minmax(0, 1fr); } }
 .create-fields { display: grid; gap: 0.5rem; }
 .create-fields label:not(:first-child) { margin-top: 0.75rem; }
-.create-slug { display: flex; align-items: center; border: 1px solid var(--cn-line-strong); border-radius: var(--cn-radius-control); background: var(--cn-surface); overflow: hidden; }
+.create-slug { display: flex; flex-wrap: wrap; align-items: center; border: 1px solid var(--cn-line-strong); border-radius: var(--cn-radius-control); background: var(--cn-surface); overflow: hidden; }
 .create-slug span { padding: 0 0.25rem 0 0.75rem; color: var(--cn-fg-muted); font-size: var(--cn-text-sm); white-space: nowrap; }
-.create-slug input { border: 0 !important; box-shadow: none !important; padding-left: 0; }
+.create-slug input { flex: 1 1 12rem; min-width: 0; border: 0 !important; box-shadow: none !important; padding-left: 0; }
+@media (max-width: 639px) { .create-slug span { padding-top: 0.5rem; font-size: var(--cn-text-xs); } .create-slug input { padding-left: 0.75rem; } }
+.create-field-label { margin-top: 0.75rem; font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); }
+.create-byline { font-size: var(--cn-text-sm); color: var(--cn-fg-secondary); }
 .create-preview { max-height: 32rem; overflow-y: auto; padding: 1.25rem 1.5rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); }
 .create-preview .reader-passage { margin-bottom: 1rem; }
 .create-preview .reader-passage > p, .create-preview .reader-passage > ul, .create-preview .reader-passage > ol, .create-preview .reader-passage > blockquote { font-size: 1rem; line-height: 1.65; }
