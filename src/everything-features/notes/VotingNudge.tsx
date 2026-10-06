@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { readBrowserFlag, setBrowserFlag } from "@cn/core/extensionStorage";
-import { RATING_QUESTION } from "./NoteBox";
+import { ratingQuestion } from "./NoteBox";
 
 /** The one-time voting nudge: on the first note a reader opens, the rating
  *  panel's question also tells them their rating counts even without any
@@ -39,7 +39,7 @@ export function useVotingNudge(): { show: boolean; dismiss: () => void } {
 export function VotingNudge({ onDismiss }: { onDismiss: () => void }) {
   return (
     <span>
-      <span className="font-semibold">{RATING_QUESTION}</span> <span className="text-fg-secondary">You don't need to be an expert.</span>{" "}
+      <span className="font-semibold">{ratingQuestion("note")}</span> <span className="text-fg-secondary">You don't need to be an expert.</span>{" "}
       <button type="button" onClick={onDismiss} className="font-medium text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control">
         Got it
       </button>
