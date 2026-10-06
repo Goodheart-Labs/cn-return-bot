@@ -160,8 +160,9 @@ export interface RateClaimsResponse {
 // ---------------------------------------------------------------------------
 
 export const FETCH_PAGE_PATH = "/fetch-page";
-export const FETCH_PAGE_HTML_PATH = "/fetch-page-html";
-export const FETCH_JSON_PATH = "/fetch-json";
+/** Reads a whole article for a minisite (readPageForMinisite), so the page's
+ *  HTML is parsed inside the sandbox and never in a service that holds keys. */
+export const READ_PAGE_PATH = "/read-page";
 export const FETCH_IMAGE_PATH = "/fetch-image";
 
 /** The environment variable that names the fetcher's Unix socket. The fetcher

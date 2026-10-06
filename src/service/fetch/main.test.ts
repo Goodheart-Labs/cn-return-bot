@@ -2,7 +2,8 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fetchJson, fetchWebPage, fetchWebPageHtml, fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
+import { PageReadError, readPageForMinisite } from "../../everything/minisites/readPage";
+import { fetchWebPage, fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
 import { callFetchService } from "../client";
 import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchedImage } from "../contract";
 import { startFetchService } from "./main";
@@ -50,13 +51,16 @@ describe("the fetcher", () => {
     }
   });
 
-  test("fetchWebPageHtml and fetchJson go through the fetcher when the socket is set", async () => {
+  test("a minisite page is read inside the fetcher when the socket is set", async () => {
     process.env[FETCH_SERVICE_SOCKET_VARIABLE] = socket;
     try {
-      const page = await fetchWebPageHtml(`http://127.0.0.1:${site.port}/article`);
-      expect(page.ok && page.html).toContain("<article><h1>Test</h1>");
-      expect(await fetchJson(`http://127.0.0.1:${site.port}/post.json`)).toEqual({ ok: true, json: { title: "A post" } });
-      expect(await fetchJson(`http://127.0.0.1:${site.port}/article`)).toEqual({ ok: false, reason: "not JSON but text/html" });
+      const page = await readPageForMinisite(`http://127.0.0.1:${site.port}/article`);
+      expect(page.content).toContain("The fetcher returned this article.");
+      expect(page.plain_text).toContain("The fetcher returned this article.");
+      // The fetcher's plain sentence reaches the caller as a PageReadError.
+      const refused = readPageForMinisite("ftp://example.org/file");
+      expect(refused).rejects.toBeInstanceOf(PageReadError);
+      expect(refused).rejects.toThrow("This is not the address of a web page.");
     } finally {
       delete process.env[FETCH_SERVICE_SOCKET_VARIABLE];
     }

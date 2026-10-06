@@ -16,14 +16,11 @@ import { getBrowser } from "../utils/browserManager";
 import { isWebUrl } from "../utils/webUrl";
 import { callFetchService } from "../../service/client";
 import {
-  FETCH_JSON_PATH,
-  FETCH_PAGE_HTML_PATH,
   FETCH_PAGE_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
   type FetchedJson,
   type FetchedPageHtml,
   type FetchPageRequest,
-  type FetchUrlRequest,
 } from "../../service/contract";
 import {
   GEMINI_MODEL,
@@ -461,24 +458,6 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
   const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
   if (!socket) return fetchWebPageInProcess(url, opts);
   return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url, maxChars: opts?.maxChars } satisfies FetchPageRequest);
-}
-
-/** Like fetchWebPage, but answers with the HTML of the page the ladder
- *  accepted instead of flattening it to markdown. The minisite page reader
- *  needs the HTML to keep links, footnotes and figures. */
-export async function fetchWebPageHtml(url: string): Promise<FetchedPageHtml> {
-  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
-  if (!socket) return fetchWebPageHtmlInProcess(url);
-  return callFetchService<FetchedPageHtml>(socket, FETCH_PAGE_HTML_PATH, { url } satisfies FetchUrlRequest);
-}
-
-/** Fetches a JSON answer with one plain request. It has no fallbacks, because
- *  an API either answers or it does not, and an archive copy of an API answer
- *  is useless. */
-export async function fetchJson(url: string): Promise<FetchedJson> {
-  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
-  if (!socket) return fetchJsonInProcess(url);
-  return callFetchService<FetchedJson>(socket, FETCH_JSON_PATH, { url } satisfies FetchUrlRequest);
 }
 
 const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";

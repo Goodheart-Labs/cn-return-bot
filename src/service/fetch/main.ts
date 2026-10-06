@@ -18,12 +18,12 @@
 
 import { chmodSync } from "node:fs";
 import { downloadImageInlineData } from "../../pipeline/media/mediaAnalysisGemini";
-import { fetchJsonInProcess, fetchWebPageHtmlInProcess, fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
+import { readPageAnswer } from "../../everything/minisites/readPage";
+import { fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
 import {
   FETCH_IMAGE_PATH,
-  FETCH_JSON_PATH,
-  FETCH_PAGE_HTML_PATH,
   FETCH_PAGE_PATH,
+  READ_PAGE_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
   type FetchUrlRequest,
   type FetchPageRequest,
@@ -44,8 +44,7 @@ const SOCKET_MODE = 0o666;
 
 const routes: Record<string, (body: any) => Promise<unknown>> = {
   [FETCH_PAGE_PATH]: (body: FetchPageRequest) => fetchWebPageInProcess(body.url, { maxChars: body.maxChars }),
-  [FETCH_PAGE_HTML_PATH]: (body: FetchUrlRequest) => fetchWebPageHtmlInProcess(body.url),
-  [FETCH_JSON_PATH]: (body: FetchUrlRequest) => fetchJsonInProcess(body.url),
+  [READ_PAGE_PATH]: (body: FetchUrlRequest) => readPageAnswer(body.url),
   [FETCH_IMAGE_PATH]: (body: FetchUrlRequest) => downloadImageInlineData(body.url),
 };
 

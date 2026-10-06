@@ -5,13 +5,18 @@
  * fetch ladder, and Readability finds the article in its HTML. Both paths run
  * the article HTML through the same converter to reader text.
  *
- * Every network request goes through fetchWebPageHtml and fetchJson, so on the
- * services box the sandboxed fetcher makes them. */
+ * On the services box all of it runs inside the sandboxed fetcher (cn-fetch):
+ * the download, and the parsing of the page's HTML, which comes from a
+ * stranger. The other services only ever see the finished result.
+ * readPageForMinisite asks the fetcher for it over its socket, the way
+ * fetchWebPage does, and runs it in this process where there is no fetcher. */
 
 import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
 import { parseReaderText, plainText, withoutRepeatedHeader } from "../../everything-core/readerText";
-import { fetchJson, fetchWebPageHtml } from "../../pipeline/tool-calling/tools";
+import { fetchJsonInProcess, fetchWebPageHtmlInProcess } from "../../pipeline/tool-calling/tools";
+import { callFetchService } from "../../service/client";
+import { FETCH_SERVICE_SOCKET_VARIABLE, READ_PAGE_PATH, type FetchUrlRequest } from "../../service/contract";
 import { isWebUrl } from "../../pipeline/utils/webUrl";
 import { canonicalSubstackFeed, substackFeedInPageHtml, substackFeedOfPage } from "../feedUrls";
 import { htmlToReaderBlocks } from "./htmlToReaderText";
@@ -49,7 +54,32 @@ const HEADER_BLOCKS_CHECKED = 4;
 
 const SUBSTACK_POST_PATH = /^\/p\/([\w-]+)\/?$/;
 
+/** What the fetcher's read-page route answers. A PageReadError travels as its
+ *  sentence, so the admin still sees why the page could not be read. */
+export type ReadPageAnswer = { kind: "page"; page: MinisitePage } | { kind: "unreadable"; reason: string };
+
+/** Reads a page for a minisite, inside the fetcher when there is one. */
 export async function readPageForMinisite(url: string): Promise<MinisitePage> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return readPageInProcess(url);
+  const answer = await callFetchService<ReadPageAnswer>(socket, READ_PAGE_PATH, { url } satisfies FetchUrlRequest);
+  if (answer.kind === "unreadable") throw new PageReadError(answer.reason);
+  return answer.page;
+}
+
+/** The fetcher's read-page route. */
+export async function readPageAnswer(url: string): Promise<ReadPageAnswer> {
+  try {
+    return { kind: "page", page: await readPageInProcess(url) };
+  } catch (err) {
+    if (err instanceof PageReadError) return { kind: "unreadable", reason: err.message };
+    throw err;
+  }
+}
+
+/** The page reader itself. Only the fetcher and processes without one call
+ *  this directly, because it parses the page's HTML. */
+async function readPageInProcess(url: string): Promise<MinisitePage> {
   if (!isWebUrl(url)) throw new PageReadError("This is not the address of a web page.");
   const post = await fetchSubstackPost(url);
   const page = post ? pageFromSubstackPost(post, url) : await readArticlePage(url);
@@ -131,7 +161,7 @@ async function fetchSubstackPost(url: string): Promise<SubstackPost | null> {
   const { origin, pathname } = new URL(url);
   const slug = SUBSTACK_POST_PATH.exec(pathname)?.[1];
   if (!slug) return null;
-  const answer = await fetchJson(`${origin}/api/v1/posts/${slug}`);
+  const answer = await fetchJsonInProcess(`${origin}/api/v1/posts/${slug}`);
   return answer.ok && isSubstackPost(answer.json) ? answer.json : null;
 }
 
@@ -239,7 +269,7 @@ export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage
 }
 
 async function readArticlePage(url: string): Promise<MinisitePage> {
-  const fetched = await fetchWebPageHtml(url);
+  const fetched = await fetchWebPageHtmlInProcess(url);
   if (!fetched.ok) {
     console.warn(`[minisite] could not fetch ${url}: ${fetched.reason}`);
     throw new PageReadError("We could not download this page. The site may block our server, or the page may need a login.");
