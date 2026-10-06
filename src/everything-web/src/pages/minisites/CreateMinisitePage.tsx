@@ -157,7 +157,6 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
         <Input id="create-address" type="url" inputMode="url" autoFocus placeholder="https://" value={address} onChange={(event) => { setAddress(event.target.value); setJobId(null); }} />
         <Button type="submit" disabled={reading || !address.trim()}>{reading ? "Reading the page…" : "Read the page"}</Button>
       </div>
-      <p className="create-hint">Any article, newsletter post or blog post. Our server reads it, which usually takes a few seconds.</p>
       {requestError && <p role="alert" className="factcheck-error">{requestError}</p>}
       {job?.status === "error" && <p role="alert" className="factcheck-error">{job.error ?? "We couldn't read this page."} <button type="button" className="minisites-retry" onClick={() => void read()}>Try again</button></p>}
     </form>}
@@ -172,7 +171,7 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
           <Textarea id="create-description" autoGrow rows={3} maxLength={1000} value={description} onChange={(event) => setDescription(event.target.value)} />
           <label htmlFor="create-slug">Address</label>
           <div className="create-slug"><span>commonnotes.net/minisites/</span><Input id="create-slug" value={slug} maxLength={80} aria-invalid={!slugValid} onChange={(event) => { setSlug(event.target.value.toLowerCase()); setSlugEdited(true); }} /></div>
-          <p className={slugValid ? "create-hint" : "factcheck-error"}>Lowercase letters, numbers and dashes. It cannot change after you create the minisite.</p>
+          {!slugValid && <p className="factcheck-error">Use lowercase letters, numbers and dashes.</p>}
           {result.byline && <><p className="create-field-label">Byline</p><p className="create-byline">{result.byline}</p></>}
         </div>
         <Preview result={result} />

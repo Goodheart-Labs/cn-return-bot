@@ -37,7 +37,7 @@ function NoteDialog({ anchor }: { anchor: ReaderAnchor }) {
         onSuccess: (result) => {
           closeDialog();
           document.getSelection()?.removeAllRanges();
-          notify("Your note is posted. It shows as “Needs more ratings” until other readers rate it.");
+          notify("Your note is posted.");
           reveal(noteCardId(scope, result.noteId), anchor.blockId);
         },
       },
@@ -49,7 +49,6 @@ function NoteDialog({ anchor }: { anchor: ReaderAnchor }) {
     <DialogQuote label={anchor.partial ? "On the words you selected" : "On this passage"} text={anchor.text} />
     <form className="reader-dialog-form" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
       <Textarea autoGrow autoFocus aria-label="Your note" value={text} onChange={(event) => setText(event.target.value)} rows={4} maxLength={MAX_NOTE_LENGTH} placeholder="Add context, a correction, or a source for this passage." />
-      <p className="reader-dialog-hint">Your note appears beside the passage as “Needs more ratings” until other readers rate it.</p>
       {session && !session.user.is_anonymous && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
       {post.isError && <p role="alert" className="reader-dialog-error">That didn't post. Check your connection and try again.</p>}
       <DialogFooter>

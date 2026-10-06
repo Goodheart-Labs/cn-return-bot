@@ -318,7 +318,6 @@ export function Reader({ item, content, header, features, scope }: {
               <div className="reader-margin-group" data-margin-group={wide ? "" : undefined}>{entries(UNANCHORED)}</div>
             </section>}
             <footer className="reader-end">
-              {totalEntries > 0 && <p>Readers’ ratings decide which notes count. Rate the ones you read above.</p>}
               <OriginalLink url={item.url} />
             </footer>
           </article>

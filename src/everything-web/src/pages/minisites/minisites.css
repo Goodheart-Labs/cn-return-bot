@@ -2,7 +2,6 @@
 .minisites-page { max-width: 60rem; margin: 0 auto; padding: 2.5rem 1rem 5rem; }
 .minisites-page h1 { font-family: var(--cn-font-title); font-size: var(--cn-text-3xl); line-height: var(--cn-leading-3xl); font-weight: 700; color: var(--cn-fg); }
 .minisites-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem 2rem; margin-bottom: 2rem; }
-.minisites-head p { max-width: 36rem; margin-top: 0.5rem; color: var(--cn-fg-secondary); }
 .minisites-empty { color: var(--cn-fg-muted); }
 .minisites-retry { color: var(--cn-link); text-decoration: underline; text-underline-offset: 3px; }
 
@@ -45,7 +44,6 @@
 .create-fields label span { font-weight: 400; color: var(--cn-fg-muted); }
 .create-paste-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .create-paste-row > :first-child { flex: 1 1 18rem; }
-.create-hint { font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); color: var(--cn-fg-muted); }
 .create-known { margin-bottom: 1.5rem; padding: 0.625rem 0.875rem; border: 1px solid var(--cn-positive-line); border-radius: var(--cn-radius-control); background: var(--cn-positive-soft); color: var(--cn-positive-selected-fg); font-size: var(--cn-text-sm); }
 .create-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2rem; align-items: start; }
 @media (max-width: 767px) { .create-columns { grid-template-columns: minmax(0, 1fr); } }

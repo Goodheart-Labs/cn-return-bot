@@ -54,10 +54,6 @@ function AskPanel({ blockId }: { blockId: string }) {
       <h3>Ask Opus</h3>
       <button type="button" className="reader-icon-button" aria-label="Close Ask Opus" onClick={closeAsk}><CloseIcon size={16} aria-hidden /></button>
     </header>
-    <p className="reader-ask-intro">
-      {features.has("opus.search") ? "Opus answers with sources from the web." : "Opus answers from the article and what it knows."}
-      {drafts && " It can also draft a key point or a forecast for you."}
-    </p>
     {questions.data?.map((q) => {
       const draft = parseHighlightDraft(q.draft);
       return <div key={q.id} className="reader-ask-exchange">
@@ -77,7 +73,6 @@ function AskPanel({ blockId }: { blockId: string }) {
       <div className="reader-ask-actions"><Button type="submit" disabled={waiting || !text.trim()}>{waiting ? "Waiting…" : "Ask"}</Button></div>
     </form>
     {(error || poster.error || questions.isError) && <p role="alert" className="reader-dialog-error">{error || poster.error || "Your questions couldn't load."}</p>}
-    <p className="reader-ask-smallprint">Answers come from Claude Opus 5.5 and can be wrong.</p>
     {login}{poster.login}
   </section>;
 }

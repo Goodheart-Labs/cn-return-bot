@@ -43,7 +43,7 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
     closeDialog();
     document.getSelection()?.removeAllRanges();
     refetchHighlights();
-    notify(`Your ${kindName(highlight.kind)} is posted. Other readers can now rate it.`);
+    notify(`Your ${kindName(highlight.kind)} is posted.`);
   }
   function edit(next: HighlightDraft) {
     setKind(next.kind);
@@ -66,7 +66,6 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
           : "A key point in this article is"}
       </label>
       <Textarea autoGrow id="reader-highlight-statement" aria-label={kind === "forecast" ? "What the forecast is about" : "The key point"} placeholder={kind === "forecast" ? "what the article expects to happen" : "the point, in a sentence"} required maxLength={2000} rows={2} value={statement} onChange={(event) => setStatement(event.target.value)} />
-      <p className="reader-dialog-hint">Other readers rate whether this {kindName(kind)} is helpful.</p>
       {session && !session.user.is_anonymous && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
       {suggestion
         ? <DraftSuggestion draft={suggestion} posting={poster.posting} onUse={() => void post(suggestion, null)} onEdit={() => edit(suggestion)} />

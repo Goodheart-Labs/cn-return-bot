@@ -112,8 +112,7 @@
 .reader-ask-panel h3 { font-weight: 600; color: var(--cn-fg); }
 .reader-icon-button { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: var(--cn-radius-control); color: var(--cn-fg-muted); }
 .reader-icon-button:hover { background: var(--cn-surface-hover); color: var(--cn-fg); }
-.reader-ask-intro, .reader-ask-smallprint, .reader-ask-status { color: var(--cn-fg-muted); }
-.reader-ask-smallprint { font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); }
+.reader-ask-status { color: var(--cn-fg-muted); }
 .reader-ask-exchange { display: grid; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--cn-line); }
 .reader-ask-question { font-weight: 600; color: var(--cn-fg); white-space: pre-wrap; }
 .reader-ask-quote { margin-bottom: 0.5rem; padding: 0.375rem 0.625rem; border-left: 2px solid var(--cn-highlighter-line); background: var(--cn-surface-muted); color: var(--cn-fg-secondary); font-style: italic; }
@@ -167,7 +166,6 @@
 .reader-dialog-quote .reader-text-button { margin-top: 0.25rem; font-size: var(--cn-text-xs); }
 /* A <dialog> does not inherit the page's text colour, so the form sets it. */
 .reader-dialog-form { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; color: var(--cn-fg); }
-.reader-dialog-hint { font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); color: var(--cn-fg-muted); }
 .reader-dialog-error { font-size: var(--cn-text-sm); color: var(--cn-negative); }
 .reader-dialog-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
 .reader-dialog-helper { margin-right: auto; }
