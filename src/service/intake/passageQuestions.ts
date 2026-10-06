@@ -5,6 +5,7 @@ import { requestBudgetExhausted } from "../../everything/spendCap";
 import { llm, withLlmAbortSignal } from "../../pipeline/llm/llm";
 import { OPENROUTER_PRICING } from "../../pipeline/cost-tracking/pricing";
 import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
+import { checked } from "./supabaseResult";
 
 const MODEL = "anthropic/claude-opus-5.5";
 const SEARCHES_PER_QUESTION = 3;
@@ -30,11 +31,6 @@ const SYSTEM_PROMPT = [
 
 function webSearchTool(maxUses: number) {
   return { ...OPENROUTER_NATIVE_WEB_SEARCH_TOOL, parameters: { ...OPENROUTER_NATIVE_WEB_SEARCH_TOOL.parameters, max_uses: maxUses } };
-}
-
-function checked<T>({ data, error }: { data: T; error: { message: string } | null }): T {
-  if (error) throw new Error(error.message);
-  return data;
 }
 
 export async function answerPassageQuestion(question: PassageQuestion, deps = {

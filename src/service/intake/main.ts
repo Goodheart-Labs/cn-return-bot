@@ -9,6 +9,10 @@
  * its business; the Actions feed run owns those tiers, which is what makes the
  * two workers unable to want the same row.
  *
+ * It also answers readers' Ask Opus questions (passageQuestions.ts) and works
+ * the jobs the website writes for minisites (minisiteJobs.ts), each in a loop
+ * of its own.
+ *
  * It hears about a new request in about a second over Supabase Realtime, and
  * additionally re-reads the inbox on a timer. The timer is not optional:
  * realtime is a live feed with no replay, so a row that lands while the socket
@@ -23,6 +27,7 @@
  */
 
 import "dotenv/config";
+import { consumeMinisiteJobs } from "./minisiteJobs";
 import { consumePassageQuestions } from "./passageQuestions";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { consumeNoteRequests } from "../../everything/consumeRequests";
@@ -42,6 +47,7 @@ const POLL_INTERVAL_MS = 60_000;
  *  never cares which one did. */
 let wake: () => void = () => {};
 let wakeQuestions: () => void = () => {};
+let wakeMinisiteJobs: () => void = () => {};
 
 function sleepUntilWoken(): Promise<void> {
   return new Promise((resolve) => {
@@ -50,11 +56,21 @@ function sleepUntilWoken(): Promise<void> {
   });
 }
 
+/** Sleeps for the poll interval, or until the waker handed to `setWaker` is
+ *  called. */
+function sleepUntilPolled(setWaker: (waker: () => void) => void): Promise<void> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, POLL_INTERVAL_MS);
+    setWaker(() => { clearTimeout(timer); resolve(); });
+  });
+}
+
 function subscribeToRequests(): void {
   getSupabaseClient()
     .channel("intake-note-requests")
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "everything_note_requests" }, () => wake())
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "everything_passage_questions" }, () => wakeQuestions())
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "everything_minisite_jobs" }, () => wakeMinisiteJobs())
     .subscribe((status) => console.log(`[intake] realtime channel: ${status}`));
 }
 
@@ -86,16 +102,23 @@ async function main() {
   ensureYtDlp();
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
-  await Promise.all([questionLoop(), noteLoop()]);
+  await Promise.all([questionLoop(), minisiteJobLoop(), noteLoop()]);
 }
 
 async function questionLoop() {
   for (;;) {
     await consumePassageQuestions();
-    await new Promise<void>((resolve) => {
-      const timer = setTimeout(resolve, POLL_INTERVAL_MS);
-      wakeQuestions = () => { clearTimeout(timer); resolve(); };
-    });
+    await sleepUntilPolled((waker) => { wakeQuestions = waker; });
+  }
+}
+
+/** A fact-check job wakes the note loop, which then works the article the
+ *  job's database function already queued. Reading a page can take minutes,
+ *  so these jobs have their own loop and never hold up reader requests. */
+async function minisiteJobLoop() {
+  for (;;) {
+    await consumeMinisiteJobs(() => wake());
+    await sleepUntilPolled((waker) => { wakeMinisiteJobs = waker; });
   }
 }
 
