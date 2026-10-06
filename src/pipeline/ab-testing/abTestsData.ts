@@ -42,7 +42,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
     { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 30 },
     { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 15 },
-    { variant: { name: "sonnet55-native-medium",  overrides: { search_model: "anthropic/claude-sonnet-5.5",       web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
+    { variant: { name: "opus55-native-medium",    overrides: { search_model: "anthropic/claude-opus-5.5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
@@ -91,7 +91,7 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
     { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 13 },
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
-    { variant: { name: "sonnet55-medium",  overrides: { writer_model: "anthropic/claude-sonnet-5.5", writer_reasoning_effort: "medium" }}, weight: 0 },
+    { variant: { name: "opus55-medium",    overrides: { writer_model: "anthropic/claude-opus-5.5", writer_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
     // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
