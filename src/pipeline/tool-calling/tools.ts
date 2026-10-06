@@ -15,7 +15,16 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
 import { isWebUrl } from "../utils/webUrl";
 import { callFetchService } from "../../service/client";
-import { FETCH_PAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchPageRequest } from "../../service/contract";
+import {
+  FETCH_JSON_PATH,
+  FETCH_PAGE_HTML_PATH,
+  FETCH_PAGE_PATH,
+  FETCH_SERVICE_SOCKET_VARIABLE,
+  type FetchedJson,
+  type FetchedPageHtml,
+  type FetchPageRequest,
+  type FetchUrlRequest,
+} from "../../service/contract";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
@@ -454,11 +463,69 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
   return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url, maxChars: opts?.maxChars } satisfies FetchPageRequest);
 }
 
+/** Like fetchWebPage, but answers with the HTML of the page the ladder
+ *  accepted instead of flattening it to markdown. The minisite page reader
+ *  needs the HTML to keep links, footnotes and figures. */
+export async function fetchWebPageHtml(url: string): Promise<FetchedPageHtml> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return fetchWebPageHtmlInProcess(url);
+  return callFetchService<FetchedPageHtml>(socket, FETCH_PAGE_HTML_PATH, { url } satisfies FetchUrlRequest);
+}
+
+/** Fetches a JSON answer with one plain request. It has no fallbacks, because
+ *  an API either answers or it does not, and an archive copy of an API answer
+ *  is useless. */
+export async function fetchJson(url: string): Promise<FetchedJson> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return fetchJsonInProcess(url);
+  return callFetchService<FetchedJson>(socket, FETCH_JSON_PATH, { url } satisfies FetchUrlRequest);
+}
+
+const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";
+
 /** The fetch ladder itself. Only the fetcher and processes without one call
  *  this directly. */
 export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
   const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
-  if (!isWebUrl(url)) return { content: "Fetch refused: only http and https addresses are fetched", fetchedUrl: url, ok: false };
+  if (!isWebUrl(url)) return { content: `Fetch refused: ${REFUSED_NON_WEB_URL}`, fetchedUrl: url, ok: false };
+  const outcome = await runFetchLadder(url);
+  if (!outcome.ok) return { content: outcome.diagnostic, fetchedUrl: url, ok: false };
+  const { markdown, fetchedUrl, via } = outcome.page;
+  const content = via ? `[fetched via ${via}]\n\n${markdown.slice(0, maxChars)}` : markdown.slice(0, maxChars);
+  return { content, fetchedUrl, ok: true };
+}
+
+export async function fetchWebPageHtmlInProcess(url: string): Promise<FetchedPageHtml> {
+  if (!isWebUrl(url)) return { ok: false, reason: REFUSED_NON_WEB_URL };
+  const outcome = await runFetchLadder(url);
+  if (!outcome.ok) return { ok: false, reason: outcome.diagnostic };
+  return { ok: true, html: outcome.page.html, fetchedUrl: outcome.page.fetchedUrl };
+}
+
+export async function fetchJsonInProcess(url: string): Promise<FetchedJson> {
+  if (!isWebUrl(url)) return { ok: false, reason: REFUSED_NON_WEB_URL };
+  const answer = await rawFetch(url, FETCH_UAS.desktop);
+  if (!answer.ok || !answer.body) return { ok: false, reason: answer.status ? `HTTP ${answer.status}` : answer.error ?? "empty answer" };
+  if (!answer.contentType?.includes("json")) return { ok: false, reason: `not JSON but ${answer.contentType}` };
+  try {
+    return { ok: true, json: JSON.parse(answer.body) };
+  } catch {
+    return { ok: false, reason: "the answer is not valid JSON" };
+  }
+}
+
+/** A page the ladder accepted. `via` names the fallback that produced it, or
+ *  is null when a plain HTTP request did. */
+interface LadderPage {
+  html: string;
+  markdown: string;
+  fetchedUrl: string;
+  via: string | null;
+}
+
+type LadderOutcome = { ok: true; page: LadderPage } | { ok: false; diagnostic: string };
+
+async function runFetchLadder(url: string): Promise<LadderOutcome> {
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as
@@ -473,7 +540,7 @@ export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: num
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label, cls, status: r.status, chars: markdown.length, markdown });
-      if (cls === "good") return { content: markdown.slice(0, maxChars), fetchedUrl: url, ok: true };
+      if (cls === "good") return { ok: true, page: { html: r.body, markdown, fetchedUrl: url, via: null } };
     } else {
       attempts.push({ label, cls: "fail", status: r.status, chars: 0, markdown: "" });
     }
@@ -491,11 +558,7 @@ export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: num
       if (cls === "good") {
         // The requested URL is dead or blocked. We read the snapshot instead, so
         // the snapshot is the URL a note may cite, not the original.
-        return {
-          content: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, maxChars)}`,
-          fetchedUrl: r.finalUrl ?? url,
-          ok: true,
-        };
+        return { ok: true, page: { html: r.body, markdown, fetchedUrl: r.finalUrl ?? url, via: `${archiveLabel} snapshot` } };
       }
     } else {
       attempts.push({ label: archiveLabel, cls: "fail", status: r.status, chars: 0, markdown: "" });
@@ -509,13 +572,7 @@ export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: num
   if (browser.ok && browser.body) {
     const { cls, markdown } = classifyContent(browser.body);
     attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length, markdown });
-    if (cls === "good") {
-      return {
-        content: `[fetched via headless browser]\n\n${markdown.slice(0, maxChars)}`,
-        fetchedUrl: url,
-        ok: true,
-      };
-    }
+    if (cls === "good") return { ok: true, page: { html: browser.body, markdown, fetchedUrl: url, via: "headless browser" } };
   } else {
     attempts.push({ label: "browser", cls: "fail", status: browser.status, chars: 0, markdown: "" });
   }
@@ -526,13 +583,13 @@ export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: num
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
     const tag = best.cls === "wall" ? "login wall / anti-bot block" : "thin content";
-    return { content: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, fetchedUrl: url, ok: false };
+    return { ok: false, diagnostic: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)` };
   }
   const last = attempts[attempts.length - 1];
   const failure = last?.status
     ? `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`
     : `Fetch error: all ${attempts.length} attempts failed`;
-  return { content: failure, fetchedUrl: url, ok: false };
+  return { ok: false, diagnostic: failure };
 }
 
 export function handleProposeNotes(
