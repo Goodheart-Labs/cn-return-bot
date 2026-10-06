@@ -8,7 +8,7 @@ const question: PassageQuestion = {
   status: "answering", answer: null, draft: null, error: null, model: null, cost_usd: 0, created_at: "2026-09-29T10:00:00Z", started_at: "2026-09-29T10:00:01Z", answered_at: null,
 };
 
-function setup(calls: { name: string; args: unknown }[] = [], options: { budget?: boolean; failure?: boolean } = {}) {
+function setup(calls: { name: string; args: unknown }[] = [], options: { budget?: boolean; failure?: boolean; answer?: string; searches?: number[] } = {}) {
   const writes: { table: string; values: Record<string, unknown> }[] = [];
   const reads: { table: string; field: string; value: unknown }[] = [];
   const db = { from(table: string) {
@@ -24,15 +24,17 @@ function setup(calls: { name: string; args: unknown }[] = [], options: { budget?
     };
     return query;
   } };
+  let turn = 0;
   const complete = mock(async (params: OpenAI.ChatCompletionCreateParamsNonStreaming) => {
+    const searches = options.searches?.[turn++] ?? 0;
     if (options.failure && params.messages.length > 2) throw new Error("upstream failed");
     const first = params.messages.length === 2;
     return {
       id: "reply1", created: 0, model: "anthropic/claude-opus-5.5", object: "chat.completion",
       choices: [{ index: 0, logprobs: null, finish_reason: "stop", message: first && calls.length
         ? { role: "assistant", refusal: null, content: null, tool_calls: calls.map((call, i) => ({ id: `t${i}`, type: "function", function: { name: call.name, arguments: JSON.stringify(call.args) } })) }
-        : { role: "assistant", refusal: null, content: "Here is a short answer." } }],
-      usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150, cost: 0.002 },
+        : { role: "assistant", refusal: null, content: options.answer ?? "Here is a short answer." } }],
+      usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150, cost: 0.002, server_tool_use_details: { web_search_requests: searches } },
     } as OpenAI.ChatCompletion;
   });
   return { writes, reads, complete, deps: { db: db as never, complete, budgetExhausted: async () => !!options.budget } };
@@ -90,4 +92,39 @@ test("a failure after a paid turn keeps its cost and draft", async () => {
   await answerPassageQuestion(question, deps);
   expect(writes.at(-1)?.values).toMatchObject({ status: "error", cost_usd: 0.002 });
   expect(writes.some((w) => w.values.draft)).toBe(true);
+});
+
+test("the agent can search the web, at most three times per question", async () => {
+  const { deps, complete } = setup([{ name: "draft_forecast", args: { probability: 20, statement: "Rain in London tomorrow" } }], { searches: [2, 0] });
+  await answerPassageQuestion(question, deps);
+  const searchTools = complete.mock.calls.map(([params]) => (params.tools as unknown[]).filter((tool) => (tool as { type: string }).type === "openrouter:web_search"));
+  expect(searchTools).toEqual([[{ type: "openrouter:web_search", parameters: { engine: "native", max_uses: 3 } }], [{ type: "openrouter:web_search", parameters: { engine: "native", max_uses: 1 } }]]);
+  expect(complete.mock.calls.every(([params]) => (params.max_tokens ?? 0) <= 2000)).toBe(true);
+
+  const spent = setup([{ name: "draft_key_point", args: { point: "Capacity matters" } }], { searches: [3] });
+  await answerPassageQuestion(question, spent.deps);
+  expect((spent.complete.mock.calls[1]![0].tools as { type: string }[]).some((tool) => tool.type === "openrouter:web_search")).toBe(false);
+});
+
+test("answers drop the search tool's line citations but keep markdown links", async () => {
+  const { deps, writes } = setup([], { answer: "Demand rose 3%【4471†L10-L12】 in 2025, per [the IEA](https://www.iea.org/report)." });
+  await answerPassageQuestion(question, deps);
+  expect(writes.at(-1)?.values).toMatchObject({ status: "done", answer: "Demand rose 3% in 2025, per [the IEA](https://www.iea.org/report)." });
+});
+
+test("the prompt asks for searches and short replies, and the draft tools ask for the bare event", async () => {
+  const { deps, complete } = setup();
+  await answerPassageQuestion(question, deps);
+  const params = complete.mock.calls[0]![0];
+  const system = params.messages[0]!.content as string;
+  expect(system).not.toContain("no browsing tool");
+  expect(system).toContain("Search the web when the question turns on facts or recent events");
+  expect(system).toContain("one or two sentences");
+  const tools = Object.fromEntries((params.tools as OpenAI.ChatCompletionTool[]).filter((tool) => tool.type === "function").map((tool) => [tool.function.name, tool.function]));
+  const statement = (tools.draft_forecast!.parameters!.properties as Record<string, { description: string }>).statement!.description;
+  expect(statement).toContain("Only the event, worded to complete \"N% chance of …\"");
+  expect(statement).toContain("No commentary");
+  const point = (tools.draft_key_point!.parameters!.properties as Record<string, { description: string }>).point!.description;
+  expect(point).toContain("worded to complete \"A key point in this article is …\"");
+  expect(point).toContain("No commentary");
 });
