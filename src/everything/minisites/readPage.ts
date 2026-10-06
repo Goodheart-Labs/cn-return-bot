@@ -13,6 +13,7 @@ import { parseHTML } from "linkedom";
 import { parseReaderText, plainText, withoutRepeatedHeader } from "../../everything-core/readerText";
 import { fetchJson, fetchWebPageHtml } from "../../pipeline/tool-calling/tools";
 import { isWebUrl } from "../../pipeline/utils/webUrl";
+import { canonicalSubstackFeed, substackFeedInPageHtml, substackFeedOfPage } from "../feedUrls";
 import { htmlToReaderBlocks } from "./htmlToReaderText";
 
 /** What a read_page job writes into its result, and what
@@ -47,11 +48,6 @@ const MAX_BYLINE_CHARS = 300;
 const HEADER_BLOCKS_CHECKED = 4;
 
 const SUBSTACK_POST_PATH = /^\/p\/([\w-]+)\/?$/;
-const SUBSTACK_HOST = /^([\w-]+)\.substack\.com$/;
-/** Every Substack page embeds its publication in an escaped JSON blob. The
- *  extension reads a custom domain's *.substack.com name the same way
- *  (readSubstackPublicationFromPage). */
-const SUBSTACK_PAGE_SUBDOMAIN = /subdomain\\?":\\?"([\w-]+)\\?"/;
 
 export async function readPageForMinisite(url: string): Promise<MinisitePage> {
   if (!isWebUrl(url)) throw new PageReadError("This is not the address of a web page.");
@@ -95,10 +91,6 @@ function isoDate(value: string | null | undefined): string | null {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-function substackFeedUrl(subdomain: string): string {
-  return `https://${subdomain.toLowerCase()}.substack.com`;
 }
 
 // ---------------------------------------------------------------------------
@@ -147,8 +139,7 @@ function postPublication(post: SubstackPost): SubstackPublication | null {
 /** Exported for the tests, which feed it a saved answer. */
 export function pageFromSubstackPost(post: SubstackPost, url: string): MinisitePage {
   const publication = postPublication(post);
-  const hostSubdomain = SUBSTACK_HOST.exec(new URL(url).hostname)?.[1];
-  const subdomain = publication?.subdomain ?? (hostSubdomain !== "www" ? hostSubdomain : undefined);
+  const feed = publication ? canonicalSubstackFeed(`https://${publication.subdomain}.substack.com`) : substackFeedOfPage(url);
   const authors = joinNames(post.publishedBylines.map((byline) => byline.name));
   const byline = [authors, publication?.name].filter(Boolean).join(" · ") || null;
   return buildPage({
@@ -158,7 +149,7 @@ export function pageFromSubstackPost(post: SubstackPost, url: string): MinisiteP
     published_at: isoDate(post.post_date),
     image_url: post.cover_image && isWebUrl(post.cover_image) ? post.cover_image : null,
     content: articleContent(htmlToReaderBlocks(post.body_html, post.canonical_url ?? url), [post.title, post.subtitle, byline]),
-    creator_feed_url: subdomain ? substackFeedUrl(subdomain) : null,
+    creator_feed_url: feed?.feed_url ?? null,
   });
 }
 
@@ -174,13 +165,27 @@ function metaContent(document: Document, names: string[]): string | null {
   return null;
 }
 
+/** How much text besides its heading a wrapper may hold and still count as
+ *  the heading's own wrapper. Wikipedia's holds an "edit" link. */
+const MAX_HEADING_WRAPPER_EXTRA_CHARS = 20;
+
+const textLength = (element: Element) => (element.textContent ?? "").trim().length;
+
 /** Readability drops a heading whose class or id sounds like page chrome.
  *  Substack's section headings carry the class "header-anchor-post", so all
- *  four headings of the big-tent post were lost. */
+ *  four headings of the big-tent post were lost. It also drops a small wrapper
+ *  that holds a link, heading and all, which is how Wikipedia's section
+ *  headings were lost. So each heading loses its class and id, and replaces a
+ *  wrapper that holds little besides it. */
 function keepHeadings(document: Document): void {
   for (const heading of Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6"))) {
     heading.removeAttribute("class");
     heading.removeAttribute("id");
+    let wrapper = heading.parentElement;
+    while (wrapper?.localName === "div" && textLength(wrapper) - textLength(heading) <= MAX_HEADING_WRAPPER_EXTRA_CHARS) {
+      wrapper.replaceWith(heading);
+      wrapper = heading.parentElement;
+    }
   }
 }
 
@@ -193,6 +198,11 @@ function absoluteImage(value: string | null, base: string): string | null {
     return null;
   }
 }
+
+/** The subdomain pattern of substackFeedInPageHtml would also match a
+ *  "subdomain" key in some other site's data, so it is only asked on a page
+ *  that carries Substack's preloads blob. */
+const isSubstackPage = (html: string) => html.includes("window._preloads");
 
 /** Exported for the tests, which feed it a saved page. */
 export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage {
@@ -213,7 +223,6 @@ export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage
   const description = meta.description ?? article.excerpt ?? "";
   const author = article.byline ?? meta.author;
   const byline = [author, meta.siteName ?? article.siteName].filter(Boolean).join(" · ") || null;
-  const subdomain = html.includes("_preloads") ? SUBSTACK_PAGE_SUBDOMAIN.exec(html)?.[1] : undefined;
   return buildPage({
     title,
     description,
@@ -221,7 +230,7 @@ export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage
     published_at: isoDate(meta.published ?? article.publishedTime),
     image_url: absoluteImage(meta.image, pageUrl),
     content: articleContent(htmlToReaderBlocks(article.content, pageUrl), [title, description, byline, author]),
-    creator_feed_url: subdomain ? substackFeedUrl(subdomain) : null,
+    creator_feed_url: isSubstackPage(html) ? substackFeedInPageHtml(html)?.feed_url ?? null : null,
   });
 }
 

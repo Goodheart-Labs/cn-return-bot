@@ -45,6 +45,15 @@ describe("a page read with Readability", () => {
     expect(page.image_url).toStartWith("https://substackcdn.com/image/fetch/");
   });
 
+  test("keeps a heading inside a small wrapper with an edit link, as on Wikipedia", () => {
+    const paragraphs = (from: number) => [0, 1, 2, 3].map((n) => `<p>Paragraph ${from + n} of the article, long enough for Readability to keep it, with a comma or two.</p>`).join("");
+    const wiki = pageFromArticleHtml(
+      `<html><body><main>${paragraphs(1)}<div class="mw-heading mw-heading2"><h2 id="History">History</h2><span class="mw-editsection"><a href="/w/edit">edit</a></span></div>${paragraphs(5)}</main></body></html>`,
+      "https://en.wikipedia.org/wiki/Example",
+    );
+    expect(wiki.content).toContain("with a comma or two.\n\n## History\n\nParagraph 5");
+  });
+
   test("leaves out a first paragraph that only repeats the title", () => {
     const repeated = pageFromArticleHtml(
       `<html><head><meta property="og:title" content="A long enough title for the test"></head><body><article><p>A long enough title for the test</p>${"<p>The article's own words, long enough for Readability to keep them.</p>".repeat(8)}</article></body></html>`,
