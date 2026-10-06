@@ -114,7 +114,7 @@ export function parseInline(text: string, style: Style = {}): InlineRun[] {
     const char = text[i]!;
     const rest = text.slice(i);
 
-    if (char === "\\" && /[\\`*_[\]()#>!|-]/.test(text[i + 1] ?? "")) {
+    if (char === "\\" && /[\\`*_[\]()#>!|.+-]/.test(text[i + 1] ?? "")) {
       buffer += text[i + 1];
       i += 2;
       continue;
