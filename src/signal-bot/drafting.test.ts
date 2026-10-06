@@ -2,10 +2,10 @@ import { describe, expect, mock, spyOn, test } from "bun:test";
 import type { Post } from "../api/fetchEligiblePosts";
 import { TweetLookupError } from "../api/fetchTweetById";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
-import { outcomeToResult, type PipelineOutcome } from "../bots/types";
+import { outcomeToResult, pipelineOutcomeOf, type PipelineOutcome } from "../bots/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import {
-  createDraftingAdapter, pipelineOutcomeOf, SIGNAL_PICKS, validateSignalDraft, type DraftingDependencies, type SignalDraft,
+  createDraftingAdapter, SIGNAL_PICKS, validateSignalDraft, type DraftingDependencies, type SignalDraft,
 } from "./drafting";
 
 const post: Post = {

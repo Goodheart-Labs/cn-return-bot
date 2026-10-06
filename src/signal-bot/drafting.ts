@@ -1,7 +1,6 @@
 import type { Post } from "../api/fetchEligiblePosts";
 import { TweetLookupError } from "../api/fetchTweetById";
-import type { PipelineOutcome } from "../bots/types";
-import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
+import { pipelineOutcomeOf, type PipelineOutcome } from "../bots/types";
 import type { ChatMessage } from "../pipeline/utils/jsonLlmCall";
 import { countSubmittedNoteLength, joinNoteWithSources } from "../pipeline/utils/noteLength";
 import { discussionSourceUrls, isPublicSourceUrl, readDiscussionSource, type DiscussionSource } from "./sources";
@@ -199,22 +198,6 @@ export const SIGNAL_PICKS: Record<string, string> = {
 
 /** The discussion and the general chat run on the same model as the writer. */
 const SIGNAL_CHAT_MODEL = "anthropic/claude-sonnet-4.6";
-
-/** Reads the bot's outcome back out of the claim-check service's answer. */
-export function pipelineOutcomeOf(output: TweetComputeOutput): PipelineOutcome {
-  if (output.outcome === "failed") throw new Error(output.errorMessage ?? "The tweet check failed.");
-  const result = output.pipelineResult;
-  const searchResults = result?.searchContextResult.searchResults;
-  if (!result?.noteResult.note) {
-    return { type: "no_correction", reason: searchResults || output.outcomeReason || "No correction is needed.", searchResults };
-  }
-  const noteText = result.noteResult.note;
-  const sources = result.noteResult.url.split(" ").filter(Boolean);
-  if (result.checkResult?.startsWith("NO")) {
-    return { type: "verification_failed", noteText, sources, reason: result.checkResult.replace(/^NO:\s*/, ""), searchResults };
-  }
-  return { type: "note", noteText, sources, verified: result.checkResult != null, searchResults };
-}
 
 function createDefaults(): DraftingDependencies {
   async function chatCall(costName: string, messages: ChatMessage[], responseFormat: object, schemaHint: string): Promise<unknown> {

@@ -1,3 +1,4 @@
+import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { EvaluatedSource } from "../pipeline/prompts/verify/citations";
 
 export interface PipelineResult {
@@ -97,4 +98,21 @@ export interface Bot {
   description: string;
 
   runPipeline(post: any, content: PostContent): Promise<PipelineResult | null>;
+}
+
+/** The reverse of outcomeToResult: reads the bot's outcome back out of the
+ *  claim-check service's answer to a tweet check. */
+export function pipelineOutcomeOf(output: TweetComputeOutput): PipelineOutcome {
+  if (output.outcome === "failed") throw new Error(output.errorMessage ?? "The tweet check failed.");
+  const result = output.pipelineResult;
+  const searchResults = result?.searchContextResult.searchResults;
+  if (!result?.noteResult.note) {
+    return { type: "no_correction", reason: searchResults || output.outcomeReason || "No correction is needed.", searchResults };
+  }
+  const noteText = result.noteResult.note;
+  const sources = result.noteResult.url.split(" ").filter(Boolean);
+  if (result.checkResult?.startsWith("NO")) {
+    return { type: "verification_failed", noteText, sources, reason: result.checkResult.replace(/^NO:\s*/, ""), searchResults };
+  }
+  return { type: "note", noteText, sources, verified: result.checkResult != null, searchResults };
 }

@@ -1,5 +1,5 @@
 /** Shared admission for scheduled and approved Signal submissions. */
-export type SubmissionLane = "automatic" | "signal";
+export type SubmissionLane = "automatic" | "signal" | "x_tag";
 export type SubmissionClaimOutcome = "submitted" | "rejected" | "uncertain";
 
 export interface SubmissionCapacity {
