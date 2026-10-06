@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
 import { fetchNotesForItem } from "@cn/core/notes";
 import { subscribeToItemProgress } from "@cn/core/requestStatus";
+import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
 import { NoteCard } from "@cn/features/notes/NoteCard";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
@@ -41,13 +42,14 @@ function shareUrl(noteId: string, scope: string): string {
 }
 
 function NoteEntries({ blockId }: { blockId: string }) {
-  const { features, notesByBlock, nnnEntries, scope } = useReader();
+  const { features, notesByBlock, nnnEntries, scope, entryNavigation } = useReader();
   if (!features.has("notes")) return null;
-  return <>{(notesByBlock.get(blockId) ?? []).map((note) => (
-    <div key={note.id} id={noteCardId(scope, note.id)} className="reader-entry">
-      <NoteCard compact note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
-    </div>
-  ))}</>;
+  return <>{(notesByBlock.get(blockId) ?? []).map((note) => {
+    const navigation = entryNavigation(noteCardId(scope, note.id));
+    return <div key={note.id} id={noteCardId(scope, note.id)} className="reader-entry">
+      <NoteCard compact topBar={navigation && <NextNoteButton {...navigation} />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
+    </div>;
+  })}</>;
 }
 
 /** Notes in the margin: AI notes and readers' notes beside their passage. The

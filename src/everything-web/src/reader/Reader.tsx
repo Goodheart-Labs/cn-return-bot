@@ -9,6 +9,7 @@ import type { NoteRow } from "@cn/core/types";
 import { BlockContent, type MarkKind } from "./Blocks";
 import { ReaderContext, UNANCHORED, useReader, type AskingState, type ReaderAction, type ReaderApi, type ReaderDialog } from "./context";
 import { READER_MODULES } from "./features";
+import { highlightCardId } from "./features/highlights";
 import { noteCardId, useReaderNoteSet } from "./features/notes";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useMarginLayout } from "./useMarginLayout";
@@ -176,6 +177,13 @@ export function Reader({ item, content, header, features, scope }: {
   const notesByBlock = useMemo(() => new Map([...placedNotes.byBlock, ...(placedNotes.unanchored.length ? [[UNANCHORED, placedNotes.unanchored] as const] : [])]), [placedNotes]);
   const highlightsByBlock = useMemo(() => new Map([...placedHighlights.byBlock, ...(placedHighlights.unanchored.length ? [[UNANCHORED, placedHighlights.unanchored] as const] : [])]), [placedHighlights]);
 
+  // Every margin card in reading order: by passage, notes before key points
+  // and forecasts, and the unanchored ones last. The "N of M" buttons walk it.
+  const entryOrder = useMemo(() => [...blocks.map((block) => block.id), UNANCHORED].flatMap((blockId) => [
+    ...(notesByBlock.get(blockId) ?? []).map((note) => ({ elementId: noteCardId(scope, note.id), blockId })),
+    ...(highlightsByBlock.get(blockId) ?? []).map((highlight) => ({ elementId: highlightCardId(scope, highlight.id), blockId })),
+  ]), [blocks, notesByBlock, highlightsByBlock, scope]);
+
   const notify = useCallback((message: string) => setNotice(message), []);
   useEffect(() => {
     if (!notice) return;
@@ -194,6 +202,12 @@ export function Reader({ item, content, header, features, scope }: {
     closeDialog: () => setDialog(null),
     notify,
     reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId); },
+    entryNavigation: (elementId) => {
+      const index = entryOrder.findIndex((entry) => entry.elementId === elementId);
+      if (index < 0 || entryOrder.length <= 1) return null;
+      const next = entryOrder[(index + 1) % entryOrder.length]!;
+      return { position: index + 1, total: entryOrder.length, onNext: () => api.reveal(next.elementId, next.blockId) };
+    },
   };
 
   const quotesByBlock = useMemo(() => {

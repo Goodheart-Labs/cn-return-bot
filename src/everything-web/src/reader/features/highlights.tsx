@@ -6,6 +6,7 @@ import { deletePassageHighlight, fetchHighlightVotes, voteOnHighlight } from "@c
 import { displayName } from "@cn/core/session";
 import type { Vote } from "@cn/core/votes";
 import { useSession } from "@cn/features/auth/useSession";
+import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
 import { RatingPanel, ratingQuestion } from "@cn/features/notes/NoteBox";
 import { VoteRatings } from "@cn/features/notes/VoteRatings";
 import { Button } from "@cn/ui/Button";
@@ -93,9 +94,11 @@ function HighlightCard({ highlight, myVote, pending, onVote, onDelete }: {
   onVote: (vote: Vote) => void;
   onDelete: (() => void) | null;
 }) {
-  const { scope } = useReader();
+  const { scope, entryNavigation } = useReader();
   const kind = highlight.kind === "forecast" ? "forecast" : "key point";
+  const navigation = entryNavigation(highlightCardId(scope, highlight.id));
   return <section id={highlightCardId(scope, highlight.id)} className="reader-entry reader-highlight-card" aria-label={kind}>
+    {navigation && <div className="-mt-1 mb-3 flex items-center"><NextNoteButton {...navigation} /></div>}
     <p className="reader-entry-kind">{kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}<span>{highlight.author_name || "Anonymous reader"}</span></p>
     <p className="reader-highlight-sentence">{highlightSentence(highlight)}</p>
     <RatingPanel question={<span className="font-semibold">{ratingQuestion(kind)}</span>}>

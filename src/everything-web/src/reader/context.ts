@@ -1,5 +1,6 @@
 import { createContext, useContext, type ComponentType } from "react";
 import type { PageItem } from "@cn/core/items";
+import type { NoteNavigation } from "@cn/features/notes/NextNoteButton";
 import type { FeatureId } from "@cn/core/minisiteFeatures";
 import type { HighlightDraft, PassageHighlight } from "@cn/core/passageHighlights";
 import type { ReaderBlock } from "@cn/core/readerText";
@@ -55,6 +56,9 @@ export interface ReaderApi {
   /** Scrolls to an entry's card once it has rendered, and outlines it. On a
    *  narrow screen it first opens the passage the card sits under. */
   reveal: (elementId: string, blockId?: string) => void;
+  /** A card's place among all margin cards in reading order, and the move to
+   *  the next one. Null when the card is the only one. */
+  entryNavigation: (elementId: string) => NoteNavigation | null;
 }
 
 export const ReaderContext = createContext<ReaderApi | null>(null);
