@@ -1,0 +1,26 @@
+/* Shared by every card option. The colours repeat the semantic tokens of
+ * src/everything-ui/tokens.css, because a card is rendered on its own page
+ * outside the website. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --canvas: #f9fafb;
+  --surface: #ffffff;
+  --fg: #111827;
+  --fg-secondary: #4b5563;
+  --fg-muted: #646b76;
+  --line: #e5e7eb;
+  --link: #2563eb;
+  --tint: #eff6ff;
+  --tint-line: #dbeafe;
+  --note-mark: #dbeafe;
+  --note-mark-line: #60a5fa;
+  --positive: #15803d;
+  --positive-solid: #22c55e;
+}
+body {
+  width: 1200px; height: 630px; overflow: hidden;
+  font-family: Inter, sans-serif;
+  color: var(--fg);
+  background: var(--canvas);
+}
+.logo { display: block; }
