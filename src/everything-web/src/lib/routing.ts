@@ -7,6 +7,9 @@ import { capturePageview } from "./analytics";
  *   /notes                the overview of all projects
  *   /notes/<slug>         one project
  *   /notes/<slug>/<item>  one post or video of a project
+ *   /minisites            every minisite
+ *   /minisites/new        an admin creates a minisite from a pasted link
+ *   /minisites/<slug>     one minisite: an article with the reader features it switched on
  *   /leaderboard          the rating leaderboard
  *   /read?url=<article>   one article with its notes in the margin; &full=<url>
  *                         adds the article's full text below it
@@ -29,11 +32,14 @@ export type Route =
   | { view: "home"; section: "install" | null }
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
   | { view: "leaderboard" }
+  | { view: "minisites"; slug: string | null }
+  | { view: "newMinisite" }
   | { view: "read"; url: string | null; full: string | null };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
+export const MINISITES: Route = { view: "minisites", slug: null };
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
 const LEGACY_PARAMS = ["view", "project", "item", "episode", "section"];
@@ -54,6 +60,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (LEGACY_PARAMS.some((name) => q.has(name))) return readLegacyRoute(q);
   const [page, project, item] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
+  if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "read") return { view: "read", url: q.get("url"), full: q.get("full") };
   if (page === "install") return INSTALL;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
@@ -63,6 +70,8 @@ export function readRoute(pathname: string, search: string): Route {
 /** The address of a route, for the href of a link that navigates in-app. */
 export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
+  if (route.view === "newMinisite") return "/minisites/new";
+  if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
   if (route.view === "read") {
     const q = new URLSearchParams();
     if (route.url) q.set("url", route.url);

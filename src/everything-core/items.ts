@@ -22,7 +22,7 @@ export async function fetchProjectItems(projectId: string): Promise<FeedItemRow[
  *  anchor. `projectSlug` is what share links are built from. */
 export type PageItem = ItemRow & { full_text: string | null; projectSlug: string | null };
 
-const PAGE_ITEM_SELECT =
+export const PAGE_ITEM_SELECT =
   "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, project:everything_projects(slug)";
 
 /** Whether the pipeline has read this page in full. Only such a page refuses a

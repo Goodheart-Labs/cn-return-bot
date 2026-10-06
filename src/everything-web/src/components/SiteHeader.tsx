@@ -1,14 +1,14 @@
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { HOME, INSTALL, NOTES, type Route } from "../lib/routing";
+import { HOME, INSTALL, MINISITES, NOTES, type Route } from "../lib/routing";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
 
 const navLink =
   "rounded-control text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2";
 
-/** The bar at the top of every page. The name and the three pages sit on the
+/** The bar at the top of every page. The name and the four pages sit on the
  *  left, signing in and getting the extension on the right. Getting the
  *  extension leads to the homepage's install section. */
 export function SiteHeader({ route, navigate, onSignIn }: { route: Route; navigate: (route: Route) => void; onSignIn: () => void }) {
@@ -28,6 +28,9 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           </RouteLink>
           <RouteLink to={NOTES} navigate={navigate} current={route.view === "notes"} className={navLink}>
             Notes
+          </RouteLink>
+          <RouteLink to={MINISITES} navigate={navigate} current={route.view === "minisites" || route.view === "newMinisite"} className={navLink}>
+            Minisites
           </RouteLink>
           <RouteLink to={{ view: "leaderboard" }} navigate={navigate} current={route.view === "leaderboard"} className={navLink}>
             Leaderboard

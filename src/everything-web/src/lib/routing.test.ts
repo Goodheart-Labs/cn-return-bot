@@ -13,6 +13,9 @@ const ROUTES: [string, Route][] = [
   ["/notes/zvi/item-1", { view: "notes", project: "zvi", item: "item-1", note: null }],
   ["/notes/zvi?note=n-1", { view: "notes", project: "zvi", item: null, note: "n-1" }],
   ["/leaderboard", { view: "leaderboard" }],
+  ["/minisites", { view: "minisites", slug: null }],
+  ["/minisites/new", { view: "newMinisite" }],
+  ["/minisites/big-tent-or-small-tent", { view: "minisites", slug: "big-tent-or-small-tent" }],
   ["/read?url=https%3A%2F%2Fexample.com%2Fp", { view: "read", url: "https://example.com/p", full: null }],
   ["/read?url=https%3A%2F%2Fexample.com%2Fp&full=https%3A%2F%2Fexample.com%2Fp.pdf", { view: "read", url: "https://example.com/p", full: "https://example.com/p.pdf" }],
 ];
