@@ -96,12 +96,25 @@ export async function createMinisite(params: { jobId: string; slug: string; titl
   return data;
 }
 
-export async function updateMinisiteFeatures(minisiteId: string, features: readonly string[]): Promise<void> {
-  const { error } = await supabase
+/** What an admin may change on a minisite. The address and the article stay fixed. */
+export type MinisiteSettings = Pick<Minisite, "title" | "description" | "image_url" | "features">;
+
+export async function updateMinisite(minisiteId: string, settings: MinisiteSettings): Promise<void> {
+  const { data, error } = await supabase
     .from("everything_minisites")
-    .update({ features: [...features], updated_at: new Date().toISOString() })
-    .eq("id", minisiteId);
-  if (error) throw new Error(`could not save the features: ${error.message}`);
+    .update({ ...settings, updated_at: new Date().toISOString() })
+    .eq("id", minisiteId)
+    .select("id");
+  if (error) throw new Error(`The changes could not be saved: ${error.message}`);
+  // Row level security answers a refused update with no rows instead of an error.
+  if (!data.length) throw new Error("The changes could not be saved. Only admins can edit minisites.");
+}
+
+/** Deletes the minisite. Its article, notes and highlights stay on Common Notes. */
+export async function deleteMinisite(minisiteId: string): Promise<void> {
+  const { data, error } = await supabase.from("everything_minisites").delete().eq("id", minisiteId).select("id");
+  if (error) throw new Error(`The minisite could not be deleted: ${error.message}`);
+  if (!data.length) throw new Error("The minisite could not be deleted. Only admins can delete minisites.");
 }
 
 /** Queues the minisite's article for the full fact-check (migration 117). */

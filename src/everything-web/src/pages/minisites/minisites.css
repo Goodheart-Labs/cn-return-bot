@@ -73,3 +73,14 @@
 .factcheck-actions { display: flex; justify-content: flex-end; margin-top: 0.25rem; }
 .factcheck-error { font-size: var(--cn-text-sm); color: var(--cn-negative); }
 .factcheck-progress { position: fixed; left: 50%; bottom: 1.25rem; z-index: 40; transform: translateX(-50%); max-width: calc(100% - 2rem); padding: 0.625rem 1.125rem; border-radius: 9999px; background: var(--cn-inverse); color: var(--cn-on-inverse); font-size: var(--cn-text-sm); box-shadow: var(--cn-shadow-floating); }
+
+/* Editing a minisite */
+.minisite-edit-fields { display: grid; gap: 0.5rem; }
+.minisite-edit-fields label { font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); }
+.minisite-edit-fields label:not(:first-child) { margin-top: 0.5rem; }
+.minisite-edit-address { margin-top: 0.25rem; font-size: var(--cn-text-xs); color: var(--cn-fg-muted); }
+.minisite-edit-heading { margin: 1.5rem 0 0.5rem; font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); }
+.minisite-delete-button { margin-right: auto; color: var(--cn-negative) !important; }
+.minisite-delete-confirm { display: grid; gap: 0.75rem; color: var(--cn-fg); }
+.minisite-delete-confirm-button { background: var(--cn-negative) !important; }
+.minisite-delete-confirm-button:hover { filter: brightness(0.92); }
