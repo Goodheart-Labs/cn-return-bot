@@ -1,0 +1,23 @@
+name: Probe Hand-Picked Note
+# Throwaway probe for GOO-212, deleted after one run. Jim asked for one real note
+# ("Test https://en.wikipedia.org/wiki/Test") on a hand-picked post, submitted with
+# the production notewriter secrets, to learn whether X accepts notes outside the
+# eligibility feed.
+on:
+  push:
+    branches: [feature/twitter-tag-note-bot]
+    paths: [.github/workflows/probe-hand-picked-note.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run src/scripts_jim/2026_10_05_x_tag_bot_plan/submitTestNote.ts
