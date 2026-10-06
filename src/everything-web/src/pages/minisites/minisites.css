@@ -83,5 +83,6 @@
 .minisite-edit-heading { margin: 1.5rem 0 0.5rem; font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); }
 .minisite-delete-button { margin-right: auto; color: var(--cn-negative) !important; }
 .minisite-delete-confirm { display: grid; gap: 0.75rem; color: var(--cn-fg); }
-.minisite-delete-confirm-button { background: var(--cn-negative) !important; }
+/* A fixed red, because the dark theme's negative colour is too light behind white text. */
+.minisite-delete-confirm-button { background: rgb(var(--cn-red-600)) !important; color: rgb(255 255 255) !important; }
 .minisite-delete-confirm-button:hover { filter: brightness(0.92); }

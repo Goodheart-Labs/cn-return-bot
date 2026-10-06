@@ -5,11 +5,10 @@ const LONG_QUOTE_CHARS = 280;
 
 /** The words a dialog is about, the same way in every reader dialog. A long
  *  passage starts clamped, with a button that shows all of it. */
-export function DialogQuote({ text, label }: { text: string; label: string }) {
+export function DialogQuote({ text }: { text: string }) {
   const long = text.length > LONG_QUOTE_CHARS;
   const [open, setOpen] = useState(!long);
   return <figure className="reader-dialog-quote">
-    <figcaption>{label}</figcaption>
     <blockquote className={open ? "" : "reader-dialog-quote-clamped"}>“{text.trim()}”</blockquote>
     {long && <button type="button" className="reader-text-button" onClick={() => setOpen((value) => !value)}>{open ? "Show less" : "Show all"}</button>}
   </figure>;

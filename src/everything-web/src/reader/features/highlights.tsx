@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ensureUser } from "@cn/core/auth";
 import { highlightSentence, parseHighlightDraft, type HighlightDraft, type PassageHighlight, type PassageQuestion } from "@cn/core/passageHighlights";
@@ -37,6 +37,10 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
   const suggestion = parseHighlightDraft(answer?.draft);
   const current = parseHighlightDraft({ kind, probability: kind === "forecast" && probability.trim() ? Number(probability) : null, statement });
   const canDraft = features.has("opus.drafts");
+  const form = useRef<HTMLFormElement>(null);
+  // The modal moves focus to its first button when it opens, which happens
+  // before this effect, so the first field takes focus here.
+  useEffect(() => form.current?.querySelector<HTMLElement>("input, textarea")?.focus(), []);
 
   async function post(highlight: HighlightDraft, authorName: string | null) {
     if (!(await poster.post(anchor, highlight, authorName))) return;
@@ -58,8 +62,8 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
   }
 
   return <Modal title={kind === "forecast" ? "Forecast" : "Key point"} onClose={closeDialog} widthClassName="max-w-[35rem]">
-    <DialogQuote label="On the words you selected" text={anchor.text} />
-    <form className="reader-dialog-form" onSubmit={(event) => { event.preventDefault(); if (current) void post(current, signed && session ? displayName(session) : null); }}>
+    <DialogQuote text={anchor.text} />
+    <form ref={form} className="reader-dialog-form" onSubmit={(event) => { event.preventDefault(); if (current) void post(current, signed && session ? displayName(session) : null); }}>
       <label className="reader-highlight-lead" htmlFor="reader-highlight-statement">
         {kind === "forecast"
           ? <>This is a forecast of a <span className="reader-nowrap"><Input aria-label="Probability in percent" type="number" inputMode="numeric" min={0} max={100} step={1} required placeholder="70" className="reader-highlight-probability" value={probability} onChange={(event) => setProbability(event.target.value)} />% chance of</span></>
@@ -98,7 +102,7 @@ function HighlightCard({ highlight, myVote, pending, onVote, onDelete }: {
   const id = highlightCardId(scope, highlight.id);
   if (isCollapsed(id)) return <ClosedEntry elementId={id} kind={kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"} detail={highlight.statement} />;
   return <section id={id} className="reader-entry reader-highlight-card" aria-label={kind}>
-    <EntryBar elementId={id} kind={kind} />
+    <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind={kind} /></div>
     <p className="reader-entry-kind">{kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}<span>{highlight.author_name || "Anonymous reader"}</span></p>
     <p className="reader-highlight-sentence">{highlightSentence(highlight)}</p>
     <RatingPanel question={<span className="font-semibold">{ratingQuestion(kind)}</span>}>

@@ -137,7 +137,7 @@ function EditMinisiteDialog({ minisite, onClose, onDeleted }: { minisite: Minisi
 
   return <Modal title="Edit minisite" onClose={onClose} widthClassName="max-w-[40rem]">
     {confirmingDelete ? <div className="minisite-delete-confirm">
-      <p>Delete “{minisite.title}”? Its address stops working. The article and its notes stay on Common Notes.</p>
+      <p>Delete this minisite? Its address stops working. The article and its notes stay on Common Notes.</p>
       {error && <p role="alert" className="factcheck-error">{error}</p>}
       <div className="minisite-dialog-actions">
         <Button variant="quiet" onClick={() => setConfirmingDelete(false)}>Keep it</Button>

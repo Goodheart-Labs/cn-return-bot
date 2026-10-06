@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ensureSession } from "@cn/core/auth";
 import { anchorForSelection, type ReaderBlock } from "@cn/core/readerText";
 import { displayName } from "@cn/core/session";
@@ -25,6 +25,10 @@ function NoteDialog({ anchor }: { anchor: ReaderAnchor }) {
   const [signed, setSigned] = useState(false);
   const [login, setLogin] = useState(false);
   const post = usePostClaimWithNote();
+  const form = useRef<HTMLFormElement>(null);
+  // The modal moves focus to its first button when it opens, which happens
+  // before this effect, so the text box takes focus here.
+  useEffect(() => form.current?.querySelector("textarea")?.focus(), []);
 
   // The invisible account is made when the reader posts, not when the dialog
   // opens, so opening and cancelling leaves nothing behind.
@@ -46,9 +50,9 @@ function NoteDialog({ anchor }: { anchor: ReaderAnchor }) {
 
   if (login) return <LoginModal open onClose={() => setLogin(false)} />;
   return <Modal title="Add a note" onClose={closeDialog} widthClassName="max-w-[35rem]">
-    <DialogQuote label={anchor.partial ? "On the words you selected" : "On this passage"} text={anchor.text} />
-    <form className="reader-dialog-form" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
-      <Textarea autoGrow autoFocus aria-label="Your note" value={text} onChange={(event) => setText(event.target.value)} rows={4} maxLength={MAX_NOTE_LENGTH} placeholder="Add context, a correction, or a source for this passage." />
+    <DialogQuote text={anchor.text} />
+    <form ref={form} className="reader-dialog-form" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
+      <Textarea autoGrow aria-label="Your note" value={text} onChange={(event) => setText(event.target.value)} rows={4} maxLength={MAX_NOTE_LENGTH} placeholder="Add context, a correction, or a source for this passage." />
       {session && !session.user.is_anonymous && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
       {post.isError && <p role="alert" className="reader-dialog-error">That didn't post. Check your connection and try again.</p>}
       <DialogFooter>
