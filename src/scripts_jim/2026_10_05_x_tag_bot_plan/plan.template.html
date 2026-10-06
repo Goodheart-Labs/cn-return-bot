@@ -244,7 +244,7 @@ td code { white-space: nowrap; }
       <li>Everything else, such as thanks, jokes and insults, gets no reply at all. That also stops two bots from talking to each other forever.</li>
       <li>An approval submits the exact draft it replies to, as long as the approver is someone who asked for this note or suggested a change that led to it. The <a href="#d-approvers">approval rule</a> shows who that is. Anyone else gets one reply that explains the rule.</li>
       <li>An improve-and-approve first runs the revision. If the bot makes the change, it submits the new version right away and shows it in the "Submitted" reply. If it doesn't agree with the change, nothing is submitted and it explains why.</li>
-      <li>A post gets at most one note from us. Any later approval on that post, in any thread, gets the link to the note we already submitted.</li>
+      <li>A post gets at most one note from us. If several drafts are approved before it goes out, the most recently approved one is submitted, and everyone who approved gets one reply with the note's link (see <a href="#d-one-note">one note per post</a>).</li>
       <li>X takes our notes only on some posts, mostly posts where people requested a note. On any other post, the draft says so and asks people to request one, and an approval waits up to 3 hours for X to allow it (see <a href="#d-eligibility">the decision</a>).</li>
       <li>After submission the bot replies "Submitted" with the note's link. If X's daily limit for our AI notes is used up, it first replies that the note is queued, and later replies again once it went through.</li>
     </ul>
@@ -330,7 +330,6 @@ td code { white-space: nowrap; }
             <tr><td><code>post_context</code></td><td>text</td><td>The full input the first research got. Revisions get the same input, so they see the same post, media descriptions and comments.</td></tr>
             <tr><td><code>findings</code></td><td>text</td><td>The research findings of the first run.</td></tr>
             <tr><td><code>status</code></td><td>text</td><td><code>researching</code>, <code>answered</code>, <code>queued</code>, <code>submitted</code>, <code>failed</code>.</td></tr>
-            <tr><td><code>approved_post_id</code></td><td>text</td><td>The bot's draft post that was approved, so the queue knows which draft to submit.</td></tr>
             <tr><td><code>note_id</code></td><td>text</td><td>The Community Note id once X accepted it.</td></tr>
             <tr><td><code>pipeline_run_id</code></td><td>uuid</td><td>The <code>pipeline_runs</code> row with the full log and cost, <code>bot_name = 'x-tag'</code>.</td></tr>
             <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
@@ -355,7 +354,7 @@ td code { white-space: nowrap; }
         <div class="table-wrap"><table>
           <thead><tr><th>Table</th><th>Change</th><th>Why</th></tr></thead>
           <tbody>
-            <tr><td><code>signal_submission_queue</code></td><td>Renamed to <code>approved_submission_queue</code>, with a new <code>lane</code> column.</td><td>It now holds notes a human approved in Signal or on X. Both get priority over the automatic pipeline.</td></tr>
+            <tr><td><code>signal_submission_queue</code></td><td>Renamed to <code>approved_submission_queue</code>, with new columns <code>lane</code> and <code>draft_post_id</code>.</td><td>It holds the one waiting approval per post, from Signal or from X, and both get priority over the automatic pipeline. <code>draft_post_id</code> names the approved draft post, and a newer approval on the same post overwrites it.</td></tr>
             <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions.</td></tr>
           </tbody>
         </table></div>
@@ -385,9 +384,15 @@ td code { white-space: nowrap; }
         <p>An approval always submits the exact draft it replies to, never "the latest draft". An approval from someone not on the path gets one reply that explains the rule and suggests they tag the bot themselves. Your answer in the question round was "anyone". If you meant that literally anyone in the thread may approve, the check is one line to remove.</p>
       </div>
 
-      <div class="decision">
-        <h3>One note per post</h3>
-        <p>Our AI Note Writer can submit only one note per post. Once a note is submitted on a post, every later approval on that post, in any thread, gets the reply that a note is already submitted, with its link. Two people tagging the bot under the same post therefore share one note.</p>
+      <div class="decision" id="d-one-note">
+        <h3>One note per post, even when several drafts get approved</h3>
+        <p>Our AI Note Writer can submit only one note per post. Several approvals can still arrive close together: two people approve different drafts in two branches of a thread, or in two threads on the same post, while the first approval waits for X's daily limit or for the post to become eligible. Three rules handle every such case.</p>
+        <ul>
+          <li><strong>One waiting approval per post.</strong> The approved-notes queue holds at most one entry per post, and the entry names the approved draft. A newer approval of a different draft replaces it, because the newer draft is the one people checked most recently. Both drafts are still from people on their path, so nobody outside the discussion can swap the note.</li>
+          <li><strong>Never two submissions.</strong> The database's existing <code>claim_note_submission</code> takes a lock and refuses a second claim on a post that already has one. Two approvals in the same second therefore lead to one submission.</li>
+          <li><strong>One final reply per approval.</strong> When the note goes in, the bot replies to every approval on that post that has no final reply yet. The approval whose draft went in gets "Submitted" with the link. Every other one gets the link too, with a sentence saying a different draft was submitted. An approval that comes after the submission gets the link at once.</li>
+        </ul>
+        <p>An example: Priya approves draft 1 at 14:02, but the daily limit is full, so she gets the queued reply. At 14:20 Mohan, who asked for a better source under draft 1, approves the revised draft 2, which replaces draft 1 in the queue. At 14:31 a slot frees up and draft 2 is submitted. Mohan gets "Submitted" and Priya gets the reply that a different draft went in, both with the same link.</p>
       </div>
 
       <div class="decision">
@@ -459,10 +464,22 @@ Chrome: https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokme
 Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       </div>
 
-      <div class="decision">
-        <h3>Models</h3>
+      <div class="decision" id="d-models">
+        <h3>Models: Sonnet 5.5 or Opus 5.5, at medium reasoning (open)</h3>
+        <p>Search, writer and revision run at medium reasoning effort, which the model spends on thinking before it answers. The writer had no reasoning setting of its own, so it got one, <code>writer_reasoning_effort</code>, next to the existing <code>search_reasoning_effort</code>. That part is built.</p>
+        <p>You suggested Sonnet 5.5 (<code>anthropic/claude-sonnet-5.5</code>, $2 per million input tokens and $10 per million output tokens, half the price of Opus 5.5). The first Sonnet runs looked worse, so both models ran the search step three times on each example post:</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Model, medium reasoning</th><th>Post</th><th class="num">Right answer</th><th class="num">Searched the web</th><th class="num">Mean cost</th><th class="num">Mean time</th></tr></thead>
+          <tbody>
+            <tr><td>Sonnet 5.5</td><td>Mumbai (note needed)</td><td class="num">2 of 3</td><td class="num">3 of 3</td><td class="num">$0.10</td><td class="num">14 s</td></tr>
+            <tr><td>Sonnet 5.5</td><td>GDP (no note)</td><td class="num">2 of 3</td><td class="num">2 of 3</td><td class="num">$0.18</td><td class="num">14 s</td></tr>
+            <tr><td>Opus 5.5</td><td>Mumbai (note needed)</td><td class="num">3 of 3</td><td class="num">3 of 3</td><td class="num">$0.17</td><td class="num">28 s</td></tr>
+            <tr><td>Opus 5.5</td><td>GDP (no note)</td><td class="num">3 of 3</td><td class="num">3 of 3</td><td class="num">$0.10</td><td class="num">16 s</td></tr>
+          </tbody>
+        </table></div>
+        <p>In one GDP run Sonnet answered without searching at all, and its findings said so: "I did not run a web search. This is from background knowledge." On Mumbai it twice called the false side claim "an aside" and declined. That happened even though the request section tells it to check the claim the tagger points at, which fixed the same problem on Opus. Twelve runs are a small sample, but Opus was right every time and costs about the same per search here.</p>
+        <p>The examples on this page ran on Opus 5.5 before the reasoning setting existed. Once you pick a model, they run again on it.</p>
         <ul>
-          <li>Research, writing and revision use Opus 5.5 (<code>anthropic/claude-opus-5.5</code> on OpenRouter, $4 per million input tokens and $20 per million output tokens). It is newer and slightly cheaper than the Opus 5 the production search uses.</li>
           <li>Sorting replies and writing the no-note explanation use Muse Spark 1.3 Contributor, the model Common Notes runs on. It costs about $0.0002 per call.</li>
           <li>Image and video descriptions and the comment reading stay as they are in production (Muse or Gemini for media, Grok's X search for comments).</li>
         </ul>
@@ -490,7 +507,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
     <h3>The claim-check service runs the steps a caller picks</h3>
     <ul>
       <li><strong>Every step can be switched off through the A/B config.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag (<code>source_verifier</code>, <code>materiality_judge</code>, <code>note_evaluation</code>), on by default, and an "off" variant in their A/B test. The topic filter and the prefilter already had one. A caller picks its chain by forcing variants, so there is no second mechanism next to the A/B config.</li>
-      <li><strong>Opus 5.5 variants</strong> for search (<code>opus55-native</code>) and writer (<code>opus55</code>), at weight 0, so production never draws them.</li>
+      <li><strong>Sonnet 5.5 variants at medium reasoning</strong> for search (<code>sonnet55-native-medium</code>) and writer (<code>sonnet55-medium</code>), at weight 0, so production never draws them. The writer got its own reasoning setting, <code>writer_reasoning_effort</code>, which the bot config passes to the writer call only.</li>
       <li><strong>The tweet route takes a note request.</strong> <code>CheckTweetRequest</code> has an optional <code>noteRequest</code> (who asked and what they wrote). The service puts it on the run's context, the same way the curated-topic context works, and the user message renders it as its last section. The service's answer now also carries the rendered post, so a bot can show its model the same context later.</li>
       <li><strong>Honest outcomes.</strong> A note written with the verifier off is marked unverified instead of passing as "checked". A "no note needed" answer keeps the research findings, so the no-note reply and the Signal bot can explain why.</li>
       <li><strong>One special case gone.</strong> Scoring skipped X's evaluation for Common Notes claims through a check on the Common Notes flag. Common Notes now forces the evaluation's "off" variant instead.</li>
@@ -530,6 +547,8 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>The diagram shows every branch:</strong> the "seen this post?" check, the unreadable post, the approval rule's reply, one note per post, the queued and gave-up replies, and X refusing a post.</li>
       <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.24, against $1.36 for the uncapped one.</li>
       <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young: "The post is ineligible to write a note via API call". The bot now checks eligibility first, drafts anyway, asks people to request a note, and lets an approval wait up to 3 hours for X to allow it.</li>
+      <li><strong>Medium reasoning, and Sonnet 5.5 or Opus 5.5.</strong> Every Opus or Sonnet call runs at medium reasoning. You suggested Sonnet 5.5. In a twelve-run comparison it was right 4 of 6 times against Opus's 6 of 6, so the model choice is open.</li>
+      <li><strong>Several approvals on one post.</strong> The queue holds one waiting approval per post, and a newer approval replaces it. The database lock lets only one note through, and every approval gets one final reply with the link. This replaces the old "one note per post" rule and the <code>approved_post_id</code> column.</li>
       <li><strong>Every "can't submit" reply suggests requesting a note</strong> when the reason is eligibility: the draft's ending, the queued reply, the gave-up reply and the reply after X refuses a post.</li>
       <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the exact bio, website field and pinned post linking to commonnotes.net and the extension stores.</li>
       <li><strong>Implicit mentions are a known risk.</strong> We don't yet know whether X lets the bot reply to someone who answered its post without typing its handle. The first live test checks this.</li>
@@ -677,7 +696,7 @@ const STEPS = {
     title: "Submission queue", chips: [["code", "Plain code"], ["reused", "Existing gate"], ["changed", "New lane"]],
     summary: "Asks the database's capacity gate every 2 minutes for up to 3 hours. Approved notes go ahead of the automatic pipeline.",
     body: [
-      "The existing claim_note_submission function decides when a note may go out. If there is room, the note is submitted at once and no \"queued\" reply is posted.",
+      "The queue holds one waiting approval per post. A newer approval of a different draft on the same post replaces the waiting one. The existing claim_note_submission function decides when a note may go out, and its lock lets only one note per post through. If there is room and the post is eligible, the note is submitted at once and no \"queued\" reply is posted.",
       "If there is no room, the bot posts the queued reply once, then asks again every 2 minutes. Asking the database costs nothing and never calls X. After 3 hours without room it posts the gave-up reply.",
       "The same wait also covers a post that X doesn't take notes on yet. Every 2 minutes the bot asks evaluate_note again, so a post that becomes eligible because people requested a note goes out within minutes.",
     ],
@@ -691,9 +710,12 @@ const STEPS = {
   },
   submitted: {
     title: "Reply: submitted", chips: [["reply", "Bot reply"], ["x", "X API"]],
-    summary: "A fixed reply with the note's link. After an improve-and-approve it also shows the version that was submitted.",
-    body: ["The person who approved sees the link. After an improve-and-approve they also see the exact text that went in, because they never saw it as a draft."],
-    blocks: [["Fixed reply: submitted", R.submitted, "fixed text"], ["Fixed reply: improved and submitted", R.improvedAndSubmitted, "fixed text"]],
+    summary: "One reply to every approval on the post that has no final reply yet, each with the note's link.",
+    body: [
+      "The approval whose draft went in gets the submitted reply. After an improve-and-approve it also shows the exact text that went in, because nobody saw it as a draft.",
+      "Every other waiting approval on the post, for example one whose draft was replaced by a newer approval, gets the reply that a different draft was submitted, with the same link.",
+    ],
+    blocks: [["Fixed reply: submitted", R.submitted, "fixed text"], ["Fixed reply: improved and submitted", R.improvedAndSubmitted, "fixed text"], ["Fixed reply: a different draft went in", R.otherDraftSubmitted, "fixed text"]],
     facts: [["Cost", "$0.20 for a reply with a link"]],
   },
   refused: {
@@ -723,7 +745,7 @@ const STEPS = {
   alreadyB: {
     title: "Reply: note link", chips: [["reply", "Bot reply"]],
     summary: "The post already has a note from us. Our AI Note Writer can submit only one note per post.",
-    body: ["This catches a second approval in the same thread, and an approval in a different thread on the same post."],
+    body: ["This is the reply to an approval that arrives after the post's note was already submitted, from this thread or any other."],
     blocks: [["Fixed text", R.alreadySubmitted, "fixed text"]],
   },
   known: {
@@ -923,7 +945,7 @@ const NODES = [
   { id: "queuedReply", x: COL[3], y: ROW_B[1], title: "Reply: queued", sub: "may ask for a request", kind: "reply" },
   { id: "gaveUp", x: COL[3], y: ROW_B[2], title: "Reply: gave up", sub: "may ask for a request", kind: "reply" },
   { id: "submit", x: COL[4], y: ROW_B[0], title: "Submit to X", sub: "Community Notes API", kind: "x" },
-  { id: "submitted", x: COL[4], y: ROW_B[1], title: "Reply: submitted", sub: "with the note link", kind: "reply" },
+  { id: "submitted", x: COL[4], y: ROW_B[1], title: "Reply: submitted", sub: "to every approval", kind: "reply" },
   { id: "refused", x: COL[4], y: ROW_B[2], title: "Reply: X refused", sub: "asks for a request", kind: "reply" },
   { id: "revise", x: COL[1], y: ROW_B[3], title: "Revise", sub: "search, fetch, new draft", kind: "opus" },
   { id: "postRevision", x: COL[2], y: ROW_B[3], title: "Post the new answer", sub: "draft or reason", kind: "reply" },
