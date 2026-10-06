@@ -530,6 +530,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>The diagram shows every branch:</strong> the "seen this post?" check, the unreadable post, the approval rule's reply, one note per post, the queued and gave-up replies, and X refusing a post.</li>
       <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.24, against $1.36 for the uncapped one.</li>
       <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young: "The post is ineligible to write a note via API call". The bot now checks eligibility first, drafts anyway, asks people to request a note, and lets an approval wait up to 3 hours for X to allow it.</li>
+      <li><strong>Every "can't submit" reply suggests requesting a note</strong> when the reason is eligibility: the draft's ending, the queued reply, the gave-up reply and the reply after X refuses a post.</li>
       <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the exact bio, website field and pinned post linking to commonnotes.net and the extension stores.</li>
       <li><strong>Implicit mentions are a known risk.</strong> We don't yet know whether X lets the bot reply to someone who answered its post without typing its handle. The first live test checks this.</li>
     </ul>
@@ -680,7 +681,7 @@ const STEPS = {
       "If there is no room, the bot posts the queued reply once, then asks again every 2 minutes. Asking the database costs nothing and never calls X. After 3 hours without room it posts the gave-up reply.",
       "The same wait also covers a post that X doesn't take notes on yet. Every 2 minutes the bot asks evaluate_note again, so a post that becomes eligible because people requested a note goes out within minutes.",
     ],
-    blocks: [["Fixed reply: queued", R.queued, "fixed text"], ["Fixed reply: gave up, limit full", R.gaveUp, "fixed text"], ["Fixed reply: gave up, not eligible", R.gaveUpNotEligible, "fixed text"]],
+    blocks: [["Fixed reply: queued, limit full", R.queued, "fixed text"], ["Fixed reply: queued, not eligible yet", R.queuedNotEligible, "fixed text"], ["Fixed reply: gave up, limit full", R.gaveUp, "fixed text"], ["Fixed reply: gave up, not eligible", R.gaveUpNotEligible, "fixed text"]],
   },
   submit: {
     title: "Submit to X", chips: [["code", "Plain code"], ["x", "Community Notes API"], ["reused", "Existing submit"]],
@@ -703,9 +704,9 @@ const STEPS = {
   },
   queuedReply: {
     title: "Reply: queued", chips: [["reply", "Bot reply"]],
-    summary: "Posted once, when the daily limit is full at the moment of approval.",
-    body: ["The note is waiting in the approved-notes queue. The bot replies again once it is submitted, or after 3 hours if it never got room."],
-    blocks: [["Fixed text", R.queued, "fixed text"]],
+    summary: "Posted once, when the note can't go out at the moment of approval: the daily limit is full, or X doesn't take our notes on the post yet.",
+    body: ["The note is waiting in the approved-notes queue. The bot replies again once it is submitted, or after 3 hours if it never could be. Whenever the reason is eligibility, the reply suggests requesting a Community Note, because that is what makes a post eligible."],
+    blocks: [["Daily limit full", R.queued, "fixed text"], ["Not eligible yet", R.queuedNotEligible, "fixed text"]],
   },
   gaveUp: {
     title: "Reply: gave up", chips: [["reply", "Bot reply"]],

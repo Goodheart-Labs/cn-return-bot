@@ -166,14 +166,15 @@ If you think I missed something, reply with a source or a correction.`;
 /** The fixed replies around submission. No model writes them. */
 export const STATUS_REPLIES = {
   queued: "Approved. X's daily limit for AI-written notes is used up right now, so the note is queued. I'll reply here once it's submitted.",
+  queuedNotEligible: "Approved. X doesn't take notes from me on this post yet, so the note is waiting. You can help by requesting a Community Note in the post's menu. I'll reply here once it's submitted.",
   submitted: "Submitted. Community Notes contributors now rate it before it can show on the post.\nhttps://x.com/i/communitynotes/<note id>",
   improvedAndSubmitted: "<the revision call's reply>\n\nI made the change and submitted this version:\n\n<note text>\n\n<sources>\n\nhttps://x.com/i/communitynotes/<note id>",
   alreadySubmitted: "A note from me is already submitted on this post:\nhttps://x.com/i/communitynotes/<note id>",
   notOnPath: "Only the person who asked for this note, and people whose suggestions shaped it, can approve it. You can suggest a change, or tag me under the post to start your own.",
   gaveUp: "I couldn't submit this note within 3 hours, because X's daily limit stayed full. Reply \"approve\" to try again.",
-  gaveUpNotEligible: "I couldn't submit this note within 3 hours, because X still doesn't take notes from me on this post. Reply \"approve\" to try again.",
+  gaveUpNotEligible: "I couldn't submit this note within 3 hours, because X still doesn't take notes from me on this post. You can request a Community Note in the post's menu, then reply \"approve\" to try again.",
   draftNotEligibleEnding: "X doesn't take notes from me on this post yet. You can request a Community Note in the post's menu. Then reply \"approve\" and I'll submit it as soon as X allows it.",
-  ineligible: "X doesn't accept a note from me on this post, so I couldn't submit it.",
+  ineligible: "X doesn't take notes from me on this post, so I couldn't submit it. You can request a Community Note in the post's menu, then reply \"approve\" to try again.",
   postDeleted: "The post was deleted, so there is nothing to add a note to.",
   unreadable: "I can't read that post. It may be deleted or from a protected account.",
 };
