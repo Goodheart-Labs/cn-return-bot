@@ -96,7 +96,7 @@ interface Revision {
 }
 
 export async function revise(
-  params: { postContext: string; findings: string; thread: ThreadPost[]; current: CurrentAnswer },
+  params: { postContext: string; findings: string; thread: ThreadPost[]; current: CurrentAnswer; improveAndApprove?: boolean },
   fetchTool: object = WEB_FETCH_TOOL,
 ) {
   const userMessage = buildRevisionUserMessage(params);

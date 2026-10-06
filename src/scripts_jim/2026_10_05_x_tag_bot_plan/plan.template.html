@@ -258,7 +258,7 @@ td code { white-space: nowrap; }
     <div class="table-wrap" id="cost-table"></div>
     <div class="prose">
       <p><strong>Fixed costs:</strong> X Premium for the bot account is $8 a month. Every tag and every reply X pushes to us costs $0.005, and nothing is charged while nobody writes to the bot.</p>
-      <p><strong>At scale:</strong> 20 conversations a day at about $1.50 each is about $900 a month. The revision step is the one to watch. A revision that searches and opens pages cost $1.36 in the example, because Opus reads every fetched page as input. With the fetch tool capped at two pages of 8,000 tokens each, the improve-and-approve revision cost $0.24.</p>
+      <p><strong>At scale:</strong> 20 conversations a day at about $1.50 each is about $900 a month. The revision step is the one to watch. A revision that searches and opens pages cost $1.10 in the Mumbai example, because Opus reads every fetched page as input (262,000 input tokens). With the fetch tool capped at two pages of 8,000 tokens each, the improve-and-approve revision cost $0.31. The revision also re-checks its sources on every reply: in the submission-claim test, eight short replies cost $6 together, about $0.75 each.</p>
     </div>
     <div class="callout">
       <p><strong>One price is unclear.</strong> X lists $0.01 for a "summoned" post (a reply to someone who tagged us) and $0.20 for a post with a link. A draft reply is both. X's docs don't say which wins. The table assumes $0.20, the worse case. We will know from the billing console after the first day.</p>
@@ -374,7 +374,7 @@ td code { white-space: nowrap; }
             <ul><li>Bot: draft 1 <span class="ok">(priya may approve)</span>
               <ul>
                 <li>@redpill_raj: "lol imagine needing a bot..." (no reply)</li>
-                <li>@mvaidya: "newkerala is a pretty weak source..."
+                <li>@mvaidya: "Is that really the best source?..."
                   <ul><li>Bot: draft 2 <span class="ok">(priya and mvaidya may approve)</span>, <span class="no">(redpill_raj may not)</span></li></ul>
                 </li>
               </ul>
@@ -404,13 +404,13 @@ td code { white-space: nowrap; }
 
       <div class="decision">
         <h3>Approvals are read by Muse, not by a fixed list of words</h3>
-        <p>The Signal bot deliberately never lets a model decide what counts as an approval. It only accepts exact phrases such as "yes post". On X people write freely ("looks good, ship it", "approve but drop the second link"), so a word list would either miss approvals or accept "approve but change X". So the classifier has a fourth kind, improve-and-approve. Muse sorted all five example replies correctly, including "approve but drop the newkerala link". On that reply the revision swapped the link for Wikipedia's Dharavi article and would have submitted the new version, for $0.24.</p>
+        <p>The Signal bot deliberately never lets a model decide what counts as an approval. It only accepts exact phrases such as "yes post". On X people write freely ("looks good, ship it", "approve but drop the second link"), so a word list would either miss approvals or accept "approve but change X". So the classifier has a fourth kind, improve-and-approve. Muse sorted all five example replies correctly, including "approve but use an official source instead of that link". On that reply the revision replaced the news link with the Maharashtra government's Dharavi Redevelopment Project site, dropped a detail that site doesn't support, and would have submitted the new version, for $0.31. Its input ends with a notice that the bot will submit a revised version right away. Without it, the model asked for another approval.</p>
         <p>The risk is a wrong approval, and a submitted note cannot be taken back through the API. The plan limits the risk two ways: only a reply to a draft can count as an approval, and only from someone on the draft's path.</p>
       </div>
 
       <div class="decision">
         <h3>No source check means people in the thread are the check</h3>
-        <p>The ticket drops the source verifier. The revision example shows what that costs. Asked for an official source, Opus rewrote the note around the 2011 census and cited <code>en.wikipedia.org/wiki/Slums_in_Chennai</code> for a claim about Mumbai. The verifier would likely have caught that the page does not support the claim. Without it, the wrong link goes into the draft, and only a careful reader in the thread would notice before approving.</p>
+        <p>The ticket drops the source verifier. An earlier test run shows what that can cost. Asked for an official source, Opus 5.5 (before the medium reasoning setting) rewrote the note around the 2011 census and cited <code>en.wikipedia.org/wiki/Slums_in_Chennai</code> for a claim about Mumbai. The verifier would likely have caught that the page does not support the claim. In the final runs at medium reasoning the sources held up: a government table filed with Parliament and Wikipedia's Dharavi article. Several revisions even removed a word their sources didn't support, on their own. Still, without a check a wrong link can go into a draft, and only a careful reader in the thread would notice before approving.</p>
         <p>Options, cheapest first:</p>
         <ul>
           <li>Keep it as the ticket says, and rely on the people in the thread.</li>
@@ -421,7 +421,7 @@ td code { white-space: nowrap; }
 
       <div class="decision">
         <h3>The bot's fixed text is never written by a model</h3>
-        <p>The lines around a draft ("Draft Community Note:", "Reply approve..."), and every status reply ("Submitted", "Queued", "Already submitted"), are fixed templates in code. A model writes only the explanation in a no-note reply and the reply to feedback. We tested whether the revision call ever claims on its own that a note was submitted, with eight replies built to tempt it ("thanks for submitting!", "did you submit it yet?", "ok publish it"). It never did, so the tag bot has no filter for such claims, unlike the Signal bot's <code>safeReply</code>. The test showed a different problem: the model told people "I don't submit notes", because nothing told it how approval works. The revision prompt now says that people submit a draft by replying "approve". In two of the eight runs the model also re-read its sources and replaced the wrong Chennai link on its own.</p>
+        <p>The lines around a draft ("Draft Community Note:", "Reply approve..."), and every status reply ("Submitted", "Queued", "Already submitted"), are fixed templates in code. A model writes only the explanation in a no-note reply and the reply to feedback. We tested whether the revision call ever claims on its own that a note was submitted, with eight replies built to tempt it ("thanks for submitting!", "did you submit it yet?", "ok publish it"). It never did, so the tag bot has no filter for such claims, unlike the Signal bot's <code>safeReply</code>. The test showed a different problem: the model told people "I don't submit notes", because nothing told it how approval works. The revision prompt now says that people submit a draft by replying "approve". In the re-run on Opus 5.5 at medium reasoning, all eight answers again made no claim, and each told the person to reply "approve" to the draft.</p>
         <p>Everything people write in the thread, and every page the bot reads, goes into the prompts as evidence, never as instructions. Each prompt says so.</p>
       </div>
 
@@ -465,7 +465,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       </div>
 
       <div class="decision" id="d-models">
-        <h3>Models: Sonnet 5.5 or Opus 5.5, at medium reasoning (open)</h3>
+        <h3>Models: Opus 5.5 at medium reasoning</h3>
         <p>Search, writer and revision run at medium reasoning effort, which the model spends on thinking before it answers. The writer had no reasoning setting of its own, so it got one, <code>writer_reasoning_effort</code>, next to the existing <code>search_reasoning_effort</code>. That part is built.</p>
         <p>You suggested Sonnet 5.5 (<code>anthropic/claude-sonnet-5.5</code>, $2 per million input tokens and $10 per million output tokens, half the price of Opus 5.5). The first Sonnet runs looked worse, so both models ran the search step three times on each example post:</p>
         <div class="table-wrap"><table>
@@ -478,7 +478,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
           </tbody>
         </table></div>
         <p>In one GDP run Sonnet answered without searching at all, and its findings said so: "I did not run a web search. This is from background knowledge." On Mumbai it twice called the false side claim "an aside" and declined. That happened even though the request section tells it to check the claim the tagger points at, which fixed the same problem on Opus. Twelve runs are a small sample, but Opus was right every time and costs about the same per search here.</p>
-        <p>The examples on this page ran on Opus 5.5 before the reasoning setting existed. Once you pick a model, they run again on it.</p>
+        <p>You chose Opus 5.5. Every example on this page ran on Opus 5.5 at medium reasoning, except the first-try search, which is marked as such.</p>
         <ul>
           <li>Sorting replies and writing the no-note explanation use Muse Spark 1.3 Contributor, the model Common Notes runs on. It costs about $0.0002 per call.</li>
           <li>Image and video descriptions and the comment reading stay as they are in production (Muse or Gemini for media, Grok's X search for comments).</li>
@@ -507,7 +507,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
     <h3>The claim-check service runs the steps a caller picks</h3>
     <ul>
       <li><strong>Every step can be switched off through the A/B config.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag (<code>source_verifier</code>, <code>materiality_judge</code>, <code>note_evaluation</code>), on by default, and an "off" variant in their A/B test. The topic filter and the prefilter already had one. A caller picks its chain by forcing variants, so there is no second mechanism next to the A/B config.</li>
-      <li><strong>Sonnet 5.5 variants at medium reasoning</strong> for search (<code>sonnet55-native-medium</code>) and writer (<code>sonnet55-medium</code>), at weight 0, so production never draws them. The writer got its own reasoning setting, <code>writer_reasoning_effort</code>, which the bot config passes to the writer call only.</li>
+      <li><strong>Opus 5.5 variants at medium reasoning</strong> for search (<code>opus55-native-medium</code>) and writer (<code>opus55-medium</code>), at weight 0, so production never draws them. The writer got its own reasoning setting, <code>writer_reasoning_effort</code>, which the bot config passes to the writer call only.</li>
       <li><strong>The tweet route takes a note request.</strong> <code>CheckTweetRequest</code> has an optional <code>noteRequest</code> (who asked and what they wrote). The service puts it on the run's context, the same way the curated-topic context works, and the user message renders it as its last section. The service's answer now also carries the rendered post, so a bot can show its model the same context later.</li>
       <li><strong>Honest outcomes.</strong> A note written with the verifier off is marked unverified instead of passing as "checked". A "no note needed" answer keeps the research findings, so the no-note reply and the Signal bot can explain why.</li>
       <li><strong>One special case gone.</strong> Scoring skipped X's evaluation for Common Notes claims through a check on the Common Notes flag. Common Notes now forces the evaluation's "off" variant instead.</li>
@@ -545,9 +545,9 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>No filter for submission claims.</strong> A test with eight tempting replies found none, so the tag bot doesn't get the Signal bot's <code>safeReply</code>. The revision prompt now explains how approval works.</li>
       <li><strong>Simpler <code>x_tag_posts</code> table.</strong> <code>answered_by</code> and <code>llm_cost_usd</code> are gone. A crash at the wrong moment may cause one double reply, which we accept.</li>
       <li><strong>The diagram shows every branch:</strong> the "seen this post?" check, the unreadable post, the approval rule's reply, one note per post, the queued and gave-up replies, and X refusing a post.</li>
-      <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.24, against $1.36 for the uncapped one.</li>
+      <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.31, against $1.10 for the uncapped Mumbai revision.</li>
       <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young: "The post is ineligible to write a note via API call". The bot now checks eligibility first, drafts anyway, asks people to request a note, and lets an approval wait up to 3 hours for X to allow it.</li>
-      <li><strong>Medium reasoning, and Sonnet 5.5 or Opus 5.5.</strong> Every Opus or Sonnet call runs at medium reasoning. You suggested Sonnet 5.5. In a twelve-run comparison it was right 4 of 6 times against Opus's 6 of 6, so the model choice is open.</li>
+      <li><strong>Opus 5.5 at medium reasoning.</strong> Every Opus call runs at medium reasoning. Sonnet 5.5 was tested and dropped: in a twelve-run comparison it was right 4 of 6 times against Opus's 6 of 6, and once answered without searching. All examples ran again on the final setup.</li>
       <li><strong>Several approvals on one post.</strong> The queue holds one waiting approval per post, and a newer approval replaces it. The database lock lets only one note through, and every approval gets one final reply with the link. This replaces the old "one note per post" rule and the <code>approved_post_id</code> column.</li>
       <li><strong>Every "can't submit" reply suggests requesting a note</strong> when the reason is eligibility: the draft's ending, the queued reply, the gave-up reply and the reply after X refuses a post.</li>
       <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the exact bio, website field and pinned post linking to commonnotes.net and the extension stores.</li>
@@ -624,7 +624,7 @@ const STEPS = {
     facts: [["Cost", "Grok comments $0.06 to $0.16 per post, media description under $0.001"], ["Time", "10 to 20 s"]],
   },
   search: {
-    title: "Search", chips: [["opus", "Opus 5.5"], ["reused", "Existing prompt"], ["changed", "Opus 5.5 instead of the A/B mix"]],
+    title: "Search", chips: [["opus", "Opus 5.5"], ["reused", "Existing prompt"], ["changed", "Opus 5.5 at medium reasoning"]],
     summary: "Opus 5.5 with web search decides whether the post needs a note and writes research findings with source links.",
     body: [
       "The production search step, unchanged, with Opus 5.5 and Anthropic's web search tool. It returns findings with inline links and a yes or no on whether a note is needed.",
@@ -636,7 +636,7 @@ const STEPS = {
     ],
   },
   searchFirstTry: {
-    title: "Search, first try without the side-claim sentence", chips: [["opus", "Opus 5.5"], ["warn", "Superseded"]],
+    title: "Search, first try without the side-claim sentence", chips: [["opus", "Opus 5.5, default reasoning"], ["warn", "Superseded"]],
     summary: "The first test run, before the tagger section told the model to check side claims.",
     body: ["Same post, same comment, same prompts, but the tagger section did not yet say to check a claim the tagger points at. Read the last paragraph: the model agrees the claim is false and still declines."],
     blocks: [["Output", json({ correction_needed: M.searchFirstTry.result.correctionNeeded, findings: M.searchFirstTry.result.findings }), "real", true]],
@@ -678,7 +678,7 @@ const STEPS = {
   classify: {
     title: "Sort the reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
     summary: "Muse decides whether a reply is an approval, an improve-and-approve, feedback or anything else.",
-    body: ["One small call per reply. Below are all five replies from the two threads, sorted with the four-kind prompt. \"approve but drop the newkerala link\" is the improve-and-approve case."],
+    body: ["One small call per reply. Below are all five replies from the two threads, sorted with the four-kind prompt. \"approve but use an official source instead of that link\" is the improve-and-approve case."],
     blocks: [["System prompt", DATA.prompts.classifier, "new"]],
     examples: classifierExamples,
   },
@@ -782,7 +782,10 @@ const STEPS = {
   askRequest: {
     title: "Post the draft and ask for a request", chips: [["reply", "Bot reply"], ["x", "X API"]],
     summary: "The draft on a post X doesn't take our notes on yet. Its last line asks people to request a Community Note.",
-    body: ["The same draft template, with a different last line. Requesting a note is what makes a post eligible, so the reply tells people how to do it. An approval still works: it waits in the queue for X to allow the note."],
+    body: [
+      "The same draft template, with a different last line. Requesting a note is what makes a post eligible, so the reply tells people how to do it.",
+      "Replies under this post work exactly as under a normal draft: an approval, an improve-and-approve, feedback, or anything else. Both are stored as draft posts in x_tag_posts. An approval waits in the queue until X allows the note.",
+    ],
     blocks: [["Last line instead of \"Reply approve...\"", R.draftNotEligibleEnding, "fixed text"]],
   },
   fetch: {
@@ -804,10 +807,11 @@ const STEPS = {
     body: [
       "One call with Anthropic's web search and web fetch tools, run by the provider inside the call. It gets the same input as the first research, the first findings, the current answer and the thread from the tag down to the reply.",
       "A new draft is checked in code before posting: at most 280 characters with links counted as 1, one to five public links. The reply text is posted above the draft, as in the template.",
-      "The prompt shown has one sentence that was added after these examples ran: that people submit a draft by replying \"approve\" and the bot then posts the link. The submission-claim test showed it was missing.",
+      "On an improve-and-approve, the input ends with the notice below, because the bot then submits a revised version right away. Without it, the model asked for another approval.",
     ],
+    blocks: [["Notice at the end of the input on an improve-and-approve", DATA.prompts.improveNotice, "new"]],
     tabs: [
-      { label: "Mumbai: revise", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", M.revision.userMessage, "real"], ["Output", json(M.revision.revision), "real", true], ["Posted reply", M.revisedReply, "real"]], facts: [["Cost", fmtUsd(M.revision.costUsd) + " (323,000 input tokens, 2 searches, pages opened)"], ["Time", fmtSec(M.revision.seconds)], ["Note length", M.revision.noteLength + " of 280"]] },
+      { label: "Mumbai: revise", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", M.revision.userMessage, "real"], ["Output", json(M.revision.revision), "real", true], ["Posted reply", M.revisedReply, "real"]], facts: [["Cost", fmtUsd(M.revision.costUsd) + " (" + Math.round(M.revision.toolUse.usage.prompt_tokens / 1000) + ",000 input tokens, " + M.revision.toolUse.usage.server_tool_use_details.web_search_requests + " searches, pages opened, fetch not capped)"], ["Time", fmtSec(M.revision.seconds)], ["Note length", M.revision.noteLength + " of 280"]] },
       { label: "Mumbai: improve and approve", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", I.revision.userMessage, "real"], ["Output", json(I.revision.revision), "real", true]], facts: [["Cost", fmtUsd(I.revision.costUsd) + " (fetch capped at 2 pages of 8,000 tokens)"], ["Time", fmtSec(I.revision.seconds)], ["Note length", I.revision.noteLength + " of 280"]] },
       { label: "GDP: keep", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", G.revision.userMessage, "real"], ["Output", json(G.revision.revision), "real", true]], facts: [["Cost", fmtUsd(G.revision.costUsd) + " (no search needed)"], ["Time", fmtSec(G.revision.seconds)]] },
     ],
@@ -967,7 +971,7 @@ const EDGES_A = [
   { d: "M710,428 H674", label: "yes", lx: 680, ly: 419 },
   { d: "M805,456 V506", label: "not eligible", lx: 812, ly: 486 },
   // Loops down to the replies
-  { d: "M575,456 V590 H115 V" + (ROW_B[0] - 4), dash: true, label: "people reply to the bot's post", lx: 250, ly: 582 },
+  { d: "M575,456 V590 H115 V" + (ROW_B[0] - 4), dash: true, label: "people reply to either post", lx: 250, ly: 582 },
   { d: "M805,566 V590 H575", dash: true, arrow: false },
 ];
 const EDGES_B = [

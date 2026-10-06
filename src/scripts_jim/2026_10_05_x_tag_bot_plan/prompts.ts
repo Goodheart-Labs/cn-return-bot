@@ -120,11 +120,16 @@ export type CurrentAnswer =
   | { kind: "draft"; text: string; sources: string[] }
   | { kind: "no_note"; reply: string };
 
+/** Added to the revision's input on an improve-and-approve, because then the
+ *  bot submits a revised draft right away instead of asking for approval. */
+export const IMPROVE_AND_APPROVE_NOTICE = `The last post approves the draft on the condition that you make its change. If you revise, the bot submits your new version right away, so do not ask for another approval. If you keep the draft, nothing is submitted.`;
+
 export function buildRevisionUserMessage(params: {
   postContext: string;
   findings: string;
   thread: ThreadPost[];
   current: CurrentAnswer;
+  improveAndApprove?: boolean;
 }): string {
   const thread = params.thread.map((post) => `@${post.handle}: ${post.text}`).join("\n\n");
   const current = params.current.kind === "draft"
@@ -142,7 +147,7 @@ ${current}
 
 ## Thread, oldest first. Answer the last post.
 
-${thread}`;
+${thread}${params.improveAndApprove ? `\n\n${IMPROVE_AND_APPROVE_NOTICE}` : ""}`;
 }
 
 /** The fixed text around a draft. No model writes it, so it cannot drift. */

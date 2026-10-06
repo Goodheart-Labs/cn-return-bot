@@ -33,7 +33,7 @@ const results = await withBotConfig(TAG_BOT_CONFIG, () => withCostTracker(async 
   const improveRequest: ThreadPost = mumbai.classifications[2].reply;
   const thread: ThreadPost[] = [mumbai.requester, { handle: BOT_HANDLE, text: mumbai.draftReply }, improveRequest];
   const revision = await revise(
-    { postContext: mumbai.postContext, findings: mumbai.pipeline.search.result.findings, thread, current: { kind: "draft", ...mumbai.draft } },
+    { postContext: mumbai.postContext, findings: mumbai.pipeline.search.result.findings, thread, current: { kind: "draft", ...mumbai.draft }, improveAndApprove: true },
     CAPPED_WEB_FETCH_TOOL,
   );
   return { classifications, improveRequest, revision };
