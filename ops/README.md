@@ -99,6 +99,17 @@ SLACK_CHANNEL_WRITTEN_BY_HUMAN=
 SLACK_CHANNEL_FIRST_HELPFUL_VOTE=
 SLACK_CHANNEL_HELPFUL=
 
+# cn-x-tag-bot only: @CommonNotesBot's account and developer app. See "The X
+# tag bot" below. The bot also uses SUPABASE_*, CLAIM_CHECK_URL and the
+# notewriter's X_* keys above, which submit its notes.
+X_TAG_BOT_USER_ID=
+X_TAG_BOT_HANDLE=CommonNotesBot
+X_TAG_BOT_API_KEY=
+X_TAG_BOT_API_KEY_SECRET=
+X_TAG_BOT_ACCESS_TOKEN=
+X_TAG_BOT_ACCESS_TOKEN_SECRET=
+X_TAG_BOT_BEARER_TOKEN=
+
 # Optional knobs, with their defaults
 #CLAIM_CHECK_PORT=8787
 #CLAIM_CHECK_CONCURRENCY=6
@@ -108,6 +119,38 @@ SLACK_CHANNEL_HELPFUL=
 #EVERYTHING_DAILY_SPEND_CAP_USD=50
 #EVERYTHING_REQUEST_RESERVE_USD=10
 ```
+
+## The X tag bot (cn-x-tag-bot)
+
+People tag @CommonNotesBot under a post on X, and the bot answers with a draft
+Community Note. An approval in the thread submits it through the notewriter.
+The plan, with every prompt, reply and decision, is linked on GOO-212.
+
+The bot runs the first answer on the claim-check service, with its own chain
+of steps (`TAG_BOT_PICKS` in `src/x-tag-bot/bot.ts`). It hears about tags
+through the X Activity API: one persistent stream, no public address. When the
+stream ends the process exits, systemd starts it again, and X resends the last
+five minutes. A tag sent during a longer outage gets no answer, on purpose.
+
+First-time setup, once the account exists (GOO-368):
+
+1. In the bot's developer app, enable OAuth 1.0a with read and write access and
+   OAuth 2.0 with a callback address, and copy its keys and bearer token into
+   `service.env` (the `X_TAG_BOT_*` lines above).
+2. On any machine with those keys plus `X_TAG_BOT_CLIENT_ID`,
+   `X_TAG_BOT_CLIENT_SECRET` and `X_TAG_BOT_REDIRECT_URI`, run
+   `bun run x-tag-bot-setup`. It logs in as the bot once, creates the two
+   event subscriptions and prints `X_TAG_BOT_USER_ID`.
+3. Apply migration 117, then install and start the unit:
+   `cp ops/cn-x-tag-bot.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now cn-x-tag-bot`.
+
+Autodeploy restarts it with the other services, but only while it runs, so it
+stays off until step 3.
+
+To try the bot without X, run a dry run on any machine with an OpenRouter key
+and a working X read token: `bun run x-tag-bot --dry-run <post-url> "<comment>"
+"<reply>" ...`. It prints every reply instead of posting, keeps nothing and
+submits nothing.
 
 ## Posting to Slack
 

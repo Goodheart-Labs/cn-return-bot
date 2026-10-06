@@ -18,7 +18,7 @@ SERVICE_USER="cnbot"
 # is first installed by the deploy after the one that adds it. A new unit must
 # be installed by hand once (cp, daemon-reload, enable --now), as cn-fetch was
 # on 2026-09-28.
-UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-notify)
+UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-notify cn-x-tag-bot)
 
 main() {
   # Deploy whatever branch the checkout is on. Before the cutover PR merges

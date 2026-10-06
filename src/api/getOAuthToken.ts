@@ -18,11 +18,12 @@ export function getOAuth1Headers(
   url: string,
   method: string = "GET",
   _body?: string,
-  profile: "writer" | "reader" = "writer",
+  profile: "writer" | "reader" | "tagbot" = "writer",
 ) {
   const readerConfigured = profile === "reader" &&
     ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"].some((suffix) => process.env[`X_READ_${suffix}`]);
-  const prefix = readerConfigured ? "X_READ" : "X";
+  // The tag bot posts as its own account, @CommonNotesBot, never as the notewriter.
+  const prefix = profile === "tagbot" ? "X_TAG_BOT" : readerConfigured ? "X_READ" : "X";
   const consumer_key = getRequiredEnv(`${prefix}_API_KEY`);
   const consumer_secret = getRequiredEnv(`${prefix}_API_KEY_SECRET`);
   const access_token = getRequiredEnv(`${prefix}_ACCESS_TOKEN`);

@@ -29,6 +29,7 @@ The goals, in order: views of AI-written notes, misleading views suppressed, get
 - `src/everything-core/`, `src/everything-ui/`, `src/everything-features/` - the shared layers of the Common Notes frontend.
 - `src/everything-web/` (website), `src/everything-extension/` (browser extension), `src/analytics-dashboard/` (Common Notes analytics), `src/review-dashboard/` (X note failures).
 - `src/signal-bot/` - a Signal chat bot that drafts a note for a pasted tweet and submits it after a human says yes.
+- `src/x-tag-bot/` - @CommonNotesBot on X: people tag it under a post, it answers with a draft note, and an approval in the thread submits it (see "X tag bot" below).
 - `src/scripts_jim/`, `src/scripts_nathan/`, `src/scripts_rob/` - personal investigation journals, one dated folder each.
 - `migrations/` - Supabase SQL migrations. `ops/` - the services machine.
 
@@ -42,6 +43,7 @@ One always-on Linux server (the "services box") runs these systemd services, des
 - `cn-fetch`: fetches every outside page and image in a sandbox without keys.
 - `cn-pot-provider`: a Docker container that hands out YouTube PO tokens on 127.0.0.1:4416 (see "Fetching sources").
 - `cn-notify`: posts new notes and votes to four Slack channels as the bot "Claudy" (see "Slack announcements" in `ops/README.md`).
+- `cn-x-tag-bot`: @CommonNotesBot on X (see "X tag bot" below and "The X tag bot" in `ops/README.md`).
 
 The X bot run and the Common Notes feed run are thin callers. They first check that the services they use are reachable and not stuck, and fail if not. Then they send the work over HTTP (`src/service/client.ts`, URLs in `CLAIM_CHECK_URL` and `EXTRACTION_URL`). The X bot and the Signal bot use only claim-check. So a change to note writing or claim checking reaches production only once the services box has deployed it. Deploying is a pull: a systemd timer runs `ops/autodeploy.sh` every 5 minutes, which pulls the checkout's branch and restarts the services once they are idle. A new unit file must be installed by hand once.
 
@@ -169,6 +171,18 @@ Things that are easy to get wrong:
 - **Data collection**: visit recording stays off until the reader has seen the welcome page (`cn:welcomeSeen`), and it obeys the per-site checkboxes on the settings page.
 - **Settings** writes store only the keys the reader changed (`patchSyncObject` in `utils/settings.ts`), so a changed default reaches everyone who never touched that setting.
 - The extension IDs are pinned (Chrome by the manifest `key`, Firefox by `gecko.id` = `extension@commonnotes.net`), so the X sign-in redirect URLs are fixed. Never delete an AMO listing: the old Firefox id was permanently burned that way.
+
+## X tag bot
+
+`src/x-tag-bot/` runs as `cn-x-tag-bot` on the services box (GOO-212; the plan with every prompt and reply is linked on the ticket).
+
+- A tag reaches the bot through the X Activity API stream (`post.mention.create`, `post.reply.create`). When the stream ends the process exits and systemd restarts it; a tag sent during a longer outage gets no answer, by decision.
+- The first answer is one claim-check `/check-tweet` call with `TAG_BOT_PICKS` (no filters, no verifier, no scoring gates, Opus 5.5 at medium reasoning) and the tagger's comment as the note request. Sorting replies (Muse) and revising (Opus 5.5 with web search and fetch) run in the bot.
+- Before a draft is posted, `evaluate_note` checks whether X takes our notes on the post. On an ineligible post the draft asks people to request a Community Note, and an approval waits for eligibility.
+- Who may approve a draft: everyone who wrote a post on the path from the tag down to it. The newest waiting approval on a post wins, and every approval gets one final reply with the note's link.
+- Approved notes go through `submitApprovedNote` in the `x_tag` lane, which shares the Signal bot's priority queue. An approval waits up to 3 hours for room in the daily limit or for eligibility.
+- Every fixed reply is in `replies.ts`. Conversations are stored in `x_tag_threads` and `x_tag_posts` (migration 117).
+- `bun run x-tag-bot --dry-run <post-url> "<comment>" "<reply>" ...` tries it locally without X: it prints every reply, stores nothing and submits nothing.
 
 ## Review dashboard
 
