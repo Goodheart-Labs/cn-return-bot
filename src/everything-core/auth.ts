@@ -109,6 +109,14 @@ export async function ensureUser(): Promise<User | null> {
   return anon.user;
 }
 
+/** Like ensureUser, but returns the whole session, which writes that record
+ *  the author's name need. Null means the reader has to sign in first. */
+export async function ensureSession(): Promise<Session | null> {
+  if (!(await ensureUser())) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session;
+}
+
 /** The length of the one-time code Supabase sends by email. The prod value
  *  lives in the dashboard (Authentication → Email → OTP Length); local
  *  development mirrors it in config.toml under auth.email.otp_length. */

@@ -16,7 +16,7 @@ export function NoteCard({ note, shareUrl, nnnEntries = [], compact, onDeleted }
         {note.claim.image_urls.map((url) => <a key={url} href={url} target="_blank" rel="noreferrer"><img src={url} alt="Claim source" loading="lazy" className="max-h-48 max-w-full rounded-control" /></a>)}
       </div>}
       {note.claim.context_quote && <blockquote className="mb-3 border-l-2 border-line pl-3 text-sm text-fg-secondary">{note.claim.context_quote}</blockquote>}
-      <Note note={note} shareUrl={shareUrl} onDeleted={onDeleted} />
+      <Note note={note} shareUrl={shareUrl} onDeleted={onDeleted} compact={compact} />
       <NoteNotNeeded entries={nnnEntries} />
     </Card>
   );

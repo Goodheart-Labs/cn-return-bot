@@ -28,10 +28,13 @@ function splitTrailingPunctuation(matched: string): { url: string; trailing: str
 // URL becomes its own anchor. Two links that sit next to each other are never
 // merged into one.
 // A caller on another design system passes its own `linkClassName`.
-export function LinkifiedText({ text, className, linkClassName = "text-blue-600 dark:text-blue-400 hover:underline break-all" }: {
+// `shortLinks` shows each link as its site's name instead of the whole address,
+// for narrow columns where a long address would wrap into many lines.
+export function LinkifiedText({ text, className, linkClassName = "text-blue-600 dark:text-blue-400 hover:underline break-all", shortLinks = false }: {
   text: string;
   className?: string;
   linkClassName?: string;
+  shortLinks?: boolean;
 }) {
   const nodes: ReactNode[] = [];
   let lastIndex = 0;
@@ -50,7 +53,7 @@ export function LinkifiedText({ text, className, linkClassName = "text-blue-600 
         rel="noopener noreferrer"
         className={linkClassName}
       >
-        {url}
+        {shortLinks ? `${new URL(url).hostname.replace(/^www\./, "")} ↗` : url}
       </a>,
     );
     if (trailing) nodes.push(trailing);
