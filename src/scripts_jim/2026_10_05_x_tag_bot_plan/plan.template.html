@@ -808,7 +808,7 @@ const STEPS = {
       "Topic filter: a cheap call that blocks topics we decided not to note. Off as part of \"no precheck\".",
       "Note-needed prefilter: a DeepSeek search and judge before the main search. In production it rejects about 57% of posts. Off, because a person explicitly asked about this post.",
       "Source verifier: checks that each cited page supports the note. Off as the ticket asks. The revision example shows what it would have caught, see the decision on source checks.",
-      "Materiality judge and X's evaluate_note score: they filter notes for the automatic pipeline's limited daily slots. A human approval replaces them.",
+      "Materiality judge and X's evaluate_note score: they filter notes for the automatic pipeline's limited daily slots. A human approval replaces them. The bot still calls evaluate_note once itself, but only to learn whether X takes our notes on the post, never to reject a draft for its score.",
       "Each of these now has an \"off\" variant in its A/B test. That part is built.",
     ],
     blocks: [["TAG_BOT_PICKS", DATA.prompts.tagBotPicks, "the step selection", true]],
