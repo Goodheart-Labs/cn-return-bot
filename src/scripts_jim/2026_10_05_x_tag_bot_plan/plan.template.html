@@ -211,7 +211,7 @@ td code { white-space: nowrap; }
       <span class="chip opus">Opus 5.5</span><span class="chip muse">Muse Spark 1.3</span><span class="chip other">Other model</span><span class="chip code">Plain code</span><span class="chip x">X API call</span><span class="chip new">Bot reply</span><span class="chip skip">Skipped for this bot</span>
     </div>
     <div class="flow-wrap">
-      <svg id="flow-svg" viewBox="0 0 1180 1115" role="img" aria-label="Flow diagram of the bot's steps"></svg>
+      <svg id="flow-svg" viewBox="0 0 1180 1165" role="img" aria-label="Flow diagram of the bot's steps"></svg>
     </div>
     <p class="flow-hint">On a phone, scroll the diagram sideways. Every step is also reachable with the Tab key and Enter.</p>
   </section>
@@ -749,12 +749,19 @@ const STEPS = {
     title: "Eligible for our notes?", chips: [["x", "X API"], ["code", "Plain code"], ["new", "New, after the probe"]],
     summary: "Asks X's evaluate_note whether our AI Note Writer may note this post. It publishes nothing.",
     body: [
-      "On 6 October we submitted a real note on a hand-picked post by Nathan Young with the production keys. X refused it: \"Failed to create a note. The post is ineligible to write a note via API call.\" X's evaluate_note endpoint, which only scores a draft and publishes nothing, refused the same post with the same reason. So evaluate_note works as an eligibility check before any money is spent.",
+      "On 6 October we submitted a real note on a hand-picked post by Nathan Young with the production keys. X refused it: \"Failed to create a note. The post is ineligible to write a note via API call.\" X's evaluate_note endpoint, which only scores a draft and publishes nothing, refused the same post with the same reason. So evaluate_note works as an eligibility check.",
+      "The check runs only when the writer produced a draft, right before the bot posts it, because a no-note answer doesn't need it. It sends the real draft, so the same call also returns X's score for it.",
       "X offers AI note writers the posts where people requested a Community Note. Anyone on X can request one in a post's menu, up to five a day. How many requests a post needs is not published.",
-      "Decided: the bot researches either way and remembers the answer. On an eligible post the draft ends as usual. On an ineligible one it ends with the text below, and an approval waits in the queue until X allows the note or 3 hours pass.",
+      "Decided: on an eligible post the draft is posted as usual. On an ineligible one it ends with the text below, and an approval waits in the queue until X allows the note or 3 hours pass.",
     ],
     blocks: [["Draft ending on an ineligible post", R.draftNotEligibleEnding, "fixed text"]],
     facts: [["Cost", "Not on X's price list. Production already calls it for every note."]],
+  },
+  askRequest: {
+    title: "Post the draft and ask for a request", chips: [["reply", "Bot reply"], ["x", "X API"]],
+    summary: "The draft on a post X doesn't take our notes on yet. Its last line asks people to request a Community Note.",
+    body: ["The same draft template, with a different last line. Requesting a note is what makes a post eligible, so the reply tells people how to do it. An approval still works: it waits in the queue for X to allow the note."],
+    blocks: [["Last line instead of \"Reply approve...\"", R.draftNotEligibleEnding, "fixed text"]],
   },
   fetch: {
     title: "Fetch the post", chips: [["x", "X API"], ["code", "Plain code"]],
@@ -887,7 +894,10 @@ const KIND_STYLE = {
 // Columns and rows of the grid the nodes sit on.
 const COL = [20, 250, 480, 710, 960];
 const ROW_A = [70, 180, 290, 400];
-const ROW_B = [650, 760, 870, 990];
+// Phase B sits B_SHIFT lower than its edge coordinates, which are drawn inside a
+// group moved down by the same amount.
+const B_SHIFT = 50;
+const ROW_B = [650, 760, 870, 990].map((y) => y + B_SHIFT);
 const NODES = [
   { id: "watch", x: COL[0], y: ROW_A[0], title: "Event stream", sub: "post.mention.create", kind: "code" },
   { id: "known", x: COL[1], y: ROW_A[0], title: "Seen this post?", sub: "note or answer exists", kind: "code" },
@@ -895,13 +905,14 @@ const NODES = [
   { id: "repeat", x: COL[1], y: ROW_A[2], title: "Repeat the answer", sub: "no new research", kind: "reply" },
   { id: "fetch", x: COL[2], y: ROW_A[0], title: "Fetch the post", sub: "and the tagger's post", kind: "x" },
   { id: "unreadable", x: COL[2], y: ROW_A[1], title: "Reply: can't read it", sub: "fixed text", kind: "reply" },
-  { id: "eligible", x: COL[3], y: ROW_A[0], title: "Eligible for our notes?", sub: "evaluate_note", kind: "x" },
   { id: "read", x: COL[4], y: ROW_A[0], title: "Read the post", sub: "media, comments, author", kind: "other" },
   { id: "search", x: COL[4], y: ROW_A[1], title: "Search", sub: "web search, findings", kind: "opus" },
   { id: "timing", x: COL[4], y: ROW_A[2], title: "Timing check", sub: "Gemini 3 Flash", kind: "other" },
   { id: "writer", x: COL[4], y: ROW_A[3], title: "Writer", sub: "one note, 280 chars", kind: "opus" },
   { id: "noNote", x: COL[3], y: ROW_A[1], title: "No-note reply", sub: "2 or 3 sentences", kind: "muse" },
-  { id: "postAnswer", x: COL[3], y: ROW_A[3], title: "Post the answer", sub: "draft or no-note", kind: "reply" },
+  { id: "eligible", x: COL[3], y: ROW_A[3], title: "Eligible for our notes?", sub: "evaluate_note", kind: "x" },
+  { id: "postAnswer", x: COL[2], y: ROW_A[3], title: "Post the answer", sub: "draft or no-note", kind: "reply" },
+  { id: "askRequest", x: COL[3], y: 510, title: "Post draft, ask for", sub: "a Community Note request", kind: "reply" },
   { id: "watch2", x: COL[0], y: ROW_B[0], title: "Event stream", sub: "post.reply.create", kind: "code" },
   { id: "classify", x: COL[1], y: ROW_B[0], title: "Sort the reply", sub: "four kinds", kind: "muse" },
   { id: "silent", x: COL[0], y: ROW_B[1], title: "Stay silent", sub: "no reply", kind: "code" },
@@ -909,31 +920,35 @@ const NODES = [
   { id: "notOnPath", x: COL[2], y: ROW_B[1], title: "Reply: who may approve", sub: "fixed text", kind: "reply" },
   { id: "alreadyB", x: COL[2], y: ROW_B[2], title: "Reply: note link", sub: "one note per post", kind: "reply" },
   { id: "queue", x: COL[3], y: ROW_B[0], title: "Submission queue", sub: "room and eligible? 3 h", kind: "code" },
-  { id: "queuedReply", x: COL[3], y: ROW_B[1], title: "Reply: queued", sub: "fixed text", kind: "reply" },
-  { id: "gaveUp", x: COL[3], y: ROW_B[2], title: "Reply: gave up", sub: "full or not eligible", kind: "reply" },
+  { id: "queuedReply", x: COL[3], y: ROW_B[1], title: "Reply: queued", sub: "may ask for a request", kind: "reply" },
+  { id: "gaveUp", x: COL[3], y: ROW_B[2], title: "Reply: gave up", sub: "may ask for a request", kind: "reply" },
   { id: "submit", x: COL[4], y: ROW_B[0], title: "Submit to X", sub: "Community Notes API", kind: "x" },
   { id: "submitted", x: COL[4], y: ROW_B[1], title: "Reply: submitted", sub: "with the note link", kind: "reply" },
-  { id: "refused", x: COL[4], y: ROW_B[2], title: "Reply: X refused", sub: "ineligible or deleted", kind: "reply" },
+  { id: "refused", x: COL[4], y: ROW_B[2], title: "Reply: X refused", sub: "asks for a request", kind: "reply" },
   { id: "revise", x: COL[1], y: ROW_B[3], title: "Revise", sub: "search, fetch, new draft", kind: "opus" },
   { id: "postRevision", x: COL[2], y: ROW_B[3], title: "Post the new answer", sub: "draft or reason", kind: "reply" },
 ];
-const EDGES = [
-  // Someone tags the bot
+const EDGES_A = [
   { d: "M210,98 H246" },
   { d: "M440,98 H476" },
   { d: "M345,126 V176", label: "note submitted", lx: 352, ly: 156 },
   { d: "M250,112 H238 V318 H246", label: "answer exists", lx: 150, ly: 240 },
   { d: "M575,126 V176", label: "deleted or protected", lx: 582, ly: 156 },
-  { d: "M670,98 H706" },
-  { d: "M900,98 H956" },
+  { d: "M670,98 H956", label: "new post", lx: 680, ly: 89 },
   { d: "M1055,126 V176" },
   { d: "M960,208 H904", label: "no note", lx: 908, ly: 199 },
   { d: "M1055,236 V286", label: "note needed", lx: 1062, ly: 266 },
   { d: "M1055,346 V396" },
   { d: "M960,428 H904", label: "note", lx: 914, ly: 419 },
   { d: "M960,412 C930,412 925,250 900,232", label: "empty", lx: 862, ly: 322 },
-  { d: "M805,236 V396" },
-  // Someone replies
+  { d: "M805,236 V330 H575 V396" },
+  { d: "M710,428 H674", label: "yes", lx: 680, ly: 419 },
+  { d: "M805,456 V506", label: "not eligible", lx: 812, ly: 486 },
+  // Loops down to the replies
+  { d: "M575,456 V590 H115 V" + (ROW_B[0] - 4), dash: true, label: "people reply to the bot's post", lx: 250, ly: 582 },
+  { d: "M805,566 V590 H575", dash: true, arrow: false },
+];
+const EDGES_B = [
   { d: "M210,678 H246" },
   { d: "M440,668 H476", label: "approve or improve", lx: 420, ly: 641 },
   { d: "M270,706 V788 H214", label: "other", lx: 276, ly: 752 },
@@ -950,8 +965,6 @@ const EDGES = [
   { d: "M900,788 C925,788 925,700 958,692", label: "ready", lx: 916, ly: 760 },
   { d: "M1055,706 V756", label: "accepted", lx: 1062, ly: 736 },
   { d: "M1150,706 C1172,760 1172,860 1152,880", label: "refused", lx: 1092, ly: 850 },
-  // Loops back to the replies
-  { d: "M805,456 V590 H115 V646", dash: true, label: "people reply to the bot's post", lx: 330, ly: 582 },
   { d: "M575,1046 V1100 H8 V678 H16", dash: true, label: "people reply to the new draft", lx: 150, ly: 1092 },
 ];
 const SKIPPED = ["Topic filter", "Note-needed prefilter", "Source verifier", "Materiality judge", "X evaluate_note"];
@@ -964,6 +977,14 @@ function svgEl(tag, attrs, text) {
 }
 function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
+function drawEdges(parent, edges) {
+  for (const edge of edges) {
+    const arrow = edge.arrow === false ? {} : { "marker-end": "url(#arrow)" };
+    parent.append(svgEl("path", { d: edge.d, class: "edge" + (edge.dash ? " dash" : ""), ...arrow }));
+    if (edge.label) parent.append(svgEl("text", { x: edge.lx, y: edge.ly, class: "edge-label" }, edge.label));
+  }
+}
+
 function drawFlow() {
   const svg = document.getElementById("flow-svg");
   svg.replaceChildren();
@@ -973,20 +994,20 @@ function drawFlow() {
   defs.append(marker);
   svg.append(defs);
   svg.append(svgEl("text", { x: 20, y: 34, class: "phase" }, "Someone tags the bot under a post"));
-  svg.append(svgEl("text", { x: 20, y: 630, class: "phase" }, "Someone replies to one of the bot's posts"));
+  svg.append(svgEl("text", { x: 20, y: 630 + B_SHIFT, class: "phase" }, "Someone replies to one of the bot's posts"));
   svg.append(svgEl("rect", { x: 946, y: 52, width: 218, height: 418, rx: 14, class: "service-box" }));
   svg.append(svgEl("text", { x: 960, y: 490, class: "service-label" }, "On the claim-check service"));
-  for (const edge of EDGES) {
-    svg.append(svgEl("path", { d: edge.d, class: "edge" + (edge.dash ? " dash" : ""), "marker-end": "url(#arrow)" }));
-    if (edge.label) svg.append(svgEl("text", { x: edge.lx, y: edge.ly, class: "edge-label" }, edge.label));
-  }
+  const phaseB = svgEl("g", { transform: `translate(0, ${B_SHIFT})` });
+  drawEdges(svg, EDGES_A);
+  drawEdges(phaseB, EDGES_B);
+  svg.append(phaseB);
   const skipGroup = svgEl("g", { class: "skipnode", tabindex: "0", role: "button", "aria-label": "Steps switched off for this bot" });
-  skipGroup.append(svgEl("text", { x: 20, y: 512, class: "phase", style: "text-decoration:none" }, "Switched off by TAG_BOT_PICKS"));
+  skipGroup.append(svgEl("text", { x: 20, y: 612, class: "phase", style: "text-decoration:none" }, "Switched off by TAG_BOT_PICKS"));
   let sx = 20;
   for (const name of SKIPPED) {
     const width = name.length * 7.2 + 24;
-    skipGroup.append(svgEl("rect", { x: sx, y: 524, width, height: 28, rx: 14 }));
-    skipGroup.append(svgEl("text", { x: sx + 12, y: 542 }, name));
+    skipGroup.append(svgEl("rect", { x: sx, y: 622, width, height: 28, rx: 14 }));
+    skipGroup.append(svgEl("text", { x: sx + 12, y: 640 }, name));
     sx += width + 10;
   }
   bindNode(skipGroup, "skipped");
