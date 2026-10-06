@@ -167,7 +167,7 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
         <div className="create-fields">
           <label htmlFor="create-title">Title</label>
           <Input id="create-title" value={title} maxLength={300} onChange={(event) => { setTitle(event.target.value); if (!slugEdited) setSlug(slugForTitle(event.target.value)); }} />
-          <label htmlFor="create-description">Description <span>from the page’s own summary</span></label>
+          <label htmlFor="create-description">Description</label>
           <Textarea id="create-description" autoGrow rows={3} maxLength={1000} value={description} onChange={(event) => setDescription(event.target.value)} />
           <label htmlFor="create-slug">Address</label>
           <div className="create-slug"><span>commonnotes.net/minisites/</span><Input id="create-slug" value={slug} maxLength={80} aria-invalid={!slugValid} onChange={(event) => { setSlug(event.target.value.toLowerCase()); setSlugEdited(true); }} /></div>

@@ -30,7 +30,7 @@ function Edition({ source, scope }: { source: string; scope: string }) {
   if (query.isError) return <Notice title="The article couldn’t load." body="Please try again, or read the original." url={source} />;
   const item = query.data;
   if (!item || item.checked_scope === "paragraph") {
-    return <Notice title="Common Notes hasn't checked this page yet" body={item ? "Only a selected paragraph was checked. It is not shown here as the full article." : undefined} url={source} />;
+    return <Notice title="Common Notes hasn't checked this page yet" body={item ? "Only a selected paragraph was checked." : undefined} url={source} />;
   }
   return <Reader item={item} content={item.full_text} scope={scope} features={ALL}
     header={{ title: item.title || new URL(item.url).hostname.replace(/^www\./, ""), publishedAt: item.published_at }} />;
