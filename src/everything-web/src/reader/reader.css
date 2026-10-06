@@ -1,0 +1,220 @@
+/* The article reader. The page is a grid: the header and the article share one
+ * column, the margin column on the right holds the link to the original and
+ * the jump button, and on wide screens a rail on the left holds the contents.
+ * Margin entries live inside their passage in the page structure and are
+ * drawn into the margin column by absolute positioning (useMarginLayout.ts).
+ * The site header is sticky, so anchors scroll to just below it. */
+.reader {
+  --reader-measure: 40rem;
+  --reader-margin: 21rem;
+  --reader-gap: 2.5rem;
+  --reader-rail: 11rem;
+  --reader-anchor-offset: 5.5rem;
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: 0 1rem 5rem;
+}
+
+.reader-layout {
+  display: grid;
+  grid-template-columns: minmax(0, var(--reader-measure));
+  grid-template-areas: "header" "rail" "article";
+  justify-content: center;
+  column-gap: var(--reader-gap);
+}
+.reader-header { grid-area: header; padding: 2.5rem 0 2rem; }
+.reader-rail { grid-area: rail; min-width: 0; }
+.reader-article { grid-area: article; min-width: 0; position: relative; }
+.reader-margin-column { grid-area: top; display: none; }
+
+.reader-header h1 { font-family: var(--cn-font-title); font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem); font-weight: 700; line-height: 1.12; letter-spacing: -0.015em; text-wrap: balance; color: var(--cn-fg); }
+.reader-subtitle { margin-top: 0.75rem; font-family: var(--cn-font-serif); font-size: 1.375rem; line-height: 1.45; color: var(--cn-fg-secondary); text-wrap: pretty; }
+.reader-byline { display: flex; flex-wrap: wrap; column-gap: 0.5rem; row-gap: 0.25rem; margin-top: 1rem; font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); color: var(--cn-fg-muted); }
+.reader-byline span + span::before { content: "·"; margin-right: 0.5rem; }
+.reader-header-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin-top: 1.25rem; }
+
+.reader-original { font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); color: var(--cn-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.reader-original:hover { text-decoration-thickness: 2px; }
+
+.reader-jump { display: flex; align-items: center; gap: 0.625rem; width: 100%; max-width: 21rem; padding: 0.625rem 0.75rem; border: 1px solid var(--cn-tint-line); border-radius: var(--cn-radius-control); background: var(--cn-tint); color: var(--cn-fg); font-size: var(--cn-text-sm); font-weight: 600; text-align: left; transition: border-color 120ms, background-color 120ms; }
+.reader-jump:hover { border-color: var(--cn-link); }
+.reader-jump-arrow { display: grid; place-items: center; width: 1.625rem; height: 1.625rem; flex-shrink: 0; border-radius: 9999px; background: var(--cn-primary); color: var(--cn-on-primary); font-size: 0.9375rem; transition: transform 160ms ease; }
+.reader-jump:hover .reader-jump-arrow { transform: translateY(2px); }
+.reader-jump-count { margin-left: auto; color: var(--cn-link); font-variant-numeric: tabular-nums; }
+
+/* The text */
+.reader-passage { position: relative; margin-bottom: 1.6rem; scroll-margin-top: var(--reader-anchor-offset); }
+.reader-passage > p, .reader-passage > ul, .reader-passage > ol, .reader-passage > blockquote { font-family: var(--cn-font-serif); font-size: 1.1875rem; line-height: 1.8; color: var(--cn-fg); overflow-wrap: break-word; white-space: pre-line; }
+.reader-passage > ul, .reader-passage > ol { padding-left: 1.5rem; }
+.reader-passage > ul { list-style: disc; }
+.reader-passage > ol { list-style: decimal; }
+.reader-passage li + li { margin-top: 0.5rem; }
+.reader-passage > blockquote { padding-left: 1.25rem; border-left: 3px solid var(--cn-line-strong); color: var(--cn-fg-secondary); }
+.reader-passage > h2, .reader-passage > h3, .reader-passage > h4 { font-family: var(--cn-font-title); font-weight: 700; color: var(--cn-fg); text-wrap: balance; }
+.reader-passage > h2 { font-size: var(--cn-text-2xl); line-height: 1.3; margin-top: 2.75rem; }
+.reader-passage > h3 { font-size: 1.25rem; line-height: 1.35; margin-top: 2.25rem; }
+.reader-passage > h4 { font-size: 1.0625rem; line-height: 1.4; margin-top: 1.75rem; }
+.reader-block:first-child .reader-passage > :is(h2, h3, h4) { margin-top: 0; }
+.reader-passage a { color: var(--cn-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.reader-passage code { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 0.875em; padding: 0.1em 0.3em; border-radius: 0.25rem; background: var(--cn-surface-hover); }
+.reader-passage > pre { overflow-x: auto; padding: 1rem; border-radius: var(--cn-radius-card); background: var(--cn-surface-muted); font-size: var(--cn-text-sm); line-height: 1.6; }
+.reader-passage > pre code { padding: 0; background: none; }
+.reader-passage > figure { margin: 2rem 0; }
+.reader-passage > figure img { display: block; max-width: 100%; height: auto; margin: 0 auto; border-radius: var(--cn-radius-control); }
+.reader-passage > figure figcaption { margin-top: 0.625rem; font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); color: var(--cn-fg-muted); text-align: center; }
+.reader-embed { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; padding: 0.875rem 1rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); text-decoration: none !important; }
+.reader-embed:hover { border-color: var(--cn-link); }
+.reader-embed-host { font-weight: 400; color: var(--cn-link); }
+.reader-table { overflow-x: auto; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); }
+.reader-table table { width: 100%; border-collapse: collapse; font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); }
+.reader-table th, .reader-table td { padding: 0.5rem 0.75rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--cn-line); }
+.reader-table th { font-weight: 600; background: var(--cn-surface-muted); }
+.reader-table tr:last-child td { border-bottom: 0; }
+.reader-fnref { font-family: var(--cn-font-sans); font-size: 0.7em; line-height: 0; margin-left: 0.1em; }
+.reader-fnref a { text-decoration: none !important; font-weight: 600; }
+.reader-footnotes-heading { margin: 3rem 0 1rem; padding-top: 1.5rem; border-top: 1px solid var(--cn-line); font-size: var(--cn-text-sm); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--cn-fg-muted); }
+.reader-passage > .reader-footnote { font-family: var(--cn-font-sans); font-size: var(--cn-text-sm); line-height: 1.65; color: var(--cn-fg-secondary); }
+.reader-footnote-label { font-weight: 600; color: var(--cn-fg); }
+
+/* Marked words. Notes are blue; readers' key points and forecasts are yellow. */
+.reader-mark { color: inherit; border-radius: 2px; }
+.reader-mark-note { background: var(--cn-note-mark); box-shadow: inset 0 -2px 0 var(--cn-note-mark-line); }
+.reader-mark-highlight { background: var(--cn-highlighter); box-shadow: inset 0 -2px 0 var(--cn-highlighter-line); }
+
+/* A passage with entries carries a bar in the gutter. */
+.reader-passage-noted::before { content: ""; position: absolute; left: -1rem; top: 0.4rem; bottom: 0.4rem; border-left: 3px solid var(--cn-tint-line); border-radius: 2px; }
+.reader-passage-open.reader-passage-noted::before { border-color: var(--cn-primary); }
+
+/* Buttons that appear when a reader points at or focuses a passage. They take
+ * no room: they float in the space below the passage. */
+.reader-passage-actions { position: absolute; right: 0; top: 100%; z-index: 2; display: flex; gap: 0.25rem; opacity: 0; pointer-events: none; transition: opacity 120ms; }
+.reader-passage:hover .reader-passage-actions, .reader-passage:focus-within .reader-passage-actions { opacity: 1; pointer-events: auto; }
+.reader-passage-actions button { padding: 0.125rem 0.625rem; border-radius: 9999px; background: var(--cn-canvas); color: var(--cn-fg-muted); font-size: var(--cn-text-sm); line-height: 1.5rem; }
+.reader-passage-actions button:hover { background: var(--cn-tint); color: var(--cn-link); }
+.reader-count-pill { display: inline-flex; margin-top: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; background: var(--cn-tint); color: var(--cn-link); font-size: var(--cn-text-sm); font-weight: 600; line-height: 1.5rem; }
+
+/* Entries beside a passage. */
+.reader-margin-group { display: grid; gap: 1rem; margin: 1rem 0 0.5rem; font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); }
+.reader-entry { min-width: 0; border-radius: var(--cn-radius-card); transition: outline-color 200ms; outline: 2px solid transparent; outline-offset: 4px; }
+.reader-flash { outline-color: var(--cn-focus); }
+.reader-entry-kind { display: flex; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.375rem; font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--cn-fg-muted); }
+.reader-entry-kind span { font-weight: 400; letter-spacing: 0; text-transform: none; }
+.reader-highlight-card { padding: 1rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); overflow-wrap: anywhere; }
+.reader-highlight-card .reader-entry-kind { color: var(--cn-caution); }
+.reader-highlight-sentence { color: var(--cn-fg); }
+
+.reader-ask-panel { padding: 1rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); overflow-wrap: anywhere; display: grid; gap: 0.75rem; }
+.reader-ask-panel header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.reader-ask-panel h3 { font-weight: 600; color: var(--cn-fg); }
+.reader-icon-button { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: var(--cn-radius-control); color: var(--cn-fg-muted); }
+.reader-icon-button:hover { background: var(--cn-surface-hover); color: var(--cn-fg); }
+.reader-ask-intro, .reader-ask-smallprint, .reader-ask-status { color: var(--cn-fg-muted); }
+.reader-ask-smallprint { font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); }
+.reader-ask-exchange { display: grid; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--cn-line); }
+.reader-ask-question { font-weight: 600; color: var(--cn-fg); white-space: pre-wrap; }
+.reader-ask-quote { margin-bottom: 0.5rem; padding: 0.375rem 0.625rem; border-left: 2px solid var(--cn-highlighter-line); background: var(--cn-surface-muted); color: var(--cn-fg-secondary); font-style: italic; }
+.reader-ask-quote span { font-style: normal; font-weight: 600; margin-right: 0.25rem; }
+.reader-ask-actions { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
+.reader-answer { white-space: pre-line; color: var(--cn-fg); }
+.reader-answer > * + * { margin-top: 0.5rem; }
+.reader-answer ul { padding-left: 1.25rem; list-style: disc; }
+.reader-answer li + li { margin-top: 0.25rem; }
+.reader-answer a { color: var(--cn-link); text-decoration: underline; text-underline-offset: 2px; }
+.reader-draft-card { padding: 0.75rem; border: 1px solid var(--cn-tint-line); border-radius: var(--cn-radius-control); background: var(--cn-tint); white-space: normal; }
+.reader-draft-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; margin-top: 0.75rem; }
+
+/* The toolbar above selected words. It is drawn into the page body, so these
+ * rules are not scoped to the reader. */
+.reader-selection-toolbar { position: fixed; z-index: 40; display: flex; gap: 0.125rem; padding: 0.25rem; border-radius: var(--cn-radius-control); background: var(--cn-inverse); box-shadow: var(--cn-shadow-floating); font-family: var(--cn-font-sans); }
+.reader-selection-toolbar button { padding: 0.375rem 0.75rem; border-radius: 0.375rem; color: var(--cn-on-inverse); font-size: var(--cn-text-sm); font-weight: 600; line-height: 1.25rem; white-space: nowrap; }
+.reader-selection-toolbar button:hover, .reader-selection-toolbar button:focus-visible { background: rgb(255 255 255 / 0.14); outline: none; }
+@media (pointer: coarse) { .reader-selection-toolbar button { min-height: 2.5rem; } }
+
+/* Contents */
+.reader-contents-wide { display: none; }
+.reader-contents-narrow { margin-bottom: 2rem; border-top: 1px solid var(--cn-line); border-bottom: 1px solid var(--cn-line); font-size: var(--cn-text-sm); }
+.reader-contents-narrow summary { cursor: pointer; padding: 0.75rem 0; font-weight: 600; color: var(--cn-fg-secondary); }
+.reader-contents ol { list-style: none; padding: 0 0 0.75rem; }
+.reader-contents a { display: block; padding: 0.3rem 0; color: var(--cn-fg-muted); line-height: 1.4; }
+.reader-contents a:hover { color: var(--cn-link); }
+
+/* The end of the article, and the leftovers. */
+.reader-unanchored { margin-top: 3rem; }
+.reader-unanchored > h2 { font-family: var(--cn-font-title); font-size: var(--cn-text-xl); font-weight: 700; }
+.reader-unanchored > p { margin-top: 0.25rem; font-size: var(--cn-text-sm); color: var(--cn-fg-muted); }
+.reader-end { display: grid; gap: 0.75rem; justify-items: start; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--cn-line); font-size: var(--cn-text-sm); color: var(--cn-fg-muted); }
+
+.reader-notice { max-width: var(--reader-measure); margin: 0 auto 3rem; padding: 2rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); }
+.reader-notice h1, .reader-notice h2 { font-family: var(--cn-font-title); font-size: var(--cn-text-2xl); line-height: var(--cn-leading-2xl); font-weight: 700; margin-bottom: 0.75rem; }
+.reader-notice p { color: var(--cn-fg-muted); margin-bottom: 1.25rem; }
+.reader-load-error { max-width: var(--reader-measure); margin: 0 auto 1.5rem; font-size: var(--cn-text-sm); color: var(--cn-fg-secondary); }
+.reader-load-error button, .reader-text-button { color: var(--cn-link); text-decoration: underline; text-underline-offset: 3px; }
+.reader-status { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); max-width: calc(100% - 2rem); z-index: 30; padding: 0.625rem 1rem; border-radius: var(--cn-radius-control); background: var(--cn-inverse); color: var(--cn-on-inverse); font-size: var(--cn-text-sm); box-shadow: var(--cn-shadow-floating); }
+.reader-status:empty { display: none; }
+.reader :focus-visible { outline: 2px solid var(--cn-focus); outline-offset: 3px; }
+
+/* Dialogs */
+.reader-dialog-quote { margin-top: 0.25rem; }
+.reader-dialog-quote figcaption { font-size: var(--cn-text-xs); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--cn-fg-muted); margin-bottom: 0.375rem; }
+.reader-dialog-quote blockquote { padding-left: 0.75rem; border-left: 2px solid var(--cn-line-strong); font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); font-style: italic; color: var(--cn-fg-secondary); }
+.reader-dialog-quote-clamped { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.reader-dialog-quote .reader-text-button { margin-top: 0.25rem; font-size: var(--cn-text-xs); }
+.reader-dialog-form { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+.reader-dialog-hint { font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); color: var(--cn-fg-muted); }
+.reader-dialog-error { font-size: var(--cn-text-sm); color: var(--cn-negative); }
+.reader-dialog-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.reader-dialog-helper { margin-right: auto; }
+.reader-dialog-actions { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+.reader-highlight-lead { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.reader-nowrap { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
+.reader-highlight-probability { width: 4.5rem; text-align: right; }
+@media (max-width: 479px) {
+  .reader-dialog-footer { flex-direction: column; align-items: stretch; }
+  .reader-dialog-helper { margin: 0; order: 2; }
+  .reader-dialog-helper > * { width: 100%; }
+  .reader-dialog-actions { flex-direction: row-reverse; margin: 0; }
+  .reader-dialog-actions > * { flex: 1; }
+}
+
+/* Narrow screens: one column. Entries open inline under a tapped passage. */
+@media (max-width: 899px) {
+  .reader-passage-actions { position: static; display: none; justify-content: flex-end; margin-top: 0.5rem; opacity: 1; pointer-events: auto; }
+  .reader-passage-open .reader-passage-actions { display: flex; }
+  .reader-passage-noted::before { left: -0.625rem; }
+  .reader-passage-actions button { min-height: 2rem; }
+}
+@media (max-width: 599px) {
+  .reader-header { padding-top: 1.5rem; }
+  .reader-subtitle { font-size: 1.1875rem; }
+  .reader-passage > p, .reader-passage > ul, .reader-passage > ol, .reader-passage > blockquote { font-size: 1.125rem; line-height: 1.75; }
+  .reader-notice { padding: 1.25rem; }
+}
+
+/* Wide screens: the margin column appears, and margin groups move into it. */
+@media (min-width: 900px) {
+  .reader { padding: 0 2rem 5rem; }
+  .reader-layout {
+    grid-template-columns: minmax(0, var(--reader-measure)) minmax(18rem, var(--reader-margin));
+    grid-template-areas: "header top" "rail ." "article .";
+  }
+  .reader-margin-column { display: grid; align-content: end; gap: 0.75rem; padding-bottom: 2rem; }
+  .reader-margin-group { position: absolute; top: 0; left: calc(100% + var(--reader-gap)); width: min(var(--reader-margin), calc(100vw - 100% - 2 * var(--reader-gap))); margin: 0; transition: top 150ms ease; }
+  .reader-unanchored .reader-margin-group { position: absolute; }
+}
+@media (min-width: 900px) and (max-width: 1199px) {
+  .reader-margin-group { width: 18rem; }
+}
+@media (min-width: 1200px) {
+  .reader-layout {
+    grid-template-columns: var(--reader-rail) minmax(0, var(--reader-measure)) var(--reader-margin);
+    grid-template-areas: ". header top" "rail article .";
+  }
+  .reader-rail { position: sticky; top: var(--reader-anchor-offset); align-self: start; padding-top: 0.25rem; }
+  .reader-contents-narrow { display: none; }
+  .reader-contents-wide { display: block; font-size: var(--cn-text-sm); }
+  .reader-contents-wide p { margin-bottom: 0.5rem; font-size: var(--cn-text-xs); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--cn-fg-muted); }
+  .reader-margin-group { width: var(--reader-margin); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reader-passage-actions, .reader-margin-group, .reader-jump-arrow, .reader-entry { transition: none; }
+}
