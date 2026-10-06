@@ -77,6 +77,7 @@ bun run everything-auto-run                                       # one feed run
 bun run everything-worker                                         # drain the feed tiers of the queue (up to the feed budget) and exit
 bun run everything-auto-enqueue [--dry-run]                       # enqueue the next post the walk would pick
 bun run everything-prioritize <creator-url...>                    # give creators 7 days of priority
+bun run minisite-create <url> --slug <slug> [--features a,b] [--doc <file>] [--dry-run]  # create a minisite (all features by default)
 bun run commonnotes                # website on port 8003 against the PROD backend (.env.prod-backend, gitignored)
 bun run commonnotes-local          # website against the local Supabase
 bun run commonnotes-dashboard      # analytics dashboard on port 8004 against the PROD backend
