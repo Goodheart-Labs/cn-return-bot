@@ -155,7 +155,9 @@
 .reader-load-error button, .reader-text-button { color: var(--cn-link); text-decoration: underline; text-underline-offset: 3px; }
 .reader-status { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); max-width: calc(100% - 2rem); z-index: 30; padding: 0.625rem 1rem; border-radius: var(--cn-radius-control); background: var(--cn-inverse); color: var(--cn-on-inverse); font-size: var(--cn-text-sm); box-shadow: var(--cn-shadow-floating); }
 .reader-status:empty { display: none; }
-.reader :focus-visible { outline: 2px solid var(--cn-focus); outline-offset: 3px; }
+/* Dialogs are left out: they bring their own focus rings, and the dialog
+ * element itself takes focus when it opens. */
+.reader-layout :focus-visible { outline: 2px solid var(--cn-focus); outline-offset: 3px; }
 
 /* Dialogs */
 .reader-dialog-quote { margin-top: 0.25rem; }
@@ -163,7 +165,8 @@
 .reader-dialog-quote blockquote { padding-left: 0.75rem; border-left: 2px solid var(--cn-line-strong); font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); font-style: italic; color: var(--cn-fg-secondary); }
 .reader-dialog-quote-clamped { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .reader-dialog-quote .reader-text-button { margin-top: 0.25rem; font-size: var(--cn-text-xs); }
-.reader-dialog-form { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+/* A <dialog> does not inherit the page's text colour, so the form sets it. */
+.reader-dialog-form { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; color: var(--cn-fg); }
 .reader-dialog-hint { font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); color: var(--cn-fg-muted); }
 .reader-dialog-error { font-size: var(--cn-text-sm); color: var(--cn-negative); }
 .reader-dialog-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
@@ -171,7 +174,8 @@
 .reader-dialog-actions { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
 .reader-highlight-lead { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
 .reader-nowrap { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
-.reader-highlight-probability { width: 4.5rem; text-align: right; }
+.reader-highlight-probability { width: 4.5rem; text-align: right; appearance: textfield; -moz-appearance: textfield; }
+.reader-highlight-probability::-webkit-inner-spin-button, .reader-highlight-probability::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 @media (max-width: 479px) {
   .reader-dialog-footer { flex-direction: column; align-items: stretch; }
   .reader-dialog-helper { margin: 0; order: 2; }
