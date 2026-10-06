@@ -1,7 +1,7 @@
 import type { Post } from "../api/fetchEligiblePosts";
 import { TweetLookupError } from "../api/fetchTweetById";
 import type { PipelineOutcome } from "../bots/types";
-import type { BotConfig } from "../pipeline/ab-testing/botConfig";
+import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { ChatMessage } from "../pipeline/utils/jsonLlmCall";
 import { countSubmittedNoteLength, joinNoteWithSources } from "../pipeline/utils/noteLength";
 import { discussionSourceUrls, isPublicSourceUrl, readDiscussionSource, type DiscussionSource } from "./sources";
@@ -179,46 +179,62 @@ function exactHumanDraft(message: string, currentDraft?: SignalDraft): SignalDra
   return draft;
 }
 
-function createDefaults(overrides: Partial<BotConfig>): DraftingDependencies {
-  async function scoped<T>(fn: () => Promise<T>): Promise<T> {
+/** The steps and models of the first draft, picked from the A/B tests. A person
+ *  pasted the tweet, so the topic filter and the note-needed prefilter are off.
+ *  A person approves the note, so the materiality judge and X's evaluation are
+ *  off too. The source verifier stays on, because its verdict is shown with the
+ *  draft. */
+export const SIGNAL_PICKS: Record<string, string> = {
+  bot: "simple-bot",
+  topic_filter: "off",
+  note_prefilter: "off",
+  simple_bot_search: "sonnet46-native",
+  simple_bot_writer: "sonnet",
+  simple_bot_verifier: "gemini-flash",
+  verifier_claim_based: "classic",
+  materiality_treatment: "off",
+  eval_submit_threshold: "off",
+  author_history: "off",
+};
+
+/** The discussion and the general chat run on the same model as the writer. */
+const SIGNAL_CHAT_MODEL = "anthropic/claude-sonnet-4.6";
+
+/** Reads the bot's outcome back out of the claim-check service's answer. */
+export function pipelineOutcomeOf(output: TweetComputeOutput): PipelineOutcome {
+  if (output.outcome === "failed") throw new Error(output.errorMessage ?? "The tweet check failed.");
+  const result = output.pipelineResult;
+  const searchResults = result?.searchContextResult.searchResults;
+  if (!result?.noteResult.note) {
+    return { type: "no_correction", reason: searchResults || output.outcomeReason || "No correction is needed.", searchResults };
+  }
+  const noteText = result.noteResult.note;
+  const sources = result.noteResult.url.split(" ").filter(Boolean);
+  if (result.checkResult?.startsWith("NO")) {
+    return { type: "verification_failed", noteText, sources, reason: result.checkResult.replace(/^NO:\s*/, ""), searchResults };
+  }
+  return { type: "note", noteText, sources, verified: result.checkResult != null, searchResults };
+}
+
+function createDefaults(): DraftingDependencies {
+  async function chatCall(costName: string, messages: ChatMessage[], responseFormat: object, schemaHint: string): Promise<unknown> {
     const { DEFAULT_CONFIG, withBotConfig } = await import("../pipeline/ab-testing/botConfig");
     const { withCostTracker } = await import("../pipeline/cost-tracking/costTracker");
-    // Signal has no A/B selector to replace the legacy shared search default.
-    // Use the established OpenRouter native-search route with its existing key.
-    return withBotConfig({
-      ...DEFAULT_CONFIG, botId: "simple-bot", author_history: false,
-      web_search: "native", search_model: "anthropic/claude-sonnet-4.6", ...overrides,
-    },
-      () => withCostTracker(fn));
+    const { runJsonLlmCall } = await import("../pipeline/utils/jsonLlmCall");
+    return withBotConfig({ ...DEFAULT_CONFIG, botId: "signal" }, () =>
+      withCostTracker(() => runJsonLlmCall({ costName, model: SIGNAL_CHAT_MODEL, messages, responseFormat, schemaHint })));
   }
   return {
     fetchPost: async (id) => (await import("../api/fetchTweetById")).fetchTweetById(id),
-    initialDraft: (post) => scoped(async () => {
-      const { createBotInput } = await import("../pipeline/input/createBotInput");
-      const { buildUserMessageFromInput } = await import("../pipeline/prompts/input/userMessage");
-      const { runSimpleBotPipeline } = await import("../pipeline/simple-bot/orchestrator");
-      const input = await createBotInput(post, `signal:${post.id}`);
-      return { outcome: await runSimpleBotPipeline(post, input), inputContext: buildUserMessageFromInput(post, input) };
-    }),
-    discuss: (messages) => scoped(async () => {
-      const { getBotConfig } = await import("../pipeline/ab-testing/botConfig");
-      const { runJsonLlmCall } = await import("../pipeline/utils/jsonLlmCall");
-      const config = getBotConfig();
-      return runJsonLlmCall({
-        costName: "signal.discussion", model: config.writer_model ?? config.model,
-        messages, responseFormat: DISCUSSION_RESPONSE_FORMAT,
-        schemaHint: '{"action":"discuss|revise|abstain","reply":string,"draft":{"text":string,"sources":string[]}|null,"abstentionReason":string|null}',
-      });
-    }),
-    chat: (messages) => scoped(async () => {
-      const { getBotConfig } = await import("../pipeline/ab-testing/botConfig");
-      const { runJsonLlmCall } = await import("../pipeline/utils/jsonLlmCall");
-      const config = getBotConfig();
-      return runJsonLlmCall({
-        costName: "signal.chat", model: config.writer_model ?? config.model,
-        messages, responseFormat: CHAT_RESPONSE_FORMAT, schemaHint: '{"reply":string}',
-      });
-    }),
+    initialDraft: async (post) => {
+      const { requestTweetCheck } = await import("../service/client");
+      // A person is waiting for the draft, like a reader waiting for a page.
+      const { output } = await requestTweetCheck({ priority: "reader", post, picks: SIGNAL_PICKS });
+      return { outcome: pipelineOutcomeOf(output), inputContext: output.postContext ?? "" };
+    },
+    discuss: (messages) => chatCall("signal.discussion", messages, DISCUSSION_RESPONSE_FORMAT,
+      '{"action":"discuss|revise|abstain","reply":string,"draft":{"text":string,"sources":string[]}|null,"abstentionReason":string|null}'),
+    chat: (messages) => chatCall("signal.chat", messages, CHAT_RESPONSE_FORMAT, '{"reply":string}'),
     readSource: readDiscussionSource,
   };
 }
@@ -250,11 +266,8 @@ function lookupFailureDetail(error: unknown): string {
   return `${reason} I couldn't retrieve the tweet, so research has not started. Reply ‘retry’ to try the lookup again.`;
 }
 
-export function createDraftingAdapter(
-  overrides: Partial<DraftingDependencies> = {},
-  config: Partial<BotConfig> = {},
-): DraftingAdapter {
-  const deps: DraftingDependencies = { ...createDefaults(config), ...overrides };
+export function createDraftingAdapter(overrides: Partial<DraftingDependencies> = {}): DraftingAdapter {
+  const deps: DraftingDependencies = { ...createDefaults(), ...overrides };
   const adapter: DraftingAdapter = {
     async inspect(tweetId) {
       if (!/^\d{1,25}$/.test(tweetId)) throw new Error("Invalid tweet ID.");

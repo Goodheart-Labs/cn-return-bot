@@ -43,7 +43,7 @@ One always-on Linux server (the "services box") runs these systemd services, des
 - `cn-pot-provider`: a Docker container that hands out YouTube PO tokens on 127.0.0.1:4416 (see "Fetching sources").
 - `cn-notify`: posts new notes and votes to four Slack channels as the bot "Claudy" (see "Slack announcements" in `ops/README.md`).
 
-The X bot run and the Common Notes feed run are thin callers. They first check that the services they use are reachable and not stuck, and fail if not. Then they send the work over HTTP (`src/service/client.ts`, URLs in `CLAIM_CHECK_URL` and `EXTRACTION_URL`). The X bot uses only claim-check. So a change to note writing or claim checking reaches production only once the services box has deployed it. Deploying is a pull: a systemd timer runs `ops/autodeploy.sh` every 5 minutes, which pulls the checkout's branch and restarts the services once they are idle. A new unit file must be installed by hand once.
+The X bot run and the Common Notes feed run are thin callers. They first check that the services they use are reachable and not stuck, and fail if not. Then they send the work over HTTP (`src/service/client.ts`, URLs in `CLAIM_CHECK_URL` and `EXTRACTION_URL`). The X bot and the Signal bot use only claim-check. So a change to note writing or claim checking reaches production only once the services box has deployed it. Deploying is a pull: a systemd timer runs `ops/autodeploy.sh` every 5 minutes, which pulls the checkout's branch and restarts the services once they are idle. A new unit file must be installed by hand once.
 
 ## Common Notes
 

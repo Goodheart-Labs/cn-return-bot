@@ -35,6 +35,8 @@ import { claimCheckFields } from "./claimCheckFields";
 // verifier_citations is on, so every accepted source carries a verbatim
 // supporting quote and an explanation. We save those per source.
 // Keep the single-call classic verifier here; X uses the claim-based flow.
+// X's evaluate_note is off, because a claim's post id is made up and X can only
+// refuse it.
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
@@ -45,6 +47,7 @@ const FORCED_PICKS: Record<string, string> = {
   media_description: "gemini3flash",
   verifier_citations: "on",
   verifier_claim_based: "classic",
+  eval_submit_threshold: "off",
 };
 
 export interface ClaimPostParams {

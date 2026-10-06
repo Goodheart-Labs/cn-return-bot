@@ -16,6 +16,7 @@ import type { Post } from "../api/fetchEligiblePosts";
 import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
+import type { NoteRequest } from "../pipeline/input/noteRequest";
 
 export const CHECK_CLAIM_PATH = "/check-claim";
 export const CHECK_TWEET_PATH = "/check-tweet";
@@ -89,13 +90,16 @@ export interface CheckClaimResponse {
 export interface CheckTweetRequest {
   priority: WorkPriority;
   post: Post;
-  /** The picks the caller already decided: the feed tier the post came from,
-   *  and the monitoring picks for a curated-topic post. Everything else is
-   *  drawn by the service. */
+  /** The picks the caller already decided. Everything else is drawn by the
+   *  service. The X note writer forces the feed tier the post came from, and
+   *  the monitoring picks for a curated-topic post. A bot that answers people
+   *  forces its whole chain of steps and models, for example `SIGNAL_PICKS`. */
   picks: Record<string, string>;
   /** The curated-topic context for a misinfo-monitoring post; absent on a
    *  regular post. */
   monitoring?: MonitoringContext;
+  /** What the person who asked for a note wrote; absent on a feed post. */
+  noteRequest?: NoteRequest;
 }
 
 /** The full compute output, because the caller writes the database rows the
