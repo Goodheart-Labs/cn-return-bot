@@ -288,7 +288,7 @@ export function Reader({ item, content, header, features, scope }: {
 
   return <ReaderContext.Provider value={api}>
     <div className="reader" data-scope={scope}>
-      {noteQuery.isError && <p className="reader-load-error" role="alert">The notes couldn’t load. You can still read the article. <button type="button" onClick={() => void noteQuery.refetch()}>Try again</button></p>}
+      {noteQuery.isError && <p className="reader-load-error" role="alert">The notes couldn’t load. <button type="button" onClick={() => void noteQuery.refetch()}>Try again</button></p>}
       {highlightQuery.isError && <p className="reader-load-error" role="alert">Key points and forecasts couldn’t load. <button type="button" onClick={() => void highlightQuery.refetch()}>Try again</button></p>}
 
       {blocks.length === 0 ? <div className="reader-layout">{headerElement}<div className="reader-notice" style={{ gridArea: "article" }}><h2>The article text isn't available yet.</h2><OriginalLink url={item.url} /></div></div>
@@ -314,7 +314,6 @@ export function Reader({ item, content, header, features, scope }: {
             })}
             {unanchoredCount > 0 && <section id={`${scope}-${UNANCHORED}`} className="reader-passage reader-unanchored">
               <h2>More on this article</h2>
-              <p>These entries refer to passages we couldn’t match to this copy of the text.</p>
               <div className="reader-margin-group" data-margin-group={wide ? "" : undefined}>{entries(UNANCHORED)}</div>
             </section>}
             <footer className="reader-end">

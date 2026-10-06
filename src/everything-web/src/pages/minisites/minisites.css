@@ -41,7 +41,6 @@
 .create-step-done > span { border-color: var(--cn-positive-line) !important; background: var(--cn-positive-soft); color: var(--cn-positive); }
 .create-paste { display: grid; gap: 0.5rem; max-width: 42rem; }
 .create-paste label, .create-fields label { font-size: var(--cn-text-sm); font-weight: 600; color: var(--cn-fg); }
-.create-fields label span { font-weight: 400; color: var(--cn-fg-muted); }
 .create-paste-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .create-paste-row > :first-child { flex: 1 1 18rem; }
 .create-known { margin-bottom: 1.5rem; padding: 0.625rem 0.875rem; border: 1px solid var(--cn-positive-line); border-radius: var(--cn-radius-control); background: var(--cn-positive-soft); color: var(--cn-positive-selected-fg); font-size: var(--cn-text-sm); }

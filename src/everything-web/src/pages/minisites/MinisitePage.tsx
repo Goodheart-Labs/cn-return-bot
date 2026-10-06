@@ -135,7 +135,7 @@ export function MinisitePage({ slug, navigate }: { slug: string; navigate: (rout
 
   if (query.isPending) return <main className="minisites-page"><p className="minisites-empty" role="status">Loading the minisite…</p></main>;
   if (query.isError) return <main className="minisites-page"><p className="minisites-empty" role="alert">The minisite couldn't load. <button type="button" className="minisites-retry" onClick={() => void query.refetch()}>Try again</button></p></main>;
-  if (!query.data) return <main className="minisites-page"><h1>No minisite here</h1><p className="minisites-empty">There is no minisite at this address. <RouteLink to={MINISITES} navigate={navigate} className="minisites-retry">See all minisites</RouteLink></p></main>;
+  if (!query.data) return <main className="minisites-page"><h1>No minisite here</h1><p className="minisites-empty"><RouteLink to={MINISITES} navigate={navigate} className="minisites-retry">See all minisites</RouteLink></p></main>;
 
   const { minisite } = query.data;
   const unchecked = !isWholePageChecked(query.data.item) && !running && !checkStarted;
