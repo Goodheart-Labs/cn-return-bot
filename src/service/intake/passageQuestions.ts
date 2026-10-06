@@ -7,7 +7,7 @@ import { requestBudgetExhausted } from "../../everything/spendCap";
 import { llm, withLlmAbortSignal } from "../../pipeline/llm/llm";
 import { OPENROUTER_PRICING } from "../../pipeline/cost-tracking/pricing";
 import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
-import { checked } from "./supabaseResult";
+import { checked } from "../../api/supabaseResult";
 
 const MODEL = "anthropic/claude-opus-5.5";
 const NO_COMMENTARY = "No commentary or reasoning, and nothing about the article or its authors (never \"this tests…\"); reasoning goes in your reply.";

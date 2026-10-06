@@ -11,7 +11,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { PageReadError, readPageForMinisite, type MinisitePage } from "../../everything/minisites/readPage";
-import { checked } from "./supabaseResult";
+import { checked } from "../../api/supabaseResult";
 
 const JOBS_TABLE = "everything_minisite_jobs";
 

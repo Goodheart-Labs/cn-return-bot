@@ -1,27 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { parseReaderText, plainText, type InlineRun, type ReaderBlock } from "../../everything-core/readerText";
+import { parseReaderText, plainText, type ReaderBlock } from "../../everything-core/readerText";
 import { htmlToReaderBlocks } from "./htmlToReaderText";
+import { blockRuns } from "./readerTextStats";
 import bigTentPost from "./fixtures/big-tent-substack-post.json";
 
 const fixture = (name: string) => readFileSync(join(import.meta.dir, "fixtures", name), "utf8");
-
-function blockRuns(block: ReaderBlock): InlineRun[] {
-  switch (block.kind) {
-    case "list":
-      return block.items.flat();
-    case "table":
-      return [...block.header, ...block.rows.flat()].flat();
-    case "figure":
-      return block.caption;
-    case "embed":
-    case "code":
-      return [];
-    default:
-      return block.runs;
-  }
-}
 
 const allRuns = (blocks: ReaderBlock[]) => blocks.flatMap(blockRuns);
 const ofKind = <K extends ReaderBlock["kind"]>(blocks: ReaderBlock[], kind: K) =>
