@@ -198,7 +198,7 @@ td code { white-space: nowrap; }
       <span>Every model output on this page is real. The two posts and their comments are real production data. The replies under them are written by hand.</span>
     </div>
     <nav class="toc" aria-label="Sections">
-      <a href="#flow">The steps</a><a href="#threads">Two example threads</a><a href="#behaviour">Behaviour</a><a href="#costs">Costs</a><a href="#limits">X's rules and limits</a><a href="#approval">X's approval</a><a href="#decisions">Implementation decisions</a><a href="#risks">Risks and open questions</a><a href="#built">Built so far</a><a href="#build">Build pieces</a><a href="#changes">Changes</a>
+      <a href="#flow">The steps</a><a href="#threads">Two example threads</a><a href="#behaviour">Behaviour</a><a href="#costs">Costs</a><a href="#limits">X's rules and limits</a><a href="#approval">X's approval</a><a href="#d-profile">Profile</a><a href="#decisions">Implementation decisions</a><a href="#risks">Risks and open questions</a><a href="#built">Built so far</a><a href="#build">Build pieces</a><a href="#changes">Changes</a>
     </nav>
   </header>
 
@@ -245,6 +245,7 @@ td code { white-space: nowrap; }
       <li>An approval submits the exact draft it replies to, as long as the approver is someone who asked for this note or suggested a change that led to it. The <a href="#d-approvers">approval rule</a> shows who that is. Anyone else gets one reply that explains the rule.</li>
       <li>An improve-and-approve first runs the revision. If the bot makes the change, it submits the new version right away and shows it in the "Submitted" reply. If it doesn't agree with the change, nothing is submitted and it explains why.</li>
       <li>A post gets at most one note from us. Any later approval on that post, in any thread, gets the link to the note we already submitted.</li>
+      <li>X takes our notes only on some posts, mostly posts where people requested a note. On any other post, the draft says so and asks people to request one (proposed, see <a href="#d-eligibility">the open decision</a>).</li>
       <li>After submission the bot replies "Submitted" with the note's link. If X's daily limit for our AI notes is used up, it first replies that the note is queued, and later replies again once it went through.</li>
     </ul>
   </section>
@@ -419,6 +420,45 @@ td code { white-space: nowrap; }
         <p>Everything people write in the thread, and every page the bot reads, goes into the prompts as evidence, never as instructions. Each prompt says so.</p>
       </div>
 
+      <div class="decision" id="d-eligibility">
+        <h3>Posts X won't take notes on (open, needs your decision)</h3>
+        <p>We submitted the note "Test https://en.wikipedia.org/wiki/Test" on <a href="https://x.com/NathanpmYoung/status/2107364216898490806">a post by Nathan Young</a> with the production notewriter keys, through a throwaway GitHub workflow. X refused it: "Failed to create a note. The post is ineligible to write a note via API call." Nothing was published. X's <code>evaluate_note</code>, which publishes nothing, refused the same post for the same reason, so the bot can check eligibility first.</p>
+        <p>Two things we learned on the way. Every note must contain a link, or X refuses it before looking at the post. And the X keys in our local env file belong to a second AI Note Writer that has not earned admission, so production tests must run through GitHub with the real secrets.</p>
+        <p>The plan proposes: research either way, tell people how to make the post eligible, and let an approval wait until X allows it.</p>
+        <ul>
+          <li><strong>Draft anyway (proposed).</strong> The draft is still useful to the people in the thread. Its last line asks them to request a Community Note, and an approval waits up to 3 hours for the post to become eligible, in the same queue that waits for the daily limit.</li>
+          <li><strong>Stop early.</strong> Reply at once that X doesn't take our notes on this post, ask them to request a note and tag again. No research, no cost.</li>
+          <li><strong>Draft anyway, no waiting.</strong> Show the draft, but approval only works once the post is eligible.</li>
+        </ul>
+      </div>
+
+      <div class="decision" id="d-profile">
+        <h3>The bot's profile</h3>
+        <p>Handle <code>@CommonNotesBot</code>, as you confirmed. The bio must say the account is automated and who runs it, and it has room for 160 characters. The store links are too long for it, so the bio and the website field point to commonnotes.net, whose home page has the install buttons, and a pinned post carries the direct store links.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Field</th><th>Text</th></tr></thead>
+          <tbody>
+            <tr><td>Display name</td><td>Common Notes Bot</td></tr>
+            <tr><td>Handle</td><td>@CommonNotesBot</td></tr>
+            <tr><td>Bio (about 156 of 160 characters)</td><td>Tag me under a post and I'll draft a Community Note. Reply "approve" to submit it. Automated, run by @&lt;our account&gt;. See notes on any page: commonnotes.net</td></tr>
+            <tr><td>Website</td><td>https://commonnotes.net</td></tr>
+            <tr><td>Automated label</td><td>Managed by @&lt;our account&gt;</td></tr>
+          </tbody>
+        </table></div>
+        <p>Pinned post, posted once (a post with links costs $0.20):</p>
+        <pre class="text" style="border:1px solid var(--line);border-radius:10px">How I work:
+1. Reply to a post and tag @CommonNotesBot. Say what you think is wrong, if you like.
+2. I research it and reply with a draft Community Note, or explain why no note is needed.
+3. Reply with changes, or "approve" to submit it. "Approve but ..." works too.
+
+I only answer when someone tags me. X lets me add notes only to posts where people requested one, so request a note from the post's menu if I can't submit.
+
+Common Notes shows notes like these on YouTube, Substack and other sites:
+https://commonnotes.net
+Chrome: https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
+      </div>
+
       <div class="decision">
         <h3>Models</h3>
         <ul>
@@ -433,7 +473,7 @@ td code { white-space: nowrap; }
   <section id="risks" class="prose">
     <h2>Risks and open questions</h2>
     <ul>
-      <li><strong>Will X accept notes on any post?</strong> The AI Note Writer API officially offers notes on posts in its eligibility feed, mostly posts where people requested a note. The Signal bot submitted one note on a hand-picked post on 20 September, and X accepted it. That is one data point. When X refuses a post as ineligible, the bot will say so in the thread.</li>
+      <li><strong>X does not accept notes on any post. Tested on 6 October.</strong> A real submission on a hand-picked post by Nathan Young came back "The post is ineligible to write a note via API call". Most posts people tag will probably be ineligible at first, because X offers AI note writers mainly posts where people requested a note. This is the biggest open question of the plan, see <a href="#d-eligibility">posts X won't take notes on</a>.</li>
       <li><strong>Will such notes get rated?</strong> A note on a post outside the feed may be shown to fewer raters. The Signal note is still "Needs more ratings" two weeks later. We cannot tell yet whether that is unusual, because our scraper does not record rating counts.</li>
       <li><strong>The notewriter's API keys.</strong> An investigation on 1 October found that the notewriter app's keys are refused for reading posts, because that app is not attached to an X "Project". Submitting notes still works in production. The bot account gets its own app inside a Project, so this does not block us, but it is worth knowing.</li>
       <li><strong>Does a reply to the bot count as tagging it?</strong> X's rule says an app may reply when the author "@mentions" it. A reply to one of our posts carries our handle as an implicit mention: X delivers it to us as a reply event, but its text may not contain the handle. X's own event list treats the two apart (<code>post.mention.create</code> "does not fire for implicit mentions carried by replies"). If X's reply check does the same, the bot could answer the first tag but not the feedback under its drafts, unless the person writes the handle again. The first test with the real account must check this. If it fails, the draft's last line asks people to tag the bot in their reply.</li>
@@ -489,6 +529,8 @@ td code { white-space: nowrap; }
       <li><strong>Simpler <code>x_tag_posts</code> table.</strong> <code>answered_by</code> and <code>llm_cost_usd</code> are gone. A crash at the wrong moment may cause one double reply, which we accept.</li>
       <li><strong>The diagram shows every branch:</strong> the "seen this post?" check, the unreadable post, the approval rule's reply, one note per post, the queued and gave-up replies, and X refusing a post.</li>
       <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.24, against $1.36 for the uncapped one.</li>
+      <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young: "The post is ineligible to write a note via API call". The plan adds an eligibility check and proposes how to handle such posts. That decision is open.</li>
+      <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, and the exact bio, website field and pinned post, with links to commonnotes.net and the extension stores.</li>
       <li><strong>Implicit mentions are a known risk.</strong> We don't yet know whether X lets the bot reply to someone who answered its post without typing its handle. The first live test checks this.</li>
     </ul>
   </section>
@@ -636,8 +678,9 @@ const STEPS = {
     body: [
       "The existing claim_note_submission function decides when a note may go out. If there is room, the note is submitted at once and no \"queued\" reply is posted.",
       "If there is no room, the bot posts the queued reply once, then asks again every 2 minutes. Asking the database costs nothing and never calls X. After 3 hours without room it posts the gave-up reply.",
+      "Proposed: the same wait also covers a post that X doesn't take notes on yet. Every 2 minutes the bot asks evaluate_note again, so a post that becomes eligible because people requested a note goes out within minutes.",
     ],
-    blocks: [["Fixed reply: queued", R.queued, "fixed text"], ["Fixed reply: gave up", R.gaveUp, "fixed text"]],
+    blocks: [["Fixed reply: queued", R.queued, "fixed text"], ["Fixed reply: gave up, limit full", R.gaveUp, "fixed text"], ["Fixed reply: gave up, not eligible", R.gaveUpNotEligible, "fixed text"]],
   },
   submit: {
     title: "Submit to X", chips: [["code", "Plain code"], ["x", "Community Notes API"], ["reused", "Existing submit"]],
@@ -668,7 +711,7 @@ const STEPS = {
     title: "Reply: gave up", chips: [["reply", "Bot reply"]],
     summary: "The daily limit stayed full for 3 hours.",
     body: ["Replying \"approve\" again to the same draft starts a new 3-hour wait."],
-    blocks: [["Fixed text", R.gaveUp, "fixed text"]],
+    blocks: [["Limit stayed full", R.gaveUp, "fixed text"], ["Post stayed ineligible", R.gaveUpNotEligible, "fixed text"]],
   },
   notOnPath: {
     title: "Reply: who may approve", chips: [["reply", "Bot reply"]],
@@ -700,6 +743,17 @@ const STEPS = {
     title: "Repeat the answer", chips: [["reply", "Bot reply"], ["code", "Plain code"]],
     summary: "Another thread on this post already has an answer. The bot posts the newest one again.",
     body: ["The answer is the newest draft or no-note reply of the post's most recent thread, in the same template. If the new tag also contains a suggestion, the tag is then handled as feedback on that answer."],
+  },
+  eligible: {
+    title: "Eligible for our notes?", chips: [["x", "X API"], ["code", "Plain code"], ["new", "New, after the probe"]],
+    summary: "Asks X's evaluate_note whether our AI Note Writer may note this post. It publishes nothing.",
+    body: [
+      "On 6 October we submitted a real note on a hand-picked post by Nathan Young with the production keys. X refused it: \"Failed to create a note. The post is ineligible to write a note via API call.\" X's evaluate_note endpoint, which only scores a draft and publishes nothing, refused the same post with the same reason. So evaluate_note works as an eligibility check before any money is spent.",
+      "X offers AI note writers the posts where people requested a Community Note. Anyone on X can request one in a post's menu, up to five a day. How many requests a post needs is not published.",
+      "Proposed, waiting for your decision: the bot researches either way and remembers the answer. On an eligible post the draft ends as usual. On an ineligible one it ends with the text below, and an approval waits in the queue until X allows the note or 3 hours pass.",
+    ],
+    blocks: [["Draft ending on an ineligible post", R.draftNotEligibleEnding, "fixed text"]],
+    facts: [["Cost", "Not on X's price list. Production already calls it for every note."]],
   },
   fetch: {
     title: "Fetch the post", chips: [["x", "X API"], ["code", "Plain code"]],
@@ -840,6 +894,7 @@ const NODES = [
   { id: "repeat", x: COL[1], y: ROW_A[2], title: "Repeat the answer", sub: "no new research", kind: "reply" },
   { id: "fetch", x: COL[2], y: ROW_A[0], title: "Fetch the post", sub: "and the tagger's post", kind: "x" },
   { id: "unreadable", x: COL[2], y: ROW_A[1], title: "Reply: can't read it", sub: "fixed text", kind: "reply" },
+  { id: "eligible", x: COL[3], y: ROW_A[0], title: "Eligible for our notes?", sub: "evaluate_note", kind: "x" },
   { id: "read", x: COL[4], y: ROW_A[0], title: "Read the post", sub: "media, comments, author", kind: "other" },
   { id: "search", x: COL[4], y: ROW_A[1], title: "Search", sub: "web search, findings", kind: "opus" },
   { id: "timing", x: COL[4], y: ROW_A[2], title: "Timing check", sub: "Gemini 3 Flash", kind: "other" },
@@ -852,9 +907,9 @@ const NODES = [
   { id: "approvalCheck", x: COL[2], y: ROW_B[0], title: "Approval check", sub: "on the draft's path?", kind: "code" },
   { id: "notOnPath", x: COL[2], y: ROW_B[1], title: "Reply: who may approve", sub: "fixed text", kind: "reply" },
   { id: "alreadyB", x: COL[2], y: ROW_B[2], title: "Reply: note link", sub: "one note per post", kind: "reply" },
-  { id: "queue", x: COL[3], y: ROW_B[0], title: "Submission queue", sub: "every 2 min, up to 3 h", kind: "code" },
+  { id: "queue", x: COL[3], y: ROW_B[0], title: "Submission queue", sub: "room and eligible? 3 h", kind: "code" },
   { id: "queuedReply", x: COL[3], y: ROW_B[1], title: "Reply: queued", sub: "fixed text", kind: "reply" },
-  { id: "gaveUp", x: COL[3], y: ROW_B[2], title: "Reply: gave up", sub: "limit stayed full", kind: "reply" },
+  { id: "gaveUp", x: COL[3], y: ROW_B[2], title: "Reply: gave up", sub: "full or not eligible", kind: "reply" },
   { id: "submit", x: COL[4], y: ROW_B[0], title: "Submit to X", sub: "Community Notes API", kind: "x" },
   { id: "submitted", x: COL[4], y: ROW_B[1], title: "Reply: submitted", sub: "with the note link", kind: "reply" },
   { id: "refused", x: COL[4], y: ROW_B[2], title: "Reply: X refused", sub: "ineligible or deleted", kind: "reply" },
@@ -868,7 +923,8 @@ const EDGES = [
   { d: "M345,126 V176", label: "note submitted", lx: 352, ly: 156 },
   { d: "M250,112 H238 V318 H246", label: "answer exists", lx: 150, ly: 240 },
   { d: "M575,126 V176", label: "deleted or protected", lx: 582, ly: 156 },
-  { d: "M670,98 H956", label: "new post: claim-check, TAG_BOT_PICKS", lx: 680, ly: 89 },
+  { d: "M670,98 H706" },
+  { d: "M900,98 H956" },
   { d: "M1055,126 V176" },
   { d: "M960,208 H904", label: "no note", lx: 908, ly: 199 },
   { d: "M1055,236 V286", label: "note needed", lx: 1062, ly: 266 },
@@ -888,9 +944,9 @@ const EDGES = [
   { d: "M345,1046 V1070 H700 V712", label: "revised", lx: 520, ly: 1064 },
   { d: "M440,1018 H476" },
   { d: "M900,678 H956" },
-  { d: "M805,706 V756", label: "no room yet", lx: 812, ly: 736 },
-  { d: "M805,816 V866", label: "still full after 3 h", lx: 812, ly: 846 },
-  { d: "M900,788 C925,788 925,700 958,692", label: "room", lx: 916, ly: 760 },
+  { d: "M805,706 V756", label: "must wait", lx: 812, ly: 736 },
+  { d: "M805,816 V866", label: "still waiting after 3 h", lx: 812, ly: 846 },
+  { d: "M900,788 C925,788 925,700 958,692", label: "ready", lx: 916, ly: 760 },
   { d: "M1055,706 V756", label: "accepted", lx: 1062, ly: 736 },
   { d: "M1150,706 C1172,760 1172,860 1152,880", label: "refused", lx: 1092, ly: 850 },
   // Loops back to the replies
