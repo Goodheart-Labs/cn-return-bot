@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
-import { ArticleReader } from "./ArticleReader";
 import { LoginModal } from "./components/LoginModal";
 import { SiteHeader } from "./components/SiteHeader";
 import { useRoute } from "./lib/routing";
@@ -22,7 +21,6 @@ export function App() {
     <LoginPromptProvider value={() => setLoginOpen(true)}>
       <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />
       {route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
-        : route.view === "read" ? <ArticleReader url={route.url} full={route.full} />
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}

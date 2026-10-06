@@ -117,7 +117,7 @@ The website ships the anon key, so the anon role is locked out of every table ex
 
 ### Minisites
 
-The reader (`src/everything-web/src/reader/`) is a shell plus one module per feature (`reader/features/`). Each module fills named slots: buttons on selected words, buttons under a passage, entries in the margin, a rail, dialogs. A feature added later starts off on existing minisites. `/read?url=` shows any checked article in the same reader with every feature on. Creating a minisite: the website writes a `read_page` job, the intake service reads the page through `cn-fetch` without fact-checking it, and `everything_create_minisite` makes the minisite. The fact-check is a separate admin button (`everything_start_minisite_check`), which queues the article at the reader-request tier and keeps its text. On a minisite, Ask Opus gets only the tools its features allow and never `request_note`.
+The reader (`src/everything-web/src/reader/`) is a shell plus one module per feature (`reader/features/`). Each module fills named slots: buttons on selected words, buttons under a passage, entries in the margin, a rail, dialogs. A feature added later starts off on existing minisites. The old `/read?url=` page is gone; its two articles are the minisites `big-tent-or-small-tent` and `white-house-accord`. Creating a minisite: the website writes a `read_page` job, the intake service reads the page through `cn-fetch` without fact-checking it, and `everything_create_minisite` makes the minisite. The fact-check is a separate admin button (`everything_start_minisite_check`), which queues the article at the reader-request tier and keeps its text. On a minisite, Ask Opus gets only the tools its features allow and never `request_note`.
 
 ### Website, voting and donations
 

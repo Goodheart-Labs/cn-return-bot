@@ -61,7 +61,7 @@ function collectIds(nodes: readonly FeatureNode[]): FeatureId[] {
   return nodes.flatMap((node) => [node.id as FeatureId, ...collectIds(node.children ?? [])]);
 }
 
-/** Every feature. The plain /read?url= page uses all of them. */
+/** Every feature: what a new minisite starts with. */
 export const ALL_FEATURES: readonly FeatureId[] = collectIds(FEATURE_TREE);
 
 /** The features in effect for a stored list. A child counts only while its

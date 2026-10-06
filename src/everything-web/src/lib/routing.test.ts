@@ -16,8 +16,6 @@ const ROUTES: [string, Route][] = [
   ["/minisites", { view: "minisites", slug: null }],
   ["/minisites/new", { view: "newMinisite" }],
   ["/minisites/big-tent-or-small-tent", { view: "minisites", slug: "big-tent-or-small-tent" }],
-  ["/read?url=https%3A%2F%2Fexample.com%2Fp", { view: "read", url: "https://example.com/p", full: null }],
-  ["/read?url=https%3A%2F%2Fexample.com%2Fp&full=https%3A%2F%2Fexample.com%2Fp.pdf", { view: "read", url: "https://example.com/p", full: "https://example.com/p.pdf" }],
 ];
 
 describe("routing", () => {
@@ -36,6 +34,10 @@ describe("routing", () => {
     expect(readRoute("/", "?project=zvi&episode=item-1&note=n-1")).toEqual({ view: "notes", project: "zvi", item: "item-1", note: "n-1" });
     expect(readRoute("/", "?view=leaderboard")).toEqual({ view: "leaderboard" });
     expect(readRoute("/", "?section=install")).toEqual({ view: "home", section: "install" });
+  });
+
+  test("the old article reader's links show the homepage", () => {
+    expect(readRoute("/read", "?url=https%3A%2F%2Fexample.com%2Fp")).toEqual({ view: "home", section: null });
   });
 
   test("an unknown path shows the homepage", () => {

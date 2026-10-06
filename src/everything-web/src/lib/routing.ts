@@ -11,8 +11,8 @@ import { capturePageview } from "./analytics";
  *   /minisites/new        an admin creates a minisite from a pasted link
  *   /minisites/<slug>     one minisite: an article with the reader features it switched on
  *   /leaderboard          the rating leaderboard
- *   /read?url=<article>   one article with its notes in the margin; &full=<url>
- *                         adds the article's full text below it
+ * The old article reader at /read?url=… is gone (GOO-374); its articles are
+ * minisites now, and its old links show the homepage like any unknown path.
  * A link to one note adds ?note=<id> to its project's path. The static pages
  * /privacy/ and /terms/ sit beside the app.
  *
@@ -33,8 +33,7 @@ export type Route =
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
-  | { view: "newMinisite" }
-  | { view: "read"; url: string | null; full: string | null };
+  | { view: "newMinisite" };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
@@ -61,7 +60,6 @@ export function readRoute(pathname: string, search: string): Route {
   const [page, project, item] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
-  if (page === "read") return { view: "read", url: q.get("url"), full: q.get("full") };
   if (page === "install") return INSTALL;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;
@@ -72,12 +70,6 @@ export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
-  if (route.view === "read") {
-    const q = new URLSearchParams();
-    if (route.url) q.set("url", route.url);
-    if (route.full) q.set("full", route.full);
-    return `/read${q.size ? `?${q}` : ""}`;
-  }
   if (route.view === "home") return route.section ? `/${route.section}` : "/";
   const segments = ["notes", route.project, route.project && route.item].filter((segment) => !!segment) as string[];
   const note = route.note ? `?note=${encodeURIComponent(route.note)}` : "";
