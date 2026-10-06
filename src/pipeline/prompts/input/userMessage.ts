@@ -178,7 +178,7 @@ export function buildUserMessageFromInput(post: Post, input: BotInput): string {
  *  post whose side claim was false, the search agreed with the person and still
  *  declined, because its prompt only notes main claims. The last sentence fixes
  *  that. */
-function formatNoteRequest(request: NoteRequest): string {
+export function formatNoteRequest(request: NoteRequest): string {
   return `## Request from the person who tagged the bot
 
 @${request.handle} replied to this post and tagged the bot:

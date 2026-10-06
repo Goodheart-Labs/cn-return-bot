@@ -10,22 +10,16 @@ import { readFileSync, writeFileSync } from "fs";
 import { SEARCH_PROMPTED_JSON_INSTRUCTION, SEARCH_SYSTEM_PROMPT } from "../../pipeline/prompts/simple-bot/searchAgent";
 import { TIMING_EXTRACTOR_SYSTEM_PROMPT } from "../../pipeline/prompts/simple-bot/timingJudge";
 import { buildWriterUserMessage, WRITER_SYSTEM_PROMPT } from "../../pipeline/prompts/simple-bot/writer";
-import {
-  buildClassifierUserMessage,
-  buildNoNoteReplyUserMessage,
-  buildRequesterSection,
-  CLASSIFIER_SYSTEM_PROMPT,
-  NO_NOTE_REPLY_SYSTEM_PROMPT,
-  renderDraftReply,
-  renderNoNoteReply,
-  IMPROVE_AND_APPROVE_NOTICE,
-  REVISION_SYSTEM_PROMPT,
-  STATUS_REPLIES,
-  TAG_BOT_PICKS,
-} from "./prompts";
+import { buildClassifierUserMessage, buildNoNoteReplyUserMessage } from "./prompts";
+import { TAG_BOT_PICKS } from "../../x-tag-bot/bot";
+import { CLASSIFIER_SYSTEM_PROMPT, IMPROVE_AND_APPROVE_NOTICE, NO_NOTE_REPLY_SYSTEM_PROMPT, REVISION_SYSTEM_PROMPT } from "../../x-tag-bot/prompts";
+import * as replies from "../../x-tag-bot/replies";
+import { formatNoteRequest } from "../../pipeline/prompts/input/userMessage";
 import { SIGNAL_PICKS } from "../../signal-bot/drafting";
 
 const OUTPUT_DIR = `${import.meta.dir}/output`;
+const PLACEHOLDER_DRAFT = { text: "<note text>", sources: ["<source 1>", "<source 2>"] };
+const NOTE_ID = "<note id>";
 const read = (name: string) => JSON.parse(readFileSync(`${OUTPUT_DIR}/${name}`, "utf8"));
 
 const mumbai = read("examples_mumbai.json").mumbai;
@@ -39,13 +33,27 @@ const planData = {
     search: `${SEARCH_SYSTEM_PROMPT}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`,
     writer: WRITER_SYSTEM_PROMPT,
     timing: TIMING_EXTRACTOR_SYSTEM_PROMPT,
-    requesterSection: buildRequesterSection({ handle: "<handle>", text: "<comment without the @ tag>" }),
+    requesterSection: formatNoteRequest({ handle: "<handle>", text: "<comment without the @ tag>" }),
     noNote: NO_NOTE_REPLY_SYSTEM_PROMPT,
     classifier: CLASSIFIER_SYSTEM_PROMPT,
     revision: REVISION_SYSTEM_PROMPT,
-    draftTemplate: renderDraftReply({ lead: "<the revision call's reply, only on a revised draft>", text: "<note text>", sources: ["<source 1>", "<source 2>"] }),
-    noNoteTemplate: renderNoNoteReply("<the no-note reply>"),
-    statusReplies: STATUS_REPLIES,
+    draftTemplate: replies.draftReply({ lead: "<the revision call's reply, only on a revised draft>", draft: PLACEHOLDER_DRAFT, eligible: true }),
+    noNoteTemplate: replies.noNoteReply("<the no-note reply>"),
+    statusReplies: {
+      queued: replies.queuedReply(true),
+      queuedNotEligible: replies.queuedReply(false),
+      submitted: replies.submittedReply(NOTE_ID),
+      improvedAndSubmitted: replies.improvedAndSubmittedReply({ lead: "<the revision call's reply>", draft: PLACEHOLDER_DRAFT, noteId: NOTE_ID }),
+      otherDraftSubmitted: replies.otherDraftSubmittedReply({ draftPostId: "<id of the submitted draft's post>", noteId: NOTE_ID }),
+      alreadySubmitted: replies.alreadySubmittedReply(NOTE_ID),
+      notOnPath: replies.NOT_ON_PATH_REPLY,
+      gaveUp: replies.gaveUpReply(true),
+      gaveUpNotEligible: replies.gaveUpReply(false),
+      draftNotEligibleEnding: replies.draftReply({ draft: PLACEHOLDER_DRAFT, eligible: false }).split("\n\n").at(-1),
+      ineligible: replies.refusedReply("ineligible"),
+      postDeleted: replies.refusedReply("deleted"),
+      unreadable: replies.UNREADABLE_REPLY,
+    },
     improveNotice: IMPROVE_AND_APPROVE_NOTICE,
     tagBotPicks: JSON.stringify(TAG_BOT_PICKS, null, 2),
     signalPicks: JSON.stringify(SIGNAL_PICKS, null, 2),

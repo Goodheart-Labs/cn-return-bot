@@ -189,7 +189,7 @@ td code { white-space: nowrap; }
 
 <div class="page">
   <header>
-    <div class="eyebrow">Plan for GOO-212 · in review · 5 October 2026</div>
+    <div class="eyebrow">GOO-212 · built, waiting for the X account · 6 October 2026</div>
     <h1>Tag-to-Note Bot</h1>
     <p class="lede">Someone replies under a post on X and tags our bot. The bot researches the post with our existing note pipeline and answers in the thread with a draft Community Note, or with an explanation of why no note is needed. Anyone in the thread can suggest changes, and the bot answers each suggestion with a revised draft or a reason to keep it. When someone who asked for the note replies "approve", our AI Note Writer submits it and the bot replies with a link to the note.</p>
     <div class="meta">
@@ -198,7 +198,7 @@ td code { white-space: nowrap; }
       <span>Every model output on this page is real. The two posts and their comments are real production data. The replies under them are written by hand.</span>
     </div>
     <nav class="toc" aria-label="Sections">
-      <a href="#flow">The steps</a><a href="#threads">Two example threads</a><a href="#behaviour">Behaviour</a><a href="#costs">Costs</a><a href="#limits">X's rules and limits</a><a href="#approval">X's approval</a><a href="#d-profile">Profile</a><a href="#decisions">Implementation decisions</a><a href="#risks">Risks and open questions</a><a href="#built">Built so far</a><a href="#build">Build pieces</a><a href="#changes">Changes</a>
+      <a href="#flow">The steps</a><a href="#threads">Two example threads</a><a href="#behaviour">Behaviour</a><a href="#costs">Costs</a><a href="#limits">X's rules and limits</a><a href="#approval">X's approval</a><a href="#d-profile">Profile</a><a href="#decisions">Implementation decisions</a><a href="#risks">Risks and open questions</a><a href="#built">What's built</a><a href="#changes">Changes</a>
     </nav>
   </header>
 
@@ -301,7 +301,7 @@ td code { white-space: nowrap; }
         <p>The bot is a long-running program, a <em>daemon</em>, that runs as a new systemd service called <code>cn-x-tag-bot</code> on the services box. systemd is Linux's service manager: it starts the program at boot and restarts it if it crashes. The box's existing autodeploy timer pulls new code and restarts it, like the other <code>cn-*</code> services.</p>
         <p>X pushes the bot's mentions to it through the X Activity API (X's name, "XAA"). The service subscribes once to two events for the bot's account: <code>post.mention.create</code>, which fires when someone writes the bot's handle in a post, and <code>post.reply.create</code>, which fires when someone replies directly to one of the bot's posts. It then opens one persistent HTTP stream (<code>GET /2/activity/stream</code>), a connection that the service opens and X keeps open, and X sends each event down it within a second. The stream needs no public web address, so it fits the services box, and it needs no cursor or schedule of our own.</p>
         <p>The plan deliberately does not try to be robust against outages. A tag that arrives while the service is down gets no answer, and the person can tag again. The one exception costs a single parameter: when the stream connects, it asks for <code>backfill_minutes=5</code>, so X resends the last five minutes. That covers the restart the autodeploy timer does after every code change. X also offers webhooks, where X calls a public address of ours, and polling the mentions timeline. Both need more code for no gain here.</p>
-        <p>The first answer runs on the claim-check service, like every other note our bots write. The bot sends one request to the service's <code>/check-tweet</code> route with the post, the tagger's request and <code>TAG_BOT_PICKS</code>. The picks are the existing A/B variants, forced by the caller, and they choose every step and model: no topic filter, no prefilter, Opus 5.5 for search and writer, no source verifier, no materiality judge and no X evaluation. This is built, and the Signal bot already uses it with its own <code>SIGNAL_PICKS</code>, see <a href="#built">Built so far</a>.</p>
+        <p>The first answer runs on the claim-check service, like every other note our bots write. The bot sends one request to the service's <code>/check-tweet</code> route with the post, the tagger's request and <code>TAG_BOT_PICKS</code>. The picks are the existing A/B variants, forced by the caller, and they choose every step and model: no topic filter, no prefilter, Opus 5.5 for search and writer, no source verifier, no materiality judge and no X evaluation. This is built, and the Signal bot already uses it with its own <code>SIGNAL_PICKS</code>, see <a href="#built">What's built</a>.</p>
         <p>Sorting replies and revising run in the tag bot itself. They are conversation calls about one thread, like the Signal bot's discussion call, and not pipeline steps.</p>
       </div>
 
@@ -329,8 +329,6 @@ td code { white-space: nowrap; }
             <tr><td><code>requester_id</code>, <code>requester_handle</code></td><td>text</td><td>Who tagged the bot.</td></tr>
             <tr><td><code>post_context</code></td><td>text</td><td>The full input the first research got. Revisions get the same input, so they see the same post, media descriptions and comments.</td></tr>
             <tr><td><code>findings</code></td><td>text</td><td>The research findings of the first run.</td></tr>
-            <tr><td><code>status</code></td><td>text</td><td><code>researching</code>, <code>answered</code>, <code>queued</code>, <code>submitted</code>, <code>failed</code>.</td></tr>
-            <tr><td><code>note_id</code></td><td>text</td><td>The Community Note id once X accepted it.</td></tr>
             <tr><td><code>pipeline_run_id</code></td><td>uuid</td><td>The <code>pipeline_runs</code> row with the full log and cost, <code>bot_name = 'x-tag'</code>.</td></tr>
             <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
           </tbody>
@@ -344,9 +342,9 @@ td code { white-space: nowrap; }
             <tr><td><code>parent_tweet_id</code></td><td>text</td><td>The post it replies to.</td></tr>
             <tr><td><code>author_id</code>, <code>author_handle</code></td><td>text</td><td>Who wrote it.</td></tr>
             <tr><td><code>role</code></td><td>text</td><td><code>human</code> or <code>bot</code>.</td></tr>
-            <tr><td><code>kind</code></td><td>text</td><td>For a human post: <code>request</code>, <code>approve</code>, <code>feedback</code>, <code>other</code>. For a bot post: <code>draft</code>, <code>no_note</code>, <code>answer</code>, <code>queued</code>, <code>submitted</code>, <code>error</code>.</td></tr>
+            <tr><td><code>kind</code></td><td>text</td><td>For a human post: <code>request</code>, <code>approve</code>, <code>improve_and_approve</code>, <code>feedback</code>, <code>other</code>. For a bot post: <code>draft</code>, <code>no_note</code>, <code>answer</code>, and the fixed replies <code>queued</code>, <code>submitted</code>, <code>other_draft_submitted</code>, <code>already_submitted</code>, <code>not_on_path</code>, <code>gave_up</code>, <code>refused</code>, <code>unreadable</code>.</td></tr>
             <tr><td><code>text</code></td><td>text</td><td>The full text as posted.</td></tr>
-            <tr><td><code>draft</code></td><td>jsonb</td><td>On a draft post, <code>{text, sources}</code>: exactly what an approval of this post submits.</td></tr>
+            <tr><td><code>draft</code></td><td>jsonb</td><td>On every bot post that shows a version of the note, <code>{text, sources}</code>: exactly what an approval of it submits. That is a draft, and the improved version posted after an improve-and-approve.</td></tr>
             <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
           </tbody>
         </table></div>
@@ -354,8 +352,7 @@ td code { white-space: nowrap; }
         <div class="table-wrap"><table>
           <thead><tr><th>Table</th><th>Change</th><th>Why</th></tr></thead>
           <tbody>
-            <tr><td><code>signal_submission_queue</code></td><td>Renamed to <code>approved_submission_queue</code>, with new columns <code>lane</code> and <code>draft_post_id</code>.</td><td>It holds the one waiting approval per post, from Signal or from X, and both get priority over the automatic pipeline. <code>draft_post_id</code> names the approved draft post, and a newer approval on the same post overwrites it.</td></tr>
-            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions.</td></tr>
+            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions. The bot uses the Signal bot's queue table <code>signal_submission_queue</code> as it is, which gives both bots priority over the automatic pipeline. It is not renamed, because the automatic pipeline, the Signal bot and the database all read its fields by name, and a rename would have to switch all of them at the same moment. Which draft waits on a post is read from the approvals in <code>x_tag_posts</code>, so the queue needs no new column.</td></tr>
           </tbody>
         </table></div>
       </div>
@@ -502,37 +499,35 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
   </section>
 
   <section id="built" class="prose">
-    <h2>Built so far</h2>
-    <p>This part is built and in the draft PR. Everything else on this page is still a plan.</p>
-    <h3>The claim-check service runs the steps a caller picks</h3>
+    <h2>What's built</h2>
+    <p>Everything on this page is built and in the draft PR, except the X account itself. The bot can't run on X until the account, its developer app and the two event subscriptions exist.</p>
+    <h3>The tag bot, <code>src/x-tag-bot/</code></h3>
     <ul>
-      <li><strong>Every step can be switched off through the A/B config.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag (<code>source_verifier</code>, <code>materiality_judge</code>, <code>note_evaluation</code>), on by default, and an "off" variant in their A/B test. The topic filter and the prefilter already had one. A caller picks its chain by forcing variants, so there is no second mechanism next to the A/B config.</li>
-      <li><strong>Opus 5.5 variants at medium reasoning</strong> for search (<code>opus55-native-medium</code>) and writer (<code>opus55-medium</code>), at weight 0, so production never draws them. The writer got its own reasoning setting, <code>writer_reasoning_effort</code>, which the bot config passes to the writer call only.</li>
-      <li><strong>The tweet route takes a note request.</strong> <code>CheckTweetRequest</code> has an optional <code>noteRequest</code> (who asked and what they wrote). The service puts it on the run's context, the same way the curated-topic context works, and the user message renders it as its last section. The service's answer now also carries the rendered post, so a bot can show its model the same context later.</li>
-      <li><strong>Honest outcomes.</strong> A note written with the verifier off is marked unverified instead of passing as "checked". A "no note needed" answer keeps the research findings, so the no-note reply and the Signal bot can explain why.</li>
-      <li><strong>One special case gone.</strong> Scoring skipped X's evaluation for Common Notes claims through a check on the Common Notes flag. Common Notes now forces the evaluation's "off" variant instead.</li>
+      <li><strong><code>bot.ts</code>, the behaviour.</strong> What happens on a tag, on a reply to a bot post, and on the waiting approvals of a post. Work on one post runs one task at a time, so two approvals can't race, and the database lock is the second guarantee of one note per post. Every outside service comes in as a dependency, which the tests and the dry run swap out.</li>
+      <li><strong><code>threads.ts</code>, reading a conversation.</strong> Pure functions: the path from the tag down to a post, who may approve a draft, which approvals are still open, and which version went in.</li>
+      <li><strong><code>prompts.ts</code> and <code>replies.ts</code>.</strong> The three new prompts, word for word as on this page, and every fixed reply.</li>
+      <li><strong><code>models.ts</code>.</strong> Muse sorts replies and writes the no-note reply. Opus 5.5 at medium reasoning revises, with web search and capped web fetch. A revised note is checked before posting: at most 280 characters with links counted as one, one to five links. A note that fails the check makes the model try again.</li>
+      <li><strong><code>x.ts</code>.</strong> Posting replies as the bot, reading the X Activity API stream, and the eligibility check through <code>evaluate_note</code>.</li>
+      <li><strong><code>store.ts</code>.</strong> The two tables, with an in-memory version for the tests and the dry run.</li>
+      <li><strong><code>main.ts</code>.</strong> The service: it reads the stream, checks the waiting approvals every 2 minutes, and exits when the stream ends so systemd starts it again. Also the dry run.</li>
+      <li><strong><code>setup.ts</code>.</strong> The one-time login as the bot and the creation of the two event subscriptions.</li>
     </ul>
-    <h3>The Signal bot drafts on the claim-check service</h3>
+    <h3>Shared parts</h3>
     <ul>
-      <li>Its first draft no longer runs the pipeline in its own process. It sends the tweet to the service with <code>SIGNAL_PICKS</code>, which keep its old steps and models: no filters before the search, Sonnet 4.6 for search and writer, the Gemini source verifier, and no scoring gates.</li>
-      <li>Its discussion and chat calls stay in the bot, now on one named model constant instead of a borrowed bot config.</li>
-      <li><strong>Deployment step for you:</strong> the Signal bot's env file on its host needs <code>CLAIM_CHECK_URL</code> and <code>SERVICE_AUTH_SECRET</code>, the same values the GitHub workflows use. Until then its first drafts fail.</li>
+      <li><strong>The claim-check service runs the steps a caller picks.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag and an "off" A/B variant. The tweet route takes the note request, and its answer carries the rendered post. There are Opus 5.5 medium variants for search and writer, and a writer reasoning setting.</li>
+      <li><strong>Submitting an approved note</strong> is one shared function, <code>submitApprovedNote</code>, used by the Signal bot and the tag bot in their own lanes.</li>
+      <li><strong>The Signal bot drafts on the claim-check service</strong> with <code>SIGNAL_PICKS</code>, which keep its old steps and models.</li>
+      <li><strong>Migration 117</strong> adds the two tables and the <code>x_tag</code> lane.</li>
+      <li><strong>Operations:</strong> the <code>cn-x-tag-bot</code> unit, autodeploy, and the docs in <code>ops/README.md</code>, <code>docs/prod-config.md</code> and CLAUDE.md.</li>
     </ul>
-    <p>Tests cover each switch, the request section and the Signal bot's service path. All 461 affected tests pass, and the type check and lint are clean apart from a type error that is already on main.</p>
-  </section>
-
-  <section id="build" class="prose">
-    <h2>Build pieces</h2>
-    <p>One ticket and one pull request, with these parts as sub-issues.</p>
-    <ol class="steps-list">
-      <li><strong>X account.</strong> Bot account, Premium, Automated label, bio, and a developer app in a Project with credits and a spending limit. This needs a human with a phone number and a card.</li>
-      <li><strong>Steps picked through the A/B config, and the Signal bot on the service.</strong> Built, see above.</li>
-      <li><strong>Event stream and threads.</strong> The migration, the two XAA subscriptions and the stream connection, and routing an event to "new thread" or "reply in a thread".</li>
-      <li><strong>First answer.</strong> <code>TAG_BOT_PICKS</code>, the "seen this post?" check, the draft template and the no-note reply.</li>
-      <li><strong>Replies to the bot.</strong> The four-kind classifier, the revision call with capped fetch, improve-and-approve and the approval rule.</li>
-      <li><strong>Submission.</strong> The shared approved-submission path, the queue rename, the <code>x_tag</code> lane, the 3-hour retry and the fixed replies.</li>
-      <li><strong>Service and tests.</strong> The systemd unit, a dry-run mode that prints replies instead of posting them, tests, and the docs.</li>
-    </ol>
+    <h3>How it was checked</h3>
+    <ul>
+      <li>25 tests for the bot: tags, the no-note answer, a second tag, the approval rule, improve-and-approve, waiting for room or eligibility, several approvals on one post, giving up after 3 hours, the stream parser and the revision checks.</li>
+      <li>The migration ran in a throwaway Postgres (PGlite) with all 32 queue tests, including a new one for the <code>x_tag</code> lane.</li>
+      <li>A real dry run on the Mumbai post: research on Opus 5.5 medium, a draft, "lol" ignored, and "approve but use an official source" revised to the government's 2011 census report and submitted in one reply. Nothing was posted or submitted.</li>
+      <li>The whole suite passes. Type check, lint and the unused-code check are clean, apart from the type error that is already on main.</li>
+    </ul>
+    <p>Try it yourself: <code>bun run x-tag-bot --dry-run &lt;post-url&gt; "&lt;your comment&gt;" "&lt;reply&gt;" ...</code>. It needs an OpenRouter key and a working X read token.</p>
   </section>
 
   <section id="changes" class="prose">
@@ -543,6 +538,9 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>The claim-check service runs the first answer.</strong> The steps are chosen through the existing A/B config, and the Signal bot was refactored to work the same way. That part is built.</li>
       <li><strong>Improve and approve.</strong> A fourth kind of reply. It revises the draft and submits the new version without a second approval round.</li>
       <li><strong>No filter for submission claims.</strong> A test with eight tempting replies found none, so the tag bot doesn't get the Signal bot's <code>safeReply</code>. The revision prompt now explains how approval works.</li>
+      <li><strong>While building: the queue table keeps its name.</strong> <code>signal_submission_queue</code> isn't renamed and gets no new column. Which draft waits is read from the stored approvals, and a rename would force the automatic pipeline, the Signal bot and the database to switch at the same moment. The threads table also lost <code>status</code> and <code>note_id</code>, which are derived from the posts and the <code>notes</code> table.</li>
+      <li><strong>While building: the service exits when the stream ends.</strong> systemd starts it again, and the stream resends the last five minutes. There is no reconnect code.</li>
+      <li><strong>While building: a dry run and a setup script.</strong> The dry run answers a made-up tag on a real post and takes replies as arguments. The setup script logs in as the bot once and creates the event subscriptions, because X allows mention and reply subscriptions only with a login of the account itself.</li>
       <li><strong>Simpler <code>x_tag_posts</code> table.</strong> <code>answered_by</code> and <code>llm_cost_usd</code> are gone. A crash at the wrong moment may cause one double reply, which we accept.</li>
       <li><strong>The diagram shows every branch:</strong> the "seen this post?" check, the unreadable post, the approval rule's reply, one note per post, the queued and gave-up replies, and X refusing a post.</li>
       <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.31, against $1.10 for the uncapped Mumbai revision.</li>
