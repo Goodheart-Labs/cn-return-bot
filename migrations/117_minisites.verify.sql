@@ -117,11 +117,21 @@ begin
   select count(*) into n from everything_minisites where id = v_site and features = array['notes'];
   r := r || jsonb_build_object('reader_update_ignored', n = 1);
 
+  -- The minisite script creates with the service key, which carries no email.
+  perform set_config('request.jwt.claims', json_build_object('role', 'service_role')::text, true);
+  set local role service_role;
+  insert into everything_minisite_jobs (kind, url, status, result) values ('read_page', 'https://example.com/by-script', 'done',
+    jsonb_build_object('title', 'By script', 'content', 'Text.', 'plain_text', 'Text.')) returning id into v_job2;
+  perform everything_create_minisite(v_job2, 'by-script', 'By script', '', '{}');
+  reset role;
+  select count(*) into n from everything_minisites where slug = 'by-script';
+  r := r || jsonb_build_object('service_role_creates', n = 1);
+
   -- 5. Anyone can read minisites.
   perform set_config('request.jwt.claims', json_build_object('role', 'anon')::text, true);
   set local role anon;
-  select count(*) into n from everything_minisites where slug in ('new-post', 'known');
-  r := r || jsonb_build_object('anon_reads_minisites', n = 2);
+  select count(*) into n from everything_minisites where slug in ('new-post', 'known', 'by-script');
+  r := r || jsonb_build_object('anon_reads_minisites', n = 3);
   reset role;
 
   -- 6. The fact-check queues the new item and keeps its text.

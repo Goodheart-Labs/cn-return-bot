@@ -63,6 +63,7 @@ comment on column everything_minisites.features is
   'Ids of the switched-on reader features (src/everything-core/minisiteFeatures.ts). Unknown ids are ignored.';
 
 alter table everything_minisites enable row level security;
+grant all on everything_minisites to service_role;
 
 create policy minisites_read on everything_minisites for select to anon, authenticated using (true);
 grant select on everything_minisites to anon, authenticated;
@@ -102,6 +103,7 @@ create table everything_minisite_jobs (
 create index everything_minisite_jobs_pending_idx on everything_minisite_jobs (created_at) where status = 'pending';
 
 alter table everything_minisite_jobs enable row level security;
+grant all on everything_minisite_jobs to service_role;
 
 create policy minisite_jobs_admin_insert on everything_minisite_jobs for insert to authenticated
   with check (everything_is_admin() and kind = 'read_page' and requested_by = auth.uid());
@@ -133,7 +135,8 @@ declare
   found_item uuid;
   project uuid;
 begin
-  if not everything_is_admin() then
+  -- The minisite script calls this with the service key, which carries no email.
+  if not (everything_is_admin() or auth.role() = 'service_role') then
     raise exception 'only admins can create minisites' using errcode = 'insufficient_privilege';
   end if;
   select * into job from everything_minisite_jobs where id = job_id;
@@ -179,7 +182,7 @@ language plpgsql security definer set search_path = public as $$
 declare
   target_item everything_items;
 begin
-  if not everything_is_admin() then
+  if not (everything_is_admin() or auth.role() = 'service_role') then
     raise exception 'only admins can start a fact-check' using errcode = 'insufficient_privilege';
   end if;
   select i.* into target_item from everything_items i join everything_minisites m on m.item_id = i.id where m.id = target_minisite;
