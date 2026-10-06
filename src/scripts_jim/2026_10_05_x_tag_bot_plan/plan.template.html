@@ -110,7 +110,7 @@ li { margin-bottom: 6px; }
 .drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .drawer h2 { margin: 4px 0 8px; font-size: 1.4rem; }
 .close { font: 600 0.9rem var(--font-body); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
-.close:focus-visible, .copy:focus-visible, .tabs button:focus-visible { outline: 2px solid var(--bot); outline-offset: 2px; }
+.close:focus-visible, .tabs button:focus-visible { outline: 2px solid var(--bot); outline-offset: 2px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-size: 0.92rem; margin: 12px 0 16px; }
 .facts dt { color: var(--muted); }
@@ -170,10 +170,6 @@ td code { white-space: nowrap; }
 .tree .ok { color: var(--bot); font-weight: 600; }
 .tree .no { color: var(--warn); font-weight: 600; }
 
-.copy-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; }
-.copy { font: 600 0.85rem var(--font-body); background: var(--ink); color: var(--bg); border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
-.request { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin: 12px 0; }
-.request pre { margin: 0; padding: 14px; border-top: 1px solid var(--line); font: 13px/1.6 var(--font-body); white-space: pre-wrap; }
 
 .steps-list { counter-reset: s; list-style: none; padding: 0; }
 .steps-list > li { counter-increment: s; position: relative; padding-left: 36px; margin-bottom: 12px; }
@@ -280,41 +276,16 @@ td code { white-space: nowrap; }
   </section>
 
   <section id="approval" class="prose">
-    <h2>X's approval for an AI reply bot</h2>
-    <h3>How the process works</h3>
-    <ol class="steps-list">
-      <li><strong>What the rules say.</strong> X's developer guidelines and Automation Rules, last updated in April 2026, say that an app which "generates and posts replies" with AI needs "prior written approval" from X before launch. Launching without it can get the account suspended, even when the replies are helpful.</li>
-      <li><strong>What X staff say.</strong> There is no form for this approval. On X's developer forum in August and September 2026, X staff told several developers that replies which are triggered by a mention, answer once per interaction, carry the Automated label and never reach out unasked do not need a separate approval. The policy page was not updated to say so. So the written rule and the staff answers disagree.</li>
-      <li><strong>What people do.</strong> Developers post an approval request in the "Rules and Policies" category of the developer forum at devcommunity.x.com, with their App ID and a description of the use case. X staff answer in the thread. That answer, in writing, is the record we want.</li>
-      <li><strong>What we should also do.</strong> We already write notes through the Community Notes API, so the Community Notes team knows our account. If we have a contact there, sending them the same text is likely faster than the forum.</li>
-      <li><strong>What we set up in the meantime.</strong> Create the bot account, buy Premium, and turn on the Automated label (Settings, Your account, Account information, Automation, then pick our main account as the managing account). Create a developer app for it in a Project in the developer console, give it read and write permission, add pay-per-use credits and set a monthly spending limit. Build and test with the bot account replying only to our own test posts until X answers.</li>
-    </ol>
-    <h3>Draft request</h3>
-    <p>For the forum or the Community Notes team. The parts in angle brackets need our real values.</p>
+    <h2>X's approval: we launch without asking</h2>
+    <p>X's developer guidelines and Automation Rules, last updated in April 2026, say that an app which "generates and posts replies" with AI needs "prior written approval" from X. There is no form for it. On X's developer forum in August and September 2026, X staff told several developers that replies like ours need no separate approval if they meet four conditions. We decided to rely on that and launch without asking. The bot meets all four:</p>
+    <ul>
+      <li><strong>Triggered by a mention.</strong> The bot only answers posts that tag it or reply to it.</li>
+      <li><strong>One reply per interaction.</strong> Each post gets at most one answer, and the double-reply guard makes sure of it.</li>
+      <li><strong>The Automated label.</strong> Set once in the account settings (Settings, Your account, Account information, Automation, with our main account as the managing account). The bio says who runs the bot.</li>
+      <li><strong>Never reaching out unasked.</strong> The bot does not watch keywords, and it never likes, follows or sends messages.</li>
+    </ul>
+    <p>The remaining risk is that X enforces the written rule anyway and limits or suspends the bot account. The notewriter account is separate, so note writing would not be affected.</p>
   </section>
-  <div class="request" style="max-width: 78ch;">
-    <div class="copy-row"><strong>Approval request: summoned-only AI reply bot that drafts Community Notes</strong><button class="copy" id="copy-request" type="button">Copy text</button></div>
-    <pre id="request-text">Hello X team,
-
-We run an AI Note Writer through the Community Notes API (account &lt;notewriter handle&gt;). We would like to add a companion account, @&lt;bot handle&gt; (App ID &lt;app id&gt;), that answers only when people tag it, and we want to make sure this fits the Automation Rules before launch.
-
-How it works:
-1. A person replies to a post and tags @&lt;bot handle&gt;.
-2. The bot researches the post and replies once to that person. The reply is either a draft Community Note with its sources or a short explanation of why no note is needed.
-3. People can reply to the bot's post with corrections or sources. The bot answers each such reply once, with a revised draft or an explanation.
-4. When a person who asked for the note replies "approve", our AI Note Writer submits the draft through the Community Notes API, where contributors rate it like any other note. The bot then replies with a link to the note.
-
-What the bot never does: reply to anyone who did not tag it or reply to it, watch keywords, post unsolicited replies, like, follow or send DMs, or reply more than once to one post.
-
-Transparency: the account carries the Automated label, and its bio says "Bot by @&lt;our account&gt;. Drafts Community Notes when you tag it."
-
-The drafts are written by large language models (Anthropic Claude Opus and Meta Muse Spark) with web search. We expect tens of conversations a day at first.
-
-Our question: do summoned-only AI replies like these need prior written approval under the Automation Rules? If they do, could you grant it for this app, or tell us the right channel?
-
-Thank you,
-&lt;name&gt;, Goodheart Labs</pre>
-  </div>
 
   <section id="decisions">
     <h2>Implementation decisions</h2>
@@ -473,7 +444,7 @@ Thank you,
     <h2>Build pieces</h2>
     <p>One ticket and one pull request, with these parts as sub-issues.</p>
     <ol class="steps-list">
-      <li><strong>X account and approval.</strong> Bot account, Premium, Automated label, developer app in a Project with credits and a spending limit, the approval request. This needs a human with a phone number and a card.</li>
+      <li><strong>X account.</strong> Bot account, Premium, Automated label, bio, and a developer app in a Project with credits and a spending limit. This needs a human with a phone number and a card.</li>
       <li><strong>Event stream and threads.</strong> The migration, the two XAA subscriptions and the stream connection, routing an event to "new thread" or "reply in a thread", and posting replies with the double-reply guard.</li>
       <li><strong>First answer.</strong> The tagger section, the bot's pipeline config, the draft template, the no-note reply, and reusing an existing answer when a second person tags the same post.</li>
       <li><strong>Replies to the bot.</strong> The classifier, the revision call with capped search and fetch, and the approval rule.</li>
@@ -937,17 +908,4 @@ for (const [name, parts] of rows) {
 table.append(tbody);
 document.getElementById("cost-table").append(table);
 
-/* ---------- Copy button ---------- */
-document.getElementById("copy-request").addEventListener("click", async (event) => {
-  const text = document.getElementById("request-text").textContent;
-  try { await navigator.clipboard.writeText(text); event.target.textContent = "Copied"; }
-  catch {
-    const range = document.createRange();
-    range.selectNodeContents(document.getElementById("request-text"));
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    event.target.textContent = "Text selected. Press Ctrl+C";
-  }
-});
 </script>
