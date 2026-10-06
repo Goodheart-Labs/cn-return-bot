@@ -3,11 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
 import { fetchNotesForItem } from "@cn/core/notes";
 import { subscribeToItemProgress } from "@cn/core/requestStatus";
-import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
+import { statusLabel } from "@cn/features/notes/NoteBox";
+import { noteStatus } from "@cn/core/noteScore";
 import { NoteCard } from "@cn/features/notes/NoteCard";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { useReader, type ReaderModule } from "../context";
+import { ClosedEntry, EntryBar } from "../EntryBar";
 
 /** The article's notes and note-not-needed entries, refreshed whenever the
  *  pipeline or a reader changes them. */
@@ -42,12 +44,13 @@ function shareUrl(noteId: string, scope: string): string {
 }
 
 function NoteEntries({ blockId }: { blockId: string }) {
-  const { features, notesByBlock, nnnEntries, scope, entryNavigation } = useReader();
+  const { features, notesByBlock, nnnEntries, scope, isCollapsed } = useReader();
   if (!features.has("notes")) return null;
   return <>{(notesByBlock.get(blockId) ?? []).map((note) => {
-    const navigation = entryNavigation(noteCardId(scope, note.id));
-    return <div key={note.id} id={noteCardId(scope, note.id)} className="reader-entry">
-      <NoteCard compact topBar={navigation && <NextNoteButton {...navigation} />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
+    const id = noteCardId(scope, note.id);
+    if (isCollapsed(id)) return <ClosedEntry key={note.id} elementId={id} kind="Note" detail={statusLabel(noteStatus(note))} />;
+    return <div key={note.id} id={id} className="reader-entry">
+      <NoteCard compact topBar={<EntryBar elementId={id} kind="note" />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
     </div>;
   })}</>;
 }

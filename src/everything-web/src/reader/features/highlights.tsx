@@ -6,7 +6,6 @@ import { deletePassageHighlight, fetchHighlightVotes, voteOnHighlight } from "@c
 import { displayName } from "@cn/core/session";
 import type { Vote } from "@cn/core/votes";
 import { useSession } from "@cn/features/auth/useSession";
-import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
 import { RatingPanel, ratingQuestion } from "@cn/features/notes/NoteBox";
 import { VoteRatings } from "@cn/features/notes/VoteRatings";
 import { Button } from "@cn/ui/Button";
@@ -15,6 +14,7 @@ import { Modal } from "@cn/ui/Modal";
 import { LoginModal } from "../../components/LoginModal";
 import { useReader, type ReaderAnchor, type ReaderModule } from "../context";
 import { DialogFooter, DialogQuote } from "../DialogParts";
+import { ClosedEntry, EntryBar } from "../EntryBar";
 import { DraftSuggestion, useHighlightPost, usePassageQuestions } from "./passageQuestions";
 
 /** The longest quote handed to Opus when it drafts from selected words. */
@@ -93,11 +93,12 @@ function HighlightCard({ highlight, myVote, pending, onVote, onDelete }: {
   onVote: (vote: Vote) => void;
   onDelete: (() => void) | null;
 }) {
-  const { scope, entryNavigation } = useReader();
+  const { scope, isCollapsed } = useReader();
   const kind = highlight.kind === "forecast" ? "forecast" : "key point";
-  const navigation = entryNavigation(highlightCardId(scope, highlight.id));
-  return <section id={highlightCardId(scope, highlight.id)} className="reader-entry reader-highlight-card" aria-label={kind}>
-    {navigation && <div className="-mt-1 mb-3 flex items-center"><NextNoteButton {...navigation} /></div>}
+  const id = highlightCardId(scope, highlight.id);
+  if (isCollapsed(id)) return <ClosedEntry elementId={id} kind={kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"} detail={highlight.statement} />;
+  return <section id={id} className="reader-entry reader-highlight-card" aria-label={kind}>
+    <EntryBar elementId={id} kind={kind} />
     <p className="reader-entry-kind">{kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}<span>{highlight.author_name || "Anonymous reader"}</span></p>
     <p className="reader-highlight-sentence">{highlightSentence(highlight)}</p>
     <RatingPanel question={<span className="font-semibold">{ratingQuestion(kind)}</span>}>

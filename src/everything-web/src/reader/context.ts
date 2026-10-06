@@ -59,6 +59,9 @@ export interface ReaderApi {
   /** A card's place among all margin cards in reading order, and the move to
    *  the next one. Null when the card is the only one. */
   entryNavigation: (elementId: string) => NoteNavigation | null;
+  /** Closed cards shrink to one line in the margin. */
+  isCollapsed: (elementId: string) => boolean;
+  setCollapsed: (elementId: string, closed: boolean) => void;
 }
 
 export const ReaderContext = createContext<ReaderApi | null>(null);

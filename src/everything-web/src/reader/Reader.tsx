@@ -170,6 +170,7 @@ export function Reader({ item, content, header, features, scope }: {
   const [asking, setAsking] = useState<AskingState | null>(null);
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
+  const [collapsed, setCollapsedSet] = useState<ReadonlySet<string>>(new Set());
   const [notice, setNotice] = useState("");
 
   const blocks = useMemo(() => withoutRepeatedHeader(
@@ -219,8 +220,14 @@ export function Reader({ item, content, header, features, scope }: {
       const index = entryOrder.findIndex((entry) => entry.elementId === elementId);
       if (index < 0 || entryOrder.length <= 1) return null;
       const next = entryOrder[(index + 1) % entryOrder.length]!;
-      return { position: index + 1, total: entryOrder.length, onNext: () => api.reveal(next.elementId, next.blockId) };
+      return { position: index + 1, total: entryOrder.length, onNext: () => { api.setCollapsed(next.elementId, false); api.reveal(next.elementId, next.blockId); } };
     },
+    isCollapsed: (elementId) => collapsed.has(elementId),
+    setCollapsed: (elementId, closed) => setCollapsedSet((current) => {
+      const next = new Set(current);
+      if (closed) next.add(elementId); else next.delete(elementId);
+      return next;
+    }),
   };
 
   const quotesByBlock = useMemo(() => {

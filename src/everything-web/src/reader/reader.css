@@ -103,6 +103,10 @@
 .reader-flash { outline-color: var(--cn-focus); }
 .reader-entry-kind { display: flex; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.375rem; font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--cn-fg-muted); }
 .reader-entry-kind span { font-weight: 400; letter-spacing: 0; text-transform: none; }
+.reader-entry-closed { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); color: var(--cn-fg-muted); font-size: var(--cn-text-sm); text-align: left; }
+.reader-entry-closed:hover { border-color: var(--cn-line-strong); color: var(--cn-fg); }
+.reader-entry-closed-kind { flex-shrink: 0; font-weight: 600; color: var(--cn-fg-secondary); }
+.reader-entry-closed-detail { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .reader-highlight-card { padding: 1rem; border: 1px solid var(--cn-line); border-radius: var(--cn-radius-card); background: var(--cn-surface); overflow-wrap: anywhere; }
 .reader-highlight-card .reader-entry-kind { color: var(--cn-caution); }
 .reader-highlight-sentence { color: var(--cn-fg); }
