@@ -5,14 +5,14 @@
 const OPTIONS = [
   {
     id: "current",
-    name: "Current",
-    tag: "Live now",
+    name: "Before",
+    tag: "Live until GOO-389",
     blurb: "The card from PR #549: a white card with the logo, the name, the headline, the pitch and three rating pills.",
   },
   {
     id: "a-headline",
     name: "A. Homepage headline",
-    tag: "Truer to the design",
+    tag: "Picked",
     blurb: "The logo, the name and the homepage headline in one centred stack, on white like the homepage.",
   },
   {
