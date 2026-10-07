@@ -72,7 +72,8 @@ for (const { file, size, artwork } of RASTERS) {
 // drawn at twice its size, so it stays sharp on high density screens.
 // Apps cache a preview image by its address, so a changed card needs a new file
 // name. Raise the number here and in og:image and twitter:image in
-// src/everything-web/index.html.
+// src/everything-web/index.html and in the static pages
+// src/everything-web/public/privacy/index.html and public/terms/index.html.
 const OG_CARD = { width: 1200, height: 630, scale: 2, file: "og-2.png" };
 const cardPage = await browser.newPage({
   viewport: { width: OG_CARD.width, height: OG_CARD.height },
