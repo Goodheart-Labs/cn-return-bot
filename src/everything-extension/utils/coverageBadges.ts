@@ -19,7 +19,7 @@ import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
 
 const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
-const BADGE_INSET = "6px";
+const BADGE_INSET_PX = 6;
 
 // The badge sits in the right-hand corner of its surface, except on YouTube.
 // There, hovering a thumbnail shows YouTube's own "Watch later" and "Add to
@@ -95,7 +95,7 @@ function createBadge(mark: BadgeMark): HTMLElement {
   badge.tabIndex = 0;
   badge.setAttribute(
     "style",
-    `position:absolute;${BADGE_SIDE}:${BADGE_INSET};z-index:10;cursor:pointer;transition:transform 120ms ease-out;` +
+    `position:absolute;z-index:10;cursor:pointer;transition:transform 120ms ease-out;` +
       "display:inline-flex;align-items:center;justify-content:center;" +
       "gap:2px;height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:9999px;" +
       `font-size:12px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:${MARKER_SHADOW};` +
@@ -106,18 +106,18 @@ function createBadge(mark: BadgeMark): HTMLElement {
   badge.addEventListener("mouseleave", () => (badge.style.transform = ""));
   const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path fill-rule="evenodd" d="${NOTE_STACK_GLYPH_PATH}"/></svg>`;
   if ("count" in mark) {
-    badge.setAttribute("aria-label", `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"}`);
+    badge.setAttribute("aria-label", `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"} on this page`);
     badge.innerHTML = `${svg}${mark.count}`;
   } else {
-    badge.setAttribute("aria-label", "Fact-checked, nothing to correct");
+    badge.setAttribute("aria-label", "We checked this page and found nothing to note");
     const check = `<svg viewBox="0 0 14 14" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M3 7.5l2.5 2.5 5.5-6"/></svg>`;
     badge.innerHTML = `${svg}${check}`;
   }
   return badge;
 }
 
-/** Makes a click on the badge open its explanation card instead of what a
- *  click there used to do. The badge usually sits inside the link, and on
+/** Makes a click on the badge open or close its explanation card instead of
+ *  what a click there used to do. The badge usually sits inside the link, and on
  *  Substack inside a note the whole card opens on click. So the click is
  *  cancelled and stopped at the badge: preventDefault keeps the browser from
  *  following the link, and stopPropagation keeps the host page's own click
@@ -218,9 +218,48 @@ function isInRunningText(anchor: HTMLAnchorElement): boolean {
   return linkText.length < (block.textContent ?? "").trim().length * MIN_TITLE_SHARE_OF_BLOCK_TEXT;
 }
 
-/** Where a badge sits: the element it is pinned to, and which of that
- *  element's corners on BADGE_SIDE it takes. */
-type BadgeSpot = { surface: HTMLElement; corner: "top" | "bottom" };
+/** Where a badge sits: the element whose corner it shows in, which of that
+ *  element's corners on BADGE_SIDE it takes, and the element it is appended
+ *  to (see badgeHost). */
+type BadgeSpot = { surface: HTMLElement; corner: "top" | "bottom"; host: HTMLElement };
+
+/** The element a badge is appended to. That is the surface itself, unless the
+ *  surface lies inside a link. Then it is the parent of the outermost such
+ *  link, and the badge is positioned to show in the surface's corner anyway.
+ *  A button inside a link is invalid HTML, and sites handle it in their own
+ *  ways. On YouTube, a click on a badge inside the thumbnail link opened the
+ *  video even though the badge cancelled and stopped the click, because
+ *  YouTube decides to navigate in listeners on the window that run before any
+ *  of ours (GOO-391). Outside the link, the click is ours. */
+function badgeHost(surface: HTMLElement): HTMLElement {
+  let host = surface;
+  for (let link = host.closest("a[href]"); link?.parentElement; link = host.closest("a[href]")) {
+    host = link.parentElement;
+    // A wrapper that draws no box of its own measures 0 by 0 and positions
+    // nothing, the same problem pictureFrame skips such wrappers for.
+    while (WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(host).display) && host.parentElement) host = host.parentElement;
+  }
+  return host;
+}
+
+const spotOn = (surface: HTMLElement, corner: BadgeSpot["corner"]): BadgeSpot => ({ surface, corner, host: badgeHost(surface) });
+
+/** How far the surface's edges are inside the host's padding box, which is
+ *  what an absolutely positioned child is placed against. All four are zero
+ *  when the badge sits directly on its surface. */
+function cornerOffsets(surface: HTMLElement, host: HTMLElement): { top: number; bottom: number; left: number; right: number } {
+  if (surface === host) return { top: 0, bottom: 0, left: 0, right: 0 };
+  const s = surface.getBoundingClientRect();
+  const h = host.getBoundingClientRect();
+  const borderRight = host.offsetWidth - host.clientWidth - host.clientLeft;
+  const borderBottom = host.offsetHeight - host.clientHeight - host.clientTop;
+  return {
+    top: s.top - h.top - host.clientTop,
+    left: s.left - h.left - host.clientLeft,
+    bottom: h.bottom - s.bottom - borderBottom,
+    right: h.right - s.right - borderRight,
+  };
+}
 
 /** The element the badge is pinned to, or null when this link should carry no
  *  badge. The rules are tried in this order.
@@ -246,13 +285,13 @@ type BadgeSpot = { surface: HTMLElement; corner: "top" | "bottom" };
  *     the card's picture if it has one and on the card's corner otherwise. */
 function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
   const linkPicture = coverImage(anchor);
-  if (linkPicture) return { surface: pictureFrame(linkPicture), corner: "top" };
+  if (linkPicture) return spotOn(pictureFrame(linkPicture), "top");
   const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
-  if (isCardLink(anchor)) return { surface: anchor, corner: card ? "top" : "bottom" };
+  if (isCardLink(anchor)) return spotOn(anchor, card ? "top" : "bottom");
   if (anchor.parentElement?.closest("a[href]") || isInRunningText(anchor)) return null;
   if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
   const cardPicture = coverImage(card);
-  return { surface: cardPicture ? pictureFrame(cardPicture) : card, corner: "top" };
+  return spotOn(cardPicture ? pictureFrame(cardPicture) : card, "top");
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
@@ -355,26 +394,28 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   // The explanation card mounts on the first badge click, so a page whose
   // badges nobody clicks never gets the extra shadow root.
   let badgeCard: Promise<BadgeCardHandle> | null = null;
-  const openBadgeCard = (badge: HTMLElement, mark: BadgeMark, anchor: HTMLAnchorElement) => {
+  const toggleBadgeCard = (badge: HTMLElement, mark: BadgeMark, anchor: HTMLAnchorElement) => {
     badgeCard ??= mountBadgeCard(ctx);
     const noun = extractYoutubeVideoId(anchor.href) ? "video" : "post";
-    void badgeCard.then((card) => card.open(badge, mark, noun));
+    void badgeCard.then((card) => card.toggle(badge, mark, noun));
   };
-  const hasBadge = (surface: HTMLElement) => [...surface.children].some((child) => child.classList.contains(BADGE_CLASS));
+  const hasBadge = (host: HTMLElement) => [...host.children].some((child) => child.classList.contains(BADGE_CLASS));
 
   /** Puts the badge on the best surface its link currently offers. Calling it
    *  again is harmless, and that matters: cover images lazy-load, so the first
    *  scan can run while the picture still has no size. The badge then starts
    *  on the card's corner, and a later scan moves it onto the picture. */
-  const seat = (badge: HTMLElement, { surface, corner }: BadgeSpot) => {
-    badge.style.top = corner === "top" ? BADGE_INSET : "";
-    badge.style.bottom = corner === "bottom" ? BADGE_INSET : "";
-    if (badge.parentElement === surface) return;
-    // The badge is positioned against the surface, so the surface must be a
+  const seat = (badge: HTMLElement, { surface, corner, host }: BadgeSpot) => {
+    // The badge is positioned against its host, so the host must be a
     // containing block. Almost every one already is; for the rare static one
     // this is the only style we touch on the host page.
-    if (getComputedStyle(surface).position === "static") surface.style.position = "relative";
-    surface.appendChild(badge);
+    if (getComputedStyle(host).position === "static") host.style.position = "relative";
+    if (badge.parentElement !== host) host.appendChild(badge);
+    const offsets = cornerOffsets(surface, host);
+    badge.style.top = corner === "top" ? `${offsets.top + BADGE_INSET_PX}px` : "";
+    badge.style.bottom = corner === "bottom" ? `${offsets.bottom + BADGE_INSET_PX}px` : "";
+    badge.style.left = BADGE_SIDE === "left" ? `${offsets.left + BADGE_INSET_PX}px` : "";
+    badge.style.right = BADGE_SIDE === "right" ? `${offsets.right + BADGE_INSET_PX}px` : "";
   };
 
   /** Drops every badge whose link no longer leads to its page. Hosts recycle
@@ -387,7 +428,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     for (const [anchor, { badge, key }] of badges) {
       const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key;
       const spot = valid ? spotFor(anchor) : null;
-      if (spot && (badge.parentElement === spot.surface || !hasBadge(spot.surface))) {
+      if (spot && (badge.parentElement === spot.host || !hasBadge(spot.host))) {
         seat(badge, spot);
       } else {
         badge.remove();
@@ -407,10 +448,10 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     const spot = spotFor(anchor);
     if (!spot) return "no-surface";
     // Another link in the same card already put its badge here.
-    if (hasBadge(spot.surface)) return "badged";
+    if (hasBadge(spot.host)) return "badged";
     const mark: BadgeMark = count ? { count } : { checked: true };
     const badge = createBadge(mark);
-    onBadgeActivate(badge, () => openBadgeCard(badge, mark, anchor));
+    onBadgeActivate(badge, () => toggleBadgeCard(badge, mark, anchor));
     seat(badge, spot);
     badges.set(anchor, { badge, key });
     return "badged";
@@ -474,6 +515,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   const observer = new MutationObserver(scheduleScan);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   ctx.addEventListener(window, "wxt:locationchange", scheduleScan);
+  // A badge outside its link was placed from measured boxes, so a resized
+  // window, which reflows the cards, needs a new scan to put it back in place.
+  ctx.addEventListener(window, "resize", scheduleScan);
   // An image that finishes loading fires no DOM mutation, but it is exactly
   // the moment a badge wants to move from the card's corner onto the picture.
   // load events do not bubble; a capture listener on the document still sees
