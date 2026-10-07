@@ -1,41 +1,42 @@
 /**
  * Ranks the creators the auto-enqueue walks, so the daily budget follows
- * reader attention (GOO-60, reworked by GOO-107 and GOO-135).
+ * reader attention (GOO-60, reworked by GOO-107, GOO-135 and GOO-257).
  *
- * There are exactly two reasons to walk a creator, and nothing is permanent:
+ * There are exactly two reasons to walk a creator:
  *
  *   1. They hold priority. Someone pressed the button in the extension, or ran
  *      everything-prioritize. That lasts seven days and then lapses.
- *   2. Readers read them inside the ranking window.
+ *   2. Someone with the extension opened one of their posts.
  *
- * Prioritised creators come first, then everyone by attention. A creator in
- * neither set is not ranked at all, so attention that fades takes its spend
- * with it. Attention has a floor, one reader, below which a creator
- * is not walked however much money is left. Above the floor, the walk in
- * autoEnqueue.ts goes down this list from the top and stops at the first
+ * Prioritised creators come first, then everyone else by their score. The walk
+ * in autoEnqueue.ts goes down this list from the top and stops at the first
  * creator with a post we have not checked.
  *
  * Both sides are needed because a creator nobody has ever checked has no row
- * anywhere. Prioritised creators are project rows; read creators are
+ * anywhere. Prioritised creators are project rows; visited creators are
  * aggregated out of the anonymous visit rows the extension writes, and most of
  * them have no project yet. Creating a project for every creator anyone visits
  * would fill the public projects table with creators we have never checked, so
  * a project row is made at the moment a creator is pressed or their first item
  * is ingested, and not before.
  *
- * WHAT "READ THEM" MEANS (GOO-135, GOO-182). A visit row carries a reader
- * hash: one value per browser and per creator, so the database can count how
- * many different browsers read a creator without ever being able to join one
- * person's reading across creators. A reader of a creator is a browser that
- * opened at least two different pages of theirs inside the window. One page is
- * a click, not a reader. Rows without a reader hash, written before the hash
- * existed or by extension copies that never updated, count for nothing here.
+ * THE SCORE (GOO-257). A creator's score is the average number of different
+ * people per post, over the creator's 10 most recently visited posts. A visit
+ * row carries a reader hash: one value per browser and per creator, so the
+ * database can count different people without ever being able to join one
+ * person's reading across creators. Rows without a reader hash, written before
+ * the hash existed or by extension copies that never updated, count for
+ * nothing. The score has no time window, so a creator who posts once a month
+ * is not forgotten between posts. It is an average rather than a total, so a
+ * creator who posts rarely but is widely read ranks above one who posts daily
+ * to a few people, and one person binge-watching a channel adds only about one
+ * person to each video.
  */
 
-import { fetchCreatorProjects, fetchCreatorAttention, QUEUE_PRIORITY } from "./db";
+import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
-import { MIN_PAGES_FOR_A_READER, MIN_READERS_TO_WALK_CREATOR, VISIT_RANKING_WINDOW_DAYS } from "../everything-core/readers";
+import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -50,13 +51,9 @@ export interface RankedCreator {
   /** When the priority window runs out, for the run log. Null when the creator
    *  is walked on attention alone. */
   priorityUntil: string | null;
-  /** Every visit row inside the window, whoever wrote it. */
-  visits: number;
-  /** Different pages opened inside the window, over rows with a reader hash. */
-  pages: number;
-  /** Browsers that opened at least MIN_PAGES_FOR_A_READER different pages.
-   *  This is what the order is built on. */
-  readers: number;
+  /** The creator's score and what it is made of. All zero for a prioritised
+   *  creator nobody has visited. */
+  score: Omit<CreatorVisitScore, "feed_url">;
   /** When this creator's top posts were last recomputed (GOO-81). */
   top_posts_refreshed_at: string | null;
   /** When a refresh was last tried and failed (migration 101). */
@@ -66,36 +63,29 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
-/** The floor: at least one reader. A creator below it is not walked at all,
- *  whatever the budget. */
-const qualifies = (creator: RankedCreator): boolean => creator.readers >= MIN_READERS_TO_WALK_CREATOR;
+const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, people: 0 };
 
-/** Most attention first. The primary number is readers. Different pages breaks
- *  the ties, which today is most of them, because it measures how much of a
- *  creator is being read and a reloaded page cannot inflate it. The order ends
- *  on the feed address, so a tie sorts the same way on every run rather than
+/** Prioritised creators first, then the highest score. Among equal scores,
+ *  the creator more different people visited goes first. The order ends on
+ *  the feed address, so a tie sorts the same way on every run rather than
  *  depending on how the database returned the rows. */
-const byAttention = (a: RankedCreator, b: RankedCreator) =>
+const byPriorityThenScore = (a: RankedCreator, b: RankedCreator) =>
   Number(b.prioritized) - Number(a.prioritized) ||
-  b.readers - a.readers ||
-  b.pages - a.pages ||
+  b.score.visitors_per_post - a.score.visitors_per_post ||
+  b.score.people - a.score.people ||
   a.feed_url.localeCompare(b.feed_url);
 
 /** Every creator with priority or attention, most important first. The
  *  auto-enqueue walks this list from the top until a creator has something
  *  unchecked. */
 export async function rankCreators(): Promise<RankedCreator[]> {
-  const since = new Date(Date.now() - VISIT_RANKING_WINDOW_DAYS * 24 * 3600_000);
-  const [projects, attention] = await Promise.all([
-    fetchCreatorProjects(),
-    fetchCreatorAttention(since, MIN_PAGES_FOR_A_READER),
-  ]);
+  const [projects, scores] = await Promise.all([fetchCreatorProjects(), fetchCreatorVisitScores(LAST_POSTS_PER_CREATOR)]);
 
   // The database already groups creators case-insensitively, so there is one
   // row per creator here. The key is normalized again because the same creator
   // has to be found from a project row too, and a project stores whatever
   // casing it was created with.
-  const attentionByUrl = new Map(attention.map((a) => [normalizeFeedUrl(a.feed_url), a]));
+  const scoreByUrl = new Map(scores.map(({ feed_url, ...score }) => [normalizeFeedUrl(feed_url), { feed_url, score }]));
 
   // Known creators are indexed by feed URL rather than by slug. The URL is the
   // key everything shares, and it is what keeps a creator walked on attention
@@ -112,7 +102,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       console.warn(`  skipping ${p.project_slug}: stored feed url is not a shape we can walk (${p.feed_url})`);
       continue;
     }
-    const read = attentionByUrl.get(normalizeFeedUrl(p.feed_url));
+    const visited = scoreByUrl.get(normalizeFeedUrl(p.feed_url));
     ranked.push({
       project_slug: p.project_slug,
       feed_type: feed.feed_type,
@@ -120,44 +110,39 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       priority: QUEUE_PRIORITY.prioritized,
       prioritized: true,
       priorityUntil: p.priority_until,
-      visits: read?.visits ?? 0,
-      pages: read?.pages ?? 0,
-      readers: read?.readers ?? 0,
+      score: visited?.score ?? NO_VISITS,
       top_posts_refreshed_at: p.top_posts_refreshed_at,
       top_posts_attempted_at: p.top_posts_attempted_at,
     });
   }
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
-  for (const [key, read] of attentionByUrl) {
+  for (const [key, visited] of scoreByUrl) {
     if (alreadyRanked.has(key)) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
-    const feed = canonicalFeed(read.feed_url);
+    const feed = canonicalFeed(visited.feed_url);
     if (!feed) {
-      console.warn(`  skipping a visited creator: feed url is not a shape we can walk (${read.feed_url})`);
+      console.warn(`  skipping a visited creator: feed url is not a shape we can walk (${visited.feed_url})`);
       continue;
     }
     const known = knownByUrl.get(key);
-    const creator: RankedCreator = {
+    ranked.push({
       project_slug: known?.project_slug ?? feed.project_slug,
       feed_type: feed.feed_type,
       feed_url: known?.feed_url ?? feed.feed_url,
       priority: QUEUE_PRIORITY.backlog,
       prioritized: false,
       priorityUntil: null,
-      visits: read.visits,
-      pages: read.pages,
-      readers: read.readers,
+      score: visited.score,
       // A creator with no project yet has no refresh stamp, so their top posts
       // are computed the first time they are walked.
       top_posts_refreshed_at: known?.top_posts_refreshed_at ?? null,
       top_posts_attempted_at: known?.top_posts_attempted_at ?? null,
-    };
-    if (qualifies(creator)) ranked.push(creator);
+    });
   }
 
-  ranked.sort(byAttention);
+  ranked.sort(byPriorityThenScore);
   return ranked;
 }
