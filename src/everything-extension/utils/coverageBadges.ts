@@ -139,6 +139,17 @@ function onBadgeActivate(badge: HTMLElement, activate: () => void) {
 // and menus. A typical 40 to 48 pixel avatar stays under it.
 const MIN_COVER_IMAGE_AREA_PX = 60 * 60;
 
+// A square picture is a profile picture or a publication's icon, whatever its
+// size. Post covers and video thumbnails are wider than they are tall. So a
+// square picture is never a cover. Jim chose this rule after Substack's
+// subscription sidebar showed a badge on a publication's icon, which links to
+// its newest post (GOO-391).
+const SQUARE_ASPECT_TOLERANCE = 0.1;
+
+function isSquare(image: HTMLElement): boolean {
+  return Math.abs(image.offsetWidth / image.offsetHeight - 1) <= SQUARE_ASPECT_TOLERANCE;
+}
+
 /** The largest image under `root` that is big enough to be a cover image or
  *  thumbnail rather than an avatar or icon. */
 function coverImage(root: HTMLElement): HTMLElement | null {
@@ -146,12 +157,26 @@ function coverImage(root: HTMLElement): HTMLElement | null {
   let coverArea = MIN_COVER_IMAGE_AREA_PX;
   for (const image of root.querySelectorAll<HTMLElement>("img")) {
     const area = image.offsetWidth * image.offsetHeight;
-    if (area >= coverArea) {
+    if (area >= coverArea && !isSquare(image)) {
       cover = image;
       coverArea = area;
     }
   }
   return cover;
+}
+
+// A link whose content is mostly a square picture is a link with a person's
+// or a publication's icon, such as a tile in Substack's subscription sidebar.
+// It gets no badge, even when it leads to a post we checked. A quarter of the
+// link's area tells such a tile apart from a post card, whose small
+// publication icon covers far less of it.
+const MIN_ICON_SHARE_OF_LINK = 0.25;
+
+function isIconLink(anchor: HTMLAnchorElement): boolean {
+  const linkArea = anchor.offsetWidth * anchor.offsetHeight;
+  return [...anchor.querySelectorAll<HTMLElement>("img")].some(
+    (image) => isSquare(image) && image.offsetWidth * image.offsetHeight >= linkArea * MIN_ICON_SHARE_OF_LINK,
+  );
 }
 
 /** The box that frames a picture on screen, so the badge can sit in the
@@ -265,6 +290,8 @@ function cornerOffsets(surface: HTMLElement, host: HTMLElement): { top: number; 
  *
  *  1. Is this level taller than a card can be? Then the climb has left any
  *     card and reached a page or an article body, and the link gets no badge.
+ *     At the link itself, a link that is mostly a square icon gets none
+ *     either (see isIconLink).
  *  2. Does this level hold a picture? The first one the climb meets is the
  *     picture nearest the link, and it is remembered.
  *  3. Is this level a unit, the box the link stands for? Then the badge goes
@@ -291,6 +318,7 @@ function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
   let picture: HTMLElement | null = null;
   for (let level: HTMLElement | null = anchor; level; level = level.parentElement) {
     if (level.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
+    if (level === anchor && isIconLink(anchor)) return null;
     picture ??= coverImage(level);
     const isUnit = level === anchor ? picture !== null || isCardLink(anchor) : level.matches(CARD_SELECTOR);
     if (isUnit && picture) return spotOn(pictureFrame(picture), "top");
