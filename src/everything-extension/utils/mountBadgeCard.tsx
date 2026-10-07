@@ -8,8 +8,9 @@ import { createOverlayUi } from "./overlayUi";
  * right edge, or with its left edge when the badge sits in the left half of
  * the window, as it does on YouTube's thumbnails. Pinning that edge lets the
  * card be as wide as its sentence. The host element is fixed to the viewport,
- * so its place is computed once from the badge's box when it opens, and the
- * card closes as soon as the page scrolls. The coordinates are CSS variables
+ * so its place is computed once from the badge's box when it opens. It never
+ * drifts away from the badge, because a scroll moves the badge out from under
+ * the mouse and that closes the card. The coordinates are CSS variables
  * set on the host element, because WXT's own :host reset would win over plain
  * inline styles. */
 const HOST_STYLE = `
@@ -30,8 +31,8 @@ export interface BadgeCardHandle {
 }
 
 /** Mounts one shadow root for the listing badges' explanation card. It stays
- *  mounted and empty until a badge is clicked. A click on another badge moves
- *  the one card there, and a second click on the same badge closes it. */
+ *  mounted and empty until a badge is clicked. The card closes in two ways
+ *  only: a second click on the same badge, or the mouse leaving the badge. */
 export async function mountBadgeCard(ctx: ContentScriptContext): Promise<BadgeCardHandle> {
   let root: Root | null = null;
   const ui = await createOverlayUi(ctx, {
@@ -56,7 +57,6 @@ export async function mountBadgeCard(ctx: ContentScriptContext): Promise<BadgeCa
   const close = () => {
     openFor = null;
     root?.render(null);
-    window.removeEventListener("scroll", close, { capture: true });
   };
 
   const toggle = (badge: HTMLElement, mark: BadgeMark, noun: "post" | "video") => {
@@ -69,10 +69,8 @@ export async function mountBadgeCard(ctx: ContentScriptContext): Promise<BadgeCa
     host.setProperty("--cn-badge-card-left", inLeftHalf ? `${Math.max(VIEWPORT_MARGIN_PX, box.left)}px` : "auto");
     host.setProperty("--cn-badge-card-right", inLeftHalf ? "auto" : `${Math.max(VIEWPORT_MARGIN_PX, innerWidth - box.right)}px`);
     ui.uiContainer.classList.toggle("dark", isPageDark());
-    root?.render(<BadgeCard mark={mark} noun={noun} onClose={close} />);
-    // Scroll events do not bubble, but a capture listener on the window sees
-    // the scrolling of every element, including Substack's inner scroll panes.
-    window.addEventListener("scroll", close, { capture: true, passive: true });
+    root?.render(<BadgeCard mark={mark} noun={noun} />);
+    badge.addEventListener("mouseleave", () => openFor === badge && close(), { once: true });
   };
 
   return {

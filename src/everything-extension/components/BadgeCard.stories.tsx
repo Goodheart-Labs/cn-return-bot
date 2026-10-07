@@ -5,7 +5,7 @@ const meta = {
   title: "Extension/Listing badge card",
   component: BadgeCard,
   globals: { scale: "extension" },
-  args: { mark: { checked: true }, noun: "post", onClose: () => {} },
+  args: { mark: { checked: true }, noun: "post" },
 } satisfies Meta<typeof BadgeCard>;
 export default meta;
 
