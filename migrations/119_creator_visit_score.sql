@@ -10,9 +10,10 @@
 -- per post, taken over the creator's 10 most recently visited posts. "Different
 -- people" means different reader hashes, so a visit row without a hash counts
 -- for nothing. There is no time window: the 10 posts are the 10 that were
--- visited most recently, however long ago that was. One person who opened one
--- post is enough to be ranked. One person who opens many posts adds about one
--- person to each of them, so a binge-watcher cannot lift a creator's average.
+-- visited most recently, however long ago that was. One person who opens many
+-- posts adds about one person to each of them, so a binge-watcher cannot lift
+-- a creator's average. The function scores every visited creator. The walk
+-- then skips creators with fewer than two visited posts (creatorRanking.ts).
 --
 -- Two functions replace everything_creator_attention and change the dashboard's
 -- everything_recent_posts. The number of posts is passed in by both callers

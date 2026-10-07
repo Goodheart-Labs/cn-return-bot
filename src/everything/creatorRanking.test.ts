@@ -26,28 +26,37 @@ const creator = (slug: string, overrides: Partial<(typeof dbState.creatorProject
   ...overrides,
 });
 
-/** One creator's score row. The defaults are one post read by one person,
- *  the smallest score there is, so a test that is about something else does
- *  not have to think about it. */
+/** One creator's score row. The defaults are one person who opened two posts,
+ *  the smallest creator the walk accepts, so a test that is about something
+ *  else does not have to think about it. */
 const visited = (feedUrl: string, score: { perPost?: number; posts?: number; people?: number } = {}) => ({
   feed_url: feedUrl,
   visitors_per_post: score.perPost ?? 1,
-  posts: score.posts ?? 1,
+  posts: score.posts ?? 2,
   people: score.people ?? 1,
 });
 
 const rankedSlugs = async () => (await rankCreators()).map((c) => c.project_slug);
 
 describe("rankCreators, score", () => {
-  test("one visit by one person is enough to be ranked", async () => {
-    dbState.creatorVisitScores = [visited("https://oneclick.substack.com")];
-    expect(await rankedSlugs()).toEqual(["oneclick"]);
+  test("a creator needs two visited posts, however many people opened the one post", async () => {
+    dbState.creatorVisitScores = [
+      visited("https://onehit.substack.com", { perPost: 8, posts: 1, people: 8 }),
+      visited("https://twoposts.substack.com", { perPost: 1, posts: 2, people: 1 }),
+    ];
+    expect(await rankedSlugs()).toEqual(["twoposts"]);
   });
 
-  test("creators order by the average number of people per post, so one widely read post beats many lightly read ones", async () => {
+  test("a prioritized creator is walked with fewer than two visited posts", async () => {
+    dbState.creatorProjects = [creator("pressed", { priority_until: inDays(3) })];
+    dbState.creatorVisitScores = [visited("https://pressed.substack.com", { posts: 1 })];
+    expect(await rankedSlugs()).toEqual(["pressed"]);
+  });
+
+  test("creators order by the average number of people per post, so a few widely read posts beat many lightly read ones", async () => {
     dbState.creatorVisitScores = [
       visited("https://daily.substack.com", { perPost: 1.2, posts: 10, people: 9 }),
-      visited("https://monthly.substack.com", { perPost: 4, posts: 1, people: 4 }),
+      visited("https://monthly.substack.com", { perPost: 4, posts: 2, people: 5 }),
     ];
     expect(await rankedSlugs()).toEqual(["monthly", "daily"]);
   });

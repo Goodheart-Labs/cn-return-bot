@@ -6,7 +6,8 @@
  *
  *   1. They hold priority. Someone pressed the button in the extension, or ran
  *      everything-prioritize. That lasts seven days and then lapses.
- *   2. Someone with the extension opened one of their posts.
+ *   2. People with the extension opened at least two different posts of
+ *      theirs, at any time.
  *
  * Prioritised creators come first, then everyone else by their score. The walk
  * in autoEnqueue.ts goes down this list from the top and stops at the first
@@ -31,6 +32,10 @@
  * creator who posts rarely but is widely read ranks above one who posts daily
  * to a few people, and one person binge-watching a channel adds only about one
  * person to each video.
+ *
+ * A creator needs at least two visited posts to be walked on visits. One post
+ * that a few people opened, perhaps because someone shared the link, says
+ * little about the creator's next post.
  */
 
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
@@ -62,6 +67,11 @@ export interface RankedCreator {
 
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
+
+/** How many different posts of a creator must have been opened before the
+ *  creator is walked on visits alone. A prioritised creator is walked
+ *  whatever their visits, because someone asked for them. */
+const MIN_VISITED_POSTS_TO_WALK = 2;
 
 const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, people: 0 };
 
@@ -118,7 +128,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key)) continue;
+    if (alreadyRanked.has(key) || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
