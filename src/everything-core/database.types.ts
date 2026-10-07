@@ -2294,13 +2294,13 @@ export type Database = {
         }
         Returns: string
       }
-      everything_creator_attention: {
-        Args: { min_pages: number; since: string }
+      everything_creator_visit_scores: {
+        Args: { last_posts: number }
         Returns: {
           feed_url: string
-          pages: number
-          readers: number
-          visits: number
+          people: number
+          posts: number
+          visitors_per_post: number
         }[]
       }
       everything_creator_project: {
@@ -2391,10 +2391,9 @@ export type Database = {
       }
       everything_reader_cost_since: { Args: { since: string }; Returns: number }
       everything_recent_posts: {
-        Args: { max_posts: number; min_pages: number; window_days: number }
+        Args: { last_posts: number; max_posts: number }
         Returns: {
-          author_pages: number
-          author_readers: number
+          author_visitors_per_post: number
           checked_scope: string
           claims_checked: number
           claims_extracted: number
@@ -2430,6 +2429,10 @@ export type Database = {
       everything_start_minisite_check: {
         Args: { target_minisite: string }
         Returns: undefined
+      }
+      everything_visit_creator: {
+        Args: { feed_url: string; url: string }
+        Returns: string
       }
       everything_visit_page: { Args: { url: string }; Returns: string }
       fact_check_consume: {

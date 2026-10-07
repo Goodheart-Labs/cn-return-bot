@@ -6,6 +6,8 @@
  *  order, which is exactly what happened in CI. Every file installs this same
  *  complete mock and steers its behaviour through `dbState`. */
 
+import type { CreatorVisitScore } from "./db";
+
 export const dbState = {
   /** What fetchItemUrlsIn / fetchItemUrlsContaining answer. */
   knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
@@ -19,13 +21,8 @@ export const dbState = {
     priority_until: string | null;
     top_posts_refreshed_at: string | null;
   }[],
-  /** What fetchCreatorAttention answers: one row per creator. */
-  creatorAttention: [] as {
-    feed_url: string;
-    visits: number;
-    pages: number;
-    readers: number;
-  }[],
+  /** What fetchCreatorVisitScores answers: one row per creator. */
+  creatorVisitScores: [] as CreatorVisitScore[],
   /** What fetchAllTopPosts answers. */
   topPosts: [] as {
     feed_url: string;
@@ -54,7 +51,7 @@ export const resetDbState = () => {
   dbState.knownItems = [];
   dbState.existingItem = null;
   dbState.creatorProjects = [];
-  dbState.creatorAttention = [];
+  dbState.creatorVisitScores = [];
   dbState.topPosts = [];
   dbState.feedPacing = {
     dbNow: new Date("2026-09-15T00:00:00Z"),
@@ -81,7 +78,7 @@ export const dbMock = () => ({
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
   fetchCreatorProjects: () => Promise.resolve(dbState.creatorProjects),
-  fetchCreatorAttention: () => Promise.resolve(dbState.creatorAttention),
+  fetchCreatorVisitScores: () => Promise.resolve(dbState.creatorVisitScores),
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   fetchFeedPacing: () => Promise.resolve(dbState.feedPacing),
   fetchCostSinceUsd: () => Promise.resolve(0),
