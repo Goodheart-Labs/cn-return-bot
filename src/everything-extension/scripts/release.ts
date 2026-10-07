@@ -4,6 +4,7 @@
  * docs/extension-release.md.
  *
  *   bun run release-ext package          build the store packages and the AMO source archive
+ *   bun run release-ext chrome-store-copy  add a store copy next to every built Chrome zip (used by CI)
  *   bun run release-ext firefox-listing  set AMO's homepage, icon and screenshots (live at once)
  *   bun run release-ext firefox-submit   upload the Firefox package to AMO for review
  *   bun run release-ext chrome-upload    upload the Chrome package as a draft
@@ -116,6 +117,20 @@ function packageRelease(): void {
   assertBuiltForProduction(files.firefoxZip);
   run("git", ["archive", "--format=zip", "-o", files.sourceZip, "HEAD"]);
   console.log(`Version ${version} packaged in ${path.dirname(files.chromeZip)}`);
+}
+
+/** Writes a Web Store copy, without the manifest key, next to every Chrome zip
+ *  `wxt zip` left in the output folder. The Build Extension workflow runs this,
+ *  so the extension-latest GitHub release carries a package the store
+ *  accepts as it is. */
+function writeChromeStoreCopies(): void {
+  const builtZips = readdirSync(OUTPUT_DIR).filter((name) => name.endsWith("-chrome.zip"));
+  if (builtZips.length === 0) throw new Error(`No *-chrome.zip in ${OUTPUT_DIR}. Run wxt zip first.`);
+  for (const name of builtZips) {
+    const target = path.join(OUTPUT_DIR, name.replace(/-chrome\.zip$/, "-chrome-store.zip"));
+    writeChromeStoreZip(path.join(OUTPUT_DIR, name), target);
+    console.log(`Wrote ${target}`);
+  }
 }
 
 function amoAuthHeader(): string {
@@ -256,6 +271,7 @@ async function printChromeStatus(): Promise<void> {
 
 const COMMANDS: Record<string, () => void | Promise<void>> = {
   package: packageRelease,
+  "chrome-store-copy": writeChromeStoreCopies,
   "firefox-listing": updateFirefoxListing,
   "firefox-submit": submitFirefoxVersion,
   "chrome-upload": uploadChromePackage,
