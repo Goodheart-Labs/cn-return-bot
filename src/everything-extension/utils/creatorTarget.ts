@@ -46,9 +46,18 @@ export function substackCreatorTarget(pageUrl: string): CreatorTarget | null {
  *  *.substack.com form the follow pipeline needs. Null on any page that is
  *  not Substack.
  *
+ *  On substack.com itself the answer is always null. Those pages are the
+ *  reader's own feed, inbox and profiles, so the blob describes the reader
+ *  rather than one creator. Its first subdomain can be the logged-in reader's
+ *  own publication. It can also be a post opened earlier, because Substack
+ *  switches pages there without reloading them. The popup used to offer that
+ *  stranger's posts on the home page (GOO-394). A profile page on
+ *  substack.com names its creator in the address instead.
+ *
  *  This also runs inside the page via executeScript for the popup, so it must
  *  stay self-contained: the serialized function has no imports over there. */
 export function readSubstackPublicationFromPage(): { subdomain: string; name: string } | null {
+  if (/^(www\.)?substack\.com$/.test(location.hostname)) return null;
   for (const script of Array.from(document.querySelectorAll("script"))) {
     const text = script.textContent ?? "";
     if (!text.includes("_preloads")) continue;

@@ -44,6 +44,12 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
+      # The Chrome Web Store refuses a package whose manifest carries the key
+      # that pins the extension ID for unpacked installs. The store copy,
+      # *-chrome-store.zip, is the file to upload there.
+      - name: Make the Chrome Web Store copy
+        run: bun run release-ext chrome-store-copy
+
       - uses: actions/upload-artifact@v4
         with:
           name: common-notes-extension

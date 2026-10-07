@@ -37,7 +37,7 @@ import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from 
 import { getBestMediaUrl } from "./bestMediaUrl";
 import { isWebUrl } from "../utils/webUrl";
 import { callFetchService } from "../../service/client";
-import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchImageRequest, type FetchedImage } from "../../service/contract";
+import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchUrlRequest, type FetchedImage } from "../../service/contract";
 
 const execAsync = promisify(exec);
 // The vision model we fall back to when the configured model fails, for example
@@ -178,7 +178,7 @@ async function fetchImageInlineData(imageUrl: string): Promise<FetchedImage> {
   if (dataUrlMatch) return { mimeType: dataUrlMatch[1]!, data: dataUrlMatch[2]! };
   const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
   if (!socket) return downloadImageInlineData(imageUrl);
-  return callFetchService<FetchedImage>(socket, FETCH_IMAGE_PATH, { url: imageUrl } satisfies FetchImageRequest);
+  return callFetchService<FetchedImage>(socket, FETCH_IMAGE_PATH, { url: imageUrl } satisfies FetchUrlRequest);
 }
 
 /** The download itself. Only the fetcher and processes without one call this

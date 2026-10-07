@@ -1,6 +1,8 @@
 import { browser } from "#imports";
-import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
+import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_HOVER_SCALE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
 import type { ContentScriptContext } from "#imports";
+import type { BadgeMark } from "../components/BadgeCard";
+import { mountBadgeCard, type BadgeCardHandle } from "./mountBadgeCard";
 import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import { NOTE_STACK_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
@@ -10,22 +12,30 @@ import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
-// card that leads to a page with notes gets a small circle in its upper right
+// card that leads to a page with notes gets a small circle in an upper corner
 // with the community glyph and the number of notes there. The counts come
 // from the locally synced cache, so drawing badges costs no backend request.
+// A click on the circle opens a small card that says what it means.
 
 const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
+const BADGE_INSET_PX = 6;
 
-// The fallback for links that do not wrap a picture themselves: such a link
-// only gets a badge when it sits inside a listing card, and the badge goes on
-// that card's picture or corner. Substack wraps each feed entry in
-// role="article"; article and li catch listings on generic sites. YouTube
-// never needs this path, because its tiles always contain a thumbnail link.
-// The height cap tells a card apart from a full article body that merely
-// links to another noted post. Links outside any card get no badge at all:
-// appended inline they ended up dangling under hero titles or stretched
-// across cards, which is what this replaced.
+// The badge sits in the right-hand corner of its surface, except on YouTube.
+// There, hovering a thumbnail shows YouTube's own "Watch later" and "Add to
+// queue" buttons in its upper right corner, stacked above anything we put
+// there. The badge was hidden under them whenever the pointer was on the
+// thumbnail, so a reader could never click it. YouTube leaves the upper left
+// corner empty.
+const BADGE_SIDE: "left" | "right" = /(^|\.)youtube\.com$/.test(location.hostname) ? "left" : "right";
+
+// The ancestors that count as a listing card in spotFor's climb. Substack
+// wraps each feed entry in role="article"; article and li catch listings on
+// generic sites. YouTube needs none of them, because its thumbnail links are
+// units by themselves. The height cap tells a card apart from a full article
+// body that merely links to another noted post. A text link that reaches no
+// card gets no badge at all: appended inline, such badges ended up dangling
+// under hero titles or stretched across cards.
 const CARD_SELECTOR = '[role="article"], article, li';
 const CARD_MAX_HEIGHT_PX = 900;
 
@@ -64,35 +74,63 @@ function readerPostId(href: string): string | null {
   }
 }
 
-/** A small circle pinned to a card's upper right. It uses the same surface as
+/** A small circle pinned to a card's upper corner. It uses the same surface as
  *  the in-article passage badge: a white circle with a border and the blue
  *  community glyph, plus the note count. A double-digit count widens it into
  *  a slight oval, which is fine.
  *  A checked page that produced no notes gets the same circle with a check
  *  mark instead of the count, so "we looked and found nothing" is visible in
- *  listings too. */
-function createBadge(mark: { count: number } | { checked: true }): HTMLElement {
+ *  listings too.
+ *  Under the mouse the badge grows a little, like the scrubber pins do, which
+ *  tells the reader it can be clicked. The badge lives in the host page's own
+ *  DOM, where we add no stylesheet, so the hover is two event listeners
+ *  rather than a :hover rule. */
+function createBadge(mark: BadgeMark): HTMLElement {
   const palette = isPageDark() ? MARKER_DARK : MARKER_LIGHT;
   const badge = document.createElement("span");
   badge.className = BADGE_CLASS;
+  badge.setAttribute("role", "button");
+  badge.tabIndex = 0;
   badge.setAttribute(
     "style",
-    "position:absolute;top:6px;right:6px;z-index:10;display:inline-flex;align-items:center;justify-content:center;" +
+    `position:absolute;z-index:10;cursor:pointer;transition:transform 120ms ease-out;` +
+      "display:inline-flex;align-items:center;justify-content:center;" +
       "gap:2px;height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:9999px;" +
       `font-size:12px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:${MARKER_SHADOW};` +
       `color:${palette.glyph};background:${palette.body};` +
       `border:1px solid ${palette.border};`,
   );
+  badge.addEventListener("mouseenter", () => (badge.style.transform = `scale(${MARKER_HOVER_SCALE})`));
+  badge.addEventListener("mouseleave", () => (badge.style.transform = ""));
   const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path fill-rule="evenodd" d="${NOTE_STACK_GLYPH_PATH}"/></svg>`;
   if ("count" in mark) {
-    badge.title = `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"} on this page`;
+    badge.setAttribute("aria-label", `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"} on this page`);
     badge.innerHTML = `${svg}${mark.count}`;
   } else {
-    badge.title = "We checked this page and found nothing to note";
+    badge.setAttribute("aria-label", "We checked this page and found nothing to note");
     const check = `<svg viewBox="0 0 14 14" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M3 7.5l2.5 2.5 5.5-6"/></svg>`;
     badge.innerHTML = `${svg}${check}`;
   }
   return badge;
+}
+
+/** Makes a click on the badge open or close its explanation card instead of
+ *  what a click there used to do. The badge usually sits inside the link, and on
+ *  Substack inside a note the whole card opens on click. So the click is
+ *  cancelled and stopped at the badge: preventDefault keeps the browser from
+ *  following the link, and stopPropagation keeps the host page's own click
+ *  handlers, which listen further up, from navigating. Enter and Space do the
+ *  same for a reader on the keyboard. */
+function onBadgeActivate(badge: HTMLElement, activate: () => void) {
+  const handle = (event: Event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    activate();
+  };
+  badge.addEventListener("click", handle);
+  badge.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") handle(event);
+  });
 }
 
 // Avatars and icons are small, so anything under this area cannot be the
@@ -101,6 +139,17 @@ function createBadge(mark: { count: number } | { checked: true }): HTMLElement {
 // and menus. A typical 40 to 48 pixel avatar stays under it.
 const MIN_COVER_IMAGE_AREA_PX = 60 * 60;
 
+// A square picture is a profile picture or a publication's icon, whatever its
+// size. Post covers and video thumbnails are wider than they are tall. So a
+// square picture is never a cover. Jim chose this rule after Substack's
+// subscription sidebar showed a badge on a publication's icon, which links to
+// its newest post (GOO-391).
+const SQUARE_ASPECT_TOLERANCE = 0.1;
+
+function isSquare(image: HTMLElement): boolean {
+  return Math.abs(image.offsetWidth / image.offsetHeight - 1) <= SQUARE_ASPECT_TOLERANCE;
+}
+
 /** The largest image under `root` that is big enough to be a cover image or
  *  thumbnail rather than an avatar or icon. */
 function coverImage(root: HTMLElement): HTMLElement | null {
@@ -108,12 +157,26 @@ function coverImage(root: HTMLElement): HTMLElement | null {
   let coverArea = MIN_COVER_IMAGE_AREA_PX;
   for (const image of root.querySelectorAll<HTMLElement>("img")) {
     const area = image.offsetWidth * image.offsetHeight;
-    if (area >= coverArea) {
+    if (area >= coverArea && !isSquare(image)) {
       cover = image;
       coverArea = area;
     }
   }
   return cover;
+}
+
+// A link whose content is mostly a square picture is a link with a person's
+// or a publication's icon, such as a tile in Substack's subscription sidebar.
+// It gets no badge, even when it leads to a post we checked. A quarter of the
+// link's area tells such a tile apart from a post card, whose small
+// publication icon covers far less of it.
+const MIN_ICON_SHARE_OF_LINK = 0.25;
+
+function isIconLink(anchor: HTMLAnchorElement): boolean {
+  const linkArea = anchor.offsetWidth * anchor.offsetHeight;
+  return [...anchor.querySelectorAll<HTMLElement>("img")].some(
+    (image) => isSquare(image) && image.offsetWidth * image.offsetHeight >= linkArea * MIN_ICON_SHARE_OF_LINK,
+  );
 }
 
 /** The box that frames a picture on screen, so the badge can sit in the
@@ -137,28 +200,136 @@ function pictureFrame(image: HTMLElement): HTMLElement {
   return frame;
 }
 
-/** The element the badge is pinned to, or null when this link should carry no
- *  badge. The preferred surface is the frame of the tile's picture, so the
- *  badge sits in the picture's corner, clear of the card's dates and menus.
- *  The picture is looked for inside the link first. On YouTube the link is the
- *  thumbnail itself. On a Substack profile's post list the link is the whole
- *  row, and pinning the badge to the link put it over the row's date.
+// A link can also be the card itself. A Substack profile's Posts tab wraps
+// each post row in one link, inside plain divs that match no card selector. A
+// row whose post has no cover picture then had nowhere to put its badge. Such
+// a link is told apart from a text link by its box: it lays out as a block and
+// is at least as tall as a few lines of text. The row shows its date in its
+// upper right corner, so the badge goes into the lower right one, which
+// Substack leaves empty.
+const MIN_CARD_LINK_HEIGHT_PX = 80;
+
+function isCardLink(anchor: HTMLAnchorElement): boolean {
+  return (
+    !WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(anchor).display) &&
+    anchor.offsetHeight >= MIN_CARD_LINK_HEIGHT_PX &&
+    anchor.offsetHeight <= CARD_MAX_HEIGHT_PX
+  );
+}
+
+// A text link in running text is part of what someone wrote, not an entry in
+// a listing. Every bullet point of an Astral Codex Ten post that ended in a
+// "(source)" link to a checked page got a badge, because each bullet is an li
+// and so counted as a card (GOO-393). A link in a reader's comment did the
+// same. A link is in running text when the text block around it holds much
+// more text than the link itself. A listing's title link is all or most of
+// its block, as in <h3><a>Title</a></h3>.
+// A link that shows its own web address is written text too, even when it
+// fills its block. A reader pastes the address into a comment, and Substack
+// shows the addresses of a note's links on their own line. A listing never
+// uses an address as a post's title. The pattern needs a protocol or a path,
+// so a title such as "Node.js" is not mistaken for an address.
+const MIN_TITLE_SHARE_OF_BLOCK_TEXT = 0.5;
+const BARE_ADDRESS = /^(https?:\/\/\S+|[\w-]+(\.[\w-]+)+\/\S*)$/;
+
+function isInRunningText(anchor: HTMLAnchorElement): boolean {
+  const linkText = (anchor.textContent ?? "").trim();
+  if (BARE_ADDRESS.test(linkText)) return true;
+  let block = anchor.parentElement;
+  while (block && WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(block).display)) block = block.parentElement;
+  if (!block) return false;
+  return linkText.length < (block.textContent ?? "").trim().length * MIN_TITLE_SHARE_OF_BLOCK_TEXT;
+}
+
+/** Where a badge sits: the element whose corner it shows in, which of that
+ *  element's corners on BADGE_SIDE it takes, and the element it is appended
+ *  to (see badgeHost). */
+type BadgeSpot = { surface: HTMLElement; corner: "top" | "bottom"; host: HTMLElement };
+
+/** The element a badge is appended to. That is the surface itself, unless the
+ *  surface lies inside a link. Then it is the parent of the outermost such
+ *  link, and the badge is positioned to show in the surface's corner anyway.
+ *  A button inside a link is invalid HTML, and sites handle it in their own
+ *  ways. On YouTube, a click on a badge inside the thumbnail link opened the
+ *  video even though the badge cancelled and stopped the click, because
+ *  YouTube decides to navigate in listeners on the window that run before any
+ *  of ours (GOO-391). Outside the link, the click is ours. */
+function badgeHost(surface: HTMLElement): HTMLElement {
+  let host = surface;
+  for (let link = host.closest("a[href]"); link?.parentElement; link = host.closest("a[href]")) {
+    host = link.parentElement;
+    // A wrapper that draws no box of its own measures 0 by 0 and positions
+    // nothing, the same problem pictureFrame skips such wrappers for.
+    while (WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(host).display) && host.parentElement) host = host.parentElement;
+  }
+  return host;
+}
+
+const spotOn = (surface: HTMLElement, corner: BadgeSpot["corner"]): BadgeSpot => ({ surface, corner, host: badgeHost(surface) });
+
+/** How far the surface's edges are inside the host's padding box, which is
+ *  what an absolutely positioned child is placed against. All four are zero
+ *  when the badge sits directly on its surface. */
+function cornerOffsets(surface: HTMLElement, host: HTMLElement): { top: number; bottom: number; left: number; right: number } {
+  if (surface === host) return { top: 0, bottom: 0, left: 0, right: 0 };
+  const s = surface.getBoundingClientRect();
+  const h = host.getBoundingClientRect();
+  const borderRight = host.offsetWidth - host.clientWidth - host.clientLeft;
+  const borderBottom = host.offsetHeight - host.clientHeight - host.clientTop;
+  return {
+    top: s.top - h.top - host.clientTop,
+    left: s.left - h.left - host.clientLeft,
+    bottom: h.bottom - s.bottom - borderBottom,
+    right: h.right - s.right - borderRight,
+  };
+}
+
+/** The spot for a link's badge, or null when the link should carry none. It
+ *  climbs from the link up through its ancestors and asks every level the
+ *  same three questions, stopping at the first level that settles it.
+ *
+ *  1. Is this level taller than a card can be? Then the climb has left any
+ *     card and reached a page or an article body, and the link gets no badge.
+ *     At the link itself, a link that is mostly a square icon gets none
+ *     either (see isIconLink).
+ *  2. Does this level hold a picture? The first one the climb meets is the
+ *     picture nearest the link, and it is remembered.
+ *  3. Is this level a unit, the box the link stands for? Then the badge goes
+ *     on the remembered picture's corner, or on the unit's own corner when the
+ *     climb met no picture.
+ *
+ *  The link itself is a unit when it wraps a picture or is a card-shaped box
+ *  of its own. Examples are a YouTube thumbnail, a Substack home-feed post
+ *  card, or the quote a Substack note shares from a post. Any ancestor
+ *  matching CARD_SELECTOR is a unit too. A text link that is part of written
+ *  text never climbs past itself (see isInRunningText). The same goes for a
+ *  text link nested inside another link: Substack shows an embedded note as
+ *  one big link with the note's own links inside, and climbing from such an
+ *  inner link sent its badge to an unrelated picture in the surrounding note
+ *  (GOO-393).
+ *
  *  Matching on structure rather than on component tag names is deliberate:
  *  YouTube renders different tile components logged in than logged out, and a
- *  tag-name list silently missed the logged-in ones. A text link falls back to
- *  its listing card, where the badge sits on the card's picture if it has one
- *  and on the card's corner otherwise. */
-function surfaceFor(anchor: HTMLAnchorElement): HTMLElement | null {
-  const linkPicture = coverImage(anchor);
-  if (linkPicture) return pictureFrame(linkPicture);
-  const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
-  if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
-  const cardPicture = coverImage(card);
-  return cardPicture ? pictureFrame(cardPicture) : card;
+ *  tag-name list silently missed the logged-in ones. A link that is a unit by
+ *  itself and sits outside any card is a row of a Substack profile's post
+ *  list. That row shows its date in its upper corner, so the badge takes the
+ *  lower one. */
+function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
+  let picture: HTMLElement | null = null;
+  for (let level: HTMLElement | null = anchor; level; level = level.parentElement) {
+    if (level.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
+    if (level === anchor && isIconLink(anchor)) return null;
+    picture ??= coverImage(level);
+    const isUnit = level === anchor ? picture !== null || isCardLink(anchor) : level.matches(CARD_SELECTOR);
+    if (isUnit && picture) return spotOn(pictureFrame(picture), "top");
+    if (isUnit) return spotOn(level, level === anchor && !anchor.closest(CARD_SELECTOR) ? "bottom" : "top");
+    if (level === anchor && (anchor.parentElement?.closest("a[href]") || isInRunningText(anchor))) return null;
+  }
+  return null;
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
- *  badge, placed where surfaceFor says. The scan re-runs debounced on DOM changes,
+ *  badge, placed where spotFor says. The scan re-runs debounced on DOM changes,
  *  which covers infinite scroll and single-page-app navigations. Every card
  *  that links a noted page gets one badge, however often the page is listed.
  *  A badge the host page threw away in a re-render is simply placed again on
@@ -253,19 +424,32 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   // a shelf below, gets a badge on each copy. Several links inside one card
   // lead to the same surface, and a surface carries one badge only.
   const badges = new Map<HTMLAnchorElement, { badge: HTMLElement; key: string }>();
-  const hasBadge = (surface: HTMLElement) => [...surface.children].some((child) => child.classList.contains(BADGE_CLASS));
+
+  // The explanation card mounts on the first badge click, so a page whose
+  // badges nobody clicks never gets the extra shadow root.
+  let badgeCard: Promise<BadgeCardHandle> | null = null;
+  const toggleBadgeCard = (badge: HTMLElement, mark: BadgeMark, anchor: HTMLAnchorElement) => {
+    badgeCard ??= mountBadgeCard(ctx);
+    const noun = extractYoutubeVideoId(anchor.href) ? "video" : "post";
+    void badgeCard.then((card) => card.toggle(badge, mark, noun));
+  };
+  const hasBadge = (host: HTMLElement) => [...host.children].some((child) => child.classList.contains(BADGE_CLASS));
 
   /** Puts the badge on the best surface its link currently offers. Calling it
    *  again is harmless, and that matters: cover images lazy-load, so the first
    *  scan can run while the picture still has no size. The badge then starts
    *  on the card's corner, and a later scan moves it onto the picture. */
-  const seat = (badge: HTMLElement, surface: HTMLElement) => {
-    if (badge.parentElement === surface) return;
-    // The badge is positioned against the surface, so the surface must be a
+  const seat = (badge: HTMLElement, { surface, corner, host }: BadgeSpot) => {
+    // The badge is positioned against its host, so the host must be a
     // containing block. Almost every one already is; for the rare static one
     // this is the only style we touch on the host page.
-    if (getComputedStyle(surface).position === "static") surface.style.position = "relative";
-    surface.appendChild(badge);
+    if (getComputedStyle(host).position === "static") host.style.position = "relative";
+    if (badge.parentElement !== host) host.appendChild(badge);
+    const offsets = cornerOffsets(surface, host);
+    badge.style.top = corner === "top" ? `${offsets.top + BADGE_INSET_PX}px` : "";
+    badge.style.bottom = corner === "bottom" ? `${offsets.bottom + BADGE_INSET_PX}px` : "";
+    badge.style.left = BADGE_SIDE === "left" ? `${offsets.left + BADGE_INSET_PX}px` : "";
+    badge.style.right = BADGE_SIDE === "right" ? `${offsets.right + BADGE_INSET_PX}px` : "";
   };
 
   /** Drops every badge whose link no longer leads to its page. Hosts recycle
@@ -277,9 +461,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   const pruneAndReseat = () => {
     for (const [anchor, { badge, key }] of badges) {
       const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key;
-      const surface = valid ? surfaceFor(anchor) : null;
-      if (surface && (badge.parentElement === surface || !hasBadge(surface))) {
-        seat(badge, surface);
+      const spot = valid ? spotFor(anchor) : null;
+      if (spot && (badge.parentElement === spot.host || !hasBadge(spot.host))) {
+        seat(badge, spot);
       } else {
         badge.remove();
         badges.delete(anchor);
@@ -295,12 +479,14 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     if (!key || currentKeys.has(key)) return "not-listed";
     const count = countByKey.get(key);
     if (!count && !checkedNoNotesKeys.has(key)) return "not-listed";
-    const surface = surfaceFor(anchor);
-    if (!surface) return "no-surface";
+    const spot = spotFor(anchor);
+    if (!spot) return "no-surface";
     // Another link in the same card already put its badge here.
-    if (hasBadge(surface)) return "badged";
-    const badge = createBadge(count ? { count } : { checked: true });
-    seat(badge, surface);
+    if (hasBadge(spot.host)) return "badged";
+    const mark: BadgeMark = count ? { count } : { checked: true };
+    const badge = createBadge(mark);
+    onBadgeActivate(badge, () => toggleBadgeCard(badge, mark, anchor));
+    seat(badge, spot);
     badges.set(anchor, { badge, key });
     return "badged";
   };
@@ -329,7 +515,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
       const outcome = placeBadge(anchor, currentKeys);
       if (outcome !== "not-listed") outcomes[outcome] += 1;
     }
-    logScanSummary(`[common-notes] listing badges: ${outcomes.badged + outcomes["no-surface"]} links to noted pages, ${badges.size} badges on the page, ${outcomes["no-surface"]} links outside any card`);
+    logScanSummary(`[common-notes] listing badges: ${outcomes.badged + outcomes["no-surface"]} links to noted pages, ${badges.size} badges on the page, ${outcomes["no-surface"]} links with no place for a badge`);
   };
 
   // The badges are otherwise silent, so a page that should show them and does
@@ -363,6 +549,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   const observer = new MutationObserver(scheduleScan);
   observer.observe(document.documentElement, { childList: true, subtree: true });
   ctx.addEventListener(window, "wxt:locationchange", scheduleScan);
+  // A badge outside its link was placed from measured boxes, so a resized
+  // window, which reflows the cards, needs a new scan to put it back in place.
+  ctx.addEventListener(window, "resize", scheduleScan);
   // An image that finishes loading fires no DOM mutation, but it is exactly
   // the moment a badge wants to move from the card's corner onto the picture.
   // load events do not bubble; a capture listener on the document still sees
@@ -376,5 +565,6 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     document.removeEventListener("load", onLoad, { capture: true } as EventListenerOptions);
     clearTimeout(timer);
     for (const { badge } of badges.values()) badge.remove();
+    void badgeCard?.then((card) => card.teardown());
   };
 }

@@ -1,8 +1,8 @@
 import path from "node:path";
-import { loadEnv } from "vite";
 import { defineConfig } from "wxt";
 import tailwindcss from "tailwindcss";
 import { CN_ALIASES } from "../cnAliases";
+import { settleSupabaseEnv } from "../cnEnv";
 
 // The repo root's .env supplies the VITE_SUPABASE_* values to import.meta.env, just
 // as it does in the web app's vite config. The anon key is meant to be public.
@@ -37,7 +37,7 @@ export default defineConfig({
   // defence.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
-    version: "0.4.0",
+    version: "0.4.3",
     name: "Common Notes",
     description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
@@ -160,18 +160,12 @@ export default defineConfig({
         },
       },
       {
-        // The same guard as in everything-web/vite.config.ts. A build without the
-        // Supabase environment variables inlines `undefined`, which turns the
-        // module-scope check in everything-core/supabase.ts into a throw that
-        // always fires. We fail the build loudly instead. In dev the throw shows up
-        // at runtime, which is good enough.
-        name: "require-supabase-env",
+        // The Supabase settings: the build's mode file wins over inherited
+        // variables, and a build that cannot reach a database fails. See
+        // src/cnEnv.ts.
+        name: "settle-supabase-env",
         config(_config, { command, mode }) {
-          if (command !== "build") return;
-          const env = loadEnv(mode, repoRoot, "");
-          if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) {
-            throw new Error("Refusing to build without VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY (root .env)");
-          }
+          settleSupabaseEnv(command, mode);
         },
       },
     ],

@@ -2,8 +2,8 @@ import { expect, test } from "bun:test";
 import { highlightSentence, parseHighlightDraft, validHighlight } from "./passageHighlights";
 
 test("highlight sentences", () => {
-  expect(highlightSentence({ kind: "forecast", probability: 65, statement: "It rains tomorrow" })).toBe('This is a forecast of a 65% chance of "It rains tomorrow"');
-  expect(highlightSentence({ kind: "key_point", statement: "Costs are falling" })).toBe('A key point in this article is "Costs are falling"');
+  expect(highlightSentence({ kind: "forecast", probability: 65, statement: "It rains tomorrow" })).toBe("This is a forecast of a 65% chance of “It rains tomorrow”");
+  expect(highlightSentence({ kind: "key_point", statement: "Costs are falling" })).toBe("A key point in this article is “Costs are falling”");
 });
 
 test("only forecasts require an integer probability, including the endpoints", () => {

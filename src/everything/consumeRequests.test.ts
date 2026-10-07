@@ -9,6 +9,8 @@ mock.module("./db", dbMock);
 mock.module("./pipeline/cleanCapturedText", () => ({
   cleanCapturedPageText: (text: string) => Promise.resolve({ text: `cleaned:${text}`, costUsd: 0.004 }),
 }));
+let readerBudgetSpent = false;
+mock.module("./spendCap", () => ({ requestBudgetExhausted: () => Promise.resolve(readerBudgetSpent) }));
 
 const { consumeNoteRequest } = await import("./consumeRequests");
 
@@ -21,7 +23,10 @@ const request = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-beforeEach(resetDbState);
+beforeEach(() => {
+  resetDbState();
+  readerBudgetSpent = false;
+});
 
 describe("consumeNoteRequest", () => {
   test("a finished whole-page check refuses the request", async () => {
@@ -45,7 +50,7 @@ describe("consumeNoteRequest", () => {
     expect(outcome.kind).toBe("queued");
     expect(outcome.detail).toContain("promoted");
     expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", "cleaned:body", 2]);
-    expect(dbState.calls.insertItemRun?.[0]).toEqual(["item-1", "capture_cleanup", 0.004]);
+    expect(dbState.calls.insertItemRun?.[0]).toEqual(["item-1", "capture_cleanup", 0.004, "reader"]);
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", null, "item-1"]);
   });
 
@@ -84,7 +89,15 @@ describe("consumeNoteRequest", () => {
     const row = dbState.calls.insertQueuedItem?.[0]?.[0] as Record<string, unknown>;
     expect(row.checked_scope).toBe("page");
     expect(row.full_text).toBe("cleaned:body");
-    expect(dbState.calls.insertItemRun?.[0]).toEqual(["new-item-id", "capture_cleanup", 0.004]);
+    expect(dbState.calls.insertItemRun?.[0]).toEqual(["new-item-id", "capture_cleanup", 0.004, "reader"]);
+  });
+
+  test("once the reader budget is spent, the raw capture is queued without a cleanup call", async () => {
+    readerBudgetSpent = true;
+    await consumeNoteRequest(request({ page_text: "body" }) as never);
+    const row = dbState.calls.insertQueuedItem?.[0]?.[0] as Record<string, unknown>;
+    expect(row.full_text).toBe("body");
+    expect(dbState.calls.insertItemRun).toBeUndefined();
   });
 
   test("a fresh paragraph request inserts a paragraph-scope item whose text is the selection", async () => {
