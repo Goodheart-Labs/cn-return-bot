@@ -30,20 +30,28 @@ const REVEAL_TIMEOUT_MS = 8000;
 /** The outline starts after this long even when the browser never reports
  *  the end of the scroll (Safari before 18 has no scrollend event). */
 const SCROLL_SETTLE_FALLBACK_MS = 900;
+/** How many times a jump scrolls again because the page grew under it. */
+const MAX_RESCROLLS = 3;
 
 /** Scrolls an element into the middle of the screen and outlines it briefly
- *  once the scroll has stopped, so a long jump does not use up the outline. */
-function flash(element: HTMLElement) {
-  let started = false;
-  const outline = () => {
-    if (started) return;
-    started = true;
-    window.removeEventListener("scrollend", outline);
+ *  once the scroll has stopped, so a long jump does not use up the outline.
+ *  The article's pictures load lazily and have no reserved height, so the
+ *  ones a long jump passes grow while it runs and push the element down; a
+ *  shared note link stopped a whole section short (October 2026). When the
+ *  page's height changed during the scroll, it scrolls again. */
+function flash(element: HTMLElement, attempt = 0) {
+  const heightBefore = document.documentElement.scrollHeight;
+  let settled = false;
+  const onSettled = () => {
+    if (settled) return;
+    settled = true;
+    window.removeEventListener("scrollend", onSettled);
+    if (document.documentElement.scrollHeight !== heightBefore && attempt < MAX_RESCROLLS) return flash(element, attempt + 1);
     element.classList.add("reader-flash");
     setTimeout(() => element.classList.remove("reader-flash"), FLASH_MS);
   };
-  window.addEventListener("scrollend", outline, { once: true });
-  setTimeout(outline, SCROLL_SETTLE_FALLBACK_MS);
+  window.addEventListener("scrollend", onSettled, { once: true });
+  setTimeout(onSettled, SCROLL_SETTLE_FALLBACK_MS);
   element.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
