@@ -70,14 +70,17 @@ for (const { file, size, artwork } of RASTERS) {
 }
 // The card that link previews and search results show for the website. It is
 // drawn at twice its size, so it stays sharp on high density screens.
-const OG_CARD = { width: 1200, height: 630, scale: 2 };
+// Apps cache a preview image by its address, so a changed card needs a new file
+// name. Raise the number here and in og:image and twitter:image in
+// src/everything-web/index.html.
+const OG_CARD = { width: 1200, height: 630, scale: 2, file: "og-2.png" };
 const cardPage = await browser.newPage({
   viewport: { width: OG_CARD.width, height: OG_CARD.height },
   deviceScaleFactor: OG_CARD.scale,
 });
 await cardPage.goto(pathToFileURL(path.join(ROOT, "src/everything-web/og-card.html")).href);
 await cardPage.evaluate(() => document.fonts.ready);
-const ogPath = path.join(ROOT, "src/everything-web/public/og.png");
+const ogPath = path.join(ROOT, "src/everything-web/public", OG_CARD.file);
 await cardPage.screenshot({ path: ogPath });
 console.log(`wrote ${ogPath}`);
 
