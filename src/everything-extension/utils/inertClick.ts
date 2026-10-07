@@ -51,7 +51,7 @@ export function insideCommonNotesUi(e: Event): boolean {
 }
 
 /** Calls `onDismiss` whenever the reader clicks empty page surface outside our
- *  own UI, which is how an open note or card is closed. A click that does
+ *  own UI, which is how an open note on YouTube is closed. A click that does
  *  something keeps it open, such as playing the video, pressing like or
  *  following a link. So does a click that ends a text selection, because the
  *  reader may be about to write a note on that text. Returns a function that
