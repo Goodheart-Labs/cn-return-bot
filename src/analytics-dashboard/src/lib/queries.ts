@@ -2,7 +2,7 @@ import type { Database } from "../../../everything-core/database.types";
 import { supabase } from "../../../everything-core/supabase";
 
 type RpcName = keyof Database["public"]["Functions"];
-import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../../../everything-core/readers";
+import { LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
 import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
@@ -188,27 +188,23 @@ export interface RecentPostRow {
   published_at: string | null;
   /** When the pipeline finished the post. */
   processed_at: string;
-  /** Browsers that opened at least MIN_PAGES_FOR_A_READER different pages by
-   *  the author, the number the pipeline walks authors on. A visit carries a
-   *  browser only when the extension could tell whose post it was, and only
-   *  since migration 089, so this can be below the true number. */
-  author_readers: number;
-  /** Different pages by the author that anyone opened inside the ranking
-   *  window. The pipeline uses it to order authors with the same readers. */
-  author_pages: number;
+  /** The author's score, the number the pipeline walks authors on: the
+   *  average number of different people per post, over the author's
+   *  LAST_POSTS_PER_CREATOR most recently visited posts. A visit carries a
+   *  person only since migration 089, so older reading is missing. Null when
+   *  the post's project has no feed, or nobody visited the author. */
+  author_visitors_per_post: number | null;
   claims_extracted: number;
   claims_checked: number;
   notes: number;
 }
 
-/** The author numbers use the window and the reader rule the pipeline walks
- *  creators on, so the table shows the same attention that decided which posts
- *  got checked. */
+/** The author score is the one the pipeline walks creators on, so the table
+ *  shows the same attention that decided which posts got checked. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
   return rpcAllRows<RecentPostRow>("everything_recent_posts", {
     max_posts: maxPosts,
-    window_days: VISIT_RANKING_WINDOW_DAYS,
-    min_pages: MIN_PAGES_FOR_A_READER,
+    last_posts: LAST_POSTS_PER_CREATOR,
   });
 }
 
