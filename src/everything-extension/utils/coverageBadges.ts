@@ -29,15 +29,13 @@ const BADGE_INSET_PX = 6;
 // corner empty.
 const BADGE_SIDE: "left" | "right" = /(^|\.)youtube\.com$/.test(location.hostname) ? "left" : "right";
 
-// The fallback for links that do not wrap a picture themselves: such a link
-// only gets a badge when it sits inside a listing card or is one itself (see
-// isCardLink), and the badge goes on that card's picture or corner. Substack
+// The ancestors that count as a listing card in spotFor's climb. Substack
 // wraps each feed entry in role="article"; article and li catch listings on
-// generic sites. YouTube never needs this path, because its tiles always
-// contain a thumbnail link. The height cap tells a card apart from a full
-// article body that merely links to another noted post. Links outside any
-// card get no badge at all: appended inline they ended up dangling under hero
-// titles or stretched across cards, which is what this replaced.
+// generic sites. YouTube needs none of them, because its thumbnail links are
+// units by themselves. The height cap tells a card apart from a full article
+// body that merely links to another noted post. A text link that reaches no
+// card gets no badge at all: appended inline, such badges ended up dangling
+// under hero titles or stretched across cards.
 const CARD_SELECTOR = '[role="article"], article, li';
 const CARD_MAX_HEIGHT_PX = 900;
 
@@ -261,37 +259,45 @@ function cornerOffsets(surface: HTMLElement, host: HTMLElement): { top: number; 
   };
 }
 
-/** The element the badge is pinned to, or null when this link should carry no
- *  badge. The rules are tried in this order.
+/** The spot for a link's badge, or null when the link should carry none. It
+ *  climbs from the link up through its ancestors and asks every level the
+ *  same three questions, stopping at the first level that settles it.
  *
- *  1. A link that wraps a picture gets the badge in the picture's corner,
- *     clear of the card's dates and menus. On YouTube the link is the
- *     thumbnail itself. On a Substack profile's post list the link is the
- *     whole row, and pinning the badge to the link put it over the row's date.
- *     Matching on structure rather than on component tag names is deliberate:
- *     YouTube renders different tile components logged in than logged out,
- *     and a tag-name list silently missed the logged-in ones.
- *  2. A link that is a card by itself, with no picture, carries the badge in
- *     its own corner. Inside a bigger card this is a preview box, such as the
- *     quote a Substack note shares from a post, and its upper corner is free.
- *     Outside any card it is a row of a profile's post list, whose upper corner
- *     shows the date, so the badge takes the lower one.
- *  3. A text link nested inside another link gets no badge. Substack shows an
- *     embedded note as one big link, with the note's own links inside it. The
- *     inner link used to send its badge to the largest picture of the
- *     surrounding note, which had nothing to do with the linked post
- *     (GOO-393). A text link in running text gets no badge either.
- *  4. Any other text link falls back to its listing card. The badge sits on
- *     the card's picture if it has one and on the card's corner otherwise. */
+ *  1. Is this level taller than a card can be? Then the climb has left any
+ *     card and reached a page or an article body, and the link gets no badge.
+ *  2. Does this level hold a picture? The first one the climb meets is the
+ *     picture nearest the link, and it is remembered.
+ *  3. Is this level a unit, the box the link stands for? Then the badge goes
+ *     on the remembered picture's corner, or on the unit's own corner when the
+ *     climb met no picture.
+ *
+ *  The link itself is a unit when it wraps a picture or is a card-shaped box
+ *  of its own. Examples are a YouTube thumbnail, a Substack home-feed post
+ *  card, or the quote a Substack note shares from a post. Any ancestor
+ *  matching CARD_SELECTOR is a unit too. A text link that is part of written
+ *  text never climbs past itself (see isInRunningText). The same goes for a
+ *  text link nested inside another link: Substack shows an embedded note as
+ *  one big link with the note's own links inside, and climbing from such an
+ *  inner link sent its badge to an unrelated picture in the surrounding note
+ *  (GOO-393).
+ *
+ *  Matching on structure rather than on component tag names is deliberate:
+ *  YouTube renders different tile components logged in than logged out, and a
+ *  tag-name list silently missed the logged-in ones. A link that is a unit by
+ *  itself and sits outside any card is a row of a Substack profile's post
+ *  list. That row shows its date in its upper corner, so the badge takes the
+ *  lower one. */
 function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
-  const linkPicture = coverImage(anchor);
-  if (linkPicture) return spotOn(pictureFrame(linkPicture), "top");
-  const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
-  if (isCardLink(anchor)) return spotOn(anchor, card ? "top" : "bottom");
-  if (anchor.parentElement?.closest("a[href]") || isInRunningText(anchor)) return null;
-  if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
-  const cardPicture = coverImage(card);
-  return spotOn(cardPicture ? pictureFrame(cardPicture) : card, "top");
+  let picture: HTMLElement | null = null;
+  for (let level: HTMLElement | null = anchor; level; level = level.parentElement) {
+    if (level.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
+    picture ??= coverImage(level);
+    const isUnit = level === anchor ? picture !== null || isCardLink(anchor) : level.matches(CARD_SELECTOR);
+    if (isUnit && picture) return spotOn(pictureFrame(picture), "top");
+    if (isUnit) return spotOn(level, level === anchor && !anchor.closest(CARD_SELECTOR) ? "bottom" : "top");
+    if (level === anchor && (anchor.parentElement?.closest("a[href]") || isInRunningText(anchor))) return null;
+  }
+  return null;
 }
 
 /** Marks every listing link that leads to a noted page with a note-count
