@@ -1,6 +1,8 @@
 import { browser } from "#imports";
-import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
+import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_HOVER_SCALE, MARKER_LIGHT, MARKER_SHADOW } from "./markerPalette";
 import type { ContentScriptContext } from "#imports";
+import type { BadgeMark } from "../components/BadgeCard";
+import { mountBadgeCard, type BadgeCardHandle } from "./mountBadgeCard";
 import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import { NOTE_STACK_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
@@ -10,23 +12,32 @@ import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
-// card that leads to a page with notes gets a small circle in its upper right
+// card that leads to a page with notes gets a small circle in an upper corner
 // with the community glyph and the number of notes there. The counts come
 // from the locally synced cache, so drawing badges costs no backend request.
+// A click on the circle opens a small card that says what it means.
 
 const RESCAN_DEBOUNCE_MS = 600;
 const BADGE_CLASS = "cn-coverage-badge";
 const BADGE_INSET = "6px";
 
+// The badge sits in the right-hand corner of its surface, except on YouTube.
+// There, hovering a thumbnail shows YouTube's own "Watch later" and "Add to
+// queue" buttons in its upper right corner, stacked above anything we put
+// there. The badge was hidden under them whenever the pointer was on the
+// thumbnail, so a reader could never click it. YouTube leaves the upper left
+// corner empty.
+const BADGE_SIDE: "left" | "right" = /(^|\.)youtube\.com$/.test(location.hostname) ? "left" : "right";
+
 // The fallback for links that do not wrap a picture themselves: such a link
 // only gets a badge when it sits inside a listing card or is one itself (see
-// isCardLink), and the badge goes on that card's picture or corner. Substack wraps each feed entry in
-// role="article"; article and li catch listings on generic sites. YouTube
-// never needs this path, because its tiles always contain a thumbnail link.
-// The height cap tells a card apart from a full article body that merely
-// links to another noted post. Links outside any card get no badge at all:
-// appended inline they ended up dangling under hero titles or stretched
-// across cards, which is what this replaced.
+// isCardLink), and the badge goes on that card's picture or corner. Substack
+// wraps each feed entry in role="article"; article and li catch listings on
+// generic sites. YouTube never needs this path, because its tiles always
+// contain a thumbnail link. The height cap tells a card apart from a full
+// article body that merely links to another noted post. Links outside any
+// card get no badge at all: appended inline they ended up dangling under hero
+// titles or stretched across cards, which is what this replaced.
 const CARD_SELECTOR = '[role="article"], article, li';
 const CARD_MAX_HEIGHT_PX = 900;
 
@@ -65,36 +76,63 @@ function readerPostId(href: string): string | null {
   }
 }
 
-/** A small circle pinned to a card's upper right. It uses the same surface as
+/** A small circle pinned to a card's upper corner. It uses the same surface as
  *  the in-article passage badge: a white circle with a border and the blue
  *  community glyph, plus the note count. A double-digit count widens it into
  *  a slight oval, which is fine.
  *  A checked page that produced no notes gets the same circle with a check
  *  mark instead of the count, so "we looked and found nothing" is visible in
- *  listings too. */
-function createBadge(mark: { count: number } | { checked: true }): HTMLElement {
+ *  listings too.
+ *  Under the mouse the badge grows a little, like the scrubber pins do, which
+ *  tells the reader it can be clicked. The badge lives in the host page's own
+ *  DOM, where we add no stylesheet, so the hover is two event listeners
+ *  rather than a :hover rule. */
+function createBadge(mark: BadgeMark): HTMLElement {
   const palette = isPageDark() ? MARKER_DARK : MARKER_LIGHT;
   const badge = document.createElement("span");
   badge.className = BADGE_CLASS;
+  badge.setAttribute("role", "button");
+  badge.tabIndex = 0;
   badge.setAttribute(
     "style",
-    `position:absolute;right:${BADGE_INSET};z-index:10;` +
+    `position:absolute;${BADGE_SIDE}:${BADGE_INSET};z-index:10;cursor:pointer;transition:transform 120ms ease-out;` +
       "display:inline-flex;align-items:center;justify-content:center;" +
       "gap:2px;height:26px;min-width:26px;padding:0 6px;box-sizing:border-box;border-radius:9999px;" +
       `font-size:12px;line-height:1;font-weight:600;white-space:nowrap;box-shadow:${MARKER_SHADOW};` +
       `color:${palette.glyph};background:${palette.body};` +
       `border:1px solid ${palette.border};`,
   );
+  badge.addEventListener("mouseenter", () => (badge.style.transform = `scale(${MARKER_HOVER_SCALE})`));
+  badge.addEventListener("mouseleave", () => (badge.style.transform = ""));
   const svg = `<svg viewBox="0 0 24 24" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="currentColor" aria-hidden="true" style="flex:none"><path fill-rule="evenodd" d="${NOTE_STACK_GLYPH_PATH}"/></svg>`;
   if ("count" in mark) {
-    badge.title = `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"} on this page`;
+    badge.setAttribute("aria-label", `${mark.count} Common ${mark.count === 1 ? "Note" : "Notes"}`);
     badge.innerHTML = `${svg}${mark.count}`;
   } else {
-    badge.title = "We checked this page and found nothing to note";
+    badge.setAttribute("aria-label", "Fact-checked, nothing to correct");
     const check = `<svg viewBox="0 0 14 14" width="${MARKER_GLYPH_SIZE}" height="${MARKER_GLYPH_SIZE}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M3 7.5l2.5 2.5 5.5-6"/></svg>`;
     badge.innerHTML = `${svg}${check}`;
   }
   return badge;
+}
+
+/** Makes a click on the badge open its explanation card instead of what a
+ *  click there used to do. The badge usually sits inside the link, and on
+ *  Substack inside a note the whole card opens on click. So the click is
+ *  cancelled and stopped at the badge: preventDefault keeps the browser from
+ *  following the link, and stopPropagation keeps the host page's own click
+ *  handlers, which listen further up, from navigating. Enter and Space do the
+ *  same for a reader on the keyboard. */
+function onBadgeActivate(badge: HTMLElement, activate: () => void) {
+  const handle = (event: Event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    activate();
+  };
+  badge.addEventListener("click", handle);
+  badge.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") handle(event);
+  });
 }
 
 // Avatars and icons are small, so anything under this area cannot be the
@@ -156,27 +194,62 @@ function isCardLink(anchor: HTMLAnchorElement): boolean {
   );
 }
 
-/** Where a badge sits: the element it is pinned to, and that element's right
- *  hand corner it takes. */
+// A text link in running text is part of what someone wrote, not an entry in
+// a listing. Every bullet point of an Astral Codex Ten post that ended in a
+// "(source)" link to a checked page got a badge, because each bullet is an li
+// and so counted as a card (GOO-393). A link in a reader's comment did the
+// same. A link is in running text when the text block around it holds much
+// more text than the link itself. A listing's title link is all or most of
+// its block, as in <h3><a>Title</a></h3>.
+// A link that shows its own web address is written text too, even when it
+// fills its block. A reader pastes the address into a comment, and Substack
+// shows the addresses of a note's links on their own line. A listing never
+// uses an address as a post's title. The pattern needs a protocol or a path,
+// so a title such as "Node.js" is not mistaken for an address.
+const MIN_TITLE_SHARE_OF_BLOCK_TEXT = 0.5;
+const BARE_ADDRESS = /^(https?:\/\/\S+|[\w-]+(\.[\w-]+)+\/\S*)$/;
+
+function isInRunningText(anchor: HTMLAnchorElement): boolean {
+  const linkText = (anchor.textContent ?? "").trim();
+  if (BARE_ADDRESS.test(linkText)) return true;
+  let block = anchor.parentElement;
+  while (block && WRAPPER_DISPLAYS_WITHOUT_A_FRAME.has(getComputedStyle(block).display)) block = block.parentElement;
+  if (!block) return false;
+  return linkText.length < (block.textContent ?? "").trim().length * MIN_TITLE_SHARE_OF_BLOCK_TEXT;
+}
+
+/** Where a badge sits: the element it is pinned to, and which of that
+ *  element's corners on BADGE_SIDE it takes. */
 type BadgeSpot = { surface: HTMLElement; corner: "top" | "bottom" };
 
 /** The element the badge is pinned to, or null when this link should carry no
- *  badge. The preferred surface is the frame of the tile's picture, so the
- *  badge sits in the picture's corner, clear of the card's dates and menus.
- *  The picture is looked for inside the link first. On YouTube the link is the
- *  thumbnail itself. On a Substack profile's post list the link is the whole
- *  row, and pinning the badge to the link put it over the row's date.
- *  Matching on structure rather than on component tag names is deliberate:
- *  YouTube renders different tile components logged in than logged out, and a
- *  tag-name list silently missed the logged-in ones. A text link falls back to
- *  its listing card, where the badge sits on the card's picture if it has one
- *  and on the card's corner otherwise. A link that is a card by itself, with
- *  no picture, carries the badge in its own lower corner. */
+ *  badge. The rules are tried in this order.
+ *
+ *  1. A link that wraps a picture gets the badge in the picture's corner,
+ *     clear of the card's dates and menus. On YouTube the link is the
+ *     thumbnail itself. On a Substack profile's post list the link is the
+ *     whole row, and pinning the badge to the link put it over the row's date.
+ *     Matching on structure rather than on component tag names is deliberate:
+ *     YouTube renders different tile components logged in than logged out,
+ *     and a tag-name list silently missed the logged-in ones.
+ *  2. A link that is a card by itself, with no picture, carries the badge in
+ *     its own corner. Inside a bigger card this is a preview box, such as the
+ *     quote a Substack note shares from a post, and its upper corner is free.
+ *     Outside any card it is a row of a profile's post list, whose upper corner
+ *     shows the date, so the badge takes the lower one.
+ *  3. A text link nested inside another link gets no badge. Substack shows an
+ *     embedded note as one big link, with the note's own links inside it. The
+ *     inner link used to send its badge to the largest picture of the
+ *     surrounding note, which had nothing to do with the linked post
+ *     (GOO-393). A text link in running text gets no badge either.
+ *  4. Any other text link falls back to its listing card. The badge sits on
+ *     the card's picture if it has one and on the card's corner otherwise. */
 function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
   const linkPicture = coverImage(anchor);
   if (linkPicture) return { surface: pictureFrame(linkPicture), corner: "top" };
   const card = anchor.closest<HTMLElement>(CARD_SELECTOR);
-  if (!card && isCardLink(anchor)) return { surface: anchor, corner: "bottom" };
+  if (isCardLink(anchor)) return { surface: anchor, corner: card ? "top" : "bottom" };
+  if (anchor.parentElement?.closest("a[href]") || isInRunningText(anchor)) return null;
   if (!card || card.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
   const cardPicture = coverImage(card);
   return { surface: cardPicture ? pictureFrame(cardPicture) : card, corner: "top" };
@@ -278,6 +351,15 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   // a shelf below, gets a badge on each copy. Several links inside one card
   // lead to the same surface, and a surface carries one badge only.
   const badges = new Map<HTMLAnchorElement, { badge: HTMLElement; key: string }>();
+
+  // The explanation card mounts on the first badge click, so a page whose
+  // badges nobody clicks never gets the extra shadow root.
+  let badgeCard: Promise<BadgeCardHandle> | null = null;
+  const openBadgeCard = (badge: HTMLElement, mark: BadgeMark, anchor: HTMLAnchorElement) => {
+    badgeCard ??= mountBadgeCard(ctx);
+    const noun = extractYoutubeVideoId(anchor.href) ? "video" : "post";
+    void badgeCard.then((card) => card.open(badge, mark, noun));
+  };
   const hasBadge = (surface: HTMLElement) => [...surface.children].some((child) => child.classList.contains(BADGE_CLASS));
 
   /** Puts the badge on the best surface its link currently offers. Calling it
@@ -326,7 +408,9 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     if (!spot) return "no-surface";
     // Another link in the same card already put its badge here.
     if (hasBadge(spot.surface)) return "badged";
-    const badge = createBadge(count ? { count } : { checked: true });
+    const mark: BadgeMark = count ? { count } : { checked: true };
+    const badge = createBadge(mark);
+    onBadgeActivate(badge, () => openBadgeCard(badge, mark, anchor));
     seat(badge, spot);
     badges.set(anchor, { badge, key });
     return "badged";
@@ -356,7 +440,7 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
       const outcome = placeBadge(anchor, currentKeys);
       if (outcome !== "not-listed") outcomes[outcome] += 1;
     }
-    logScanSummary(`[common-notes] listing badges: ${outcomes.badged + outcomes["no-surface"]} links to noted pages, ${badges.size} badges on the page, ${outcomes["no-surface"]} links outside any card`);
+    logScanSummary(`[common-notes] listing badges: ${outcomes.badged + outcomes["no-surface"]} links to noted pages, ${badges.size} badges on the page, ${outcomes["no-surface"]} links with no place for a badge`);
   };
 
   // The badges are otherwise silent, so a page that should show them and does
@@ -403,5 +487,6 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     document.removeEventListener("load", onLoad, { capture: true } as EventListenerOptions);
     clearTimeout(timer);
     for (const { badge } of badges.values()) badge.remove();
+    void badgeCard?.then((card) => card.teardown());
   };
 }
