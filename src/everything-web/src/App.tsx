@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LoginPromptProvider } from "@cn/features/auth/loginPrompt";
+import { ExtensionNudge } from "./components/ExtensionNudge";
 import { LoginModal } from "./components/LoginModal";
 import { SiteHeader } from "./components/SiteHeader";
 import { useRoute } from "./lib/routing";
@@ -10,8 +11,8 @@ import { MinisitePage } from "./pages/minisites/MinisitePage";
 import { MinisitesPage } from "./pages/minisites/MinisitesPage";
 import { NotesView } from "./pages/NotesView";
 
-/** The website's frame: the header on every page, and the page the route
- *  names below it. */
+/** The website's frame: the header on every page, the page the route names
+ *  below it, and the extension nudge, which counts time across pages. */
 export function App() {
   const [route, navigate] = useRoute();
   const [loginOpen, setLoginOpen] = useState(false);
@@ -25,6 +26,7 @@ export function App() {
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <ExtensionNudge route={route} navigate={navigate} />
     </LoginPromptProvider>
   );
 }
