@@ -289,7 +289,7 @@ function splitOversizedBlock(block: string): string[] {
 }
 
 // We split on blank lines so that paragraphs and speaker turns stay intact.
-function chunkText(text: string): string[] {
+export function chunkText(text: string): string[] {
   const blocks = text.split(/\n\s*\n/).flatMap((block) => splitOversizedBlock(block));
   const chunks: string[] = [];
   let cur = "";
@@ -347,7 +347,7 @@ async function extractChunks(
 // timestamps from the cues afterwards, so no [seconds] marker can leak into a
 // claim's verbatim context.
 const transcriptChunk = (text: string) => `Transcript segment:\n\n${text}`;
-const articleChunk = (text: string) => `Article excerpt:\n\n${text}`;
+export const articleChunk = (text: string) => `Article excerpt:\n\n${text}`;
 
 /** The user message for one chunk of a part. The introduction goes ahead of the
  *  chunk as context, labelled so the prompt's rule not to extract from it

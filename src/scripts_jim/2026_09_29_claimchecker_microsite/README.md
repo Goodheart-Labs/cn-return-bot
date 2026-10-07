@@ -41,3 +41,19 @@ bun run src/scripts_jim/2026_09_29_claimchecker_microsite/fetchArticle.ts
 
 The runner calls the same functions the production services call, in one
 process, and writes nothing to the production database.
+
+## The eval datasets
+
+`dataset/` holds the 14 datapoints Jim collected in the GOO-229 comments, for two evals: is the right claim in the extractor's output, and does the claim checker decide right on the claim.
+
+- `datapoints.ts` has the judgement: Jim's group, the expected decision, his words, and the reference claim.
+- `buildDataset.ts` reads production (read-only, no model calls) and writes `dataset.json`: the extractor's chunk of the post, the post the checker is handed, and what production did with the claim.
+- `buildArtifact.ts` inlines `dataset.json` into `artifact/template.html`, the page published as an artifact.
+- `findSnippets.ts` looked up where each snippet of the comments sits in production.
+
+```bash
+bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/buildDataset.ts
+bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/buildArtifact.ts
+```
+
+The chunks show images as `[[IMAGE:url]]` markers, because describing them is a model call that has not been done yet.

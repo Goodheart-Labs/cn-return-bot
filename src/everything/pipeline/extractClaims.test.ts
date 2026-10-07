@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { contextTimeSpan } from "./extractClaims";
+import { articleChunk, chunkText, contextTimeSpan } from "./extractClaims";
 import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 
 /** Cues shaped like the passage that surfaced the bug (GOO-52): the video
@@ -46,4 +46,24 @@ describe("contextTimeSpan", () => {
   test("returns an empty span for an empty excerpt", () => {
     expect(contextTimeSpan("", cues)).toEqual({});
   });
+});
+
+describe("chunkText", () => {
+  const paragraph = "word ".repeat(500).trim();
+
+  test("keeps a short text in one chunk", () => {
+    expect(chunkText("First paragraph.\n\nSecond paragraph.")).toEqual(["First paragraph.\n\nSecond paragraph."]);
+  });
+
+  test("starts a new chunk at a paragraph break once the size limit would be passed", () => {
+    const text = Array.from({ length: 10 }, () => paragraph).join("\n\n");
+    const chunks = chunkText(text);
+    expect(chunks.length).toBeGreaterThan(1);
+    for (const chunk of chunks) expect(chunk.length).toBeLessThanOrEqual(12_000);
+    expect(chunks.join("\n\n")).toBe(text);
+  });
+});
+
+test("articleChunk labels a chunk as an article excerpt", () => {
+  expect(articleChunk("Some text.")).toBe("Article excerpt:\n\nSome text.");
 });
