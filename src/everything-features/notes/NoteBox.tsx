@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteSourceDetails } from "@cn/core/notes";
 import type { NoteStatus } from "@cn/core/noteScore";
@@ -126,8 +126,7 @@ export function RatingPanel({ question, children }: { question: React.ReactNode;
 export function NoteBox({ note, status, compact = false, sourcesOpen, question, children }: {
   note: NoteRow;
   status: NoteStatus;
-  /** For a narrow column: sources show as site names, and a long note starts
-   *  clamped to a few lines with a "More" button. */
+  /** For a narrow column: sources show as site names. */
   compact?: boolean;
   sourcesOpen?: boolean;
   question?: React.ReactNode;
@@ -137,32 +136,18 @@ export function NoteBox({ note, status, compact = false, sourcesOpen, question, 
   // "AI writes, people rate": a reader should never mistake a machine's note
   // for a person's.
   const byline = note.author_id ? `by ${note.author_name ?? "anonymous"}` : "Written by AI";
-  const [expanded, setExpanded] = useState(false);
-  const [clamped, setClamped] = useState(false);
-  const textBox = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const paragraph = textBox.current?.firstElementChild;
-    if (compact && !expanded && paragraph) setClamped(paragraph.scrollHeight > paragraph.clientHeight + 1);
-  }, [compact, expanded, note.note]);
   return (
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <StatusBadge status={status} />
         <span className="text-xs text-fg-muted shrink-0">{byline}</span>
       </div>
-      <div ref={textBox}>
-        <LinkifiedText
-          className={`text-sm text-fg whitespace-pre-wrap${compact && !expanded ? " line-clamp-6" : ""}`}
-          linkClassName={compact ? "text-link hover:underline" : "text-link hover:underline break-all"}
-          shortLinks={compact}
-          text={noteText(note)}
-        />
-      </div>
-      {compact && (clamped || expanded) && (
-        <button type="button" className="mt-1 text-xs font-semibold text-link hover:underline" onClick={() => setExpanded((open) => !open)}>
-          {expanded ? "Less" : "More"}
-        </button>
-      )}
+      <LinkifiedText
+        className="text-sm text-fg whitespace-pre-wrap"
+        linkClassName={compact ? "text-link hover:underline" : "text-link hover:underline break-all"}
+        shortLinks={compact}
+        text={noteText(note)}
+      />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
       {children && <RatingPanel question={question ?? <span className="font-semibold">{ratingQuestion("note")}</span>}>{children}</RatingPanel>}
     </div>
