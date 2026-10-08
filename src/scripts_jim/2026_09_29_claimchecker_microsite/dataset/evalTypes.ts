@@ -86,15 +86,12 @@ export interface QualityAnswer {
   reason: string;
 }
 
-export interface CheckerRowResult {
-  id: string;
-  group: Group;
-  expected: DatasetRow["expected"];
+/** One run of the whole claim check on one row. */
+export interface CheckerSample {
   outcome: CheckerOutcome;
   verdict: CheckerVerdict;
   /** Only for a note where reference notes exist. */
   quality: QualityAnswer | null;
-  referenceNotes: string[];
   research: string | null;
   draftNote: string | null;
   sourceVerdict: string | null;
@@ -102,7 +99,22 @@ export interface CheckerRowResult {
   judgeCostUsd: number;
 }
 
+export interface CheckerRowResult {
+  id: string;
+  group: Group;
+  expected: DatasetRow["expected"];
+  referenceNotes: string[];
+  samples: CheckerSample[];
+  /** In how many samples the decision was the expected one. */
+  passedIn: number;
+  /** The row's verdict over its samples: a pass when passedIn reaches the pass mark,
+   *  otherwise the most common way the samples went wrong. */
+  verdict: CheckerVerdict;
+}
+
 export interface CheckerEvalResult {
+  samples: number;
+  passAt: number;
   rows: CheckerRowResult[];
   costUsd: { checks: number; judge: number };
 }
@@ -112,7 +124,7 @@ export interface EvalRun {
   label: string;
   createdAt: string;
   commit: string;
-  settings: { extractorModel: string; checkerModels: string; commentsFetched: boolean; samples: number };
+  settings: { extractorModel: string; checkerModels: string; commentsFetched: boolean; samples: { extractor: number; checker: number } };
   /** The rows the run covered, by id. */
   rowIds: string[];
   extractor: ExtractorEvalResult | null;

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import OpenAI from "openai";
-import { applyRatings, parseRatingOutput, rateClaims, shouldFactCheck } from "./rateClaims";
+import { JUDGEMENTS, RATING_SYSTEM_PROMPT, applyRatings, parseRatingOutput, rateClaims, shouldFactCheck } from "./rateClaims";
 
 // The OpenAI SDK's create method is replaced, so no test reaches OpenRouter while
 // our own client code still runs. Each request is kept so a test can check what
@@ -127,5 +127,11 @@ describe("rateClaims research call", () => {
     expect(requests[1].tools).toBeUndefined();
     expect(result.cost.cost).toBeCloseTo(0.011, 10);
     expect(result.webSearches).toBe(3);
+  });
+});
+
+describe("RATING_SYSTEM_PROMPT", () => {
+  test("names every level of the scale the rating is parsed against", () => {
+    for (const judgement of JUDGEMENTS) expect(RATING_SYSTEM_PROMPT).toContain(judgement);
   });
 });

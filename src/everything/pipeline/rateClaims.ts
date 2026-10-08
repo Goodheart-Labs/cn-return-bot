@@ -81,7 +81,7 @@ const RATING_RESPONSE_FORMAT = jsonSchemaResponseFormat("claim_ratings", {
   additionalProperties: false,
 });
 
-const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get one part of an article or transcript, possibly with the piece's introduction ahead of it for context, and the claims extracted from that part as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
+export const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get one part of an article or transcript, possibly with the piece's introduction ahead of it for context, and the claims extracted from that part as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
 
 Research first. Search the web for sources on the events, people and figures the text is about, and open the most relevant pages to read them in full. Related claims usually share a source, so read the few pages that settle many claims at once. Search before you rate.
 

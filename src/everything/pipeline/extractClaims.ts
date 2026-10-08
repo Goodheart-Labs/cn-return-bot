@@ -30,7 +30,7 @@ import { normalizeText } from "../../everything-core/normalizeText";
 import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
 import { extractionModels } from "./model";
 
-function extractionSystemPrompt(): string {
+export function extractionSystemPrompt(): string {
   const fields = [
     `- "claim": the neutral, self-contained statement.`,
     `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Verbatim source prose only — never quote an image block's Description/Visible text lines. Leave empty ("") for a claim grounded only in an image.`,

@@ -1,5 +1,5 @@
 import { describe, expect, spyOn, test } from "bun:test";
-import { articleChunk, chunkText, contextTimeSpan, describeArticleImages, renderImageDescriptions, runExtraction } from "./extractClaims";
+import { articleChunk, chunkText, contextTimeSpan, describeArticleImages, extractionSystemPrompt, renderImageDescriptions, runExtraction } from "./extractClaims";
 import { claudeExtractionModels, withExtractionModels } from "./model";
 import * as costTracker from "../../pipeline/cost-tracking/costTracker";
 import * as gemini from "../../pipeline/media/mediaAnalysisGemini";
@@ -115,5 +115,13 @@ describe("runExtraction", () => {
     expect(request.reasoning_effort).toBe("medium");
     expect(request.messages.at(-1)).toEqual({ role: "user", content: "Article excerpt:\n\nA is true." });
     spy.mockRestore();
+  });
+});
+
+describe("extractionSystemPrompt", () => {
+  test("describes every field of the response the extraction is parsed against", () => {
+    for (const field of ["claim", "context", "context_paragraph", "image_urls", "very_confident_that_its_true", "speculation"]) {
+      expect(extractionSystemPrompt()).toContain(`"${field}"`);
+    }
   });
 });

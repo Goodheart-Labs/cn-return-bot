@@ -56,10 +56,11 @@ async function main() {
   const runId = new Date().toISOString().slice(0, 16).replace("T", "-").replace(":", "");
   console.log(`Run ${runId} "${label}": ${evals.join(" and ")} on ${rows.length} rows`);
 
-  const extractor = evals.includes("extractor")
-    ? await runExtractorEval(rows, await loadItemTexts(rows.map((r) => r.item.id)), loadFrozenDescriptions())
-    : null;
-  const checker = evals.includes("checker") ? await runCheckerEval(rows, runId) : null;
+  // The two evals do not depend on each other, so they run side by side.
+  const [extractor, checker] = await Promise.all([
+    evals.includes("extractor") ? runExtractorEval(rows, await loadItemTexts(rows.map((r) => r.item.id)), loadFrozenDescriptions()) : null,
+    evals.includes("checker") ? runCheckerEval(rows, runId) : null,
+  ]);
 
   const run: EvalRun = {
     id: runId,
@@ -70,7 +71,7 @@ async function main() {
       extractorModel: extractionModels().model,
       checkerModels: "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
       commentsFetched: !!process.env.XAI_API_KEY,
-      samples: extractor?.samples ?? 0,
+      samples: { extractor: extractor?.samples ?? 0, checker: checker?.samples ?? 0 },
     },
     rowIds: rows.map((r) => r.id),
     extractor,

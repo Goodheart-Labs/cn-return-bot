@@ -1,0 +1,466 @@
+<title>Common Notes Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a reading column, a wide band for the flow diagram, a side drawer for the details of a step. */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --ink: #15191f;
+  --muted: #5a6472;
+  --line: #d9dee5;
+  --accent: #0b6f66;
+  --accent-soft: #e2f3f1;
+  --muse: #18794a;
+  --muse-soft: #e1f3e8;
+  --other: #4d5d78;
+  --other-soft: #e6eaf1;
+  --code: #374151;
+  --code-soft: #eceef1;
+  --warn: #a4400a;
+  --warn-soft: #fde9dd;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1216; --surface: #171b21; --surface-2: #1e232b; --ink: #e6e9ee; --muted: #9aa4b2; --line: #2b313a;
+    --accent: #4cc4b6; --accent-soft: #13302d; --muse: #5fd394; --muse-soft: #15301f;
+    --other: #9fb0cc; --other-soft: #212836; --code: #c3cad4; --code-soft: #22272e; --warn: #f28b54; --warn-soft: #3a2116;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1216; --surface: #171b21; --surface-2: #1e232b; --ink: #e6e9ee; --muted: #9aa4b2; --line: #2b313a;
+  --accent: #4cc4b6; --accent-soft: #13302d; --muse: #5fd394; --muse-soft: #15301f;
+  --other: #9fb0cc; --other-soft: #212836; --code: #c3cad4; --code-soft: #22272e; --warn: #f28b54; --warn-soft: #3a2116;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.page { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; }
+.prose { max-width: 70ch; }
+h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin-top: 56px; margin-bottom: 12px; }
+h3 { font-size: 1.1rem; font-weight: 600; margin: 20px 0 6px; }
+h4 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 6px; }
+p { margin: 0 0 12px; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--code-soft); padding: 1px 5px; border-radius: 4px; }
+.lede { color: var(--muted); font-size: 1.1rem; margin-top: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 20px 0 0; font-size: 0.9rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+.flow-wrap { margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+.flow-wrap svg { display: block; width: 100%; min-width: 940px; height: auto; }
+.flow-wrap .phase { font: 700 13px var(--font-body); fill: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.region { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.region-label { font: 700 12px var(--font-body); fill: var(--accent); }
+.node { cursor: pointer; }
+.node rect.box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; transition: stroke 120ms, fill 120ms; }
+.node:hover rect.box, .node:focus-visible rect.box, .node.active rect.box { stroke: var(--ink); fill: var(--surface-2); }
+.node:focus { outline: none; }
+.node:focus-visible rect.box { stroke-width: 2.5; }
+.node text.title { font: 600 14px var(--font-body); fill: var(--ink); }
+.node text.sub { font: 500 12px var(--font-body); fill: var(--muted); }
+.node rect.tag { stroke: none; }
+.node text.tagtext { font: 700 10px var(--font-body); letter-spacing: 0.04em; }
+.edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.edge.dash { stroke-dasharray: 5 5; }
+.edge-label { font: 600 12px var(--font-body); fill: var(--muted); }
+.arrowhead { fill: var(--muted); }
+.flow-hint { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+.tip { position: fixed; z-index: 30; max-width: 320px; background: var(--ink); color: var(--bg); padding: 10px 12px; border-radius: 8px; font-size: 0.86rem; line-height: 1.45; pointer-events: none; box-shadow: 0 6px 24px rgb(0 0 0 / 0.25); }
+
+.drawer-backdrop { position: fixed; inset: 0; background: rgb(10 12 16 / 0.45); z-index: 40; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(760px, 100%); background: var(--surface); z-index: 50; overflow-y: auto; border-left: 1px solid var(--line); box-shadow: -12px 0 40px rgb(0 0 0 / 0.2); padding: 24px 24px 64px; padding-top: max(24px, env(safe-area-inset-top, 0px)); }
+.drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.drawer h2 { margin: 4px 0 8px; font-size: 1.5rem; }
+.close { font: 600 0.9rem var(--font-body); background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.close:focus-visible, .row-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.chip { font-size: 0.78rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; border: 1.5px solid var(--line); color: var(--muted); }
+.chip.k-muse { border-color: var(--muse); color: var(--muse); background: var(--muse-soft); }
+.chip.k-other { border-color: var(--other); color: var(--other); background: var(--other-soft); }
+.chip.k-code { border-color: var(--code); color: var(--code); background: var(--code-soft); }
+.chip.k-result { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip.k-end { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+.facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 16px; font-size: 0.92rem; margin: 12px 0 16px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; min-width: 0; }
+details.block { border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; background: var(--surface); }
+details.block > summary { cursor: pointer; padding: 10px 14px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+details.block > summary::-webkit-details-marker { display: none; }
+details.block > summary::after { content: "Show"; color: var(--muted); font-weight: 500; font-size: 0.85rem; }
+details.block[open] > summary::after { content: "Hide"; }
+pre.text { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--surface-2); font: 12.5px/1.55 var(--font-mono); white-space: pre-wrap; word-break: break-word; max-height: 520px; overflow-y: auto; border-radius: 0 0 10px 10px; }
+.callout { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--surface); border-radius: 8px; padding: 10px 14px; margin: 12px 0; font-size: 0.95rem; }
+
+table.glance { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: 0.92rem; }
+.table-wrap { overflow-x: auto; margin-top: 12px; }
+.glance th { text-align: left; font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface); white-space: nowrap; }
+.glance td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.glance tr:last-child td { border-bottom: 0; }
+.row-link { background: none; border: 0; padding: 0; font: 600 0.92rem var(--font-body); color: var(--accent); cursor: pointer; text-align: left; text-decoration: underline; }
+@media (max-width: 600px) { h1 { font-size: 1.9rem; } .facts { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .node rect.box { transition: none; } }
+</style>
+
+<div class="page">
+  <h1>Common Notes pipeline</h1>
+  <p class="prose lede">What happens to one post, from its text to a note. The first half runs once per post and finds the claims. The second half runs once for every claim that is worth checking. Click any box for what it does, the prompt it is given and a real example.</p>
+  <div class="legend">
+    <span><i style="background:var(--muse)"></i>Muse Spark 1.3 (the main model)</span>
+    <span><i style="background:var(--other)"></i>another model</span>
+    <span><i style="background:var(--code)"></i>plain code, no model</span>
+    <span><i style="background:var(--accent)"></i>result</span>
+    <span><i style="background:var(--warn)"></i>ends without a note</span>
+  </div>
+
+  <div class="flow-wrap"><svg id="flow-svg" viewBox="0 0 1180 960" role="img" aria-label="Flow diagram of the Common Notes pipeline"></svg></div>
+  <p class="flow-hint">On a phone, scroll the diagram sideways. Every box is also reachable with the Tab key and Enter.</p>
+
+  <h2>The steps at a glance</h2>
+  <div class="table-wrap"><table class="glance"><thead><tr><th>Step</th><th>Runs</th><th>Model</th><th>What it decides</th></tr></thead><tbody id="glance"></tbody></table></div>
+
+  <h2>The two evals</h2>
+  <p class="prose">The dashed frames in the diagram show which part each eval tests. Eval 1 gives the extractor one chunk of a post and asks whether the right claim comes out. Eval 2 gives the whole claim check one claim and asks whether it ends in the right decision, a note or no note. The gate, the image descriptions and the rating are not tested by either.</p>
+</div>
+
+<div id="tip" class="tip" hidden></div>
+<div id="drawer-root"></div>
+
+<script type="application/json" id="data">/*DATA*/</script>
+<script>
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const P = DATA.prompts;
+const EX = DATA.example;
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/* ---------- The steps ---------- */
+const KIND = {
+  muse: { color: "--muse", soft: "--muse-soft", tag: "MUSE" },
+  gemini: { color: "--other", soft: "--other-soft", tag: "GEMINI" },
+  deepseek: { color: "--other", soft: "--other-soft", tag: "DEEPSEEK" },
+  grok: { color: "--other", soft: "--other-soft", tag: "GROK" },
+  code: { color: "--code", soft: "--code-soft", tag: "CODE" },
+  result: { color: "--accent", soft: "--accent-soft", tag: "RESULT" },
+  end: { color: "--warn", soft: "--warn-soft", tag: "NO NOTE" },
+};
+const chipClass = (kind) => ({ muse: "k-muse", gemini: "k-other", deepseek: "k-other", grok: "k-other", code: "k-code", result: "k-result", end: "k-end" })[kind];
+
+const STEPS = {
+  fetch: {
+    kind: "code", title: "Fetch the text", sub: "page, post or video", runs: "Once per post", model: "none",
+    summary: "Gets the text of the post. Images stay in it as markers.",
+    decides: "Whether there is any text to work on.",
+    what: "A Substack post is read from its feed, a YouTube video from its captions, and any other page through a ladder of fetchers that ends in a headless browser. When a reader asked for the page, the text their browser captured is used instead. Images stay in the text as [[IMAGE:address]] markers.",
+    goesIn: "The address of the post, or the text a reader's browser captured.", comesOut: "The text of the post.",
+    tested: "Not tested. The evals start from the stored text of the post.",
+  },
+  gate: {
+    kind: "muse", title: "Gate and split", sub: "checkable? topic parts", runs: "Once per post", model: "Muse Spark 1.3",
+    summary: "One call decides whether the text is worth checking and whether it falls into topic parts.",
+    decides: "Whether the post makes claims worth checking, and where its topic parts begin.",
+    what: "One call reads the whole text and answers two questions. Does the text try to shape what the reader believes (an argument, a report, advice)? An announcement, a personal update or entertainment is marked not checkable and the post ends there. A page a reader asked for is never declined. And does the text fall into parts about different topics? Splitting is optional and most texts stay one part. Each part is marked by its first one or two sentences, copied word for word, and the code cuts the text at those sentences.",
+    goesIn: "The whole text, with the title.", comesOut: "A verdict: checkable or not, and the start of each part.",
+    tested: "Not tested. The evals read each post as one unsplit part.",
+    prompts: [["System prompt", () => P.system.gate], ["User message", () => "Title: <title of the post>\n\n<the whole text>"]],
+  },
+  images: {
+    kind: "gemini", title: "Describe images", sub: "one call per image", runs: "Once per image", model: "Gemini 3 Flash",
+    summary: "The extractor cannot see images, so Gemini describes each one in words.",
+    decides: "What each image shows and says.",
+    what: "The extractor reads only text. Each image in the post gets a description from Gemini, plus any text it can read in the picture. The description is spliced into the text in place of the marker, in square brackets together with the address of the image, so that a claim can name the images it rests on.",
+    goesIn: "One image.", comesOut: "A description and the visible text of the image.",
+    tested: "The evals read frozen descriptions: the 66 images of the seven posts were described once, for about $0.33, and saved.",
+    prompts: [["Prompt", () => P.system.images]],
+  },
+  chunks: {
+    kind: "code", title: "Cut into chunks", sub: "12,000 characters", runs: "Once per post", model: "none",
+    summary: "Cuts the text at paragraph breaks into chunks of at most 12,000 characters.",
+    decides: "What the extractor sees in one call.",
+    what: "The text, now with the image descriptions in it, is cut at paragraph breaks into chunks of at most 12,000 characters. When the gate split the post into parts, each part is cut on its own and gets the introduction of the post shown ahead of it as context. The chunk size matters more than the model: on one test post, Muse found 80 claims in one call over the whole essay and 336 with 12,000-character chunks.",
+    goesIn: "The text with image descriptions.", comesOut: "Chunks, each labelled \"Article excerpt:\".",
+    tested: "Eval 1 gives the extractor exactly one such chunk per row.",
+  },
+  extract: {
+    kind: "muse", title: "Extract claims", sub: "one call per chunk", runs: "Once per chunk", model: "Muse Spark 1.3, high reasoning",
+    summary: "Lists every checkable claim in the chunk.",
+    decides: "Which statements become claims, and how each is worded.",
+    what: "For every chunk, one call lists every checkable claim the chunk makes or relies on, including implicit ones, and splits compound statements into several claims. Each claim is restated neutrally, and comes with the verbatim quote it sits in, the wider paragraph around it and the images it rests on. The extractor also marks a claim it is very confident is true (that one is never checked) and a claim about a future scenario (that one is dropped). Opinions, value judgments, predictions and jokes are skipped.",
+    goesIn: "One chunk.", comesOut: "A list of claims with quote, paragraph and image addresses.",
+    tested: "Eval 1 tests this step. In the baseline, it found the right claim in 10 of 14 rows.",
+    facts: [["Cost", "About half a cent per call: 33 calls cost $0.15 in the eval baseline"]],
+    prompts: [["System prompt", () => P.system.extraction], ["User message", () => "Article excerpt:\n\n<one chunk of the post>"]],
+    example: () => EX.extraction,
+  },
+  dedupe: {
+    kind: "code", title: "Clean up the claims", sub: "repeats, predictions", runs: "Once per post", model: "none",
+    summary: "Drops repeated claims and claims about the future.",
+    decides: "Which claims go on.",
+    what: "The claims of all chunks and parts are put together. A claim with the same text as one the post already carries is dropped, which matters when a post is resumed after a crash. A claim about a future scenario is dropped. A claim the extractor was very confident about is stored as skipped with the judgement certainly true, and is never rated or checked.",
+    goesIn: "All extracted claims.", comesOut: "The claims to rate, grouped by part.",
+    tested: "Not tested.",
+  },
+  rate: {
+    kind: "muse", title: "Rate claims", sub: "per part, with search", runs: "Once per part", model: "Muse Spark 1.3, medium reasoning, native search",
+    summary: "Researches a whole part at once and rates each of its claims from certainly true to certainly false.",
+    decides: "How likely each claim is true, and so whether it is worth a costly check.",
+    what: "One call per part rates all of that part's claims together, because the claims of one topic are related and one good source can settle many of them. The model researches with Meta's own search inside the one request, reads the pages it wants, and rates every numbered claim on a seven level scale. It rates the claim as stated: a wrong name, number or date makes it false even if the gist holds. A claim rated uncertain or worse is sent to the fact-check, so the model is told to be as decisive as the evidence allows.",
+    goesIn: "The part's text and its claims as numbered JSON, each shown the way the fact-check will see it.", comesOut: "A research summary and one rating per claim.",
+    tested: "Not tested by the evals.",
+    facts: [["Cost", "$0.05 for the whole sex-cult post in the first baseline run"]],
+    prompts: [["System prompt", () => P.system.rating], ["User message", () => "Introduction (context only):\n\n<the introduction, when the part has one>\n\nPart:\n\n<the part's text>\n\nClaims:\n{\n \"1\": { \"Highlighted claim from Article\": \"...\", \"Surrounding context\": \"...\" },\n \"2\": { ... }\n}"]],
+  },
+  worth: {
+    kind: "code", title: "Worth checking?", sub: "uncertain or worse", runs: "Once per claim", model: "none",
+    summary: "Only claims rated uncertain or worse get the costly fact-check.",
+    decides: "Which claims are fact-checked. This is what keeps the cost down.",
+    what: "A claim rated uncertain, somewhat likely false, likely false or certainly false goes on to the fact-check. A claim the rater left out counts as uncertain. A claim rated somewhat likely true or better is stored as skipped, with its judgement. In the baseline run, 195 of 764 claims were worth checking.",
+    goesIn: "Rated claims.", comesOut: "The claims to check.",
+    tested: "Not tested.",
+  },
+  skipped: {
+    kind: "end", title: "Stored as skipped", sub: "rated true", runs: "", model: "none",
+    summary: "The claim is saved with its rating and never checked.",
+    decides: "",
+    what: "The claim is saved with its judgement and costs nothing more. The lab microsite shows such claims when you tick the box that also tints the claims without a note.",
+    goesIn: "A claim rated likely true or better.", comesOut: "A saved claim with no note.", tested: "",
+  },
+  nocheck: {
+    kind: "end", title: "Post done, no claims", sub: "not checkable", runs: "", model: "none",
+    summary: "The gate found nothing to check.",
+    decides: "",
+    what: "The post is marked done and the reason the gate gave is saved on it. No claims are extracted and nothing more is spent.",
+    goesIn: "A post the gate marked not checkable.", comesOut: "A finished post with a reason.", tested: "",
+  },
+  build: {
+    kind: "code", title: "Build the post", sub: "passage and paragraph", runs: "Once per claim", model: "none",
+    summary: "Turns the claim into a small synthetic post that the X note pipeline can handle.",
+    decides: "Exactly what the checker is told about the claim.",
+    what: "The claim check is the pipeline that writes Community Notes for X posts, so each claim becomes a small synthetic post. Its text is \"Highlighted claim from Article:\" followed by the quote, and \"Surrounding context:\" followed by the paragraph. The extractor's own restatement is left out on purpose, because it can drift from what the author wrote. Only a claim with no quote, because it rests on an image, gets a \"Claim:\" line with the restatement and the image attached.",
+    goesIn: "A claim with its quote, paragraph and images.", comesOut: "A post: text, media, date.",
+    tested: "Eval 2 gives the checker exactly this post, one row at a time.",
+    example: () => EX.post,
+  },
+  read: {
+    kind: "grok", title: "Read the post", sub: "comments, images", runs: "Once per claim", model: "Grok, and Gemini for images",
+    summary: "Collects what the X pipeline collects for a tweet: replies under the post, a description of any image.",
+    decides: "Extra context for the research.",
+    what: "Before the research, the pipeline collects what it would for a tweet. It asks Grok for the replies under the post. For a claim from an article that post does not exist, and in the baseline run Grok still answered with a list of replies for 47 of 195 checks, and some of those were invented. A claim that rests on an image also gets a description of the image from Gemini, which can be costly: one figure took one call that cost $0.20.",
+    goesIn: "The synthetic post.", comesOut: "A block of replies and a description of the image.",
+    tested: "Part of every Eval 2 check.",
+    facts: [["Cost", "$0.022 for the replies in the Berkeley check, which was most of that check's cost after the search"]],
+  },
+  topic: {
+    kind: "deepseek", title: "Topic filter", sub: "blocked topics", runs: "Once per claim", model: "DeepSeek V4 Flash",
+    summary: "A cheap gate from the X bot for a list of blocked topics.",
+    decides: "Whether the post is about a blocked topic.",
+    what: "A cheap gate that asks whether the post is about a topic the bot does not write about: the assassination of Charlie Kirk, Tyler Robinson, Candace Owens, and the health or death of Mitch McConnell. It was built for X posts and also runs on article claims.",
+    goesIn: "The post and its replies.", comesOut: "Blocked or not, with a reason.",
+    tested: "Part of every Eval 2 check.",
+    facts: [["Cost", "$0.0001 per check"]],
+    prompts: [["System prompt", () => P.system.topic]],
+  },
+  research: {
+    kind: "muse", title: "Research", sub: "search, findings", runs: "Once per claim", model: "Muse Spark 1.3, native search",
+    summary: "Researches the claim and says whether it contains a clear factual error.",
+    decides: "Whether a correction is needed. Most checks end here.",
+    what: "One call with Meta's native search researches the highlighted claim and writes a dense summary of its findings with the full source links. It also sets correction_needed, which is true only for a clear factual error backed by direct contradicting evidence. Opinions, predictions and subjective characterizations are not corrected. When correction_needed is false, the check ends here as no correction needed. In the first baseline run, 172 of the 180 checked claims without a note ended at this step.",
+    goesIn: "The synthetic post.", comesOut: "Findings with sources, and correction_needed.",
+    tested: "Part of every Eval 2 check. In the baseline, four of six difficult note rows ended here as no correction needed.",
+    facts: [["Cost", "$0.014 for the search in the Berkeley check"]],
+    prompts: [["System prompt", () => P.system.research], ["User message of a real check", () => P.user.research]],
+    example: () => EX.research,
+  },
+  timing: {
+    kind: "gemini", title: "Timing check", sub: "how close to its event", runs: "Once per claim", model: "Gemini 3 Flash",
+    summary: "Dates the event the post is about, and warns the writer when the post is very recent.",
+    decides: "Whether the writer gets a warning about timing.",
+    what: "A small model dates the event the post is about. When the post was published within 6 hours of that event, or during it, the writer gets an extra block saying so, because a correction that was true when the post was published is rarely rated helpful. For nearly every article claim the event is long settled and nothing changes. The step never stops a note by itself.",
+    goesIn: "The post and the findings.", comesOut: "Nothing, or a timing block for the writer.",
+    tested: "Part of every Eval 2 check.",
+    facts: [["Cost", "$0.0006 per check"]],
+    prompts: [["System prompt", () => P.system.timing]],
+  },
+  writer: {
+    kind: "muse", title: "Writer", sub: "one note, 280 characters", runs: "Once per claim", model: "Muse Spark 1.3",
+    summary: "Writes one short note that disputes the claim, or an empty note.",
+    decides: "Whether to write a note, and what it says.",
+    what: "The writer reads the post and the findings and writes exactly one note that disputes a claim the post's argument rests on, or returns an empty note. The note leads with what is true, makes one key point, does not hedge, keeps a neutral tone, and stays within 280 characters before the links. Every sentence must be backed by a cited link. An empty note ends the check as no correction needed. The prompt warns the writer that the source verifier rejects the whole note if one claim in it has no supporting source.",
+    goesIn: "The post, the replies and the findings.", comesOut: "A note with its sources, or an empty note.",
+    tested: "Part of every Eval 2 check.",
+    facts: [["Cost", "$0.0006 per check"]],
+    prompts: [["System prompt", () => P.system.writer], ["User message of a real check", () => P.user.writer]],
+    example: () => EX.writer,
+  },
+  verifier: {
+    kind: "muse", title: "Source verifier", sub: "do the sources back it?", runs: "Once per claim", model: "Muse Spark 1.3",
+    summary: "Opens every cited page and checks that it supports the note.",
+    decides: "Whether the note is accepted.",
+    what: "The verifier opens every link the note cites and reads the page. A source is good only if it opened and its text directly supports a factual claim in the note. The note is accepted only if the good sources together cover every factual claim in it. Otherwise the check ends as check failed, or as unfetchable sources when none of the cited pages could be opened. For every accepted source it also writes the verbatim quote and a plain explanation, which readers see under source details.",
+    goesIn: "The note, its cited links, the text of each page.", comesOut: "A verdict per source, and accepted or rejected.",
+    tested: "Part of every Eval 2 check. In the baseline, CFAR/FTX and the pivotal act ended here.",
+    facts: [["Cost", "$0.0012 per check"]],
+    prompts: [["System prompt", () => P.system.verifier], ["User message of a real check (shortened)", () => P.user.verifier.slice(0, 3500) + "\n\n[... the rest of the fetched pages ...]"]],
+    example: () => EX.verifier,
+  },
+  materiality: {
+    kind: "gemini", title: "Materiality judge", sub: "would raters agree?", runs: "Once per note", model: "Gemini 3 Flash",
+    summary: "Asks whether the note engages the post's main argument. A low score stops the note.",
+    decides: "Whether a true and cited note is also worth showing.",
+    what: "A last judge asks what readers ask. Does the note dispute the claim the post's argument rests on? Would it change a reader's takeaway? Would it convince a skeptical reader? It gives a persuasion score from 0 to 1, and a score under 0.5 ends the check as low materiality. In five weeks of scores kept for the purpose (August and September 2026), notes it scored under 0.5 were rated helpful 58% of the time, against 80% above.",
+    goesIn: "The post, the findings and the note.", comesOut: "A persuasion score and a reason.",
+    tested: "Part of every Eval 2 check. In the second baseline run, the Opus figure row ended here.",
+    facts: [["Cost", "$0.0008 per check"]],
+    prompts: [["System prompt", () => P.system.materiality]],
+  },
+  note: {
+    kind: "result", title: "Note", sub: "saved with sources", runs: "", model: "none",
+    summary: "The note, its sources and their supporting quotes are saved and shown.",
+    decides: "",
+    what: "The note is saved with its sources and the verbatim quotes that support it. It appears on the Common Notes website and in the browser extension next to the passage, and readers vote on it.",
+    goesIn: "An accepted note.", comesOut: "A published note.", tested: "",
+  },
+  noBlocked: { kind: "end", title: "No note", sub: "blocked topic", runs: "", model: "none", summary: "The topic filter blocked the post.", decides: "", what: "The post is about a topic the bot does not write about. The claim is saved with the reason.", goesIn: "", comesOut: "", tested: "" },
+  noCorrection: { kind: "end", title: "No note", sub: "no correction needed", runs: "", model: "none", summary: "The research found no clear factual error, or the writer wrote nothing.", decides: "", what: "The research found no clear factual error, or the writer decided that no note would stand. This is by far the most common ending: 172 of the 180 checked claims without a note in the first baseline run. The saved reason is no_correction_needed.", goesIn: "", comesOut: "", tested: "" },
+  noSources: { kind: "end", title: "No note", sub: "sources rejected", runs: "", model: "none", summary: "A note was drafted, but its sources did not back it.", decides: "", what: "A note was drafted, but the source verifier did not accept it: its sources did not cover every claim in the note (reason check_failed, 6 claims in the first baseline run), or none of the cited pages could be opened (reason unfetchable_sources, 2 claims).", goesIn: "", comesOut: "", tested: "" },
+  noMaterial: { kind: "end", title: "No note", sub: "low materiality", runs: "", model: "none", summary: "The materiality judge scored the note under 0.5.", decides: "", what: "The note was true and cited, but the materiality judge scored it under 0.5, so it was not published. The saved reason is low_materiality_score.", goesIn: "", comesOut: "", tested: "" },
+};
+
+/* ---------- The diagram ---------- */
+const NODE_W = 190, NODE_H = 56;
+const COL = [20, 250, 480, 710, 960];
+const NODES = [
+  ["fetch", 0, 70], ["gate", 1, 70], ["images", 2, 70], ["chunks", 3, 70], ["extract", 4, 70],
+  ["nocheck", 1, 170],
+  ["dedupe", 0, 290], ["rate", 1, 290], ["worth", 2, 290], ["skipped", 3, 290],
+  ["build", 0, 440], ["read", 1, 440], ["topic", 2, 440], ["research", 3, 440], ["timing", 4, 440],
+  ["noBlocked", 2, 550], ["noCorrection", 3, 550], ["writer", 4, 550],
+  ["noSources", 3, 660], ["verifier", 4, 660],
+  ["noMaterial", 3, 770], ["materiality", 4, 770],
+  ["note", 4, 880],
+];
+const EDGES = [
+  { d: "M210,98 H246" }, { d: "M440,98 H476" }, { d: "M670,98 H706" }, { d: "M900,98 H956" },
+  { d: "M345,126 V166", label: "not checkable", lx: 352, ly: 150 },
+  { d: "M1055,126 V240 H115 V286" },
+  { d: "M210,318 H246" }, { d: "M440,318 H476" },
+  { d: "M670,318 H706", label: "true", lx: 678, ly: 309 },
+  { d: "M575,346 V366 H115 V436", label: "uncertain or worse", lx: 150, ly: 382 },
+  { d: "M210,468 H246" }, { d: "M440,468 H476" }, { d: "M670,468 H706" }, { d: "M900,468 H956" },
+  { d: "M575,496 V546", label: "blocked", lx: 582, ly: 526 },
+  { d: "M805,496 V546", label: "no error found", lx: 812, ly: 526 },
+  { d: "M1055,496 V546" },
+  { d: "M960,578 H904", label: "empty", lx: 914, ly: 569 },
+  { d: "M1055,606 V656" },
+  { d: "M960,688 H904", label: "rejected", lx: 906, ly: 679 },
+  { d: "M1055,716 V766" },
+  { d: "M960,798 H904", label: "under 0.5", lx: 904, ly: 789 },
+  { d: "M1055,826 V876", label: "accepted", lx: 1062, ly: 856 },
+];
+function el(tag, attrs, text) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+  if (text != null) node.textContent = text;
+  return node;
+}
+const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const tip = document.getElementById("tip");
+
+function drawFlow() {
+  const svg = document.getElementById("flow-svg");
+  svg.replaceChildren();
+  const defs = el("defs", {});
+  const marker = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" });
+  marker.append(el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }));
+  defs.append(marker);
+  svg.append(defs);
+  svg.append(el("text", { x: 20, y: 34, class: "phase" }, "Once per post, in the extraction service"));
+  svg.append(el("text", { x: 140, y: 414, class: "phase" }, "Once for every claim worth checking, in the claim-check service"));
+  svg.append(el("rect", { x: 950, y: 54, width: 210, height: 90, rx: 14, class: "region" }));
+  svg.append(el("text", { x: 962, y: 136, class: "region-label" }, "Eval 1 tests this step"));
+  svg.append(el("rect", { x: 10, y: 424, width: 1160, height: 508, rx: 14, class: "region" }));
+  svg.append(el("text", { x: 20, y: 922, class: "region-label" }, "Eval 2 tests everything inside this frame, one claim at a time"));
+  for (const edge of EDGES) {
+    svg.append(el("path", { d: edge.d, class: "edge" + (edge.dash ? " dash" : ""), "marker-end": "url(#arrow)" }));
+    if (edge.label) svg.append(el("text", { x: edge.lx, y: edge.ly, class: "edge-label" }, edge.label));
+  }
+  for (const [id, col, y] of NODES) {
+    const step = STEPS[id];
+    const k = KIND[step.kind];
+    const x = COL[col];
+    const group = el("g", { class: "node", tabindex: "0", role: "button", "data-step": id, "aria-label": step.title + ", " + step.sub });
+    group.append(el("rect", { class: "box", x, y, width: NODE_W, height: NODE_H, rx: 10 }));
+    group.append(el("rect", { class: "tag", x, y, width: 6, height: NODE_H, rx: 3, fill: cssVar(k.color) }));
+    group.append(el("text", { class: "title", x: x + 16, y: y + 24 }, step.title));
+    group.append(el("text", { class: "sub", x: x + 16, y: y + 43 }, step.sub));
+    const tagWidth = k.tag.length * 6.6 + 12;
+    group.append(el("rect", { class: "tag", x: x + NODE_W - tagWidth - 8, y: y - 9, width: tagWidth, height: 18, rx: 9, fill: cssVar(k.soft), stroke: cssVar(k.color), "stroke-width": "1" }));
+    group.append(el("text", { class: "tagtext", x: x + NODE_W - tagWidth - 2, y: y + 4, fill: cssVar(k.color) }, k.tag));
+    group.addEventListener("click", () => openStep(id));
+    group.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStep(id); } });
+    group.addEventListener("mouseenter", () => { tip.textContent = step.summary; tip.hidden = false; });
+    group.addEventListener("mousemove", (e) => { tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 340) + "px"; tip.style.top = e.clientY + 16 + "px"; });
+    group.addEventListener("mouseleave", () => { tip.hidden = true; });
+    svg.append(group);
+  }
+}
+
+/* ---------- The drawer ---------- */
+function h(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "text") node.textContent = v; else if (k === "class") node.className = v; else node.setAttribute(k, v); }
+  for (const c of children) if (c != null) node.append(c);
+  return node;
+}
+function block(label, text) {
+  const details = h("details", { class: "block" }, h("summary", {}, h("span", { text: label })), h("pre", { class: "text", text }));
+  return details;
+}
+let lastFocus = null;
+function closeDrawer() {
+  document.getElementById("drawer-root").replaceChildren();
+  document.querySelectorAll(".node.active").forEach((n) => n.classList.remove("active"));
+  if (lastFocus) lastFocus.focus();
+}
+function openStep(id) {
+  const step = STEPS[id];
+  const k = KIND[step.kind];
+  lastFocus = document.activeElement;
+  document.querySelectorAll(".node.active").forEach((n) => n.classList.remove("active"));
+  document.querySelector(`.node[data-step="${id}"]`)?.classList.add("active");
+  const chips = h("div", { class: "chips" }, h("span", { class: "chip " + chipClass(step.kind), text: k.tag }));
+  if (step.runs) chips.append(h("span", { class: "chip", text: step.runs }));
+  const facts = h("dl", { class: "facts" });
+  const rows = [["Model", step.model], ...(step.facts ?? [])];
+  for (const [name, value] of rows) if (value) facts.append(h("dt", { text: name }), h("dd", { text: value }));
+  const drawer = h("aside", { class: "drawer", role: "dialog", "aria-modal": "true", "aria-label": step.title },
+    h("div", { class: "drawer-head" }, h("div", {}, chips, h("h2", { text: step.title }), h("p", { class: "prose", text: step.summary })), h("button", { class: "close", type: "button", text: "Close", onclick: closeDrawer })),
+    facts,
+  );
+  const add = (label, text) => { if (text) drawer.append(h("h4", { text: label }), h("p", { text })); };
+  add("What it does", step.what);
+  add("Goes in", step.goesIn);
+  add("Comes out", step.comesOut);
+  if (step.tested) drawer.append(h("div", { class: "callout", text: step.tested }));
+  for (const [label, get] of step.prompts ?? []) drawer.append(block(label, get()));
+  const example = step.example?.();
+  if (example) { drawer.append(h("h4", { text: "A real example" })); for (const [label, text] of example) drawer.append(block(label, text)); }
+  const root = document.getElementById("drawer-root");
+  root.replaceChildren(h("div", { class: "drawer-backdrop", onclick: closeDrawer }), drawer);
+  drawer.querySelector(".close").focus();
+}
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
+/* ---------- The table ---------- */
+document.getElementById("glance").append(...Object.entries(STEPS).filter(([, s]) => s.runs).map(([id, s]) =>
+  h("tr", {}, h("td", {}, h("button", { class: "row-link", type: "button", text: s.title, onclick: () => openStep(id) })), h("td", { text: s.runs }), h("td", { text: s.model }), h("td", { text: s.decides }))));
+
+drawFlow();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawFlow);
+new MutationObserver(drawFlow).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>

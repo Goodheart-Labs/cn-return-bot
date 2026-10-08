@@ -392,7 +392,7 @@ function renderDatasets() {
   document.getElementById("dsintro").innerHTML =
     (which === "extractor"
       ? `<p>The extractor reads one chunk of a post and returns claims. It passes a datapoint when its output contains the reference claim. A Muse judge decides that. All 14 are required, including the no-note ones, because the checker can only rule on a claim that exists.</p>`
-      : `<p>The checker gets one claim and ends with a note or with no note. It passes when that matches the expected decision. For 12 of the 14 rows, readers already voted on a note in production, so their votes are a second opinion next to your labels.</p>`) +
+      : `<p>The checker gets one claim and ends with a note or with no note. It runs three times on each row, and the row passes when the decision was the expected one in two of the three. For 12 of the 14 rows, readers already voted on a note in production, so their votes are a second opinion next to your labels.</p>`) +
     columnsTable(which);
   const widths = which === "extractor" ? [40, 140, 300, 260, 190, 110] : [40, 140, 270, 110, 380, 120];
   const cols = `<colgroup>${widths.map((w) => `<col style="width:${w}px">`).join("")}</colgroup>`;
@@ -448,30 +448,36 @@ function checkerSummary(run) {
     const inGroup = c.rows.filter((r) => r.group === g.id);
     if (!inGroup.length) return "";
     const n = (v) => inGroup.filter((r) => r.verdict === v).length;
-    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${n("pass")}</td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td></tr>`;
+    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${n("pass")}</td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td><td class="n">${inGroup.reduce((s, r) => s + r.passedIn, 0)} of ${inGroup.length * c.samples}</td></tr>`;
   }).join("");
   const n = (v) => c.rows.filter((r) => r.verdict === v).length;
-  const judged = c.rows.filter((r) => r.quality);
-  return `<table class="sumtable"><thead><tr><th>Group</th><th>Rows</th><th>Pass</th><th>Fail</th><th>Soft fail</th><th>Error</th></tr></thead><tbody>${rows}
-    <tr><td><b>All</b></td><td class="n">${c.rows.length}</td><td class="n"><b>${n("pass")}</b></td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td></tr></tbody></table>
-    <p class="small">Where a note was expected and written, a second judge asked whether it makes the reference point: ${judged.filter((r) => r.quality.samePoint).length} of ${judged.length} do.</p>`;
+  const judged = c.rows.flatMap((r) => r.samples).filter((s) => s.quality);
+  return `<table class="sumtable"><thead><tr><th>Group</th><th>Rows</th><th>Pass (right in ${c.passAt} of ${c.samples})</th><th>Fail</th><th>Soft fail</th><th>Error</th><th>Samples right</th></tr></thead><tbody>${rows}
+    <tr><td><b>All</b></td><td class="n">${c.rows.length}</td><td class="n"><b>${n("pass")}</b></td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td><td class="n">${c.rows.reduce((s, r) => s + r.passedIn, 0)} of ${c.rows.length * c.samples}</td></tr></tbody></table>
+    <p class="small">Where a note was expected and written, a second judge asked whether it makes the reference point: ${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes do.</p>`;
 }
+const outcomeLine = (o) => (o.type === "note" ? `<b>Note:</b> ${esc(truncate(o.note, 110))}` : o.type === "no_note" ? `<b>No note:</b> <span class="small">${esc(o.reason)}</span>` : `<b>Error:</b> <span class="small">${esc(o.error)}</span>`);
 function checkerRowsResult(run) {
   const c = run.checker;
   return c.rows.map((r) => {
     const open = state.ropen.has("rc-" + r.id);
-    const o = r.outcome;
-    const result = o.type === "note" ? `<b>Note</b><br>${esc(truncate(o.note, 220))}` : o.type === "no_note" ? `<b>No note</b><br><span class="small">${esc(o.reason)}</span>` : `<b>Error</b><br><span class="small">${esc(o.error)}</span>`;
-    const quality = r.quality ? (r.quality.samePoint ? `<span class="verdict v-pass">Same point</span>` : `<span class="verdict v-fail">Other point</span>`) : '<span class="small">not judged</span>';
-    const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td><td>${result}</td><td>${verdictPill(r.verdict)}</td><td>${quality}</td></tr>`;
+    const judged = r.samples.filter((s) => s.quality);
+    const quality = judged.length ? `${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes` : '<span class="small">not judged</span>';
+    const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
+      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
     if (!open) return row;
-    const sources = o.type === "note" && o.sources.length ? `<ul class="small">${o.sources.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noreferrer">${esc(s.url)}</a>${s.quote ? `<br>“${esc(truncate(s.quote, 240))}”` : ""}</li>`).join("")}</ul>` : "";
+    const samples = r.samples.map((s, i) => {
+      const o = s.outcome;
+      const sources = o.type === "note" && o.sources.length ? `<ul class="small">${o.sources.map((x) => `<li><a href="${esc(x.url)}" target="_blank" rel="noreferrer">${esc(x.url)}</a>${x.quote ? `<br>“${esc(truncate(x.quote, 240))}”` : ""}</li>`).join("")}</ul>` : "";
+      return `<div class="sample"><div class="head"><b>Sample ${i + 1}</b>${verdictPill(s.verdict)}<span class="small">check ${money(s.checkCostUsd)}</span></div>
+        ${o.type === "note" ? `<div class="notebox">${esc(o.note)}${sources}</div>` : o.type === "no_note" ? `<p>No note. ${esc(o.reason)}</p>` : `<p>${esc(o.error)}</p>`}
+        ${s.quality ? `<p><span class="small">Reference point:</span> ${s.quality.samePoint ? "yes" : "no"}. ${esc(s.quality.reason)}</p>` : ""}
+        ${s.research || s.draftNote || s.sourceVerdict ? `<details><summary>Research, drafted note and source check</summary>${s.research ? `<h4>Research findings</h4><pre>${esc(s.research)}</pre>` : ""}${s.draftNote ? `<h4>Note the writer drafted</h4><pre>${esc(s.draftNote)}</pre>` : ""}${s.sourceVerdict ? `<h4>Source check verdict</h4><pre>${esc(s.sourceVerdict)}</pre>` : ""}</details>` : ""}</div>`;
+    }).join("");
     return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
-      <div><h4>What the check ended with</h4>${o.type === "note" ? `<div class="notebox">${esc(o.note)}${sources}</div>` : o.type === "no_note" ? `<p>No note. ${esc(o.reason)}</p>` : `<p>${esc(o.error)}</p>`}
-        ${r.quality ? `<h4>Does it make the reference point?</h4><p>${r.quality.samePoint ? "Yes" : "No"}. ${esc(r.quality.reason)}</p>` : ""}
-        <h4>Reference notes</h4>${r.referenceNotes.length ? r.referenceNotes.map((t) => `<div class="refnote">${esc(t)}</div>`).join("") : '<span class="small">none</span>'}
-        <p class="meta">Check ${money(r.checkCostUsd)}${r.judgeCostUsd ? `, judge ${money(r.judgeCostUsd)}` : ""}</p></div>
-      <div>${r.research ? `<h4>Research findings of the check</h4><pre>${esc(r.research)}</pre>` : ""}${r.draftNote ? `<h4>Note the writer drafted</h4><pre>${esc(r.draftNote)}</pre>` : ""}${r.sourceVerdict ? `<h4>Source check verdict</h4><pre>${esc(r.sourceVerdict)}</pre>` : ""}</div></div></td></tr>`;
+      <div><h4>Expected</h4><p>${expectedText({ expected: r.expected })}</p>
+        <h4>Reference notes</h4>${r.referenceNotes.length ? r.referenceNotes.map((x) => `<div class="refnote">${esc(x)}</div>`).join("") : '<span class="small">none</span>'}</div>
+      <div><h4>The ${c.samples} samples</h4>${samples}</div></div></td></tr>`;
   }).join("");
 }
 
@@ -486,7 +492,7 @@ function renderResults() {
   const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} rows passed</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}</div>`;
   const body = state.rs === "extractor"
     ? `${extractorSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:140px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference claim</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
-    : `${checkerSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:130px"><col><col style="width:100px"><col style="width:120px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the check ended with</th><th>Verdict</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
+    : `${checkerSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
   box.innerHTML = `<h2>Results</h2>
     <div class="runbar"><label for="runpick"><b>Run</b></label><select id="runpick">${options}</select></div>
     <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} rows. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
@@ -544,16 +550,16 @@ const PLAN_CHECKER = [
     what: "One of the 14 rows of the checker table.",
     input: "The post text built from the claim: the highlighted passage and its paragraph, or the claim line and the image.",
     output: "Passed on unchanged.", note: "The built post is the same one the pipeline's buildClaimPost makes, so the eval cannot drift from production." },
-  { id: "c-check", kind: "model", name: "Claim check under test", hint: "once per row",
-    what: "The whole check of one claim as it is in the branch: the topic filter, the research with search, the note writer and the source verifier.",
+  { id: "c-check", kind: "model", name: "Claim check under test", hint: "3 samples per row",
+    what: "The whole check of one claim as it is in the branch: the topic filter, the research with search, the note writer and the source verifier. It runs three times per row, because the same check can end differently each time: two identical baseline runs flipped 2 of 14 rows.",
     input: "The post text. The comments fetch would be left out for article claims. In the baseline run it asked Grok about a tweet that does not exist, and for 47 of the 195 checks Grok answered with a list of replies anyway.",
     output: "One of: a note with its sources, no note with a reason, or an error.",
-    note: "About $0.03 per claim on Muse, from the baseline run's $5.21 for 195 checks. So the 14 rows cost about $0.38 in one run. There is no repeat: each row is checked once." },
+    note: "About $0.03 per claim on Muse, from the baseline run's $5.21 for 195 checks. The 14 rows at 3 samples cost about $1.1 and a full run of both evals about $1.6." },
   { id: "c-outcome", kind: "data", name: "Outcome", hint: "note, no note, or error", what: "What the check ended with.", input: "Output of the check.", output: "The decision, the note text and sources if there is one, and the research findings.", note: "An error counts as a failure and is listed apart, so a broken run is never read as a wrong decision." },
   { id: "c-rule", kind: "rule", name: "Decision rule", hint: "no model involved",
     what: "A plain comparison with the expected decision.",
     input: "Expected decision and the outcome.",
-    output: "Pass, fail or soft fail per row.",
+    output: "Pass, fail or soft fail per sample, and per row: a pass when the decision was right in 2 of 3 samples.",
     prompt: `expected note     and the check wrote a note   -> pass
 expected note     and no note                  -> fail
 expected no note  and no note                  -> pass
@@ -580,7 +586,7 @@ Reference corrections: <your wording and the real helpful notes, one per line>
 Pipeline note: <the note the check wrote>`,
     note: "All nine note rows have at least one reference note. You gave wording for 4 (EA earning to give, the pivotal act, Melanie Mitchell, EA beholden), and real notes that readers rated helpful exist for 7 (Berkeley, Czechoslovakia, CFAR/FTX, cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell)." },
   { id: "c-score", kind: "report", name: "Score", hint: "pass rate by group",
-    what: "A table by your four groups with the rows passed, the soft failures and the errors, plus the cost per claim.",
+    what: "A table by your four groups with the rows passed (right in 2 of 3 samples), the soft failures and the errors, the number of samples that were right, plus the cost per claim.",
     input: "The decision rule's results and, where present, the quality judge's.", output: "The table below, saved as a run next to the lab's other runs.", note: "The first line to watch is the no-note easy group. Those four are exactly the notes readers voted down." },
 ];
 const PLAN_LOOP = [
@@ -630,7 +636,7 @@ const DECISIONS = [
   "The stored text of the sex-cult post and of the ACX letter to Pinker has no images, because it came from a reader's browser. The other five posts keep their images as markers. The chunks are cut the way the pipeline cuts an unsplit post. In a real run the first step may split a post into topic parts first, which changes where the chunks begin.",
   "Only 3 of the 14 checker inputs come from a saved production prompt. The July posts have no check logs. The others are built with the pipeline's own function from the stored claim, which is the same text without the date lines and the comments.",
   "For the readers' highlights (CFAR/FTX, the cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell) the surrounding paragraph is taken from the post's text. The extractor may have chosen a different paragraph.",
-  "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. The extractor eval runs three samples per row and passes a row at 2 of 3. That is my proposal, because the same extraction call can find different claims each time. The checker eval runs each row once. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
+  "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. Both evals run three samples per row and pass a row at 2 of 3, because the same call can end differently each time. The checker eval ran once per row at first, and two identical runs flipped 2 of 14 rows, so you asked for three samples. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
   "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October, and the EA beholden wording is yours from the same day. Both rest on your account of Yudkowsky's and Soares' views. I have not checked them against their writing or found sources yet.",
   "The Sol 45% row had a wrong reference claim at first. I wrote that the author gave the 45%, but in the text it is Sol, the AI model, answering in its own reply. The extractor had it right. The production note on that claim made the same mistake and said it was the author's estimate. I fixed the reference claim and ran the baseline again.",
   "The dataset and its build script live in the lab folder of the PR, so they stay in git. This page is built from them.",
