@@ -74,6 +74,14 @@ describe("parseRatingOutput", () => {
     expect(out.ratings).toHaveLength(1);
   });
 
+  test("reads ratings written as an object keyed by claim number", () => {
+    const out = parseRatingOutput(`{"research":"x","ratings":{"1":"likely true","2":"uncertain"}}`);
+    expect(out.ratings).toEqual([
+      { claim: 1, rating: "likely true" },
+      { claim: 2, rating: "uncertain" },
+    ]);
+  });
+
   test("rejects a missing ratings list", () => {
     expect(() => parseRatingOutput(`{"research":"x"}`)).toThrow();
   });

@@ -1,0 +1,38 @@
+[
+ {
+  "id": "production",
+  "label": "Production, 24 Sep (with reader notes and votes)",
+  "createdAt": "2026-09-24T16:23:17.600435+00:00",
+  "source": "production",
+  "totalCostUsd": 4.494681126532003,
+  "claims": 395,
+  "notes": 22
+ },
+ {
+  "id": "2026-09-29-0945",
+  "label": "Smoke test (3 checks)",
+  "createdAt": "2026-09-29T10:10:56.341Z",
+  "source": "local",
+  "totalCostUsd": 0.7128023848020001,
+  "claims": 764,
+  "notes": 1
+ },
+ {
+  "id": "2026-09-29-1011",
+  "label": "Baseline: today's pipeline",
+  "createdAt": "2026-09-29T10:39:07.743Z",
+  "source": "local",
+  "totalCostUsd": 5.8500303194860015,
+  "claims": 764,
+  "notes": 15
+ },
+ {
+  "id": "2026-09-29-1403",
+  "label": "Sonnet 5.5 extraction and rating, no checks",
+  "createdAt": "2026-09-29T14:14:28.335Z",
+  "source": "local",
+  "totalCostUsd": 3.3485341999999996,
+  "claims": 288,
+  "notes": 0
+ }
+]

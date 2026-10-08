@@ -17,7 +17,7 @@ import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
 import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
-import { EVERYTHING_MODEL } from "./model";
+import { extractionModels } from "./model";
 
 const GATE_SPLIT_SYSTEM_PROMPT = `You read a text (an article or a podcast transcript) and answer two questions.
 
@@ -89,10 +89,12 @@ export async function gateAndSplit(text: string, title: string | undefined): Pro
     schemaHint: GATE_SPLIT_SCHEMA_HINT,
     call: async (messages, attempt) => {
       const callName = attempt === 1 ? "gate_and_split" : `gate_and_split.retry.${attempt - 1}`;
+      const { model, reasoning } = extractionModels();
       const { response, costEntry } = await trackedLlmCreate(callName, {
-        model: EVERYTHING_MODEL,
+        model,
         messages,
         response_format: GATE_SPLIT_RESPONSE_FORMAT,
+        ...(reasoning.gate ? { reasoning_effort: reasoning.gate } : {}),
       } as any);
       trackLlmCall(costEntry);
       const answer = (response as any).choices?.[0]?.message?.content ?? "{}";
