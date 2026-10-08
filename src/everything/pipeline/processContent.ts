@@ -43,8 +43,11 @@ const RATING_PART_CONCURRENCY = 2;
 /** How many claims of one item are in flight at once. The services decide the
  *  real capacity, so this is not a capacity limit. It paces the work so the
  *  daily spend cap is still consulted as the item progresses, which is what
- *  lets an item stop partway and resume later. */
-const CHECK_REQUEST_CONCURRENCY = 6;
+ *  lets an item stop partway and resume later. It matches the claim checker's
+ *  slots for feed work: in production that service runs 10 at a time
+ *  (`CLAIM_CHECK_CONCURRENCY` on the services machine) and keeps 2 for readers,
+ *  so one item can use all 8 that remain (GOO-318). */
+const CHECK_REQUEST_CONCURRENCY = 8;
 
 /** A page someone asked for and is waiting on is served before anything from
  *  the backlog. Everything else this file processes is backlog. */
