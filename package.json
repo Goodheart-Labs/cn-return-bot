@@ -109,6 +109,8 @@
     "everything-prioritize": "bun run src/everything/prioritize.ts",
     "everything-auto-run": "bun run src/everything/autoRun.ts",
     "everything-worker": "bun run src/everything/worker.ts",
+    "x-tag-bot": "bun run src/x-tag-bot/main.ts",
+    "x-tag-bot-setup": "bun run src/x-tag-bot/setup.ts",
     "minisite-create": "bun run src/everything/minisites/createMinisite.ts",
     "commonnotes": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort --mode prod-backend",
     "commonnotes-local": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort",

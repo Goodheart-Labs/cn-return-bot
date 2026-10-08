@@ -42,6 +42,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
     { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 30 },
     { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 15 },
+    { variant: { name: "opus55-native-medium",    overrides: { search_model: "anthropic/claude-opus-5.5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
@@ -90,6 +91,7 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
     { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 13 },
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
+    { variant: { name: "opus55-medium",    overrides: { writer_model: "anthropic/claude-opus-5.5", writer_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
     // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
@@ -111,6 +113,7 @@ const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
     { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
     { variant: { name: "gpt6luna",         overrides: { verifier_model: "openai/gpt-6-luna"               }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"      }}, weight: 0  },
+    { variant: { name: "off",              overrides: { source_verifier: false                            }}, weight: 0  },
   ],
 };
 
@@ -145,6 +148,7 @@ const MATERIALITY_TREATMENT_TEST: ABTest = {
   variants: [
     { variant: { name: "judge_gate",     overrides: { materiality_gate_threshold: 0.5, writer_central_claim: false } }, weight: 50 },
     { variant: { name: "writer_central", overrides: { materiality_gate_threshold: undefined, writer_central_claim: true } }, weight: 50 },
+    { variant: { name: "off",            overrides: { materiality_judge: false, materiality_gate_threshold: undefined, writer_central_claim: false } }, weight: 0 },
   ],
 };
 
@@ -279,6 +283,7 @@ const EVAL_SUBMIT_THRESHOLD_TEST: ABTest = {
     { variant: { name: "-3", overrides: { eval_submit_threshold: -3 } }, weight: 100 },
     { variant: { name: "0",  overrides: { eval_submit_threshold: 0  } }, weight: 0   },
     { variant: { name: "-6", overrides: { eval_submit_threshold: -6 } }, weight: 0   },
+    { variant: { name: "off", overrides: { note_evaluation: false } },   weight: 0   },
   ],
 };
 

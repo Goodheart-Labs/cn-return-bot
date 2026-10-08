@@ -91,6 +91,10 @@ export interface TweetComputeOutput {
   costUsd?: number;
   flatLog: Record<string, unknown>;
   bot: { name: string; picks?: Record<string, string>; config?: Record<string, unknown> };
+  /** The rendered post that every step read. A bot that goes on to discuss the
+   *  note with people shows its model the same context. It is absent when the
+   *  run failed before the post was rendered. */
+  postContext?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -192,14 +196,15 @@ function extractBotScoringFilterScores(result: PipelineResult): ScoreEntry[] {
 export async function scorePipelineResult(
   result: PipelineResult
 ): Promise<ScoringOutput> {
+  const config = getBotConfig();
   const scores: ScoreEntry[] = [];
   const noteText = joinNoteAndUrl(result.noteResult.note, result.noteResult.url);
   const evalGate: EvalGateDecision = {
-    threshold: getBotConfig().eval_submit_threshold ?? 0,
+    threshold: config.eval_submit_threshold ?? 0,
     advisory: getMonitoringContext() !== undefined,
   };
   const materialityGate: Partial<EvalGateDecision> = {
-    threshold: getBotConfig().materiality_gate_threshold,
+    threshold: config.materiality_gate_threshold,
     advisory: evalGate.advisory,
   };
   const log = getTweetLog();
@@ -211,7 +216,7 @@ export async function scorePipelineResult(
 
   scores.push(...extractBotScoringFilterScores(result));
 
-  if (result.noteResult.status === CORRECTION_STATUS && result.noteResult.note) {
+  if (config.materiality_judge && result.noteResult.status === CORRECTION_STATUS && result.noteResult.note) {
     try {
       const materialityScores = await runMaterialityJudge({
         postText: String(result.post?.text ?? ""),
@@ -236,10 +241,10 @@ export async function scorePipelineResult(
   log?.set("materiality.threshold", materialityGate.threshold);
   log?.set("materiality.shouldSubmit", materialityGate.shouldSubmit);
 
-  // X's evaluate endpoint scores a note against a real tweet. A Common Notes
-  // claim has a made-up post id, so X can only refuse the call. We skip it, and
-  // the evaluation gate then lets the note pass.
-  if (getBotConfig().commonnotes_pipeline) return { scores, evalGate, materialityGate };
+  // Without X's evaluation there is no score, and the evaluation gate lets the
+  // note pass. Common Notes switches it off, because its claims have made-up
+  // post ids that X can only refuse.
+  if (!config.note_evaluation) return { scores, evalGate, materialityGate };
 
   const evalResult = await getEvaluationScore(result.post.id, noteText);
   if (evalResult.error) {
@@ -424,7 +429,7 @@ function failedComputeOutput(post: Post, bot: Bot, err: any): TweetComputeOutput
   };
 }
 
-function gateComputeOutput(bot: Bot, gate: Outcome): TweetComputeOutput {
+function gateComputeOutput(bot: Bot, gate: Outcome, postContext: string): TweetComputeOutput {
   const log = getTweetLog();
   log?.set("outcome.result", gate.outcome);
   log?.set("outcome.reason", gate.outcomeReason ?? "");
@@ -440,6 +445,7 @@ function gateComputeOutput(bot: Bot, gate: Outcome): TweetComputeOutput {
     costUsd: aggregateAndLogCosts()?.cost,
     flatLog: log ? Object.fromEntries(log) : {},
     bot: getLoggedBotIdentity(bot.id, log),
+    postContext,
   };
 }
 
@@ -499,10 +505,10 @@ export async function computeTweetResult(post: Post, bot: Bot): Promise<TweetCom
     const userMessage = buildUserMessageFromInput(post, input);
 
     const topicFiltered = await runTopicFilterGate(userMessage);
-    if (topicFiltered) return gateComputeOutput(bot, topicFiltered);
+    if (topicFiltered) return gateComputeOutput(bot, topicFiltered, userMessage);
 
     const prefiltered = await runPrefilterGate(userMessage);
-    if (prefiltered) return gateComputeOutput(bot, prefiltered);
+    if (prefiltered) return gateComputeOutput(bot, prefiltered, userMessage);
 
     const { result } = await runBotPipeline(post, bot);
     if (!result) {
@@ -539,6 +545,7 @@ export async function computeTweetResult(post: Post, bot: Bot): Promise<TweetCom
       costUsd: aggregateAndLogCosts()?.cost,
       flatLog: log ? Object.fromEntries(log) : {},
       bot: getLoggedBotIdentity(bot.id, log),
+      postContext: userMessage,
     };
   } catch (err: any) {
     return failedComputeOutput(post, bot, err);

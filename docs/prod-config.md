@@ -415,7 +415,7 @@ backup of it.
 
 ## X developer apps
 
-Two separate X apps exist, in X's developer portal.
+Two separate X apps exist, in X's developer portal, and a third is planned.
 
 1. **The notewriter app.** It acts as the bot's notewriter account to read
    posts, submit notes and read their ratings. Its four credentials are the
@@ -436,3 +436,16 @@ Two separate X apps exist, in X's developer portal.
    For local development the same pair goes into `.env` as
    `TWITTER_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET`, which
    `config.toml` reads.
+3. **The tag bot app (not created yet, GOO-368).** It belongs to the
+   @CommonNotesBot account, which carries X Premium, the Automated label
+   (managing account @NathanpmYoung) and the bio from the GOO-212 plan. It
+   sits inside a Project with pay-per-use credits and a monthly spending limit.
+   OAuth 1.0a with read and write access posts the replies (`X_TAG_BOT_API_KEY`,
+   `X_TAG_BOT_API_KEY_SECRET`, `X_TAG_BOT_ACCESS_TOKEN`,
+   `X_TAG_BOT_ACCESS_TOKEN_SECRET`). The app's bearer token
+   (`X_TAG_BOT_BEARER_TOKEN`) reads the X Activity API stream. OAuth 2.0 with a
+   callback address is needed once, for `bun run x-tag-bot-setup`, which
+   creates the stream's two subscriptions (`post.mention.create` and
+   `post.reply.create` for the bot's user id) and prints `X_TAG_BOT_USER_ID`.
+   All of these go into the services machine's `service.env`. Record the
+   subscription ids here once they exist.

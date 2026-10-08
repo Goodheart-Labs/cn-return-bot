@@ -31,9 +31,10 @@ Every reply starts with “Bot”, since the bot may post from the owner's own a
 --help      Show this help without connecting to any service.
 
 Required: X_API_KEY, X_API_KEY_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET,
-OPENROUTER_API_KEY, and (without --console) SIGNAL_API_URL, SIGNAL_NUMBER, SIGNAL_GROUP_ID.
+OPENROUTER_API_KEY, CLAIM_CHECK_URL, SERVICE_AUTH_SECRET, and (without --console)
+SIGNAL_API_URL, SIGNAL_NUMBER, SIGNAL_GROUP_ID.
 Optional X_READ_* credentials read tweets when the writer app cannot.
-Search uses Anthropic native web search through OpenRouter.
+The first draft runs on the claim-check service, with the steps in SIGNAL_PICKS.
 Live submission also needs SUPABASE_URL and SUPABASE_SERVICE_KEY,
 and migration 100 applied before both this worker and the scheduled pipeline.
 

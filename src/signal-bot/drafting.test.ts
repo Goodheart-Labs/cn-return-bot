@@ -2,8 +2,10 @@ import { describe, expect, mock, spyOn, test } from "bun:test";
 import type { Post } from "../api/fetchEligiblePosts";
 import { TweetLookupError } from "../api/fetchTweetById";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
+import { outcomeToResult, pipelineOutcomeOf, type PipelineOutcome } from "../bots/types";
+import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import {
-  createDraftingAdapter, validateSignalDraft, type DraftingDependencies, type SignalDraft,
+  createDraftingAdapter, SIGNAL_PICKS, validateSignalDraft, type DraftingDependencies, type SignalDraft,
 } from "./drafting";
 
 const post: Post = {
@@ -16,7 +18,7 @@ function dependencies(overrides: Partial<DraftingDependencies> = {}): DraftingDe
   return {
     fetchPost: async () => post,
     initialDraft: async () => ({
-      outcome: { type: "note", noteText: draft.text, sources: draft.sources, searchResults: "The record says 2017." },
+      outcome: { type: "note", noteText: draft.text, sources: draft.sources, verified: true, searchResults: "The record says 2017." },
       inputContext: "Original post and inspected media.",
     }),
     discuss: async () => ({ action: "discuss", reply: "The record is relevant to this claim.", draft: null, abstentionReason: null }),
@@ -27,38 +29,37 @@ function dependencies(overrides: Partial<DraftingDependencies> = {}): DraftingDe
 }
 
 describe("Signal draft adapter", () => {
-  test("the real default scope selects supported native search while honoring explicit overrides", async () => {
-    const [input, pipeline, config] = await Promise.all([
-      import("../pipeline/input/createBotInput"),
-      import("../pipeline/simple-bot/orchestrator"),
-      import("../pipeline/ab-testing/botConfig"),
-    ]);
-    const sharedBefore = structuredClone(config.DEFAULT_CONFIG);
-    const observed: Array<{ web_search: string; search_model?: string }> = [];
-    // Mock the API/LLM boundaries, while exercising the adapter's real lazy
-    // imports and configuration scope. No credentials or services are used.
-    const inputCall = spyOn(input, "createBotInput").mockResolvedValue({
-      mediaResult: { tweetMedia: [], quotedTweetMedia: [] }, mediaMadeWithAiLabel: false,
-    });
-    const pipelineCall = spyOn(pipeline, "runSimpleBotPipeline").mockImplementation(async () => {
-      const active = config.getBotConfig();
-      observed.push({ web_search: active.web_search, search_model: active.search_model });
-      return { type: "no_correction", reason: "Offline configuration test." };
-    });
+  test("the first draft asks the claim-check service with the Signal picks", async () => {
+    const client = await import("../service/client");
+    const output: TweetComputeOutput = {
+      pipelineResult: outcomeToResult(post, "simple-bot", { type: "no_correction", reason: "The record agrees.", searchResults: "The record agrees." }),
+      outcome: "rejected", outcomeReason: "no_correction_needed", finalStage: "note_writing",
+      scores: [], flatLog: {}, bot: { name: "Simple Bot" }, postContext: "The rendered post",
+    };
+    const call = spyOn(client, "requestTweetCheck").mockResolvedValue({ output });
     try {
-      await createDraftingAdapter().draft({ post, history: [] });
-      await createDraftingAdapter({}, { web_search: "native_grok", search_model: "x-ai/grok-4.3" }).draft({ post, history: [] });
-      expect(observed).toEqual([
-        { web_search: "native", search_model: "anthropic/claude-sonnet-4.6" },
-        { web_search: "native_grok", search_model: "x-ai/grok-4.3" },
-      ]);
-      expect(config.DEFAULT_CONFIG).toEqual(sharedBefore);
-      expect(inputCall).toHaveBeenCalledTimes(2);
-      expect(pipelineCall).toHaveBeenCalledTimes(2);
+      const result = await createDraftingAdapter().draft({ post, history: [] });
+      expect(call).toHaveBeenCalledWith({ priority: "reader", post, picks: SIGNAL_PICKS });
+      expect(result.abstentionReason).toBe("The record agrees.");
+      expect(result.research).toStartWith("The rendered post");
     } finally {
-      inputCall.mockRestore();
-      pipelineCall.mockRestore();
+      call.mockRestore();
     }
+  });
+
+  test("the service's answer maps back to the bot's outcome", () => {
+    const answer = (outcome: PipelineOutcome, overall: TweetComputeOutput["outcome"]): TweetComputeOutput => ({
+      pipelineResult: outcomeToResult(post, "simple-bot", outcome),
+      outcome: overall, finalStage: "x", scores: [], flatLog: {}, bot: { name: "Simple Bot" },
+    });
+    const note = { noteText: draft.text, sources: draft.sources, searchResults: "Findings" };
+    expect(pipelineOutcomeOf(answer({ type: "note", ...note, verified: true }, "candidate")))
+      .toEqual({ type: "note", ...note, verified: true });
+    expect(pipelineOutcomeOf(answer({ type: "verification_failed", ...note, reason: "Only part is supported." }, "rejected")))
+      .toEqual({ type: "verification_failed", ...note, reason: "Only part is supported." });
+    expect(pipelineOutcomeOf(answer({ type: "no_correction", reason: "Findings", searchResults: "Findings" }, "rejected")))
+      .toEqual({ type: "no_correction", reason: "Findings", searchResults: "Findings" });
+    expect(() => pipelineOutcomeOf({ ...answer({ type: "no_correction", reason: "" }, "failed"), errorMessage: "boom" })).toThrow("boom");
   });
 
   test("the default inspection uses only the direct lookup even when the feed is unavailable", async () => {

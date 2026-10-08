@@ -34,6 +34,7 @@ describe.skipIf(!pglitePath)("submission queue SQL in an isolated PostgreSQL dat
     `);
     await db.exec(await Bun.file(new URL("../../../migrations/093_signal_submission_reserve.sql", import.meta.url)).text());
     await db.exec(await Bun.file(new URL("../../../migrations/100_signal_submission_queue.sql", import.meta.url)).text());
+    await db.exec(await Bun.file(new URL("../../../migrations/120_x_tag_bot.sql", import.meta.url)).text());
   });
 
   beforeEach(async () => {
@@ -104,6 +105,14 @@ describe.skipIf(!pglitePath)("submission queue SQL in an isolated PostgreSQL dat
     await finish(second, "rejected", null, "ineligible");
     expect((await snapshot()).signalQueued).toBe(0);
     expect((await claim("100")).status).toBe("claimed");
+  });
+
+  test("the x_tag lane shares the approved queue's priority over the automatic lane", async () => {
+    await cap(10);
+    await db.exec("set role service_role");
+    expect(await queue("300")).toEqual({ status: "queued" });
+    expect(await claim("100")).toMatchObject({ status: "capacity_reserved", reason: "signal_priority" });
+    expect(await claim("300", "x_tag")).toMatchObject({ status: "claimed" });
   });
 
   test("cancelling a queued note releases priority and is idempotent", async () => {

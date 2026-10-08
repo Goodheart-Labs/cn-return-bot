@@ -42,6 +42,9 @@ and `bun src/signal-bot/main.ts --help`, including the selected requests group a
 file outside the source export, owned by root with mode `0600`. Compose reads
 it as raw environment values, without expanding dollar signs in credentials.
 Use the same X account and Supabase database as the scheduled pipeline.
+The first draft of every note runs on the claim-check service on the services
+box, so the file also needs `CLAIM_CHECK_URL` (the box's address on port 8787)
+and `SERVICE_AUTH_SECRET`, the same values the GitHub workflows use.
 `SIGNAL_NUMBER` uses E.164 format; select the notes group's ID from
 `GET /v1/groups/<number>` on the bridge.
 

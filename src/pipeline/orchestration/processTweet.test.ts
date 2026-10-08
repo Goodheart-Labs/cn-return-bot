@@ -18,6 +18,7 @@ const result = outcomeToResult({ id: "123", text: "The post" }, "simple-bot", {
   type: "note",
   noteText: "A correction.",
   sources: ["https://example.com/source"],
+  verified: true,
   searchResults: "The findings",
 });
 
@@ -196,11 +197,19 @@ describe("materiality scoring", () => {
     expect(determineOutcome(result, output).outcome).toBe("candidate");
   });
 
-  test("a Common Notes claim never calls X's evaluate endpoint", async () => {
+  test("with note_evaluation off, X's evaluate endpoint is never called", async () => {
     mockScores(0.8);
-    const output = await withBotConfig({ ...GATED, commonnotes_pipeline: true }, () => scorePipelineResult(result));
+    const output = await withBotConfig({ ...GATED, note_evaluation: false }, () => scorePipelineResult(result));
     expect(evaluate).not.toHaveBeenCalled();
     expect(output.evalGate.shouldSubmit).toBeUndefined();
+    expect(determineOutcome(result, output).outcome).toBe("candidate");
+  });
+
+  test("with materiality_judge off, the judge never runs and its gate cannot reject", async () => {
+    mockScores(0.1);
+    const output = await withBotConfig({ ...GATED, materiality_judge: false }, () => scorePipelineResult(result));
+    expect(judge).not.toHaveBeenCalled();
+    expect(output.materialityGate.shouldSubmit).toBeUndefined();
     expect(determineOutcome(result, output).outcome).toBe("candidate");
   });
 });
