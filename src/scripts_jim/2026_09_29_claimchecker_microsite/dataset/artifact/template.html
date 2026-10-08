@@ -18,6 +18,10 @@
   --nonote-soft: #e8e3f6;
   --model: #b4531c;
   --model-soft: #fbe9dc;
+  --bad: #b3261e;
+  --bad-soft: #fbe3e1;
+  --warn: #8a5a00;
+  --warn-soft: #fbefcf;
   --font-ui: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
@@ -27,6 +31,7 @@
     --accent: #5cc4c0; --accent-soft: #1b3433; --code-bg: #1b2a29; --mark: #6b5a14;
     --note: #62d09b; --note-soft: #173528; --nonote: #b4a2f0; --nonote-soft: #2a2347;
     --model: #f0a574; --model-soft: #3b2518; color-scheme: dark;
+    --bad: #ff9a92; --bad-soft: #43201e; --warn: #e8bd5a; --warn-soft: #3a2f12;
   }
 }
 :root[data-theme="dark"] {
@@ -34,6 +39,7 @@
   --accent: #5cc4c0; --accent-soft: #1b3433; --code-bg: #1b2a29; --mark: #6b5a14;
   --note: #62d09b; --note-soft: #173528; --nonote: #b4a2f0; --nonote-soft: #2a2347;
   --model: #f0a574; --model-soft: #3b2518; color-scheme: dark;
+  --bad: #ff9a92; --bad-soft: #43201e; --warn: #e8bd5a; --warn-soft: #3a2f12;
 }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
 * { box-sizing: border-box; }
@@ -96,6 +102,20 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 .pill { display: inline-block; border-radius: 4px; padding: 0 6px; font-size: 0.78rem; font-weight: 600; background: var(--code-bg); }
 .refnote { margin: 0 0 8px; }
 .refnote:last-child { margin-bottom: 0; }
+.verdict { display: inline-block; border-radius: 4px; padding: 1px 8px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+.v-pass { background: var(--note-soft); color: var(--note); }
+.v-fail { background: var(--bad-soft); color: var(--bad); }
+.v-soft { background: var(--warn-soft); color: var(--warn); }
+.v-error { background: var(--code-bg); color: var(--muted); }
+.runbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 18px 0 8px; }
+.runbar select { font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); max-width: 100%; }
+.sumtable { min-width: 0; width: auto; table-layout: auto; margin: 8px 0 18px; }
+.sumtable th, .sumtable td { padding: 7px 14px; }
+.sumtable td.n { font-variant-numeric: tabular-nums; text-align: right; }
+.sample { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 10px 12px; margin: 0 0 10px; }
+.sample .head { display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
+.sample ol { margin: 6px 0 0; padding-left: 22px; font-size: 0.84rem; }
+.sample details > summary { cursor: pointer; color: var(--accent); font-size: 0.82rem; }
 .expect-note { color: var(--note); font-weight: 600; }
 .expect-nonote { color: var(--nonote); font-weight: 600; }
 .small { font-size: 0.82rem; color: var(--muted); }
@@ -147,6 +167,7 @@ table.matrix td, table.matrix th { padding: 6px 12px; }
 
   <div class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-view="datasets">Datasets</button>
+    <button class="tab" role="tab" data-view="results">Results</button>
     <button class="tab" role="tab" data-view="plan">Evaluation plan</button>
     <button class="tab" role="tab" data-view="decisions">For you to check</button>
   </div>
@@ -159,6 +180,10 @@ table.matrix td, table.matrix th { padding: 6px 12px; }
     <div class="chips" id="chips"></div>
     <div id="dsintro"></div>
     <div id="dstable"></div>
+  </section>
+
+  <section id="view-results" hidden>
+    <div id="resultsbody"></div>
   </section>
 
   <section id="view-plan" hidden>
@@ -176,16 +201,18 @@ table.matrix td, table.matrix th { padding: 6px 12px; }
 </div>
 
 <script type="application/json" id="data">/*DATA*/</script>
+<script type="application/json" id="runs">/*RUNS*/</script>
 <script>
 const DATA = JSON.parse(document.getElementById("data").textContent);
 const POINTS = DATA.datapoints;
+const RUNS = JSON.parse(document.getElementById("runs").textContent);
 const GROUPS = [
   { id: "note-easy", label: "Note, easy" },
   { id: "note-difficult", label: "Note, difficult" },
   { id: "no-note-easy", label: "No note, easy" },
   { id: "no-note-difficult", label: "No note, difficult" },
 ];
-const state = { view: "datasets", ds: "extractor", group: null, open: new Set() };
+const state = { view: "datasets", ds: "extractor", group: null, open: new Set(), run: RUNS[0]?.id ?? null, rs: "extractor", ropen: new Set() };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const groupChip = (id) => `<span class="group g-${id}">${esc(GROUPS.find((g) => g.id === id).label)}</span>`;
@@ -372,6 +399,100 @@ function renderDatasets() {
   document.getElementById("dstable").innerHTML = `<div class="tablewrap"><table>${cols}<thead>${head}</thead><tbody>${which === "extractor" ? extractorRows(points) : checkerRows(points)}</tbody></table></div>`;
 }
 
+
+/* ---- Results ---- */
+const money = (n) => "$" + n.toFixed(n < 0.1 ? 3 : 2);
+const pointOf = (id) => POINTS.find((p) => p.id === id);
+const VERDICT = { pass: ["v-pass", "Pass"], fail: ["v-fail", "Fail"], soft_fail: ["v-soft", "Soft fail"], error: ["v-error", "Error"] };
+const verdictPill = (v) => `<span class="verdict ${VERDICT[v][0]}">${VERDICT[v][1]}</span>`;
+
+function extractorSummary(run) {
+  const e = run.extractor;
+  const rows = GROUPS.map((g) => {
+    const inGroup = e.rows.filter((r) => r.group === g.id);
+    if (!inGroup.length) return "";
+    const found3 = inGroup.filter((r) => r.foundIn === e.samples).length;
+    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${inGroup.filter((r) => r.passed).length}</td><td class="n">${found3}</td></tr>`;
+  }).join("");
+  const total = e.rows.length;
+  return `<table class="sumtable"><thead><tr><th>Group</th><th>Rows</th><th>Passed (found in ${e.passAt} of ${e.samples})</th><th>Found in all ${e.samples}</th></tr></thead><tbody>${rows}
+    <tr><td><b>All</b></td><td class="n">${total}</td><td class="n"><b>${e.rows.filter((r) => r.passed).length}</b></td><td class="n">${e.rows.filter((r) => r.foundIn === e.samples).length}</td></tr></tbody></table>`;
+}
+function extractorRowsResult(run) {
+  const e = run.extractor;
+  return e.rows.map((r) => {
+    const open = state.ropen.has("rx-" + r.id);
+    const pill = r.passed ? `<span class="verdict v-pass">Found ${r.foundIn} of ${e.samples}</span>` : `<span class="verdict v-fail">Found ${r.foundIn} of ${e.samples}</span>`;
+    const row = `<tr class="row" tabindex="0" data-id="rx-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${esc(r.referenceClaim)}</td><td>${pill}</td></tr>`;
+    if (!open) return row;
+    const chunk = e.chunkRuns.find((c) => c.key === r.chunkKey);
+    const samples = r.judgements.map((j, i) => {
+      const s = chunk.samples[i];
+      if (!j) return `<div class="sample"><div class="head"><b>Sample ${i + 1}</b><span class="verdict v-error">Extraction failed</span></div><span class="small">${esc(s.error ?? "")}</span></div>`;
+      const matching = j.matchingClaims.map((n) => s.claims[n - 1]).filter(Boolean);
+      return `<div class="sample"><div class="head"><b>Sample ${i + 1}</b><span class="verdict ${j.found ? "v-pass" : "v-fail"}">${j.found ? "Found" : "Not found"}</span><span class="small">${s.claims.length} claims extracted${s.speculationDropped ? `, ${s.speculationDropped} dropped as predictions` : ""}</span></div>
+        <p>${esc(j.reason)}</p>
+        ${matching.length ? `<span class="small">Matching claims:</span><ol>${j.matchingClaims.map((n) => `<li value="${n}">${esc(s.claims[n - 1]?.claim ?? "")}</li>`).join("")}</ol>` : ""}
+        <details><summary>All ${s.claims.length} claims of this sample</summary><ol>${s.claims.map((c) => `<li>${esc(c.claim)}</li>`).join("")}</ol></details></div>`;
+    }).join("");
+    return row + `<tr class="detail"><td colspan="4"><div class="detail-grid">
+      <div><h4>Reference claim</h4><p>${esc(r.referenceClaim)}</p><h4>Passage the judge was shown</h4><div class="input-box" style="max-height:220px">${esc(r.passage)}</div>
+        <p class="meta">${esc(chunk.itemTitle)}, chunk ${chunk.chunkIndex} of ${chunk.chunkCount}, ${chunk.chunkChars.toLocaleString("en")} characters. Its three extractions are shared by every row in this chunk.</p></div>
+      <div><h4>The three samples</h4>${samples}</div></div></td></tr>`;
+  }).join("");
+}
+
+function checkerSummary(run) {
+  const c = run.checker;
+  const rows = GROUPS.map((g) => {
+    const inGroup = c.rows.filter((r) => r.group === g.id);
+    if (!inGroup.length) return "";
+    const n = (v) => inGroup.filter((r) => r.verdict === v).length;
+    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${n("pass")}</td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td></tr>`;
+  }).join("");
+  const n = (v) => c.rows.filter((r) => r.verdict === v).length;
+  const judged = c.rows.filter((r) => r.quality);
+  return `<table class="sumtable"><thead><tr><th>Group</th><th>Rows</th><th>Pass</th><th>Fail</th><th>Soft fail</th><th>Error</th></tr></thead><tbody>${rows}
+    <tr><td><b>All</b></td><td class="n">${c.rows.length}</td><td class="n"><b>${n("pass")}</b></td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td></tr></tbody></table>
+    <p class="small">Where a note was expected and written, a second judge asked whether it makes the reference point: ${judged.filter((r) => r.quality.samePoint).length} of ${judged.length} do.</p>`;
+}
+function checkerRowsResult(run) {
+  const c = run.checker;
+  return c.rows.map((r) => {
+    const open = state.ropen.has("rc-" + r.id);
+    const o = r.outcome;
+    const result = o.type === "note" ? `<b>Note</b><br>${esc(truncate(o.note, 220))}` : o.type === "no_note" ? `<b>No note</b><br><span class="small">${esc(o.reason)}</span>` : `<b>Error</b><br><span class="small">${esc(o.error)}</span>`;
+    const quality = r.quality ? (r.quality.samePoint ? `<span class="verdict v-pass">Same point</span>` : `<span class="verdict v-fail">Other point</span>`) : '<span class="small">not judged</span>';
+    const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td><td>${result}</td><td>${verdictPill(r.verdict)}</td><td>${quality}</td></tr>`;
+    if (!open) return row;
+    const sources = o.type === "note" && o.sources.length ? `<ul class="small">${o.sources.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noreferrer">${esc(s.url)}</a>${s.quote ? `<br>“${esc(truncate(s.quote, 240))}”` : ""}</li>`).join("")}</ul>` : "";
+    return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
+      <div><h4>What the check ended with</h4>${o.type === "note" ? `<div class="notebox">${esc(o.note)}${sources}</div>` : o.type === "no_note" ? `<p>No note. ${esc(o.reason)}</p>` : `<p>${esc(o.error)}</p>`}
+        ${r.quality ? `<h4>Does it make the reference point?</h4><p>${r.quality.samePoint ? "Yes" : "No"}. ${esc(r.quality.reason)}</p>` : ""}
+        <h4>Reference notes</h4>${r.referenceNotes.length ? r.referenceNotes.map((t) => `<div class="refnote">${esc(t)}</div>`).join("") : '<span class="small">none</span>'}
+        <p class="meta">Check ${money(r.checkCostUsd)}${r.judgeCostUsd ? `, judge ${money(r.judgeCostUsd)}` : ""}</p></div>
+      <div>${r.research ? `<h4>Research findings of the check</h4><pre>${esc(r.research)}</pre>` : ""}${r.draftNote ? `<h4>Note the writer drafted</h4><pre>${esc(r.draftNote)}</pre>` : ""}${r.sourceVerdict ? `<h4>Source check verdict</h4><pre>${esc(r.sourceVerdict)}</pre>` : ""}</div></div></td></tr>`;
+  }).join("");
+}
+
+function renderResults() {
+  const box = document.getElementById("resultsbody");
+  if (!RUNS.length) { box.innerHTML = '<h2>Results</h2><p class="lede">No run yet.</p>'; return; }
+  const run = RUNS.find((r) => r.id === state.run) ?? RUNS[0];
+  const options = RUNS.map((r) => `<option value="${esc(r.id)}"${r.id === run.id ? " selected" : ""}>${esc(r.label)} (${esc(r.id)}, ${r.rowIds.length} rows)</option>`).join("");
+  const have = { extractor: !!run.extractor, checker: !!run.checker };
+  if (!have[state.rs]) state.rs = have.extractor ? "extractor" : "checker";
+  const cost = [run.extractor && `extractor eval ${money(run.extractor.costUsd.extraction + run.extractor.costUsd.judge)} (extraction ${money(run.extractor.costUsd.extraction)}, judge ${money(run.extractor.costUsd.judge)})`, run.checker && `checker eval ${money(run.checker.costUsd.checks + run.checker.costUsd.judge)} (checks ${money(run.checker.costUsd.checks)}, judge ${money(run.checker.costUsd.judge)})`].filter(Boolean).join(", ");
+  const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} rows passed</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}</div>`;
+  const body = state.rs === "extractor"
+    ? `${extractorSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:140px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference claim</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
+    : `${checkerSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:130px"><col><col style="width:100px"><col style="width:120px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the check ended with</th><th>Verdict</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
+  box.innerHTML = `<h2>Results</h2>
+    <div class="runbar"><label for="runpick"><b>Run</b></label><select id="runpick">${options}</select></div>
+    <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} rows. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
+    ${subtabs}${body}`;
+}
+
 /* ---- Evaluation plan ---- */
 const PLAN_EXTRACTOR = [
   { id: "e-row", kind: "data", name: "Dataset row", hint: "chunk of a post and the reference claim",
@@ -398,7 +519,7 @@ const PLAN_EXTRACTOR = [
     prompt: `System prompt (draft):
 You check whether a list of extracted claims contains a given claim.
 
-You get a reference claim, the passage of the text it comes from, and a numbered list of extracted claims. A listed claim contains the reference claim if it states the same checkable fact, even in other words. A listed claim that only mentions the topic, leaves out the checkable part, or states something different does not count.
+You get a reference claim, the passage of the text it comes from, and a numbered list of extracted claims. The list contains the reference claim if one listed claim, or several listed claims together, state the same checkable fact, even in other words. The extractor splits compound statements into several claims, so every part of the reference claim must be stated by some listed claim. A claim that only mentions the topic, leaves out a checkable part, or states something different does not count.
 
 Answer with JSON: { "reason": string, "matching_claims": number[], "found": boolean }. Write the reason first.
 
@@ -411,7 +532,7 @@ Extracted claims:
 1. <claim>
 2. <claim>
 ...`,
-    note: "The reason comes first in the JSON so the model states its argument before the verdict. The judge sees only the claims, never the chunk, so it cannot be swayed by the surrounding text." },
+    note: "The reason comes first in the JSON so the model states its argument before the verdict. The judge sees only the claims, never the chunk, so it cannot be swayed by the surrounding text. Several claims together can satisfy a reference claim, because the extractor is told to split compound statements. A first smoke run on the Opus figure row showed that a judge demanding one single claim fails an extractor for doing what its prompt says." },
   { id: "e-score", kind: "report", name: "Score", hint: "found in how many of 3 samples",
     what: "Per row: found in 0, 1, 2 or 3 of the samples. Per group: the share of rows found in all three, and the share found in at least one.",
     input: "The judge's answers.",
@@ -511,19 +632,20 @@ const DECISIONS = [
   "For the readers' highlights (CFAR/FTX, the cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell) the surrounding paragraph is taken from the post's text. The extractor may have chosen a different paragraph.",
   "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. The extractor eval runs three samples per row and passes a row at 2 of 3. That is my proposal, because the same extraction call can find different claims each time. The checker eval runs each row once. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
   "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October, and the EA beholden wording is yours from the same day. Both rest on your account of Yudkowsky's and Soares' views. I have not checked them against their writing or found sources yet.",
+  "The Sol 45% row had a wrong reference claim at first. I wrote that the author gave the 45%, but in the text it is Sol, the AI model, answering in its own reply. The extractor had it right. The production note on that claim made the same mistake and said it was the author's estimate. I fixed the reference claim and ran the baseline again.",
   "The dataset and its build script live in the lab folder of the PR, so they stay in git. This page is built from them.",
 ];
 
 /* ---- Wiring ---- */
 function setView(view) {
   state.view = view;
-  for (const v of ["datasets", "plan", "decisions"]) document.getElementById("view-" + v).hidden = v !== view;
+  for (const v of ["datasets", "results", "plan", "decisions"]) document.getElementById("view-" + v).hidden = v !== view;
   for (const t of document.querySelectorAll(".tab")) t.setAttribute("aria-selected", String(t.dataset.view === view));
   try { history.replaceState(null, "", "#" + view); } catch {}
 }
 function renderAll() {
   for (const s of document.querySelectorAll(".subtab")) s.setAttribute("aria-selected", String(s.dataset.ds === state.ds));
-  renderChips(); renderDatasets(); renderPlans();
+  renderChips(); renderDatasets(); renderResults(); renderPlans();
 }
 document.getElementById("decisions").innerHTML = DECISIONS.map((d) => `<li>${esc(d)}</li>`).join("");
 document.getElementById("tabs").addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) setView(t.dataset.view); });
@@ -546,11 +668,22 @@ document.getElementById("dstable").addEventListener("keydown", (e) => {
   const row = e.target.closest("tr.row");
   if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggleRow(row); }
 });
+document.getElementById("resultsbody").addEventListener("click", (e) => {
+  const sub = e.target.closest("[data-rs]");
+  if (sub) { state.rs = sub.dataset.rs; renderResults(); return; }
+  const row = e.target.closest("tr.row");
+  if (row) { const id = row.dataset.id; state.ropen.has(id) ? state.ropen.delete(id) : state.ropen.add(id); renderResults(); }
+});
+document.getElementById("resultsbody").addEventListener("change", (e) => { if (e.target.id === "runpick") { state.run = e.target.value; state.ropen.clear(); renderResults(); } });
+document.getElementById("resultsbody").addEventListener("keydown", (e) => {
+  const row = e.target.closest("tr.row");
+  if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); const id = row.dataset.id; state.ropen.has(id) ? state.ropen.delete(id) : state.ropen.add(id); renderResults(); }
+});
 document.getElementById("plans").addEventListener("click", (e) => {
   const n = e.target.closest(".node");
   if (n) { planSelection[n.dataset.plan] = n.dataset.node; renderPlans(); }
 });
 renderAll();
 const start = storedHash();
-setView(["datasets", "plan", "decisions"].includes(start) ? start : "datasets");
+setView(["datasets", "results", "plan", "decisions"].includes(start) ? start : "datasets");
 </script>

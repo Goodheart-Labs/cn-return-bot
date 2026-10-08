@@ -208,7 +208,7 @@ export const DATAPOINTS: Datapoint[] = [
     writtenOn: "2026-10-05",
     expected: { decision: "no_note" },
     referenceClaim:
-      "The author gives a 45% probability that Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely because of the harness and permissions.",
+      "Sol, the AI model, gave a 45% probability that its own alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely because of the harness and permissions.",
   },
   {
     id: "opus-values-figure",

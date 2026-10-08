@@ -1,5 +1,8 @@
-import { describe, expect, test } from "bun:test";
-import { articleChunk, chunkText, contextTimeSpan } from "./extractClaims";
+import { describe, expect, spyOn, test } from "bun:test";
+import { articleChunk, chunkText, contextTimeSpan, describeArticleImages, renderImageDescriptions, runExtraction } from "./extractClaims";
+import { claudeExtractionModels, withExtractionModels } from "./model";
+import * as costTracker from "../../pipeline/cost-tracking/costTracker";
+import * as gemini from "../../pipeline/media/mediaAnalysisGemini";
 import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 
 /** Cues shaped like the passage that surfaced the bug (GOO-52): the video
@@ -66,4 +69,51 @@ describe("chunkText", () => {
 
 test("articleChunk labels a chunk as an article excerpt", () => {
   expect(articleChunk("Some text.")).toBe("Article excerpt:\n\nSome text.");
+});
+
+describe("renderImageDescriptions", () => {
+  const url = "https://example.com/a.png";
+
+  test("replaces the marker with the url, the description and the visible text", () => {
+    const rendered = renderImageDescriptions(`Before [[IMAGE:${url}]] after`, new Map([[url, { description: "A chart.", ocrText: "Sales" }]]));
+    expect(rendered).toBe(`Before [Image: ${url}\nDescription: A chart.\nVisible text: Sales] after`);
+  });
+
+  test("says so when an image could not be analyzed", () => {
+    expect(renderImageDescriptions(`[[IMAGE:${url}]]`, new Map())).toBe(`[Image: ${url}\n(image could not be analyzed)]`);
+  });
+});
+
+describe("describeArticleImages", () => {
+  test("describes each distinct image once and keeps an empty description for a failed one", async () => {
+    const spy = spyOn(gemini, "describeImageFromUrl").mockImplementation(async (url: string) => {
+      if (url.endsWith("bad.png")) throw new Error("boom");
+      return { description: { description: `of ${url}`, ocrText: "" } } as any;
+    });
+    const quiet = spyOn(console, "error").mockImplementation(() => {});
+    const text = "[[IMAGE:https://x/a.png]] and again [[IMAGE:https://x/a.png]] and [[IMAGE:https://x/bad.png]]";
+    const descriptions = await describeArticleImages(text);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(descriptions.get("https://x/a.png")?.description).toBe("of https://x/a.png");
+    expect(descriptions.get("https://x/bad.png")).toEqual({ description: "", ocrText: "" });
+    spy.mockRestore();
+    quiet.mockRestore();
+  });
+});
+
+describe("runExtraction", () => {
+  test("sends the chunk to the model that extractionModels names and returns its claims", async () => {
+    const claim = { claim: "A is true.", context: "A is true.", context_paragraph: "A is true.", image_urls: [], very_confident_that_its_true: false, speculation: false };
+    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue({
+      response: { choices: [{ message: { content: JSON.stringify({ claims: [claim] }) } }] },
+      costEntry: { name: "claim_extraction", input_tokens: 1, output_tokens: 1, cost: 0, tools: [] },
+    } as any);
+    const claims = await withExtractionModels(claudeExtractionModels("anthropic/claude-sonnet-5.5", "medium"), () => runExtraction("Article excerpt:\n\nA is true."));
+    expect(claims).toEqual([claim]);
+    const request = spy.mock.calls[0]![1] as any;
+    expect(request.model).toBe("anthropic/claude-sonnet-5.5");
+    expect(request.reasoning_effort).toBe("medium");
+    expect(request.messages.at(-1)).toEqual({ role: "user", content: "Article excerpt:\n\nA is true." });
+    spy.mockRestore();
+  });
 });

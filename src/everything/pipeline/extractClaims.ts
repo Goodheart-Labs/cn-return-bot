@@ -75,7 +75,7 @@ function claimsResponseFormat() {
   });
 }
 
-interface RawClaim {
+export interface RawClaim {
   claim: string;
   context: string;
   context_paragraph: string;
@@ -106,7 +106,7 @@ const freshImageMarkerRe = () => new RegExp(IMAGE_MARKER_RE.source, "g");
  *  descriptions keyed by URL. Each distinct URL is described once, and the calls
  *  run in parallel. A description that fails becomes empty fields, and the
  *  renderer still keeps the URL in the text. */
-async function describeArticleImages(text: string): Promise<Map<string, GeminiMediaDescription>> {
+export async function describeArticleImages(text: string): Promise<Map<string, GeminiMediaDescription>> {
   const urls = [...new Set([...text.matchAll(freshImageMarkerRe())].map((m) => m[1]!))];
   const entries = await Promise.all(
     urls.map((url, i) =>
@@ -125,7 +125,7 @@ async function describeArticleImages(text: string): Promise<Map<string, GeminiMe
  *  block holds the URL, so the model can cite it back in image_urls, plus
  *  Gemini's description and the text it read off the image. The brackets make
  *  the block read as an aside, so the model never quotes it as article prose. */
-function renderImageDescriptions(text: string, descriptions: Map<string, GeminiMediaDescription>): string {
+export function renderImageDescriptions(text: string, descriptions: Map<string, GeminiMediaDescription>): string {
   return text.replace(freshImageMarkerRe(), (_m, url) => {
     const { description, ocrText } = descriptions.get(url) ?? { description: "", ocrText: "" };
     const lines = [`Image: ${url}`];
@@ -148,7 +148,7 @@ function renderImageDescriptions(text: string, descriptions: Map<string, GeminiM
  *  little to extract, makes that answer especially likely. Without the retry
  *  that prose crashed the whole item, and the error said only that some JSON
  *  failed to parse. */
-async function runExtraction(content: string): Promise<RawClaim[]> {
+export async function runExtraction(content: string): Promise<RawClaim[]> {
   const parsed = await parseJsonWithRetry<{ claims?: RawClaim[] }>({
     source: "claim_extraction",
     messages: [

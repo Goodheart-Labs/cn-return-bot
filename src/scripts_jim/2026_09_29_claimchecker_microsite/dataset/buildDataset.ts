@@ -20,16 +20,13 @@ import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { buildClaimPost } from "../../../everything/pipeline/checkClaims";
 import { articleChunk, chunkText } from "../../../everything/pipeline/extractClaims";
-import { normalizeText } from "../../../everything-core/normalizeText";
 import type { ExtractedClaim } from "../../../everything/types";
 import { checkTraceOf, type LabRun } from "../labRun";
 import { LAB_DIR, RUNS_DIR } from "../runStore";
 import { DATAPOINTS, GROUP_TITLE, type Datapoint } from "./datapoints";
+import { locate, paragraphsAround } from "./text";
 
 const DATASET_PATH = join(LAB_DIR, "dataset", "dataset.json");
-/** Words of a passage used to find it in a chunk or paragraph. */
-const WORDS_TO_LOCATE = 9;
-
 const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
 /** The claim as the checker needs it, from wherever the claim lives. */
@@ -56,38 +53,6 @@ async function claimOf(datapoint: Datapoint): Promise<SourceClaim> {
     .single();
   if (error) throw error;
   return { id: data.id, restatement: data.claim, contextQuote: data.context_quote, contextParagraph: data.context_paragraph, imageUrls: (data.image_urls as string[] | null) ?? [] };
-}
-
-function wordsOf(text: string, from: "start" | "end"): string[] {
-  const words = normalizeText(text).split(" ");
-  return from === "start" ? words.slice(0, WORDS_TO_LOCATE) : words.slice(-WORDS_TO_LOCATE);
-}
-
-/** A pattern that matches the words in the text however the punctuation and
- *  capitals between them differ, the way normalizeText sees them. */
-function looseMatcher(words: string[]): RegExp {
-  return new RegExp(words.join("[^a-zA-Z0-9]+"), "i");
-}
-
-/** The offsets of a passage inside a text, or null when it is not there. */
-function locate(text: string, passage: string): { start: number; end: number } | null {
-  const head = looseMatcher(wordsOf(passage, "start")).exec(text);
-  if (!head) return null;
-  const tail = looseMatcher(wordsOf(passage, "end"));
-  const rest = text.slice(head.index);
-  const tailMatch = tail.exec(rest);
-  if (!tailMatch) return null;
-  return { start: head.index, end: head.index + tailMatch.index + tailMatch[0].length };
-}
-
-/** The paragraphs (blank-line separated) the passage sits in. A passage that
- *  runs over several paragraphs gives all of them. */
-function paragraphsAround(text: string, passage: string): string | null {
-  const span = locate(text, passage);
-  if (!span) return null;
-  const startOfParagraph = text.lastIndexOf("\n\n", span.start);
-  const endOfParagraph = text.indexOf("\n\n", span.end);
-  return text.slice(startOfParagraph === -1 ? 0 : startOfParagraph + 2, endOfParagraph === -1 ? text.length : endOfParagraph).trim();
 }
 
 /** The chunk the extractor would read the passage in, shown as the user message
@@ -167,7 +132,7 @@ function labPromptAsReceived(runId: string, claimId: string): string | null {
 }
 
 async function buildRecord(datapoint: Datapoint) {
-  const { data: item, error } = await db.from("everything_items").select("id, title, url, source, published_at, full_text").eq("id", datapoint.itemId).single();
+  const { data: item, error } = await db.from("everything_items").select("id, title, url, source, published_at, created_at, full_text").eq("id", datapoint.itemId).single();
   if (error) throw error;
   const claim = await claimOf(datapoint);
   const text = item.full_text as string;
@@ -183,7 +148,7 @@ async function buildRecord(datapoint: Datapoint) {
     contextParagraph: paragraph ?? "",
     imageUrls: claim.imageUrls,
   } as ExtractedClaim;
-  const post = buildClaimPost({ claim: extractedClaim, source: "substack", itemId: item.id, index: 0, publishedAt: item.published_at ?? undefined });
+  const post = buildClaimPost({ claim: extractedClaim, source: "substack", itemId: item.id, index: 0, publishedAt: item.published_at ?? item.created_at });
 
   const productionClaimId = datapoint.claimSource.from === "lab" ? datapoint.claimSource.productionClaimId : datapoint.claimSource.claimId;
   const production = await productionOutcome(productionClaimId);
