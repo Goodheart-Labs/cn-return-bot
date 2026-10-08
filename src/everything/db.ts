@@ -320,12 +320,15 @@ export async function fetchItemUrlsContaining(fragments: string[]): Promise<Know
   ) as KnownItemUrl[];
 }
 
-/** Returns the items that a killed run left stranded in `processing`. This is
- *  only meaningful while no worker is running. The workflow's concurrency group
- *  guarantees that. */
-export async function fetchOrphanedProcessingItems(): Promise<{ id: string; url: string }[]> {
+/** Returns the items of one tier that a killed run left stranded in
+ *  `processing`. This is only meaningful while no worker of that tier is
+ *  running. Each tier has its own worker: the feed run, whose concurrency group
+ *  guarantees there is one, and the intake service, which is a single process.
+ *  Looking at the other tier would take items its worker is still checking. */
+export async function fetchOrphanedProcessingItems(tier: "requested" | "feed"): Promise<{ id: string; url: string }[]> {
+  const query = getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing");
   return throwOnError(
-    await getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing"),
+    await (tier === "requested" ? query.gte("priority", QUEUE_PRIORITY.requested) : query.lt("priority", QUEUE_PRIORITY.requested)),
   ) as { id: string; url: string }[];
 }
 
@@ -499,6 +502,11 @@ export async function setItemProgress(id: string, progress: ItemProgress | null)
   throwOnError(await getSupabaseClient().from("everything_items").update({ progress }).eq("id", id));
 }
 
+/** Whom a pipeline cost was spent for: a reader who asked for a page or a
+ *  passage, or the feed. The reader share has its own daily ceiling in
+ *  spendCap.ts. */
+export type SpendFor = "reader" | "feed";
+
 /** One fact-check run of a claim. This is the everything pipeline's counterpart
  *  of a pipeline_runs row. */
 export interface ClaimPipelineRun {
@@ -513,6 +521,7 @@ export interface ClaimPipelineRun {
   bot_config: Record<string, unknown> | null;
   logs: Record<string, unknown> | null;
   cost: number | null;
+  work_priority: SpendFor;
 }
 
 /** We scrub NUL characters here, the same way pipeline_runs does. Model output
@@ -535,13 +544,14 @@ const ITEM_RUN_ROW = {
  *  Extraction and rating each write one such row per item, and so does the
  *  cleanup of a reader request's captured text. Until these rows existed the
  *  cap silently undercounted by exactly that spend. */
-export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number): Promise<void> {
+export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number, spendFor: SpendFor): Promise<void> {
   throwOnError(
     await getSupabaseClient().from("everything_pipeline_runs").insert({
       ...ITEM_RUN_ROW[stage],
       item_id: itemId,
       claim_id: null,
       cost: costUsd,
+      work_priority: spendFor,
     }),
   );
 }
@@ -639,21 +649,22 @@ export async function resolveNoteRequest(
   );
 }
 
-/** What one creator's visit rows add up to over the ranking window (GOO-135).
- *  Every number except `visits` is counted over rows that carry a reader hash,
- *  because a row without one cannot be attributed to a browser. */
-export interface CreatorAttention {
+/** One creator's score, counted in the database over the visit rows that carry
+ *  a reader hash (GOO-257). A row without a hash cannot be told apart from
+ *  another person's, so it counts for nothing. */
+export interface CreatorVisitScore {
   /** The creator's feed address, in one of the capitalisations it was recorded
    *  under. Creators are grouped case-insensitively in the database. */
   feed_url: string;
-  /** Every visit row for this creator, with or without a reader hash. */
-  visits: number;
-  /** How many different pages of this creator were opened. Reloading one page,
-   *  or opening it under another address, counts once. */
-  pages: number;
-  /** How many browsers opened at least MIN_PAGES_FOR_A_READER different pages
-   *  of this creator. This is what the walk ranks by. */
-  readers: number;
+  /** The average number of different people per post, over the creator's
+   *  LAST_POSTS_PER_CREATOR most recently visited posts. This is what the walk
+   *  ranks by. */
+  visitors_per_post: number;
+  /** How many posts that average covers, at most LAST_POSTS_PER_CREATOR. */
+  posts: number;
+  /** Different people who opened anything of this creator. It only orders
+   *  creators whose averages tie. */
+  people: number;
 }
 
 /** A creator we already know: a project row carrying the feed we poll. A
@@ -900,18 +911,17 @@ function inWorkerOrder(a: { priority: number; published_at: string | null; creat
   return a.created_at.localeCompare(b.created_at);
 }
 
-/** What browsers did with each creator's pages since the given time, counted in
- *  the database (see everything_creator_attention, migration 102). `minPages`
- *  is how many different pages of a creator one browser must have opened to
- *  count as a reader. */
-export async function fetchCreatorAttention(since: Date, minPages: number): Promise<CreatorAttention[]> {
+/** Every visited creator's score, counted in the database (see
+ *  everything_creator_visit_scores, migration 119). `lastPosts` is how many of
+ *  a creator's most recently visited posts the average covers. */
+export async function fetchCreatorVisitScores(lastPosts: number): Promise<CreatorVisitScore[]> {
   // One row per creator anyone visited, which passed 1,000 rows in September
   // 2026. PostgREST can order and filter a function's rows, and feed_url is
   // unique among them, so the rows page by it like a table.
-  return fetchAllRows<CreatorAttention>(
-    () => getSupabaseClient().rpc("everything_creator_attention", { since: since.toISOString(), min_pages: minPages }),
+  return fetchAllRows<CreatorVisitScore>(
+    () => getSupabaseClient().rpc("everything_creator_visit_scores", { last_posts: lastPosts }),
     "feed_url",
-    { label: "creatorAttention" },
+    { label: "creatorVisitScores" },
   );
 }
 
@@ -921,6 +931,15 @@ export async function fetchCreatorAttention(since: Date, minPages: number): Prom
 export async function fetchCostSinceUsd(since: Date): Promise<number> {
   const total = throwOnError(
     await getSupabaseClient().rpc("everything_cost_since", { since: since.toISOString() }),
+  ) as number | string | null;
+  return Number(total ?? 0);
+}
+
+/** The part of fetchCostSinceUsd that was spent on readers' requests
+ *  (migration 114). */
+export async function fetchReaderCostSinceUsd(since: Date): Promise<number> {
+  const total = throwOnError(
+    await getSupabaseClient().rpc("everything_reader_cost_since", { since: since.toISOString() }),
   ) as number | string | null;
   return Number(total ?? 0);
 }

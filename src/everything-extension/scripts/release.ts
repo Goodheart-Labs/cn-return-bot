@@ -4,6 +4,7 @@
  * docs/extension-release.md.
  *
  *   bun run release-ext package          build the store packages and the AMO source archive
+ *   bun run release-ext chrome-store-copy  add a store copy next to every built Chrome zip (used by CI)
  *   bun run release-ext firefox-listing  set AMO's homepage, icon and screenshots (live at once)
  *   bun run release-ext firefox-submit   upload the Firefox package to AMO for review
  *   bun run release-ext chrome-upload    upload the Chrome package as a draft
@@ -15,6 +16,7 @@ import { execFileSync } from "node:child_process";
 import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { parse } from "dotenv";
 
 const EXTENSION_DIR = path.resolve(import.meta.dir, "..");
 const REPO_ROOT = path.resolve(EXTENSION_DIR, "../..");
@@ -34,6 +36,9 @@ const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const AMO_TOKEN_LIFETIME_SECONDS = 60;
 const GOOGLE_TOKEN_LIFETIME_SECONDS = 600;
 const POLL_INTERVAL_MS = 5_000;
+// A package's unpacked code is a few megabytes, more than execFileSync's
+// default output limit of one megabyte.
+const PACKAGE_CODE_MAX_BYTES = 64 * 1024 * 1024;
 const MAX_POLLS = 60;
 
 type ReleaseFiles = { chromeZip: string; firefoxZip: string; sourceZip: string };
@@ -88,6 +93,18 @@ function writeChromeStoreZip(builtZip: string, target: string): void {
   run("zip", [target, "manifest.json"], workDir);
 }
 
+/** Version 0.4.0 went to both stores pointing at the local database (GOO-356).
+ *  So every store package must contain the production address from
+ *  .env.prod-backend before it can be uploaded. */
+function assertBuiltForProduction(zipPath: string): void {
+  const productionUrl = parse(readFileSync(path.join(REPO_ROOT, ".env.prod-backend"))).VITE_SUPABASE_URL;
+  if (!productionUrl) throw new Error(".env.prod-backend has no VITE_SUPABASE_URL");
+  const code = execFileSync("unzip", ["-p", zipPath, "*.js"], { encoding: "utf8", maxBuffer: PACKAGE_CODE_MAX_BYTES });
+  if (!code.includes(productionUrl)) {
+    throw new Error(`${zipPath} does not talk to the production database ${productionUrl}. Do not upload it.`);
+  }
+}
+
 function packageRelease(): void {
   assertCleanTree();
   run("bun", ["run", "zip-ext"]);
@@ -96,8 +113,24 @@ function packageRelease(): void {
   mkdirSync(path.dirname(files.chromeZip), { recursive: true });
   writeChromeStoreZip(path.join(OUTPUT_DIR, `everything-extension-${version}-chrome.zip`), files.chromeZip);
   copyFileSync(path.join(OUTPUT_DIR, `everything-extension-${version}-firefox.zip`), files.firefoxZip);
+  assertBuiltForProduction(files.chromeZip);
+  assertBuiltForProduction(files.firefoxZip);
   run("git", ["archive", "--format=zip", "-o", files.sourceZip, "HEAD"]);
   console.log(`Version ${version} packaged in ${path.dirname(files.chromeZip)}`);
+}
+
+/** Writes a Web Store copy, without the manifest key, next to every Chrome zip
+ *  `wxt zip` left in the output folder. The Build Extension workflow runs this,
+ *  so the extension-latest GitHub release carries a package the store
+ *  accepts as it is. */
+function writeChromeStoreCopies(): void {
+  const builtZips = readdirSync(OUTPUT_DIR).filter((name) => name.endsWith("-chrome.zip"));
+  if (builtZips.length === 0) throw new Error(`No *-chrome.zip in ${OUTPUT_DIR}. Run wxt zip first.`);
+  for (const name of builtZips) {
+    const target = path.join(OUTPUT_DIR, name.replace(/-chrome\.zip$/, "-chrome-store.zip"));
+    writeChromeStoreZip(path.join(OUTPUT_DIR, name), target);
+    console.log(`Wrote ${target}`);
+  }
 }
 
 function amoAuthHeader(): string {
@@ -238,6 +271,7 @@ async function printChromeStatus(): Promise<void> {
 
 const COMMANDS: Record<string, () => void | Promise<void>> = {
   package: packageRelease,
+  "chrome-store-copy": writeChromeStoreCopies,
   "firefox-listing": updateFirefoxListing,
   "firefox-submit": submitFirefoxVersion,
   "chrome-upload": uploadChromePackage,

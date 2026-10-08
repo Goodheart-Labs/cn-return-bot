@@ -99,17 +99,31 @@ CWS_SERVICE_ACCOUNT_KEY_FILE=/home/jim/dev/env/cn-return-bot/cws-service-account
 **Never delete the AMO listing**, not even to start over. The reason is in
 prod-config.md.
 
+## From the GitHub release
+
+Every merge to main that touches the extension runs the Build Extension
+workflow. It uploads the packages to the rolling GitHub release
+[extension-latest](https://github.com/Goodheart-Labs/cn-return-bot/releases/tag/extension-latest),
+built against the production database from the repository's secrets.
+`everything-extension-<version>-chrome-store.zip` is the Web Store copy,
+without the manifest key, made by `bun run release-ext chrome-store-copy`. It
+can be uploaded in the Chrome Web Store dashboard as it is.
+`everything-extension-<version>-chrome.zip` keeps the key and is for unpacked
+installs.
+
 ## Without API credentials
 
 `package` needs no credentials. Every other step can also be done in the
 store dashboards, using the files `package` wrote. A Claude session can do
 that in a Chrome on the Mac: start Chrome there with a remote debugging port,
 which lets a program control it, and with its own profile, because Chrome
-refuses remote debugging on the everyday profile.
+refuses remote debugging on the everyday profile. `mac` is the VPS's name for
+the Mac, through a tunnel the Mac keeps open (devbox README, section
+"mac-tunnel").
 
 ```bash
-ssh jimmaar@jims-macbook-air 'open -na "Google Chrome" --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile'
-ssh -N -L 9223:localhost:9222 jimmaar@jims-macbook-air   # then Playwright's connectOverCDP("http://localhost:9223")
+ssh mac 'open -na "Google Chrome" --args --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-debug-profile'
+ssh -N -L 9223:localhost:9222 mac   # then Playwright's connectOverCDP("http://localhost:9223")
 ```
 
 Copy the upload files to the same absolute path on the Mac, so file uploads

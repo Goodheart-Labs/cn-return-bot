@@ -5,7 +5,8 @@
  *
  * The walk is one straight line (Jim's design, GOO-225). It goes down the
  * creator ranking from the top: creators holding priority first, then
- * everyone by readers (see creatorRanking.ts). At each creator it asks one
+ * everyone by their score, the average number of different people per post
+ * (see creatorRanking.ts). At each creator it asks one
  * question: does this creator have a post we have not checked? A post counts
  * if it is among the creator's five newest, or among their all-time top posts
  * (GOO-81, see topPosts.ts). The first creator with such a post gets it
@@ -37,7 +38,7 @@
 import "dotenv/config";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { MIN_PAGES_FOR_A_READER, VISIT_RANKING_WINDOW_DAYS } from "../everything-core/readers";
+import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
 import {
   countYoutubeNotifications,
   enqueueItems,
@@ -204,8 +205,8 @@ export async function unprocessedEntries(feed: PriorityFeed, entries: FeedEntry[
  *  This only runs while no worker is active. Inside the workflow that is
  *  guaranteed by its concurrency group; for local runs see the warning in
  *  CLAUDE.md. */
-async function triageOrphanedItems(): Promise<void> {
-  for (const item of await fetchOrphanedProcessingItems()) {
+export async function triageOrphanedItems(tier: "requested" | "feed"): Promise<void> {
+  for (const item of await fetchOrphanedProcessingItems(tier)) {
     if ((await fetchItemClaims(item.id)).length > 0) {
       await requeueItem(item.id);
       console.log(`Orphaned in processing → requeued for resume: ${item.url}`);
@@ -263,7 +264,7 @@ export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEnt
  *  walk. Both steps assume no worker is active, which the workflow's
  *  concurrency group guarantees. */
 export async function triageQueue(): Promise<void> {
-  await triageOrphanedItems();
+  await triageOrphanedItems("feed");
   await retryErroredItems();
 }
 
@@ -293,7 +294,7 @@ export async function walkToFirstUnchecked<C, W extends { unchecked: unknown[] }
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
-const CREATOR_COLUMNS = [4, 24, 20, 7, 5, 6, 16, 9];
+const CREATOR_COLUMNS = [4, 24, 20, 8, 5, 6, 16, 9];
 const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "left", "right"];
 
 /** How much of a creator's priority window is left, for the walk table. Rounded
@@ -397,12 +398,12 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // slow walk never reads as a hang.
   const byPriority = ranked.filter((c) => c.prioritized).length;
   console.log(
-    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by readers, a browser that opened at least ${MIN_PAGES_FOR_A_READER} different pages · counted over the last ${VISIT_RANKING_WINDOW_DAYS} days`,
+    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by the average number of different people per post, over each creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts`,
   );
   console.log(`  walked from the top until a creator has a post we have not checked`);
   console.log(groupOpen("the walk, in rank order"));
   console.log(
-    fixedRow(["rank", "creator", "why", "readers", "pages", "visits", "listing", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN),
+    fixedRow(["rank", "creator", "why", "per post", "posts", "people", "listing", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN),
   );
 
   const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<CreatorWalk | null> => {
@@ -429,9 +430,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
           String(feedIndex + 1),
           feed.project,
           creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "attention",
-          String(creator.readers),
-          String(creator.pages),
-          String(creator.visits),
+          creator.score.visitors_per_post.toFixed(2),
+          String(creator.score.posts),
+          String(creator.score.people),
           listingSource(feed, listing),
           String(unchecked.length),
         ],

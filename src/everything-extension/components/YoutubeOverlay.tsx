@@ -4,9 +4,10 @@ import { browser } from "#imports";
 import { Quote } from "@cn/ui/typography";
 import { useSession } from "@cn/features/auth/useSession";
 import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGroups";
-import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
+import { listenForDismissingClicks } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { ClaimNoteStack, NextNoteButton, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
+import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { FloatingWindow, type Box } from "./FloatingWindow";
 import { useNoteDisplay } from "./NoteDisplayChoices";
@@ -193,18 +194,13 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // window would show the card again; the hush holds it down until playback
   // leaves the window. Clicks that actually do something keep the card up,
   // such as clicking the video to play or pause it, or the like button, or
-  // the comments. isInertClick tells the two apart by looking for the signs
-  // that an element is interactive.
+  // the comments. listenForDismissingClicks tells the two apart.
   useEffect(() => {
     if (!group) return;
-    const onClick = (e: MouseEvent) => {
-      if (insideCommonNotesUi(e) || !isInertClick(e)) return;
-      if (!window.getSelection()?.isCollapsed) return;
+    return listenForDismissingClicks(() => {
       hushed.current = group.claimId;
       beginHide();
-    };
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
+    });
   }, [group]);
   // Clicking a pin is explicit intent, so we undo any hiding, summon a claim
   // that does not pop up on its own, and seek into the claim's window. The resulting

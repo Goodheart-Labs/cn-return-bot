@@ -48,11 +48,35 @@ Paste-ready allow-list:
 https://commonnotes.net/**
 https://www.commonnotes.net/**
 https://goodheart-labs.github.io/cn-return-bot/notes/**
+http://localhost:3000/**
+http://localhost:3001/**
+http://localhost:3002/**
+http://localhost:3003/**
+http://localhost:3004/**
+http://localhost:3005/**
+http://localhost:3006/**
+http://localhost:3007/**
+http://localhost:3008/**
+http://localhost:3009/**
+http://localhost:3118/**
+http://localhost:5173/**
+http://localhost:8000/**
+http://localhost:8001/**
+http://localhost:8002/**
 http://localhost:8003/**
 http://localhost:8004/**
-https://jodkhmefbcmgldokmeicpdogkepmcnij.chromiumapp.org/**
+http://localhost:8005/**
+http://localhost:8006/**
+http://localhost:8007/**
+http://localhost:8008/**
+http://localhost:8009/**
+http://localhost:8010/**
+https://*.chromiumapp.org/**
+https://*.extensions.allizom.org/**
 https://edc17663d98cd6a49556fdc1882c73dace1728c1.extensions.allizom.org/**
 ```
+
+The localhost lines are every port the Mac tunnel forwards (devbox README, section "mac-tunnel"), so X sign-in returns to whichever local server it started from. They were widened from 8003 and 8004 on 2026-10-06 (GOO-374). The production site never returns to localhost, because a sign-in always asks to return to the address it started on.
 
 The first three lines are the website on its own domain and on GitHub Pages.
 The website asks X sign-in to return to the page the reader was on, in
@@ -326,6 +350,20 @@ Each subscription names the Edge Function's address above and carries
 that secret changes, existing subscriptions keep signing with the old value,
 and the function ignores their notifications. Each subscription is renewed 7
 days after it was made, the next time the walk reaches its channel.
+
+## Hetzner: the services machine
+
+Hetzner is the German hosting company that rents us the always-on server
+described in [ops/README.md](../ops/README.md). It is the Hetzner Cloud server
+`ubuntu-8gb-hel1-1`, type CX33 (4 shared vCPUs, 8 GB memory), in Helsinki, at
+`95.217.155.79`. It replaced the CPX32 `ubuntu-8gb-nbg1-1` at `167.235.29.159`
+on 2026-10-08 (GOO-244). The old server was deleted the same day. The server was created with the devbox's SSH key, and
+password login is switched off. `ssh root@95.217.155.79` works from the devbox.
+
+Nothing finds the machine by name. Only the two repository secrets
+`CLAIM_CHECK_URL` (`http://95.217.155.79:8787`) and `EXTRACTION_URL`
+(`http://95.217.155.79:8788`) hold its address. So a move to another machine
+changes those two values and nothing else outside the machine.
 
 ## Residential proxy
 

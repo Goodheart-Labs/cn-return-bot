@@ -1,24 +1,15 @@
 import { normalizeFeedUrl } from "./pageUrls";
 
-/** How many different pages of one creator a browser must open inside the
- *  ranking window before it counts as a reader of that creator. One page is a
- *  click; a second, different page is somebody who reads them.
+/** How many of a creator's posts their score averages over. A creator's score
+ *  is the average number of different people per post, taken over the
+ *  creator's posts that were visited most recently (GOO-257). There is no time
+ *  window, so a creator who posts rarely keeps their score until newer visits
+ *  replace it.
  *
  *  It lives here because two places have to agree on it: the pipeline walks
- *  creators on it, and the analytics dashboard reports on it. Both pass it to
- *  the database rather than the database holding a copy. */
-export const MIN_PAGES_FOR_A_READER = 2;
-
-/** How many days back a creator's visits and readers count. The pipeline walks
- *  creators on the numbers inside this window, and the dashboard shows each
- *  checked post's author with the same numbers, so both read it from here. */
-export const VISIT_RANKING_WINDOW_DAYS = 14;
-
-/** How many readers a creator needs before the pipeline walks them on
- *  attention alone. Below this nothing of theirs is processed however much
- *  money is left. A creator holding priority is walked whatever their
- *  readers, because someone asked for them. */
-export const MIN_READERS_TO_WALK_CREATOR = 1;
+ *  creators on the score, and the analytics dashboard shows it. Both pass it
+ *  to the database rather than the database holding a copy. */
+export const LAST_POSTS_PER_CREATOR = 10;
 
 /** The value a visit row carries instead of an identifier: one per browser and
  *  per creator (GOO-135).

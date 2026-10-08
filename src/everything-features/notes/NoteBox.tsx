@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteSourceDetails } from "@cn/core/notes";
 import type { NoteStatus } from "@cn/core/noteScore";
@@ -25,8 +25,9 @@ export const statusLabel = (status: NoteStatus): string => STATUS[status].label;
  *  always agree. */
 export const statusColorClass = (status: NoteStatus): string => STATUS[status].dot;
 
-/** The one question every note's rating panel asks, whatever its status. */
-export const RATING_QUESTION = "Is this note helpful?";
+/** The one question every rating panel asks, whatever its status: notes, and
+ *  the reader's key points and forecasts. */
+export const ratingQuestion = (thing: "note" | "key point" | "forecast") => `Is this ${thing} helpful?`;
 
 /** The status badge shown above a note. It is a filled circle followed by the
  *  Community Notes copy for that status. A status that has been decided also
@@ -48,7 +49,7 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
           <path d="M6.5 6.5l7 7M13.5 6.5l-7 7" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" />
         )}
       </svg>
-      <span>{label}</span>
+      <span className="whitespace-nowrap">{label}</span>
     </div>
   );
 }
@@ -103,14 +104,31 @@ function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
   );
 }
 
+/** The softly filled panel that asks the rating question beside the pills.
+ *  Notes use it, and so do readers' key points and forecasts, so every rating
+ *  on the site looks the same. */
+export function RatingPanel({ question, children }: { question: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
+      <div className="text-sm text-fg">{question}</div>
+      {/* The pills never squeeze beside the question. When both do not fit,
+          the pills move to their own line together. */}
+      <div className="shrink-0">{children}</div>
+    </div>
+  );
+}
+
 /** The note, laid out like a Community Note on X: the status line, the note
  *  text with its source links, and then a softly filled rating panel that asks
  *  the question beside the pills. `children` are the pills. `question`
  *  replaces the plain question, which is how the one-time voting hint joins
  *  the panel without covering the note. */
-export function NoteBox({ note, status, sourcesOpen, question, children }: {
+export function NoteBox({ note, status, compact = false, sourcesOpen, question, children }: {
   note: NoteRow;
   status: NoteStatus;
+  /** For a narrow column: sources show as site names, and a long note starts
+   *  clamped to a few lines with a "More" button. */
+  compact?: boolean;
   sourcesOpen?: boolean;
   question?: React.ReactNode;
   children?: React.ReactNode;
@@ -119,20 +137,34 @@ export function NoteBox({ note, status, sourcesOpen, question, children }: {
   // "AI writes, people rate": a reader should never mistake a machine's note
   // for a person's.
   const byline = note.author_id ? `by ${note.author_name ?? "anonymous"}` : "Written by AI";
+  const [expanded, setExpanded] = useState(false);
+  const [clamped, setClamped] = useState(false);
+  const textBox = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const paragraph = textBox.current?.firstElementChild;
+    if (compact && !expanded && paragraph) setClamped(paragraph.scrollHeight > paragraph.clientHeight + 1);
+  }, [compact, expanded, note.note]);
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <StatusBadge status={status} />
         <span className="text-xs text-fg-muted shrink-0">{byline}</span>
       </div>
-      <LinkifiedText className="text-sm text-fg whitespace-pre-wrap" linkClassName="text-link hover:underline break-all" text={noteText(note)} />
-      {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
-      {children && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
-          <div className="text-sm text-fg">{question ?? <span className="font-semibold">{RATING_QUESTION}</span>}</div>
-          {children}
-        </div>
+      <div ref={textBox}>
+        <LinkifiedText
+          className={`text-sm text-fg whitespace-pre-wrap${compact && !expanded ? " line-clamp-6" : ""}`}
+          linkClassName={compact ? "text-link hover:underline" : "text-link hover:underline break-all"}
+          shortLinks={compact}
+          text={noteText(note)}
+        />
+      </div>
+      {compact && (clamped || expanded) && (
+        <button type="button" className="mt-1 text-xs font-semibold text-link hover:underline" onClick={() => setExpanded((open) => !open)}>
+          {expanded ? "Less" : "More"}
+        </button>
       )}
+      {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
+      {children && <RatingPanel question={question ?? <span className="font-semibold">{ratingQuestion("note")}</span>}>{children}</RatingPanel>}
     </div>
   );
 }

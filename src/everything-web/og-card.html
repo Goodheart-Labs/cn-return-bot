@@ -2,54 +2,34 @@
 <html>
 <head>
 <!-- The link preview card that og:image points at. scripts/generate-logo-assets.ts
-     renders it to public/og.png, so run that script after changing this file. -->
+     renders it, so run that script after changing this file.
+     Slack's small preview shows only the middle square of the card, x 285 to 915,
+     at about 120 pixels on screen. So the logo, the name and the headline sit in
+     one centred stack no wider than 560 pixels, and are large enough to read
+     there. Design and crop rules: src/scripts_jim/2026_10_06_link_preview_explorer/. -->
 <meta charset="utf-8">
 <!-- The website draws with the system font. A rendered card must look the same
      on every machine, so it uses Inter, which is close to Apple's SF Pro. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=block">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    width: 1200px; height: 630px;
-    background: #f8fafc;
-    font-family: Inter, sans-serif;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .card {
-    width: 1020px;
+    width: 1200px; height: 630px; overflow: hidden;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    padding: 56px 48px 48px;
+    font-family: Inter, sans-serif;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
   }
-  .title { display: flex; align-items: center; gap: 28px; }
-  .title img { width: 104px; height: 104px; }
-  h1 { font-size: 72px; font-weight: 800; color: #111827; letter-spacing: -1px; }
-  .sub { font-size: 40px; color: #374151; margin-top: 18px; line-height: 1.35; }
-  .pitch { font-size: 30px; color: #6b7280; margin-top: 28px; }
-  .row { margin-top: 34px; display: flex; align-items: center; }
-  .pill {
-    font-size: 25px; font-weight: 700; white-space: nowrap;
-    border-radius: 999px; padding: 12px 26px; margin-right: 22px;
-  }
-  .helpful { background: #dcfce7; border: 1px solid #bbf7d0; color: #15803d; }
-  .somewhat { background: #fef9c3; border: 1px solid #fde68a; color: #a16207; }
-  .nothelpful { background: #fee2e2; border: 1px solid #fecaca; color: #b91c1c; }
-  .site { margin-left: auto; font-size: 29px; font-weight: 700; color: #2563eb; }
+  img { width: 168px; height: 168px; margin-bottom: 18px; }
+  h1 { font-size: 76px; font-weight: 800; letter-spacing: -2px; line-height: 1; color: #111827; }
+  .headline { margin-top: 22px; font-size: 34px; font-weight: 500; color: #4b5563; letter-spacing: -0.3px; }
+  .site { margin-top: 30px; font-size: 26px; font-weight: 700; color: #2563eb; }
 </style>
 </head>
 <body>
-  <div class="card">
-    <div class="title"><img src="../everything-ui/assets/logo.svg" alt=""><h1>Common Notes</h1></div>
-    <div class="sub">Community Notes 4 Everything.</div>
-    <div class="pitch">See notes written by others on articles and YouTube videos.</div>
-    <div class="row">
-      <span class="pill helpful">Helpful</span>
-      <span class="pill somewhat">Somewhat helpful</span>
-      <span class="pill nothelpful">Not helpful</span>
-      <span class="site">commonnotes.net</span>
-    </div>
-  </div>
+  <img src="../everything-ui/assets/logo.svg" alt="">
+  <h1>Common Notes</h1>
+  <div class="headline">Community Notes 4 Everything</div>
+  <div class="site">commonnotes.net</div>
 </body>
 </html>
