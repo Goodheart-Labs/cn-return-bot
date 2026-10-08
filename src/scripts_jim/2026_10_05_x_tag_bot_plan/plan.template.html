@@ -164,7 +164,7 @@ td code { white-space: nowrap; }
 .decision h3 { margin-top: 0; }
 .decision p:last-child, .decision ul:last-child { margin-bottom: 0; }
 
-/* Approval tree */
+/* Small trees */
 .tree { font-size: 0.92rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
 .tree ul { list-style: none; padding-left: 22px; border-left: 1px solid var(--line); margin: 4px 0 4px 8px; }
 .tree > ul { border-left: none; padding-left: 0; margin-left: 0; }
@@ -189,9 +189,9 @@ td code { white-space: nowrap; }
 
 <div class="page">
   <header>
-    <div class="eyebrow">GOO-212 · built, waiting for the X account · 6 October 2026</div>
+    <div class="eyebrow">GOO-212 · built, waiting for the X account · 8 October 2026</div>
     <h1>Tag-to-Note Bot</h1>
-    <p class="lede">Someone replies under a post on X and tags our bot. The bot researches the post with our existing note pipeline and answers in the thread with a draft Community Note, or with an explanation of why no note is needed. Anyone in the thread can suggest changes, and the bot answers each suggestion with a revised draft or a reason to keep it. When someone who asked for the note replies "approve", our AI Note Writer submits it and the bot replies with a link to the note.</p>
+    <p class="lede">Someone replies under a post on X and tags our bot. The bot researches the post with our existing note pipeline and submits a Community Note right away, or explains why no note is needed. When it can't submit yet, because X doesn't take our notes on that post or the daily limit is full, it shows the note, says what would help, and keeps trying for three hours. People can reply with corrections while a note waits.</p>
     <div class="meta">
       <a href="https://linear.app/goodheart-labs/issue/GOO-212/make-a-twitter-bot-that-automatically-posts-community-notes-when">Linear ticket GOO-212</a>
       <a href="https://github.com/Goodheart-Labs/cn-return-bot/pull/560">Draft PR #560</a>
@@ -205,13 +205,13 @@ td code { white-space: nowrap; }
   <section id="flow">
     <h2>The steps</h2>
     <div class="prose">
-      <p>Two things start the bot. A new tag starts a conversation, shown in the top half. A reply to one of the bot's own posts continues a conversation, shown in the bottom half. Hover over a step for a one-line summary. Click it to see its full prompt, the real input it got and the real output it gave.</p>
+      <p>Three things set the bot to work. A new tag starts a conversation (top). A reply to one of the bot's posts continues it (middle). Every two minutes the bot tries its waiting notes again (bottom). Hover over a step for a one-line summary. Click it to see its full prompt, the real input it got and the real output it gave.</p>
     </div>
     <div class="legend" aria-label="Legend">
       <span class="chip opus">Opus 5.5</span><span class="chip muse">Muse Spark 1.3</span><span class="chip other">Other model</span><span class="chip code">Plain code</span><span class="chip x">X API call</span><span class="chip new">Bot reply</span><span class="chip skip">Skipped for this bot</span>
     </div>
     <div class="flow-wrap">
-      <svg id="flow-svg" viewBox="0 0 1180 1165" role="img" aria-label="Flow diagram of the bot's steps"></svg>
+      <svg id="flow-svg" viewBox="0 0 1180 1180" role="img" aria-label="Flow diagram of the bot's steps"></svg>
     </div>
     <p class="flow-hint">On a phone, scroll the diagram sideways. Every step is also reachable with the Tab key and Enter.</p>
   </section>
@@ -219,7 +219,7 @@ td code { white-space: nowrap; }
   <section id="threads">
     <h2>Two example threads</h2>
     <div class="prose">
-      <p>These are the two conversations the plan's examples come from. The first is a post with a false side claim, where the bot drafts a note, revises it after a suggestion and gets approved. The second is a post whose numbers are right, where the bot says no note is needed and holds its ground when someone pushes back. The small buttons under each bot post open the step that wrote it.</p>
+      <p>These are the two conversations the plan's examples come from. The first is a post with a false side claim on a post X doesn't take our notes on yet: the bot posts its note as waiting, revises it after a correction, and submits it once X allows it. The second is a post whose numbers are right, where the bot says no note is needed and holds its ground when someone pushes back. The small buttons under each bot post open the step that wrote it.</p>
     </div>
     <div class="threads">
       <div class="thread" id="thread-mumbai"></div>
@@ -229,24 +229,23 @@ td code { white-space: nowrap; }
 
   <section id="behaviour" class="prose">
     <h2>Behaviour</h2>
-    <h3>Starting a conversation</h3>
+    <h3>A tag</h3>
     <ul>
-      <li>A person replies to a post and writes <code>@CommonNotesBot</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post. The handle is a placeholder until we pick one.</li>
+      <li>A person replies to a post and writes <code>@CommonNotesBot</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post.</li>
       <li>The bot answers within about 30 to 60 seconds. X pushes the tag to us within a second, and the research takes 20 to 40 seconds.</li>
       <li>The person's own words go into the research. If they point at one claim, the bot checks that claim even when it is not the post's main argument. This turned out to matter, see <a href="#d-requester">the decision on the tagger's comment</a>.</li>
-      <li>The answer is one reply: a draft note with its sources, or two or three sentences on why no note is needed. Either way the reply ends with how to continue.</li>
-      <li>If a second person tags the bot under the same post, the bot does not research again. It answers with the newest answer it already has. If their tag also contains a suggestion, it is handled like any other suggestion.</li>
+      <li>If the research finds a note, the bot submits it right away and replies with the note and its link. There is no approval step.</li>
+      <li>If it can't submit yet, it replies with the note and says why. When X doesn't take our notes on the post yet, the reply says that requesting a Community Note in the post's menu helps. When the daily limit is full, it says so. Either way it keeps trying every 2 minutes for 3 hours, and replies under the note once it went in.</li>
+      <li>If no note is needed, it replies with two or three sentences on why.</li>
+      <li>If a second person tags the bot under the same post, the bot doesn't research again. It answers with the newest answer it already has, or with the link if our note is already in. If their tag asks for a change, it is handled as feedback.</li>
     </ul>
-    <h3>Continuing a conversation</h3>
+    <h3>A reply to the bot</h3>
     <ul>
-      <li>Anyone may reply to one of the bot's posts. The bot sorts each reply into one of four kinds: an approval, an improve-and-approve ("approve but drop the second link"), feedback, or anything else.</li>
-      <li>Feedback gets one answer: a new draft, or a short reason why the current answer stands. The bot can search the web and open links the person posted.</li>
+      <li>Anyone may reply to one of the bot's posts. The bot sorts each reply into feedback or anything else.</li>
+      <li>Feedback gets one answer while the note still waits: a revised note, which the bot then submits or keeps trying exactly like a first note, or a short reason why the answer stands. The bot can search the web and open links the person posted.</li>
+      <li>Feedback after the note went in gets the note's link, because a submitted note can't be changed.</li>
       <li>Everything else, such as thanks, jokes and insults, gets no reply at all. That also stops two bots from talking to each other forever.</li>
-      <li>An approval submits the exact draft it replies to, as long as the approver is someone who asked for this note or suggested a change that led to it. The <a href="#d-approvers">approval rule</a> shows who that is. Anyone else gets one reply that explains the rule.</li>
-      <li>An improve-and-approve first runs the revision. If the bot makes the change, it submits the new version right away and shows it in the "Submitted" reply. If it doesn't agree with the change, nothing is submitted and it explains why.</li>
-      <li>A post gets at most one note from us. If several drafts are approved before it goes out, the most recently approved one is submitted, and everyone who approved gets one reply with the note's link (see <a href="#d-one-note">one note per post</a>).</li>
-      <li>X takes our notes only on some posts, mostly posts where people requested a note. On any other post, the draft says so and asks people to request one, and an approval waits up to 3 hours for X to allow it (see <a href="#d-eligibility">the decision</a>).</li>
-      <li>After submission the bot replies "Submitted" with the note's link. If X's daily limit for our AI notes is used up, it first replies that the note is queued, and later replies again once it went through.</li>
+      <li>A post gets at most one note from us. When several versions wait on one post, the newest one is the one that goes in, and the older versions get a reply that links to it (see <a href="#d-one-note">one note per post</a>).</li>
     </ul>
   </section>
 
@@ -273,7 +272,7 @@ td code { white-space: nowrap; }
     <h3>Character limits</h3>
     <ul>
       <li><strong>A Community Note</strong> may have 280 characters, and each link counts as 1 character. Our writer already works to this limit.</li>
-      <li><strong>A post</strong> from a normal account may have 280 characters, and each link counts as 23 characters, because X rewrites every link to a <code>t.co</code> short link of that length. A draft with two sources plus the line "Reply approve..." is usually 380 to 450 characters.</li>
+      <li><strong>A post</strong> from a normal account may have 280 characters, and each link counts as 23 characters, because X rewrites every link to a <code>t.co</code> short link of that length. A note with two sources plus the bot's explanation around it is usually 380 to 450 characters.</li>
       <li><strong>X Premium</strong> allows posts of up to 25,000 characters. The API needs no special flag for this: <code>POST /2/tweets</code> accepts the longer text when the account has Premium, and refuses it otherwise. We decided to buy Premium for the bot. Premium also adds a checkmark, which ranks the bot's replies higher in a thread.</li>
     </ul>
     <h3>Rate limits</h3>
@@ -309,16 +308,15 @@ td code { white-space: nowrap; }
         <h3>What it reuses from the Signal bot</h3>
         <p>The Signal bot (<code>src/signal-bot/</code>) already drafts a note for a pasted tweet, discusses it, takes an approval and submits through a priority queue. Its first draft now goes through the claim-check service, the same way the tag bot's will. Its chat parts are specific to Signal: local SQLite storage, numbered conversations, regex commands. The tag bot reuses the parts that are not:</p>
         <ul>
-          <li><code>pipelineOutcomeOf</code>, which reads the service's answer back into a note, a note whose sources failed the check, or "no note needed". It moves out of the Signal bot when the tag bot needs it.</li>
-          <li><code>validateSignalDraft</code>, which checks a draft has one to five public source URLs and fits 280 characters. It moves to a shared place and is renamed <code>validateApprovedDraft</code>.</li>
-          <li>The submission path in <code>submission.ts</code>, which writes a <code>pipeline_runs</code> row and calls <code>submitNoteForTweet</code> in a priority lane. It becomes shared code for "notes a human approved".</li>
-          <li>The database's capacity gate (<code>claim_note_submission</code>), which already gives human-approved notes priority over the automatic pipeline.</li>
+          <li><code>pipelineOutcomeOf</code>, which reads the service's answer back into a note, a note whose sources failed the check, or "no note needed". It now sits next to its counterpart in <code>src/bots/types.ts</code>.</li>
+          <li>The submission path from <code>submission.ts</code>, which writes a <code>pipeline_runs</code> row and calls <code>submitNoteForTweet</code> in a priority lane. It is now the shared <code>submitApprovedNote</code>.</li>
+          <li>The database's capacity gate (<code>claim_note_submission</code>) and the Signal bot's queue table, which give both bots priority over the automatic pipeline.</li>
         </ul>
       </div>
 
       <div class="decision">
         <h3>Database changes</h3>
-        <p>Two new tables keep the conversations. A thread is one tag and everything below it. Every post in it, ours and theirs, is one row in the second table, so the tree of replies can be rebuilt from <code>parent_tweet_id</code>. The bot uses that table for four things: finding which thread a new reply belongs to, knowing the exact draft an approval approves, walking the path for the approval rule and the revision's thread, and never answering a post twice (a post is answered when a bot row has it as parent). Costs stay in <code>pipeline_runs</code>. If the bot crashes between posting a reply and saving it, it may answer that post again after the restart, which we accept for simpler code.</p>
+        <p>Two new tables keep the conversations. A thread is one tag and everything below it. Every post in it, ours and theirs, is one row in the second table, so the tree of replies can be rebuilt from <code>parent_tweet_id</code>. The bot uses that table for four things: finding which thread a new reply belongs to, walking the path for the revision's thread, knowing which notes still wait and exactly what they say, and never answering a post twice. Costs stay in <code>pipeline_runs</code>. If the bot crashes between posting a reply and saving it, it may answer that post again after the restart, which we accept for simpler code.</p>
         <h4><code>x_tag_threads</code> (new)</h4>
         <div class="table-wrap"><table>
           <thead><tr><th>Column</th><th>Type</th><th>Purpose</th></tr></thead>
@@ -342,9 +340,9 @@ td code { white-space: nowrap; }
             <tr><td><code>parent_tweet_id</code></td><td>text</td><td>The post it replies to.</td></tr>
             <tr><td><code>author_id</code>, <code>author_handle</code></td><td>text</td><td>Who wrote it.</td></tr>
             <tr><td><code>role</code></td><td>text</td><td><code>human</code> or <code>bot</code>.</td></tr>
-            <tr><td><code>kind</code></td><td>text</td><td>For a human post: <code>request</code>, <code>approve</code>, <code>improve_and_approve</code>, <code>feedback</code>, <code>other</code>. For a bot post: <code>draft</code>, <code>no_note</code>, <code>answer</code>, and the fixed replies <code>queued</code>, <code>submitted</code>, <code>other_draft_submitted</code>, <code>already_submitted</code>, <code>not_on_path</code>, <code>gave_up</code>, <code>refused</code>, <code>unreadable</code>.</td></tr>
+            <tr><td><code>kind</code></td><td>text</td><td>For a human post: <code>request</code>, <code>feedback</code>, <code>other</code>. For a bot post: <code>waiting</code>, <code>submitted</code>, <code>no_note</code>, <code>answer</code>, and the fixed replies <code>other_version_submitted</code>, <code>already_submitted</code>, <code>gave_up</code>, <code>refused</code>, <code>unreadable</code>.</td></tr>
             <tr><td><code>text</code></td><td>text</td><td>The full text as posted.</td></tr>
-            <tr><td><code>draft</code></td><td>jsonb</td><td>On every bot post that shows a version of the note, <code>{text, sources}</code>: exactly what an approval of it submits. That is a draft, and the improved version posted after an improve-and-approve.</td></tr>
+            <tr><td><code>draft</code></td><td>jsonb</td><td>On every bot post that shows a note, <code>{text, sources}</code>: exactly what goes in when it is submitted. That is a waiting note, and a note that went in with the first reply.</td></tr>
             <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
           </tbody>
         </table></div>
@@ -352,7 +350,7 @@ td code { white-space: nowrap; }
         <div class="table-wrap"><table>
           <thead><tr><th>Table</th><th>Change</th><th>Why</th></tr></thead>
           <tbody>
-            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions. The bot uses the Signal bot's queue table <code>signal_submission_queue</code> as it is, which gives both bots priority over the automatic pipeline. It is not renamed, because the automatic pipeline, the Signal bot and the database all read its fields by name, and a rename would have to switch all of them at the same moment. Which draft waits on a post is read from the approvals in <code>x_tag_posts</code>, so the queue needs no new column.</td></tr>
+            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions. The bot uses the Signal bot's queue table <code>signal_submission_queue</code> as it is, which gives both bots priority over the automatic pipeline. It is not renamed, because the automatic pipeline, the Signal bot and the database all read its fields by name, and a rename would have to switch all of them at the same moment. Which note waits on a post is read from <code>x_tag_posts</code>, so the queue needs no new column.</td></tr>
           </tbody>
         </table></div>
       </div>
@@ -363,75 +361,51 @@ td code { white-space: nowrap; }
         <p>So the section that carries the comment now says: "If it points at a specific claim in the post, decide whether that claim needs a note, even when it is not the post's main argument." With that sentence the same run wrote a draft. The shared search and writer prompts stay unchanged, so the production bot is not affected. <button class="close" type="button" data-open="searchFirstTry">See the first run's findings</button></p>
       </div>
 
-      <div class="decision" id="d-approvers">
-        <h3>Who may approve a draft</h3>
-        <p>The ticket says the person who tagged the bot can approve, and that when there are several drafts, "every user who's above in the tree can approve". The plan reads this as: a person may approve a draft if they wrote any post on the path from the tag down to that draft. That is the tagger and everyone whose suggestion led to the draft. Someone who only replied elsewhere in the thread may still suggest changes, but not approve.</p>
-        <div class="tree" aria-label="Example of who may approve">
-          <ul><li>@priya_k_writes tags the bot
-            <ul><li>Bot: draft 1 <span class="ok">(priya may approve)</span>
-              <ul>
-                <li>@redpill_raj: "lol imagine needing a bot..." (no reply)</li>
-                <li>@mvaidya: "Is that really the best source?..."
-                  <ul><li>Bot: draft 2 <span class="ok">(priya and mvaidya may approve)</span>, <span class="no">(redpill_raj may not)</span></li></ul>
-                </li>
-              </ul>
-            </li></ul>
-          </li></ul>
-        </div>
-        <p>An approval always submits the exact draft it replies to, never "the latest draft". An approval from someone not on the path gets one reply that explains the rule and suggests they tag the bot themselves. Your answer in the question round was "anyone". If you meant that literally anyone in the thread may approve, the check is one line to remove.</p>
+      <div class="decision" id="d-no-approval">
+        <h3>No approval step: the bot submits on its own</h3>
+        <p>The first plan had people approve each draft before it went in. Nathan suggested the bot should submit on its own and ask for help only when something blocks it, and you agreed (8 October). So a note now goes in as soon as X takes it. The approval rule, the "improve and approve" reply and the queue of approvals are gone, and the classifier knows only two kinds of reply, feedback and anything else.</p>
+        <p>What this gives up: nobody reads a note before it is submitted, and since the ticket also dropped the source check, nothing checks the cited pages either (see the decision below). What it gains: one reply instead of two, a note on the post as early as possible, and much less code.</p>
       </div>
 
       <div class="decision" id="d-one-note">
-        <h3>One note per post, even when several drafts get approved</h3>
-        <p>Our AI Note Writer can submit only one note per post. Several approvals can still arrive close together: two people approve different drafts in two branches of a thread, or in two threads on the same post, while the first approval waits for X's daily limit or for the post to become eligible. Three rules handle every such case.</p>
+        <h3>One note per post, even with several versions</h3>
+        <p>Our AI Note Writer can submit only one note per post. Several versions of a note can still wait on one post at the same time, for example when someone's correction leads to a revised note while the first one waits, or when two threads on the same post each produce one.</p>
         <ul>
-          <li><strong>One waiting approval per post.</strong> The approved-notes queue holds at most one entry per post, and the entry names the approved draft. A newer approval of a different draft replaces it, because the newer draft is the one people checked most recently. Both drafts are still from people on their path, so nobody outside the discussion can swap the note.</li>
-          <li><strong>Never two submissions.</strong> The database's existing <code>claim_note_submission</code> takes a lock and refuses a second claim on a post that already has one. Two approvals in the same second therefore lead to one submission.</li>
-          <li><strong>One final reply per approval.</strong> When the note goes in, the bot looks up every approval on that post in <code>x_tag_posts</code>, from every thread, that has no final reply yet. A final reply says submitted, a different draft went in, gave up, or X refused; a "queued" reply doesn't count. The approval whose draft went in gets "Submitted" with the note's link. Every other one gets a reply that links the X post of the draft that went in, which X shows as a quote card, so people see exactly which version was submitted. An approval that comes after the submission gets the same reply at once.</li>
+          <li><strong>The newest waiting version is the one tried.</strong> It is the version people corrected most recently. A newer "no note needed" answer, such as a withdrawal, stops every waiting version before it.</li>
+          <li><strong>Never two submissions.</strong> Work on one post runs one task at a time, and the database's existing <code>claim_note_submission</code> lock refuses a second claim on a post that already has one.</li>
+          <li><strong>Every waiting version gets one final reply.</strong> When the note goes in, the version that went in gets "Submitted" with the note's link. Each older version gets a reply that links to the X post of the version that went in, which X shows as a quote card.</li>
         </ul>
-        <p>An example: Priya approves draft 1 at 14:02, but the daily limit is full, so she gets the queued reply. At 14:20 Mohan, who asked for a better source under draft 1, approves the revised draft 2, which replaces draft 1 in the queue. At 14:31 a slot frees up and draft 2 is submitted. Mohan gets "Submitted" and Priya gets the reply that a different draft went in, both with the same link.</p>
       </div>
 
       <div class="decision">
-        <h3>Waiting for X's daily limit: retry every 2 minutes, for 3 hours instead of 60 minutes</h3>
-        <p>X lets our AI Note Writer submit only so many notes per 24 hours. Right now the limit is 73, and 68 of those slots were used when this plan was written. On 4 October we hit the limit at 50. The automatic pipeline fills the limit most days, so an approved note will often have to wait.</p>
-        <p>The database already decides when a submission may go out (<code>claim_note_submission</code>). A slot frees up when a note submitted 24 hours earlier drops out of the window, which happens every 20 to 30 minutes on a typical day. After X actually refuses a note for the limit, the gate waits 95 minutes and then lets one test submission through. Approved notes from the bot jump ahead of the automatic pipeline, like Signal approvals do today.</p>
-        <p>The bot checks the queue every 2 minutes, as the ticket suggests, but it asks the database gate rather than X, so waiting costs nothing. A 60-minute window would fail every approval that arrives just after a refusal, because the gate alone waits 95 minutes. So the plan keeps trying for 3 hours. After that, the bot replies that the limit stayed full and that replying "approve" again restarts the wait.</p>
+        <h3>Waiting notes: tried every 2 minutes, for 3 hours</h3>
+        <p>X lets our AI Note Writer submit only so many notes per 24 hours. On 5 October the limit was 73, and 68 of those slots were used when this plan was written. On 4 October we hit the limit at 50. The automatic pipeline fills the limit most days, so a note from the bot will often have to wait. And most posts people tag are probably not eligible for our notes yet.</p>
+        <p>The database decides when a submission may go out. A slot frees up when a note submitted 24 hours earlier drops out of the window, about every 20 to 30 minutes on a typical day. After X actually refuses a note for the limit, the gate waits 95 minutes and then lets one test submission through. The bot's notes go ahead of the automatic pipeline, like Signal approvals do.</p>
+        <p>Every 2 minutes the bot asks <code>evaluate_note</code> whether the post is eligible, and then the database gate whether there is room. Neither publishes anything. A 60-minute window would fail every note that arrives just after a refusal, because the gate alone waits 95 minutes, so the bot keeps trying for 3 hours. After that it replies under the note that it gave up and how to try again: request a Community Note, or tag it again.</p>
       </div>
 
       <div class="decision">
-        <h3>Approvals are read by Muse, not by a fixed list of words</h3>
-        <p>The Signal bot deliberately never lets a model decide what counts as an approval. It only accepts exact phrases such as "yes post". On X people write freely ("looks good, ship it", "approve but drop the second link"), so a word list would either miss approvals or accept "approve but change X". So the classifier has a fourth kind, improve-and-approve. Muse sorted all five example replies correctly, including "approve but use an official source instead of that link". On that reply the revision replaced the news link with the Maharashtra government's Dharavi Redevelopment Project site, dropped a detail that site doesn't support, and would have submitted the new version, for $0.31. Its input ends with a notice that the bot will submit a revised version right away. Without it, the model asked for another approval.</p>
-        <p>The risk is a wrong approval, and a submitted note cannot be taken back through the API. The plan limits the risk two ways: only a reply to a draft can count as an approval, and only from someone on the draft's path.</p>
-      </div>
-
-      <div class="decision">
-        <h3>No source check means people in the thread are the check</h3>
-        <p>The ticket drops the source verifier. An earlier test run shows what that can cost. Asked for an official source, Opus 5.5 (before the medium reasoning setting) rewrote the note around the 2011 census and cited <code>en.wikipedia.org/wiki/Slums_in_Chennai</code> for a claim about Mumbai. The verifier would likely have caught that the page does not support the claim. In the final runs at medium reasoning the sources held up: a government table filed with Parliament and Wikipedia's Dharavi article. Several revisions even removed a word their sources didn't support, on their own. Still, without a check a wrong link can go into a draft, and only a careful reader in the thread would notice before approving.</p>
+        <h3>No source check, and no human check either</h3>
+        <p>The ticket drops the source verifier, and without an approval step nobody reads a note before it goes in. An earlier test run shows what that can cost. Asked for an official source, Opus 5.5 (before the medium reasoning setting) rewrote the note around the 2011 census and cited <code>en.wikipedia.org/wiki/Slums_in_Chennai</code> for a claim about Mumbai. The verifier would likely have caught that the page does not support the claim. In the final runs at medium reasoning the sources held up: a government table filed with Parliament and Wikipedia's Dharavi article.</p>
         <p>Options, cheapest first:</p>
         <ul>
-          <li>Keep it as the ticket says, and rely on the people in the thread.</li>
+          <li>Keep it as it is.</li>
           <li>Accept a source in a revised note only if Opus actually opened it or found it in this conversation's search results. This is plain code and catches invented links, but not a real page that says something else.</li>
-          <li>Run the existing source verifier on revised drafts only. It costs about $0.01 and 10 seconds per revision.</li>
+          <li>Run the existing source verifier on every note before it goes in, by switching it back on in <code>TAG_BOT_PICKS</code>. It costs about $0.01 and 10 seconds per note.</li>
         </ul>
       </div>
 
       <div class="decision">
         <h3>The bot's fixed text is never written by a model</h3>
-        <p>The lines around a draft ("Draft Community Note:", "Reply approve..."), and every status reply ("Submitted", "Queued", "Already submitted"), are fixed templates in code. A model writes only the explanation in a no-note reply and the reply to feedback. We tested whether the revision call ever claims on its own that a note was submitted, with eight replies built to tempt it ("thanks for submitting!", "did you submit it yet?", "ok publish it"). It never did, so the tag bot has no filter for such claims, unlike the Signal bot's <code>safeReply</code>. The test showed a different problem: the model told people "I don't submit notes", because nothing told it how approval works. The revision prompt now says that people submit a draft by replying "approve". In the re-run on Opus 5.5 at medium reasoning, all eight answers again made no claim, and each told the person to reply "approve" to the draft.</p>
+        <p>Everything around a note ("I submitted this Community Note", the waiting explanation, "Submitted", "gave up") is a fixed template in code. A model writes only the explanation in a no-note reply and the lead above a revised note. We tested whether the revision call ever claims on its own that a note was submitted, with eight replies built to tempt it ("thanks for submitting!", "did you submit it yet?", "ok publish it"). It never did, so the tag bot has no filter for such claims, unlike the Signal bot's <code>safeReply</code>. The revision prompt now says that the bot itself submits a new note and reports it, so the model has no reason to.</p>
         <p>Everything people write in the thread, and every page the bot reads, goes into the prompts as evidence, never as instructions. Each prompt says so.</p>
       </div>
 
       <div class="decision" id="d-eligibility">
-        <h3>Posts X won't take notes on: draft anyway and wait</h3>
+        <h3>Posts X won't take notes on: show the note and keep trying</h3>
         <p>We submitted the note "Test https://en.wikipedia.org/wiki/Test" on <a href="https://x.com/NathanpmYoung/status/2107364216898490806">a post by Nathan Young</a> with the production notewriter keys, through a throwaway GitHub workflow. X refused it: "Failed to create a note. The post is ineligible to write a note via API call." Nothing was published. X's <code>evaluate_note</code>, which publishes nothing, refused the same post for the same reason, so the bot can check eligibility first.</p>
         <p>Two things we learned on the way. Every note must contain a link, or X refuses it before looking at the post. And the X keys in our local env file belong to a second AI Note Writer that has not earned admission, so production tests must run through GitHub with the real secrets.</p>
-        <p>You chose the first option below: research either way, tell people how to make the post eligible, and let an approval wait until X allows it.</p>
-        <ul>
-          <li><strong>Draft anyway and wait (chosen).</strong> The draft is still useful to the people in the thread. Its last line asks them to request a Community Note, and an approval waits up to 3 hours for the post to become eligible, in the same queue that waits for the daily limit.</li>
-          <li><strong>Stop early.</strong> Reply at once that X doesn't take our notes on this post, ask them to request a note and tag again. No research, no cost.</li>
-          <li><strong>Draft anyway, no waiting.</strong> Show the draft, but approval only works once the post is eligible.</li>
-        </ul>
+        <p>So the bot researches either way and shows the note in the thread, where it is useful even before it goes in. The reply says that requesting a Community Note in the post's menu helps, and the bot keeps trying for 3 hours in the same loop that waits for the daily limit.</p>
       </div>
 
       <div class="decision" id="d-profile">
@@ -442,7 +416,7 @@ td code { white-space: nowrap; }
           <tbody>
             <tr><td>Display name</td><td>Common Notes Bot</td></tr>
             <tr><td>Handle</td><td>@CommonNotesBot</td></tr>
-            <tr><td>Bio (154 of 160 characters)</td><td>Tag me under a post and I'll draft a Community Note. Reply "approve" to submit it. Automated, run by @NathanpmYoung. See notes on the web: commonnotes.net</td></tr>
+            <tr><td>Bio (138 of 160 characters)</td><td>Tag me under a post and I'll check it and submit a Community Note. Automated, run by @NathanpmYoung. See notes on the web: commonnotes.net</td></tr>
             <tr><td>Website</td><td>https://commonnotes.net</td></tr>
             <tr><td>Automated label</td><td>Managed by @NathanpmYoung</td></tr>
           </tbody>
@@ -450,10 +424,11 @@ td code { white-space: nowrap; }
         <p>Pinned post, posted once (a post with links costs $0.20):</p>
         <pre class="text" style="border:1px solid var(--line);border-radius:10px">How I work:
 1. Reply to a post and tag @CommonNotesBot. Say what you think is wrong, if you like.
-2. I research it and reply with a draft Community Note, or explain why no note is needed.
-3. Reply with changes, or "approve" to submit it. "Approve but ..." works too.
+2. I research it and submit a Community Note, or explain why no note is needed.
+3. If X doesn't take notes from me on that post yet, request a Community Note from the post's menu. I keep trying for 3 hours.
+4. While a note waits, reply with a correction and I'll revise it.
 
-I only answer when someone tags me. Run by @NathanpmYoung. X lets me add notes only to posts where people requested one, so request a note from the post's menu if I can't submit.
+I only answer when someone tags me. Run by @NathanpmYoung.
 
 Common Notes shows notes like these on YouTube, Substack and other sites:
 https://commonnotes.net
@@ -487,12 +462,12 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
   <section id="risks" class="prose">
     <h2>Risks and open questions</h2>
     <ul>
-      <li><strong>X does not accept notes on any post. Tested on 6 October.</strong> A real submission on a hand-picked post by Nathan Young came back "The post is ineligible to write a note via API call". Most posts people tag will probably be ineligible at first, because X offers AI note writers mainly posts where people requested a note. The bot drafts anyway and waits, see <a href="#d-eligibility">posts X won't take notes on</a>. How many requests make a post eligible is not published, so we will learn how often the wait succeeds only once the bot runs.</li>
+      <li><strong>X does not accept notes on any post. Tested on 6 October.</strong> A real submission on a hand-picked post by Nathan Young came back "The post is ineligible to write a note via API call". Most posts people tag will probably be ineligible at first, because X offers AI note writers mainly posts where people requested a note. The bot shows the note anyway and keeps trying, see <a href="#d-eligibility">posts X won't take notes on</a>. How many requests make a post eligible is not published, so we will learn how often the wait succeeds only once the bot runs.</li>
       <li><strong>Will such notes get rated?</strong> A note on a post outside the feed may be shown to fewer raters. The Signal note is still "Needs more ratings" two weeks later. We cannot tell yet whether that is unusual, because our scraper does not record rating counts.</li>
       <li><strong>The notewriter's API keys.</strong> An investigation on 1 October found that the notewriter app's keys are refused for reading posts, because that app is not attached to an X "Project". Submitting notes still works in production. The bot account gets its own app inside a Project, so this does not block us, but it is worth knowing.</li>
-      <li><strong>Does a reply to the bot count as tagging it?</strong> X's rule says an app may reply when the author "@mentions" it. A reply to one of our posts carries our handle as an implicit mention: X delivers it to us as a reply event, but its text may not contain the handle. X's own event list treats the two apart (<code>post.mention.create</code> "does not fire for implicit mentions carried by replies"). If X's reply check does the same, the bot could answer the first tag but not the feedback under its drafts, unless the person writes the handle again. The first test with the real account must check this. If it fails, the draft's last line asks people to tag the bot in their reply.</li>
-      <li><strong>Our AI writer's track record.</strong> You said not to worry about limits. One effect to keep in mind: every submitted note counts toward the AI writer's rating history, which X uses to set the daily limit. If many approved notes get rated unhelpful, the main pipeline's limit shrinks too.</li>
-      <li><strong>The bot's handle.</strong> <code>@CommonNotesBot</code> is a placeholder. Anything with "Community Notes" in it would look like X's own account, so we should avoid it.</li>
+      <li><strong>Does a reply to the bot count as tagging it?</strong> X's rule says an app may reply when the author "@mentions" it. A reply to one of our posts carries our handle as an implicit mention: X delivers it to us as a reply event, but its text may not contain the handle. X's own event list treats the two apart (<code>post.mention.create</code> "does not fire for implicit mentions carried by replies"). If X's reply check does the same, the bot could answer the first tag but not the feedback under its notes, unless the person writes the handle again. The first test with the real account must check this. If it fails, the note's last line asks people to tag the bot in their reply.</li>
+      <li><strong>Replies under its own posts.</strong> When a waiting note goes in, the bot replies under that note, which is its own post. Nobody tagged the bot in it, so if X's reply rule also covers replies to your own posts, those replies are refused. Threads that apps post by themselves suggest they are allowed. The first live test checks this too.</li>
+      <li><strong>Our AI writer's track record.</strong> You said not to worry about limits. One effect to keep in mind: every submitted note counts toward the AI writer's rating history, which X uses to set the daily limit. Without an approval step every tag can become a submission, so if many of these notes get rated unhelpful, the main pipeline's limit shrinks too.</li>
       <li><strong>Harassment.</strong> People will tag the bot under posts by people they dislike. The bot replies under the tagger's comment, not under the original post, which keeps it out of the author's direct line. Reports against the bot account could still get it limited by X.</li>
       <li><strong>Replies to replies.</strong> If someone tags the bot under a reply rather than under the original post, the bot checks that reply. The input does not yet include the post above it, which the bot may need for context. The first version adds the parent post as a section of the input.</li>
     </ul>
@@ -503,28 +478,28 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
     <p>Everything on this page is built and in the draft PR, except the X account itself. The bot can't run on X until the account, its developer app and the two event subscriptions exist.</p>
     <h3>The tag bot, <code>src/x-tag-bot/</code></h3>
     <ul>
-      <li><strong><code>bot.ts</code>, the behaviour.</strong> What happens on a tag, on a reply to a bot post, and on the waiting approvals of a post. Work on one post runs one task at a time, so two approvals can't race, and the database lock is the second guarantee of one note per post. Every outside service comes in as a dependency, which the tests and the dry run swap out.</li>
-      <li><strong><code>threads.ts</code>, reading a conversation.</strong> Pure functions: the path from the tag down to a post, who may approve a draft, which approvals are still open, and which version went in.</li>
+      <li><strong><code>bot.ts</code>, the behaviour.</strong> What happens on a tag, on a reply to a bot post, and to the waiting notes. Any note, first or revised, goes through one function that submits it right away or posts it as waiting. Work on one post runs one task at a time, and the database lock is the second guarantee of one note per post. Every outside service comes in as a dependency, which the tests and the dry run swap out.</li>
+      <li><strong><code>threads.ts</code>, reading a conversation.</strong> Pure functions: the path from the tag down to a post, the answer a reply is about, the open waiting notes on a post, and which version went in.</li>
       <li><strong><code>prompts.ts</code> and <code>replies.ts</code>.</strong> The three new prompts, word for word as on this page, and every fixed reply.</li>
       <li><strong><code>models.ts</code>.</strong> Muse sorts replies and writes the no-note reply. Opus 5.5 at medium reasoning revises, with web search and capped web fetch. A revised note is checked before posting: at most 280 characters with links counted as one, one to five links. A note that fails the check makes the model try again.</li>
       <li><strong><code>x.ts</code>.</strong> Posting replies as the bot, reading the X Activity API stream, and the eligibility check through <code>evaluate_note</code>.</li>
       <li><strong><code>store.ts</code>.</strong> The two tables, with an in-memory version for the tests and the dry run.</li>
-      <li><strong><code>main.ts</code>.</strong> The service: it reads the stream, checks the waiting approvals every 2 minutes, and exits when the stream ends so systemd starts it again. Also the dry run.</li>
+      <li><strong><code>main.ts</code>.</strong> The service: it reads the stream, tries the waiting notes every 2 minutes, and exits when the stream ends so systemd starts it again. Also the dry run.</li>
       <li><strong><code>setup.ts</code>.</strong> The one-time login as the bot and the creation of the two event subscriptions.</li>
     </ul>
     <h3>Shared parts</h3>
     <ul>
       <li><strong>The claim-check service runs the steps a caller picks.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag and an "off" A/B variant. The tweet route takes the note request, and its answer carries the rendered post. There are Opus 5.5 medium variants for search and writer, and a writer reasoning setting.</li>
-      <li><strong>Submitting an approved note</strong> is one shared function, <code>submitApprovedNote</code>, used by the Signal bot and the tag bot in their own lanes.</li>
+      <li><strong>Submitting a note outside the automatic pipeline</strong> is one shared function, <code>submitApprovedNote</code>, used by the Signal bot and the tag bot in their own lanes, both with priority over the automatic pipeline.</li>
       <li><strong>The Signal bot drafts on the claim-check service</strong> with <code>SIGNAL_PICKS</code>, which keep its old steps and models.</li>
       <li><strong>Migration 117</strong> adds the two tables and the <code>x_tag</code> lane.</li>
       <li><strong>Operations:</strong> the <code>cn-x-tag-bot</code> unit, autodeploy, and the docs in <code>ops/README.md</code>, <code>docs/prod-config.md</code> and CLAUDE.md.</li>
     </ul>
     <h3>How it was checked</h3>
     <ul>
-      <li>25 tests for the bot: tags, the no-note answer, a second tag, the approval rule, improve-and-approve, waiting for room or eligibility, several approvals on one post, giving up after 3 hours, the stream parser and the revision checks.</li>
+      <li>22 tests for the bot's behaviour, plus tests for the stream parser and the revision checks: a note that goes in at once, waiting for eligibility or room, feedback that revises a waiting note, a revised note that goes in and settles the older version, feedback after submission, a withdrawal, two waiting versions, giving up after 3 hours, a second tag, and duplicate events.</li>
       <li>The migration ran in a throwaway Postgres (PGlite) with all 32 queue tests, including a new one for the <code>x_tag</code> lane.</li>
-      <li>A real dry run on the Mumbai post: research on Opus 5.5 medium, a draft, "lol" ignored, and "approve but use an official source" revised to the government's 2011 census report and submitted in one reply. Nothing was posted or submitted.</li>
+      <li>A real dry run of the final version on the Mumbai post: research on Opus 5.5 medium, a note citing the 2011 census figures and Wikipedia, submitted at once in one reply, and "lol" ignored. Nothing was posted or submitted.</li>
       <li>The whole suite passes. Type check, lint and the unused-code check are clean, apart from the type error that is already on main.</li>
     </ul>
     <p>Try it yourself: <code>bun run x-tag-bot --dry-run &lt;post-url&gt; "&lt;your comment&gt;" "&lt;reply&gt;" ...</code>. It needs an OpenRouter key and a working X read token.</p>
@@ -533,23 +508,20 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
   <section id="changes" class="prose">
     <h2>Changes since the first plan</h2>
     <ul>
-      <li><strong>X pushes the tags.</strong> The bot gets them through the X Activity API stream instead of polling. A tag sent during an outage gets no answer, which you accepted for simpler code. One parameter still resends the last five minutes, so restarts after a deploy lose nothing.</li>
-      <li><strong>No approval request to X.</strong> We launch without asking, because X staff said bots like ours need none if they meet four conditions. The bot meets all four. The draft request is gone.</li>
-      <li><strong>The claim-check service runs the first answer.</strong> The steps are chosen through the existing A/B config, and the Signal bot was refactored to work the same way. That part is built.</li>
-      <li><strong>Improve and approve.</strong> A fourth kind of reply. It revises the draft and submits the new version without a second approval round.</li>
-      <li><strong>No filter for submission claims.</strong> A test with eight tempting replies found none, so the tag bot doesn't get the Signal bot's <code>safeReply</code>. The revision prompt now explains how approval works.</li>
-      <li><strong>While building: the queue table keeps its name.</strong> <code>signal_submission_queue</code> isn't renamed and gets no new column. Which draft waits is read from the stored approvals, and a rename would force the automatic pipeline, the Signal bot and the database to switch at the same moment. The threads table also lost <code>status</code> and <code>note_id</code>, which are derived from the posts and the <code>notes</code> table.</li>
-      <li><strong>While building: the service exits when the stream ends.</strong> systemd starts it again, and the stream resends the last five minutes. There is no reconnect code.</li>
-      <li><strong>While building: a dry run and a setup script.</strong> The dry run answers a made-up tag on a real post and takes replies as arguments. The setup script logs in as the bot once and creates the event subscriptions, because X allows mention and reply subscriptions only with a login of the account itself.</li>
-      <li><strong>Simpler <code>x_tag_posts</code> table.</strong> <code>answered_by</code> and <code>llm_cost_usd</code> are gone. A crash at the wrong moment may cause one double reply, which we accept.</li>
-      <li><strong>The diagram shows every branch:</strong> the "seen this post?" check, the unreadable post, the approval rule's reply, one note per post, the queued and gave-up replies, and X refusing a post.</li>
-      <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut the improve-and-approve revision to $0.31, against $1.10 for the uncapped Mumbai revision.</li>
-      <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young: "The post is ineligible to write a note via API call". The bot now checks eligibility first, drafts anyway, asks people to request a note, and lets an approval wait up to 3 hours for X to allow it.</li>
-      <li><strong>Opus 5.5 at medium reasoning.</strong> Every Opus call runs at medium reasoning. Sonnet 5.5 was tested and dropped: in a twelve-run comparison it was right 4 of 6 times against Opus's 6 of 6, and once answered without searching. All examples ran again on the final setup.</li>
-      <li><strong>Several approvals on one post.</strong> The queue holds one waiting approval per post, and a newer approval replaces it. The database lock lets only one note through, and every approval gets one final reply. Approvals whose draft didn't go in get a link to the X post of the draft that did. This replaces the old "one note per post" rule and the <code>approved_post_id</code> column.</li>
-      <li><strong>Every "can't submit" reply suggests requesting a note</strong> when the reason is eligibility: the draft's ending, the queued reply, the gave-up reply and the reply after X refuses a post.</li>
-      <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the exact bio, website field and pinned post linking to commonnotes.net and the extension stores.</li>
-      <li><strong>Implicit mentions are a known risk.</strong> We don't yet know whether X lets the bot reply to someone who answered its post without typing its handle. The first live test checks this.</li>
+      <li><strong>No approval step (8 October).</strong> Nathan suggested it and you agreed: the bot submits a note on its own as soon as X takes it. When something blocks it, it shows the note, says why, and keeps trying for 3 hours. This replaced the approval rule, "improve and approve", the approval queue and the "who may approve" reply. The classifier now knows two kinds, feedback and anything else.</li>
+      <li><strong>Several versions on one post.</strong> The newest waiting version is the one tried. When it goes in, older versions get a link to it. The database lock lets only one note through. This replaced the rules for several approvals.</li>
+      <li><strong>X pushes the tags.</strong> The bot gets them through the X Activity API stream instead of polling. A tag sent during an outage gets no answer, which you accepted for simpler code. One parameter resends the last five minutes, so restarts after a deploy lose nothing.</li>
+      <li><strong>No approval request to X.</strong> We launch without asking, because X staff said bots like ours need none if they meet four conditions. The bot meets all four.</li>
+      <li><strong>The claim-check service runs the first answer.</strong> The steps are chosen through the existing A/B config, and the Signal bot was refactored to work the same way.</li>
+      <li><strong>Opus 5.5 at medium reasoning.</strong> Sonnet 5.5 was tested and dropped: in a twelve-run comparison it was right 4 of 6 times against Opus's 6 of 6, and once answered without searching.</li>
+      <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young. The bot checks eligibility with <code>evaluate_note</code>, and every "can't submit yet" reply suggests requesting a Community Note.</li>
+      <li><strong>No filter for submission claims.</strong> A test with eight tempting replies found none, so the tag bot doesn't get the Signal bot's <code>safeReply</code>.</li>
+      <li><strong>Simpler tables.</strong> <code>x_tag_posts</code> lost <code>answered_by</code> and <code>llm_cost_usd</code>, and <code>x_tag_threads</code> lost <code>status</code> and <code>note_id</code>. The queue table keeps its name and gets no new column. A crash at the wrong moment may cause one double reply, which we accept.</li>
+      <li><strong>The diagram shows every branch,</strong> now including the loop that retries waiting notes.</li>
+      <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut a revision from $1.10 to about $0.30.</li>
+      <li><strong>While building:</strong> the service exits when the stream ends and systemd restarts it; a dry run takes replies as arguments; a setup script logs in as the bot once and creates the event subscriptions.</li>
+      <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the bio, website and pinned post above. The bio changed with the switch away from approval.</li>
+      <li><strong>Open risks:</strong> whether X lets the bot reply to someone who answered it without typing its handle, and whether it may reply under its own posts. The first live test checks both.</li>
     </ul>
   </section>
 </div>
@@ -589,17 +561,16 @@ function textBlock(title, text, hint, open) {
 function json(value) { return JSON.stringify(value, null, 2); }
 
 function classifierExamples() {
-  return DATA.improve.classifications.map((c, i) => ({
-    label: "Reply " + (i + 1) + ": " + c.result.kind,
+  return DATA.classifierRuns.map((c, i) => ({
+    label: "Reply " + (i + 1) + ": " + c.kind,
     input: c.userMessage,
-    output: json(c.result),
+    output: json({ kind: c.kind }),
     cost: c.costUsd,
     seconds: c.seconds,
   }));
 }
 
 const R = DATA.prompts.statusReplies;
-const I = DATA.improve;
 
 const STEPS = {
   watch: {
@@ -655,136 +626,57 @@ const STEPS = {
     facts: [["Cost", fmtUsd(M.writer.costUsd)], ["Time", fmtSec(M.writer.seconds)]],
   },
   noNote: {
-    title: "No-note reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
+    title: "Reply: no note", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
     summary: "Muse turns the research findings into two or three sentences that tell the tagger why no note is needed.",
     body: ["The findings are written for the writer, not for a reader on X: long, dense and full of links. This small call turns them into a reply. The fixed line about replying with a source is added by code."],
     blocks: [["System prompt", DATA.prompts.noNote, "new"], ["User message", G.noNoteUserMessage, "real"], ["Output", json(G.reason.result), "real", true], ["Posted reply", G.noNoteText, "real"]],
     facts: [["Cost", fmtUsd(G.reason.costUsd)], ["Time", fmtSec(G.reason.seconds)]],
   },
-  postAnswer: {
-    title: "Post the answer", chips: [["code", "Plain code"], ["x", "X API"], ["new", "New"]],
-    summary: "Posts the draft or the no-note explanation as a reply to the person who tagged the bot, using a fixed template.",
-    body: ["POST /2/tweets with reply.in_reply_to_tweet_id set to the tagger's post. The template is fixed in code. Before posting, the bot marks the tagger's post as being answered, so a crash between posting and saving cannot cause a second reply."],
-    blocks: [["Draft template", DATA.prompts.draftTemplate, "fixed text"], ["No-note template", DATA.prompts.noNoteTemplate, "fixed text"], ["Posted draft (Mumbai)", M.draftReply, "real", true]],
-    facts: [["Cost", "$0.20 with a link, $0.01 without (see the note under Costs)"]],
-  },
-  watch2: {
-    title: "Event stream", chips: [["code", "Plain code"], ["x", "X Activity API"]],
-    summary: "The same stream. A direct reply to one of the bot's posts arrives as a post.reply.create event and continues that thread.",
-    body: ["The event names the post it replies to. The service looks that post up in x_tag_posts and hands the reply to the classifier together with the bot post it answers."],
-  },
-  classify: {
-    title: "Sort the reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
-    summary: "Muse decides whether a reply is an approval, an improve-and-approve, feedback or anything else.",
-    body: ["One small call per reply. Below are all five replies from the two threads, sorted with the four-kind prompt. \"approve but use an official source instead of that link\" is the improve-and-approve case."],
-    blocks: [["System prompt", DATA.prompts.classifier, "new"]],
-    examples: classifierExamples,
-  },
-  approvalCheck: {
-    title: "Approval check", chips: [["code", "Plain code"], ["new", "New"]],
-    summary: "Checks that the approver is on the draft's path and that the post has no note from us yet. An improve-and-approve then goes to the revision first.",
+  trySubmit: {
+    title: "Try to submit", chips: [["x", "X API"], ["code", "Plain code"], ["new", "New"]],
+    summary: "One attempt: X must take our notes on the post, and the daily limit must have room. Then the note goes in through the notewriter.",
     body: [
-      "Plain code over x_tag_posts. It walks from the approved draft up to the tag and collects the human authors on that path. The approver must be one of them. If not, the bot posts the fixed reply that explains who may approve.",
-      "If the post already has a note from us, from this thread or any other, the bot replies with that note's link. Our AI Note Writer can submit only one note per post.",
-      "A plain approval goes straight to the submission queue with the approved draft. An improve-and-approve goes to the revision. If the revision makes the change, the new draft goes to the queue without another round of approval. If the revision keeps the draft, for example because the change is not supported, nothing is submitted and the bot posts the revision's reason.",
+      "First evaluate_note, with the notewriter's keys, asks whether X takes our notes on this post. It publishes nothing, and it refuses an ineligible post with the same reason a submission gets. On 6 October we tested this on a post by Nathan Young: both the real submission and evaluate_note answered \"The post is ineligible to write a note via API call\".",
+      "If the post is eligible, the shared submitApprovedNote puts the post in the approved-notes queue (priority over the automatic pipeline) and submits through submitNoteForTweet in the x_tag lane. The database's capacity gate decides whether there is room.",
+      "Submitted: the bot replies with the note and its link. Not eligible, or no room: it replies with the note as waiting. A deleted post gets the fixed reply below.",
     ],
-    blocks: [["Fixed reply: who may approve", R.notOnPath, "fixed text"], ["Fixed reply: note already submitted", R.alreadySubmitted, "fixed text"]],
+    blocks: [["Fixed reply: post deleted", R.postDeleted, "fixed text"]],
+    facts: [["Cost", "Not on X's price list; production already calls evaluate_note for every note"]],
   },
-  queue: {
-    title: "Submission queue", chips: [["code", "Plain code"], ["reused", "Existing gate"], ["changed", "New lane"]],
-    summary: "Asks the database's capacity gate every 2 minutes for up to 3 hours. Approved notes go ahead of the automatic pipeline.",
+  submittedNote: {
+    title: "Reply: submitted note", chips: [["reply", "Bot reply"], ["x", "X API"]],
+    summary: "The note went in right away. The reply shows it and links to it.",
+    body: ["A fixed template around the note. On a revised note the revision's reply comes first. Once a note is in, it can't be changed through the API, so later feedback gets the note's link."],
+    blocks: [["Template", DATA.prompts.submittedTemplate, "fixed text", true]],
+    facts: [["Cost", "$0.20 for a reply with links"]],
+  },
+  waitingNote: {
+    title: "Reply: waiting note", chips: [["reply", "Bot reply"], ["x", "X API"]],
+    summary: "The note couldn't go in yet. The reply shows it, says why and what would help, and the bot keeps trying for 3 hours.",
     body: [
-      "The queue holds one waiting approval per post. A newer approval of a different draft on the same post replaces the waiting one. The existing claim_note_submission function decides when a note may go out, and its lock lets only one note per post through. If there is room and the post is eligible, the note is submitted at once and no \"queued\" reply is posted.",
-      "If there is no room, the bot posts the queued reply once, then asks again every 2 minutes. Asking the database costs nothing and never calls X. After 3 hours without room it posts the gave-up reply.",
-      "The same wait also covers a post that X doesn't take notes on yet. Every 2 minutes the bot asks evaluate_note again, so a post that becomes eligible because people requested a note goes out within minutes.",
+      "When X doesn't take our notes on the post yet, the reply asks people to request a Community Note in the post's menu, because requests are what make a post eligible. When the daily limit is full, it says so.",
+      "Replies with corrections revise the note while it waits. Every 2 minutes the bot tries the newest waiting version again (bottom of the diagram).",
     ],
-    blocks: [["Fixed reply: queued, limit full", R.queued, "fixed text"], ["Fixed reply: queued, not eligible yet", R.queuedNotEligible, "fixed text"], ["Fixed reply: gave up, limit full", R.gaveUp, "fixed text"], ["Fixed reply: gave up, not eligible", R.gaveUpNotEligible, "fixed text"]],
-  },
-  submit: {
-    title: "Submit to X", chips: [["code", "Plain code"], ["x", "Community Notes API"], ["reused", "Existing submit"]],
-    summary: "Submits the approved draft with the existing submitNoteForTweet, in a new x_tag lane.",
-    body: ["The note text is exactly the stored draft of the approved post, or the revision's new draft after an improve-and-approve. X answers with the note's id, or refuses the post as ineligible, or reports it deleted."],
-    blocks: [["Fixed reply: X refused", R.ineligible, "fixed text"], ["Fixed reply: post deleted", R.postDeleted, "fixed text"]],
-  },
-  submitted: {
-    title: "Reply: submitted", chips: [["reply", "Bot reply"], ["x", "X API"]],
-    summary: "One reply to every approval on the post that has no final reply yet, each with the note's link.",
-    body: [
-      "The approval whose draft went in gets the submitted reply. After an improve-and-approve it also shows the exact text that went in, because nobody saw it as a draft.",
-      "Every other waiting approval on the post, for example one whose draft was replaced by a newer approval, gets the reply that a different draft was submitted. It links the X post of that draft, which X shows as a quote card, and then the note.",
-    ],
-    blocks: [["Fixed reply: submitted", R.submitted, "fixed text"], ["Fixed reply: improved and submitted", R.improvedAndSubmitted, "fixed text"], ["Fixed reply: a different draft went in", R.otherDraftSubmitted, "fixed text"]],
-    facts: [["Cost", "$0.20 for a reply with a link"]],
-  },
-  refused: {
-    title: "Reply: X refused", chips: [["reply", "Bot reply"]],
-    summary: "X refused the post as ineligible for our notes, or the post is gone.",
-    body: ["X's AI Note Writer API officially offers notes only on posts in its eligibility feed. A hand-picked post was accepted once, but X may refuse others."],
-    blocks: [["Ineligible", R.ineligible, "fixed text"], ["Deleted", R.postDeleted, "fixed text"]],
-  },
-  queuedReply: {
-    title: "Reply: queued", chips: [["reply", "Bot reply"]],
-    summary: "Posted once, when the note can't go out at the moment of approval: the daily limit is full, or X doesn't take our notes on the post yet.",
-    body: ["The note is waiting in the approved-notes queue. The bot replies again once it is submitted, or after 3 hours if it never could be. Whenever the reason is eligibility, the reply suggests requesting a Community Note, because that is what makes a post eligible."],
-    blocks: [["Daily limit full", R.queued, "fixed text"], ["Not eligible yet", R.queuedNotEligible, "fixed text"]],
-  },
-  gaveUp: {
-    title: "Reply: gave up", chips: [["reply", "Bot reply"]],
-    summary: "The daily limit stayed full for 3 hours.",
-    body: ["Replying \"approve\" again to the same draft starts a new 3-hour wait."],
-    blocks: [["Limit stayed full", R.gaveUp, "fixed text"], ["Post stayed ineligible", R.gaveUpNotEligible, "fixed text"]],
-  },
-  notOnPath: {
-    title: "Reply: who may approve", chips: [["reply", "Bot reply"]],
-    summary: "Someone who is not on the draft's path tried to approve it.",
-    body: ["The path is the chain of posts from the tag down to the draft. Only people who wrote a post on it may approve."],
-    blocks: [["Fixed text", R.notOnPath, "fixed text"]],
-  },
-  alreadyB: {
-    title: "Reply: note link", chips: [["reply", "Bot reply"]],
-    summary: "The post already has a note from us. Our AI Note Writer can submit only one note per post.",
-    body: ["This is the reply to an approval that arrives after the post's note was already submitted, from this thread or any other."],
-    blocks: [["Fixed text", R.alreadySubmitted, "fixed text"]],
+    blocks: [["Template, not eligible yet", DATA.prompts.waitingEligibilityTemplate, "fixed text", true], ["Template, daily limit full", DATA.prompts.waitingLimitTemplate, "fixed text"], ["Posted reply (Mumbai)", DATA.mumbaiWaitingNote, "real note, fixed text"]],
   },
   known: {
     title: "Seen this post?", chips: [["code", "Plain code"], ["new", "New"]],
     summary: "Before any research, the bot looks up the post in x_tag_threads.",
     body: [
-      "If we already submitted a note on this post, the bot replies with its link. If an earlier thread on the post already has an answer, the bot repeats the newest answer without new research, so a viral post tagged by 200 people costs one research run.",
+      "If we already submitted a note on this post, the bot replies with its link. If an earlier thread on the post already has an answer, the bot repeats the newest answer without new research, so a viral post tagged by 200 people costs one research run. A repeated note goes through the same attempt to submit as a new one.",
       "Otherwise this is a new post, and the bot fetches it.",
     ],
   },
   alreadyA: {
     title: "Reply: note link", chips: [["reply", "Bot reply"]],
     summary: "We already submitted a note on this post.",
-    body: ["The same fixed reply as after a second approval."],
+    body: ["The same fixed reply answers feedback after our note went in."],
     blocks: [["Fixed text", R.alreadySubmitted, "fixed text"]],
   },
   repeat: {
     title: "Repeat the answer", chips: [["reply", "Bot reply"], ["code", "Plain code"]],
     summary: "Another thread on this post already has an answer. The bot posts the newest one again.",
-    body: ["The answer is the newest draft or no-note reply of the post's most recent thread, in the same template. If the new tag also contains a suggestion, the tag is then handled as feedback on that answer."],
-  },
-  eligible: {
-    title: "Eligible for our notes?", chips: [["x", "X API"], ["code", "Plain code"], ["new", "New, after the probe"]],
-    summary: "Asks X's evaluate_note whether our AI Note Writer may note this post. It publishes nothing.",
-    body: [
-      "On 6 October we submitted a real note on a hand-picked post by Nathan Young with the production keys. X refused it: \"Failed to create a note. The post is ineligible to write a note via API call.\" X's evaluate_note endpoint, which only scores a draft and publishes nothing, refused the same post with the same reason. So evaluate_note works as an eligibility check.",
-      "The check runs only when the writer produced a draft, right before the bot posts it, because a no-note answer doesn't need it. It sends the real draft, so the same call also returns X's score for it.",
-      "X offers AI note writers the posts where people requested a Community Note. Anyone on X can request one in a post's menu, up to five a day. How many requests a post needs is not published.",
-      "Decided: on an eligible post the draft is posted as usual. On an ineligible one it ends with the text below, and an approval waits in the queue until X allows the note or 3 hours pass.",
-    ],
-    blocks: [["Draft ending on an ineligible post", R.draftNotEligibleEnding, "fixed text"]],
-    facts: [["Cost", "Not on X's price list. Production already calls it for every note."]],
-  },
-  askRequest: {
-    title: "Post the draft and ask for a request", chips: [["reply", "Bot reply"], ["x", "X API"]],
-    summary: "The draft on a post X doesn't take our notes on yet. Its last line asks people to request a Community Note.",
-    body: [
-      "The same draft template, with a different last line. Requesting a note is what makes a post eligible, so the reply tells people how to do it.",
-      "Replies under this post work exactly as under a normal draft: an approval, an improve-and-approve, feedback, or anything else. Both are stored as draft posts in x_tag_posts. An approval waits in the queue until X allows the note.",
-    ],
-    blocks: [["Last line instead of \"Reply approve...\"", R.draftNotEligibleEnding, "fixed text"]],
+    body: ["The answer is the newest note or no-note reply on the post. A note is tried again, so it is either submitted or shown as waiting. If the new tag asks for a change, it is handled as feedback on that answer instead."],
   },
   fetch: {
     title: "Fetch the post", chips: [["x", "X API"], ["code", "Plain code"]],
@@ -799,31 +691,87 @@ const STEPS = {
     body: ["Nothing else happens."],
     blocks: [["Fixed text", R.unreadable, "fixed text"]],
   },
-  revise: {
-    title: "Revise", chips: [["opus", "Opus 5.5"], ["new", "New prompt"], ["other", "Web search and web fetch"]],
-    summary: "Opus 5.5 reads the whole thread, can search and open links, and answers with a new draft, a reason to keep the answer, or a withdrawal.",
-    body: [
-      "One call with Anthropic's web search and web fetch tools, run by the provider inside the call. It gets the same input as the first research, the first findings, the current answer and the thread from the tag down to the reply.",
-      "A new draft is checked in code before posting: at most 280 characters with links counted as 1, one to five public links. The reply text is posted above the draft, as in the template.",
-      "On an improve-and-approve, the input ends with the notice below, because the bot then submits a revised version right away. Without it, the model asked for another approval.",
-    ],
-    blocks: [["Notice at the end of the input on an improve-and-approve", DATA.prompts.improveNotice, "new"]],
-    tabs: [
-      { label: "Mumbai: revise", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", M.revision.userMessage, "real"], ["Output", json(M.revision.revision), "real", true], ["Posted reply", M.revisedReply, "real"]], facts: [["Cost", fmtUsd(M.revision.costUsd) + " (" + Math.round(M.revision.toolUse.usage.prompt_tokens / 1000) + ",000 input tokens, " + M.revision.toolUse.usage.server_tool_use_details.web_search_requests + " searches, pages opened, fetch not capped)"], ["Time", fmtSec(M.revision.seconds)], ["Note length", M.revision.noteLength + " of 280"]] },
-      { label: "Mumbai: improve and approve", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", I.revision.userMessage, "real"], ["Output", json(I.revision.revision), "real", true]], facts: [["Cost", fmtUsd(I.revision.costUsd) + " (fetch capped at 2 pages of 8,000 tokens)"], ["Time", fmtSec(I.revision.seconds)], ["Note length", I.revision.noteLength + " of 280"]] },
-      { label: "GDP: keep", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", G.revision.userMessage, "real"], ["Output", json(G.revision.revision), "real", true]], facts: [["Cost", fmtUsd(G.revision.costUsd) + " (no search needed)"], ["Time", fmtSec(G.revision.seconds)]] },
-    ],
+  watch2: {
+    title: "Event stream", chips: [["code", "Plain code"], ["x", "X Activity API"]],
+    summary: "The same stream. A direct reply to one of the bot's posts arrives as a post.reply.create event.",
+    body: ["The event names the post it replies to. The service looks that post up in x_tag_posts and hands the reply to the classifier together with the bot post it answers."],
   },
-  postRevision: {
-    title: "Post the new answer", chips: [["code", "Plain code"], ["x", "X API"]],
-    summary: "Posts the revision's reply, with the new draft below it when there is one, as a reply to the person who gave feedback.",
-    body: ["The same posting code as the first answer. A new draft is a new draft post, which people can approve or reply to in turn."],
-    blocks: [["Posted reply (Mumbai)", M.revisedReply, "real", true]],
+  classify: {
+    title: "Sort the reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
+    summary: "Muse decides whether a reply is feedback on the note or anything else.",
+    body: ["One small call per reply. There is no approval kind any more, because the bot submits on its own. Below are four real classifications with this prompt, from the two example threads plus a \"thanks\"."],
+    blocks: [["System prompt", DATA.prompts.classifier, "new"]],
+    examples: classifierExamples,
   },
   silent: {
     title: "Stay silent", chips: [["code", "Plain code"]],
     summary: "Replies sorted as \"other\" get no answer. This also ends any loop with another bot.",
     body: ["The reply is saved with kind \"other\" and nothing is posted. Example: \"lol imagine needing a bot to tell you India has slums\"."],
+  },
+  noteIn: {
+    title: "Note already in?", chips: [["code", "Plain code"], ["new", "New"]],
+    summary: "Feedback after our note went in gets the note's link, because a submitted note can't be changed.",
+    body: ["The bot looks for our note on the post in the notes table, which every one of our bots writes to. Only while no note is in does feedback reach the revision."],
+  },
+  alreadyB: {
+    title: "Reply: note link", chips: [["reply", "Bot reply"]],
+    summary: "The post already has a note from us, so the note can't change any more.",
+    body: ["The same fixed text answers a second tag on a post that already has our note."],
+    blocks: [["Fixed text", R.alreadySubmitted, "fixed text"]],
+  },
+  revise: {
+    title: "Revise", chips: [["opus", "Opus 5.5"], ["new", "New prompt"], ["other", "Web search and web fetch"]],
+    summary: "Opus 5.5 reads the whole thread, can search and open links, and answers with a new note, a reason to keep the answer, or a withdrawal.",
+    body: [
+      "One call with Anthropic's web search and web fetch tools, run by the provider inside the call, at medium reasoning. It gets the same input as the first research, the first findings, the current answer and the thread from the tag down to the reply. Page fetches are capped at two pages of 8,000 tokens each.",
+      "A new note is checked in code: at most 280 characters with links counted as 1, one to five public links. A note that fails makes the model try again. The new note is then published like a first one: submitted, or shown as waiting.",
+      "A withdrawal posts a no-note answer, and every waiting version before it stops being tried.",
+    ],
+    tabs: [
+      { label: "Mumbai: revise", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", M.revision.userMessage, "real"], ["Output", json(M.revision.revision), "real", true]], facts: [["Cost", fmtUsd(M.revision.costUsd) + " (" + Math.round(M.revision.toolUse.usage.prompt_tokens / 1000) + ",000 input tokens, " + M.revision.toolUse.usage.server_tool_use_details.web_search_requests + " searches, pages opened, fetch not capped in this run)"], ["Time", fmtSec(M.revision.seconds)], ["Note length", M.revision.noteLength + " of 280"]] },
+      { label: "GDP: keep", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", G.revision.userMessage, "real"], ["Output", json(G.revision.revision), "real", true]], facts: [["Cost", fmtUsd(G.revision.costUsd) + " (no search needed)"], ["Time", fmtSec(G.revision.seconds)]] },
+    ],
+  },
+  answer: {
+    title: "Reply: answer", chips: [["reply", "Bot reply"], ["opus", "Opus 5.5 wrote it"]],
+    summary: "The revision kept the answer or withdrew the note, and its reply explains why.",
+    body: ["\"Keep\" leaves a waiting note waiting. \"Withdraw\" is stored as a no-note answer, which stops every waiting version before it."],
+    blocks: [["Posted reply (GDP)", G.revision.revision.reply, "real", true]],
+  },
+  publishRevised: {
+    title: "Publish the new note", chips: [["reply", "Bot reply"], ["x", "X API"]],
+    summary: "A revised note goes through the same attempt as a first note: submitted right away, or shown as waiting.",
+    body: ["The revision's reply comes first, then the note in the same templates as on a first answer. If the new note goes in, any older waiting version on the post gets the reply that a newer version went in."],
+    blocks: [["Posted reply (Mumbai, post not eligible yet)", DATA.mumbaiRevisedNote, "real note, fixed text", true]],
+  },
+  waitingList: {
+    title: "Waiting notes", chips: [["code", "Plain code"], ["new", "New"]],
+    summary: "Every 2 minutes the bot looks at every post with a waiting note from the last six hours.",
+    body: ["Waiting notes live in x_tag_posts, so a restart of the service loses none of them. For each post, only the newest waiting version is tried. A newer no-note answer on the post stops every version before it."],
+  },
+  tryAgain: {
+    title: "Try the newest again", chips: [["x", "X API"], ["code", "Plain code"]],
+    summary: "The same attempt as on a first note: eligible, then room in the daily limit.",
+    body: ["Asking evaluate_note and the database gate publishes nothing and costs next to nothing, so trying every 2 minutes is cheap. If the note still can't go in, the bot tries again next round, for 3 hours from when the newest version was posted."],
+  },
+  gaveUp: {
+    title: "Reply: gave up", chips: [["reply", "Bot reply"]],
+    summary: "After 3 hours the bot replies under every waiting version that it gave up, and how to try again.",
+    body: ["The reason decides the text. When eligibility was the blocker, the reply suggests requesting a Community Note and tagging the bot again."],
+    blocks: [["Daily limit stayed full", R.gaveUp, "fixed text"], ["Post stayed ineligible", R.gaveUpNotEligible, "fixed text"]],
+  },
+  submittedLater: {
+    title: "Reply: submitted", chips: [["reply", "Bot reply"], ["x", "X API"]],
+    summary: "Posted under the waiting note once it went in.",
+    body: ["It replies to the bot's own post, so the note and its outcome stay together. Whether X's reply rule allows a bot to reply under its own post is one of the checks for the first live test."],
+    blocks: [["Fixed text", R.submittedLater, "fixed text", true]],
+    facts: [["Cost", "$0.20 for a reply with a link"]],
+  },
+  olderVersions: {
+    title: "Reply: newer version in", chips: [["reply", "Bot reply"]],
+    summary: "Posted under each older waiting version when a newer one went in, with a link to the version that did.",
+    body: ["X shows the x.com link as a quote card, so people see the version that went in. If another of our bots submitted the post's note, the reply is the note link instead."],
+    blocks: [["Fixed text", R.otherVersionSubmitted, "fixed text", true], ["When another bot submitted the note", R.alreadySubmitted, "fixed text"]],
   },
   skipped: {
     title: "Steps switched off for this bot", chips: [["skip", "Off"], ["code", "TAG_BOT_PICKS"]],
@@ -832,7 +780,7 @@ const STEPS = {
       "Topic filter: a cheap call that blocks topics we decided not to note. Off as part of \"no precheck\".",
       "Note-needed prefilter: a DeepSeek search and judge before the main search. In production it rejects about 57% of posts. Off, because a person explicitly asked about this post.",
       "Source verifier: checks that each cited page supports the note. Off as the ticket asks. The revision example shows what it would have caught, see the decision on source checks.",
-      "Materiality judge and X's evaluate_note score: they filter notes for the automatic pipeline's limited daily slots. A human approval replaces them. The bot still calls evaluate_note once itself, but only to learn whether X takes our notes on the post, never to reject a draft for its score.",
+      "Materiality judge and X's evaluate_note score: they filter notes for the automatic pipeline's limited daily slots. A person asked about the post, so they are not needed. The bot still calls evaluate_note itself, but only to learn whether X takes our notes on the post, never to reject a draft for its score.",
       "Each of these now has an \"off\" variant in its A/B test. That part is built.",
     ],
     blocks: [["TAG_BOT_PICKS", DATA.prompts.tagBotPicks, "the step selection", true]],
@@ -918,10 +866,8 @@ const KIND_STYLE = {
 // Columns and rows of the grid the nodes sit on.
 const COL = [20, 250, 480, 710, 960];
 const ROW_A = [70, 180, 290, 400];
-// Phase B sits B_SHIFT lower than its edge coordinates, which are drawn inside a
-// group moved down by the same amount.
-const B_SHIFT = 50;
-const ROW_B = [650, 760, 870, 990].map((y) => y + B_SHIFT);
+const ROW_B = [710, 820];
+const ROW_C = [990, 1100];
 const NODES = [
   { id: "watch", x: COL[0], y: ROW_A[0], title: "Event stream", sub: "post.mention.create", kind: "code" },
   { id: "known", x: COL[1], y: ROW_A[0], title: "Seen this post?", sub: "note or answer exists", kind: "code" },
@@ -933,63 +879,59 @@ const NODES = [
   { id: "search", x: COL[4], y: ROW_A[1], title: "Search", sub: "web search, findings", kind: "opus" },
   { id: "timing", x: COL[4], y: ROW_A[2], title: "Timing check", sub: "Gemini 3 Flash", kind: "other" },
   { id: "writer", x: COL[4], y: ROW_A[3], title: "Writer", sub: "one note, 280 chars", kind: "opus" },
-  { id: "noNote", x: COL[3], y: ROW_A[1], title: "No-note reply", sub: "2 or 3 sentences", kind: "muse" },
-  { id: "eligible", x: COL[3], y: ROW_A[3], title: "Eligible for our notes?", sub: "evaluate_note", kind: "x" },
-  { id: "postAnswer", x: COL[2], y: ROW_A[3], title: "Post the answer", sub: "draft or no-note", kind: "reply" },
-  { id: "askRequest", x: COL[3], y: 510, title: "Post draft, ask for", sub: "a Community Note request", kind: "reply" },
+  { id: "noNote", x: COL[3], y: ROW_A[1], title: "Reply: no note", sub: "2 or 3 sentences", kind: "muse" },
+  { id: "trySubmit", x: COL[3], y: ROW_A[3], title: "Try to submit", sub: "eligible? room?", kind: "x" },
+  { id: "submittedNote", x: COL[2], y: ROW_A[3], title: "Reply: submitted note", sub: "note and its link", kind: "reply" },
+  { id: "waitingNote", x: COL[3], y: 510, title: "Reply: waiting note", sub: "says what would help", kind: "reply" },
   { id: "watch2", x: COL[0], y: ROW_B[0], title: "Event stream", sub: "post.reply.create", kind: "code" },
-  { id: "classify", x: COL[1], y: ROW_B[0], title: "Sort the reply", sub: "four kinds", kind: "muse" },
-  { id: "silent", x: COL[0], y: ROW_B[1], title: "Stay silent", sub: "no reply", kind: "code" },
-  { id: "approvalCheck", x: COL[2], y: ROW_B[0], title: "Approval check", sub: "on the draft's path?", kind: "code" },
-  { id: "notOnPath", x: COL[2], y: ROW_B[1], title: "Reply: who may approve", sub: "fixed text", kind: "reply" },
-  { id: "alreadyB", x: COL[2], y: ROW_B[2], title: "Reply: note link", sub: "one note per post", kind: "reply" },
-  { id: "queue", x: COL[3], y: ROW_B[0], title: "Submission queue", sub: "room and eligible? 3 h", kind: "code" },
-  { id: "queuedReply", x: COL[3], y: ROW_B[1], title: "Reply: queued", sub: "may ask for a request", kind: "reply" },
-  { id: "gaveUp", x: COL[3], y: ROW_B[2], title: "Reply: gave up", sub: "may ask for a request", kind: "reply" },
-  { id: "submit", x: COL[4], y: ROW_B[0], title: "Submit to X", sub: "Community Notes API", kind: "x" },
-  { id: "submitted", x: COL[4], y: ROW_B[1], title: "Reply: submitted", sub: "to every approval", kind: "reply" },
-  { id: "refused", x: COL[4], y: ROW_B[2], title: "Reply: X refused", sub: "asks for a request", kind: "reply" },
-  { id: "revise", x: COL[1], y: ROW_B[3], title: "Revise", sub: "search, fetch, new draft", kind: "opus" },
-  { id: "postRevision", x: COL[2], y: ROW_B[3], title: "Post the new answer", sub: "draft or reason", kind: "reply" },
+  { id: "classify", x: COL[1], y: ROW_B[0], title: "Sort the reply", sub: "feedback or other", kind: "muse" },
+  { id: "silent", x: COL[1], y: ROW_B[1], title: "Stay silent", sub: "no reply", kind: "code" },
+  { id: "noteIn", x: COL[2], y: ROW_B[0], title: "Note already in?", sub: "one note per post", kind: "code" },
+  { id: "alreadyB", x: COL[2], y: ROW_B[1], title: "Reply: note link", sub: "can't change it now", kind: "reply" },
+  { id: "revise", x: COL[3], y: ROW_B[0], title: "Revise", sub: "search, fetch, new note", kind: "opus" },
+  { id: "answer", x: COL[3], y: ROW_B[1], title: "Reply: answer", sub: "keep or withdraw", kind: "reply" },
+  { id: "publishRevised", x: COL[4], y: ROW_B[0], title: "Publish the new note", sub: "submitted or waiting", kind: "reply" },
+  { id: "waitingList", x: COL[0], y: ROW_C[0], title: "Waiting notes", sub: "every 2 minutes", kind: "code" },
+  { id: "tryAgain", x: COL[1], y: ROW_C[0], title: "Try the newest again", sub: "eligible? room?", kind: "x" },
+  { id: "gaveUp", x: COL[1], y: ROW_C[1], title: "Reply: gave up", sub: "after 3 hours", kind: "reply" },
+  { id: "submittedLater", x: COL[2], y: ROW_C[0], title: "Reply: submitted", sub: "under the waiting note", kind: "reply" },
+  { id: "olderVersions", x: COL[3], y: ROW_C[0], title: "Reply: newer version in", sub: "under older versions", kind: "reply" },
 ];
-const EDGES_A = [
+const EDGES = [
+  // A tag
   { d: "M210,98 H246" },
-  { d: "M440,98 H476" },
+  { d: "M440,98 H476", label: "new", lx: 446, ly: 89 },
   { d: "M345,126 V176", label: "note submitted", lx: 352, ly: 156 },
   { d: "M250,112 H238 V318 H246", label: "answer exists", lx: 150, ly: 240 },
   { d: "M575,126 V176", label: "deleted or protected", lx: 582, ly: 156 },
-  { d: "M670,98 H956", label: "new post", lx: 680, ly: 89 },
+  { d: "M670,98 H956" },
   { d: "M1055,126 V176" },
   { d: "M960,208 H904", label: "no note", lx: 908, ly: 199 },
   { d: "M1055,236 V286", label: "note needed", lx: 1062, ly: 266 },
   { d: "M1055,346 V396" },
   { d: "M960,428 H904", label: "note", lx: 914, ly: 419 },
   { d: "M960,412 C930,412 925,250 900,232", label: "empty", lx: 862, ly: 322 },
-  { d: "M805,236 V330 H575 V396" },
-  { d: "M710,428 H674", label: "yes", lx: 680, ly: 419 },
-  { d: "M805,456 V506", label: "not eligible", lx: 812, ly: 486 },
-  // Loops down to the replies
-  { d: "M575,456 V590 H115 V" + (ROW_B[0] - 4), dash: true, label: "people reply to either post", lx: 250, ly: 582 },
-  { d: "M805,566 V590 H575", dash: true, arrow: false },
-];
-const EDGES_B = [
-  { d: "M210,678 H246" },
-  { d: "M440,668 H476", label: "approve or improve", lx: 420, ly: 641 },
-  { d: "M270,706 V788 H214", label: "other", lx: 276, ly: 752 },
-  { d: "M345,706 V986", label: "feedback", lx: 352, ly: 900 },
-  { d: "M575,706 V756", label: "not on path", lx: 582, ly: 736 },
-  { d: "M670,694 H690 V898 H674", label: "already noted", lx: 600, ly: 948 },
-  { d: "M480,694 H462 V1010 H444", label: "improve and approve", lx: 468, ly: 966 },
-  { d: "M670,668 H706" },
-  { d: "M345,1046 V1070 H700 V712", label: "revised", lx: 520, ly: 1064 },
-  { d: "M440,1018 H476" },
-  { d: "M900,678 H956" },
-  { d: "M805,706 V756", label: "must wait", lx: 812, ly: 736 },
-  { d: "M805,816 V866", label: "still waiting after 3 h", lx: 812, ly: 846 },
-  { d: "M900,788 C925,788 925,700 958,692", label: "ready", lx: 916, ly: 760 },
-  { d: "M1055,706 V756", label: "accepted", lx: 1062, ly: 736 },
-  { d: "M1150,706 C1172,760 1172,860 1152,880", label: "refused", lx: 1092, ly: 850 },
-  { d: "M575,1046 V1100 H8 V678 H16", dash: true, label: "people reply to the new draft", lx: 150, ly: 1092 },
+  { d: "M710,428 H674", label: "in", lx: 682, ly: 419 },
+  { d: "M805,456 V506", label: "blocked", lx: 812, ly: 486 },
+  // Down to the replies
+  { d: "M575,456 V596 H8 V738 H16", dash: true, label: "people reply to the bot", lx: 250, ly: 588 },
+  { d: "M805,566 V596 H575", dash: true, arrow: false },
+  { d: "M710,208 H690 V596", dash: true, arrow: false },
+  // A reply
+  { d: "M210,738 H246" },
+  { d: "M345,766 V816", label: "other", lx: 352, ly: 796 },
+  { d: "M440,738 H476", label: "feedback", lx: 396, ly: 784 },
+  { d: "M575,766 V816", label: "yes", lx: 582, ly: 796 },
+  { d: "M670,738 H706", label: "no", lx: 680, ly: 729 },
+  { d: "M805,766 V816", label: "keep or withdraw", lx: 812, ly: 796 },
+  { d: "M900,738 H956", label: "revised", lx: 906, ly: 729 },
+  { d: "M1055,766 V900 H115 V770", dash: true, label: "people reply to the new note", lx: 470, ly: 892 },
+  // Waiting notes
+  { d: "M210,1018 H246" },
+  { d: "M345,1046 V1096", label: "3 hours passed", lx: 352, ly: 1076 },
+  { d: "M440,1018 H476", label: "in", lx: 452, ly: 1009 },
+  { d: "M670,1018 H706" },
+  { d: "M250,1040 H214", label: "still blocked", lx: 140, ly: 1066 },
 ];
 const SKIPPED = ["Topic filter", "Note-needed prefilter", "Source verifier", "Materiality judge", "X evaluate_note"];
 
@@ -1018,20 +960,18 @@ function drawFlow() {
   defs.append(marker);
   svg.append(defs);
   svg.append(svgEl("text", { x: 20, y: 34, class: "phase" }, "Someone tags the bot under a post"));
-  svg.append(svgEl("text", { x: 20, y: 630 + B_SHIFT, class: "phase" }, "Someone replies to one of the bot's posts"));
+  svg.append(svgEl("text", { x: 20, y: 690, class: "phase" }, "Someone replies to one of the bot's posts"));
+  svg.append(svgEl("text", { x: 20, y: 970, class: "phase" }, "Every two minutes: the waiting notes"));
   svg.append(svgEl("rect", { x: 946, y: 52, width: 218, height: 418, rx: 14, class: "service-box" }));
   svg.append(svgEl("text", { x: 960, y: 490, class: "service-label" }, "On the claim-check service"));
-  const phaseB = svgEl("g", { transform: `translate(0, ${B_SHIFT})` });
-  drawEdges(svg, EDGES_A);
-  drawEdges(phaseB, EDGES_B);
-  svg.append(phaseB);
+  drawEdges(svg, EDGES);
   const skipGroup = svgEl("g", { class: "skipnode", tabindex: "0", role: "button", "aria-label": "Steps switched off for this bot" });
-  skipGroup.append(svgEl("text", { x: 20, y: 612, class: "phase", style: "text-decoration:none" }, "Switched off by TAG_BOT_PICKS"));
+  skipGroup.append(svgEl("text", { x: 20, y: 622, class: "phase", style: "text-decoration:none" }, "Switched off by TAG_BOT_PICKS"));
   let sx = 20;
   for (const name of SKIPPED) {
     const width = name.length * 7.2 + 24;
-    skipGroup.append(svgEl("rect", { x: sx, y: 622, width, height: 28, rx: 14 }));
-    skipGroup.append(svgEl("text", { x: sx + 12, y: 640 }, name));
+    skipGroup.append(svgEl("rect", { x: sx + 10, y: 632, width, height: 28, rx: 14 }));
+    skipGroup.append(svgEl("text", { x: sx + 22, y: 650 }, name));
     sx += width + 10;
   }
   bindNode(skipGroup, "skipped");
@@ -1105,20 +1045,19 @@ function quotedText(context) {
   return context.slice(start + marker.length, end).trim();
 }
 
-const submittedTemplate = "Submitted. Community Notes contributors now rate it before it can show on the post.\nhttps://x.com/i/communitynotes/<note id>";
-
 const mumbaiThread = document.getElementById("thread-mumbai");
+const C = DATA.classifierRuns;
 mumbaiThread.append(
-  el("h3", { text: "A false side claim: draft, revise, approve" }),
-  el("div", { class: "caption", text: "Real post from 29 September 2026, which quotes a post claiming that virtually everywhere Indians live looks like a garbage-filled canal." }),
+  el("h3", { text: "A false side claim: waiting, revised, submitted" }),
+  el("div", { class: "caption", text: "Real post from 29 September 2026, which quotes a post claiming that virtually everywhere Indians live looks like a garbage-filled canal. The thread assumes X doesn't take our notes on it yet." }),
   post({ role: "root", name: "Dinesh D'Souza", handle: "DineshDSouza", text: postText(M.postContext) + "\n\nQuoting: " + quotedText(M.postContext) }),
   post({ role: "human", handle: M.requester.handle, text: M.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: M.draftReply, steps: [["search", "Search", 0], ["writer", "Writer"], ["postAnswer", "Template"]] }),
-  post({ role: "human", handle: M.classifications[0].reply.handle, text: M.classifications[0].reply.text, steps: [["classify", "Sorted as other", 0]], silent: "The bot does not answer." }),
-  post({ role: "human", handle: M.classifications[1].reply.handle, text: M.classifications[1].reply.text, steps: [["classify", "Sorted as feedback", 1]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: M.revisedReply, steps: [["revise", "Revise", 0]] }),
-  post({ role: "human", handle: M.approval.handle, text: M.approval.text, steps: [["classify", "Sorted as approve", 3], ["approvalCheck", "Approval check"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: submittedTemplate, steps: [["submit", "Submit and reply"]], silent: "Fixed template. The example did not really submit anything." }),
+  post({ role: "bot", handle: "CommonNotesBot", text: DATA.mumbaiWaitingNote, steps: [["search", "Search", 0], ["writer", "Writer"], ["trySubmit", "Try to submit"], ["waitingNote", "Waiting note"]] }),
+  post({ role: "human", handle: C[0].reply.handle, text: C[0].reply.text, steps: [["classify", "Sorted as other", 0]], silent: "The bot does not answer." }),
+  post({ role: "human", handle: C[1].reply.handle, text: C[1].reply.text, steps: [["classify", "Sorted as feedback", 1]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: DATA.mumbaiRevisedNote, steps: [["revise", "Revise", 0], ["publishRevised", "Publish"]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: R.submittedLater, steps: [["waitingList", "Waiting notes"], ["tryAgain", "Try again"], ["submittedLater", "Submitted"]], silent: "Under the revised note, once people requested a note and X allowed it. Fixed template; the example submitted nothing." }),
+  post({ role: "bot", handle: "CommonNotesBot", text: R.otherVersionSubmitted, steps: [["olderVersions", "Older version"]], silent: "Under the first note, which the revision replaced." }),
 );
 
 const gdpThread = document.getElementById("thread-gdp");
@@ -1128,25 +1067,25 @@ gdpThread.append(
   post({ role: "root", name: "Treasury Secretary Scott Bessent", handle: "SecScottBessent", text: postText(G.postContext) }),
   post({ role: "human", handle: G.requester.handle, text: G.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
   post({ role: "bot", handle: "CommonNotesBot", text: G.noNoteText, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
-  post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, steps: [["classify", "Sorted as feedback", 4]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: G.revision.revision.reply, steps: [["revise", "Revise", 1]] }),
+  post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, steps: [["classify", "Sorted as feedback", 3]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: G.revision.revision.reply, steps: [["revise", "Revise", 1], ["answer", "Answer"]] }),
 );
 
 /* ---------- Cost table ---------- */
 const commentsCost = { mumbai: 0.157, gdp: 0.057 };
-const classifierCost = M.classifications[0].costUsd;
+const classifierCost = C[0].costUsd;
 const rows = [
-  ["Tag that gets a draft, nobody replies", [
+  ["Tag whose note goes in right away", [
     ["Read comments (Grok) and media", commentsCost.mumbai], ["Search (Opus 5.5)", M.search.costUsd], ["Timing check", M.timing.costUsd], ["Writer (Opus 5.5)", M.writer.costUsd],
-    ["X: tag event, post reads", 0.020], ["X: draft reply with links", 0.20]]],
+    ["X: tag event, post reads", 0.020], ["X: reply with the note and its links", 0.20]]],
   ["Tag that gets a no-note answer", [
     ["Read comments and media", commentsCost.gdp], ["Search (Opus 5.5)", G.search.costUsd], ["No-note reply (Muse)", G.reason.costUsd],
     ["X: tag event, post reads", 0.015], ["X: reply with one link", 0.20]]],
   ["The full Mumbai thread", [
-    ["First draft, as above", commentsCost.mumbai + M.search.costUsd + M.timing.costUsd + M.writer.costUsd], ["Sorting 3 replies (Muse)", 3 * classifierCost], ["Revision with search (Opus 5.5)", M.revision.costUsd],
-    ["X: 4 events and post reads", 0.035], ["X: draft, revised draft, submitted reply", 0.60]]],
+    ["First note, as above", commentsCost.mumbai + M.search.costUsd + M.timing.costUsd + M.writer.costUsd], ["Sorting 2 replies (Muse)", 2 * classifierCost], ["Revision with search (Opus 5.5)", M.revision.costUsd],
+    ["X: 3 events and post reads", 0.030], ["X: waiting note, revised note, two replies after submission", 0.80]]],
   ["The full GDP thread", [
-    ["No-note answer, as above", commentsCost.gdp + G.search.costUsd + G.reason.costUsd], ["Sorting 1 reply (Muse)", G.classification.costUsd], ["Revision without search", G.revision.costUsd],
+    ["No-note answer, as above", commentsCost.gdp + G.search.costUsd + G.reason.costUsd], ["Sorting 1 reply (Muse)", C[3].costUsd], ["Revision without search", G.revision.costUsd],
     ["X: 2 events and post reads", 0.020], ["X: no-note reply, answer without link", 0.21]]],
 ];
 const table = el("table", {});
