@@ -25,6 +25,10 @@ export async function shootPending() {
           await el.waitFor({ timeout: 15000 });
           await page.waitForTimeout(800);
           await el.evaluate((root) => {
+            // The site header is sticky and would cover the top of the card
+            for (const n of document.querySelectorAll<HTMLElement>("body *")) {
+              if (["fixed", "sticky"].includes(getComputedStyle(n).position)) n.style.display = "none";
+            }
             for (const n of root.querySelectorAll<HTMLElement>("button, a, span, div")) {
               const t = n.innerText?.trim();
               if (t === "Show surrounding context") n.style.display = "none";
@@ -33,10 +37,11 @@ export async function shootPending() {
                 while (pop.parentElement && pop.parentElement.innerText.trim().startsWith("You don't need to be an expert")) pop = pop.parentElement;
                 pop.style.display = "none";
               }
-              if (t === "Show source details") {
+              // Action row: "Show source details" before the Sept 2026 redesign, "Source details" after
+              if (t === "Show source details" || t === "Source details") {
                 let row: HTMLElement | null = n;
                 while (row && row.parentElement && !row.parentElement.innerText.includes("Share")) row = row.parentElement;
-                while (row?.parentElement && row.parentElement.innerText.trim().startsWith("Show source details")) row = row.parentElement;
+                while (row?.parentElement && row.parentElement.innerText.trim().startsWith(t)) row = row.parentElement;
                 if (row) row.style.display = "none";
               }
             }

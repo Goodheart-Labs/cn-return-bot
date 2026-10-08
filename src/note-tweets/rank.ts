@@ -1,6 +1,7 @@
 import { supabaseConfig } from "./config";
 import { ensureState, STATE_DIR } from "./paths";
 import { loadNotes } from "./loadNotes";
+import { rankCreators } from "../everything/creatorRanking";
 import { rankNotes } from "./ranking";
 import { feedPage } from "./feedPage";
 import { host, noteText } from "./markup";
@@ -9,10 +10,13 @@ import type { FeedData, Staged } from "./types";
 
 const config = supabaseConfig();
 await ensureState();
-const { rows, jim, articles, helpfulAt, extra } = await loadNotes(config.url, config.serviceKey, Bun.argv.slice(2));
+const { rows, jim, articles, helpfulAt, extra, newIds } = await loadNotes(config.url, config.serviceKey, Bun.argv.slice(2));
+// Popularity = the bot's own creator order (priority, then readers in the window).
+const popularity = new Map<string, { rank: number; readers: number }>();
+for (const [rank, c] of (await rankCreators()).entries()) if (c.project_slug && !popularity.has(c.project_slug)) popularity.set(c.project_slug, { rank, readers: c.readers });
 const scored = rankNotes(rows);
 const staging: Record<string, Staged> = await Bun.file(`${STATE_DIR}/staging.json`).json().catch(() => ({}));
-const html = feedPage(scored, jim, articles, helpfulAt, staging, config.url, config.anonKey);
+const html = feedPage(scored, jim, articles, helpfulAt, staging, config.url, config.anonKey, newIds, popularity);
 await buildStyles();
 await Bun.write(`${STATE_DIR}/ranked.html`, html);
 const feedData: FeedData = Object.fromEntries(scored.map(n => {
@@ -26,6 +30,7 @@ const feedData: FeedData = Object.fromEntries(scored.map(n => {
   }];
 }));
 await Bun.write(`${STATE_DIR}/feed-data.json`, JSON.stringify(feedData, null, 2));
+console.log(newIds.size, "new notes,", popularity.size, "ranked creators");
 console.log(jim.size, "notes on Jim's list,", extra.length, "fetched without votes");
 
 console.log(scored.filter(n => n.everything_claims?.updated_quote).length, "flagged since-corrected");

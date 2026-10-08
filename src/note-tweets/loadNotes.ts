@@ -2,6 +2,8 @@ import { INPUT_DIR } from "./paths";
 import { parseResults } from "./parseResults";
 import type { Article, Note } from "./types";
 
+export const NEW_DAYS = 7;
+
 export async function loadNotes(URL_: string, key: string, articleArgs: string[]) {
   const h = { apikey: key, Authorization: `Bearer ${key}` };
   const sel = "id,note,sources:everything_note_sources(url,sort_order),author_id,helpful_count,somewhat_helpful_count,not_helpful_count,created_at,everything_claims(claim,context_quote,context_paragraph,updated_quote,context_url,everything_items(title,url,published_at,everything_projects(slug,name)))";
@@ -10,6 +12,18 @@ export async function loadNotes(URL_: string, key: string, articleArgs: string[]
     const r = await fetch(`${URL_}/rest/v1/everything_notes?select=${sel}&or=(helpful_count.gt.0,somewhat_helpful_count.gt.0,not_helpful_count.gt.0)&limit=1000&offset=${off}`, { headers: h });
     if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
     const page = await r.json(); rows.push(...page);
+    if (page.length < 1000) break;
+  }
+
+  // Recent notes, voted or not, for the "New on popular" filter.
+  const since = new Date(Date.now() - NEW_DAYS * 864e5).toISOString();
+  const newIds = new Set<string>();
+  for (let off = 0; ; off += 1000) {
+    const r = await fetch(`${URL_}/rest/v1/everything_notes?select=${sel}&created_at=gte.${since}&limit=1000&offset=${off}`, { headers: h });
+    if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
+    const page: Note[] = await r.json();
+    const have = new Set(rows.map(r => r.id));
+    for (const n of page) { newIds.add(n.id); if (!have.has(n.id)) rows.push(n); }
     if (page.length < 1000) break;
   }
 
@@ -48,5 +62,5 @@ export async function loadNotes(URL_: string, key: string, articleArgs: string[]
     for (const v of page) helpfulAt.set(v.note_id, [...(helpfulAt.get(v.note_id) ?? []), v.created_at]);
     if (page.length < 1000) break;
   }
-  return { rows, jim, articles, helpfulAt, extra };
+  return { rows, jim, articles, helpfulAt, extra, newIds };
 }

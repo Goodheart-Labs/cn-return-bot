@@ -37,7 +37,7 @@ const contextParagraph = (paragraph: string, quote: string, bare: boolean) => {
   </div>`;
 };
 
-export function feedCards(jim: Map<string, Jim>, articles: Article[], helpfulAt: Map<string, string[]>, staging: Record<string, Staged>) {
+export function feedCards(jim: Map<string, Jim>, articles: Article[], helpfulAt: Map<string, string[]>, staging: Record<string, Staged>, newIds = new Set<string>(), popularity = new Map<string, { rank: number; readers: number }>()) {
   const articleOf = (id: string) => articles.find(a => a.ids.has(id))?.key;
   const thirdHelpful = (id: string) => helpfulAt.get(id)?.[2];
 const card = (n: ScoredNote, i: number) => {
@@ -50,13 +50,15 @@ const card = (n: ScoredNote, i: number) => {
   const jimTag = j ? [j.bucket === "send" ? "Jim: send" : j.bucket === "uncertain" ? "Jim: uncertain" : "", j.pick ? `Jim picked: ${j.pick}` : ""].filter(Boolean).join(" · ") : "";
   const art = articleOf(n.id);
   const third = thirdHelpful(n.id), sent = staging[n.id]?.status;
+  const isNew = newIds.has(n.id), pop = pr?.slug ? popularity.get(pr.slug) : undefined;
+  const newTag = isNew ? `new ${new Date(n.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}${pop ? ` · ${pop.readers} reader${pop.readers === 1 ? "" : "s"}` : ""}` : "";
   const thirdTag = third ? `3rd helpful ${new Date(third).toLocaleDateString("en-US", { month: "short", day: "numeric" })}` : "";
-  return `<div id="note-${n.id}" data-card${j ? " data-jim" : ""}${art ? ` data-article="${art}"` : ""}${third ? ` data-third="${third}"` : ""}${isRecent(third) ? " data-recent" : ""} class="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start mb-6">
+  return `<div id="note-${n.id}" data-card${j ? " data-jim" : ""}${art ? ` data-article="${art}"` : ""}${third ? ` data-third="${third}"` : ""}${isRecent(third) ? " data-recent" : ""}${isNew ? ` data-new data-pop="${pop?.rank ?? 99999}" data-created="${n.created_at}"` : ""} class="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start mb-6">
   ${paragraph ? `<div class="hidden xl:block xl:col-start-1 xl:row-start-1">${contextParagraph(paragraph, quote, false)}</div>
   <div class="xl:hidden w-full max-w-[40rem] mx-auto ctx-inline" style="display:grid;grid-template-rows:0fr;transition:grid-template-rows 300ms ease"><div class="overflow-hidden min-h-0"><div class="mb-2">${contextParagraph(paragraph, quote, true)}</div></div></div>` : ""}
   <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
   <div class="flex items-center justify-between gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">
-    <span class="font-semibold text-gray-700 dark:text-gray-200"><input type="checkbox" data-select="${n.id}" style="margin-right:6px;vertical-align:-2px">#${i + 1} · ${esc(pr?.name)}${c?.updated_quote ? ` · <span class="text-green-700 dark:text-green-400">✎ since corrected</span>` : ""}${jimTag ? ` · <span class="text-amber-700 dark:text-amber-400">${esc(jimTag)}</span>` : ""}${thirdTag ? ` · ${thirdTag}` : ""}${sent ? ` · <span class="text-green-700 dark:text-green-400">${sent === "sent" ? "sent to Typefully" : "staged"}</span>` : ""}</span>
+    <span class="font-semibold text-gray-700 dark:text-gray-200"><input type="checkbox" data-select="${n.id}" style="margin-right:6px;vertical-align:-2px">#${i + 1} · ${esc(pr?.name)}${c?.updated_quote ? ` · <span class="text-green-700 dark:text-green-400">✎ since corrected</span>` : ""}${jimTag ? ` · <span class="text-amber-700 dark:text-amber-400">${esc(jimTag)}</span>` : ""}${newTag ? ` · <span class="text-blue-700 dark:text-blue-400">${esc(newTag)}</span>` : ""}${thirdTag ? ` · ${thirdTag}` : ""}${sent ? ` · <span class="text-green-700 dark:text-green-400">${sent === "sent" ? "sent to Typefully" : "staged"}</span>` : ""}</span>
     <a href="${link}" target="_blank" class="${LINK}">Open on Common Notes ↗</a>
   </div>
   ${j?.comment || j?.sendInstead ? `<div class="bg-gray-50 dark:bg-gray-800/40 rounded-lg border border-gray-200 dark:border-gray-700 p-3 mb-3 text-xs text-gray-600 dark:text-gray-300">

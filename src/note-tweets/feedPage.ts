@@ -1,17 +1,19 @@
 import { esc, LINK } from "./markup";
 import { feedCards, SHAPE, VOTE_STYLE, RECENT_DAYS, isRecent } from "./feedCards";
+import { NEW_DAYS } from "./loadNotes";
 import type { Article, Jim, ScoredNote, Staged } from "./types";
 
-export function feedPage(scored: ScoredNote[], jim: Map<string, Jim>, articles: Article[], helpfulAt: Map<string, string[]>, staging: Record<string, Staged>, URL_: string, ANON: string) {
+export function feedPage(scored: ScoredNote[], jim: Map<string, Jim>, articles: Article[], helpfulAt: Map<string, string[]>, staging: Record<string, Staged>, URL_: string, ANON: string, newIds = new Set<string>(), popularity = new Map<string, { rank: number; readers: number }>()) {
   const open = scored.filter(n => !n.everything_claims?.updated_quote);
   const corrected = scored.filter(n => n.everything_claims?.updated_quote);
-  const { card, thirdHelpful } = feedCards(jim, articles, helpfulAt, staging);
+  const { card, thirdHelpful } = feedCards(jim, articles, helpfulAt, staging, newIds, popularity);
 const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ranked Notes</title><link rel="stylesheet" href="feed.css">
 <script>matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.classList.add("dark")</script>
 <style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 body[data-filter="jim"] [data-card]:not([data-jim]){display:none}
 body[data-filter="recent"] [data-card]:not([data-recent]){display:none}
+body[data-filter="new"] [data-card]:not([data-new]),body[data-filter="new"] [data-card][data-voted-before]{display:none}
 ${articles.map(a => `body[data-filter="${a.key}"] [data-card]:not([data-article="${a.key}"]){display:none}`).join("\n")}
 [data-filter-btn]{white-space:nowrap}
 [data-filter-btn][aria-pressed="true"]{background:#2563eb;color:#fff;border-color:#2563eb}</style></head>
@@ -23,6 +25,7 @@ ${articles.map(a => `body[data-filter="${a.key}"] [data-card]:not([data-article=
     <div id="toolbar" class="flex items-center flex-wrap gap-x-4 gap-y-1 mb-2 text-sm text-gray-600 dark:text-gray-300" style="position:sticky;top:0;z-index:10;padding:8px 0;background:inherit">
       <span class="inline-flex items-center gap-1">
         <button type="button" data-filter-btn="all" class="${SHAPE} border-gray-200 dark:border-gray-600">All</button>
+        <button type="button" data-filter-btn="new" title="Notes written in the last ${NEW_DAYS} days that you haven't voted on, most-read creators first, newest first within each" class="${SHAPE} border-gray-200 dark:border-gray-600">New on popular (${open.filter(n => newIds.has(n.id)).length})</button>
         <button type="button" data-filter-btn="jim" class="${SHAPE} border-gray-200 dark:border-gray-600">Jim's list (${jim.size})</button>
         <button type="button" data-filter-btn="recent" title="Notes whose 3rd Helpful vote landed in the last ${RECENT_DAYS} days, newest first" class="${SHAPE} border-gray-200 dark:border-gray-600">Recent 3+ helpful (${open.filter(n => isRecent(thirdHelpful(n.id))).length})</button>
         ${articles.map(a => `<button type="button" data-filter-btn="${a.key}" title="${esc(a.title)}" class="${SHAPE} border-gray-200 dark:border-gray-600">${esc(a.title.length > 40 ? a.title.slice(0, 38) + "…" : a.title)} (${a.ids.size})</button>`).join("\n        ")}
@@ -77,7 +80,7 @@ async function refresh() {
   document.getElementById("signout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
   const { data, error } = await sb.from("everything_votes").select("note_id, vote").eq("voter_id", user.id);
   if (error) { auth.insertAdjacentHTML("beforeend", " · couldn't load your votes: " + error.message); return; }
-  for (const r of data) { mine.set(r.note_id, String(r.vote)); paint(r.note_id); }
+  for (const r of data) { mine.set(r.note_id, String(r.vote)); paint(r.note_id); document.getElementById("note-" + r.note_id)?.setAttribute("data-voted-before", ""); }
 }
 
 document.addEventListener("click", (e) => {
@@ -118,7 +121,9 @@ document.addEventListener("click", async (e) => {
 const cards = [...document.querySelectorAll("main > [data-card]")];
 const setFilter = (f) => {
   document.body.dataset.filter = f;
-  const order = f === "recent" ? [...cards].sort((a, b) => (b.dataset.third || "").localeCompare(a.dataset.third || "")) : cards;
+  const order = f === "recent" ? [...cards].sort((a, b) => (b.dataset.third || "").localeCompare(a.dataset.third || ""))
+    : f === "new" ? [...cards].sort((a, b) => (a.dataset.pop ? +a.dataset.pop : 1e9) - (b.dataset.pop ? +b.dataset.pop : 1e9) || (b.dataset.created || "").localeCompare(a.dataset.created || ""))
+    : cards;
   const corrected = document.getElementById("corrected");
   for (const c of order) corrected.before(c);
   for (const b of document.querySelectorAll("[data-filter-btn]")) b.setAttribute("aria-pressed", b.dataset.filterBtn === f);
