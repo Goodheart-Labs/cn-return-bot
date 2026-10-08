@@ -13,7 +13,7 @@ const template = readFileSync(join(DATASET_DIR, "artifact", "template.html"), "u
 const dataset = readFileSync(join(DATASET_DIR, "dataset.json"), "utf8");
 // "</" inside the JSON would end the script element early.
 const safeJson = dataset.replaceAll("</", "<\\/");
-const resultsDir = join(DATASET_DIR, "results");
+const resultsDir = join(DATASET_DIR, "evalRuns");
 const runs = existsSync(resultsDir)
   ? readdirSync(resultsDir)
       .filter((name) => name.endsWith(".json"))

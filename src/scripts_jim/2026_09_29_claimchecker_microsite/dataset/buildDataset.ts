@@ -6,10 +6,9 @@
  * collects what production did with the claim. It calls no model and writes
  * nothing to the database.
  *
- * One limit: the posts' images are not described here, because that is a model
- * call. A chunk therefore still shows each image as its [[IMAGE:url]] marker.
- * When the extractor runs, the descriptions are spliced in first, and chunk
- * borders can then shift a little.
+ * The images of the posts are shown by the descriptions that freezeImages.ts
+ * saved, spliced in before the text is cut, which is what the extractor reads.
+ * Run freezeImages.ts first.
  *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/buildDataset.ts
  */
@@ -19,11 +18,12 @@ import { createClient } from "@supabase/supabase-js";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { buildClaimPost } from "../../../everything/pipeline/checkClaims";
-import { articleChunk, chunkText } from "../../../everything/pipeline/extractClaims";
+import { articleChunk, chunkText, renderImageDescriptions } from "../../../everything/pipeline/extractClaims";
 import type { ExtractedClaim } from "../../../everything/types";
 import { checkTraceOf, type LabRun } from "../labRun";
 import { LAB_DIR, RUNS_DIR } from "../runStore";
 import { DATAPOINTS, GROUP_TITLE, type Datapoint } from "./datapoints";
+import { loadFrozenDescriptions } from "./freezeImages";
 import { locate, paragraphsAround } from "./text";
 
 const DATASET_PATH = join(LAB_DIR, "dataset", "dataset.json");
@@ -58,17 +58,16 @@ async function claimOf(datapoint: Datapoint): Promise<SourceClaim> {
 /** The chunk the extractor would read the passage in, shown as the user message
  *  it would get. An image claim has no passage, so its chunk is the one that
  *  holds the image. */
-function extractorInput(text: string, claim: SourceClaim) {
-  const chunks = chunkText(text);
-  const needle = claim.contextQuote ? null : claim.imageUrls[0];
-  const index = chunks.findIndex((chunk) => (needle ? chunk.includes(needle) : !!locate(chunk, claim.contextQuote!)));
+function extractorInput(text: string, claim: SourceClaim, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
+  const chunks = chunkText(renderImageDescriptions(text, descriptions));
+  const imageMarker = claim.contextQuote ? null : `Image: ${claim.imageUrls[0]}`;
+  const index = chunks.findIndex((chunk) => (imageMarker ? chunk.includes(imageMarker) : !!locate(chunk, claim.contextQuote!)));
   if (index === -1) throw new Error(`No chunk holds the passage of claim ${claim.id}`);
   const userMessage = articleChunk(chunks[index]!);
-  const span = needle
+  const span = imageMarker
     ? (() => {
-        const at = userMessage.indexOf(needle);
-        const open = userMessage.lastIndexOf("[[IMAGE:", at);
-        return { start: open, end: userMessage.indexOf("]]", at) + 2 };
+        const at = userMessage.indexOf(imageMarker);
+        return { start: userMessage.lastIndexOf("[Image:", at + 1), end: userMessage.indexOf("]", at) + 1 };
       })()
     : locate(userMessage, claim.contextQuote!);
   return {
@@ -77,7 +76,7 @@ function extractorInput(text: string, claim: SourceClaim) {
     chunkCount: chunks.length,
     chunkChars: chunks[index]!.length,
     highlight: span,
-    imageMarkersInChunk: (userMessage.match(/\[\[IMAGE:/g) ?? []).length,
+    imageBlocksInChunk: (userMessage.match(/\[Image: /g) ?? []).length,
   };
 }
 
@@ -131,7 +130,7 @@ function labPromptAsReceived(runId: string, claimId: string): string | null {
   }
 }
 
-async function buildRecord(datapoint: Datapoint) {
+async function buildRecord(datapoint: Datapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
   const { data: item, error } = await db.from("everything_items").select("id, title, url, source, published_at, created_at, full_text").eq("id", datapoint.itemId).single();
   if (error) throw error;
   const claim = await claimOf(datapoint);
@@ -168,7 +167,7 @@ async function buildRecord(datapoint: Datapoint) {
     expected: datapoint.expected,
     referenceClaim: datapoint.referenceClaim,
     item: { id: item.id, title: item.title, url: item.url, source: item.source, publishedAt: item.published_at, textChars: text.length },
-    extractor: extractorInput(text, claim),
+    extractor: extractorInput(text, claim, descriptions),
     checker: {
       claim: { ...claim, paragraphTakenFromText: !storedParagraph && !!paragraph },
       post,
@@ -178,9 +177,10 @@ async function buildRecord(datapoint: Datapoint) {
   };
 }
 
+const descriptions = loadFrozenDescriptions();
 const records = [];
 for (const datapoint of DATAPOINTS) {
-  const record = await buildRecord(datapoint);
+  const record = await buildRecord(datapoint, descriptions);
   records.push(record);
   console.log(
     `${datapoint.id.padEnd(30)} chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars)`,

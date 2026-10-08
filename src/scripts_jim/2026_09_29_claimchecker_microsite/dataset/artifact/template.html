@@ -163,7 +163,7 @@ table.matrix td, table.matrix th { padding: 6px 12px; }
 
 <div class="wrap">
   <h1>Claimchecker eval sets</h1>
-  <p class="lede">GOO-229. The 14 datapoints from your ticket comments, with their full inputs, sorted into your four groups. Nothing has been run on them yet. Click a row to open its full input.</p>
+  <p class="lede">GOO-229. The 14 datapoints from your ticket comments, with their full inputs, sorted into your four groups. The baseline run of the current pipeline is on the Results tab. Click a row to open its full input.</p>
 
   <div class="tabs" role="tablist" id="tabs">
     <button class="tab" role="tab" data-view="datasets">Datasets</button>
@@ -328,7 +328,7 @@ function extractorRows(points) {
           <h4>Source post</h4><p><a href="${esc(d.item.url)}" target="_blank" rel="noreferrer">${esc(d.item.title)}</a><br><span class="small">${d.item.source} item, ${d.item.textChars.toLocaleString("en")} characters in total</span></p></div>
         <div><h4>Full input: the extractor's user message ${copyButton(d.id, "Copy")}</h4>
           <div class="input-box" data-box="${d.id}">${highlighted(e.userMessage, e.highlight)}</div>
-          <p class="meta">The yellow part is the datapoint. ${e.imageMarkersInChunk} image marker${e.imageMarkersInChunk === 1 ? "" : "s"} in this chunk, shown as [[IMAGE:url]] because the image descriptions are not generated yet. The system prompt is the pipeline's current extraction prompt.</p></div>
+          <p class="meta">The yellow part is the datapoint. ${e.imageBlocksInChunk} image${e.imageBlocksInChunk === 1 ? "" : "s"} in this chunk, shown by the description Gemini wrote once and saved, as the extractor reads it. The system prompt is the pipeline's current extraction prompt.</p></div>
       </div></td></tr>`;
     })
     .join("");
@@ -500,12 +500,12 @@ const PLAN_EXTRACTOR = [
     input: "The post's chunk exactly as the extractor is given it, and the reference claim.",
     output: "Passed on unchanged.",
     note: "Several datapoints share a post, but each has its own chunk, so the 14 rows need 11 distinct extractor calls per sample." },
-  { id: "e-img", kind: "model", optional: true, name: "Freeze image descriptions", hint: "once, saved in the dataset",
-    what: "The extractor does not see images. It reads a text description of each one that Gemini writes at run time. Writing it afresh on every run would cost money, add chance to the result and shift the chunk borders. So it would be done once and saved into the dataset.",
+  { id: "e-img", kind: "model", name: "Frozen image descriptions", hint: "described once, saved in the dataset",
+    what: "The extractor does not see images. It reads a text description of each one that Gemini writes. Writing it afresh on every run would cost money, add chance to the result and shift the chunk borders. So each image was described once and the description is saved in the dataset. The chunks are cut after the descriptions are spliced in.",
     input: "The 66 images of the seven posts.",
-    output: "The description and visible text of each image, saved in dataset.json. The chunks are then cut again with these descriptions inside.",
+    output: "The description and visible text of each image, saved in images.json.",
     prompt: "Analyze this image. Describe what it shows and extract all visible text.",
-    note: "A one-off cost under $0.50. The baseline run paid $0.58 for its whole extraction, which covered 87 images and all the claims, so 66 images cost less than that. Not done yet. Without it, the Opus figure datapoint cannot be tested fairly." },
+    note: "Done. The 66 images cost $0.33 once. The description of the Opus figure is the only evidence the extractor has for that row." },
   { id: "e-ext", kind: "model", name: "Extractor under test", hint: "3 samples per row",
     what: "The extraction step as it is in the branch, on the model the run names. It is called three times per row, because the same call can give different claims each time.",
     input: "The chunk as the user message, and the extraction system prompt.",
@@ -587,13 +587,13 @@ const PLAN_LOOP = [
   { id: "l-change", kind: "data", name: "Change one thing", hint: "a prompt, a model, a rule", what: "For example: take the opinion rule out of the checker's system prompt, or split the extractor's chunks smaller.", input: "A branch or a flag.", output: "A labelled run.", note: "The same labels as the lab's runs, so the microsite lists it." },
   { id: "l-pick", kind: "rule", promptLabel: "Planned commands", name: "Pick what to run", hint: "one eval, a few rows", what: "A run covers only what you choose: the extractor eval, the checker eval or both, and for each, all 14 rows, one group, or named rows. The usual case is a handful of rows of one eval.",
     input: "Flags on the run command.", output: "The list of rows to run.",
-    prompt: `bun run .../dataset/runEvals.ts --label "opinion rule removed" --eval checker --only ea-beholden-to-yudkowsky,givewell-1500x,sol-subagents
-bun run .../dataset/runEvals.ts --label "smaller chunks" --eval extractor --group note-difficult
-bun run .../dataset/runEvals.ts --label "full run"`,
-    note: "Planned, not built. --eval is extractor, checker or both. --only takes row ids, --group takes one of the four groups, and no flag means every row. The ids are the ones in the tables." },
+    prompt: `bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/runEvals.ts --label "opinion rule removed" --eval checker --only ea-beholden-to-yudkowsky,givewell-1500x,sol-subagents
+... --label "smaller chunks" --eval extractor --group note-difficult
+... --label "full run"`,
+    note: "Built. --eval is extractor, checker or both. --only takes row ids, --group takes one of the four groups, and no flag means every row. The ids are the ones in the tables. The baseline was run with just --label." },
   { id: "l-run", kind: "model", name: "Run the chosen rows", hint: "cost scales with the rows", what: "Only the chosen rows are run, and the run records which ones it covered.", input: "The chosen rows of the dataset tables.", output: "One result per row run.",
-    note: "Rough prices from the baseline run: the checker about $0.03 per row, the extractor about $0.09 per row (one chunk at 3 samples). Rows that share a chunk share its extraction calls: the seven sex-cult rows need only 4 chunks. So five checker rows cost about $0.15. A full run of both evals is about $1.40. Nothing has been run." },
-  { id: "l-compare", kind: "report", name: "Compare to an earlier run", hint: "only the rows both have", what: "Each chosen row is compared with the latest earlier run that also covered it, so a partial run is never compared with rows it did not run. Groups show their pass rate over the rows present.", input: "Two results.", output: "A delta per row and per group, and the rows that flipped.", note: "Rows with no earlier result show as new. A gain on the note groups that costs the no-note groups shows as soon as both groups are in the run." },
+    note: "Measured on the baseline: the extractor eval cost $0.17 (33 extraction calls $0.15, judges $0.02) and the checker eval $0.46, which is $0.033 per row, except that the Opus figure row costs more because the pipeline analyses its image. A full run of both evals cost $0.62 and took about 27 minutes of wall time. Rows that share a chunk share its extraction calls: the seven sex-cult rows need only 4 chunks." },
+  { id: "l-compare", kind: "report", name: "Compare to an earlier run", hint: "only the rows both have, not built yet", what: "Each chosen row is compared with the latest earlier run that also covered it, so a partial run is never compared with rows it did not run. Groups show their pass rate over the rows present.", input: "Two results.", output: "A delta per row and per group, and the rows that flipped.", note: "Rows with no earlier result show as new. A gain on the note groups that costs the no-note groups shows as soon as both groups are in the run." },
   { id: "l-look", kind: "data", name: "Open the failures", hint: "in the microsite", what: "Each flipped row opens in the lab microsite with its research, drafted note and verdict.", input: "The flipped rows.", output: "Your decision on the next change.", note: "The dataset grows from here: a failure you agree is wrong becomes a new row." },
 ];
 const PLANS = [
@@ -626,7 +626,7 @@ function renderPlans() {
 const DECISIONS = [
   "The groups for the datapoints you did not label are my proposal, which you accepted for now: the four no-note datapoints and Czechoslovakia and CFAR/FTX are easy, and EA earning to give and Melanie Mitchell are difficult. The EA beholden claim is a note, difficult.",
   "The reference claims are written by me, from your words and the claims production extracted. The extractor eval stands or falls on them, so please read the column once.",
-  "Image descriptions are not generated yet, so the chunks show [[IMAGE:url]] markers. The Opus figure row has no passage and rests on one image, so it cannot be tested until its description exists.",
+  "The 66 images of the posts were described once by Gemini (about $0.33) and the descriptions are saved, so every run reads the same text. The Opus figure row has no passage and rests on one image, so its test depends on that description.",
   "The stored text of the sex-cult post and of the ACX letter to Pinker has no images, because it came from a reader's browser. The other five posts keep their images as markers. The chunks are cut the way the pipeline cuts an unsplit post. In a real run the first step may split a post into topic parts first, which changes where the chunks begin.",
   "Only 3 of the 14 checker inputs come from a saved production prompt. The July posts have no check logs. The others are built with the pipeline's own function from the stored claim, which is the same text without the date lines and the comments.",
   "For the readers' highlights (CFAR/FTX, the cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell) the surrounding paragraph is taken from the post's text. The extractor may have chosen a different paragraph.",

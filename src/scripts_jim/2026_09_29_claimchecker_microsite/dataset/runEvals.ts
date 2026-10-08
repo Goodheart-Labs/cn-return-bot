@@ -1,6 +1,6 @@
 /**
  * Runs the extractor eval, the checker eval or both on all datapoints or a
- * chosen few, and saves the result as results/<run id>.json. It calls the same
+ * chosen few, and saves the result as evalRuns/<run id>.json. It calls the same
  * functions the production services call, in this process, and writes nothing
  * to the production database.
  *
@@ -23,7 +23,7 @@ import { runExtractorEval } from "./extractorEval";
 import { loadFrozenDescriptions } from "./freezeImages";
 import { loadItemTexts } from "./itemTexts";
 
-const RESULTS_DIR = join(LAB_DIR, "dataset", "results");
+const RESULTS_DIR = join(LAB_DIR, "dataset", "evalRuns");
 
 function arg(name: string): string | undefined {
   const at = process.argv.indexOf(`--${name}`);
@@ -79,7 +79,7 @@ async function main() {
   mkdirSync(RESULTS_DIR, { recursive: true });
   writeFileSync(join(RESULTS_DIR, `${runId}.json`), JSON.stringify(run, null, 1));
   const total = (extractor ? extractor.costUsd.extraction + extractor.costUsd.judge : 0) + (checker ? checker.costUsd.checks + checker.costUsd.judge : 0);
-  console.log(`Saved results/${runId}.json, $${total.toFixed(2)} in total`);
+  console.log(`Saved evalRuns/${runId}.json, $${total.toFixed(2)} in total`);
 }
 
 await main();
