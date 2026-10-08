@@ -4,27 +4,34 @@
  *  setup in supabase.ts. */
 
 // Query parameters that only record how the reader arrived, never which page
-// they see. Substack's logged-in reader adds lli=1 ("logged-in link") to every
-// post link it shows, for example on a profile's Posts tab, next to its utm_
-// parameters. On *.substack.com post links the whole query is dropped anyway
-// (see isSubstackHostPost), so lli is listed here for the custom domains.
-const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli"];
+// they see. Substack post links lose their whole query instead (see
+// isSubstackPostPage), so Substack's own parameters are not listed here.
+const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si"];
 
-/** Whether the URL is a post on a *.substack.com host. Such a post is chosen by
- *  its path alone, and its stored item URL never has a query. Substack keeps
- *  adding parameters of its own to post links, such as r (a referral code),
- *  triedRedirect and lli. Each new one used to break matching until we listed
- *  it, so on these hosts the query is dropped whatever it holds. A newsletter
- *  on its own domain cannot be recognized from its address, so its links only
- *  lose the tracking parameters. */
-function isSubstackHostPost(url: URL): boolean {
-  return /(^|\.)substack\.com$/.test(url.hostname) && url.pathname.startsWith("/p/");
+/** Whether the URL is a Substack post. Substack serves posts under /p/, on its
+ *  own subdomains and on custom domains such as www.astralcodexten.com alike.
+ *  A custom domain cannot be recognized as Substack from its host, so the path
+ *  alone decides.
+ *  A Substack post is chosen by its path alone, and its stored item URL never
+ *  has a query. Substack keeps adding parameters of its own to post links, such
+ *  as r (a referral code), triedRedirect and lli. Each new one used to break
+ *  matching until we listed it, so a post link loses its whole query.
+ *  Other sites with /p/ paths are treated the same way. Instagram and beehiiv
+ *  use /p/ and ignore the query. If a site needed the query to pick the page,
+ *  the worst case is a badge on a link that differs from a checked page only in
+ *  its query. */
+export function isSubstackPostPage(pageUrl: string): boolean {
+  try {
+    return new URL(pageUrl).pathname.startsWith("/p/");
+  } catch {
+    return false;
+  }
 }
 
 /** Canonicalizes a page URL so it can be looked up in `everything_items.url`,
  *  with the page's canonical link passed in as a plain string. Callers that
  *  hold a Document use normalizePageUrl instead. The hash and any tracking
- *  parameters are dropped, and a *.substack.com post loses its whole query. */
+ *  parameters are dropped, and a Substack post loses its whole query. */
 export function canonicalizePageUrl(href: string, canonical: string | null): string {
   let url = new URL(href);
   if (canonical) {
@@ -38,7 +45,7 @@ export function canonicalizePageUrl(href: string, canonical: string | null): str
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
-  if (isSubstackHostPost(url)) {
+  if (isSubstackPostPage(url.href)) {
     url.search = "";
     return url.toString();
   }

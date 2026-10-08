@@ -14,12 +14,12 @@ test("a Substack profile's post links canonicalize to the stored item URL, logge
   expect(canonicalizePageUrl(PROFILE_POST_LINK_LOGGED_IN, null)).toBe(STORED_ITEM_URL);
 });
 
-test("a *.substack.com post loses every query parameter, a custom-domain post only the tracking ones", () => {
+test("a Substack post loses every query parameter, on a substack.com subdomain and on a custom domain", () => {
   expect(canonicalizePageUrl("https://nathanpmyoung.substack.com/p/some-post?r=abc12&triedRedirect=true", null)).toBe(
     "https://nathanpmyoung.substack.com/p/some-post",
   );
   expect(canonicalizePageUrl("https://www.astralcodexten.com/p/some-post?lli=1&utm_source=profile&r=abc12", null)).toBe(
-    "https://www.astralcodexten.com/p/some-post?r=abc12",
+    "https://www.astralcodexten.com/p/some-post",
   );
 });
 

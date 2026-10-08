@@ -2,19 +2,8 @@
  *  question ("is there anything here worth asking us to check?"), not the
  *  creator question, which lives in creatorTarget.ts. */
 
-import { extractYoutubeVideoId } from "@cn/core/pageUrls";
+import { extractYoutubeVideoId, isSubstackPostPage } from "@cn/core/pageUrls";
 import { forumOrigin, isForumPostPage } from "./creatorTarget";
-
-/** Substack post pages live under /p/, on subdomains and custom domains alike.
- *  The "we have not checked this yet" overlay only makes sense on a post, not
- *  on a homepage or an archive. */
-export function isSubstackPostPage(pageUrl: string): boolean {
-  try {
-    return new URL(pageUrl).pathname.startsWith("/p/");
-  } catch {
-    return false;
-  }
-}
 
 /** Whether requesting a check makes sense for this URL. On the platforms
  *  whose URL shapes we know, only an actual post or video is checkable:
