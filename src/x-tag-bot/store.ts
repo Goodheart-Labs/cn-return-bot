@@ -1,6 +1,6 @@
 /**
  * Where the bot keeps its conversations: x_tag_threads and x_tag_posts
- * (migration 117). The Supabase store is the real one. The memory store backs
+ * (migration 120). The Supabase store is the real one. The memory store backs
  * the tests and the dry run, so a dry run never writes made-up post ids into
  * production tables.
  */

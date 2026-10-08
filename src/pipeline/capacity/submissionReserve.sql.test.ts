@@ -34,7 +34,7 @@ describe.skipIf(!pglitePath)("submission queue SQL in an isolated PostgreSQL dat
     `);
     await db.exec(await Bun.file(new URL("../../../migrations/093_signal_submission_reserve.sql", import.meta.url)).text());
     await db.exec(await Bun.file(new URL("../../../migrations/100_signal_submission_queue.sql", import.meta.url)).text());
-    await db.exec(await Bun.file(new URL("../../../migrations/117_x_tag_bot.sql", import.meta.url)).text());
+    await db.exec(await Bun.file(new URL("../../../migrations/120_x_tag_bot.sql", import.meta.url)).text());
   });
 
   beforeEach(async () => {

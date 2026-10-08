@@ -1,6 +1,8 @@
 # The services machine
 
-One always-on Linux server runs five systemd services:
+One always-on Linux server runs six systemd services. It is the Hetzner Cloud
+server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
+`ssh root@95.217.155.79` (see `docs/prod-config.md`).
 
 | Unit | What it does | Port |
 |---|---|---|
@@ -9,6 +11,7 @@ One always-on Linux server runs five systemd services:
 | `cn-intake` | watches reader requests and drives them through the other two | none |
 | `cn-fetch` | fetches outside pages and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-notify` | posts new notes and votes to four Slack channels | none |
+| `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake is a caller: it holds the service key and writes the rows. The Actions
@@ -38,7 +41,7 @@ themselves, because their units want it, and autodeploy restarts it with them.
 git clone https://github.com/Goodheart-Labs/cn-return-bot.git /opt/cn-return-bot
 bash /opt/cn-return-bot/ops/setup-vm.sh
 # fill in /etc/cn-return-bot/service.env (below)
-systemctl start cn-claim-check cn-extraction cn-intake
+systemctl start cn-claim-check cn-extraction cn-intake cn-notify
 ```
 
 ## /etc/cn-return-bot/service.env
@@ -142,7 +145,7 @@ First-time setup, once the account exists (GOO-368):
    `X_TAG_BOT_CLIENT_SECRET` and `X_TAG_BOT_REDIRECT_URI`, run
    `bun run x-tag-bot-setup`. It logs in as the bot once, creates the two
    event subscriptions and prints `X_TAG_BOT_USER_ID`.
-3. Apply migration 117, then install and start the unit:
+3. Apply migration 120, then install and start the unit:
    `cp ops/cn-x-tag-bot.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now cn-x-tag-bot`.
 
 Autodeploy restarts it with the other services, but only while it runs, so it
@@ -250,20 +253,52 @@ when it drains; a service that does not answer health counts as idle, because
 the new commit may be the fix. So a merge to main is live within about five
 minutes of the machine going quiet.
 
-The checkout tracks whichever branch it is on: the feature branch before the
-cutover PR merges, `main` after (switch once by hand with
-`sudo -u cnbot git -C /opt/cn-return-bot checkout main`).
+The checkout tracks whichever branch it is on, which is `main`.
 
-## Rollback
+## Moving to a new machine
 
-```bash
-systemctl stop cn-claim-check cn-extraction cn-intake
-```
+Only two things find this machine: the repository secrets `CLAIM_CHECK_URL` and
+`EXTRACTION_URL`, which the X note writer and the Common Notes feed run read when
+they start. Everything else on the machine either waits to be called, or, like
+`cn-intake` and `cn-notify`, looks for work in the database by itself. Two
+copies of intake would both take the same reader request, and two copies of
+notify could post the same message twice. So the two machines must never run
+those at the same time.
 
-Then re-enable the old in-process path by reverting the cutover commit on main,
-or by dispatching the workflows manually while investigating. The Actions runs
-fail loudly while the machine is down, which is the intended signal, not a
-side effect.
+The move on 2026-10-08 (GOO-244) went like this, with about 15 minutes of
+downtime:
+
+1. Build the new machine with "First-time setup" above, but start only
+   `cn-claim-check` and `cn-extraction`. `setup-vm.sh` enables intake and
+   notify, so run `systemctl disable cn-intake cn-notify` right after it.
+2. Pause both pipeline workflows:
+   `gh workflow disable everything-priority-feeds.yml` and
+   `gh workflow disable create-notes-routine-dynamic.yml`. pg_cron's dispatches
+   fail while they are off, which is harmless.
+3. Wait until no run is in progress and both services on the old machine show
+   `inFlight` 0 and `waiting` 0 on `/health`, and intake is not working on a page.
+4. On the old machine, switch everything off. `disable` keeps a reboot from
+   bringing it back:
+   `systemctl disable --now cn-autodeploy.timer cn-intake cn-notify cn-claim-check cn-extraction cn-fetch cn-pot-provider`.
+5. Copy the environment file machine to machine without printing it, and
+   compare the hashes:
+   ```bash
+   ssh root@<old> 'cat /etc/cn-return-bot/service.env' | ssh root@<new> 'umask 077; cat > /etc/cn-return-bot/service.env'
+   for ip in <old> <new>; do ssh root@$ip 'sha256sum /etc/cn-return-bot/service.env | cut -c1-16'; done
+   ```
+6. On the new machine, restart the two called services so they read the file,
+   and switch on the other two:
+   `systemctl restart cn-claim-check cn-extraction && systemctl enable --now cn-intake cn-notify cn-fetch`.
+7. Point `CLAIM_CHECK_URL` and `EXTRACTION_URL` at the new address with
+   `gh secret set`, then `gh workflow enable` both workflows and watch one run
+   of each finish green.
+8. Once the new machine has served a few runs, delete the old one in the
+   Hetzner console. Powering it off does not stop the bill. Check first that
+   Hetzner holds no snapshots of it, because those are billed separately and
+   survive the deletion.
+
+Rollback is the same steps in the other direction. With no machine at all, the
+Actions runs fail loudly at their health check, which is the intended signal.
 
 ## Looking at it
 

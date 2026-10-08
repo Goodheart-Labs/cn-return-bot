@@ -110,6 +110,13 @@
   --cn-tint: rgb(var(--cn-blue-50));
   /* Their border. */
   --cn-tint-line: rgb(var(--cn-blue-100));
+  /* Words in an article that a note is about, as the reader marks them. */
+  --cn-note-mark: rgb(var(--cn-blue-100));
+  --cn-note-mark-line: rgb(var(--cn-blue-400));
+  /* Words a reader marked as a key point or a forecast: a highlighter yellow,
+   * so they read apart from note quotes. */
+  --cn-highlighter: rgb(var(--cn-amber-100));
+  --cn-highlighter-line: rgb(var(--cn-amber-400));
   /* The dark bubble of a one-time hint. */
   --cn-inverse: rgb(var(--cn-gray-900));
   /* Text in that bubble. */
@@ -239,6 +246,10 @@
   --cn-focus-halo: rgb(var(--cn-blue-400) / 0.25);
   --cn-tint: rgb(var(--cn-blue-950) / 0.5);
   --cn-tint-line: rgb(var(--cn-blue-900));
+  --cn-note-mark: rgb(var(--cn-blue-900) / 0.6);
+  --cn-note-mark-line: rgb(var(--cn-blue-400));
+  --cn-highlighter: rgb(var(--cn-amber-900) / 0.6);
+  --cn-highlighter-line: rgb(var(--cn-amber-400));
   --cn-inverse: rgb(var(--cn-gray-800));
   --cn-on-inverse: rgb(var(--cn-gray-50));
   --cn-on-inverse-muted: rgb(var(--cn-gray-300));

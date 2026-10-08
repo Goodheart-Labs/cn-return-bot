@@ -492,7 +492,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>The claim-check service runs the steps a caller picks.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag and an "off" A/B variant. The tweet route takes the note request, and its answer carries the rendered post. There are Opus 5.5 medium variants for search and writer, and a writer reasoning setting.</li>
       <li><strong>Submitting a note outside the automatic pipeline</strong> is one shared function, <code>submitApprovedNote</code>, used by the Signal bot and the tag bot in their own lanes, both with priority over the automatic pipeline.</li>
       <li><strong>The Signal bot drafts on the claim-check service</strong> with <code>SIGNAL_PICKS</code>, which keep its old steps and models.</li>
-      <li><strong>Migration 117</strong> adds the two tables and the <code>x_tag</code> lane.</li>
+      <li><strong>Migration 120</strong> adds the two tables and the <code>x_tag</code> lane.</li>
       <li><strong>Operations:</strong> the <code>cn-x-tag-bot</code> unit, autodeploy, and the docs in <code>ops/README.md</code>, <code>docs/prod-config.md</code> and CLAUDE.md.</li>
     </ul>
     <h3>How it was checked</h3>

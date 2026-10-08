@@ -15,26 +15,34 @@ import { useInstallTabs } from "./useInstallTabs";
  * and the install section. */
 
 function Screenshots() {
-  const { index, go, held, holdProps } = useCarousel(SCREENSHOTS.length);
+  const { index, strip, step, go, held, holdProps } = useCarousel(SCREENSHOTS.length);
   return (
     <section aria-roledescription="carousel" aria-label="Screenshots of the extension" className="mx-auto mt-14 w-full max-w-5xl" {...holdProps}>
       <div className="group relative overflow-hidden rounded-card border border-line bg-inverse shadow-floating">
-        <div className="flex transition-transform duration-500 ease-out motion-reduce:transition-none" style={{ transform: `translateX(-${index * 100}%)` }}>
-          {SCREENSHOTS.map((shot, i) => (
-            <div key={shot.src} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${SCREENSHOTS.length}`} aria-hidden={i !== index} className="w-full shrink-0">
-              <img src={shot.src} alt={shot.alt} width={1280} height={800} className="block aspect-[16/10] w-full object-cover object-top" />
+        <div className="relative aspect-[16/10]">
+          {strip.map(({ key, index: i, offset }) => (
+            <div
+              key={key}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${SCREENSHOTS.length}`}
+              aria-hidden={offset !== 0}
+              className="absolute inset-0 transition-transform duration-500 ease-out motion-reduce:transition-none"
+              style={{ transform: `translateX(${offset * 100}%)` }}
+            >
+              <img src={SCREENSHOTS[i]!.src} alt={SCREENSHOTS[i]!.alt} width={1280} height={800} className="block h-full w-full object-cover object-top" />
             </div>
           ))}
         </div>
         {[
-          { label: "Previous screenshot", step: -1, Icon: PreviousIcon, side: "left-4" },
-          { label: "Next screenshot", step: 1, Icon: NextIcon, side: "right-4" },
-        ].map(({ label, step, Icon, side }) => (
+          { label: "Previous screenshot", steps: -1, Icon: PreviousIcon, side: "left-4" },
+          { label: "Next screenshot", steps: 1, Icon: NextIcon, side: "right-4" },
+        ].map(({ label, steps, Icon, side }) => (
           <button
             key={label}
             type="button"
             aria-label={label}
-            onClick={() => go(index + step)}
+            onClick={() => step(steps)}
             className={cn(
               "absolute top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-surface text-fg shadow-raised transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100",
               side,
