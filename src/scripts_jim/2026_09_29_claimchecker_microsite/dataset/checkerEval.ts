@@ -14,7 +14,7 @@ import PQueue from "p-queue";
 import { runClaimCheck } from "../../../everything/pipeline/checkClaims";
 import { LOGS_DIR } from "../runStore";
 import { checkTraceOf } from "../labRun";
-import type { CheckerEvalResult, CheckerOutcome, CheckerRowResult, CheckerSample, CheckerVerdict, DatasetRow } from "./evalTypes";
+import type { CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict, DatasetRow } from "./evalTypes";
 import { judgeNoteQuality } from "./judges";
 
 const SAMPLES_PER_ROW = 3;
@@ -47,6 +47,20 @@ function referenceNotesOf(row: DatasetRow): string[] {
   return [...(row.expected.referenceNote ? [row.expected.referenceNote] : []), ...real];
 }
 
+/** The user messages of the research step and the writer step, from the log of
+ *  a check. A log written to disk keeps its messages under string keys, one
+ *  held in memory keeps them in a list, so both are read. */
+export function promptsOf(logs: any): CheckerPrompts {
+  const search = logs?.note_writer_steps?.search?.messages;
+  const attempts = logs?.note_writer_steps?.note_writer?.attempts;
+  const firstAttempt = Array.isArray(attempts) ? attempts[0] : attempts?.["0"];
+  const writerMessages: { role: string; content: string }[] = Array.isArray(firstAttempt?.messages) ? firstAttempt.messages : Object.values(firstAttempt?.messages ?? {});
+  return {
+    research: (Array.isArray(search) ? search[0] : search?.["0"])?.userMessage ?? null,
+    writer: writerMessages.find((m) => m.role === "user")?.content ?? null,
+  };
+}
+
 async function checkSample(row: DatasetRow, referenceNotes: string[], runId: string, index: number, sample: number): Promise<CheckerSample> {
   const base = { quality: null, research: null, draftNote: null, sourceVerdict: null, checkCostUsd: 0, judgeCostUsd: 0 };
   try {
@@ -65,7 +79,7 @@ async function checkSample(row: DatasetRow, referenceNotes: string[], runId: str
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, research: trace.research, draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };

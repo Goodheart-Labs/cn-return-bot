@@ -51,6 +51,7 @@ process, and writes nothing to the production database.
 - `buildArtifact.ts` inlines `dataset.json` into `artifact/template.html`, the page published as an artifact.
 - `findSnippets.ts` looked up where each snippet of the comments sits in production.
 - `freezeImages.ts` describes every image of the posts once with Gemini and saves the descriptions in `images.json`, so the extractor reads the same text in every run.
+- `backfillPrompts.ts <run id>` fills the user messages that were sent to the research and writer steps into a run saved before they were kept, from the logs the run wrote.
 - `runEvals.ts` runs the evals and saves `evalRuns/<run id>.json`. `extractorEval.ts` and `checkerEval.ts` are the two evals, `judges.ts` the two Muse judges.
 
 ```bash

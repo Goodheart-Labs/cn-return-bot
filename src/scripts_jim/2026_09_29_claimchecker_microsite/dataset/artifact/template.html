@@ -116,6 +116,65 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 .sample .head { display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
 .sample ol { margin: 6px 0 0; padding-left: 22px; font-size: 0.84rem; }
 .sample details > summary { cursor: pointer; color: var(--accent); font-size: 0.82rem; }
+
+/* The chunk with its extracted passages */
+.xdetail { min-width: 0; }
+.xhead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; margin-bottom: 12px; }
+@media (max-width: 860px) { .xhead { grid-template-columns: minmax(0, 1fr); } }
+.xhead h4 { margin: 0 0 6px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.xgrid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 980px) { .xgrid { grid-template-columns: minmax(0, 1fr); } }
+.xmain { min-width: 0; }
+.xtoolbar { margin-bottom: 8px; }
+.xtext { position: relative; height: min(70vh, 640px); overflow: auto; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 14px 16px; white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; line-height: 1.8; }
+.seg { cursor: pointer; border-radius: 2px; }
+.seg.c1 { background: color-mix(in srgb, var(--note) 18%, transparent); }
+.seg.c2 { background: color-mix(in srgb, var(--note) 32%, transparent); }
+.seg.c3 { background: color-mix(in srgb, var(--note) 46%, transparent); }
+.seg.target { box-shadow: inset 0 -4px 0 var(--warn); }
+.seg.target:not(.c1):not(.c2):not(.c3) { background: var(--warn-soft); }
+.seg.focus { background: color-mix(in srgb, var(--accent) 42%, transparent); outline: 1px solid var(--accent); }
+.seg:hover { filter: brightness(0.92); }
+.xside { min-width: 0; position: sticky; top: 56px; max-height: calc(100vh - 72px); overflow: auto; }
+.xtabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.xtab { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 10px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.xtab[aria-selected="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.judgereason { font-size: 0.86rem; margin: 0 0 10px; }
+.legend2 { display: grid; gap: 4px; font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
+.legend2 i { display: inline-block; width: 22px; height: 10px; border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
+.k-ex { background: color-mix(in srgb, var(--note) 32%, transparent); }
+.k-target { background: var(--warn-soft); box-shadow: inset 0 -3px 0 var(--warn); }
+.k-focus { background: color-mix(in srgb, var(--accent) 42%, transparent); outline: 1px solid var(--accent); }
+.xhere { margin: 10px 0; }
+.targetnote { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.88rem; }
+.claimitem { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 10px; margin: 0 0 6px; cursor: pointer; font-size: 0.86rem; }
+.claimitem.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.claimno { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.claimtext { display: block; min-width: 0; }
+.claimtext .quote { display: block; margin-top: 4px; color: var(--muted); font-size: 0.8rem; }
+.claimtext .block { display: block; }
+.badge { display: inline-block; margin-left: 8px; border-radius: 999px; padding: 0 8px; font-size: 0.72rem; font-weight: 700; background: var(--note-soft); color: var(--note); }
+.xlist { padding: 10px; border-top: 1px solid var(--line); max-height: 420px; overflow: auto; }
+
+/* One claim check, step by step */
+.cdetail { min-width: 0; }
+.cgrid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 22px; align-items: start; }
+@media (max-width: 980px) { .cgrid { grid-template-columns: minmax(0, 1fr); } }
+.cleft h4, .cright h4 { margin: 14px 0 6px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.cleft h4:first-child { margin-top: 0; }
+.cleft, .cright { min-width: 0; }
+.trace { display: grid; gap: 10px; }
+.stepcard { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; }
+.stepcard > summary { cursor: pointer; padding: 9px 12px; list-style: none; display: flex; gap: 10px; align-items: center; font-weight: 600; }
+.stepcard > summary::-webkit-details-marker { display: none; }
+.stepcard > summary::after { content: "Hide"; margin-left: auto; color: var(--muted); font-weight: 500; font-size: 0.8rem; }
+.stepcard:not([open]) > summary::after { content: "Show"; }
+.stepno { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 0.78rem; font-weight: 700; flex: none; }
+.chip2 { font-size: 0.74rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+.stepcard > *:not(summary) { margin: 0 12px 12px; }
+.prosebox { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.9rem; line-height: 1.65; max-height: 460px; overflow: auto; border-top: 1px solid var(--line); padding-top: 10px; }
+.prosebox.mono { font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; }
+.stepcard details.block { margin-top: 10px; }
 .expect-note { color: var(--note); font-weight: 600; }
 .expect-nonote { color: var(--nonote); font-weight: 600; }
 .small { font-size: 0.82rem; color: var(--muted); }
@@ -425,21 +484,158 @@ function extractorRowsResult(run) {
     const pill = r.passed ? `<span class="verdict v-pass">Found ${r.foundIn} of ${e.samples}</span>` : `<span class="verdict v-fail">Found ${r.foundIn} of ${e.samples}</span>`;
     const row = `<tr class="row" tabindex="0" data-id="rx-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${esc(r.referenceClaim)}</td><td>${pill}</td></tr>`;
     if (!open) return row;
-    const chunk = e.chunkRuns.find((c) => c.key === r.chunkKey);
-    const samples = r.judgements.map((j, i) => {
-      const s = chunk.samples[i];
-      if (!j) return `<div class="sample"><div class="head"><b>Sample ${i + 1}</b><span class="verdict v-error">Extraction failed</span></div><span class="small">${esc(s.error ?? "")}</span></div>`;
-      const matching = j.matchingClaims.map((n) => s.claims[n - 1]).filter(Boolean);
-      return `<div class="sample"><div class="head"><b>Sample ${i + 1}</b><span class="verdict ${j.found ? "v-pass" : "v-fail"}">${j.found ? "Found" : "Not found"}</span><span class="small">${s.claims.length} claims extracted${s.speculationDropped ? `, ${s.speculationDropped} dropped as predictions` : ""}</span></div>
-        <p>${esc(j.reason)}</p>
-        ${matching.length ? `<span class="small">Matching claims:</span><ol>${j.matchingClaims.map((n) => `<li value="${n}">${esc(s.claims[n - 1]?.claim ?? "")}</li>`).join("")}</ol>` : ""}
-        <details><summary>All ${s.claims.length} claims of this sample</summary><ol>${s.claims.map((c) => `<li>${esc(c.claim)}</li>`).join("")}</ol></details></div>`;
-    }).join("");
-    return row + `<tr class="detail"><td colspan="4"><div class="detail-grid">
-      <div><h4>Reference claim</h4><p>${esc(r.referenceClaim)}</p><h4>Passage the judge was shown</h4><div class="input-box" style="max-height:220px">${esc(r.passage)}</div>
-        <p class="meta">${esc(chunk.itemTitle)}, chunk ${chunk.chunkIndex} of ${chunk.chunkCount}, ${chunk.chunkChars.toLocaleString("en")} characters. Its three extractions are shared by every row in this chunk.</p></div>
-      <div><h4>The three samples</h4>${samples}</div></div></td></tr>`;
+    return row + `<tr class="detail"><td colspan="4"><div class="xdetail" id="xd-${r.id}"></div></td></tr>`;
   }).join("");
+}
+
+/* ---- The chunk with its extracted passages ---- */
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** Where a quote sits in the chunk: word for word when it can, otherwise by its first and last words. */
+function findSpan(text, quote) {
+  const q = (quote ?? "").trim();
+  if (!q) return null;
+  const exact = text.indexOf(q);
+  if (exact !== -1) return { start: exact, end: exact + q.length };
+  const words = q.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim().split(" ");
+  if (words.length < 3) return null;
+  const matcher = (w) => new RegExp(w.map(escapeRe).join("[^a-zA-Z0-9]+"), "i");
+  const head = matcher(words.slice(0, 9)).exec(text);
+  if (!head) return null;
+  const tail = matcher(words.slice(-9)).exec(text.slice(head.index));
+  return tail ? { start: head.index, end: head.index + tail.index + tail[0].length } : null;
+}
+/** A claim with no quote rests on an image, so its place is the image's description block. */
+function imageBlockSpan(text, imageUrls) {
+  for (const url of imageUrls) {
+    const at = text.indexOf("Image: " + url);
+    if (at !== -1) return { start: text.lastIndexOf("[Image:", at + 1), end: text.indexOf("]", at) + 1 };
+  }
+  return null;
+}
+function node(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "text") n.textContent = v; else if (k === "class") n.className = v; else n.setAttribute(k, v); }
+  for (const kid of kids) if (kid != null) n.append(kid);
+  return n;
+}
+
+function mountExtractorDetails(run) {
+  for (const key of state.ropen) {
+    if (!key.startsWith("rx-")) continue;
+    const result = run.extractor.rows.find((r) => r.id === key.slice(3));
+    const host = document.getElementById("xd-" + key.slice(3));
+    if (host && result) mountExtractorDetail(host, result, run);
+  }
+}
+
+function mountExtractorDetail(host, result, run) {
+  const point = POINTS.find((p) => p.id === result.id);
+  const text = point.extractor.userMessage;
+  const target = point.extractor.highlight;
+  const chunk = run.extractor.chunkRuns.find((c) => c.key === result.chunkKey);
+  let sample = 0;
+  let focus = [];
+  let placed = [];
+
+  const textBox = node("div", { class: "xtext", tabindex: "0", "aria-label": "The chunk of the post with its extracted passages highlighted" });
+  const side = node("div", { class: "xside" });
+  const toolbar = node("div", { class: "xtoolbar" });
+  host.replaceChildren(
+    node("div", { class: "xhead" }, node("div", {}, node("h4", { text: "Reference claim" }), node("p", { text: result.referenceClaim })), node("div", {}, node("h4", { text: "Source" }), node("p", { class: "small", text: `${chunk.itemTitle}, chunk ${chunk.chunkIndex} of ${chunk.chunkCount}, ${chunk.chunkChars.toLocaleString("en")} characters. The three samples of this chunk are shared by every row in it.` }))),
+    node("div", { class: "xgrid" }, node("div", { class: "xmain" }, toolbar, textBox), side),
+  );
+
+  const jump = (el) => textBox.scrollTo({ top: Math.max(0, el.offsetTop - textBox.clientHeight / 3), behavior: "smooth" });
+  const jumpToTarget = () => { const el = textBox.querySelector(".seg.target"); if (el) jump(el); };
+  /** The claims whose passage overlaps the passage that should have been extracted. */
+  const overlapIds = () => (target ? placed.filter((p) => p.span && p.span.start < target.end && p.span.end > target.start).map((p) => p.i) : []);
+
+  function renderText() {
+    const claims = chunk.samples[sample].claims;
+    placed = claims.map((c, i) => ({ i, span: c.context ? findSpan(text, c.context) : imageBlockSpan(text, c.imageUrls) }));
+    const cuts = new Set([0, text.length]);
+    for (const p of placed) if (p.span) { cuts.add(p.span.start); cuts.add(p.span.end); }
+    if (target) { cuts.add(target.start); cuts.add(target.end); }
+    const sorted = [...cuts].sort((x, y) => x - y);
+    const parts = [];
+    for (let k = 0; k < sorted.length - 1; k++) {
+      const from = sorted[k], to = sorted[k + 1];
+      const cover = placed.filter((p) => p.span && p.span.start <= from && p.span.end >= to).map((p) => p.i);
+      const isTarget = !!target && target.start <= from && target.end >= to;
+      const piece = text.slice(from, to);
+      if (!cover.length && !isTarget) { parts.push(document.createTextNode(piece)); continue; }
+      parts.push(node("span", { class: `seg c${Math.min(cover.length, 3)}${isTarget ? " target" : ""}`, "data-claims": cover.join(" ") }, piece));
+    }
+    textBox.replaceChildren(...parts);
+    textBox.scrollTop = 0;
+  }
+
+  function applyFocus() {
+    for (const seg of textBox.querySelectorAll(".seg")) {
+      const ids = seg.dataset.claims ? seg.dataset.claims.split(" ").map(Number) : [];
+      seg.classList.toggle("focus", ids.some((id) => focus.includes(id)));
+    }
+    for (const item of side.querySelectorAll("[data-claim]")) item.classList.toggle("sel", focus.includes(Number(item.dataset.claim)));
+  }
+
+  function claimCard(i, claims) {
+    const c = claims[i];
+    const matched = result.judgements[sample]?.matchingClaims.includes(i + 1);
+    const where = placed[i].span ? null : c.context ? "Its quote was not found in the chunk." : c.imageUrls.length ? "It rests on an image." : "No quote.";
+    return node("button", { class: "claimitem", type: "button", "data-claim": String(i) },
+      node("span", { class: "claimno", text: String(i + 1) }),
+      node("span", { class: "claimtext" }, node("span", { text: c.claim }),
+        matched ? node("span", { class: "badge", text: "matched by the judge" }) : null,
+        where ? node("span", { class: "small block", text: where }) : null,
+        c.context ? node("span", { class: "quote", text: "“" + c.context + "”" }) : null));
+  }
+
+  function renderSide(here) {
+    const claims = chunk.samples[sample].claims;
+    const judged = result.judgements[sample];
+    const tabs = node("div", { class: "xtabs", role: "tablist" }, ...chunk.samples.map((s, i) => {
+      const j = result.judgements[i];
+      const b = node("button", { type: "button", role: "tab", class: "xtab", "aria-selected": String(i === sample) }, node("b", { text: `Sample ${i + 1}` }), node("span", { class: `verdict ${j?.found ? "v-pass" : "v-fail"}`, text: j ? (j.found ? "Found" : "Not found") : "Failed" }));
+      b.addEventListener("click", () => { sample = i; focus = []; renderText(); renderSide(null); jumpToTarget(); });
+      return b;
+    }));
+    const hereBox = node("div", { class: "xhere" });
+    if (here) {
+      if (here.target) {
+        const n = here.ids.length;
+        hereBox.append(node("div", { class: "targetnote" }, node("b", { text: "The passage that should have been extracted. " }), node("span", { text: n ? `${n} extracted claim${n === 1 ? " overlaps" : "s overlap"} it, listed below.` : "No extracted claim overlaps it." })));
+      }
+      for (const id of here.ids) hereBox.append(claimCard(id, claims));
+      if (!here.target && !here.ids.length) hereBox.append(node("p", { class: "small", text: "Nothing was extracted from this text." }));
+    } else {
+      hereBox.append(node("p", { class: "small", text: "Click a highlighted passage to see the claims extracted from it, or the amber passage to see what should have been." }));
+    }
+    const list = node("details", { class: "block" }, node("summary", {}, node("span", { text: `All ${claims.length} claims of this sample` })), node("div", { class: "xlist" }, ...claims.map((_, i) => claimCard(i, claims))));
+    const unplaced = placed.filter((p) => !p.span).length;
+    side.replaceChildren(tabs,
+      node("p", { class: "judgereason" }, node("b", { text: "Judge: " }), judged ? judged.reason : "The extraction of this sample failed."),
+      node("div", { class: "legend2" }, node("span", {}, node("i", { class: "k-ex" }), "extracted passage, darker where more claims overlap"), node("span", {}, node("i", { class: "k-target" }), "the passage that should have been extracted"), node("span", {}, node("i", { class: "k-focus" }), "chosen claim")),
+      node("p", { class: "small", text: unplaced ? `${claims.length - unplaced} of ${claims.length} claims could be placed in the text. ${unplaced} could not, because they rest on an image or their quote differs from the text.` : `All ${claims.length} claims could be placed in the text.` }),
+      hereBox, list);
+    for (const item of side.querySelectorAll("[data-claim]")) item.addEventListener("click", () => { focus = [Number(item.dataset.claim)]; applyFocus(); const el = textBox.querySelector(`.seg[data-claims~="${focus[0]}"]`); if (el) jump(el); });
+    applyFocus();
+  }
+
+  textBox.addEventListener("click", (e) => {
+    const seg = e.target.closest(".seg");
+    if (!seg) return;
+    const isTarget = seg.classList.contains("target");
+    const ids = isTarget ? overlapIds() : seg.dataset.claims ? seg.dataset.claims.split(" ").map(Number) : [];
+    focus = ids;
+    renderSide({ ids, target: isTarget });
+  });
+  const jumpButton = node("button", { class: "toggle", type: "button", text: "Jump to the passage that should have been extracted" });
+  jumpButton.addEventListener("click", () => { jumpToTarget(); focus = overlapIds(); renderSide({ ids: focus, target: true }); });
+  toolbar.append(jumpButton);
+
+  renderText();
+  renderSide(null);
+  jumpToTarget();
 }
 
 function checkerSummary(run) {
@@ -466,19 +662,77 @@ function checkerRowsResult(run) {
     const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
       <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
     if (!open) return row;
-    const samples = r.samples.map((s, i) => {
-      const o = s.outcome;
-      const sources = o.type === "note" && o.sources.length ? `<ul class="small">${o.sources.map((x) => `<li><a href="${esc(x.url)}" target="_blank" rel="noreferrer">${esc(x.url)}</a>${x.quote ? `<br>“${esc(truncate(x.quote, 240))}”` : ""}</li>`).join("")}</ul>` : "";
-      return `<div class="sample"><div class="head"><b>Sample ${i + 1}</b>${verdictPill(s.verdict)}<span class="small">check ${money(s.checkCostUsd)}</span></div>
-        ${o.type === "note" ? `<div class="notebox">${esc(o.note)}${sources}</div>` : o.type === "no_note" ? `<p>No note. ${esc(o.reason)}</p>` : `<p>${esc(o.error)}</p>`}
-        ${s.quality ? `<p><span class="small">Reference point:</span> ${s.quality.samePoint ? "yes" : "no"}. ${esc(s.quality.reason)}</p>` : ""}
-        ${s.research || s.draftNote || s.sourceVerdict ? `<details><summary>Research, drafted note and source check</summary>${s.research ? `<h4>Research findings</h4><pre>${esc(s.research)}</pre>` : ""}${s.draftNote ? `<h4>Note the writer drafted</h4><pre>${esc(s.draftNote)}</pre>` : ""}${s.sourceVerdict ? `<h4>Source check verdict</h4><pre>${esc(s.sourceVerdict)}</pre>` : ""}</details>` : ""}</div>`;
-    }).join("");
-    return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
-      <div><h4>Expected</h4><p>${expectedText({ expected: r.expected })}</p>
-        <h4>Reference notes</h4>${r.referenceNotes.length ? r.referenceNotes.map((x) => `<div class="refnote">${esc(x)}</div>`).join("") : '<span class="small">none</span>'}</div>
-      <div><h4>The ${c.samples} samples</h4>${samples}</div></div></td></tr>`;
+    return row + `<tr class="detail"><td colspan="6"><div class="cdetail" id="cd-${r.id}"></div></td></tr>`;
   }).join("");
+}
+
+/* ---- One claim check, step by step ---- */
+function linkified(text) {
+  const fragment = document.createDocumentFragment();
+  for (const part of text.split(/(https?:\/\/[^\s)\]]+)/g)) {
+    if (/^https?:\/\//.test(part)) fragment.append(node("a", { href: part, target: "_blank", rel: "noreferrer", text: part }));
+    else fragment.append(part);
+  }
+  return fragment;
+}
+function stepCard(number, title, chip, body, { open = true } = {}) {
+  const details = node("details", { class: "stepcard" }, node("summary", {}, node("span", { class: "stepno", text: String(number) }), node("span", { class: "stepname", text: title }), chip ? node("span", { class: "chip2", text: chip }) : null), body);
+  if (open) details.setAttribute("open", "");
+  return details;
+}
+const proseBox = (text, mono = false) => node("div", { class: "prosebox" + (mono ? " mono" : "") }, linkified(text));
+
+function mountCheckerDetails(run) {
+  for (const key of state.ropen) {
+    if (!key.startsWith("rc-")) continue;
+    const result = run.checker.rows.find((r) => r.id === key.slice(3));
+    const host = document.getElementById("cd-" + key.slice(3));
+    if (host && result) mountCheckerDetail(host, result);
+  }
+}
+
+function mountCheckerDetail(host, result) {
+  const point = POINTS.find((p) => p.id === result.id);
+  let sample = 0;
+  const trace = node("div", { class: "trace" });
+  const tabs = node("div", { class: "xtabs", role: "tablist" });
+  const left = node("div", { class: "cleft" },
+    node("h4", { text: "Expected" }), node("p", {}, ...[result.expected.decision === "note" ? "Note" : "No note"], result.expected.noteTolerated ? " (a note would not be bad)" : ""),
+    node("h4", { text: "Reference notes" }),
+    ...(result.referenceNotes.length ? result.referenceNotes.map((x) => node("div", { class: "refnote" }, linkified(x))) : [node("span", { class: "small", text: "none" })]),
+    node("h4", { text: "The claim as it was handed to the checker" }), proseBox(point.checker.post.text, true));
+
+  function renderSample() {
+    const s = result.samples[sample];
+    const o = s.outcome;
+    tabs.replaceChildren(...result.samples.map((x, i) => {
+      const b = node("button", { type: "button", role: "tab", class: "xtab", "aria-selected": String(i === sample) }, node("b", { text: `Sample ${i + 1}` }), node("span", { class: `verdict ${VERDICT[x.verdict][0]}`, text: VERDICT[x.verdict][1] }), node("span", { class: "small", text: x.outcome.type === "note" ? "note" : x.outcome.type === "no_note" ? "no note" : "error" }));
+      b.addEventListener("click", () => { sample = i; renderSample(); });
+      return b;
+    }));
+    const steps = [];
+    let n = 1;
+    steps.push(stepCard(n++, "What the checker was given", "user message of the research step",
+      s.prompts?.research ? proseBox(s.prompts.research, true) : node("div", {}, node("p", { class: "small", text: "The message that was sent was not saved for this run. This is the claim as it was handed over." }), proseBox(point.checker.post.text, true))));
+    steps.push(stepCard(n++, "Research", "Muse, native search", s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." })));
+    if (s.draftNote) {
+      const body = node("div", {}, proseBox(s.draftNote));
+      if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, s.prompts.writer)));
+      steps.push(stepCard(n++, "The note the writer drafted", "Muse", body));
+    }
+    if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", "Muse", proseBox(s.sourceVerdict)));
+    const end = node("div", {});
+    if (o.type === "note") {
+      end.append(node("div", { class: "notebox" }, o.note, ...(o.sources.length ? [node("ul", { class: "small" }, ...o.sources.map((x) => node("li", {}, node("a", { href: x.url, target: "_blank", rel: "noreferrer", text: x.url }), x.quote ? node("div", { text: "“" + truncate(x.quote, 240) + "”" }) : null)))] : [])));
+    } else if (o.type === "no_note") end.append(node("p", { text: "No note. Reason: " + o.reason }));
+    else end.append(node("p", { text: o.error }));
+    if (s.quality) end.append(node("p", {}, node("b", { text: "Does it make the reference point? " }), (s.quality.samePoint ? "Yes. " : "No. ") + s.quality.reason));
+    steps.push(stepCard(n++, "Result", `check ${money(s.checkCostUsd)}${s.judgeCostUsd ? `, judge ${money(s.judgeCostUsd)}` : ""}`, end));
+    trace.replaceChildren(...steps);
+  }
+
+  host.replaceChildren(node("div", { class: "cgrid" }, left, node("div", { class: "cright" }, tabs, trace)));
+  renderSample();
 }
 
 function renderResults() {
@@ -497,6 +751,8 @@ function renderResults() {
     <div class="runbar"><label for="runpick"><b>Run</b></label><select id="runpick">${options}</select></div>
     <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} rows. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
     ${subtabs}${body}`;
+  mountExtractorDetails(run);
+  mountCheckerDetails(run);
 }
 
 /* ---- Evaluation plan ---- */

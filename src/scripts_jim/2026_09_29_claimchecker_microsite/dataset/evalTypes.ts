@@ -86,9 +86,18 @@ export interface QualityAnswer {
   reason: string;
 }
 
+/** The user messages that were sent to two steps of one claim check, as the
+ *  pipeline built them: the date lines, the post and the replies fetched for it. */
+export interface CheckerPrompts {
+  research: string | null;
+  writer: string | null;
+}
+
 /** One run of the whole claim check on one row. */
 export interface CheckerSample {
   outcome: CheckerOutcome;
+  /** Missing in a run saved before the prompts were kept and not yet filled in from its logs. */
+  prompts?: CheckerPrompts;
   verdict: CheckerVerdict;
   /** Only for a note where reference notes exist. */
   quality: QualityAnswer | null;

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { rowVerdictOf, verdictOf } from "./checkerEval";
+import { promptsOf, rowVerdictOf, verdictOf } from "./checkerEval";
 import type { CheckerOutcome } from "./evalTypes";
 
 const note: CheckerOutcome = { type: "note", note: "A note.", sources: [] };
@@ -45,5 +45,27 @@ describe("rowVerdictOf", () => {
 
   test("a plain fail when the samples disagree and too few passed", () => {
     expect(rowVerdictOf(["error", "soft_fail", "fail"]).verdict).toBe("fail");
+  });
+});
+
+describe("promptsOf", () => {
+  const writerMessages = [
+    { role: "system", content: "writer system" },
+    { role: "user", content: "writer user" },
+  ];
+
+  test("reads the messages of a log written to disk, which are kept under string keys", () => {
+    const logs = { note_writer_steps: { search: { messages: { "0": { userMessage: "research user" } } }, note_writer: { attempts: { "0": { messages: writerMessages } } } } };
+    expect(promptsOf(logs)).toEqual({ research: "research user", writer: "writer user" });
+  });
+
+  test("reads the messages of a log held in memory, which are kept in lists", () => {
+    const logs = { note_writer_steps: { search: { messages: [{ userMessage: "research user" }] }, note_writer: { attempts: [{ messages: writerMessages }] } } };
+    expect(promptsOf(logs)).toEqual({ research: "research user", writer: "writer user" });
+  });
+
+  test("has no writer prompt for a check that ended before the writer", () => {
+    const logs = { note_writer_steps: { search: { messages: { "0": { userMessage: "research user" } } } } };
+    expect(promptsOf(logs)).toEqual({ research: "research user", writer: null });
   });
 });
