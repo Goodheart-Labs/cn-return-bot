@@ -442,7 +442,7 @@ any error                                      -> error, not counted as pass or 
     note: "Only the Yudkowsky writer datapoint is marked as tolerated, from your words." },
   { id: "c-quality", kind: "model", optional: true, name: "Note quality judge", hint: "only where a reference note exists",
     what: "For a row that expects a note, a second check that the note makes the point you gave. Without it, a note about the wrong thing would pass.",
-    input: "The claim, the reference note, and the pipeline's note.",
+    input: "The claim, the reference notes, and the pipeline's note.",
     output: "JSON: same point yes or no, and the reason.",
     prompt: `System prompt (draft):
 You compare a community note written by a pipeline with the correction a human expert says is right.
@@ -457,7 +457,7 @@ Claim: <the claim>
 Reference corrections: <your wording and the real helpful notes, one per line>
 
 Pipeline note: <the note the check wrote>`,
-    note: "Eight rows have at least one reference note. You gave wording for 3 (EA earning to give, the pivotal act, Melanie Mitchell), and real notes that readers rated helpful exist for 7 (Berkeley, Czechoslovakia, CFAR/FTX, cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell). Only the EA beholden row has none." },
+    note: "All nine note rows have at least one reference note. You gave wording for 4 (EA earning to give, the pivotal act, Melanie Mitchell, EA beholden), and real notes that readers rated helpful exist for 7 (Berkeley, Czechoslovakia, CFAR/FTX, cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell)." },
   { id: "c-score", kind: "report", name: "Score", hint: "pass rate by group",
     what: "A table by your four groups with the rows passed, the soft failures and the errors, plus the cost per claim.",
     input: "The decision rule's results and, where present, the quality judge's.", output: "The table below, saved as a run next to the lab's other runs.", note: "The first line to watch is the no-note easy group. Those four are exactly the notes readers voted down." },
@@ -510,7 +510,7 @@ const DECISIONS = [
   "Only 3 of the 14 checker inputs come from a saved production prompt. The July posts have no check logs. The others are built with the pipeline's own function from the stored claim, which is the same text without the date lines and the comments.",
   "For the readers' highlights (CFAR/FTX, the cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell) the surrounding paragraph is taken from the post's text. The extractor may have chosen a different paragraph.",
   "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. The extractor eval runs three samples per row and passes a row at 2 of 3. That is my proposal, because the same extraction call can find different claims each time. The checker eval runs each row once. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
-  "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October. It rests on your account of Yudkowsky's views, and I have not checked it against his writing or found sources yet. The EA beholden row has no reference note.",
+  "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October, and the EA beholden wording is yours from the same day. Both rest on your account of Yudkowsky's and Soares' views. I have not checked them against their writing or found sources yet.",
   "The dataset and its build script live in the lab folder of the PR, so they stay in git. This page is built from them.",
 ];
 

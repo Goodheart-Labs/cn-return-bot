@@ -164,9 +164,13 @@ export const DATAPOINTS: Datapoint[] = [
     itemId: SEX_CULT_POST,
     claimSource: { from: "lab", runId: "2026-09-29-1011", claimId: "2026-09-29-1011-175", productionClaimId: "dd4b4e6f-5d93-4311-bb8c-87fa6b89db1e" },
     jimsWords:
-      "So I found this\n\n\"Highlighted claim from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true.\nSurrounding context: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism's safety efforts.\"\n\nWere models don't like to write a note. System prompt says not to correct for Opinions, predictions, or subjective characterizations. Same if you say \"Would you write a community note on this?\" I think this distracts the model a lot. [...] I think I would take this out.",
+      "So I found this\n\n\"Highlighted claim from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true.\nSurrounding context: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism's safety efforts.\"\n\nWere models don't like to write a note. System prompt says not to correct for Opinions, predictions, or subjective characterizations. Same if you say \"Would you write a community note on this?\" I think this distracts the model a lot. [...] I think I would take this out.\n\n[Added by Jim in chat, 8 October, on what the note should say] Yudkowsky, Nate Soares and have a lot of disagreements with the AI Safety community. They think that agent foundations work is important, but everything else e.g. most other stuff e.g. in Prosaic Alignment, Interpretability, Control won't scale to superintelligence and so it doesn't really matter.",
     writtenOn: "2026-09-30",
-    expected: { decision: "note" },
+    expected: {
+      decision: "note",
+      referenceNote:
+        "Yudkowsky and Nate Soares disagree with much of the AI safety community. They think that agent foundations work is important, but that most other work, such as prosaic alignment, interpretability and control, will not scale to superintelligence and so does not really matter.",
+    },
     referenceClaim:
       "Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.",
   },
