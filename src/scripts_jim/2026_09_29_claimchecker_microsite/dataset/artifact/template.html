@@ -175,6 +175,25 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 .prosebox { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.9rem; line-height: 1.65; max-height: 460px; overflow: auto; border-top: 1px solid var(--line); padding-top: 10px; }
 .prosebox.mono { font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; }
 .stepcard details.block { margin-top: 10px; }
+
+/* Runs and comparison */
+.runtable td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.runrow { cursor: pointer; }
+.runrow:hover td { background: var(--accent-soft); }
+.runrow.current td { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.runtitle { margin: 22px 0 4px; font-size: 1.05rem; }
+.cmp th, .cmp td { vertical-align: middle; }
+.cmp th.cur, .cmp td.cur { background: var(--accent-soft); }
+.cmplabel { max-width: 420px; font-size: 0.84rem; }
+.cmpcell { border: 0; background: none; padding: 2px 4px; cursor: pointer; border-radius: 4px; white-space: nowrap; }
+.cmpcell:hover { background: var(--code-bg); }
+.cmpcell:focus-visible { outline: 2px solid var(--accent); }
+.runs { margin-bottom: 6px; }
+.seg.pass-other { background: color-mix(in srgb, var(--muted) 16%, transparent); }
+.seg.pass-forecast { background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: inset 0 -2px 0 var(--accent); }
+.k-other { background: color-mix(in srgb, var(--muted) 30%, transparent); }
+.k-forecast { background: color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: inset 0 -2px 0 var(--accent); }
+.passstats { font-size: 0.82rem; color: var(--muted); margin: 0 0 8px; }
 .expect-note { color: var(--note); font-weight: 600; }
 .expect-nonote { color: var(--nonote); font-weight: 600; }
 .small { font-size: 0.82rem; color: var(--muted); }
@@ -471,21 +490,21 @@ const verdictPill = (v) => `<span class="verdict ${VERDICT[v][0]}">${VERDICT[v][
 
 function extractorSummary(run) {
   const e = run.extractor;
+  const hasAtomic = e.rows.some((r) => r.atomicIn !== undefined);
+  const atomicPassed = (rows) => rows.filter((r) => r.passed && (r.atomicIn ?? 0) >= e.passAt).length;
   const rows = GROUPS.map((g) => {
     const inGroup = e.rows.filter((r) => r.group === g.id);
     if (!inGroup.length) return "";
-    const found3 = inGroup.filter((r) => r.foundIn === e.samples).length;
-    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${inGroup.filter((r) => r.passed).length}</td><td class="n">${found3}</td></tr>`;
+    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${inGroup.filter((r) => r.passed).length}</td><td class="n">${inGroup.filter((r) => r.foundIn === e.samples).length}</td>${hasAtomic ? `<td class="n">${atomicPassed(inGroup)}</td>` : ""}</tr>`;
   }).join("");
-  const total = e.rows.length;
-  return `<table class="sumtable"><thead><tr><th>Group</th><th>Rows</th><th>Passed (found in ${e.passAt} of ${e.samples})</th><th>Found in all ${e.samples}</th></tr></thead><tbody>${rows}
-    <tr><td><b>All</b></td><td class="n">${total}</td><td class="n"><b>${e.rows.filter((r) => r.passed).length}</b></td><td class="n">${e.rows.filter((r) => r.foundIn === e.samples).length}</td></tr></tbody></table>`;
+  return `<table class="sumtable"><thead><tr><th>Group</th><th>Statements</th><th>Found (in ${e.passAt} of ${e.samples})</th><th>Found in all ${e.samples}</th>${hasAtomic ? `<th>Found and atomic</th>` : ""}</tr></thead><tbody>${rows}
+    <tr><td><b>All</b></td><td class="n">${e.rows.length}</td><td class="n"><b>${e.rows.filter((r) => r.passed).length}</b></td><td class="n">${e.rows.filter((r) => r.foundIn === e.samples).length}</td>${hasAtomic ? `<td class="n">${atomicPassed(e.rows)}</td>` : ""}</tr></tbody></table>`;
 }
 function extractorRowsResult(run) {
   const e = run.extractor;
   return e.rows.map((r) => {
     const open = state.ropen.has("rx-" + r.id);
-    const pill = r.passed ? `<span class="verdict v-pass">Found ${r.foundIn} of ${e.samples}</span>` : `<span class="verdict v-fail">Found ${r.foundIn} of ${e.samples}</span>`;
+    const pill = `<span class="verdict ${r.passed ? "v-pass" : "v-fail"}">Found ${r.foundIn} of ${e.samples}</span>${r.atomicIn !== undefined ? `<br><span class="small">atomic in ${r.atomicIn}</span>` : ""}`;
     const row = `<tr class="row" tabindex="0" data-id="rx-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === (r.datapointId ?? r.id)) + 1}</td><td>${groupChip(r.group)}</td><td>${esc(r.referenceClaim)}</td><td>${pill}</td></tr>`;
     if (!open) return row;
     return row + `<tr class="detail"><td colspan="4"><div class="xdetail" id="xd-${r.id}"></div></td></tr>`;
@@ -540,6 +559,8 @@ function mountExtractorDetail(host, result, run) {
   let sample = 0;
   let focus = [];
   let placed = [];
+  /** The forecast and other passages of the sample that could be placed in the chunk, which are shown in their own colours. */
+  let typed = [];
 
   const textBox = node("div", { class: "xtext", tabindex: "0", "aria-label": "The chunk of the post with its extracted passages highlighted" });
   const side = node("div", { class: "xside" });
@@ -557,8 +578,10 @@ function mountExtractorDetail(host, result, run) {
   function renderText() {
     const claims = chunk.samples[sample].claims;
     placed = claims.map((c, i) => ({ i, span: c.context ? findSpan(text, c.context) : imageBlockSpan(text, c.imageUrls) }));
+    typed = (chunk.samples[sample].passages ?? []).map((p, i) => ({ i, p, span: p.type === "statement" ? null : findSpan(text, p.text) })).filter((x) => x.span);
     const cuts = new Set([0, text.length]);
     for (const p of placed) if (p.span) { cuts.add(p.span.start); cuts.add(p.span.end); }
+    for (const x of typed) { cuts.add(x.span.start); cuts.add(x.span.end); }
     if (target) { cuts.add(target.start); cuts.add(target.end); }
     const sorted = [...cuts].sort((x, y) => x - y);
     const parts = [];
@@ -567,8 +590,9 @@ function mountExtractorDetail(host, result, run) {
       const cover = placed.filter((p) => p.span && p.span.start <= from && p.span.end >= to).map((p) => p.i);
       const isTarget = !!target && target.start <= from && target.end >= to;
       const piece = text.slice(from, to);
-      if (!cover.length && !isTarget) { parts.push(document.createTextNode(piece)); continue; }
-      parts.push(node("span", { class: `seg c${Math.min(cover.length, 3)}${isTarget ? " target" : ""}`, "data-claims": cover.join(" ") }, piece));
+      const pass = typed.find((x) => x.span.start <= from && x.span.end >= to);
+      if (!cover.length && !isTarget && !pass) { parts.push(document.createTextNode(piece)); continue; }
+      parts.push(node("span", { class: `seg c${Math.min(cover.length, 3)}${isTarget ? " target" : ""}${pass ? " pass-" + pass.p.type : ""}`, "data-claims": cover.join(" "), "data-pass": pass ? String(pass.i) : "" }, piece));
     }
     textBox.replaceChildren(...parts);
     textBox.scrollTop = 0;
@@ -604,7 +628,9 @@ function mountExtractorDetail(host, result, run) {
       return b;
     }));
     const hereBox = node("div", { class: "xhere" });
-    if (here) {
+    if (here?.pass) {
+      hereBox.append(node("div", { class: "targetnote" }, node("b", { text: `${here.pass.type}${here.pass.why ? ": " + here.pass.why : ""}. ` }), node("span", { text: here.pass.type === "forecast" ? "A forecast is not checked." : "Nothing is checked here." }), node("div", { class: "small", text: here.pass.text })));
+    } else if (here) {
       if (here.target) {
         const n = here.ids.length;
         hereBox.append(node("div", { class: "targetnote" }, node("b", { text: "The passage that should have been extracted. " }), node("span", { text: n ? `${n} extracted claim${n === 1 ? " overlaps" : "s overlap"} it, listed below.` : "No extracted claim overlaps it." })));
@@ -616,9 +642,16 @@ function mountExtractorDetail(host, result, run) {
     }
     const list = node("details", { class: "block" }, node("summary", {}, node("span", { text: `All ${claims.length} claims of this sample` })), node("div", { class: "xlist" }, ...claims.map((_, i) => claimCard(i, claims))));
     const unplaced = placed.filter((p) => !p.span).length;
+    const sampleInfo = chunk.samples[sample];
+    const counts = {};
+    for (const x of sampleInfo.passages ?? []) counts[x.type] = (counts[x.type] ?? 0) + 1;
+    const passStats = sampleInfo.passages
+      ? node("p", { class: "passstats", text: `Passages: ${counts.statement ?? 0} statement, ${counts.forecast ?? 0} forecast, ${counts.other ?? 0} other. They cover ${((sampleInfo.coverage ?? 1) * 100).toFixed(1)}% of the chunk${sampleInfo.attempts > 1 ? `, after ${sampleInfo.attempts} attempts` : ""}.` })
+      : null;
     side.replaceChildren(tabs,
-      node("p", { class: "judgereason" }, node("b", { text: "Judge: " }), judged ? judged.reason : "The extraction of this sample failed."),
-      node("div", { class: "legend2" }, node("span", {}, node("i", { class: "k-ex" }), "extracted passage, darker where more claims overlap"), node("span", {}, node("i", { class: "k-target" }), "the passage that should have been extracted"), node("span", {}, node("i", { class: "k-focus" }), "chosen claim")),
+      node("p", { class: "judgereason" }, node("b", { text: "Judge: " }), judged ? judged.reason + (judged.atomic === false ? " Not atomic: a matching claim bundles several statements." : "") : "The extraction of this sample failed."),
+      passStats,
+      node("div", { class: "legend2" }, node("span", {}, node("i", { class: "k-ex" }), "statement passage, darker where more claims overlap"), ...(sampleInfo.passages ? [node("span", {}, node("i", { class: "k-forecast" }), "forecast"), node("span", {}, node("i", { class: "k-other" }), "other")] : []), node("span", {}, node("i", { class: "k-target" }), "the passage that should have been extracted"), node("span", {}, node("i", { class: "k-focus" }), "chosen claim")),
       node("p", { class: "small", text: unplaced ? `${claims.length - unplaced} of ${claims.length} claims could be placed in the text. ${unplaced} could not, because they rest on an image or their quote differs from the text.` : `All ${claims.length} claims could be placed in the text.` }),
       hereBox, list);
     for (const item of side.querySelectorAll("[data-claim]")) item.addEventListener("click", () => { focus = [Number(item.dataset.claim)]; applyFocus(); const el = textBox.querySelector(`.seg[data-claims~="${focus[0]}"]`); if (el) jump(el); });
@@ -631,7 +664,8 @@ function mountExtractorDetail(host, result, run) {
     const isTarget = seg.classList.contains("target");
     const ids = isTarget ? overlapIds() : seg.dataset.claims ? seg.dataset.claims.split(" ").map(Number) : [];
     focus = ids;
-    renderSide({ ids, target: isTarget });
+    const pass = seg.dataset.pass ? (chunk.samples[sample].passages ?? [])[Number(seg.dataset.pass)] : null;
+    renderSide({ ids, target: isTarget, pass: !isTarget && !ids.length ? pass : null });
   });
   const jumpButton = node("button", { class: "toggle", type: "button", text: "Jump to the passage that should have been extracted" });
   jumpButton.addEventListener("click", () => { jumpToTarget(); focus = overlapIds(); renderSide({ ids: focus, target: true }); });
@@ -739,21 +773,66 @@ function mountCheckerDetail(host, result) {
   renderSample();
 }
 
+/** The numbers of one run that the overview shows. */
+function runStats(run) {
+  const e = run.extractor;
+  const c = run.checker;
+  const cost = (e ? e.costUsd.extraction + e.costUsd.judge : 0) + (c ? c.costUsd.checks + c.costUsd.judge : 0);
+  return {
+    extractor: e ? `${e.rows.filter((r) => r.passed).length} of ${e.rows.length} statements found` : "not run",
+    checker: c ? `${c.rows.filter((r) => r.verdict === "pass").length} of ${c.rows.length} decisions right` : "not run",
+    cost,
+  };
+}
+
+function runsTable(selected) {
+  const rows = RUNS.map((r) => {
+    const s = runStats(r);
+    return `<tr class="runrow${r.id === selected.id ? " current" : ""}" tabindex="0" data-run="${esc(r.id)}"><td><b>${esc(r.label)}</b><br><span class="small">${esc(r.id)}</span></td><td>${esc(new Date(r.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}</td><td class="small">${esc(r.commit)}</td><td>${s.extractor}</td><td>${s.checker}</td><td class="n">${money(s.cost)}</td></tr>`;
+  }).join("");
+  return `<details class="block runs" open><summary><span>All runs (${RUNS.length}), newest first</span></summary><div class="tablewrap"><table class="sumtable runtable"><thead><tr><th>Run</th><th>Date</th><th>Commit</th><th>Eval 1: extractor</th><th>Eval 2: claim checker</th><th>Cost</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+}
+
+/** One row of the comparison per statement or datapoint, one column per run that ran the eval. Clicking a cell opens that run at that row. */
+function compareTable(kind, selected) {
+  const runs = RUNS.filter((r) => r[kind]);
+  if (runs.length < 2) return "";
+  const order = (id) => POINTS.findIndex((p) => p.id === id.split("#")[0]);
+  const rowIds = [...new Set(runs.flatMap((r) => r[kind].rows.map((x) => x.id)))].sort((x, y) => order(x) - order(y) || x.localeCompare(y));
+  const label = (id) => {
+    for (const r of runs) { const x = r[kind].rows.find((q) => q.id === id); if (x) return kind === "extractor" ? x.referenceClaim : id; }
+    return id;
+  };
+  const group = (id) => runs.map((r) => r[kind].rows.find((q) => q.id === id)).find(Boolean).group;
+  const cell = (run, id) => {
+    const x = run[kind].rows.find((q) => q.id === id);
+    if (!x) return '<span class="small">not in this run</span>';
+    const samples = run[kind].samples;
+    const pill = kind === "extractor"
+      ? `<span class="verdict ${x.passed ? "v-pass" : "v-fail"}">${x.foundIn}/${samples}</span>${x.atomicIn !== undefined ? `<span class="small"> atomic ${x.atomicIn}</span>` : ""}`
+      : `${verdictPill(x.verdict)}<span class="small"> ${x.passedIn ?? (x.verdict === "pass" ? 1 : 0)}/${samples}</span>`;
+    return `<button type="button" class="cmpcell" data-run="${esc(run.id)}" data-kind="${kind}" data-row="${esc(id)}">${pill}</button>`;
+  };
+  const head = runs.map((r) => `<th${r.id === selected.id ? ' class="cur"' : ""}>${esc(r.label)}<br><span class="small">${esc(r.id)}</span></th>`).join("");
+  const body = rowIds.map((id) => `<tr><td>${groupChip(group(id))}</td><td class="cmplabel">${esc(truncate(label(id), 110))}</td>${runs.map((r) => `<td${r.id === selected.id ? ' class="cur"' : ""}>${cell(r, id)}</td>`).join("")}</tr>`).join("");
+  return `<details class="block"><summary><span>Compare the ${runs.length} runs row by row</span></summary><div class="tablewrap"><table class="sumtable cmp"><thead><tr><th>Group</th><th>${kind === "extractor" ? "Reference statement" : "Datapoint"}</th>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
+}
+
 function renderResults() {
   const box = document.getElementById("resultsbody");
   if (!RUNS.length) { box.innerHTML = '<h2>Results</h2><p class="lede">No run yet.</p>'; return; }
   const run = RUNS.find((r) => r.id === state.run) ?? RUNS[0];
-  const options = RUNS.map((r) => `<option value="${esc(r.id)}"${r.id === run.id ? " selected" : ""}>${esc(r.label)} (${esc(r.id)}, ${r.rowIds.length} rows)</option>`).join("");
   const have = { extractor: !!run.extractor, checker: !!run.checker };
   if (!have[state.rs]) state.rs = have.extractor ? "extractor" : "checker";
   const cost = [run.extractor && `extractor eval ${money(run.extractor.costUsd.extraction + run.extractor.costUsd.judge)} (extraction ${money(run.extractor.costUsd.extraction)}, judge ${money(run.extractor.costUsd.judge)})`, run.checker && `checker eval ${money(run.checker.costUsd.checks + run.checker.costUsd.judge)} (checks ${money(run.checker.costUsd.checks)}, judge ${money(run.checker.costUsd.judge)})`].filter(Boolean).join(", ");
-  const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} rows passed</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}</div>`;
+  const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} statements found</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}</div>`;
   const body = state.rs === "extractor"
-    ? `${extractorSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:140px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference claim</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
-    : `${checkerSummary(run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
+    ? `${extractorSummary(run)}${compareTable("extractor", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:170px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference statement</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
+    : `${checkerSummary(run)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
   box.innerHTML = `<h2>Results</h2>
-    <div class="runbar"><label for="runpick"><b>Run</b></label><select id="runpick">${options}</select></div>
-    <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} rows. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
+    ${runsTable(run)}
+    <h3 class="runtitle">${esc(run.label)}</h3>
+    <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} datapoints. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
     ${subtabs}${body}`;
   mountExtractorDetails(run);
   mountCheckerDetails(run);
@@ -934,14 +1013,27 @@ document.getElementById("dstable").addEventListener("keydown", (e) => {
   const row = e.target.closest("tr.row");
   if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggleRow(row); }
 });
+function openRun(runId, kind, rowId) {
+  state.run = runId;
+  if (kind) state.rs = kind;
+  state.ropen.clear();
+  if (rowId) state.ropen.add((kind === "extractor" ? "rx-" : "rc-") + rowId);
+  renderResults();
+  if (rowId) document.querySelector(`tr.row[data-id="${(kind === "extractor" ? "rx-" : "rc-") + rowId}"]`)?.scrollIntoView({ block: "center" });
+}
 document.getElementById("resultsbody").addEventListener("click", (e) => {
+  const cmp = e.target.closest(".cmpcell");
+  if (cmp) { openRun(cmp.dataset.run, cmp.dataset.kind, cmp.dataset.row); return; }
+  const runRow = e.target.closest(".runrow");
+  if (runRow) { openRun(runRow.dataset.run); return; }
   const sub = e.target.closest("[data-rs]");
   if (sub) { state.rs = sub.dataset.rs; renderResults(); return; }
   const row = e.target.closest("tr.row");
   if (row) { const id = row.dataset.id; state.ropen.has(id) ? state.ropen.delete(id) : state.ropen.add(id); renderResults(); }
 });
-document.getElementById("resultsbody").addEventListener("change", (e) => { if (e.target.id === "runpick") { state.run = e.target.value; state.ropen.clear(); renderResults(); } });
 document.getElementById("resultsbody").addEventListener("keydown", (e) => {
+  const runRow = e.target.closest(".runrow");
+  if (runRow && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openRun(runRow.dataset.run); return; }
   const row = e.target.closest("tr.row");
   if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); const id = row.dataset.id; state.ropen.has(id) ? state.ropen.delete(id) : state.ropen.add(id); renderResults(); }
 });
