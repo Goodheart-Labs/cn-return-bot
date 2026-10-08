@@ -357,7 +357,7 @@ Hetzner is the German hosting company that rents us the always-on server
 described in [ops/README.md](../ops/README.md). It is the Hetzner Cloud server
 `ubuntu-8gb-hel1-1`, type CX33 (4 shared vCPUs, 8 GB memory), in Helsinki, at
 `95.217.155.79`. It replaced the CPX32 `ubuntu-8gb-nbg1-1` at `167.235.29.159`
-on 2026-10-08 (GOO-244). The server was created with the devbox's SSH key, and
+on 2026-10-08 (GOO-244). The old server was deleted the same day. The server was created with the devbox's SSH key, and
 password login is switched off. `ssh root@95.217.155.79` works from the devbox.
 
 Nothing finds the machine by name. Only the two repository secrets

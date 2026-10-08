@@ -248,8 +248,10 @@ downtime:
 7. Point `CLAIM_CHECK_URL` and `EXTRACTION_URL` at the new address with
    `gh secret set`, then `gh workflow enable` both workflows and watch one run
    of each finish green.
-8. Keep the old machine for a week, then delete it in the Hetzner console.
-   Powering it off does not stop the bill.
+8. Once the new machine has served a few runs, delete the old one in the
+   Hetzner console. Powering it off does not stop the bill. Check first that
+   Hetzner holds no snapshots of it, because those are billed separately and
+   survive the deletion.
 
 Rollback is the same steps in the other direction. With no machine at all, the
 Actions runs fail loudly at their health check, which is the intended signal.
