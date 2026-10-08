@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteSourceDetails } from "@cn/core/notes";
 import type { NoteStatus } from "@cn/core/noteScore";
@@ -14,14 +14,20 @@ import { queryKeys } from "../query/queryKeys";
 const STATUS: Record<NoteStatus, { label: string; dot: string }> = {
   helpful: { label: "Currently rated helpful", dot: "text-positive-solid" },
   not_helpful: { label: "Currently rated not helpful", dot: "text-negative-solid" },
-  needs_ratings: { label: "Needs more ratings", dot: "text-fg-subtle" },
+  needs_ratings: { label: "Needs more ratings", dot: "text-pending-solid" },
 };
 
 /** The status line's words for a status, for labels that name it elsewhere. */
 export const statusLabel = (status: NoteStatus): string => STATUS[status].label;
 
-/** The one question every note's rating panel asks, whatever its status. */
-export const RATING_QUESTION = "Is this note helpful?";
+/** The status colour as a text colour class. The extension's page markers
+ *  draw with it too, through `bg-current`, so a marker and the note it opens
+ *  always agree. */
+export const statusColorClass = (status: NoteStatus): string => STATUS[status].dot;
+
+/** The one question every rating panel asks, whatever its status: notes, and
+ *  the reader's key points and forecasts. */
+export const ratingQuestion = (thing: "note" | "key point" | "forecast") => `Is this ${thing} helpful?`;
 
 /** The status badge shown above a note. It is a filled circle followed by the
  *  Community Notes copy for that status. A status that has been decided also
@@ -31,8 +37,10 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
   return (
     <div className="flex items-center gap-1.5 text-sm font-semibold text-fg-secondary">
       {/* The size is given in em so the icon scales with the site's larger
-          type scale. */}
-      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden className={`shrink-0 ${dot}`}>
+          type scale. The circle fills the whole viewBox, and at a fractional
+          pixel size its softened edge falls just outside the box. The svg
+          would clip that edge flat, so its overflow is left visible. */}
+      <svg viewBox="0 0 20 20" width="1.05em" height="1.05em" aria-hidden overflow="visible" className={`shrink-0 ${dot}`}>
         <circle cx="10" cy="10" r="10" fill="currentColor" />
         {status === "helpful" && (
           <path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -41,7 +49,7 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
           <path d="M6.5 6.5l7 7M13.5 6.5l-7 7" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" />
         )}
       </svg>
-      <span>{label}</span>
+      <span className="whitespace-nowrap">{label}</span>
     </div>
   );
 }
@@ -51,14 +59,14 @@ export function StatusBadge({ status }: { status: NoteStatus }) {
  *  dashboard and the stats dashboard render a note. A note stores one source
  *  row per supporting quote, so the same URL can appear on several rows when
  *  several passages of one document back the note. The link is shown once;
- *  the individual quotes live behind "Show source details". */
+ *  the individual quotes live behind "Source details". */
 function noteText(note: NoteRow): string {
   const urls = [...new Set(note.sources.map((s) => s.url))];
   return urls.length > 0 ? `${note.note} ${urls.join(" ")}` : note.note;
 }
 
 /** The supporting quote and the explanation for each source, revealed by the
- *  "Show source details" button. The source URLs already sit inline in the note
+ *  "Source details" button. The source URLs already sit inline in the note
  *  text, so this shows only the body of each citation. Each quote links out to
  *  that passage in the source.
  *
@@ -96,14 +104,31 @@ function SourceDetails({ open, noteId }: { open: boolean; noteId: string }) {
   );
 }
 
+/** The softly filled panel that asks the rating question beside the pills.
+ *  Notes use it, and so do readers' key points and forecasts, so every rating
+ *  on the site looks the same. */
+export function RatingPanel({ question, children }: { question: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
+      <div className="text-sm text-fg">{question}</div>
+      {/* The pills never squeeze beside the question. When both do not fit,
+          the pills move to their own line together. */}
+      <div className="shrink-0">{children}</div>
+    </div>
+  );
+}
+
 /** The note, laid out like a Community Note on X: the status line, the note
  *  text with its source links, and then a softly filled rating panel that asks
  *  the question beside the pills. `children` are the pills. `question`
  *  replaces the plain question, which is how the one-time voting hint joins
  *  the panel without covering the note. */
-export function NoteBox({ note, status, sourcesOpen, question, children }: {
+export function NoteBox({ note, status, compact = false, sourcesOpen, question, children }: {
   note: NoteRow;
   status: NoteStatus;
+  /** For a narrow column: sources show as site names, and a long note starts
+   *  clamped to a few lines with a "More" button. */
+  compact?: boolean;
   sourcesOpen?: boolean;
   question?: React.ReactNode;
   children?: React.ReactNode;
@@ -112,20 +137,34 @@ export function NoteBox({ note, status, sourcesOpen, question, children }: {
   // "AI writes, people rate": a reader should never mistake a machine's note
   // for a person's.
   const byline = note.author_id ? `by ${note.author_name ?? "anonymous"}` : "Written by AI";
+  const [expanded, setExpanded] = useState(false);
+  const [clamped, setClamped] = useState(false);
+  const textBox = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const paragraph = textBox.current?.firstElementChild;
+    if (compact && !expanded && paragraph) setClamped(paragraph.scrollHeight > paragraph.clientHeight + 1);
+  }, [compact, expanded, note.note]);
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <StatusBadge status={status} />
         <span className="text-xs text-fg-muted shrink-0">{byline}</span>
       </div>
-      <LinkifiedText className="text-sm text-fg whitespace-pre-wrap" linkClassName="text-link hover:underline break-all" text={noteText(note)} />
-      {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
-      {children && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
-          <div className="text-sm text-fg">{question ?? <span className="font-semibold">{RATING_QUESTION}</span>}</div>
-          {children}
-        </div>
+      <div ref={textBox}>
+        <LinkifiedText
+          className={`text-sm text-fg whitespace-pre-wrap${compact && !expanded ? " line-clamp-6" : ""}`}
+          linkClassName={compact ? "text-link hover:underline" : "text-link hover:underline break-all"}
+          shortLinks={compact}
+          text={noteText(note)}
+        />
+      </div>
+      {compact && (clamped || expanded) && (
+        <button type="button" className="mt-1 text-xs font-semibold text-link hover:underline" onClick={() => setExpanded((open) => !open)}>
+          {expanded ? "Less" : "More"}
+        </button>
       )}
+      {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
+      {children && <RatingPanel question={question ?? <span className="font-semibold">{ratingQuestion("note")}</span>}>{children}</RatingPanel>}
     </div>
   );
 }

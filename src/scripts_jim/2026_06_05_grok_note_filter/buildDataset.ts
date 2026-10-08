@@ -13,7 +13,7 @@ import "dotenv/config";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { getSupabaseClient } from "../../api/supabaseClient";
-import { fetchAllRows, fetchInBatches } from "../../api/paging";
+import { fetchAllRows, fetchInBatches } from "../../everything-core/paging";
 import { labelRun, tweetUrl, type RunLabel } from "./labeling";
 
 const SINCE = "2026-05-28T00:00:00Z";
@@ -93,6 +93,7 @@ async function main() {
     (chunk) =>
       client.from("tweets").select("tweet_id, text, has_video, has_photo").in("tweet_id", chunk),
     tweetIds,
+    "tweet_id",
     { label: "buildDataset.tweets" },
   );
   const tweetById = new Map(tweets.map((t) => [t.tweet_id, t]));

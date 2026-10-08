@@ -1,4 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
@@ -7,7 +8,7 @@ import type { NoteRow, NoteSourceDetail } from "./types";
  *
  * Only the source URLs are read, because the URLs are what the note text
  * renders. The quote and the explanation of each source are much larger and
- * sit behind the "Show source details" button, so fetchNoteSourceDetails
+ * sit behind the "Source details" button, so fetchNoteSourceDetails
  * fetches them when a reader opens that. The button still has to know whether
  * there is anything to show. That is what the second, aliased embed of the
  * same table is for: the query filters it down to the sources that carry a
@@ -52,18 +53,20 @@ export async function fetchNote(id: string): Promise<NoteRow | null> {
 /** Every visible note on one item. The extension shows one page at a time and
  *  reads its notes this way. */
 export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
-  const { data, error } = await noteQuery().eq("claim.item_id", itemId).neq("status", "hidden");
-  if (error) throw error;
-  return data.map(toNoteRow);
+  const notes = await fetchAllRows<RawNote>(() => noteQuery().eq("claim.item_id", itemId).neq("status", "hidden"), "id", { label: "itemNotes" });
+  return notes.map(toNoteRow);
 }
 
 /** Every visible note in one project. The filter reaches from the note through
  *  its claim to that claim's item, so the database returns only this
  *  project's notes. */
 export async function fetchProjectNotes(projectId: string): Promise<NoteRow[]> {
-  const { data, error } = await projectNoteQuery().eq("claim.item.project_id", projectId).neq("status", "hidden");
-  if (error) throw error;
-  return data.map(toNoteRow);
+  const notes = await fetchAllRows<RawNote>(
+    () => projectNoteQuery().eq("claim.item.project_id", projectId).neq("status", "hidden"),
+    "id",
+    { label: "projectNotes" },
+  );
+  return notes.map(toNoteRow);
 }
 
 /** One note of this project, by id. A note from another project comes back as
@@ -75,7 +78,7 @@ export async function fetchProjectNote(noteId: string, projectId: string): Promi
   return data && toNoteRow(data);
 }
 
-/** The quote and the explanation behind one note's "Show source details"
+/** The quote and the explanation behind one note's "Source details"
  *  reveal. A source with no quote has no body to show, so it is left out here
  *  the same way the reveal leaves it out. */
 export async function fetchNoteSourceDetails(noteId: string): Promise<NoteSourceDetail[]> {

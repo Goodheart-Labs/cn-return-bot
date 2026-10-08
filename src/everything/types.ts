@@ -36,6 +36,7 @@ export type ClaimAnchor =
   | { kind: "substack"; url: string };
 
 export interface ExtractedClaim {
+  steer?: string | null;
   /** Neutral, self-contained restatement of the claim. */
   claim: string;
   /** Verbatim excerpt with all the context needed to evaluate the claim.

@@ -1,17 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" class="cn-reading-scale">
+<!-- bg-surface on <html>: scrolling past the top of the page shows the root
+     element's background, and a page loads at its top, below the header.
+     OverscrollColor takes over once the page runs, and sets the colour at
+     whichever edge of the window the reader is nearer. -->
+<html lang="en" class="cn-reading-scale bg-surface">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Common Notes: Community Notes on everything</title>
-  <meta name="description" content="AI-written community notes on podcasts, newsletters, and beyond. Read freely; sign in to rate notes or suggest better ones." />
+  <!-- The title, the description and the link preview text repeat the
+       homepage's headline and pitch (pages/home/content.ts). -->
+  <title>Common Notes: Community Notes 4 Everything</title>
+  <meta name="description" content="Common Notes is a Community Notes–inspired system that brings this feature to the whole web. See notes written by others on articles and YouTube videos." />
   <meta property="og:title" content="Common Notes" />
-  <meta property="og:description" content="Community Notes everywhere: podcasts, newsletters, and beyond. In alpha, but voting works." />
+  <meta property="og:description" content="Common Notes is a Community Notes–inspired system that brings this feature to the whole web. See notes written by others on articles and YouTube videos." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://commonnotes.net/" />
-  <meta property="og:image" content="https://commonnotes.net/og.png" />
+  <!-- No og:url. Every address serves this same file, so a fixed og:url would
+       tell Facebook that every page is the home page. Without it, apps use the
+       address that was shared. -->
+  <!-- og-card.html is the image's source; scripts/generate-logo-assets.ts says
+       when its file name must change. The width and height let apps lay out the
+       preview before the image arrives. -->
+  <meta property="og:image" content="https://commonnotes.net/og-2.png" />
+  <meta property="og:image:width" content="2400" />
+  <meta property="og:image:height" content="1260" />
+  <meta property="og:image:alt" content="The Common Notes logo, the name Common Notes and the headline Community Notes 4 Everything." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://commonnotes.net/og.png" />
+  <meta name="twitter:image" content="https://commonnotes.net/og-2.png" />
+  <!-- The logo as the tab icon, and the icon iOS uses for a home screen
+       bookmark. Both are drawn from the logo by scripts/generate-logo-assets.ts.
+       The paths start at the website's folder, so they hold on every page
+       path in development too. -->
+  <link rel="icon" type="image/png" sizes="96x96" href="/src/assets/favicon-96.png" />
+  <link rel="apple-touch-icon" href="/src/assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" />
@@ -19,6 +39,13 @@
     /* Applied before first paint so a dark system never flashes a light page.
      * SystemTheme keeps the class in sync with live OS theme changes. */
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.classList.add("dark");
+    /* Safari does not colour the area its trackpad bounce reveals past the
+     * top or bottom of the page the way Chrome does (see OverscrollColor), and
+     * shows black there. So Safari does not bounce at all. Chrome, Edge and
+     * Firefox name Safari in their user agents too, hence the exclusions. */
+    if (/safari/i.test(navigator.userAgent) && !/chrome|chromium|crios|fxios|edg|android/i.test(navigator.userAgent)) {
+      document.documentElement.classList.add("overscroll-y-none");
+    }
   </script>
 </head>
 <body class="bg-canvas text-fg font-sans min-h-screen">

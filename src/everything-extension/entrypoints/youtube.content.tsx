@@ -2,25 +2,24 @@ import "../assets/tailwind.css";
 import { createRoot } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@cn/features/query/queryClient";
-import { defineContentScript, createShadowRootUi } from "#imports";
+import { defineContentScript } from "#imports";
 import type { ContentScriptContext } from "#imports";
-import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
+import { fetchItemForUrl, type PageItem } from "@cn/core/items";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
-import { claimGroups, itemNoteSetQuery, noteCounts, type NoteCounts } from "../utils/claimGroups";
+import { claimGroups, itemNoteSetQuery } from "../utils/claimGroups";
 import { mountCoverageBadges } from "../utils/coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "../utils/coveredPages";
 import { recordPageVisit } from "../utils/linkVisits";
 import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { timedGroups, YoutubeOverlayApp } from "../components/YoutubeOverlay";
-import { jumpToNextNote } from "../utils/jumpBus";
-import { mountStatusOverlay } from "../utils/mountStatusOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
 import { listenForRequestInfo } from "../utils/requestInfo";
 import { listenForLiveRequests } from "../utils/requestLive";
-import { getNoteFilters, getSettings } from "../utils/settings";
+import { getNoteDisplay } from "../utils/settings";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 import { track } from "@cn/core/analytics";
+import { createOverlayUi } from "../utils/overlayUi";
 
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
@@ -43,19 +42,6 @@ function waitFor<T extends Element>(selector: string): Promise<T | null> {
     };
     poll();
   });
-}
-
-/** The transient note-count card on a checked video, gated by its setting. */
-async function mountStatus(ctx: ContentScriptContext, counts: NoteCounts, wholePageChecked: boolean): Promise<() => void> {
-  if (!(await getSettings()).showNoteCountOverlay) return () => {};
-  return (
-    await mountStatusOverlay(ctx, {
-      noun: "video",
-      counts,
-      wholePageChecked,
-      onOpenNotes: jumpToNextNote,
-    })
-  ).teardown;
 }
 
 async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | null> {
@@ -96,22 +82,20 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
     console.warn("[common-notes] notes fetch failed, mounting nothing:", err);
     return null;
   }
-  const filters = await getNoteFilters();
-  const groups = timedGroups(claimGroups(noteSet, filters));
+  const groups = timedGroups(claimGroups(noteSet, await getNoteDisplay()));
   console.info(`[common-notes] ${groups.length} timestamped claims on this video`);
-  const statusTeardown = await mountStatus(ctx, noteCounts(noteSet.notes.values(), filters), isWholePageChecked(item));
-  if (groups.length === 0) return statusTeardown;
+  if (groups.length === 0) return null;
 
   const player = await waitFor<HTMLElement>(PLAYER_SELECTOR);
   const video = document.querySelector<HTMLVideoElement>(VIDEO_SELECTOR);
-  if (!player || !video) return statusTeardown;
+  if (!player || !video) return null;
 
   let themeRoot: HTMLElement | null = null;
   // The host lives on the page body, not inside the player, so the card can
   // be dragged over the whole page. Its geometry is set in assets/tailwind.css
   // under `:host(common-notes-yt)`. The scrub-bar pins reach the player on
   // their own.
-  const ui = await createShadowRootUi(ctx, {
+  const ui = await createOverlayUi(ctx, {
     name: "common-notes-yt",
     position: "inline",
     anchor: "body",
@@ -152,7 +136,6 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   const stopTheme = observePageTheme((dark) => themeRoot?.classList.toggle("dark", dark));
   return () => {
     stopTheme();
-    statusTeardown();
     ui.remove();
   };
 }

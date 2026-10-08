@@ -160,6 +160,9 @@ export interface RateClaimsResponse {
 // ---------------------------------------------------------------------------
 
 export const FETCH_PAGE_PATH = "/fetch-page";
+/** Reads a whole article for a minisite (readPageForMinisite), so the page's
+ *  HTML is parsed inside the sandbox and never in a service that holds keys. */
+export const READ_PAGE_PATH = "/read-page";
 export const FETCH_IMAGE_PATH = "/fetch-image";
 
 /** The environment variable that names the fetcher's Unix socket. The fetcher
@@ -173,9 +176,21 @@ export interface FetchPageRequest {
   maxChars?: number;
 }
 
-export interface FetchImageRequest {
+export interface FetchUrlRequest {
   url: string;
 }
+
+/** A page's HTML as the fetch ladder accepted it. `fetchedUrl` has the same
+ *  meaning as in WebFetchResult: the archive snapshot when the ladder fell back
+ *  to one, and the requested address otherwise. */
+export type FetchedPageHtml =
+  | { ok: true; html: string; fetchedUrl: string }
+  | { ok: false; reason: string };
+
+/** A JSON answer from one plain request, without the ladder's fallbacks. */
+export type FetchedJson =
+  | { ok: true; json: unknown }
+  | { ok: false; reason: string };
 
 /** An image as Gemini takes it inline: its media type and its bytes in
  *  base64. */

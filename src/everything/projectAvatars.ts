@@ -4,15 +4,19 @@
  * picture: the YouTube channel lookup (one API unit), the Substack RSS feed's
  * channel image, and the LessWrong or Alignment Forum user query.
  *
+ * The same answer carries the creator's name. A project created from a reader
+ * request knows only its slug (GOO-290), so its name is filled in here, on
+ * the first feed run after the project appeared.
+ *
  * Every feed run refreshes a few projects whose last attempt is missing or
  * older than a month, so pictures stay current without a separate schedule.
  * `bun run everything-refresh-avatars` refreshes every due project at once.
  */
 
 import "dotenv/config";
-import { fetchProjectsDueForAvatar, recordAvatarAttempt, type AvatarDue } from "./db";
+import { fetchProjectsDueForAvatar, fillProjectDisplayName, recordAvatarAttempt, type AvatarDue } from "./db";
 import { canonicalFeed } from "./feedUrls";
-import { fetchAuthorProfileImage } from "./sources/lesswrong";
+import { fetchAuthorProfile } from "./sources/lesswrong";
 import { fetchFeedPosts } from "./sources/substack";
 import { resolveChannel } from "../pipeline/media/youtubeDataApi";
 
@@ -26,18 +30,28 @@ const DAY_MS = 24 * 3600 * 1000;
  *  migration catch up on every project this many at a time. */
 export const AVATARS_PER_RUN = 5;
 
-/** The creator's current picture, or null when the source has none. */
-export async function fetchAvatarUrl(feedUrl: string): Promise<string | null> {
+/** The creator's current picture and name as their source shows them. The
+ *  picture is null when the source has none. */
+export async function fetchCreatorProfile(feedUrl: string): Promise<{ avatarUrl: string | null; name?: string }> {
   const feed = canonicalFeed(feedUrl);
   if (!feed) throw new Error(`Not a feed URL we know: ${feedUrl}`);
-  if (feed.feed_type === "youtube") return (await resolveChannel(feed.feed_url)).thumbnailUrl ?? null;
-  if (feed.feed_type === "substack") return (await fetchFeedPosts(feed.feed_url)).imageUrl ?? null;
-  return fetchAuthorProfileImage(feed.feed_url);
+  if (feed.feed_type === "youtube") {
+    const channel = await resolveChannel(feed.feed_url);
+    return { avatarUrl: channel.thumbnailUrl ?? null, name: channel.title };
+  }
+  if (feed.feed_type === "substack") {
+    const publication = await fetchFeedPosts(feed.feed_url);
+    return { avatarUrl: publication.imageUrl ?? null, name: publication.title };
+  }
+  const author = await fetchAuthorProfile(feed.feed_url);
+  return { avatarUrl: author.imageUrl, name: author.displayName };
 }
 
 async function refreshOne(project: AvatarDue): Promise<void> {
   try {
-    await recordAvatarAttempt(project.id, await fetchAvatarUrl(project.feed_url), new Date());
+    const profile = await fetchCreatorProfile(project.feed_url);
+    await recordAvatarAttempt(project.id, profile.avatarUrl, new Date());
+    await fillProjectDisplayName(project.id, profile.name);
   } catch (err) {
     // One creator's feed failing must not stop the run, the same way the walk
     // skips a feed that will not list. The attempt is back-dated so that it

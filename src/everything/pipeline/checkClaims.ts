@@ -14,7 +14,7 @@ import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 import { createTweetLog, getLoggedBotIdentity, nestDotKeys, withTweetLog, type TweetLogMap } from "../../pipeline/utils/tweetLog";
 import type { TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
-import { insertClaimPipelineRun } from "../db";
+import { insertClaimPipelineRun, type SpendFor } from "../db";
 import type { ClaimRunRecord } from "../../service/contract";
 import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from "../types";
 import { claimCheckFields } from "./claimCheckFields";
@@ -126,7 +126,7 @@ function buildRunRecord(result: ProcessTweetResult, log: TweetLogMap): ClaimRunR
 
 /** Saves the run's tweet log and LLM cost to everything_pipeline_runs. This is
  *  best effort. A failure to record must never make the claim itself fail. */
-export async function recordClaimRun(claimId: string, run: ClaimRunRecord): Promise<void> {
+export async function recordClaimRun(claimId: string, run: ClaimRunRecord, spendFor: SpendFor): Promise<void> {
   try {
     await insertClaimPipelineRun({
       claim_id: claimId,
@@ -138,6 +138,7 @@ export async function recordClaimRun(claimId: string, run: ClaimRunRecord): Prom
       bot_config: run.botConfig,
       logs: run.logs,
       cost: run.costUsd,
+      work_priority: spendFor,
     });
   } catch (err: any) {
     console.warn(`  [recordClaimRun] failed to record pipeline run for claim ${claimId}: ${err?.message}`);

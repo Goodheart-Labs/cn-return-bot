@@ -27,11 +27,12 @@ import {
   setItemProgress,
   type ItemClaimRow,
   type NewClaimRow,
+  type SpendFor,
 } from "../db";
 import { dropSpeculation } from "./extractClaims";
 import { VERY_CONFIDENT_JUDGEMENT, shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
-import type { RateClaimsResponse, WorkPriority } from "../../service/contract";
+import type { RateClaimsResponse } from "../../service/contract";
 import { group, money } from "../logFormat";
 import { feedBudgetExhausted, requestBudgetExhausted } from "../spendCap";
 import type { ContentPart, ExtractedClaim, FetchedContent, RatedClaim } from "../types";
@@ -42,12 +43,15 @@ const RATING_PART_CONCURRENCY = 2;
 /** How many claims of one item are in flight at once. The services decide the
  *  real capacity, so this is not a capacity limit. It paces the work so the
  *  daily spend cap is still consulted as the item progresses, which is what
- *  lets an item stop partway and resume later. */
-const CHECK_REQUEST_CONCURRENCY = 6;
+ *  lets an item stop partway and resume later. It matches the claim checker's
+ *  slots for feed work: in production that service runs 10 at a time
+ *  (`CLAIM_CHECK_CONCURRENCY` on the services machine) and keeps 2 for readers,
+ *  so one item can use all 8 that remain (GOO-318). */
+const CHECK_REQUEST_CONCURRENCY = 8;
 
 /** A page someone asked for and is waiting on is served before anything from
  *  the backlog. Everything else this file processes is backlog. */
-function workPriorityOf(item: EverythingItem): WorkPriority {
+function workPriorityOf(item: EverythingItem): SpendFor {
   return item.priority >= QUEUE_PRIORITY.requested ? "reader" : "feed";
 }
 
@@ -109,10 +113,10 @@ async function checkAndRecordClaim(
   try {
     const { check, run } = await requestClaimCheck({
       priority: workPriorityOf(item),
-      post: buildClaimPost({ claim, source: item.source, itemId: item.id, index, publishedAt }),
+      post: buildClaimPost({ claim: item.request_steer ? { ...claim, steer: item.request_steer } : claim, source: item.source, itemId: item.id, index, publishedAt }),
     });
     // The service cannot store anything, so recording the run is ours to do.
-    await recordClaimRun(claimId, run);
+    await recordClaimRun(claimId, run, workPriorityOf(item));
     if (check.kind === "note") {
       await insertNote(claimId, check.note, check.sources);
       await setClaimStatus(claimId, "note", null);
@@ -237,7 +241,7 @@ export async function processFetchedContent(
 
   await setItemProgress(item.id, { stage: "extracting" });
   const extraction = await requestClaimExtraction({ priority: workPriorityOf(item), content });
-  if (extraction.costUsd !== null) await insertItemRun(item.id, "extraction", extraction.costUsd);
+  if (extraction.costUsd !== null) await insertItemRun(item.id, "extraction", extraction.costUsd, workPriorityOf(item));
   if (extraction.kind === "not_checkable") {
     console.log(`  not checkable: ${extraction.reason}`);
     return { ...EMPTY_TALLY, skipReason: extraction.reason };
@@ -248,7 +252,7 @@ export async function processFetchedContent(
 
   await setItemProgress(item.id, { stage: "rating" });
   const rating = await ratePartsOfItem(item, extraction.introduction, parts);
-  if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd);
+  if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd, workPriorityOf(item));
   const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;

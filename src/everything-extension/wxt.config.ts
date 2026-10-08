@@ -1,8 +1,8 @@
 import path from "node:path";
-import { loadEnv } from "vite";
 import { defineConfig } from "wxt";
 import tailwindcss from "tailwindcss";
 import { CN_ALIASES } from "../cnAliases";
+import { settleSupabaseEnv } from "../cnEnv";
 
 // The repo root's .env supplies the VITE_SUPABASE_* values to import.meta.env, just
 // as it does in the web app's vite config. The anon key is meant to be public.
@@ -37,12 +37,14 @@ export default defineConfig({
   // defence.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
   manifest: ({ browser }) => ({
-    version: "0.3.1",
+    version: "0.4.4",
     name: "Common Notes",
     description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
-    permissions: ["storage", "identity", "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
+    // Safari has no identity API, so its build signs in by email code only and
+    // does not ask for the permission.
+    permissions: ["storage", ...(browser === "safari" ? [] : ["identity"]), "contextMenus", "activeTab", "tabs", "scripting", "alarms"],
     // Access to every site is required at install time. The background then
     // registers the generic content script for every hostname that has notes,
     // without asking. The user sees one broad install warning and no per-site
@@ -50,10 +52,12 @@ export default defineConfig({
     // grant.html; what the user can switch off now lives on the settings page
     // (overlays, thumbnail badges, visit recording). Note for existing
     // installs: Chrome disables an updated extension until the user approves
-    // the newly required permission.
+    // the newly required permission. Safari is the exception. It grants no site
+    // at install, and each user allows sites from the toolbar button, which is
+    // why the Safari welcome page asks for "Always Allow on Every Website".
     host_permissions: ["<all_urls>"],
     ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
-    browser_specific_settings: {
+    ...(browser === "firefox" ? { browser_specific_settings: {
       // A fixed add-on ID keeps the OAuth redirect URL on extensions.allizom.org
       // the same across every Firefox install. This is not the original ID. AMO
       // burns an ID permanently when its add-on is deleted, and that is what
@@ -72,10 +76,12 @@ export default defineConfig({
           optional: ["authenticationInfo", "personallyIdentifyingInfo"],
         },
       },
-    },
+    } } : {}),
+    // Safari 18 is the oldest version we test on. It runs on macOS 13 and later.
+    ...(browser === "safari" ? { browser_specific_settings: { safari: { strict_min_version: "18.0" } } } : {}),
   }),
   hooks: {
-    "build:manifestGenerated": (_wxt, manifest) => {
+    "build:manifestGenerated": (wxt, manifest) => {
       // The generic content script is injected at runtime on origins we do not know
       // in advance, so WXT cannot work out which matches its stylesheet needs. It
       // emits an empty list, and that would stop the shadow-root UI from fetching
@@ -85,6 +91,9 @@ export default defineConfig({
         if (typeof resource === "object" && "resources" in resource && RUNTIME_INJECTED_CSS.some((css) => resource.resources.includes(css))) {
           resource.matches = ["<all_urls>"];
         }
+        // Safari does not know use_dynamic_url, and Apple's converter warns
+        // about it. WXT adds the key for every browser.
+        if (wxt.config.browser === "safari" && typeof resource === "object") delete resource.use_dynamic_url;
       }
     },
   },
@@ -151,18 +160,12 @@ export default defineConfig({
         },
       },
       {
-        // The same guard as in everything-web/vite.config.ts. A build without the
-        // Supabase environment variables inlines `undefined`, which turns the
-        // module-scope check in everything-core/supabase.ts into a throw that
-        // always fires. We fail the build loudly instead. In dev the throw shows up
-        // at runtime, which is good enough.
-        name: "require-supabase-env",
+        // The Supabase settings: the build's mode file wins over inherited
+        // variables, and a build that cannot reach a database fails. See
+        // src/cnEnv.ts.
+        name: "settle-supabase-env",
         config(_config, { command, mode }) {
-          if (command !== "build") return;
-          const env = loadEnv(mode, repoRoot, "");
-          if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) {
-            throw new Error("Refusing to build without VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY (root .env)");
-          }
+          settleSupabaseEnv(command, mode);
         },
       },
     ],

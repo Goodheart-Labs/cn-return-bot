@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { PageReadError, readPageForMinisite } from "../../everything/minisites/readPage";
 import { fetchWebPage, fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
 import { callFetchService } from "../client";
 import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchedImage } from "../contract";
@@ -22,12 +23,14 @@ describe("the fetcher", () => {
     fetcher = startFetchService(socket);
     site = Bun.serve({
       port: 0,
-      fetch: (request) =>
-        new URL(request.url).pathname === "/image.png"
-          ? new Response(PNG_BYTES, { headers: { "content-type": "image/png" } })
-          : new Response(`<html><body><article><h1>Test</h1><p>${ARTICLE_TEXT}</p></article></body></html>`, {
-              headers: { "content-type": "text/html" },
-            }),
+      fetch: (request) => {
+        const { pathname } = new URL(request.url);
+        if (pathname === "/image.png") return new Response(PNG_BYTES, { headers: { "content-type": "image/png" } });
+        if (pathname === "/post.json") return Response.json({ title: "A post" });
+        return new Response(`<html><body><article><h1>Test</h1><p>${ARTICLE_TEXT}</p></article></body></html>`, {
+          headers: { "content-type": "text/html" },
+        });
+      },
     });
   });
 
@@ -43,6 +46,21 @@ describe("the fetcher", () => {
       const result = await fetchWebPage(`http://127.0.0.1:${site.port}/article`);
       expect(result.ok).toBe(true);
       expect(result.content).toContain("The fetcher returned this article.");
+    } finally {
+      delete process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+    }
+  });
+
+  test("a minisite page is read inside the fetcher when the socket is set", async () => {
+    process.env[FETCH_SERVICE_SOCKET_VARIABLE] = socket;
+    try {
+      const page = await readPageForMinisite(`http://127.0.0.1:${site.port}/article`);
+      expect(page.content).toContain("The fetcher returned this article.");
+      expect(page.plain_text).toContain("The fetcher returned this article.");
+      // The fetcher's plain sentence reaches the caller as a PageReadError.
+      const refused = readPageForMinisite("ftp://example.org/file");
+      expect(refused).rejects.toBeInstanceOf(PageReadError);
+      expect(refused).rejects.toThrow("This is not the address of a web page.");
     } finally {
       delete process.env[FETCH_SERVICE_SOCKET_VARIABLE];
     }

@@ -4,7 +4,6 @@ import { creatorPlatform } from "@cn/core/projects";
 import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
-import { ExtensionNudge } from "../components/ExtensionNudge";
 import { FeedNoteCard } from "../components/FeedNoteCard";
 import { BackToProjects } from "../components/BackToProjects";
 import { ItemList } from "../components/ItemList";
@@ -178,6 +177,7 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
       <FeedNoteCard
         key={note.id}
         note={note}
+        post={activeItem ? undefined : items.get(note.claim.item_id)}
         improvements={improvements.get(note.id) ?? NO_NOTES}
         nnnEntries={entries.get(note.claim_id) ?? NO_ENTRIES}
         shareUrl={noteUrl(project.slug, note.id)}
@@ -251,7 +251,6 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
         {feed}
       </main>
 
-      <ExtensionNudge navigate={navigate} />
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} navigate={navigate} />
     </div>
   );

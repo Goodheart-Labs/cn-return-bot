@@ -1,7 +1,7 @@
 import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
-import type { ClaimGroup } from "../utils/claimGroups";
-import { noteShareUrl } from "../utils/share";
 import { Note } from "@cn/features/notes/Note";
+import type { ClaimGroup } from "../utils/claimGroups";
+import { noteShareUrl } from "@cn/core/pageUrls";
 
 /** The width every overlay uses. The Substack popover and the YouTube card are
  *  the same surface, so they get the same size. */
@@ -9,9 +9,12 @@ export const NOTE_POPOVER_WIDTH = 560;
 
 /** The whole note surface of one claim. It shows the original note, the
  *  other notes on the claim indented under a thin rail, and the claim's
- *  note-not-needed list. The Substack popover and the YouTube overlay both use
- *  it, so the two cannot drift apart. */
-export function ClaimNoteStack({ group, projectSlug }: { group: ClaimGroup; projectSlug: string | null }) {
+ *  note-not-needed list. The Substack popover and the YouTube overlay both
+ *  use it, so the two cannot drift apart. */
+export function ClaimNoteStack({ group, projectSlug }: {
+  group: ClaimGroup;
+  projectSlug: string | null;
+}) {
   const [original, ...others] = group.notes;
   return (
     <>

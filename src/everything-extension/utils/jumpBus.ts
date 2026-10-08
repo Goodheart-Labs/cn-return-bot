@@ -1,7 +1,7 @@
-// The note-count card and the popup both step through a page's notes with the
-// same cursor. The popup reaches the notes UI through a tab message, but the
-// card cannot: it renders in its own React tree, in its own shadow root, next
-// to the notes UI. Both trees run in the same content script, so a
+// The request progress card and the popup both step through a page's notes
+// with the same cursor. The popup reaches the notes UI through a tab message,
+// but the card cannot: it renders in its own React tree, in its own shadow
+// root, next to the notes UI. Both trees run in the same content script, so a
 // module-level slot is all that is needed to connect them. The notes UI
 // registers its jump function here, and the card calls it.
 let handler: (() => void) | null = null;

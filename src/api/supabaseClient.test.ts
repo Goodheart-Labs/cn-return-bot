@@ -4,14 +4,25 @@ import { SupabaseLogger } from "./supabaseClient";
 const now = Date.parse("2026-09-07T12:00:00Z");
 const dayMs = 86_400_000;
 
-function history(rows: { submit_score: number; decided_at: string }[]) {
+/** A fake ranking_decisions table that serves keyset pages of at most 1000
+ *  rows, like the real API. */
+function history(scores: { submit_score: number; decided_at: string }[]) {
+  const rows = scores.map((r, i) => ({ id: i + 1, ...r }));
+  let after = 0;
+  let limit = Infinity;
   const query = {
     select: mock(() => query),
     eq: mock(() => query),
     gte: mock(() => query),
     or: mock(() => query),
     order: mock(() => query),
-    range: mock(async (start: number, end: number) => ({ data: rows.slice(start, end + 1), error: null })),
+    limit: mock((count: number) => { limit = count; return query; }),
+    gt: mock((_column: string, value: number) => { after = value; return query; }),
+    then(resolve: (result: { data: typeof rows; error: null }) => void) {
+      const page = rows.filter((r) => r.id > after).slice(0, Math.min(limit, 1000));
+      after = 0;
+      resolve({ data: page, error: null });
+    },
   };
   const logger = Object.assign(Object.create(SupabaseLogger.prototype), { client: { from: mock(() => query) } }) as SupabaseLogger;
   return { logger, query };
@@ -43,7 +54,7 @@ describe("fetchRankingSubmitScores", () => {
     expect(result.scores).toHaveLength(1001);
     expect(result.spanDays).toBe(7);
     expect(result.distinctDays).toBe(8);
-    expect(query.range.mock.calls).toEqual([[0, 999], [1000, 1999]]);
+    expect(query.gt.mock.calls).toEqual([["id", 1000], ["id", 1001]]);
   });
 
   test("empty history has zero span and zero distinct dates", async () => {

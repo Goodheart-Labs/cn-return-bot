@@ -2,7 +2,7 @@ import { browser, defineContentScript } from "#imports";
 
 /** Where the Common Notes website runs. The dev build also marks localhost,
  *  where the website runs during development. */
-const WEBSITE_PAGES = ["*://commonnotes.net/*", "*://*.commonnotes.net/*", "*://goodheart-labs.github.io/cn-return-bot/*"];
+const WEBSITE_PAGES = ["*://commonnotes.net/*", "*://*.commonnotes.net/*"];
 const DEV_WEBSITE_PAGES = ["http://localhost/*", "http://127.0.0.1/*"];
 
 // Tells our own website that the extension is installed, so it stops

@@ -263,31 +263,31 @@ async function main() {
     const localOutput: OutputFolder | null = isLocal
       ? initOutputFolder("pipeline", "run", undefined)
       : null;
-    const onTweetProcessed = localOutput
-      ? (event: TweetProcessedEvent) => writePipelineRowToCsv(localOutput, event)
-      : undefined;
+    // Every tweet's outcome is recorded, so the run can fail at the end when
+    // every check failed.
+    const tweetOutcomes: TweetProcessedEvent["tweetResult"]["outcome"][] = [];
+    const onTweetProcessed = (event: TweetProcessedEvent) => {
+      tweetOutcomes.push(event.tweetResult.outcome);
+      if (localOutput) writePipelineRowToCsv(localOutput, event);
+    };
 
     // Fetch the skip set and the known-tweet set once here. Otherwise the notes,
-    // pipeline_runs and tweets tables get scanned twice in a single run.
+    // pipeline_runs and tweets tables get scanned twice in a single run. A
+    // failed read ends the run. Carrying on with empty sets would process
+    // tweets we already wrote notes for.
     let skipPostIds: Set<string> | undefined;
     let knownTweetIds: Set<string> | undefined;
     if (supabaseLogger) {
-      try {
-        [skipPostIds, knownTweetIds] = await Promise.all([
-          supabaseLogger.getSkipTweetIds(),
-          supabaseLogger.getKnownTweetIds(),
-        ]);
-      } catch (err) {
-        console.warn("[pipeline] Failed to pre-fetch skip/known sets (the pipeline will fetch its own):", err);
-      }
+      [skipPostIds, knownTweetIds] = await Promise.all([
+        supabaseLogger.getSkipTweetIds(),
+        supabaseLogger.getKnownTweetIds(),
+      ]);
     }
 
     // Track every tweet a pre-pass processes. The known-tweet set above was
     // snapshotted before the pre-passes ran, so without this the regular pass
     // could process the same tweet a second time within one run. knownTweetIds
-    // is undefined when the pre-fetch failed. That case heals itself, because
-    // fetchPosts then queries the database again after the pre-passes have
-    // written their new tweets with bulkInsertNewTweets.
+    // is undefined only when there is no database logger at all.
     const trackPrePassProcessed = (event: TweetProcessedEvent) => {
       knownTweetIds?.add(event.post.id);
       return onTweetProcessed?.(event);
@@ -409,6 +409,20 @@ async function main() {
 
     if (localOutput) {
       await autoOpenInDashboard(localOutput.csvPath, buildRunName("pipeline", "local"));
+    }
+
+    // A failed tweet is recorded on its pipeline_runs row, and the run used to
+    // end green. About half of all runs have a tweet or two whose sources could
+    // not be fetched, so one failure is normal. But when every tweet fails,
+    // something shared is broken, such as a model provider or the claim-check
+    // service. In the week before this check was added, no run had every tweet
+    // fail. So that case fails the run, after the submission above has sent
+    // what it could.
+    if (tweetOutcomes.length > 0 && tweetOutcomes.every((outcome) => outcome === "failed")) {
+      throw new Error(
+        `Every one of the ${tweetOutcomes.length} tweets this run checked failed. ` +
+          "The reasons are in the log above and in pipeline_runs.error_message. Failing the run so this is seen.",
+      );
     }
 
     console.log("[pipeline] Pipeline completed successfully");

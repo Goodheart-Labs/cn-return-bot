@@ -50,6 +50,7 @@ export const CN_COLORS = {
   "negative-selected-fg": "var(--cn-negative-selected-fg)",
   "negative-line": "var(--cn-negative-line)",
   "negative-solid": "var(--cn-negative-solid)",
+  "pending-solid": "var(--cn-pending-solid)",
 };
 
 /** The text sizes, each with its line height, read from tokens.css. */

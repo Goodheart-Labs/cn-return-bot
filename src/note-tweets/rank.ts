@@ -13,7 +13,7 @@ await ensureState();
 const { rows, jim, articles, helpfulAt, extra, newIds } = await loadNotes(config.url, config.serviceKey, Bun.argv.slice(2));
 // Popularity = the bot's own creator order (priority, then readers in the window).
 const popularity = new Map<string, { rank: number; readers: number }>();
-for (const [rank, c] of (await rankCreators()).entries()) if (c.project_slug && !popularity.has(c.project_slug)) popularity.set(c.project_slug, { rank, readers: c.readers });
+for (const [rank, c] of (await rankCreators()).entries()) if (c.project_slug && !popularity.has(c.project_slug)) popularity.set(c.project_slug, { rank, readers: c.score.people });
 const scored = rankNotes(rows);
 const staging: Record<string, Staged> = await Bun.file(`${STATE_DIR}/staging.json`).json().catch(() => ({}));
 const html = feedPage(scored, jim, articles, helpfulAt, staging, config.url, config.anonKey, newIds, popularity);

@@ -3,12 +3,28 @@
  *  pipeline can import this file without pulling in the browser-only client
  *  setup in supabase.ts. */
 
-const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si"];
+// Query parameters that only record how the reader arrived, never which page
+// they see. Substack's logged-in reader adds lli=1 ("logged-in link") to every
+// post link it shows, for example on a profile's Posts tab, next to its utm_
+// parameters. On *.substack.com post links the whole query is dropped anyway
+// (see isSubstackHostPost), so lli is listed here for the custom domains.
+const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli"];
+
+/** Whether the URL is a post on a *.substack.com host. Such a post is chosen by
+ *  its path alone, and its stored item URL never has a query. Substack keeps
+ *  adding parameters of its own to post links, such as r (a referral code),
+ *  triedRedirect and lli. Each new one used to break matching until we listed
+ *  it, so on these hosts the query is dropped whatever it holds. A newsletter
+ *  on its own domain cannot be recognized from its address, so its links only
+ *  lose the tracking parameters. */
+function isSubstackHostPost(url: URL): boolean {
+  return /(^|\.)substack\.com$/.test(url.hostname) && url.pathname.startsWith("/p/");
+}
 
 /** Canonicalizes a page URL so it can be looked up in `everything_items.url`,
  *  with the page's canonical link passed in as a plain string. Callers that
  *  hold a Document use normalizePageUrl instead. The hash and any tracking
- *  parameters are dropped. */
+ *  parameters are dropped, and a *.substack.com post loses its whole query. */
 export function canonicalizePageUrl(href: string, canonical: string | null): string {
   let url = new URL(href);
   if (canonical) {
@@ -22,6 +38,10 @@ export function canonicalizePageUrl(href: string, canonical: string | null): str
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
+  if (isSubstackHostPost(url)) {
+    url.search = "";
+    return url.toString();
+  }
   // We collect the keys with forEach rather than by iterating. A Firefox content
   // script sees DOM objects through Xray wrappers, and those do not support the
   // iterator protocol on URLSearchParams. Spreading `url.searchParams.keys()`
@@ -125,4 +145,14 @@ export async function fetchReaderCanonical(href: string): Promise<string | null>
   } catch {
     return null;
   }
+}
+
+export const COMMONNOTES_ORIGIN = "https://commonnotes.net";
+
+/** Builds a deep link to a single note on the public site. The extension's
+ *  Share action copies it, and the Slack announcements link to it. The site's
+ *  addresses are described in everything-web/src/lib/routing.ts. */
+export function noteShareUrl(projectSlug: string | null, noteId: string): string {
+  const project = projectSlug ? `/${encodeURIComponent(projectSlug)}` : "";
+  return `${COMMONNOTES_ORIGIN}/notes${project}?note=${encodeURIComponent(noteId)}`;
 }

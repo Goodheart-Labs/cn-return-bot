@@ -1,4 +1,5 @@
 import type { TablesInsert } from "./database.types";
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 import type { FeedProjectRow } from "./types";
 
@@ -30,13 +31,17 @@ export async function fetchProjects(): Promise<FeedProjectRow[]> {
  *  someone had pressed it. Returns null when the query failed, so a caller does
  *  not mistake an outage for "nobody is prioritised". */
 export async function fetchPrioritizedCreatorUrls(): Promise<string[] | null> {
-  const { data, error } = await supabase
-    .from("everything_projects")
-    .select("feed_url")
-    .not("feed_url", "is", null)
-    .gt("priority_until", new Date().toISOString());
-  if (error) return null;
-  return data.map((r) => r.feed_url!);
+  const now = new Date().toISOString();
+  try {
+    const projects = await fetchAllRows<{ id: string; feed_url: string }>(
+      () => supabase.from("everything_projects").select("id, feed_url").not("feed_url", "is", null).gt("priority_until", now),
+      "id",
+      { label: "prioritizedCreators" },
+    );
+    return projects.map((r) => r.feed_url);
+  } catch {
+    return null;
+  }
 }
 
 /** Records that a reader wants a whole Substack publication or YouTube channel

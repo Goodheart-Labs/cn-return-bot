@@ -12,7 +12,10 @@ import { useSession } from "../auth/useSession";
 import { Composer } from "./Composer";
 import { useDeleteNote, usePostImprovement, usePostNnn } from "./useNoteWrites";
 
-const ACTION_ICON_SIZE = 16;
+/** The action icons are sized relative to the row's text, so they stay in
+ *  proportion on the website's larger text and on the extension's smaller one.
+ *  Filled icons at a fixed 16px looked heavy next to the extension's 12px text. */
+const ACTION_ICON_SIZE = "1.15em";
 
 /** On a touch screen the action links grow to a finger-sized target. */
 const TOUCH_TARGET = "[@media(pointer:coarse)]:min-h-10";
@@ -27,11 +30,12 @@ const logPostFailure = (what: string) => (err: Error) => console.error(`[common-
  *  note on the same claim and shows it beside the original. You can copy a deep
  *  link to the note. On a note you wrote yourself there is also a ⋯ menu, and
  *  it holds Delete. */
-export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, children }: {
+export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, onDeleted, children }: {
   note: NoteRow;
   /** The absolute deep link to this note. The website builds it from the
    *  project slug. The extension passes the public site's URL instead. */
   shareUrl: string;
+  onDeleted?: () => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions rendered between Share and the ⋯ button. The feed uses this
@@ -75,7 +79,7 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   const del = () => {
     setExpanded(null);
     setConfirmingDelete(false);
-    deleteNote.mutate(note.id);
+    void deleteNote.mutateAsync(note.id).then(() => onDeleted?.()).catch(() => {});
   };
   // A reader with no session gets an invisible anonymous account on the spot,
   // and the composer renders as soon as the new session reaches this
@@ -96,8 +100,10 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
             moved the other actions out of it on 2026-07-14, because the menu
             was hiding the whole improvement flow. */}
         {showSourcesButton && (
-          <Button variant="link" className={TOUCH_TARGET} onClick={onToggleSources}>
-            <QuoteIcon size={ACTION_ICON_SIZE} aria-hidden /> {sourcesOpen ? "Hide source details" : "Show source details"}
+          // The label stays the same when the details open. A label that changed
+          // width made the row wrap differently in the two states.
+          <Button variant="link" className={TOUCH_TARGET} aria-expanded={!!sourcesOpen} onClick={onToggleSources}>
+            <QuoteIcon size={ACTION_ICON_SIZE} aria-hidden /> Source details
           </Button>
         )}
         <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("nnn")}>

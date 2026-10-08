@@ -98,6 +98,21 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_admins: {
+        Row: {
+          added_at: string
+          email: string
+        }
+        Insert: {
+          added_at?: string
+          email: string
+        }
+        Update: {
+          added_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       everything_claims: {
         Row: {
           claim: string
@@ -261,6 +276,7 @@ export type Database = {
           progress: Json | null
           project_id: string | null
           published_at: string | null
+          request_steer: string | null
           retries: number
           skip_reason: string | null
           source: string
@@ -280,6 +296,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          request_steer?: string | null
           retries?: number
           skip_reason?: string | null
           source: string
@@ -299,6 +316,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          request_steer?: string | null
           retries?: number
           skip_reason?: string | null
           source?: string
@@ -354,6 +372,112 @@ export type Database = {
             foreignKeyName: "everything_link_visits_item_id_fkey"
             columns: ["item_id"]
             isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_minisite_jobs: {
+        Row: {
+          created_at: string
+          error: string | null
+          finished_at: string | null
+          id: string
+          kind: string
+          minisite_id: string | null
+          requested_by: string | null
+          result: Json | null
+          started_at: string | null
+          status: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          kind: string
+          minisite_id?: string | null
+          requested_by?: string | null
+          result?: Json | null
+          started_at?: string | null
+          status?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          kind?: string
+          minisite_id?: string | null
+          requested_by?: string | null
+          result?: Json | null
+          started_at?: string | null
+          status?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_minisite_jobs_minisite_id_fkey"
+            columns: ["minisite_id"]
+            isOneToOne: false
+            referencedRelation: "everything_minisites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_minisites: {
+        Row: {
+          byline: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          description: string
+          features: string[]
+          id: string
+          image_url: string | null
+          item_id: string
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          byline?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          features?: string[]
+          id?: string
+          image_url?: string | null
+          item_id: string
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          byline?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          features?: string[]
+          id?: string
+          image_url?: string | null
+          item_id?: string
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_minisites_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: true
             referencedRelation: "everything_items"
             referencedColumns: ["id"]
           },
@@ -439,40 +563,49 @@ export type Database = {
         Row: {
           client_token: string | null
           created_at: string
+          feed_url: string | null
           id: string
           item_id: string | null
           page_text: string | null
           page_title: string
           page_url: string
+          passage_question_id: string | null
           selection: string | null
           status: string
           status_reason: string | null
+          steer: string | null
           user_id: string | null
         }
         Insert: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
           page_title?: string
           page_url: string
+          passage_question_id?: string | null
           selection?: string | null
           status?: string
           status_reason?: string | null
+          steer?: string | null
           user_id?: string | null
         }
         Update: {
           client_token?: string | null
           created_at?: string
+          feed_url?: string | null
           id?: string
           item_id?: string | null
           page_text?: string | null
           page_title?: string
           page_url?: string
+          passage_question_id?: string | null
           selection?: string | null
           status?: string
           status_reason?: string | null
+          steer?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -481,6 +614,13 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: false
             referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_note_requests_passage_question_id_fkey"
+            columns: ["passage_question_id"]
+            isOneToOne: true
+            referencedRelation: "everything_passage_questions"
             referencedColumns: ["id"]
           },
         ]
@@ -580,6 +720,150 @@ export type Database = {
           },
         ]
       }
+      everything_passage_highlight_votes: {
+        Row: {
+          created_at: string
+          entry_id: string
+          vote: number
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          vote: number
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          vote?: number
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_passage_highlight_votes_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "everything_passage_highlights"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_passage_highlights: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          context_paragraph: string
+          created_at: string
+          helpful_count: number
+          id: string
+          item_id: string
+          kind: string
+          not_helpful_count: number
+          probability: number | null
+          quote: string
+          somewhat_helpful_count: number
+          statement: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          context_paragraph: string
+          created_at?: string
+          helpful_count?: number
+          id?: string
+          item_id: string
+          kind: string
+          not_helpful_count?: number
+          probability?: number | null
+          quote: string
+          somewhat_helpful_count?: number
+          statement: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          context_paragraph?: string
+          created_at?: string
+          helpful_count?: number
+          id?: string
+          item_id?: string
+          kind?: string
+          not_helpful_count?: number
+          probability?: number | null
+          quote?: string
+          somewhat_helpful_count?: number
+          statement?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_passage_highlights_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_passage_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          author_id: string
+          cost_usd: number
+          created_at: string
+          draft: Json | null
+          error: string | null
+          id: string
+          item_id: string
+          model: string | null
+          passage: string
+          question: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          author_id: string
+          cost_usd?: number
+          created_at?: string
+          draft?: Json | null
+          error?: string | null
+          id?: string
+          item_id: string
+          model?: string | null
+          passage: string
+          question: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          author_id?: string
+          cost_usd?: number
+          created_at?: string
+          draft?: Json | null
+          error?: string | null
+          id?: string
+          item_id?: string
+          model?: string | null
+          passage?: string
+          question?: string
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_passage_questions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_pipeline_runs: {
         Row: {
           ab_test_picks: Json | null
@@ -595,6 +879,7 @@ export type Database = {
           logs: Json | null
           outcome: string | null
           outcome_reason: string | null
+          work_priority: string | null
         }
         Insert: {
           ab_test_picks?: Json | null
@@ -610,6 +895,7 @@ export type Database = {
           logs?: Json | null
           outcome?: string | null
           outcome_reason?: string | null
+          work_priority?: string | null
         }
         Update: {
           ab_test_picks?: Json | null
@@ -625,6 +911,7 @@ export type Database = {
           logs?: Json | null
           outcome?: string | null
           outcome_reason?: string | null
+          work_priority?: string | null
         }
         Relationships: [
           {
@@ -706,6 +993,24 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_slack_announcements: {
+        Row: {
+          channel: string
+          posted_at: string
+          subject_id: string
+        }
+        Insert: {
+          channel: string
+          posted_at?: string
+          subject_id: string
+        }
+        Update: {
+          channel?: string
+          posted_at?: string
+          subject_id?: string
+        }
+        Relationships: []
+      }
       everything_top_posts: {
         Row: {
           feed_url: string
@@ -739,6 +1044,39 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_vote_history: {
+        Row: {
+          action: string
+          at: string
+          id: number
+          new_vote: number | null
+          old_vote: number | null
+          target_id: string
+          vote_table: string
+          voter_id: string
+        }
+        Insert: {
+          action: string
+          at?: string
+          id?: never
+          new_vote?: number | null
+          old_vote?: number | null
+          target_id: string
+          vote_table: string
+          voter_id: string
+        }
+        Update: {
+          action?: string
+          at?: string
+          id?: never
+          new_vote?: number | null
+          old_vote?: number | null
+          target_id?: string
+          vote_table?: string
+          voter_id?: string
+        }
+        Relationships: []
+      }
       everything_votes: {
         Row: {
           created_at: string
@@ -746,6 +1084,7 @@ export type Database = {
           note_id: string
           platform: string | null
           reasoning: string | null
+          updated_at: string
           vote: number
           voter_id: string
         }
@@ -755,6 +1094,7 @@ export type Database = {
           note_id: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote: number
           voter_id: string
         }
@@ -764,6 +1104,7 @@ export type Database = {
           note_id?: string
           platform?: string | null
           reasoning?: string | null
+          updated_at?: string
           vote?: number
           voter_id?: string
         }
@@ -776,6 +1117,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      everything_youtube_channels: {
+        Row: {
+          channel_id: string
+          feed_url: string
+          listed_at: string | null
+          notified_at: string | null
+          subscribed_at: string | null
+          title: string
+          uploads: Json
+        }
+        Insert: {
+          channel_id: string
+          feed_url: string
+          listed_at?: string | null
+          notified_at?: string | null
+          subscribed_at?: string | null
+          title: string
+          uploads?: Json
+        }
+        Update: {
+          channel_id?: string
+          feed_url?: string
+          listed_at?: string | null
+          notified_at?: string | null
+          subscribed_at?: string | null
+          title?: string
+          uploads?: Json
+        }
+        Relationships: []
       }
       fact_check_usage: {
         Row: {
@@ -1642,6 +2013,24 @@ export type Database = {
         }
         Relationships: []
       }
+      trending_posts: {
+        Row: {
+          post_id: string
+          posted_at: string
+          topic: string
+        }
+        Insert: {
+          post_id: string
+          posted_at?: string
+          topic: string
+        }
+        Update: {
+          post_id?: string
+          posted_at?: string
+          topic?: string
+        }
+        Relationships: []
+      }
       tweets: {
         Row: {
           author_description: string | null
@@ -1895,14 +2284,28 @@ export type Database = {
         Returns: Json
       }
       everything_cost_since: { Args: { since: string }; Returns: number }
-      everything_creator_attention: {
-        Args: { min_pages: number; since: string }
+      everything_create_minisite: {
+        Args: {
+          job_id: string
+          new_description: string
+          new_features: string[]
+          new_slug: string
+          new_title: string
+        }
+        Returns: string
+      }
+      everything_creator_visit_scores: {
+        Args: { last_posts: number }
         Returns: {
           feed_url: string
-          pages: number
-          readers: number
-          visits: number
+          people: number
+          posts: number
+          visitors_per_post: number
         }[]
+      }
+      everything_creator_project: {
+        Args: { creator_feed_url: string }
+        Returns: string
       }
       everything_daily_activity: {
         Args: { window_days?: number }
@@ -1943,6 +2346,7 @@ export type Database = {
           users: number
         }[]
       }
+      everything_is_admin: { Args: never; Returns: boolean }
       everything_leaderboard: {
         Args: never
         Returns: {
@@ -1985,11 +2389,11 @@ export type Database = {
           vote_score: number
         }[]
       }
+      everything_reader_cost_since: { Args: { since: string }; Returns: number }
       everything_recent_posts: {
-        Args: { max_posts: number; min_pages: number; window_days: number }
+        Args: { last_posts: number; max_posts: number }
         Returns: {
-          author_pages: number
-          author_readers: number
+          author_visitors_per_post: number
           checked_scope: string
           claims_checked: number
           claims_extracted: number
@@ -2021,6 +2425,14 @@ export type Database = {
           hour: string
           runs: number
         }[]
+      }
+      everything_start_minisite_check: {
+        Args: { target_minisite: string }
+        Returns: undefined
+      }
+      everything_visit_creator: {
+        Args: { feed_url: string; url: string }
+        Returns: string
       }
       everything_visit_page: { Args: { url: string }; Returns: string }
       fact_check_consume: {
