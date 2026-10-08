@@ -10,7 +10,8 @@
  * in one chunk, share the chunk's extraction calls.
  */
 import PQueue from "p-queue";
-import { runExtraction } from "../../../everything/pipeline/extractClaims";
+import { bodyOfChunkMessage, runPassageExtraction } from "../../../everything/pipeline/extractClaims";
+import { claimsOfPassages } from "../../../everything/pipeline/passages";
 import type { ChunkRun, ChunkSample, DatasetRow, ExtractorEvalResult, ExtractorRowResult, JudgeAnswer } from "./evalTypes";
 import { judgeExtraction, withCost } from "./judges";
 
@@ -48,8 +49,15 @@ function casesOf(rows: DatasetRow[]): EvalCase[] {
 
 async function sampleChunk(userMessage: string): Promise<ChunkSample> {
   try {
-    const { value, costUsd } = await withCost(() => runExtraction(userMessage));
-    return { claims: value.map((c) => ({ claim: c.claim, context: c.context, imageUrls: c.imageUrls })), costUsd };
+    const { value, costUsd } = await withCost(() => runPassageExtraction(userMessage));
+    const claims = claimsOfPassages(value.passages, bodyOfChunkMessage(userMessage));
+    return {
+      claims: claims.map((c) => ({ claim: c.claim, context: c.context, imageUrls: c.imageUrls })),
+      passages: value.passages.map((p) => ({ text: p.text, type: p.type, ...(typeof p.extra.why === "string" ? { why: p.extra.why } : {}), claims: p.claims })),
+      coverage: value.coverage,
+      attempts: value.attempts,
+      costUsd,
+    };
   } catch (err: any) {
     return { claims: [], costUsd: 0, error: err?.message ?? String(err) };
   }
@@ -86,8 +94,9 @@ export async function runExtractorEval(rows: DatasetRow[]): Promise<ExtractorEva
         ),
       );
       const foundIn = judgements.filter((j) => j?.found).length;
-      console.log(`  ${c.id}: found in ${foundIn} of ${SAMPLES_PER_CHUNK}`);
-      return { id: c.id, datapointId: c.datapointId, group: c.group, referenceClaim: c.referenceClaim, passage: c.passage, chunkKey: c.chunkKey, judgements, foundIn, passed: foundIn >= PASS_AT };
+      const atomicIn = judgements.filter((j) => j?.found && j.atomic).length;
+      console.log(`  ${c.id}: found in ${foundIn} of ${SAMPLES_PER_CHUNK}, atomic in ${atomicIn}`);
+      return { id: c.id, datapointId: c.datapointId, group: c.group, referenceClaim: c.referenceClaim, passage: c.passage, chunkKey: c.chunkKey, judgements, foundIn, atomicIn, passed: foundIn >= PASS_AT };
     }),
   );
   return {

@@ -31,6 +31,8 @@ export type EvalName = "extractor" | "checker";
 
 export interface JudgeAnswer {
   found: boolean;
+  /** Whether every matching claim states a single statement. Missing in a run made before the judge asked. */
+  atomic?: boolean;
   matchingClaims: number[];
   reason: string;
 }
@@ -41,9 +43,24 @@ export interface ExtractedClaimSummary {
   imageUrls: string[];
 }
 
+/** A passage the extractor cut out of a chunk, sorted as a statement, a forecast or other. */
+export interface PassageSummary {
+  text: string;
+  type: string;
+  /** What an "other" passage is, in the model's words. */
+  why?: string;
+  claims: string[];
+}
+
 /** One call of the extractor on one chunk. A failed call has an error and no claims. */
 export interface ChunkSample {
   claims: ExtractedClaimSummary[];
+  /** Missing in a run made before the passage format. */
+  passages?: PassageSummary[];
+  /** The share of the chunk's characters that the passages cover. */
+  coverage?: number;
+  /** How many answers the extractor needed to give passages that add up to the chunk. */
+  attempts?: number;
   /** How many claims the extractor flagged as speculation, in a run made before the passage format. The pipeline dropped them, so the judge never saw them. */
   speculationDropped?: number;
   costUsd: number;
@@ -73,6 +90,8 @@ export interface ExtractorRowResult {
   /** The judge's answer per sample. A sample whose extraction failed has none. */
   judgements: (JudgeAnswer | null)[];
   foundIn: number;
+  /** In how many samples the statement was found and every matching claim was atomic. Missing in a run made before the judge asked. */
+  atomicIn?: number;
   passed: boolean;
 }
 

@@ -16,7 +16,9 @@ const EXTRACTION_JUDGE_PROMPT = `You check whether a list of extracted claims co
 
 You get a reference claim, the passage of the text it comes from, and a numbered list of extracted claims. The list contains the reference claim if one listed claim, or several listed claims together, state the same checkable fact, even in other words. The extractor splits compound statements into several claims, so every part of the reference claim must be stated by some listed claim. A claim that only mentions the topic, leaves out a checkable part, or states something different does not count.
 
-Answer with JSON: { "reason": string, "matching_claims": number[], "found": boolean }. Write the reason first.`;
+Extracted claims should be atomic: each states one thing that could be checked on its own. "atomic" is true when every claim you matched is atomic, and false when a matching claim bundles several separate statements together, for example two facts joined by "and". When nothing matched, "atomic" is true.
+
+Answer with JSON: { "reason": string, "matching_claims": number[], "found": boolean, "atomic": boolean }. Write the reason first.`;
 
 const QUALITY_JUDGE_PROMPT = `You compare a community note written by a pipeline with the correction a human expert says is right.
 
@@ -30,8 +32,9 @@ const EXTRACTION_JUDGE_FORMAT = jsonSchemaResponseFormat("extraction_judgement",
     reason: { type: "string" },
     matching_claims: { type: "array", items: { type: "integer" } },
     found: { type: "boolean" },
+    atomic: { type: "boolean" },
   },
-  required: ["reason", "matching_claims", "found"],
+  required: ["reason", "matching_claims", "found", "atomic"],
   additionalProperties: false,
 });
 
@@ -90,12 +93,13 @@ export async function judgeExtraction(referenceClaim: string, passage: string, c
       system: EXTRACTION_JUDGE_PROMPT,
       user: `Reference claim: ${referenceClaim}\n\nPassage: ${passage}\n\nExtracted claims:\n${numbered}`,
       format: EXTRACTION_JUDGE_FORMAT,
-      schemaHint: `{ "reason": string, "matching_claims": number[], "found": boolean }`,
+      schemaHint: `{ "reason": string, "matching_claims": number[], "found": boolean, "atomic": boolean }`,
       parse: (toParse) => {
         const raw = JSON.parse(toParse);
-        const shapeOk = typeof raw.reason === "string" && typeof raw.found === "boolean" && Array.isArray(raw.matching_claims) && raw.matching_claims.every(Number.isInteger);
-        if (!shapeOk) throw new Error("extraction judge JSON missing reason/matching_claims/found");
-        return { found: raw.found, matchingClaims: raw.matching_claims, reason: raw.reason };
+        const shapeOk =
+          typeof raw.reason === "string" && typeof raw.found === "boolean" && typeof raw.atomic === "boolean" && Array.isArray(raw.matching_claims) && raw.matching_claims.every(Number.isInteger);
+        if (!shapeOk) throw new Error("extraction judge JSON missing reason/matching_claims/found/atomic");
+        return { found: raw.found, atomic: raw.atomic, matchingClaims: raw.matching_claims, reason: raw.reason };
       },
     }),
   );
