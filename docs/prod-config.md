@@ -351,6 +351,20 @@ that secret changes, existing subscriptions keep signing with the old value,
 and the function ignores their notifications. Each subscription is renewed 7
 days after it was made, the next time the walk reaches its channel.
 
+## Hetzner: the services machine
+
+Hetzner is the German hosting company that rents us the always-on server
+described in [ops/README.md](../ops/README.md). It is the Hetzner Cloud server
+`ubuntu-8gb-hel1-1`, type CX33 (4 shared vCPUs, 8 GB memory), in Helsinki, at
+`95.217.155.79`. It replaced the CPX32 `ubuntu-8gb-nbg1-1` at `167.235.29.159`
+on 2026-10-08 (GOO-244). The old server was deleted the same day. The server was created with the devbox's SSH key, and
+password login is switched off. `ssh root@95.217.155.79` works from the devbox.
+
+Nothing finds the machine by name. Only the two repository secrets
+`CLAIM_CHECK_URL` (`http://95.217.155.79:8787`) and `EXTRACTION_URL`
+(`http://95.217.155.79:8788`) hold its address. So a move to another machine
+changes those two values and nothing else outside the machine.
+
 ## Residential proxy
 
 YouTube refuses video requests from datacenter machines. The pipeline sends
