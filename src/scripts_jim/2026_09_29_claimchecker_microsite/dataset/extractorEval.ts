@@ -45,12 +45,7 @@ function chunkOf(row: DatasetRow, text: string, descriptions: Map<string, Gemini
 async function sampleChunk(userMessage: string): Promise<ChunkSample> {
   try {
     const { value, costUsd } = await withCost(() => runExtraction(userMessage));
-    const kept = value.filter((c) => !c.speculation);
-    return {
-      claims: kept.map((c) => ({ claim: c.claim, context: c.context, imageUrls: c.image_urls ?? [] })),
-      speculationDropped: value.length - kept.length,
-      costUsd,
-    };
+    return { claims: value.map((c) => ({ claim: c.claim, context: c.context, imageUrls: c.imageUrls })), costUsd };
   } catch (err: any) {
     return { claims: [], speculationDropped: 0, costUsd: 0, error: err?.message ?? String(err) };
   }

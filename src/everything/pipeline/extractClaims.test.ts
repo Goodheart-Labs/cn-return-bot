@@ -1,5 +1,6 @@
 import { describe, expect, spyOn, test } from "bun:test";
-import { articleChunk, chunkText, contextTimeSpan, describeArticleImages, extractionSystemPrompt, renderImageDescriptions, runExtraction } from "./extractClaims";
+import { articleChunk, bodyOfChunkMessage, chunkText, contextTimeSpan, describeArticleImages, extractionSystemPrompt, renderImageDescriptions, runExtraction, runPassageExtraction } from "./extractClaims";
+import { PASSAGE_TYPES } from "./passages";
 import { claudeExtractionModels, withExtractionModels } from "./model";
 import * as costTracker from "../../pipeline/cost-tracking/costTracker";
 import * as gemini from "../../pipeline/media/mediaAnalysisGemini";
@@ -102,26 +103,72 @@ describe("describeArticleImages", () => {
 });
 
 describe("runExtraction", () => {
-  test("sends the chunk to the model that extractionModels names and returns its claims", async () => {
-    const claim = { claim: "A is true.", context: "A is true.", context_paragraph: "A is true.", image_urls: [], very_confident_that_its_true: false, speculation: false };
-    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue({
-      response: { choices: [{ message: { content: JSON.stringify({ claims: [claim] }) } }] },
-      costEntry: { name: "claim_extraction", input_tokens: 1, output_tokens: 1, cost: 0, tools: [] },
-    } as any);
-    const claims = await withExtractionModels(claudeExtractionModels("anthropic/claude-sonnet-5.5", "medium"), () => runExtraction("Article excerpt:\n\nA is true."));
-    expect(claims).toEqual([claim]);
+  const message = "Article excerpt:\n\nA is true. B is a matter of taste.";
+  const completion = (passages: object) => ({
+    response: { choices: [{ message: { content: JSON.stringify(passages) } }] },
+    costEntry: { name: "claim_extraction", input_tokens: 1, output_tokens: 1, cost: 0, tools: [] },
+  });
+
+  test("sends the chunk to the model that extractionModels names and returns the claims of its passages", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(
+      completion({ "A is true.": { type: "statement", claims: ["A is true."] }, "B is a matter of taste.": { type: "other" } }) as any,
+    );
+    const claims = await withExtractionModels(claudeExtractionModels("anthropic/claude-sonnet-5.5", "medium"), () => runExtraction(message));
+    expect(claims).toEqual([{ claim: "A is true.", context: "A is true.", contextParagraph: "A is true. B is a matter of taste.", imageUrls: [] }]);
     const request = spy.mock.calls[0]![1] as any;
     expect(request.model).toBe("anthropic/claude-sonnet-5.5");
     expect(request.reasoning_effort).toBe("medium");
-    expect(request.messages.at(-1)).toEqual({ role: "user", content: "Article excerpt:\n\nA is true." });
+    expect(request.response_format).toEqual({ type: "json_object" });
+    expect(request.messages.at(-1)).toEqual({ role: "user", content: message });
+    spy.mockRestore();
+  });
+
+  test("tells the model which text its passages left out and asks again", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate")
+      .mockResolvedValueOnce(completion({ "A is true.": { type: "statement", claims: ["A is true."] } }) as any)
+      .mockResolvedValueOnce(completion({ "A is true.": { type: "statement", claims: ["A is true."] }, "B is a matter of taste.": { type: "other" } }) as any);
+    const extraction = await runPassageExtraction(message);
+    expect(extraction.attempts).toBe(2);
+    expect(extraction.passages).toHaveLength(2);
+    const retryMessages = (spy.mock.calls[1]![1] as any).messages;
+    expect(retryMessages.at(-1).content).toContain("B is a matter of taste.");
+    spy.mockRestore();
+  });
+
+  test("gives up when the passages never add up to the text", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(completion({ "A is true.": { type: "statement", claims: ["A is true."] } }) as any);
+    await expect(runPassageExtraction(message)).rejects.toThrow("no acceptable answer after 3 attempts");
+    expect(spy).toHaveBeenCalledTimes(3);
+    spy.mockRestore();
+  });
+
+  test("does not call the model for a chunk that holds only an image block", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate");
+    const extraction = await runPassageExtraction("Article excerpt:\n\n[Image: https://x/a.png\nDescription: A chart.]");
+    expect(extraction.passages).toEqual([]);
+    expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
   });
 });
 
+describe("bodyOfChunkMessage", () => {
+  test("strips the label of an article chunk and of a transcript chunk", () => {
+    expect(bodyOfChunkMessage("Article excerpt:\n\nText.")).toBe("Text.");
+    expect(bodyOfChunkMessage("Transcript segment:\n\nSpeech.")).toBe("Speech.");
+  });
+
+  test("keeps only the part after the introduction", () => {
+    expect(bodyOfChunkMessage("Introduction (context only):\n\nOpening.\n\nPart:\n\nArticle excerpt:\n\nText.")).toBe("Text.");
+  });
+});
+
 describe("extractionSystemPrompt", () => {
-  test("describes every field of the response the extraction is parsed against", () => {
-    for (const field of ["claim", "context", "context_paragraph", "image_urls", "very_confident_that_its_true", "speculation"]) {
-      expect(extractionSystemPrompt()).toContain(`"${field}"`);
-    }
+  test("names every passage type and asks for the claims of a passage", () => {
+    for (const type of PASSAGE_TYPES) expect(extractionSystemPrompt()).toContain(`"${type}"`);
+    expect(extractionSystemPrompt()).toContain('"claims"');
+  });
+
+  test("adds the types an experiment asks for", () => {
+    expect(extractionSystemPrompt({ other: "fits none of the above" })).toContain('- "other": fits none of the above');
   });
 });

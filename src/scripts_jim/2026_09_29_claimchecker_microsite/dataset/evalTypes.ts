@@ -37,8 +37,8 @@ export interface ExtractedClaimSummary {
 /** One call of the extractor on one chunk. A failed call has an error and no claims. */
 export interface ChunkSample {
   claims: ExtractedClaimSummary[];
-  /** How many claims the extractor flagged as speculation. The pipeline drops them, so the judge never sees them. */
-  speculationDropped: number;
+  /** How many claims the extractor flagged as speculation, in a run made before the passage format. The pipeline dropped them, so the judge never saw them. */
+  speculationDropped?: number;
   costUsd: number;
   error?: string;
 }
