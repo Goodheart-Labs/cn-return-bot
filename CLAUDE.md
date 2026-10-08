@@ -22,6 +22,7 @@ The goals, in order: views of AI-written notes, misleading views suppressed, get
 
 - `src/pipeline/` - the X bot's note writing: `simple-bot/` (search, writer, correction extraction), `prefilter/` (cheap gates before the bot), `verify/` (source verification), `score/` (calls X's `evaluate_note` endpoint, not an LLM), `llm/`, `ab-testing/` (every A/B arm, including which model each stage uses), `prompts/`, `media/`, `orchestration/`, `capacity/` and `ranking/` (how many notes to submit and in which order), `utils/`.
 - `src/production/` - entry points for GitHub Actions (`runPipeline`, `updateNoteFeedback`).
+- `src/note-tweets/` - the local Common Notes feed, tweet staging and Typefully drafts.
 - `src/service/` - the services that do the expensive work for both products (see "Services machine" below).
 - `src/local/` - local tools (`tryoutNotes`, `runOnVideos`, `evaluateResults`).
 - `src/scraper/` - the notewriter page scraper.
