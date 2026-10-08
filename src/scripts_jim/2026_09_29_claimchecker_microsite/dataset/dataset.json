@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-07T19:57:41.883Z",
+ "generatedAt": "2026-10-08T12:08:35.530Z",
  "datapoints": [
   {
    "id": "berkeley-as",
@@ -242,7 +242,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:38.455Z",
+     "created_at": "2026-10-08T12:08:31.362Z",
      "text": "Highlighted claim from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\nSurrounding context: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.",
      "media": []
     },
@@ -311,7 +311,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:38.746Z",
+     "created_at": "2026-10-08T12:08:31.840Z",
      "text": "Highlighted claim from Article: Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity.\nSurrounding context: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.",
      "media": []
     },
@@ -368,7 +368,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:39.039Z",
+     "created_at": "2026-10-08T12:08:32.292Z",
      "text": "Highlighted claim from Article: She also recruited her sisters as cam girls once.\nSurrounding context: She also recruited her sisters as cam girls once. I am vague on the details.",
      "media": []
     },
@@ -436,7 +436,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:39.321Z",
+     "created_at": "2026-10-08T12:08:32.692Z",
      "text": "Highlighted claim from Article: What is troubling about this is that it would be nearly impossible to prove.\nSurrounding context: What is troubling about this is that it would be nearly impossible to prove. You showed up for an actual group sex fake rape party. If the rules are messed up and you outright get raped when you are trying to say no, you are going to have to explain to a cop exactly the difference between what happened and what was supposed to happen, or you are going to have to deal with some Effective Altruist mediator who is likely going to send you to counseling with your rapist,",
      "media": []
     },
@@ -467,11 +467,11 @@
    "id": "pivotal-act-terrorism",
    "group": "note-difficult",
    "groupTitle": "Note should be written (difficult)",
-   "jimsWords": "\"acts of terrorism that he believes anyone making AGI must do\"\n\nNeeds Note (Difficutl): Requires taste. He is in fact thinks that terrorism (destroying datacenters) would be okay, but not killing people",
+   "jimsWords": "\"acts of terrorism that he believes anyone making AGI must do\"\n\nNeeds Note (Difficutl): Requires taste. He is in fact thinks that terrorism (destroying datacenters) would be okay, but not killing people\n\n[Reworded by Jim in chat, 8 October] He believes that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions, and he thinks that murder is deeply wrong, so just saying terrorism would paint a wrong picture of him.",
    "writtenOn": "2026-10-05",
    "expected": {
     "decision": "note",
-    "referenceNote": "Yudkowsky does think that terrorism in the form of destroying datacenters would be okay, but he does not think that killing people would be."
+    "referenceNote": "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him."
    },
    "referenceClaim": "Yudkowsky's term \"pivotal act\" is a euphemism for acts of terrorism that he believes anyone building AGI must commit.",
    "item": {
@@ -505,7 +505,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:39.639Z",
+     "created_at": "2026-10-08T12:08:33.054Z",
      "text": "Highlighted claim from Article: acts of terrorism that he believes anyone making AGI must do\nSurrounding context: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.",
      "media": []
     },
@@ -574,7 +574,7 @@
     "post": {
      "id": "60c2e7ea-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:39.942Z",
+     "created_at": "2026-10-08T12:08:33.343Z",
      "text": "Highlighted claim from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nSurrounding context: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
      "media": []
     },
@@ -590,9 +590,9 @@
       "text": "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs https://x.com/MelMitchell1/status/2107633255352865182",
       "writtenBy": "reader JimMaar1",
       "votes": {
-       "helpful": 9,
+       "helpful": 12,
        "somewhatHelpful": 1,
-       "notHelpful": 0
+       "notHelpful": 1
       },
       "sources": []
      }
@@ -642,7 +642,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:40.194Z",
+     "created_at": "2026-10-08T12:08:33.670Z",
      "text": "Highlighted claim from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true.\nSurrounding context: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.",
      "media": []
     },
@@ -1071,7 +1071,7 @@
     "post": {
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
-     "created_at": "2026-10-07T19:57:41.726Z",
+     "created_at": "2026-10-08T12:08:35.351Z",
      "text": "Highlighted claim from Article: Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters.\nSurrounding context: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.",
      "media": []
     },

@@ -133,11 +133,12 @@ export const DATAPOINTS: Datapoint[] = [
     itemId: SEX_CULT_POST,
     claimSource: { from: "production", claimId: "16bd8415-6a6b-42dc-9d7e-7a0a9974c6aa" },
     jimsWords:
-      "\"acts of terrorism that he believes anyone making AGI must do\"\n\nNeeds Note (Difficutl): Requires taste. He is in fact thinks that terrorism (destroying datacenters) would be okay, but not killing people",
+      "\"acts of terrorism that he believes anyone making AGI must do\"\n\nNeeds Note (Difficutl): Requires taste. He is in fact thinks that terrorism (destroying datacenters) would be okay, but not killing people\n\n[Reworded by Jim in chat, 8 October] He believes that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions, and he thinks that murder is deeply wrong, so just saying terrorism would paint a wrong picture of him.",
     writtenOn: "2026-10-05",
     expected: {
       decision: "note",
-      referenceNote: "Yudkowsky does think that terrorism in the form of destroying datacenters would be okay, but he does not think that killing people would be.",
+      referenceNote:
+        "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him.",
     },
     referenceClaim: "Yudkowsky's term \"pivotal act\" is a euphemism for acts of terrorism that he believes anyone building AGI must commit.",
   },

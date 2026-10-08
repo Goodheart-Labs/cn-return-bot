@@ -73,7 +73,7 @@ button { font: inherit; color: inherit; }
 .g-no-note-difficult { background: transparent; border-color: var(--nonote); color: var(--nonote); }
 
 .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-table { border-collapse: collapse; width: 100%; min-width: 1000px; table-layout: fixed; }
+table { border-collapse: collapse; width: 100%; min-width: 1060px; table-layout: fixed; }
 th { text-align: left; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; }
 td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 0.88rem; overflow-wrap: anywhere; }
 tr.row { cursor: pointer; }
@@ -94,6 +94,8 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 .toggle { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.8rem; margin: 0 6px 6px 0; background: var(--surface); }
 .meta { color: var(--muted); font-size: 0.8rem; margin: 6px 0 12px; }
 .pill { display: inline-block; border-radius: 4px; padding: 0 6px; font-size: 0.78rem; font-weight: 600; background: var(--code-bg); }
+.refnote { margin: 0 0 8px; }
+.refnote:last-child { margin-bottom: 0; }
 .expect-note { color: var(--note); font-weight: 600; }
 .expect-nonote { color: var(--nonote); font-weight: 600; }
 .small { font-size: 0.82rem; color: var(--muted); }
@@ -208,6 +210,22 @@ const expectedText = (d) =>
     ? `<span class="expect-note">Note</span>`
     : `<span class="expect-nonote">No note</span>${d.expected.noteTolerated ? `<br><span class="small">a note would not be bad</span>` : ""}`;
 
+const noteKind = (n) => (n.writtenBy === "the pipeline" ? "AI note" : "reader note");
+const isHelpful = (n) => n.votes.helpful > n.votes.notHelpful;
+/** The reference notes of a row: your own wording, and the real notes readers rated helpful. For a row where no note is wanted, the notes readers rejected. */
+function referenceCell(d, limit) {
+  const part = (label, text) => `<div class="refnote"><span class="small">${label}</span><br>${esc(limit ? truncate(text, limit) : text)}</div>`;
+  const notes = d.production.notes;
+  if (d.expected.decision === "note") {
+    const out = [];
+    if (d.expected.referenceNote) out.push(part("Your wording", d.expected.referenceNote));
+    for (const n of notes.filter(isHelpful)) out.push(part(`Real ${noteKind(n)}, ${votesText(n.votes)}`, n.text));
+    return out.length ? out.join("") : '<span class="small">none yet: production wrote no note and you gave no wording</span>';
+  }
+  const rejected = notes.map((n) => part(`Rejected ${noteKind(n)}, ${votesText(n.votes)}`, n.text));
+  return `<span class="small">No note expected.</span>${rejected.join("")}`;
+}
+
 function highlighted(text, span) {
   if (!span) return esc(text);
   return esc(text.slice(0, span.start)) + "<mark>" + esc(text.slice(span.start, span.end)) + "</mark>" + esc(text.slice(span.end));
@@ -245,7 +263,7 @@ const COLUMNS = {
     ["paragraph_source", "stored or from text", "Readers' highlights have no stored paragraph, so it is taken from the post's text, as the extractor would have stored it."],
     ["expected_decision", "note or no_note", "What the checker should end with."],
     ["note_tolerated", "true or false", "True when you said a note would not be bad. A note then counts as a soft failure."],
-    ["reference_note", "text or empty", "What the note should say, where you gave it. Where you did not, the production note readers voted on is shown instead."],
+    ["reference_notes", "texts", "What the note should say. For a note row: your own wording where you gave it, and every real production note that readers rated helpful, from a reader or from the pipeline. For a no-note row: the notes readers rejected, as examples of what not to write."],
     ["prompt_as_received", "text or empty", "The full prompt the checker saw, when its log was saved. This exists for 3 of the 14."],
     ["production_outcome", "note, votes, trace", "The production note and its votes, the research findings, the drafted note and the source check verdict, where logged."],
     ["jims_words", "text", "As in the extractor table."],
@@ -314,7 +332,7 @@ function checkerRows(points) {
         <td>${groupChip(d.group)}</td>
         <td><div class="cell-quote">${esc(truncate(label, 220))}</div></td>
         <td>${expectedText(d)}</td>
-        <td>${d.expected.referenceNote ? esc(d.expected.referenceNote) : '<span class="small">none given</span>'}</td>
+        <td>${referenceCell(d, 230)}</td>
         <td>${productionSummary(d.production)}</td></tr>`;
       if (!open) return row;
       const showAs = c.asReceived && c.asReceived.prompt ? state.open.has("as-" + d.id) : false;
@@ -324,7 +342,7 @@ function checkerRows(points) {
       const text = showAs ? c.asReceived.prompt : c.post.text + (c.post.media.length ? "\n\nImages: " + c.post.media.map((m) => m.url).join("\n") : "");
       return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
         <div><h4>What you wrote</h4><div class="words">${esc(d.jimsWords)}</div>
-          <h4>Expected</h4><p>${expectedText(d)}${d.expected.referenceNote ? `<br>${esc(d.expected.referenceNote)}` : ""}</p>
+          <h4>Expected</h4><p>${expectedText(d)}</p><h4>Reference notes</h4>${referenceCell(d, 0)}
           <h4>What production did</h4>${d.production.notes.length ? d.production.notes.map(noteBlock).join("") : `<p>${productionSummary(d.production)}</p>`}
           ${traceBlock(d.production.trace)}</div>
         <div><h4>Full input: what the checker is handed ${copyButton(d.id, "Copy")}</h4>
@@ -343,13 +361,13 @@ function renderDatasets() {
   const head =
     which === "extractor"
       ? "<tr><th>#</th><th>Group</th><th>Passage in the text</th><th>Reference claim</th><th>Source and chunk</th><th>Production</th></tr>"
-      : "<tr><th>#</th><th>Group</th><th>Claim handed to the checker</th><th>Expected</th><th>Reference note</th><th>Production</th></tr>";
+      : "<tr><th>#</th><th>Group</th><th>Claim handed to the checker</th><th>Expected</th><th>Reference notes</th><th>Production</th></tr>";
   document.getElementById("dsintro").innerHTML =
     (which === "extractor"
       ? `<p>The extractor reads one chunk of a post and returns claims. It passes a datapoint when its output contains the reference claim. A Muse judge decides that. All 14 are required, including the no-note ones, because the checker can only rule on a claim that exists.</p>`
       : `<p>The checker gets one claim and ends with a note or with no note. It passes when that matches the expected decision. For 12 of the 14 rows, readers already voted on a note in production, so their votes are a second opinion next to your labels.</p>`) +
     columnsTable(which);
-  const widths = which === "extractor" ? [40, 140, 300, 260, 190, 110] : [40, 140, 320, 120, 260, 120];
+  const widths = which === "extractor" ? [40, 140, 300, 260, 190, 110] : [40, 140, 270, 110, 380, 120];
   const cols = `<colgroup>${widths.map((w) => `<col style="width:${w}px">`).join("")}</colgroup>`;
   document.getElementById("dstable").innerHTML = `<div class="tablewrap"><table>${cols}<thead>${head}</thead><tbody>${which === "extractor" ? extractorRows(points) : checkerRows(points)}</tbody></table></div>`;
 }
@@ -429,17 +447,17 @@ any error                                      -> error, not counted as pass or 
     prompt: `System prompt (draft):
 You compare a community note written by a pipeline with the correction a human expert says is right.
 
-You get a claim, the reference correction and the pipeline's note. The note makes the same correction if its main point is the reference correction, or is consistent with it and at least as specific. A note about a different point, or one that contradicts the reference, does not.
+You get a claim, one or more reference corrections and the pipeline's note. The note makes the same correction if its main point is that of any reference correction, or is consistent with it and at least as specific. A note about a different point, or one that contradicts every reference, does not.
 
 Answer with JSON: { "reason": string, "same_point": boolean }.
 
 User message:
 Claim: <the claim>
 
-Reference correction: <your reference note>
+Reference corrections: <your wording and the real helpful notes, one per line>
 
 Pipeline note: <the note the check wrote>`,
-    note: "You gave a reference note for 3 rows: EA earning to give, the pivotal act and Melanie Mitchell. For the others, the production note readers rated helpful could serve as the reference." },
+    note: "Eight rows have at least one reference note. You gave wording for 3 (EA earning to give, the pivotal act, Melanie Mitchell), and real notes that readers rated helpful exist for 7 (Berkeley, Czechoslovakia, CFAR/FTX, cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell). Only the EA beholden row has none." },
   { id: "c-score", kind: "report", name: "Score", hint: "pass rate by group",
     what: "A table by your four groups with the rows passed, the soft failures and the errors, plus the cost per claim.",
     input: "The decision rule's results and, where present, the quality judge's.", output: "The table below, saved as a run next to the lab's other runs.", note: "The first line to watch is the no-note easy group. Those four are exactly the notes readers voted down." },
@@ -492,6 +510,7 @@ const DECISIONS = [
   "Only 3 of the 14 checker inputs come from a saved production prompt. The July posts have no check logs. The others are built with the pipeline's own function from the stored claim, which is the same text without the date lines and the comments.",
   "For the readers' highlights (CFAR/FTX, the cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell) the surrounding paragraph is taken from the post's text. The extractor may have chosen a different paragraph.",
   "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. The extractor eval runs three samples per row and passes a row at 2 of 3. That is my proposal, because the same extraction call can find different claims each time. The checker eval runs each row once. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
+  "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October. It rests on your account of Yudkowsky's views, and I have not checked it against his writing or found sources yet. The EA beholden row has no reference note.",
   "The dataset and its build script live in the lab folder of the PR, so they stay in git. This page is built from them.",
 ];
 
