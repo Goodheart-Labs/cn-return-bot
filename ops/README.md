@@ -122,8 +122,9 @@ X_TAG_BOT_BEARER_TOKEN=
 
 ## The X tag bot (cn-x-tag-bot)
 
-People tag @CommonNotesBot under a post on X, and the bot answers with a draft
-Community Note. An approval in the thread submits it through the notewriter.
+People tag @CommonNotesBot under a post on X. The bot researches the post and
+submits a Community Note through the notewriter, or says why it can't yet and
+keeps trying for three hours.
 The plan, with every prompt, reply and decision, is linked on GOO-212.
 
 The bot runs the first answer on the claim-check service, with its own chain

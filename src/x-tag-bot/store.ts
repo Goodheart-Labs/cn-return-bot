@@ -11,8 +11,8 @@ import type { NoteDraft } from "./replies";
 
 export type HumanKind = "request" | ReplyKind;
 export type BotKind =
-  | "draft" | "no_note" | "answer" | "queued" | "submitted" | "other_draft_submitted"
-  | "already_submitted" | "not_on_path" | "gave_up" | "refused" | "unreadable";
+  | "waiting" | "submitted" | "no_note" | "answer" | "other_version_submitted"
+  | "already_submitted" | "gave_up" | "refused" | "unreadable";
 
 export interface ThreadRow {
   id: string;
@@ -35,8 +35,8 @@ export interface PostRow {
   role: "human" | "bot";
   kind: HumanKind | BotKind;
   text: string;
-  /** Set on every bot post that shows a version of the note: a draft, and the
-   *  improved version after an improve-and-approve. */
+  /** Set on every bot post that shows a note: a waiting note, and a note that
+   *  went in with the first reply. */
   draft?: NoteDraft;
   createdAt: string;
 }
@@ -56,13 +56,12 @@ export interface TagStore {
   threadsOnTarget(targetTweetId: string): Promise<ThreadRow[]>;
   /** Every post of every thread on the target, oldest first. */
   postsOnTarget(targetTweetId: string): Promise<PostRow[]>;
-  /** The targets with an approval written since the given time. */
-  approvalTargetsSince(since: Date): Promise<string[]>;
+  /** The targets with a waiting note posted since the given time. */
+  waitingTargetsSince(since: Date): Promise<string[]>;
   /** Our submitted note on the post, from any of our bots. */
   noteIdOnPost(targetTweetId: string): Promise<string | null>;
 }
 
-const APPROVAL_KINDS = ["approve", "improve_and_approve"];
 
 export function createSupabaseStore(db: SupabaseClient): TagStore {
   const toThread = (row: any): ThreadRow => ({
@@ -122,10 +121,10 @@ export function createSupabaseStore(db: SupabaseClient): TagStore {
       const rows = check(await db.from("x_tag_posts").select().in("thread_id", threadIds).order("created_at"));
       return (rows ?? []).map(toPost);
     },
-    async approvalTargetsSince(since) {
+    async waitingTargetsSince(since) {
       const rows = check(await db.from("x_tag_posts")
         .select("x_tag_threads!inner(target_tweet_id)")
-        .in("kind", APPROVAL_KINDS)
+        .eq("kind", "waiting")
         .gte("created_at", since.toISOString())) as any[] | null;
       return [...new Set((rows ?? []).map((row) => row.x_tag_threads.target_tweet_id as string))];
     },
@@ -177,9 +176,9 @@ export function createMemoryStore(clock: () => Date = () => new Date()): TagStor
       const ids = new Set((await store.threadsOnTarget(targetTweetId)).map((t) => t.id));
       return [...posts.values()].filter((p) => ids.has(p.threadId)).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
     },
-    async approvalTargetsSince(since: Date) {
+    async waitingTargetsSince(since: Date) {
       const targets = [...posts.values()]
-        .filter((p) => APPROVAL_KINDS.includes(p.kind) && new Date(p.createdAt) >= since)
+        .filter((p) => p.kind === "waiting" && new Date(p.createdAt) >= since)
         .map((p) => threads.get(p.threadId)!.targetTweetId);
       return [...new Set(targets)];
     },

@@ -1,6 +1,6 @@
 /**
  * The bot's own model calls. Muse sorts replies and writes the no-note reply.
- * Opus 5.5 at medium reasoning revises a draft, with web search and web fetch
+ * Opus 5.5 at medium reasoning revises a note, with web search and web fetch
  * run by the provider inside the one call.
  */
 
@@ -46,7 +46,6 @@ export interface RevisionInput {
   findings: string;
   thread: ThreadPost[];
   current: CurrentAnswer;
-  improveAndApprove?: boolean;
 }
 
 export interface TagBotModels {
@@ -71,7 +70,7 @@ export const tagBotModels: TagBotModels = {
         { role: "user", content: buildClassifierUserMessage({ botPost, reply }) },
       ],
       responseFormat: CLASSIFIER_RESPONSE_FORMAT,
-      schemaHint: '{"kind":"approve|improve_and_approve|feedback|other","reason":string}',
+      schemaHint: '{"kind":"feedback|other","reason":string}',
     }));
     return kind;
   },

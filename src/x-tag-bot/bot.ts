@@ -1,10 +1,14 @@
 /**
  * What the tag bot does with a tag, with a reply to one of its posts, and with
- * the approvals waiting on a post. Everything it talks to comes in as a
- * dependency, so the tests and the dry run can swap it out.
+ * its notes that wait. Everything it talks to comes in as a dependency, so the
+ * tests and the dry run can swap it out.
  *
- * Work on one post runs one task at a time. Two approvals on the same post can
- * then never race each other, and the database's submission lock is the second
+ * The bot submits a note itself as soon as it can. When it can't yet, because
+ * X doesn't take our notes on the post or the daily limit is full, it posts the
+ * note as waiting, says what would help, and keeps trying for three hours.
+ *
+ * Work on one post runs one task at a time, so two notes on the same post can
+ * never race each other. The database's submission lock is the second
  * guarantee that a post gets at most one note.
  */
 
@@ -15,23 +19,19 @@ import type { NoteRequest } from "../pipeline/input/noteRequest";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
-import type { Revision, TagBotModels } from "./models";
-import type { CurrentAnswer, ReplyKind } from "./prompts";
+import type { TagBotModels } from "./models";
+import type { CurrentAnswer } from "./prompts";
 import {
-  alreadySubmittedReply, draftReply, gaveUpReply, improvedAndSubmittedReply, improvedQueuedReply, noNoteReply,
-  NOT_ON_PATH_REPLY, otherDraftSubmittedReply, queuedReply, refusedReply, submittedReply, UNREADABLE_REPLY,
-  type NoteDraft,
+  alreadySubmittedReply, gaveUpReply, noNoteReply, otherVersionSubmittedReply, POST_DELETED_REPLY, submittedLaterReply,
+  submittedNoteReply, UNREADABLE_REPLY, waitingNoteReply, type NoteDraft, type WaitReason,
 } from "./replies";
 import type { BotKind, HumanKind, PostRow, TagStore, ThreadRow } from "./store";
-import {
-  approvedVersion, approversOf, asThreadPosts, currentAnswerAbove, latestAnswer, openApprovals, pathTo, submittedVersion,
-} from "./threads";
+import { asThreadPosts, currentAnswerAbove, latestAnswer, openWaitingNotes, pathTo, submittedVersion } from "./threads";
 import type { IncomingPost } from "./x";
 
 /** The bot's chain of steps on the claim-check service, picked from the A/B
- *  tests. A person asked about the post and a person approves the note, so
- *  every gate before and after the writer is off. Research and writing run on
- *  Opus 5.5 at medium reasoning effort. */
+ *  tests. A person asked about the post, so every gate before and after the
+ *  writer is off. Research and writing run on Opus 5.5 at medium reasoning. */
 export const TAG_BOT_PICKS: Record<string, string> = {
   bot: "simple-bot",
   topic_filter: "off",
@@ -43,11 +43,11 @@ export const TAG_BOT_PICKS: Record<string, string> = {
   eval_submit_threshold: "off",
 };
 
-/** An approval waits this long for room in the daily limit, or for X to take
- *  our notes on the post. */
+/** A waiting note is tried for this long. */
 export const MAX_WAIT_MS = 3 * 60 * 60_000;
 
-type WaitReason = "limit" | "eligibility";
+/** The outcome of one attempt to submit a note. */
+type Attempt = { kind: "submitted"; noteId: string } | { kind: "waiting"; reason: WaitReason } | { kind: "deleted" };
 
 export interface TagBotDeps {
   store: TagStore;
@@ -83,12 +83,11 @@ export class TagBot {
     if (targetId) return this.onPost(targetId, () => this.answerTag(incoming, targetId));
   }
 
-  /** Looks at every post whose approvals still wait. main.ts runs this every
-   *  two minutes. */
+  /** Tries every waiting note again. main.ts runs this every two minutes. */
   async tick(): Promise<void> {
     const since = new Date(this.deps.now().getTime() - 2 * MAX_WAIT_MS);
-    for (const targetId of await this.deps.store.approvalTargetsSince(since)) {
-      await this.onPost(targetId, () => this.settle(targetId));
+    for (const targetId of await this.deps.store.waitingTargetsSince(since)) {
+      await this.onPost(targetId, () => this.settleWaiting(targetId));
     }
   }
 
@@ -133,7 +132,7 @@ export class TagBot {
     if (outcome.type === "no_correction") {
       return void await this.reply(request, "no_note", noNoteReply(await models.writeNoNoteReply(postContext, findings)));
     }
-    await this.postDraft(request, targetId, { text: outcome.noteText, sources: outcome.sources });
+    await this.publishNote(request, targetId, { text: outcome.noteText, sources: outcome.sources });
   }
 
   /** A second tag on a post the bot already answered gets that answer again,
@@ -143,12 +142,11 @@ export class TagBot {
     const { store, models } = this.deps;
     const { postContext, findings, pipelineRunId } = await store.thread(earlier.threadId);
     await store.updateThread(thread.id, { postContext, findings, pipelineRunId });
-    const current: CurrentAnswer = earlier.draft ? { kind: "draft", ...earlier.draft } : { kind: "no_note", reply: earlier.text };
-    const asks = await models.classify(earlier.text, { handle: request.authorHandle, text: request.text });
-    if (asks === "feedback" || asks === "improve_and_approve") {
+    const current: CurrentAnswer = earlier.draft ? { kind: "note", ...earlier.draft } : { kind: "no_note", reply: earlier.text };
+    if (await models.classify(earlier.text, { handle: request.authorHandle, text: request.text }) === "feedback") {
       return this.answerFeedback(request, { ...thread, postContext, findings }, current);
     }
-    if (earlier.draft) return this.postDraft(request, thread.targetTweetId, earlier.draft);
+    if (earlier.draft) return this.publishNote(request, thread.targetTweetId, earlier.draft);
     await this.reply(request, "no_note", earlier.text);
   }
 
@@ -160,114 +158,94 @@ export class TagBot {
     const { store, models } = this.deps;
     const stored = await this.storeHuman(incoming, thread.id, parent.tweetId, "other");
     if (!stored) return;
-    const kind = onlyDraftsCanBeApproved(await models.classify(parent.text, { handle: incoming.authorHandle, text: incoming.text }), parent);
+    const kind = await models.classify(parent.text, { handle: incoming.authorHandle, text: incoming.text });
     await store.setKind(stored.tweetId, kind);
-    const reply = { ...stored, kind };
     if (kind === "other") return;
-    if (kind === "feedback") return this.answerFeedback(reply, thread);
-
-    const posts = await store.postsOnTarget(thread.targetTweetId);
-    if (!approversOf(posts, parent.tweetId).has(reply.authorId)) {
-      return void await this.reply(reply, "not_on_path", NOT_ON_PATH_REPLY);
-    }
-    if (kind === "improve_and_approve") return this.improveAndApprove(reply, thread, posts);
-    const waitingFor = await this.settle(thread.targetTweetId);
-    if (waitingFor) await this.reply(reply, "queued", queuedReply(waitingFor === "limit"));
+    const noteId = await store.noteIdOnPost(thread.targetTweetId);
+    if (noteId) return void await this.reply(stored, "already_submitted", alreadySubmittedReply(noteId));
+    await this.answerFeedback({ ...stored, kind }, thread);
   }
 
+  /** Revises the answer if the evidence supports the feedback. A revised note
+   *  is published like a first one. A withdrawal is a no-note answer, so a
+   *  waiting note above it stops being tried. */
   private async answerFeedback(reply: PostRow, thread: ThreadRow, current?: CurrentAnswer): Promise<void> {
-    const revision = await this.revise(reply, thread, current);
-    if (revision.action === "revise") return this.postDraft(reply, thread.targetTweetId, revision.note, revision.reply);
-    await this.reply(reply, "answer", revision.reply);
+    const path = pathTo(await this.deps.store.postsOnTarget(thread.targetTweetId), reply.tweetId);
+    const revision = await this.deps.models.revise({
+      postContext: thread.postContext ?? "",
+      findings: thread.findings ?? "",
+      thread: asThreadPosts(path),
+      current: current ?? currentAnswerAbove(path),
+    });
+    if (revision.action === "revise") return this.publishNote(reply, thread.targetTweetId, revision.note, revision.reply);
+    await this.reply(reply, revision.action === "withdraw" ? "no_note" : "answer", revision.reply);
   }
 
-  /** Revises the draft as asked and submits the new version without another
-   *  round of approval. If the revision keeps the draft, nothing is submitted.
-   *  The improved version is posted in the one reply to the person, whether it
-   *  went in or has to wait. */
-  private async improveAndApprove(reply: PostRow, thread: ThreadRow, posts: PostRow[]): Promise<void> {
-    const targetId = thread.targetTweetId;
-    const noteId = await this.deps.store.noteIdOnPost(targetId);
-    if (noteId) return this.answerSubmitted([reply], posts, noteId);
-    const revision = await this.revise(reply, thread, undefined, true);
-    if (revision.action !== "revise") return void await this.reply(reply, "answer", revision.reply);
+  // ---------------------------------------------------------------------------
+  // Submitting
+  // ---------------------------------------------------------------------------
 
-    const draft = revision.note;
-    const eligible = await this.isEligibleDraft(targetId, draft);
-    const result = eligible ? await this.deps.submit(await this.targetPost(targetId), draft) : undefined;
-    if (result?.status === "submitted") {
-      await this.reply(reply, "submitted", improvedAndSubmittedReply({ lead: revision.reply, draft, noteId: result.noteId }), draft);
-      await this.settle(targetId);
+  /** Submits a note right away if it can, and otherwise posts it as waiting.
+   *  Either way the person gets one reply, which shows the note. */
+  private async publishNote(parent: PostRow, targetId: string, draft: NoteDraft, lead?: string): Promise<void> {
+    const olderVersions = openWaitingNotes(await this.deps.store.postsOnTarget(targetId));
+    const attempt = await this.trySubmit(targetId, draft);
+    if (attempt.kind === "deleted") return void await this.reply(parent, "refused", POST_DELETED_REPLY);
+    if (attempt.kind === "waiting") {
+      return void await this.reply(parent, "waiting", waitingNoteReply({ draft, reason: attempt.reason, lead }), draft);
+    }
+    const submitted = await this.reply(parent, "submitted", submittedNoteReply({ draft, noteId: attempt.noteId, lead }), draft);
+    await this.answerSubmitted(olderVersions, attempt.noteId, submitted);
+  }
+
+  /** Tries the newest waiting note on a post again. Once the post has its note,
+   *  or the newest waiting note waited three hours, every waiting note on the
+   *  post gets its final reply. */
+  private async settleWaiting(targetId: string): Promise<void> {
+    const posts = await this.deps.store.postsOnTarget(targetId);
+    const waiting = openWaitingNotes(posts);
+    const [newest] = waiting;
+    if (!newest) return;
+
+    const noteId = await this.deps.store.noteIdOnPost(targetId);
+    if (noteId) return this.answerSubmitted(waiting, noteId, submittedVersion(posts));
+    if (this.deps.now().getTime() - new Date(newest.createdAt).getTime() > MAX_WAIT_MS) {
+      const reason: WaitReason = (await this.isEligibleDraft(targetId, newest.draft!)) ? "limit" : "eligibility";
+      for (const note of waiting) await this.reply(note, "gave_up", gaveUpReply(reason));
       return;
     }
-    if (result?.status === "expired" && result.reason === "tweet_deleted") return void await this.reply(reply, "refused", refusedReply("deleted"));
-    const stillEligible = eligible && !(result?.status === "expired");
-    await this.reply(reply, "queued", improvedQueuedReply({ lead: revision.reply, draft, eligible: stillEligible }), draft);
+    const attempt = await this.trySubmit(targetId, newest.draft!);
+    if (attempt.kind === "submitted") return this.answerSubmitted(waiting, attempt.noteId, newest);
+    if (attempt.kind === "deleted") for (const note of waiting) await this.reply(note, "refused", POST_DELETED_REPLY);
   }
 
-  // ---------------------------------------------------------------------------
-  // Waiting approvals
-  // ---------------------------------------------------------------------------
-
-  /**
-   * Decides the approvals that wait on a post. The newest one wins: its version
-   * is submitted when the daily limit has room and X takes our notes on the
-   * post. Every open approval then gets one final reply. Returns why the rest
-   * still wait, or null when nothing waits any more.
-   */
-  private async settle(targetId: string): Promise<WaitReason | null> {
-    const { store } = this.deps;
-    const posts = await store.postsOnTarget(targetId);
-    const { waiting, expired } = openApprovals(posts, this.deps.now(), MAX_WAIT_MS);
-    if (waiting.length + expired.length === 0) return null;
-
-    const noteId = await store.noteIdOnPost(targetId);
-    if (noteId) {
-      await this.answerSubmitted([...waiting, ...expired], posts, noteId);
-      return null;
-    }
-    for (const approval of expired) {
-      const eligible = await this.isEligibleDraft(targetId, approvedVersion(posts, approval)!.draft!);
-      await this.reply(approval, "gave_up", gaveUpReply(eligible));
-    }
-    const [newest] = waiting;
-    if (!newest) return null;
-
-    const version = approvedVersion(posts, newest)!;
-    if (!(await this.isEligibleDraft(targetId, version.draft!))) return "eligibility";
-    const result = await this.deps.submit(await this.targetPost(targetId), version.draft!);
+  /** One attempt: X must take our notes on the post, and the daily limit must
+   *  have room. */
+  private async trySubmit(targetId: string, draft: NoteDraft): Promise<Attempt> {
+    if (!(await this.isEligibleDraft(targetId, draft))) return { kind: "waiting", reason: "eligibility" };
+    const result = await this.deps.submit(await this.targetPost(targetId), draft);
     switch (result.status) {
       case "submitted":
-        await this.answerSubmitted(waiting, posts, result.noteId, version);
-        return null;
+        return { kind: "submitted", noteId: result.noteId };
       case "expired":
-        if (result.reason !== "tweet_deleted") return "eligibility";
-        for (const approval of waiting) await this.reply(approval, "refused", refusedReply("deleted"));
-        return null;
+        return result.reason === "tweet_deleted" ? { kind: "deleted" } : { kind: "waiting", reason: "eligibility" };
       case "uncertain":
       case "error":
         console.error(`[x-tag] Submission on ${targetId} failed (${result.status}): ${result.message}`);
-        return "limit";
+        return { kind: "waiting", reason: "limit" };
       default:
-        return "limit";
+        return { kind: "waiting", reason: "limit" };
     }
   }
 
-  /** The final reply to every approval once the post has our note. The
-   *  approvals of the version that went in get "submitted", or "already
-   *  submitted" when they came later. The others get the link to the version
-   *  that went in. */
-  private async answerSubmitted(approvals: PostRow[], posts: PostRow[], noteId: string, justSubmitted?: PostRow): Promise<void> {
-    const wentIn = justSubmitted ?? submittedVersion(posts);
-    for (const approval of approvals) {
-      const version = approvedVersion(posts, approval);
-      if (justSubmitted && version?.tweetId === justSubmitted.tweetId) {
-        await this.reply(approval, "submitted", submittedReply(noteId));
-      } else if (wentIn && version && version.tweetId !== wentIn.tweetId) {
-        await this.reply(approval, "other_draft_submitted", otherDraftSubmittedReply({ draftPostId: wentIn.tweetId, noteId }));
-      } else {
-        await this.reply(approval, "already_submitted", alreadySubmittedReply(noteId));
-      }
+  /** The final reply under each waiting note once the post has our note. The
+   *  version that went in gets "submitted". The others get the link to it, or,
+   *  when another of our bots submitted the note, its link. */
+  private async answerSubmitted(waiting: PostRow[], noteId: string, wentIn?: PostRow): Promise<void> {
+    for (const note of waiting) {
+      if (note.tweetId === wentIn?.tweetId) await this.reply(note, "submitted", submittedLaterReply(noteId));
+      else if (wentIn) await this.reply(note, "other_version_submitted", otherVersionSubmittedReply({ versionPostId: wentIn.tweetId, noteId }));
+      else await this.reply(note, "already_submitted", alreadySubmittedReply(noteId));
     }
   }
 
@@ -275,28 +253,12 @@ export class TagBot {
   // Helpers
   // ---------------------------------------------------------------------------
 
-  private async revise(reply: PostRow, thread: ThreadRow, current?: CurrentAnswer, improveAndApprove = false): Promise<Revision> {
-    const path = pathTo(await this.deps.store.postsOnTarget(thread.targetTweetId), reply.tweetId);
-    return this.deps.models.revise({
-      postContext: thread.postContext ?? "",
-      findings: thread.findings ?? "",
-      thread: asThreadPosts(path),
-      current: current ?? currentAnswerAbove(path),
-      improveAndApprove,
-    });
-  }
-
-  private async postDraft(parent: PostRow, targetId: string, draft: NoteDraft, lead?: string): Promise<void> {
-    const eligible = await this.isEligibleDraft(targetId, draft);
-    await this.reply(parent, "draft", draftReply({ draft, eligible, lead }), draft);
-  }
-
   private isEligibleDraft(targetId: string, draft: NoteDraft): Promise<boolean> {
     return this.deps.isEligible(targetId, joinNoteWithSources(draft.text, draft.sources));
   }
 
   /** The post a note would go on. It is read once and kept, because a waiting
-   *  approval needs it on every attempt. */
+   *  note needs it on every attempt. */
   private async targetPost(targetId: string): Promise<Post> {
     const cached = this.targets.get(targetId);
     if (cached) return cached;
@@ -322,12 +284,6 @@ export class TagBot {
     await this.deps.store.addPost(row);
     return { ...row, createdAt: this.deps.now().toISOString() };
   }
-}
-
-/** Only a post that shows a version of the note can be approved. An approval
- *  of anything else, such as a no-note answer, counts as feedback. */
-function onlyDraftsCanBeApproved(kind: ReplyKind, parent: PostRow): ReplyKind {
-  return parent.draft || kind === "feedback" || kind === "other" ? kind : "feedback";
 }
 
 /** "@CommonNotesBot @someone is this true?" becomes "is this true?". */

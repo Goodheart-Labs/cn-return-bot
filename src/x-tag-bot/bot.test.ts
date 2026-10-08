@@ -10,7 +10,7 @@ import { createMemoryStore } from "./store";
 import type { IncomingPost } from "./x";
 
 const TARGET = "500";
-const DRAFT = { text: "Dharavi still houses about 1 million people.", sources: ["https://en.wikipedia.org/wiki/Dharavi"] };
+const NOTE = { text: "Dharavi still houses about 1 million people.", sources: ["https://en.wikipedia.org/wiki/Dharavi"] };
 const BETTER = { text: "Greater Mumbai counted 5.2 million slum residents in 2011.", sources: ["https://example.gov/census.pdf"] };
 
 function checkAnswer(outcome: PipelineOutcome): TweetComputeOutput {
@@ -34,7 +34,7 @@ function harness(overrides: Partial<TagBotDeps> = {}) {
     models: {
       classify: mock(async () => kinds.shift() ?? "other"),
       writeNoNoteReply: mock(async () => "The figures check out."),
-      revise: mock(async (): Promise<Revision> => revisions.shift() ?? { action: "keep", reply: "The draft stays." }),
+      revise: mock(async (): Promise<Revision> => revisions.shift() ?? { action: "keep", reply: "The note stays." }),
     },
     botUserId: "bot",
     botHandle: "CommonNotesBot",
@@ -44,7 +44,7 @@ function harness(overrides: Partial<TagBotDeps> = {}) {
       return id;
     }),
     fetchPost: mock(async (id: string): Promise<Post> => ({ id, author_id: "author", created_at: "2026-10-06T10:00:00Z", text: "The slums are largely gone.", media: [] })),
-    checkTweet: mock(async () => checkAnswer({ type: "note", noteText: DRAFT.text, sources: DRAFT.sources, verified: false, searchResults: "Findings" })),
+    checkTweet: mock(async () => checkAnswer({ type: "note", noteText: NOTE.text, sources: NOTE.sources, verified: false, searchResults: "Findings" })),
     recordRun: mock(async () => undefined),
     isEligible: mock(async () => true),
     submit: mock(async (): Promise<SubmissionResult> => ({ status: "submitted", noteId: "note-1" })),
@@ -62,28 +62,35 @@ function harness(overrides: Partial<TagBotDeps> = {}) {
   };
 }
 
-/** Tags the bot under the target post and returns the id of its draft. */
+/** Tags the bot under the target post and returns the id of its answer. */
 async function tagged(h: ReturnType<typeof harness>, author = "priya"): Promise<string> {
   await h.bot.receive(h.post(author, "@CommonNotesBot is this true? Dharavi still exists", TARGET));
   return h.lastReply().id;
 }
 
 describe("a tag", () => {
-  test("gets a draft, researched with the tagger's words and the bot's picks", async () => {
+  test("is researched with the tagger's words and the note goes in right away", async () => {
     const h = harness();
     await tagged(h);
     expect(h.deps.checkTweet).toHaveBeenCalledWith(expect.objectContaining({ id: TARGET }),
       { handle: "priya", text: "is this true? Dharavi still exists" });
-    expect(h.lastReply().text).toStartWith(`Draft Community Note:\n\n${DRAFT.text}`);
-    expect(h.lastReply().text).toEndWith(`Reply "approve" and I'll submit it. Or reply with what to change.`);
-    const [thread] = await h.store.threadsOnTarget(TARGET);
-    expect(thread).toMatchObject({ postContext: "The rendered post", findings: "Findings" });
+    expect(h.deps.submit).toHaveBeenCalledWith(expect.objectContaining({ id: TARGET }), NOTE);
+    expect(h.replies).toHaveLength(1);
+    expect(h.lastReply().text).toStartWith(`I submitted this Community Note:\n\n${NOTE.text}`);
+    expect(h.lastReply().text).toContain("https://x.com/i/communitynotes/note-1");
   });
 
-  test("on a post X won't take our notes on, the draft asks people to request one", async () => {
+  test("on a post X won't take our notes on, the note waits and the reply asks for a request", async () => {
     const h = harness({ isEligible: mock(async () => false) });
     await tagged(h);
-    expect(h.lastReply().text).toContain("You can request a Community Note in the post's menu.");
+    expect(h.deps.submit).not.toHaveBeenCalled();
+    expect(h.lastReply().text).toContain("You can help by requesting a Community Note in the post's menu.");
+  });
+
+  test("when the daily limit is full, the note waits for room", async () => {
+    const h = harness({ submit: mock(async (): Promise<SubmissionResult> => ({ status: "daily_limit" })) });
+    await tagged(h);
+    expect(h.lastReply().text).toContain("X's daily limit for AI-written notes is used up right now.");
   });
 
   test("gets a no-note answer when the research finds nothing to correct", async () => {
@@ -91,14 +98,15 @@ describe("a tag", () => {
     await tagged(h);
     expect(h.deps.models.writeNoNoteReply).toHaveBeenCalledWith("The rendered post", "Accurate");
     expect(h.lastReply().text).toStartWith("The figures check out.");
+    expect(h.deps.submit).not.toHaveBeenCalled();
   });
 
-  test("a second tag on the same post repeats the answer without new research", async () => {
-    const h = harness();
+  test("a second tag repeats a no-note answer without new research", async () => {
+    const h = harness({ checkTweet: mock(async () => checkAnswer({ type: "no_correction", reason: "Accurate" })) });
     await tagged(h);
     await tagged(h, "dan");
     expect(h.deps.checkTweet).toHaveBeenCalledTimes(1);
-    expect(h.replies.map((r) => r.text)).toEqual([h.replies[0]!.text, h.replies[0]!.text]);
+    expect(h.replies[1]!.text).toBe(h.replies[0]!.text);
   });
 
   test("a post that already has our note gets its link", async () => {
@@ -125,149 +133,102 @@ describe("a tag", () => {
 });
 
 describe("replies to the bot", () => {
+  const waitingHarness = () => harness({ isEligible: mock(async () => false) });
+
   test("anything else gets no reply", async () => {
-    const h = harness();
-    const draft = await tagged(h);
-    await h.bot.receive(h.post("raj", "lol", draft));
+    const h = waitingHarness();
+    const note = await tagged(h);
+    await h.bot.receive(h.post("raj", "lol", note));
     expect(h.replies).toHaveLength(1);
   });
 
-  test("feedback gets a revised draft with the revision's reply above it", async () => {
-    const h = harness();
-    const draft = await tagged(h);
+  test("feedback on a waiting note gets a revised note with the revision's reply above it", async () => {
+    const h = waitingHarness();
+    const note = await tagged(h);
     h.kinds.push("feedback");
     h.revisions.push({ action: "revise", reply: "Good point, here is an official source.", note: BETTER });
-    await h.bot.receive(h.post("mohan", "use an official source", draft));
+    await h.bot.receive(h.post("mohan", "use an official source", note));
     expect(h.deps.models.revise).toHaveBeenCalledWith(expect.objectContaining({
-      current: { kind: "draft", ...DRAFT }, improveAndApprove: false,
+      current: { kind: "note", ...NOTE },
       thread: [expect.objectContaining({ handle: "priya" }), expect.objectContaining({ handle: "CommonNotesBot" }), { handle: "mohan", text: "use an official source" }],
     }));
-    expect(h.lastReply().text).toStartWith("Good point, here is an official source.\n\nDraft Community Note:");
+    expect(h.lastReply().text).toStartWith("Good point, here is an official source.\n\nI wrote this Community Note:");
   });
 
-  test("an approval from the tagger submits the draft and links the note", async () => {
-    const h = harness();
-    const draft = await tagged(h);
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("priya", "approve", draft));
-    expect(h.deps.submit).toHaveBeenCalledWith(expect.objectContaining({ id: TARGET }), DRAFT);
-    expect(h.lastReply().text).toStartWith("Submitted.");
-  });
-
-  test("an approval from someone off the draft's path is refused", async () => {
-    const h = harness();
-    const draft = await tagged(h);
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("raj", "approve", draft));
-    expect(h.deps.submit).not.toHaveBeenCalled();
-    expect(h.lastReply().text).toStartWith("Only the person who asked for this note");
-  });
-
-  test("an approval of a no-note answer counts as feedback", async () => {
-    const h = harness({ checkTweet: mock(async () => checkAnswer({ type: "no_correction", reason: "Accurate" })) });
-    const answer = await tagged(h);
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("priya", "approve", answer));
-    expect(h.deps.submit).not.toHaveBeenCalled();
-    expect(h.deps.models.revise).toHaveBeenCalledTimes(1);
-  });
-
-  test("improve and approve revises, submits the new version and shows it in one reply", async () => {
-    const h = harness();
-    const draft = await tagged(h);
-    h.kinds.push("improve_and_approve");
-    h.revisions.push({ action: "revise", reply: "Done, I swapped the source.", note: BETTER });
-    await h.bot.receive(h.post("priya", "approve but use an official source", draft));
-    expect(h.deps.models.revise).toHaveBeenCalledWith(expect.objectContaining({ improveAndApprove: true }));
+  test("a revised note goes in right away when X allows it", async () => {
+    const isEligible = mock(async () => false);
+    const h = harness({ isEligible });
+    const note = await tagged(h);
+    isEligible.mockImplementation(async () => true);
+    h.kinds.push("feedback");
+    h.revisions.push({ action: "revise", reply: "Swapped the source.", note: BETTER });
+    await h.bot.receive(h.post("mohan", "use an official source", note));
     expect(h.deps.submit).toHaveBeenCalledWith(expect.anything(), BETTER);
-    expect(h.replies).toHaveLength(2);
-    expect(h.lastReply().text).toContain("I made the change and submitted this version:");
+    const answers = new Map(h.replies.map((r) => [r.parent, r.text]));
+    expect(h.replies.find((r) => r.text.startsWith("Swapped the source."))!.text).toContain("I submitted this Community Note:");
+    expect(answers.get(note)).toContain("A newer version of this note was submitted instead");
   });
 
-  test("improve and approve submits nothing when the revision keeps the draft", async () => {
+  test("feedback after the note went in gets the note's link", async () => {
     const h = harness();
-    const draft = await tagged(h);
-    h.kinds.push("improve_and_approve");
-    await h.bot.receive(h.post("priya", "approve but say it never existed", draft));
+    const note = await tagged(h);
+    h.store.notes.set(TARGET, "note-1");
+    h.kinds.push("feedback");
+    await h.bot.receive(h.post("mohan", "wrong source", note));
+    expect(h.deps.models.revise).not.toHaveBeenCalled();
+    expect(h.lastReply().text).toStartWith("A note from me is already submitted on this post, so I can't change it anymore");
+  });
+
+  test("a withdrawal stops a waiting note from being tried", async () => {
+    const h = waitingHarness();
+    const note = await tagged(h);
+    h.kinds.push("feedback");
+    h.revisions.push({ action: "withdraw", reply: "You're right, the post is accurate." });
+    await h.bot.receive(h.post("dan", "this is accurate", note));
+    (h.deps.isEligible as ReturnType<typeof mock>).mockImplementation(async () => true);
+    await h.bot.tick();
     expect(h.deps.submit).not.toHaveBeenCalled();
-    expect(h.lastReply().text).toBe("The draft stays.");
   });
 });
 
-describe("waiting approvals", () => {
-  test("an approval waits while the daily limit is full and goes in once there is room", async () => {
-    const submit = mock(async (): Promise<SubmissionResult> => ({ status: "daily_limit" }));
-    const h = harness({ submit });
-    const draft = await tagged(h);
-    h.kinds.push("approve");
-    const approval = h.post("priya", "approve", draft);
-    await h.bot.receive(approval);
-    expect(h.lastReply().text).toStartWith("Approved. X's daily limit");
-    submit.mockImplementation(async () => ({ status: "submitted", noteId: "note-1" }));
-    await h.bot.tick();
-    expect(h.lastReply()).toMatchObject({ parent: approval.id, text: expect.stringMatching(/^Submitted\./) });
-  });
-
-  test("an approval waits for the post to become eligible", async () => {
+describe("waiting notes", () => {
+  test("a waiting note goes in once X allows it, with a reply under the note", async () => {
     const isEligible = mock(async () => false);
     const h = harness({ isEligible });
-    const draft = await tagged(h);
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("priya", "approve", draft));
-    expect(h.lastReply().text).toContain("X doesn't take notes from me on this post yet");
-    expect(h.deps.submit).not.toHaveBeenCalled();
+    const note = await tagged(h);
     isEligible.mockImplementation(async () => true);
     await h.bot.tick();
-    expect(h.lastReply().text).toStartWith("Submitted.");
-  });
-
-  test("the newest of several approvals goes in, and the others get its link", async () => {
-    const submit = mock(async (): Promise<SubmissionResult> => ({ status: "daily_limit" }));
-    const h = harness({ submit });
-    const draft1 = await tagged(h);
-    h.kinds.push("approve");
-    const first = h.post("priya", "approve", draft1);
-    await h.bot.receive(first);
-    h.kinds.push("feedback");
-    h.revisions.push({ action: "revise", reply: "Here is a better source.", note: BETTER });
-    await h.bot.receive(h.post("mohan", "better source please", draft1));
-    const draft2 = h.lastReply().id;
-    h.kinds.push("approve");
-    const second = h.post("mohan", "approve", draft2);
-    await h.bot.receive(second);
-
-    submit.mockImplementation(async () => ({ status: "submitted", noteId: "note-1" }));
+    expect(h.lastReply()).toMatchObject({ parent: note, text: expect.stringMatching(/^Submitted\./) });
     await h.bot.tick();
-    expect(submit).toHaveBeenLastCalledWith(expect.anything(), BETTER);
-    const answers = new Map(h.replies.map((r) => [r.parent, r.text]));
-    expect(answers.get(second.id)).toStartWith("Submitted.");
-    expect(answers.get(first.id)).toContain(`a different draft on this post, and that one was submitted`);
-    expect(answers.get(first.id)).toContain(`https://x.com/i/status/${draft2}`);
+    expect(h.deps.submit).toHaveBeenCalledTimes(1);
   });
 
-  test("an approval that still waits after three hours gets the gave-up reply", async () => {
+  test("a note that still waits after three hours gets the gave-up reply once", async () => {
     const h = harness({ submit: mock(async (): Promise<SubmissionResult> => ({ status: "daily_limit" })) });
-    const draft = await tagged(h);
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("priya", "approve", draft));
+    const note = await tagged(h);
     h.advance(MAX_WAIT_MS + 60_000);
     await h.bot.tick();
-    expect(h.lastReply().text).toStartWith("I couldn't submit this note within 3 hours");
+    expect(h.lastReply()).toMatchObject({ parent: note, text: expect.stringMatching(/^I couldn't submit this note within 3 hours, because X's daily limit/) });
     const count = h.replies.length;
     await h.bot.tick();
     expect(h.replies).toHaveLength(count);
   });
 
-  test("an approval after the submission gets the link of the note that went in", async () => {
-    const h = harness();
-    const draft = await tagged(h);
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("priya", "approve", draft));
-    h.store.notes.set(TARGET, "note-1");
-    h.kinds.push("approve");
-    await h.bot.receive(h.post("priya", "approve again", draft));
-    expect(h.deps.submit).toHaveBeenCalledTimes(1);
-    expect(h.lastReply().text).toStartWith("A note from me is already submitted on this post");
+  test("of two waiting versions, the newest goes in and the older one gets its link", async () => {
+    const isEligible = mock(async () => false);
+    const h = harness({ isEligible });
+    const first = await tagged(h);
+    h.kinds.push("feedback");
+    h.revisions.push({ action: "revise", reply: "Here is a better source.", note: BETTER });
+    await h.bot.receive(h.post("mohan", "better source please", first));
+    const second = h.lastReply().id;
+
+    isEligible.mockImplementation(async () => true);
+    await h.bot.tick();
+    expect(h.deps.submit).toHaveBeenLastCalledWith(expect.anything(), BETTER);
+    const answers = new Map(h.replies.map((r) => [r.parent, r.text]));
+    expect(answers.get(second)).toStartWith("Submitted.");
+    expect(answers.get(first)).toContain(`https://x.com/i/status/${second}`);
   });
 });
 

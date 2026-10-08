@@ -1,5 +1,5 @@
--- The X tag bot (GOO-212). People tag @CommonNotesBot under a post, the bot
--- answers with a draft note, and an approval in the thread submits it.
+-- The X tag bot (GOO-212). People tag @CommonNotesBot under a post, and the bot
+-- researches it and submits a Community Note, or says why it can't yet.
 --
 -- A thread is one tag and everything below it. Every post in it, the people's
 -- and the bot's, is one row in x_tag_posts, so the reply tree can be rebuilt
@@ -30,21 +30,21 @@ create table public.x_tag_posts (
   author_id text not null,
   author_handle text not null,
   role text not null check (role in ('human', 'bot')),
-  -- A human post is the request, or one of the four kinds the classifier
-  -- sorts replies into. A bot post is a draft, a no-note answer, the answer to
-  -- feedback, or one of the fixed replies.
+  -- A human post is the request, or one of the two kinds the classifier
+  -- sorts replies into. A bot post is a note that waits or went in, a no-note
+  -- answer, the answer to feedback, or one of the fixed replies.
   kind text not null check (kind in (
-    'request', 'approve', 'improve_and_approve', 'feedback', 'other',
-    'draft', 'no_note', 'answer', 'queued', 'submitted', 'other_draft_submitted',
-    'already_submitted', 'not_on_path', 'gave_up', 'refused', 'unreadable'
+    'request', 'feedback', 'other',
+    'waiting', 'submitted', 'no_note', 'answer', 'other_version_submitted',
+    'already_submitted', 'gave_up', 'refused', 'unreadable'
   )),
   text text not null,
-  -- On a draft: the note body and its sources, exactly what an approval of
-  -- this post submits.
+  -- On a bot post that shows a note: the note body and its sources, exactly
+  -- what goes in when it is submitted.
   draft jsonb,
   created_at timestamptz not null default now(),
-  check ((role = 'human') = (kind in ('request', 'approve', 'improve_and_approve', 'feedback', 'other'))),
-  check ((kind = 'draft') = (draft is not null))
+  check ((role = 'human') = (kind in ('request', 'feedback', 'other'))),
+  check (kind <> 'waiting' or draft is not null)
 );
 create index x_tag_posts_thread_idx on public.x_tag_posts (thread_id, created_at);
 create index x_tag_posts_parent_idx on public.x_tag_posts (parent_tweet_id);
