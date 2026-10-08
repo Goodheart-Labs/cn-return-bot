@@ -270,7 +270,10 @@ const GROUPS = [
   { id: "note-difficult", label: "Note, difficult" },
   { id: "no-note-easy", label: "No note, easy" },
   { id: "no-note-difficult", label: "No note, difficult" },
+  { id: "atomicity", label: "Several statements, extractor only" },
 ];
+/** The datapoints of the table that is shown: the extractor table has all of them, the checker table only those with a checker input. */
+const tablePoints = () => (state.ds === "extractor" ? POINTS : POINTS.filter((p) => p.checker));
 const state = { view: "datasets", ds: "extractor", group: null, open: new Set(), run: RUNS[0]?.id ?? null, rs: "extractor", ropen: new Set() };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -361,10 +364,11 @@ function columnsTable(which) {
 }
 
 function renderChips() {
-  const counts = Object.fromEntries(GROUPS.map((g) => [g.id, POINTS.filter((p) => p.group === g.id).length]));
-  const all = `<button class="chip-btn" data-group="" aria-pressed="${state.group === null}">All <span class="n">${POINTS.length}</span></button>`;
+  const points = tablePoints();
+  const counts = Object.fromEntries(GROUPS.map((g) => [g.id, points.filter((p) => p.group === g.id).length]));
+  const all = `<button class="chip-btn" data-group="" aria-pressed="${state.group === null}">All <span class="n">${points.length}</span></button>`;
   document.getElementById("chips").innerHTML =
-    all + GROUPS.map((g) => `<button class="chip-btn" data-group="${g.id}" aria-pressed="${state.group === g.id}">${groupChip(g.id)} <span class="n">${counts[g.id]}</span></button>`).join("");
+    all + GROUPS.filter((g) => counts[g.id] > 0).map((g) => `<button class="chip-btn" data-group="${g.id}" aria-pressed="${state.group === g.id}">${groupChip(g.id)} <span class="n">${counts[g.id]}</span></button>`).join("");
 }
 
 function extractorRows(points) {
@@ -376,13 +380,13 @@ function extractorRows(points) {
         <td class="num">${POINTS.indexOf(d) + 1}</td>
         <td>${groupChip(d.group)}</td>
         <td><div class="cell-quote">${esc(truncate(passageOf(d), 220))}</div></td>
-        <td>${esc(d.referenceClaim)}</td>
+        <td>${d.referenceClaims.map((c) => `<div class="refnote">${esc(c)}</div>`).join("")}</td>
         <td class="src"><b>${esc(d.item.title)}</b><br>chunk ${e.chunkIndex} of ${e.chunkCount}, ${e.chunkChars.toLocaleString("en")} characters</td>
-        <td>${productionSummary(d.production)}</td></tr>`;
+        <td>${d.production ? productionSummary(d.production) : '<span class="small">no claim in production</span>'}</td></tr>`;
       if (!open) return row;
       return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
         <div><h4>What you wrote</h4><div class="words">${esc(d.jimsWords)}</div>
-          <h4>Reference claim the extractor must produce</h4><p>${esc(d.referenceClaim)}</p>
+          <h4>Reference statements the extractor must produce</h4>${d.referenceClaims.map((c) => `<div class="refnote">${esc(c)}</div>`).join("")}
           <p class="small">Drafted by Claude from your words. Correct it if the wording is wrong.</p>
           <h4>Source post</h4><p><a href="${esc(d.item.url)}" target="_blank" rel="noreferrer">${esc(d.item.title)}</a><br><span class="small">${d.item.source} item, ${d.item.textChars.toLocaleString("en")} characters in total</span></p></div>
         <div><h4>Full input: the extractor's user message ${copyButton(d.id, "Copy")}</h4>
@@ -442,15 +446,15 @@ function checkerRows(points) {
 }
 
 function renderDatasets() {
-  const points = POINTS.filter((p) => !state.group || p.group === state.group);
+  const points = tablePoints().filter((p) => !state.group || p.group === state.group);
   const which = state.ds;
   const head =
     which === "extractor"
-      ? "<tr><th>#</th><th>Group</th><th>Passage in the text</th><th>Reference claim</th><th>Source and chunk</th><th>Production</th></tr>"
+      ? "<tr><th>#</th><th>Group</th><th>Passage in the text</th><th>Reference statements</th><th>Source and chunk</th><th>Production</th></tr>"
       : "<tr><th>#</th><th>Group</th><th>Claim handed to the checker</th><th>Expected</th><th>Reference notes</th><th>Production</th></tr>";
   document.getElementById("dsintro").innerHTML =
     (which === "extractor"
-      ? `<p>The extractor reads one chunk of a post and returns claims. It passes a datapoint when its output contains the reference claim. A Muse judge decides that. All 14 are required, including the no-note ones, because the checker can only rule on a claim that exists.</p>`
+      ? `<p>The extractor reads one chunk of a post and returns passages. Each passage is a statement, a forecast or other, and the claims of the statements are what counts. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. A statement is found when a Muse judge says the output contains it. All reference statements are required, including those of the no-note datapoints, because the checker can only rule on a claim that exists.</p>`
       : `<p>The checker gets one claim and ends with a note or with no note. It runs three times on each row, and the row passes when the decision was the expected one in two of the three. For 12 of the 14 rows, readers already voted on a note in production, so their votes are a second opinion next to your labels.</p>`) +
     columnsTable(which);
   const widths = which === "extractor" ? [40, 140, 300, 260, 190, 110] : [40, 140, 270, 110, 380, 120];
@@ -482,7 +486,7 @@ function extractorRowsResult(run) {
   return e.rows.map((r) => {
     const open = state.ropen.has("rx-" + r.id);
     const pill = r.passed ? `<span class="verdict v-pass">Found ${r.foundIn} of ${e.samples}</span>` : `<span class="verdict v-fail">Found ${r.foundIn} of ${e.samples}</span>`;
-    const row = `<tr class="row" tabindex="0" data-id="rx-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${esc(r.referenceClaim)}</td><td>${pill}</td></tr>`;
+    const row = `<tr class="row" tabindex="0" data-id="rx-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === (r.datapointId ?? r.id)) + 1}</td><td>${groupChip(r.group)}</td><td>${esc(r.referenceClaim)}</td><td>${pill}</td></tr>`;
     if (!open) return row;
     return row + `<tr class="detail"><td colspan="4"><div class="xdetail" id="xd-${r.id}"></div></td></tr>`;
   }).join("");
@@ -529,7 +533,7 @@ function mountExtractorDetails(run) {
 }
 
 function mountExtractorDetail(host, result, run) {
-  const point = POINTS.find((p) => p.id === result.id);
+  const point = POINTS.find((p) => p.id === (result.datapointId ?? result.id));
   const text = point.extractor.userMessage;
   const target = point.extractor.highlight;
   const chunk = run.extractor.chunkRuns.find((c) => c.key === result.chunkKey);

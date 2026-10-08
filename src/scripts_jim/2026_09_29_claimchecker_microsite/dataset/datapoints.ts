@@ -11,13 +11,14 @@
  */
 
 /** Jim's four groups: should a note be written, and how hard is the call. */
-export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult";
+export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity";
 
 export const GROUP_TITLE: Record<Group, string> = {
   "note-easy": "Note should be written (easy)",
   "note-difficult": "Note should be written (difficult)",
   "no-note-easy": "No note should be written (easy)",
   "no-note-difficult": "No note should be written (difficult)",
+  atomicity: "Several statements in one sentence (extractor only)",
 };
 
 /** Where the claim that the checker is given comes from. */
@@ -27,16 +28,25 @@ export type ClaimSource =
   /** A claim of one of the lab's own runs, for a passage production skipped. */
   | { from: "lab"; runId: string; claimId: string; productionClaimId: string };
 
-export interface Datapoint {
+interface DatapointBase {
   id: string;
   group: Group;
   /** The production item whose stored text the extractor reads. */
   itemId: string;
-  claimSource: ClaimSource;
   /** Jim's own words about the datapoint, copied from the ticket comment. */
   jimsWords: string;
   /** The day Jim wrote it. */
   writtenOn: string;
+  /** The statements the extractor has to produce, each neutral, self-contained and
+   *  atomic: one statement that a neutral expert could judge on its own. The
+   *  extractor eval asks, for each of them, whether the extractor's output
+   *  contains it. */
+  referenceClaims: string[];
+}
+
+/** A datapoint for both evals: the extractor eval and the claim checker eval. */
+export interface CheckedDatapoint extends DatapointBase {
+  claimSource: ClaimSource;
   expected: {
     decision: "note" | "no_note";
     /** True when Jim said a note would not be bad. Such a note is a soft failure. */
@@ -44,10 +54,18 @@ export interface Datapoint {
     /** What the note should say, where Jim gave it. */
     referenceNote?: string;
   };
-  /** A neutral, self-contained statement of the claim. The extractor eval asks
-   *  whether the extractor's output contains it. */
-  referenceClaim: string;
 }
+
+/** A datapoint for the extractor eval only: a passage of a post that holds
+ *  several statements, with no claim in production and no decision to check. */
+export interface ExtractorOnlyDatapoint extends DatapointBase {
+  extractorOnly: true;
+  /** The passage that holds the statements, as the post's text has it. It places
+   *  the datapoint in its chunk. */
+  passage: string;
+}
+
+export type Datapoint = CheckedDatapoint | ExtractorOnlyDatapoint;
 
 const ZVI_176 = "3a030aad-94e4-4f7b-a832-611311a3d0c9";
 const ZVI_ROUNDUP_44 = "4b776e7a-5475-4cf9-8f4b-aaf42e25ae55";
@@ -56,6 +74,7 @@ const ZVI_177 = "26cd7639-9b1d-49ab-a104-eb67794efae1";
 const ACX_ESCAPE_ARTIST = "6af85fd3-7903-429e-83a0-6fa3749178e3";
 const ACX_PINKER = "60c2e7ea-42ef-4a38-9e5d-6b0b22dd6599";
 const SEX_CULT_POST = "b5e5ff9c-8862-4b98-90bc-1e9ad0933f81";
+const HUNGARY_VIDEO = "8bc6a469-5c64-4859-b8a8-09cc97ca5379";
 
 export const DATAPOINTS: Datapoint[] = [
   {
@@ -67,7 +86,9 @@ export const DATAPOINTS: Datapoint[] = [
       "At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\n\nI think this is one that clearly needs a note so its a baseliny thing, like when that doesen't get a note, thats bad.",
     writtenOn: "2026-10-05",
     expected: { decision: "note" },
-    referenceClaim: "At UC Berkeley the number of A grades has risen by 30%.",
+    referenceClaims: [
+      "At UC Berkeley the number of A grades has risen by 30%.",
+    ],
   },
   {
     id: "czechoslovakia-doctors",
@@ -78,8 +99,10 @@ export const DATAPOINTS: Datapoint[] = [
       "“Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.”\n\nNote should be written on this one",
     writtenOn: "2026-10-05",
     expected: { decision: "note" },
-    referenceClaim:
-      "Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to care for the rest of the population.",
+    referenceClaims: [
+      "Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries.",
+      "The Nazis spared Jewish doctors in Czechoslovakia because deporting them would have left too few doctors to care for the rest of the population.",
+    ],
   },
   {
     id: "cfar-ftx",
@@ -90,7 +113,9 @@ export const DATAPOINTS: Datapoint[] = [
       "\"It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing\"\n\nNeeds note",
     writtenOn: "2026-10-05",
     expected: { decision: "note" },
-    referenceClaim: "Lighthaven was originally purchased with money wired to CFAR from Sam Bankman-Fried's company FTX as FTX was collapsing.",
+    referenceClaims: [
+      "Lighthaven was originally purchased with money wired to CFAR from Sam Bankman-Fried's company FTX as FTX was collapsing.",
+    ],
   },
   {
     id: "ea-earning-to-give",
@@ -104,7 +129,9 @@ export const DATAPOINTS: Datapoint[] = [
       decision: "note",
       referenceNote: "EA organisations have come to regret pushing earning to give, and they do not see it as a less impactful career path than others.",
     },
-    referenceClaim: "Effective Altruism, by creed, says people should seek more money so that they can give more to charity.",
+    referenceClaims: [
+      "Effective Altruism, by creed, says people should seek more money so that they can give more to charity.",
+    ],
   },
   {
     id: "aella-cam-girls",
@@ -114,7 +141,9 @@ export const DATAPOINTS: Datapoint[] = [
     jimsWords: "\"She also recruited her sisters as cam girls once. I am vague on the details.\"\n\nNeeds note: Difficult because sources are difficult to find",
     writtenOn: "2026-10-05",
     expected: { decision: "note" },
-    referenceClaim: "Aella once recruited her sisters to work as cam girls.",
+    referenceClaims: [
+      "Aella once recruited her sisters to work as cam girls.",
+    ],
   },
   {
     id: "nearly-impossible-to-prove",
@@ -124,8 +153,9 @@ export const DATAPOINTS: Datapoint[] = [
     jimsWords: "\"What is troubling about this is that it would be nearly impossible to prove\"\n\nNeeds Note: Difficult (Hard to fidn the source)",
     writtenOn: "2026-10-05",
     expected: { decision: "note" },
-    referenceClaim:
+    referenceClaims: [
       "If the rules at a group-sex fake-rape party are broken and a participant is raped while trying to say no, it would be nearly impossible for them to prove the difference between what happened and what was supposed to happen.",
+    ],
   },
   {
     id: "pivotal-act-terrorism",
@@ -140,7 +170,9 @@ export const DATAPOINTS: Datapoint[] = [
       referenceNote:
         "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him.",
     },
-    referenceClaim: "Yudkowsky's term \"pivotal act\" is a euphemism for acts of terrorism that he believes anyone building AGI must commit.",
+    referenceClaims: [
+      "Yudkowsky's term \"pivotal act\" is a euphemism for acts of terrorism that he believes anyone building AGI must commit.",
+    ],
   },
   {
     id: "melanie-mitchell",
@@ -155,8 +187,10 @@ export const DATAPOINTS: Datapoint[] = [
       referenceNote:
         "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs (https://x.com/MelMitchell1/status/2107633255352865182).",
     },
-    referenceClaim:
-      "Melanie Mitchell spent the 1990s and 2000s pursuing a road to AI that did not work out (teaching computers to make analogies) and has no expertise in modern LLMs.",
+    referenceClaims: [
+      "Melanie Mitchell spent the 1990s and 2000s pursuing a road to AI that did not work out (teaching computers to make analogies).",
+      "Melanie Mitchell has no expertise in modern LLMs.",
+    ],
   },
   {
     id: "ea-beholden-to-yudkowsky",
@@ -171,8 +205,9 @@ export const DATAPOINTS: Datapoint[] = [
       referenceNote:
         "Yudkowsky and Nate Soares disagree with much of the AI safety community. They think that agent foundations work is important, but that most other work, such as prosaic alignment, interpretability and control, will not scale to superintelligence and so does not really matter.",
     },
-    referenceClaim:
+    referenceClaims: [
       "Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.",
+    ],
   },
   {
     id: "givewell-1500x",
@@ -183,8 +218,9 @@ export const DATAPOINTS: Datapoint[] = [
       "*Her donations bought about 1500x less improvement per $ than the marginal GiveWell $*\n\nHere, no note should be written unlike what our pipeline did.",
     writtenOn: "2026-10-05",
     expected: { decision: "no_note" },
-    referenceClaim:
+    referenceClaims: [
       "Nathan estimated that MacKenzie Scott's donations bought about 1,500 times less improvement per dollar than the marginal GiveWell dollar.",
+    ],
   },
   {
     id: "sol-subagents",
@@ -195,8 +231,10 @@ export const DATAPOINTS: Datapoint[] = [
       "*I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna*\n\nSame",
     writtenOn: "2026-10-05",
     expected: { decision: "no_note" },
-    referenceClaim:
-      "A number of people complained that Sol cannot select appropriate subagents, which was presumably one of the main reasons OpenAI created Terra and Luna.",
+    referenceClaims: [
+      "A number of people complained that Sol cannot select appropriate subagents.",
+      "Sol's inability to select appropriate subagents was presumably one of the main reasons OpenAI created Terra and Luna.",
+    ],
   },
   {
     id: "sol-destructive-45",
@@ -207,8 +245,9 @@ export const DATAPOINTS: Datapoint[] = [
       "*Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.*\n\nSame",
     writtenOn: "2026-10-05",
     expected: { decision: "no_note" },
-    referenceClaim:
+    referenceClaims: [
       "Sol, the AI model, gave a 45% probability that its own alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely because of the harness and permissions.",
+    ],
   },
   {
     id: "opus-values-figure",
@@ -219,8 +258,12 @@ export const DATAPOINTS: Datapoint[] = [
       "According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor\n\nSame",
     writtenOn: "2026-10-05",
     expected: { decision: "no_note" },
-    referenceClaim:
-      "According to Anthropic's analysis, Claude Opus 4.6 leans toward values of deference, warmth, brevity and execution, while Opus 4.7 leans toward caution, rigor, depth and candor.",
+    referenceClaims: [
+      "According to Anthropic's analysis, Claude Opus 4.6 leans toward deference, while Opus 4.7 leans toward caution.",
+      "According to Anthropic's analysis, Claude Opus 4.6 leans toward warmth, while Opus 4.7 leans toward rigor.",
+      "According to Anthropic's analysis, Claude Opus 4.6 leans toward brevity, while Opus 4.7 leans toward depth.",
+      "According to Anthropic's analysis, Claude Opus 4.6 leans toward execution, while Opus 4.7 leans toward candor.",
+    ],
   },
   {
     id: "yudkowsky-writer-not-scientist",
@@ -231,6 +274,39 @@ export const DATAPOINTS: Datapoint[] = [
       "\"*“Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters.”*\"\n\nNo note should be written on this one, thats a bit of a hard one. Its a legitamite opinion … Its also not to bad if a note gets written",
     writtenOn: "2026-10-05",
     expected: { decision: "no_note", noteTolerated: true },
-    referenceClaim: "Eliezer Yudkowsky is a writer and not a scientist of any kind.",
+    referenceClaims: [
+      "Eliezer Yudkowsky is a writer and not a scientist of any kind.",
+    ],
+  },
+  {
+    id: "treasury-systemic-risk",
+    group: "atomicity",
+    itemId: ZVI_176,
+    extractorOnly: true,
+    passage: "A Treasury Department review finds that the AI industry poses systemic risk to the financial system, comparing AI to the dotcom crash.",
+    jimsWords:
+      "(1) is interesting please include the original text chunk in the first eval. I want to see what it does here. [Jim, 8 October, on the example of one sentence that holds two statements: the Treasury Department review finds systemic risk, comparing AI to the dotcom crash.]",
+    writtenOn: "2026-10-08",
+    referenceClaims: [
+      "A Treasury Department review found that the AI industry poses systemic risk to the financial system.",
+      "The Treasury Department review compared AI to the dotcom crash.",
+    ],
+  },
+  {
+    id: "hungary-population",
+    group: "atomicity",
+    itemId: HUNGARY_VIDEO,
+    extractorOnly: true,
+    passage:
+      "And combined with Orban's ultra strict immigration policies, it means that Hungary's population is steadily falling while those of neighboring countries are rising.",
+    jimsWords:
+      "(4) is also interesting, include the chunk in the eval. [Jim, 8 October, on the example of a transcript line where a causal statement shares words with a comparison: combined with Orban's ultra strict immigration policies, Hungary's population is steadily falling while those of neighbouring countries are rising.]",
+    writtenOn: "2026-10-08",
+    referenceClaims: [
+      "Orban has implemented ultra strict immigration policies in Hungary.",
+      "Hungary's population is steadily falling.",
+      "The populations of Hungary's neighboring countries are rising.",
+      "Hungary's very low fertility, combined with its ultra strict immigration policies, is why its population is steadily falling.",
+    ],
   },
 ];

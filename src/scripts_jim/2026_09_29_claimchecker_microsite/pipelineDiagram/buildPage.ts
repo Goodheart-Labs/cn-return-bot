@@ -37,7 +37,7 @@ function extractionExample(): Example | null {
 const checked = run?.checker?.rows.find((r) => r.id === EXAMPLE_ROW)?.samples[0];
 const example = {
   extraction: extractionExample(),
-  post: [["The post built for the Berkeley claim", row.checker.post.text] as [string, string]],
+  post: [["The post built for the Berkeley claim", row.checker!.post.text] as [string, string]],
   research: checked?.research ? ([["The findings of the Berkeley check", checked.research]] as Example) : null,
   writer: checked?.draftNote ? ([["The note the writer drafted for the Berkeley claim", checked.draftNote]] as Example) : null,
   verifier: checked

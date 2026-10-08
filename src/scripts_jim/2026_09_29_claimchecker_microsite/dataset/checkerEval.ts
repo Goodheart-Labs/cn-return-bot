@@ -14,7 +14,7 @@ import PQueue from "p-queue";
 import { runClaimCheck } from "../../../everything/pipeline/checkClaims";
 import { LOGS_DIR } from "../runStore";
 import { checkTraceOf } from "../labRun";
-import type { CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict, DatasetRow } from "./evalTypes";
+import type { CheckableRow, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
 import { judgeNoteQuality } from "./judges";
 
 const SAMPLES_PER_ROW = 3;
@@ -23,7 +23,7 @@ const PASS_AT = 2;
 const CHECK_CONCURRENCY = 6;
 
 /** The decision rule: no model involved. */
-export function verdictOf(expected: DatasetRow["expected"], outcome: CheckerOutcome): CheckerVerdict {
+export function verdictOf(expected: CheckableRow["expected"], outcome: CheckerOutcome): CheckerVerdict {
   if (outcome.type === "error") return "error";
   if (expected.decision === "note") return outcome.type === "note" ? "pass" : "fail";
   if (outcome.type === "no_note") return "pass";
@@ -42,7 +42,7 @@ export function rowVerdictOf(verdicts: CheckerVerdict[]): { passedIn: number; ve
 }
 
 /** Your own wording of the right note, and the real notes readers rated helpful. */
-function referenceNotesOf(row: DatasetRow): string[] {
+function referenceNotesOf(row: CheckableRow): string[] {
   const real = row.production.notes.filter((n) => n.votes.helpful > n.votes.notHelpful).map((n) => n.text);
   return [...(row.expected.referenceNote ? [row.expected.referenceNote] : []), ...real];
 }
@@ -61,7 +61,7 @@ export function promptsOf(logs: any): CheckerPrompts {
   };
 }
 
-async function checkSample(row: DatasetRow, referenceNotes: string[], runId: string, index: number, sample: number): Promise<CheckerSample> {
+async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number): Promise<CheckerSample> {
   const base = { quality: null, research: null, draftNote: null, sourceVerdict: null, checkCostUsd: 0, judgeCostUsd: 0 };
   try {
     // The id has a hyphen, so it can never be mistaken for a tweet id, and it is new for every sample.
@@ -86,7 +86,7 @@ async function checkSample(row: DatasetRow, referenceNotes: string[], runId: str
   }
 }
 
-export async function runCheckerEval(rows: DatasetRow[], runId: string): Promise<CheckerEvalResult> {
+export async function runCheckerEval(rows: CheckableRow[], runId: string): Promise<CheckerEvalResult> {
   console.log(`Checker eval: ${rows.length} rows, ${SAMPLES_PER_ROW} samples each`);
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   const results: CheckerRowResult[] = await Promise.all(

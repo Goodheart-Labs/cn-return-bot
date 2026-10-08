@@ -18,10 +18,8 @@ import { extractionModels } from "../../../everything/pipeline/model";
 import { LAB_DIR } from "../runStore";
 import { GROUP_TITLE, type Group } from "./datapoints";
 import { runCheckerEval } from "./checkerEval";
-import type { DatasetRow, EvalName, EvalRun } from "./evalTypes";
+import { isCheckable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
 import { runExtractorEval } from "./extractorEval";
-import { loadFrozenDescriptions } from "./freezeImages";
-import { loadItemTexts } from "./itemTexts";
 
 const RESULTS_DIR = join(LAB_DIR, "dataset", "evalRuns");
 
@@ -58,8 +56,8 @@ async function main() {
 
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker] = await Promise.all([
-    evals.includes("extractor") ? runExtractorEval(rows, await loadItemTexts(rows.map((r) => r.item.id)), loadFrozenDescriptions()) : null,
-    evals.includes("checker") ? runCheckerEval(rows, runId) : null,
+    evals.includes("extractor") ? runExtractorEval(rows) : null,
+    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId) : null,
   ]);
 
   const run: EvalRun = {

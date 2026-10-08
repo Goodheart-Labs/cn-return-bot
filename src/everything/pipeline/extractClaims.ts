@@ -358,7 +358,7 @@ async function extractChunks(
 // claim's verbatim context.
 const TRANSCRIPT_LABEL = "Transcript segment:";
 const ARTICLE_LABEL = "Article excerpt:";
-const transcriptChunk = (text: string) => `${TRANSCRIPT_LABEL}\n\n${text}`;
+export const transcriptChunk = (text: string) => `${TRANSCRIPT_LABEL}\n\n${text}`;
 export const articleChunk = (text: string) => `${ARTICLE_LABEL}\n\n${text}`;
 
 /** The user message for one chunk of a part. The introduction goes ahead of the

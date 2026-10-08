@@ -9,16 +9,23 @@ import type { Group } from "./datapoints";
 export interface DatasetRow {
   id: string;
   group: Group;
-  referenceClaim: string;
-  expected: { decision: "note" | "no_note"; noteTolerated?: boolean; referenceNote?: string };
+  /** The atomic statements the extractor has to produce. */
+  referenceClaims: string[];
+  /** True for a datapoint that only the extractor eval uses. It has no expected decision, checker input or production result. */
+  extractorOnly: boolean;
+  expected: { decision: "note" | "no_note"; noteTolerated?: boolean; referenceNote?: string } | null;
   item: { id: string; title: string };
-  extractor: { highlight: { start: number; end: number } | null; userMessage: string };
+  extractor: { chunkIndex: number; chunkCount: number; chunkChars: number; highlight: { start: number; end: number } | null; userMessage: string };
   checker: {
     claim: { restatement: string; contextQuote: string | null; imageUrls: string[] };
     post: { id: string; author_id: string; created_at: string; text: string; media: { type: string; url: string }[] };
-  };
-  production: { notes: { text: string; writtenBy: string; votes: { helpful: number; somewhatHelpful: number; notHelpful: number } }[] };
+  } | null;
+  production: { notes: { text: string; writtenBy: string; votes: { helpful: number; somewhatHelpful: number; notHelpful: number } }[] } | null;
 }
+
+/** A row that the claim checker eval can run: it has a checker input and an expected decision. */
+export type CheckableRow = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]>; production: NonNullable<DatasetRow["production"]> };
+export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly;
 
 export type EvalName = "extractor" | "checker";
 
@@ -52,8 +59,13 @@ export interface ChunkRun {
   samples: ChunkSample[];
 }
 
+/** One statement the extractor has to produce, with the result for it. Rows of
+ *  one datapoint share its chunk. */
 export interface ExtractorRowResult {
+  /** The datapoint's id, followed by # and the statement's number when the datapoint has several. */
   id: string;
+  /** Missing in a run made before a datapoint could have several statements, where the id is the datapoint's. */
+  datapointId?: string;
   group: Group;
   referenceClaim: string;
   passage: string;

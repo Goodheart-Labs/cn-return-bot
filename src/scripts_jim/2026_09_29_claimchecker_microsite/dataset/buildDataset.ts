@@ -18,11 +18,11 @@ import { createClient } from "@supabase/supabase-js";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { buildClaimPost } from "../../../everything/pipeline/checkClaims";
-import { articleChunk, chunkText, renderImageDescriptions } from "../../../everything/pipeline/extractClaims";
+import { articleChunk, chunkText, renderImageDescriptions, transcriptChunk } from "../../../everything/pipeline/extractClaims";
 import type { ExtractedClaim } from "../../../everything/types";
 import { checkTraceOf, type LabRun } from "../labRun";
 import { LAB_DIR, RUNS_DIR } from "../runStore";
-import { DATAPOINTS, GROUP_TITLE, type Datapoint } from "./datapoints";
+import { DATAPOINTS, GROUP_TITLE, type CheckedDatapoint, type Datapoint, type ExtractorOnlyDatapoint } from "./datapoints";
 import { loadFrozenDescriptions } from "./freezeImages";
 import { locate, paragraphsAround } from "./text";
 
@@ -38,7 +38,7 @@ interface SourceClaim {
   imageUrls: string[];
 }
 
-async function claimOf(datapoint: Datapoint): Promise<SourceClaim> {
+async function claimOf(datapoint: CheckedDatapoint): Promise<SourceClaim> {
   const source = datapoint.claimSource;
   if (source.from === "lab") {
     const run: LabRun = JSON.parse(readFileSync(join(RUNS_DIR, `${source.runId}.json`), "utf8"));
@@ -58,12 +58,12 @@ async function claimOf(datapoint: Datapoint): Promise<SourceClaim> {
 /** The chunk the extractor would read the passage in, shown as the user message
  *  it would get. An image claim has no passage, so its chunk is the one that
  *  holds the image. */
-function extractorInput(text: string, claim: SourceClaim, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
+function extractorInput(text: string, claim: Pick<SourceClaim, "id" | "contextQuote" | "imageUrls">, descriptions: ReturnType<typeof loadFrozenDescriptions>, label: (chunk: string) => string) {
   const chunks = chunkText(renderImageDescriptions(text, descriptions));
   const imageMarker = claim.contextQuote ? null : `Image: ${claim.imageUrls[0]}`;
   const index = chunks.findIndex((chunk) => (imageMarker ? chunk.includes(imageMarker) : !!locate(chunk, claim.contextQuote!)));
   if (index === -1) throw new Error(`No chunk holds the passage of claim ${claim.id}`);
-  const userMessage = articleChunk(chunks[index]!);
+  const userMessage = label(chunks[index]!);
   const span = imageMarker
     ? (() => {
         const at = userMessage.indexOf(imageMarker);
@@ -130,8 +130,34 @@ function labPromptAsReceived(runId: string, claimId: string): string | null {
   }
 }
 
-async function buildRecord(datapoint: Datapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
-  const { data: item, error } = await db.from("everything_items").select("id, title, url, source, published_at, created_at, full_text").eq("id", datapoint.itemId).single();
+const itemColumns = "id, title, url, source, published_at, created_at, full_text";
+
+/** A transcript chunk is labelled differently from an article chunk. */
+const labelOf = (source: string) => (source === "youtube" ? transcriptChunk : articleChunk);
+
+function recordBase(datapoint: Datapoint, item: { id: string; title: string; url: string | null; source: string; published_at: string | null }, text: string) {
+  return {
+    id: datapoint.id,
+    group: datapoint.group,
+    groupTitle: GROUP_TITLE[datapoint.group],
+    jimsWords: datapoint.jimsWords,
+    writtenOn: datapoint.writtenOn,
+    referenceClaims: datapoint.referenceClaims,
+    item: { id: item.id, title: item.title, url: item.url, source: item.source, publishedAt: item.published_at, textChars: text.length },
+  };
+}
+
+/** A datapoint that only the extractor eval uses: there is no claim, no checker input and no production result. */
+async function buildExtractorOnlyRecord(datapoint: ExtractorOnlyDatapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
+  const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
+  if (error) throw error;
+  const text = item.full_text as string;
+  const passage = { id: datapoint.id, contextQuote: datapoint.passage, imageUrls: [] };
+  return { ...recordBase(datapoint, item, text), extractorOnly: true, expected: null, extractor: extractorInput(text, passage, descriptions, labelOf(item.source)), checker: null, production: null };
+}
+
+async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
+  const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
   if (error) throw error;
   const claim = await claimOf(datapoint);
   const text = item.full_text as string;
@@ -159,15 +185,10 @@ async function buildRecord(datapoint: Datapoint, descriptions: ReturnType<typeof
         : null;
 
   return {
-    id: datapoint.id,
-    group: datapoint.group,
-    groupTitle: GROUP_TITLE[datapoint.group],
-    jimsWords: datapoint.jimsWords,
-    writtenOn: datapoint.writtenOn,
+    ...recordBase(datapoint, item, text),
+    extractorOnly: false,
     expected: datapoint.expected,
-    referenceClaim: datapoint.referenceClaim,
-    item: { id: item.id, title: item.title, url: item.url, source: item.source, publishedAt: item.published_at, textChars: text.length },
-    extractor: extractorInput(text, claim, descriptions),
+    extractor: extractorInput(text, claim, descriptions, labelOf(item.source)),
     checker: {
       claim: { ...claim, paragraphTakenFromText: !storedParagraph && !!paragraph },
       post,
@@ -180,13 +201,12 @@ async function buildRecord(datapoint: Datapoint, descriptions: ReturnType<typeof
 const descriptions = loadFrozenDescriptions();
 const records = [];
 for (const datapoint of DATAPOINTS) {
-  const record = await buildRecord(datapoint, descriptions);
+  const record = "extractorOnly" in datapoint ? await buildExtractorOnlyRecord(datapoint, descriptions) : await buildRecord(datapoint, descriptions);
   records.push(record);
   console.log(
     `${datapoint.id.padEnd(30)} chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars)`,
     `highlight ${record.extractor.highlight ? "found" : "MISSING"}`,
-    `| paragraph ${record.checker.claim.paragraphTakenFromText ? "from text" : record.checker.claim.contextParagraph ? "stored" : "NONE"}`,
-    `| as received ${record.checker.asReceived?.prompt ? "yes" : "no"}`,
+    record.checker ? `| paragraph ${record.checker.claim.paragraphTakenFromText ? "from text" : record.checker.claim.contextParagraph ? "stored" : "NONE"} | as received ${record.checker.asReceived?.prompt ? "yes" : "no"}` : "| extractor only",
   );
 }
 writeFileSync(DATASET_PATH, JSON.stringify({ generatedAt: new Date().toISOString(), datapoints: records }, null, 1));
