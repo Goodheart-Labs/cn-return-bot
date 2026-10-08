@@ -29,8 +29,7 @@ import {
   type NewClaimRow,
   type SpendFor,
 } from "../db";
-import { dropSpeculation } from "./extractClaims";
-import { VERY_CONFIDENT_JUDGEMENT, shouldFactCheck } from "./rateClaims";
+import { shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
 import type { RateClaimsRequest, RateClaimsResponse } from "../../service/contract";
 import { group, money } from "../logFormat";
@@ -64,8 +63,7 @@ function budgetExhaustedFor(item: EverythingItem): Promise<boolean> {
 /** Where every extracted claim ended up, for one item. */
 export interface ItemTally {
   extracted: number;
-  speculation: number; // Claims about a future scenario. We drop them before inserting.
-  skipped: number; // Claims the extractor or the rater was confident are true. We do not fact-check them.
+  skipped: number; // Claims the rater was confident are true. We do not fact-check them.
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
@@ -78,11 +76,11 @@ export interface ItemTally {
   skipReason: string | null;
 }
 
-const EMPTY_TALLY: ItemTally = { extracted: 0, speculation: 0, skipped: 0, notes: 0, no_note: 0, errors: 0, capped: 0, skipReason: null };
+const EMPTY_TALLY: ItemTally = { extracted: 0, skipped: 0, notes: 0, no_note: 0, errors: 0, capped: 0, skipReason: null };
 
 function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
-  const skipReason = claim.veryConfidentTrue ? "extractor very confident it is true" : `judged ${claim.judgement}`;
+  const skipReason = `judged ${claim.judgement}`;
   const anchor = claim.anchor;
   return {
     item_id: itemId,
@@ -151,8 +149,8 @@ function repeatsExistingClaim(claim: ExtractedClaim, existing: ItemClaimRow[]): 
   );
 }
 
-/** The claims of one item across all its parts, minus the speculation, the
- *  claims the item already carries, and any claim two parts both produced.
+/** The claims of one item across all its parts, minus the claims the item
+ *  already carries, and any claim two parts both produced.
  *  The introduction is shown to every part as context, so a claim from it can
  *  come back twice despite the prompt's rule; the second copy is dropped here.
  *  Returns each part with its surviving claims, and the counts the tally
@@ -160,17 +158,14 @@ function repeatsExistingClaim(claim: ExtractedClaim, existing: ItemClaimRow[]): 
 export function freshClaimsPerPart(
   parts: ContentPart[],
   existingClaims: ItemClaimRow[],
-): { parts: ContentPart[]; extracted: number; speculation: number; duplicates: number } {
+): { parts: ContentPart[]; extracted: number; duplicates: number } {
   const norm = (text: string) => text.trim().toLowerCase();
   const seen = new Set<string>();
   let extracted = 0;
-  let speculation = 0;
   let duplicates = 0;
   const fresh = parts.map((part) => {
     extracted += part.claims.length;
-    const notSpeculation = dropSpeculation(part.claims);
-    speculation += part.claims.length - notSpeculation.length;
-    const claims = notSpeculation.filter((claim) => {
+    const claims = part.claims.filter((claim) => {
       const key = norm(claim.claim);
       const quoteKey = claim.context ? `quote:${norm(claim.context)}` : null;
       const repeated = repeatsExistingClaim(claim, existingClaims) || seen.has(key) || (quoteKey !== null && seen.has(quoteKey));
@@ -181,7 +176,7 @@ export function freshClaimsPerPart(
     });
     return { ...part, claims };
   });
-  return { parts: fresh, extracted, speculation, duplicates };
+  return { parts: fresh, extracted, duplicates };
 }
 
 /** One rating call for one part. The worker sends it to the extraction
@@ -206,20 +201,15 @@ export async function rateParts(
   await Promise.all(
     parts.map((part, i) =>
       queue.add(async () => {
-        const confident = part.claims.filter((c) => c.veryConfidentTrue).map((c) => ({ ...c, judgement: VERY_CONFIDENT_JUDGEMENT }));
-        const toRate = part.claims.filter((c) => !c.veryConfidentTrue);
-        if (toRate.length === 0) {
-          rated[i] = confident;
-          return;
-        }
+        if (part.claims.length === 0) return;
         const rating = await ratePart({
           text: part.text,
           // When there is an introduction it is the first part, and it is not
           // shown its own text as context.
           introduction: part.index === 0 ? null : introduction,
-          claims: toRate,
+          claims: part.claims,
         });
-        rated[i] = [...confident, ...rating.claims];
+        rated[i] = rating.claims;
         if (rating.costUsd !== null) costUsd = (costUsd ?? 0) + rating.costUsd;
         webSearches += rating.webSearches;
         if (rating.research) research.push(parts.length > 1 ? `[${part.title}] ${rating.research}` : rating.research);
@@ -248,7 +238,7 @@ export async function processFetchedContent(
     console.log(`  not checkable: ${extraction.reason}`);
     return { ...EMPTY_TALLY, skipReason: extraction.reason };
   }
-  const { parts, extracted, speculation, duplicates } = freshClaimsPerPart(extraction.parts, existingClaims);
+  const { parts, extracted, duplicates } = freshClaimsPerPart(extraction.parts, existingClaims);
   if (duplicates > 0) console.log(`  dropped ${duplicates} claims the item already carries`);
   if (parts.length > 1) console.log(`  ${parts.length} parts: ${parts.map((p) => p.title).join(" · ")}`);
 
@@ -262,7 +252,7 @@ export async function processFetchedContent(
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
   await setItemProgress(item.id, { stage: "checking", total: toCheck });
   console.log(
-    `  ${extracted} claims found, ${speculation} were predictions and dropped, ` +
+    `  ${extracted} claims found, ` +
       `${toCheck} of ${claims.length} worth checking after research (${money(rating.costUsd ?? 0)}, ${rating.webSearches} web searches)`,
   );
   const researchLog = group("research", rating.research);
@@ -293,7 +283,6 @@ export async function processFetchedContent(
 
   return {
     extracted,
-    speculation,
     skipped: claims.length - toCheck,
     notes: outcomes.filter((o) => o === "note").length,
     no_note: outcomes.filter((o) => o === "no_note").length,
@@ -312,8 +301,6 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
     context: row.context_quote ?? "",
     contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
-    veryConfidentTrue: false,
-    speculation: false,
     anchor: { kind: "substack", url: "" },
   };
 }
@@ -361,7 +348,6 @@ export async function resumeItemClaims(item: EverythingItem): Promise<ItemTally>
 
   return {
     extracted: allClaims.length,
-    speculation: 0,
     skipped: allClaims.filter((c) => c.status === "skipped").length,
     notes: outcomes.filter((o) => o === "note").length,
     no_note: outcomes.filter((o) => o === "no_note").length,

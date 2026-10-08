@@ -83,8 +83,6 @@ function toExtractedClaim(raw: PassageClaim, anchor: ClaimAnchor): ExtractedClai
     context: raw.context,
     contextParagraph: raw.contextParagraph,
     imageUrls: raw.imageUrls,
-    veryConfidentTrue: false,
-    speculation: false,
     anchor,
   };
 }
@@ -525,13 +523,4 @@ export async function extractClaims(content: FetchedContent, concurrency: number
       return extractPlannedParts(introduction, planned, concurrency);
     }
   }
-}
-
-/**
- * Drops every claim about a hypothetical or future scenario. Only a claim about
- * the present or the past can be fact-checked, so speculation never reaches the
- * rest of the pipeline. Everything downstream works on the returned subset.
- */
-export function dropSpeculation(claims: ExtractedClaim[]): ExtractedClaim[] {
-  return claims.filter((c) => !c.speculation);
 }

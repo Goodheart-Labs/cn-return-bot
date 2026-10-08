@@ -28,8 +28,6 @@ const claim = (text: string): ExtractedClaim => ({
   context: text,
   contextParagraph: text,
   imageUrls: [],
-  veryConfidentTrue: false,
-  speculation: false,
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 });
 const claims = [claim("first"), claim("second"), claim("third")];

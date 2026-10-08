@@ -56,7 +56,6 @@ const UNRATED_JUDGEMENT = "uncertain";
 /** The judgement a claim the extractor marked very confident is stored with.
  *  It never reaches the rater, so this is the rater's top rating applied by
  *  the extractor's confidence instead. */
-export const VERY_CONFIDENT_JUDGEMENT = "certainly true";
 
 const RATING_SCHEMA_HINT = `{ "research": string, "ratings": [{ "claim": number, "rating": string }] }`;
 
