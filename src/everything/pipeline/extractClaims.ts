@@ -3,11 +3,14 @@
  *
  * The gate and split step (gateAndSplit.ts) first decides whether the text is
  * worth checking at all and cuts it into topic parts. We then ask the model,
- * with high thinking effort, to extract every checkable claim from each part.
- * The text is either a timestamped YouTube transcript or a plain article. Each
- * claim comes back in neutral, self-contained language, with a verbatim excerpt
- * of the context around it. How true a claim is gets decided afterwards by the
- * rating step in rateClaims.ts, which has web access.
+ * with high thinking effort, to cut each chunk of a part into passages that add
+ * up to the whole chunk, and to sort every passage as a statement that a
+ * neutral expert could find misleading, a forecast or something else
+ * (passages.ts reads the answer). The text is either a timestamped YouTube transcript or a plain
+ * article. A passage of claims lists them in neutral, self-contained language,
+ * and the passage itself is the verbatim excerpt that the claims sit in. How
+ * true a claim is gets decided afterwards by the rating step in rateClaims.ts,
+ * which has web access.
  *
  * A claim from a YouTube video has its context snapped back onto the subtitle
  * cues, which gives us a deep link into the video.
@@ -19,8 +22,8 @@
 
 import PQueue from "p-queue";
 import { trackLlmCall, trackedLlmCreate } from "../../pipeline/cost-tracking/costTracker";
-import { jsonSchemaResponseFormat } from "../../pipeline/prompts/responseFormat";
-import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
+import { ModelOutputInvalidError } from "../../pipeline/utils/errors";
+import type { ChatMessage } from "../../pipeline/utils/jsonLlmCall";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipeline/media/mediaAnalysisGemini";
@@ -29,71 +32,57 @@ import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, Fetche
 import { normalizeText } from "../../everything-core/normalizeText";
 import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
 import { extractionModels } from "./model";
+import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
 
-function extractionSystemPrompt(): string {
-  const fields = [
-    `- "claim": the neutral, self-contained statement.`,
-    `- "context": a verbatim excerpt from the text around the claim — its sentence plus enough surrounding sentences that a reader with none of the rest of the text has all the context needed to evaluate it. Verbatim source prose only — never quote an image block's Description/Visible text lines. Leave empty ("") for a claim grounded only in an image.`,
-    `- "context_paragraph": a wider verbatim excerpt — the full surrounding paragraph(s) the claim sits in — that contains the "context" excerpt above word-for-word. Shown to readers as the broader passage around the highlighted claim. Same rule: verbatim source prose only. Leave empty ("") when there is no surrounding text.`,
-    `- "image_urls": the URLs (from the "Image:" line of each image block) of any images the claim is based on — a chart, screenshot, photo, or diagram. Empty array for a text-only claim.`,
-    `- "very_confident_that_its_true": true only if you are very confident the claim is correct as stated, so that no fact-check is needed; false otherwise.`,
-    `- "speculation": true if the claim describes a hypothetical or future scenario — something stated as happening in a future year (e.g. "in 2028...") as part of an imagined scenario; false if it is about the present or past (2026 or earlier) or the current state of the world (real events, statistics, and any other real-world claim).`,
-  ];
-  return `You extract checkable factual claims from a text (podcast transcript or article). The text may contain bracketed image blocks — an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the article prose.
+const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
+  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading: false, out of date, overstated, missing context, cherry-picked, wrongly attributed or misleading in some other way. This covers facts, numbers, dates, events, quotations, attributions, causes, comparisons and things presupposed as background fact. When in doubt, choose this type. A sentence that mixes an opinion with a factual premise is also a statement. Also give "claims", as described below.`,
+  [FORECAST_TYPE]: `says what will or might happen in the future: a prediction, a projection, a probability or a plan.`,
+  [OTHER_TYPE]: `everything else: an opinion or value judgment with no factual premise, a recommendation, a joke, a question, a part of an invented story or an imagined scenario, a definition, and text with no content such as a heading, a transition, a greeting, a call to action, a list of links or a caption. Also give "why": a few words on what the passage is.`,
+};
 
-The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not extract claims from it; extract only from the text after "Part:".
+const PASSAGE_EXAMPLE_TEXT = `I think Berlin is the best city in Europe. It has a population of 3.7 million, and the Wall fell in 1989. By 2030 it will have 4 million people. Once upon a time a dragon lived in a cave under the Spree.`;
+const PASSAGE_EXAMPLE_ANSWER = {
+  "I think Berlin is the best city in Europe.": { type: OTHER_TYPE, why: "opinion" },
+  "It has a population of 3.7 million,": { type: STATEMENT_TYPE, claims: ["Berlin has a population of 3.7 million."] },
+  "and the Wall fell in 1989.": { type: STATEMENT_TYPE, claims: ["The Berlin Wall fell in 1989."] },
+  "By 2030 it will have 4 million people.": { type: FORECAST_TYPE },
+  "Once upon a time a dragon lived in a cave under the Spree.": { type: OTHER_TYPE, why: "invented story" },
+};
 
-Extract EVERY distinct claim the text makes or relies on, including implicit ones — things presented as background fact or presupposed, not only what is stated outright. This includes claims carried by the images: data in a chart, a figure in a screenshot, what a photo depicts — read these from the image block's Description and Visible text. Split compound statements into separate claims.
+/** `extraTypes` adds types to the usual four, for experiments that want to see
+ *  which passages do not fit them. */
+export function extractionSystemPrompt(extraTypes: Record<string, string> = {}): string {
+  const types = Object.entries({ ...PASSAGE_TYPE_DESCRIPTIONS, ...extraTypes }).map(([name, description]) => `- "${name}": ${description}`);
+  return `You cut a text into passages and sort every passage by what it says. The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
 
-A claim can rest on text, an image, or both. Ground each claim in what actually supports it: fill "context" from the article text and/or "image_urls" from the image blocks.
+The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not cut it into passages. Cut only the text after "Part:".
 
-Write each claim in NEUTRAL, SELF-CONTAINED language:
-- Strip the author's rhetoric, framing, hedging, and tone — state the underlying factual proposition plainly, as a neutral third party would.
-- Resolve pronouns and references so the claim stands entirely on its own. Each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
+Cut the text into consecutive passages that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between passages. Make each passage as short as its content allows: normally one sentence, or several when a claim cannot stand without them. Cut between sentences, and inside a sentence only when its parts have different types.
 
-Skip pure opinion, value judgments, predictions, jokes, and anything not falsifiable.
+Answer with one JSON object. Each key is one passage, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
+${types.join("\n")}
 
-For each claim return:
-${fields.join("\n")}`;
+Statements must be as atomic as possible: a statement passage holds one statement, which a neutral expert could judge on its own. If a sentence holds two or more statements, cut inside the sentence so that each gets its own passage, for example at a comma, an "and", a "while" or a "which". Only when statements are woven into each other so that no cut can separate them, for example a description inside a sentence about something else, keep them in one passage and list each as a claim. Forecast and other passages do not have to be atomic: let them run as long as they naturally do.
+
+"claims" is a list of the claims the passage makes or relies on, normally just one, including implicit ones. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
+
+A claim can rest on an image, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. For such a claim, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}" and its "claims". An image with nothing to check gets no key.
+
+Example text:
+${PASSAGE_EXAMPLE_TEXT}
+
+Example answer:
+${JSON.stringify(PASSAGE_EXAMPLE_ANSWER, null, 1)}`;
 }
 
-function claimsResponseFormat() {
-  const properties: Record<string, unknown> = {
-    claim: { type: "string", description: "Neutral, self-contained restatement of the claim." },
-    context: { type: "string", description: "Verbatim excerpt around the claim, or \"\" for an image-only claim." },
-    context_paragraph: { type: "string", description: "Wider verbatim excerpt containing the context excerpt word-for-word, or \"\" when there is no surrounding text." },
-    image_urls: { type: "array", items: { type: "string" }, description: "URLs of images the claim is based on; empty for a text-only claim." },
-    very_confident_that_its_true: { type: "boolean", description: "True only if you are very confident the claim is correct as stated." },
-    speculation: { type: "boolean", description: "True if the claim is about a hypothetical/future scenario; false if about the present or past." },
-  };
-  const required = ["claim", "context", "context_paragraph", "image_urls", "very_confident_that_its_true", "speculation"];
-  return jsonSchemaResponseFormat("content_claims", {
-    type: "object",
-    properties: { claims: { type: "array", items: { type: "object", properties, required, additionalProperties: false } } },
-    required: ["claims"],
-    additionalProperties: false,
-  });
-}
-
-interface RawClaim {
-  claim: string;
-  context: string;
-  context_paragraph: string;
-  image_urls?: string[];
-  very_confident_that_its_true: boolean;
-  speculation: boolean;
-}
-
-/** Copies the LLM's claim fields onto an ExtractedClaim and attaches the anchor
+/** Copies the claim of a passage onto an ExtractedClaim and attaches the anchor
  *  we resolved for it. */
-function toExtractedClaim(raw: RawClaim, anchor: ClaimAnchor): ExtractedClaim {
+function toExtractedClaim(raw: PassageClaim, anchor: ClaimAnchor): ExtractedClaim {
   return {
     claim: raw.claim,
-    context: raw.context ?? "",
-    contextParagraph: raw.context_paragraph ?? "",
-    imageUrls: raw.image_urls ?? [],
-    veryConfidentTrue: raw.very_confident_that_its_true,
-    speculation: raw.speculation,
+    context: raw.context,
+    contextParagraph: raw.contextParagraph,
+    imageUrls: raw.imageUrls,
     anchor,
   };
 }
@@ -106,7 +95,7 @@ const freshImageMarkerRe = () => new RegExp(IMAGE_MARKER_RE.source, "g");
  *  descriptions keyed by URL. Each distinct URL is described once, and the calls
  *  run in parallel. A description that fails becomes empty fields, and the
  *  renderer still keeps the URL in the text. */
-async function describeArticleImages(text: string): Promise<Map<string, GeminiMediaDescription>> {
+export async function describeArticleImages(text: string): Promise<Map<string, GeminiMediaDescription>> {
   const urls = [...new Set([...text.matchAll(freshImageMarkerRe())].map((m) => m[1]!))];
   const entries = await Promise.all(
     urls.map((url, i) =>
@@ -125,7 +114,7 @@ async function describeArticleImages(text: string): Promise<Map<string, GeminiMe
  *  block holds the URL, so the model can cite it back in image_urls, plus
  *  Gemini's description and the text it read off the image. The brackets make
  *  the block read as an aside, so the model never quotes it as article prose. */
-function renderImageDescriptions(text: string, descriptions: Map<string, GeminiMediaDescription>): string {
+export function renderImageDescriptions(text: string, descriptions: Map<string, GeminiMediaDescription>): string {
   return text.replace(freshImageMarkerRe(), (_m, url) => {
     const { description, ocrText } = descriptions.get(url) ?? { description: "", ocrText: "" };
     const lines = [`Image: ${url}`];
@@ -136,44 +125,65 @@ function renderImageDescriptions(text: string, descriptions: Map<string, GeminiM
   });
 }
 
-/** One extraction call over a rendered text chunk. The call goes through
- *  the tracked wrapper so its cost lands in the active cost tracker. For years
- *  it did not, which made the daily spend cap undercount by exactly the
- *  extraction spend.
+const MAX_PASSAGE_ATTEMPTS = 3;
+
+export interface PassageExtraction {
+  passages: Passage[];
+  /** The share of the chunk's characters that the passages cover. */
+  coverage: number;
+  attempts: number;
+}
+
+/** One extraction over a rendered text chunk. The calls go through the tracked
+ *  wrapper so their cost lands in the active cost tracker. For years they did
+ *  not, which made the daily spend cap undercount by exactly the extraction
+ *  spend.
  *
- *  It goes through the shared retry loop for the same reason every other JSON
- *  stage does. A json_schema response format only guarantees that the provider
- *  accepts the schema, not that it decodes against it, so now and then the model
- *  answers in prose instead. A page that is mostly navigation, where there is
- *  little to extract, makes that answer especially likely. Without the retry
- *  that prose crashed the whole item, and the error said only that some JSON
- *  failed to parse. */
-async function runExtraction(content: string): Promise<RawClaim[]> {
-  const parsed = await parseJsonWithRetry<{ claims?: RawClaim[] }>({
-    source: "claim_extraction",
-    messages: [
-      { role: "system", content: extractionSystemPrompt() },
-      { role: "user", content },
-    ],
-    schemaHint:
-      `{ "claims": [ { "claim": string, "context": string, "context_paragraph": string, ` +
-      `"image_urls": string[], "very_confident_that_its_true": boolean, "speculation": boolean } ] }`,
-    call: async (messages, attempt) => {
-      const callName = attempt === 1 ? "claim_extraction" : `claim_extraction.retry.${attempt - 1}`;
-      const { model, reasoning } = extractionModels();
-      const { response, costEntry } = await trackedLlmCreate(callName, {
-        model,
-        messages,
-        response_format: claimsResponseFormat(),
-        reasoning_effort: reasoning.extraction,
-      } as any);
-      trackLlmCall(costEntry);
-      const answer = (response as any).choices?.[0]?.message?.content ?? "{}";
-      return { toParse: stripJsonFences(answer), assistantEcho: answer };
-    },
-    parse: (toParse) => JSON.parse(toParse),
-  });
-  return parsed.claims ?? [];
+ *  The answer must be one JSON object whose passages add up to the chunk. A
+ *  provider cannot enforce that, and the model now and then skips a stretch,
+ *  rewords a passage or answers in prose. So the answer is checked, and when it
+ *  falls short the model is told which text it left out and asks again. After
+ *  three attempts the call throws, because passages that do not cover the text
+ *  would silently lose claims.
+ *
+ *  `extraTypes` adds types for experiments. */
+export async function runPassageExtraction(content: string, extraTypes: Record<string, string> = {}): Promise<PassageExtraction> {
+  const body = bodyOfChunkMessage(content);
+  if (!hasTextOutsideImages(body)) return { passages: [], coverage: 1, attempts: 0 };
+  const allowedTypes = [...PASSAGE_TYPES, ...Object.keys(extraTypes)];
+  const messages: ChatMessage[] = [
+    { role: "system", content: extractionSystemPrompt(extraTypes) },
+    { role: "user", content },
+  ];
+  let lastFeedback = "";
+  for (let attempt = 1; attempt <= MAX_PASSAGE_ATTEMPTS; attempt++) {
+    const callName = attempt === 1 ? "claim_extraction" : `claim_extraction.retry.${attempt - 1}`;
+    const { model, reasoning } = extractionModels();
+    const { response, costEntry } = await trackedLlmCreate(callName, {
+      model,
+      messages,
+      response_format: { type: "json_object" },
+      reasoning_effort: reasoning.extraction,
+    } as any);
+    trackLlmCall(costEntry);
+    const answer: string = (response as any).choices?.[0]?.message?.content ?? "{}";
+    try {
+      const parse = parsePassages(stripJsonFences(answer), body, allowedTypes);
+      if (parse.coverage >= MIN_COVERAGE) return { passages: parse.passages, coverage: parse.coverage, attempts: attempt };
+      lastFeedback = describeProblems(parse);
+    } catch (err) {
+      if (!(err instanceof PassageFormatError)) throw err;
+      lastFeedback = `${err.message} Answer again with one JSON object in the format described.`;
+    }
+    messages.push({ role: "assistant", content: answer }, { role: "user", content: lastFeedback });
+  }
+  throw new ModelOutputInvalidError(`claim_extraction: no acceptable answer after ${MAX_PASSAGE_ATTEMPTS} attempts. ${lastFeedback}`);
+}
+
+/** The claims of one chunk, each with the passage it sits in. */
+export async function runExtraction(content: string): Promise<PassageClaim[]> {
+  const { passages } = await runPassageExtraction(content);
+  return claimsOfPassages(passages, bodyOfChunkMessage(content));
 }
 
 function buildVideoLink(videoId: string, seconds: number): string {
@@ -289,7 +299,7 @@ function splitOversizedBlock(block: string): string[] {
 }
 
 // We split on blank lines so that paragraphs and speaker turns stay intact.
-function chunkText(text: string): string[] {
+export function chunkText(text: string): string[] {
   const blocks = text.split(/\n\s*\n/).flatMap((block) => splitOversizedBlock(block));
   const chunks: string[] = [];
   let cur = "";
@@ -339,22 +349,36 @@ async function extractChunks(
   const perChunk = await Promise.all(renderedChunks.map((chunk) => queue.add(() => runExtraction(chunk))));
   return perChunk
     .flat()
-    .filter((c): c is RawClaim => !!c)
-    .map((c) => toExtractedClaim(c, anchorFor(c.context ?? "", c.context_paragraph ?? "")));
+    .filter((c): c is PassageClaim => !!c)
+    .map((c) => toExtractedClaim(c, anchorFor(c.context, c.contextParagraph)));
 }
 
 // The LLM sees plain transcript text with no timestamps in it. We snap the
 // timestamps from the cues afterwards, so no [seconds] marker can leak into a
 // claim's verbatim context.
-const transcriptChunk = (text: string) => `Transcript segment:\n\n${text}`;
-const articleChunk = (text: string) => `Article excerpt:\n\n${text}`;
+const TRANSCRIPT_LABEL = "Transcript segment:";
+const ARTICLE_LABEL = "Article excerpt:";
+export const transcriptChunk = (text: string) => `${TRANSCRIPT_LABEL}\n\n${text}`;
+export const articleChunk = (text: string) => `${ARTICLE_LABEL}\n\n${text}`;
 
 /** The user message for one chunk of a part. The introduction goes ahead of the
  *  chunk as context, labelled so the prompt's rule not to extract from it
  *  applies. The introduction's own part, and an unsplit item, send the chunk
  *  alone. */
 function partUserMessage(introduction: string | null, chunk: string): string {
-  return introduction ? `Introduction (context only):\n\n${introduction}\n\nPart:\n\n${chunk}` : chunk;
+  return introduction ? `${INTRODUCTION_HEADER}\n\n${introduction}${PART_SEPARATOR}${chunk}` : chunk;
+}
+
+const INTRODUCTION_HEADER = "Introduction (context only):";
+const PART_SEPARATOR = "\n\nPart:\n\n";
+
+/** The text of a chunk message that the passages must add up to: what follows
+ *  the introduction and the label line. */
+export function bodyOfChunkMessage(message: string): string {
+  const part = message.startsWith(INTRODUCTION_HEADER) ? message.lastIndexOf(PART_SEPARATOR) : -1;
+  const chunk = part === -1 ? message : message.slice(part + PART_SEPARATOR.length);
+  const label = [ARTICLE_LABEL, TRANSCRIPT_LABEL].find((l) => chunk.startsWith(`${l}\n\n`));
+  return label ? chunk.slice(label.length + 2) : chunk;
 }
 
 /** One part ready to extract: its stored text, its rendered chunks, and how to
@@ -499,13 +523,4 @@ export async function extractClaims(content: FetchedContent, concurrency: number
       return extractPlannedParts(introduction, planned, concurrency);
     }
   }
-}
-
-/**
- * Drops every claim about a hypothetical or future scenario. Only a claim about
- * the present or the past can be fact-checked, so speculation never reaches the
- * rest of the pipeline. Everything downstream works on the returned subset.
- */
-export function dropSpeculation(claims: ExtractedClaim[]): ExtractedClaim[] {
-  return claims.filter((c) => !c.speculation);
 }

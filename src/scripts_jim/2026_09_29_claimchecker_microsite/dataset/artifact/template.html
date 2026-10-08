@@ -1,0 +1,1054 @@
+<title>Claimchecker Eval Sets</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: a sticky tab bar over three views. The datasets are two wide tables whose rows open into the full input. */
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --ink: #112120;
+  --muted: #566866;
+  --line: #d3dddc;
+  --accent: #0c6a6a;
+  --accent-soft: #dcefee;
+  --code-bg: #eef3f3;
+  --mark: #ffe28a;
+  --note: #0a7447;
+  --note-soft: #dbf1e5;
+  --nonote: #5d45a8;
+  --nonote-soft: #e8e3f6;
+  --model: #b4531c;
+  --model-soft: #fbe9dc;
+  --bad: #b3261e;
+  --bad-soft: #fbe3e1;
+  --warn: #8a5a00;
+  --warn-soft: #fbefcf;
+  --font-ui: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1615; --surface: #152120; --ink: #e5eeed; --muted: #9bb0ad; --line: #2a3b39;
+    --accent: #5cc4c0; --accent-soft: #1b3433; --code-bg: #1b2a29; --mark: #6b5a14;
+    --note: #62d09b; --note-soft: #173528; --nonote: #b4a2f0; --nonote-soft: #2a2347;
+    --model: #f0a574; --model-soft: #3b2518; color-scheme: dark;
+    --bad: #ff9a92; --bad-soft: #43201e; --warn: #e8bd5a; --warn-soft: #3a2f12;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1615; --surface: #152120; --ink: #e5eeed; --muted: #9bb0ad; --line: #2a3b39;
+  --accent: #5cc4c0; --accent-soft: #1b3433; --code-bg: #1b2a29; --mark: #6b5a14;
+  --note: #62d09b; --note-soft: #173528; --nonote: #b4a2f0; --nonote-soft: #2a2347;
+  --model: #f0a574; --model-soft: #3b2518; color-scheme: dark;
+  --bad: #ff9a92; --bad-soft: #43201e; --warn: #e8bd5a; --warn-soft: #3a2f12;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
+* { box-sizing: border-box; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-inline: 16px; padding-block: 0 64px; }
+h1 { font-size: 1.7rem; line-height: 1.15; margin: 28px 0 6px; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-size: 1.2rem; margin: 32px 0 8px; text-wrap: balance; }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p { margin: 0 0 10px; max-width: 70ch; }
+.lede { color: var(--muted); max-width: 75ch; }
+code, pre { font-family: var(--font-mono); font-size: 0.82rem; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code-bg); padding: 12px 14px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; margin: 6px 0 12px; line-height: 1.55; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; }
+
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; gap: 4px; padding-block: 8px; flex-wrap: wrap; }
+.tab { border: 1px solid transparent; background: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.tab:focus-visible, .chip-btn:focus-visible, .node:focus-visible, tr.row:focus-visible, .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.subtabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 10px; }
+.subtab { border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 6px; cursor: pointer; text-align: left; }
+.subtab b { display: block; font-size: 0.95rem; }
+.subtab span { font-size: 0.8rem; color: var(--muted); }
+.subtab[aria-selected="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.chip-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 0.85rem; display: inline-flex; gap: 6px; align-items: center; }
+.chip-btn[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.chip-btn .n { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.group { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.76rem; font-weight: 600; white-space: nowrap; border: 1.5px solid; }
+.g-note-easy { background: var(--note-soft); border-color: var(--note-soft); color: var(--note); }
+.g-note-difficult { background: transparent; border-color: var(--note); color: var(--note); }
+.g-no-note-easy { background: var(--nonote-soft); border-color: var(--nonote-soft); color: var(--nonote); }
+.g-no-note-difficult { background: transparent; border-color: var(--nonote); color: var(--nonote); }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 1060px; table-layout: fixed; }
+th { text-align: left; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 0.88rem; overflow-wrap: anywhere; }
+tr.row { cursor: pointer; }
+tr.row:hover td { background: var(--accent-soft); }
+tr.row[aria-expanded="true"] td { background: var(--accent-soft); border-bottom-color: transparent; }
+td.num { font-variant-numeric: tabular-nums; color: var(--muted); width: 36px; }
+td.src { color: var(--muted); font-size: 0.82rem; }
+td.src b { color: var(--ink); font-weight: 600; }
+.cell-quote { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
+.detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+@media (max-width: 860px) { .detail-grid { grid-template-columns: minmax(0, 1fr); } }
+.detail-grid h4 { margin: 0 0 6px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.detail-grid > div { min-width: 0; }
+.words { border-left: 3px solid var(--line); padding: 2px 0 2px 12px; white-space: pre-wrap; margin: 0 0 14px; }
+.input-box { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 12px 14px; max-height: 460px; overflow: auto; white-space: pre-wrap; word-break: break-word; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.6; }
+.input-box mark { background: var(--mark); color: inherit; padding: 1px 0; }
+.toggle { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 0.8rem; margin: 0 6px 6px 0; background: var(--surface); }
+.meta { color: var(--muted); font-size: 0.8rem; margin: 6px 0 12px; }
+.pill { display: inline-block; border-radius: 4px; padding: 0 6px; font-size: 0.78rem; font-weight: 600; background: var(--code-bg); }
+.refnote { margin: 0 0 8px; }
+.refnote:last-child { margin-bottom: 0; }
+.verdict { display: inline-block; border-radius: 4px; padding: 1px 8px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+.v-pass { background: var(--note-soft); color: var(--note); }
+.v-fail { background: var(--bad-soft); color: var(--bad); }
+.v-soft { background: var(--warn-soft); color: var(--warn); }
+.v-error { background: var(--code-bg); color: var(--muted); }
+.runbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 18px 0 8px; }
+.runbar select { font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); max-width: 100%; }
+.sumtable { min-width: 0; width: auto; table-layout: auto; margin: 8px 0 18px; }
+.sumtable th, .sumtable td { padding: 7px 14px; }
+.sumtable td.n { font-variant-numeric: tabular-nums; text-align: right; }
+.sample { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 10px 12px; margin: 0 0 10px; }
+.sample .head { display: flex; gap: 10px; align-items: baseline; margin-bottom: 4px; }
+.sample ol { margin: 6px 0 0; padding-left: 22px; font-size: 0.84rem; }
+.sample details > summary { cursor: pointer; color: var(--accent); font-size: 0.82rem; }
+
+/* The chunk with its extracted passages */
+.xdetail { min-width: 0; }
+.xhead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; margin-bottom: 12px; }
+@media (max-width: 860px) { .xhead { grid-template-columns: minmax(0, 1fr); } }
+.xhead h4 { margin: 0 0 6px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.xgrid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 980px) { .xgrid { grid-template-columns: minmax(0, 1fr); } }
+.xmain { min-width: 0; }
+.xtoolbar { margin-bottom: 8px; }
+.xtext { position: relative; height: min(70vh, 640px); overflow: auto; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 14px 16px; white-space: pre-wrap; word-break: break-word; font-size: 0.92rem; line-height: 1.8; }
+.seg { cursor: pointer; border-radius: 2px; }
+.seg.c1 { background: color-mix(in srgb, var(--note) 18%, transparent); }
+.seg.c2 { background: color-mix(in srgb, var(--note) 32%, transparent); }
+.seg.c3 { background: color-mix(in srgb, var(--note) 46%, transparent); }
+.seg.target { box-shadow: inset 0 -4px 0 var(--warn); }
+.seg.target:not(.c1):not(.c2):not(.c3) { background: var(--warn-soft); }
+.seg.focus { background: color-mix(in srgb, var(--accent) 42%, transparent); outline: 1px solid var(--accent); }
+.seg:hover { filter: brightness(0.92); }
+.xside { min-width: 0; position: sticky; top: 56px; max-height: calc(100vh - 72px); overflow: auto; }
+.xtabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.xtab { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 10px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.xtab[aria-selected="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.judgereason { font-size: 0.86rem; margin: 0 0 10px; }
+.legend2 { display: grid; gap: 4px; font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
+.legend2 i { display: inline-block; width: 22px; height: 10px; border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
+.k-ex { background: color-mix(in srgb, var(--note) 32%, transparent); }
+.k-target { background: var(--warn-soft); box-shadow: inset 0 -3px 0 var(--warn); }
+.k-focus { background: color-mix(in srgb, var(--accent) 42%, transparent); outline: 1px solid var(--accent); }
+.xhere { margin: 10px 0; }
+.targetnote { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.88rem; }
+.claimitem { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 10px; margin: 0 0 6px; cursor: pointer; font-size: 0.86rem; }
+.claimitem.sel { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.claimno { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.claimtext { display: block; min-width: 0; }
+.claimtext .quote { display: block; margin-top: 4px; color: var(--muted); font-size: 0.8rem; }
+.claimtext .block { display: block; }
+.badge { display: inline-block; margin-left: 8px; border-radius: 999px; padding: 0 8px; font-size: 0.72rem; font-weight: 700; background: var(--note-soft); color: var(--note); }
+.xlist { padding: 10px; border-top: 1px solid var(--line); max-height: 420px; overflow: auto; }
+
+/* One claim check, step by step */
+.cdetail { min-width: 0; }
+.cgrid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 22px; align-items: start; }
+@media (max-width: 980px) { .cgrid { grid-template-columns: minmax(0, 1fr); } }
+.cleft h4, .cright h4 { margin: 14px 0 6px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.cleft h4:first-child { margin-top: 0; }
+.cleft, .cright { min-width: 0; }
+.trace { display: grid; gap: 10px; }
+.stepcard { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; }
+.stepcard > summary { cursor: pointer; padding: 9px 12px; list-style: none; display: flex; gap: 10px; align-items: center; font-weight: 600; }
+.stepcard > summary::-webkit-details-marker { display: none; }
+.stepcard > summary::after { content: "Hide"; margin-left: auto; color: var(--muted); font-weight: 500; font-size: 0.8rem; }
+.stepcard:not([open]) > summary::after { content: "Show"; }
+.stepno { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 0.78rem; font-weight: 700; flex: none; }
+.chip2 { font-size: 0.74rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+.stepcard > *:not(summary) { margin: 0 12px 12px; }
+.prosebox { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.9rem; line-height: 1.65; max-height: 460px; overflow: auto; border-top: 1px solid var(--line); padding-top: 10px; }
+.prosebox.mono { font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; }
+.stepcard details.block { margin-top: 10px; }
+
+/* Runs and comparison */
+.runtable td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.runrow { cursor: pointer; }
+.runrow:hover td { background: var(--accent-soft); }
+.runrow.current td { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.runtitle { margin: 22px 0 4px; font-size: 1.05rem; }
+.cmp th, .cmp td { vertical-align: middle; }
+.cmp th.cur, .cmp td.cur { background: var(--accent-soft); }
+.cmplabel { max-width: 420px; font-size: 0.84rem; }
+.cmpcell { border: 0; background: none; padding: 2px 4px; cursor: pointer; border-radius: 4px; white-space: nowrap; }
+.cmpcell:hover { background: var(--code-bg); }
+.cmpcell:focus-visible { outline: 2px solid var(--accent); }
+.runs { margin-bottom: 6px; }
+.seg.pass-other { background: color-mix(in srgb, var(--muted) 16%, transparent); }
+.seg.pass-forecast { background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: inset 0 -2px 0 var(--accent); }
+.k-other { background: color-mix(in srgb, var(--muted) 30%, transparent); }
+.k-forecast { background: color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: inset 0 -2px 0 var(--accent); }
+.passstats { font-size: 0.82rem; color: var(--muted); margin: 0 0 8px; }
+.expect-note { color: var(--note); font-weight: 600; }
+.expect-nonote { color: var(--nonote); font-weight: 600; }
+.small { font-size: 0.82rem; color: var(--muted); }
+.notebox { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 10px 12px; margin: 0 0 10px; }
+.notebox .by { font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+.notebox ul { margin: 6px 0 0; padding-left: 18px; font-size: 0.82rem; }
+.notebox li { margin-bottom: 4px; overflow-wrap: anywhere; }
+
+details.cols { margin: 0 0 14px; }
+details.cols > summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.coltable { min-width: 0; margin-top: 8px; table-layout: auto; }
+.coltable td:first-child { font-family: var(--font-mono); font-size: 0.8rem; white-space: nowrap; }
+
+/* Evaluation diagrams */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px 0; margin: 12px 0 8px; }
+.flow .arrow { display: flex; align-items: center; padding: 0 4px; color: var(--muted); font-size: 1.2rem; }
+.node { text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 172px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+.node:hover { border-color: var(--accent); }
+.node[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft), inset 0 0 0 1px var(--accent); }
+.node .kind { font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; }
+.node .name { font-weight: 600; font-size: 0.92rem; line-height: 1.25; }
+.node .hint { font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
+.k-data .kind { color: var(--accent); }
+.k-model { border-left: 5px solid var(--model); }
+.k-model .kind { color: var(--model); }
+.k-rule .kind { color: var(--nonote); }
+.k-report .kind { color: var(--note); }
+.node.optional { border-style: dashed; }
+.flowlabel { font-size: 0.78rem; color: var(--muted); margin: 14px 0 0; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.panel { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 16px 18px; margin: 10px 0 24px; min-height: 90px; }
+.panel h3 { margin-top: 0; }
+.panel dl { margin: 0; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 6px 14px; }
+.panel dt { font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.panel dd { margin: 0; min-width: 0; }
+@media (max-width: 600px) { .panel dl { grid-template-columns: minmax(0, 1fr); } .node { width: 100%; } .flow .arrow { transform: rotate(90deg); width: 100%; justify-content: center; padding: 2px 0; } }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); margin: 6px 0 4px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+
+table.matrix { min-width: 0; width: auto; margin: 8px 0 14px; }
+table.matrix td, table.matrix th { padding: 6px 12px; }
+.decisions li { margin-bottom: 10px; max-width: 80ch; }
+.copy { float: right; }
+@media (prefers-reduced-motion: no-preference) { .node, .tab, tr.row td { transition: border-color 0.12s, background-color 0.12s; } }
+</style>
+
+<div class="wrap">
+  <h1>Claimchecker eval sets</h1>
+  <p class="lede">GOO-229. The datapoints from your ticket comments and chat, with their full inputs: 14 for both evals, sorted into your four groups, and 2 more for the extractor eval alone. Every run is on the Results tab. Click a row to open its full input.</p>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-view="datasets">Datasets</button>
+    <button class="tab" role="tab" data-view="results">Results</button>
+    <button class="tab" role="tab" data-view="plan">Evaluation plan</button>
+    <button class="tab" role="tab" data-view="decisions">For you to check</button>
+  </div>
+
+  <section id="view-datasets" hidden>
+    <div class="subtabs" role="tablist" id="subtabs">
+      <button class="subtab" role="tab" data-ds="extractor"><b>Eval 1: Extractor</b><span>Is the right claim in the extractor's output?</span></button>
+      <button class="subtab" role="tab" data-ds="checker"><b>Eval 2: Claim checker</b><span>Does the checker make the right decision on the claim?</span></button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div id="dsintro"></div>
+    <div id="dstable"></div>
+  </section>
+
+  <section id="view-results" hidden>
+    <div id="resultsbody"></div>
+  </section>
+
+  <section id="view-plan" hidden>
+    <h2>How the evaluation would work</h2>
+    <p class="lede">Two evals that can run on their own, plus the loop around them. Each box opens a panel with its details: what goes in, what comes out, and the prompt where a model is involved. Dashed boxes are optional steps.</p>
+    <div class="legend"><span><i style="background:var(--accent)"></i>data</span><span><i style="background:var(--model)"></i>model call</span><span><i style="background:var(--nonote)"></i>plain rule, no model</span><span><i style="background:var(--note)"></i>report</span></div>
+    <div id="plans"></div>
+  </section>
+
+  <section id="view-decisions" hidden>
+    <h2>Things for you to check</h2>
+    <p class="lede">Everything below is something I decided or drafted. Tell me what to change and I will rebuild the dataset.</p>
+    <ol class="decisions" id="decisions"></ol>
+  </section>
+</div>
+
+<script type="application/json" id="data">/*DATA*/</script>
+<script type="application/json" id="runs">/*RUNS*/</script>
+<script>
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const POINTS = DATA.datapoints;
+const RUNS = JSON.parse(document.getElementById("runs").textContent);
+const GROUPS = [
+  { id: "note-easy", label: "Note, easy" },
+  { id: "note-difficult", label: "Note, difficult" },
+  { id: "no-note-easy", label: "No note, easy" },
+  { id: "no-note-difficult", label: "No note, difficult" },
+  { id: "atomicity", label: "Several statements, extractor only" },
+];
+/** The datapoints of the table that is shown: the extractor table has all of them, the checker table only those with a checker input. */
+const tablePoints = () => (state.ds === "extractor" ? POINTS : POINTS.filter((p) => p.checker));
+const state = { view: "datasets", ds: "extractor", group: null, open: new Set(), run: RUNS[0]?.id ?? null, rs: "extractor", ropen: new Set() };
+
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const groupChip = (id) => `<span class="group g-${id}">${esc(GROUPS.find((g) => g.id === id).label)}</span>`;
+const truncate = (s, n) => (s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s);
+const storedHash = () => { try { return location.hash.slice(1); } catch { return ""; } };
+
+function votesText(v) {
+  const parts = [`${v.helpful} helpful`];
+  if (v.somewhatHelpful) parts.push(`${v.somewhatHelpful} somewhat`);
+  parts.push(`${v.notHelpful} not helpful`);
+  return parts.join(", ");
+}
+function productionSummary(p) {
+  if (p.notes.length) {
+    const n = p.notes[0];
+    return `${n.writtenBy === "the pipeline" ? "AI note" : "Reader note"}<br><span class="small">${votesText(n.votes)}</span>`;
+  }
+  return `No note<br><span class="small">${esc(p.status === "skipped" ? "skipped, rated " + p.judgement : p.status + (p.reason ? ": " + p.reason : ""))}</span>`;
+}
+const expectedText = (d) =>
+  d.expected.decision === "note"
+    ? `<span class="expect-note">Note</span>`
+    : `<span class="expect-nonote">No note</span>${d.expected.noteTolerated ? `<br><span class="small">a note would not be bad</span>` : ""}`;
+
+const noteKind = (n) => (n.writtenBy === "the pipeline" ? "AI note" : "reader note");
+const isHelpful = (n) => n.votes.helpful > n.votes.notHelpful;
+/** The reference notes of a row: your own wording, and the real notes readers rated helpful. For a row where no note is wanted, the notes readers rejected. */
+function referenceCell(d, limit) {
+  const part = (label, text) => `<div class="refnote"><span class="small">${label}</span><br>${esc(limit ? truncate(text, limit) : text)}</div>`;
+  const notes = d.production.notes;
+  if (d.expected.decision === "note") {
+    const out = [];
+    if (d.expected.referenceNote) out.push(part("Your wording", d.expected.referenceNote));
+    for (const n of notes.filter(isHelpful)) out.push(part(`Real ${noteKind(n)}, ${votesText(n.votes)}`, n.text));
+    return out.length ? out.join("") : '<span class="small">none yet: production wrote no note and you gave no wording</span>';
+  }
+  const rejected = notes.map((n) => part(`Rejected ${noteKind(n)}, ${votesText(n.votes)}`, n.text));
+  return `<span class="small">No note expected.</span>${rejected.join("")}`;
+}
+
+function highlighted(text, span) {
+  if (!span) return esc(text);
+  return esc(text.slice(0, span.start)) + "<mark>" + esc(text.slice(span.start, span.end)) + "</mark>" + esc(text.slice(span.end));
+}
+function passageOf(d) {
+  const e = d.extractor;
+  return e.highlight ? e.userMessage.slice(e.highlight.start, e.highlight.end) : "";
+}
+function copyButton(id, label) {
+  return `<button class="toggle copy" data-copy="${id}">${label}</button>`;
+}
+async function copyText(text, button) {
+  try { await navigator.clipboard.writeText(text); button.textContent = "Copied"; }
+  catch { const r = document.createRange(); r.selectNodeContents(button.parentElement.querySelector(".input-box")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); button.textContent = "Selected"; }
+  setTimeout(() => (button.textContent = "Copy"), 1500);
+}
+
+/* ---- Datasets ---- */
+const COLUMNS = {
+  extractor: [
+    ["id", "text", "Stable name of the datapoint."],
+    ["group", "one of four", "Your group: note easy or difficult, no note easy or difficult."],
+    ["item", "text and link", "The production post the text comes from."],
+    ["input_message", "text", "The user message the extractor receives: the label \"Article excerpt:\" and one chunk of at most 12,000 characters of the post, cut by the pipeline's own chunking function."],
+    ["chunk_index, chunk_count", "numbers", "Which chunk of the post it is, for example 4 of 5."],
+    ["passage_span", "two offsets", "Where the datapoint sits in the chunk. It is the highlighted text in the input box, and the extractor is never told."],
+    ["reference_claim", "text", "A neutral statement of the claim. The judge asks whether the extractor's output contains it. Drafted by Claude from your words."],
+    ["jims_words", "text", "What you wrote on the ticket, copied word for word."],
+    ["production", "text", "What production did with the passage: an AI note, a reader note, or nothing."],
+  ],
+  checker: [
+    ["id, group", "text, one of four", "As in the extractor table."],
+    ["post_text", "text", "What the claim checker is handed, built by the pipeline's own function. A text claim is the highlighted passage plus its surrounding paragraph. An image claim is the claim line and the image."],
+    ["post_media", "list of urls", "Images the claim rests on. Only the Opus figure has one."],
+    ["paragraph_source", "stored or from text", "Readers' highlights have no stored paragraph, so it is taken from the post's text, as the extractor would have stored it."],
+    ["expected_decision", "note or no_note", "What the checker should end with."],
+    ["note_tolerated", "true or false", "True when you said a note would not be bad. A note then counts as a soft failure."],
+    ["reference_notes", "texts", "What the note should say. For a note row: your own wording where you gave it, and every real production note that readers rated helpful, from a reader or from the pipeline. For a no-note row: the notes readers rejected, as examples of what not to write."],
+    ["prompt_as_received", "text or empty", "The full prompt the checker saw, when its log was saved. This exists for 3 of the 14."],
+    ["production_outcome", "note, votes, trace", "The production note and its votes, the research findings, the drafted note and the source check verdict, where logged."],
+    ["jims_words", "text", "As in the extractor table."],
+  ],
+};
+function columnsTable(which) {
+  const rows = COLUMNS[which].map(([n, t, p]) => `<tr><td>${esc(n)}</td><td class="small">${esc(t)}</td><td>${esc(p)}</td></tr>`).join("");
+  return `<details class="cols"><summary>Table columns</summary><div class="tablewrap"><table class="coltable"><thead><tr><th>Column</th><th>Type</th><th>Meaning</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+}
+
+function renderChips() {
+  const points = tablePoints();
+  const counts = Object.fromEntries(GROUPS.map((g) => [g.id, points.filter((p) => p.group === g.id).length]));
+  const all = `<button class="chip-btn" data-group="" aria-pressed="${state.group === null}">All <span class="n">${points.length}</span></button>`;
+  document.getElementById("chips").innerHTML =
+    all + GROUPS.filter((g) => counts[g.id] > 0).map((g) => `<button class="chip-btn" data-group="${g.id}" aria-pressed="${state.group === g.id}">${groupChip(g.id)} <span class="n">${counts[g.id]}</span></button>`).join("");
+}
+
+function extractorRows(points) {
+  return points
+    .map((d, i) => {
+      const open = state.open.has("x-" + d.id);
+      const e = d.extractor;
+      const row = `<tr class="row" tabindex="0" data-id="x-${d.id}" aria-expanded="${open}">
+        <td class="num">${POINTS.indexOf(d) + 1}</td>
+        <td>${groupChip(d.group)}</td>
+        <td><div class="cell-quote">${esc(truncate(passageOf(d), 220))}</div></td>
+        <td>${d.referenceClaims.map((c) => `<div class="refnote">${esc(c)}</div>`).join("")}</td>
+        <td class="src"><b>${esc(d.item.title)}</b><br>chunk ${e.chunkIndex} of ${e.chunkCount}, ${e.chunkChars.toLocaleString("en")} characters</td>
+        <td>${d.production ? productionSummary(d.production) : '<span class="small">no claim in production</span>'}</td></tr>`;
+      if (!open) return row;
+      return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
+        <div><h4>What you wrote</h4><div class="words">${esc(d.jimsWords)}</div>
+          <h4>Reference statements the extractor must produce</h4>${d.referenceClaims.map((c) => `<div class="refnote">${esc(c)}</div>`).join("")}
+          <p class="small">Drafted by Claude from your words. Correct it if the wording is wrong.</p>
+          <h4>Source post</h4><p><a href="${esc(d.item.url)}" target="_blank" rel="noreferrer">${esc(d.item.title)}</a><br><span class="small">${d.item.source} item, ${d.item.textChars.toLocaleString("en")} characters in total</span></p></div>
+        <div><h4>Full input: the extractor's user message ${copyButton(d.id, "Copy")}</h4>
+          <div class="input-box" data-box="${d.id}">${highlighted(e.userMessage, e.highlight)}</div>
+          <p class="meta">The yellow part is the datapoint. ${e.imageBlocksInChunk} image${e.imageBlocksInChunk === 1 ? "" : "s"} in this chunk, shown by the description Gemini wrote once and saved, as the extractor reads it. The system prompt is the pipeline's current extraction prompt.</p></div>
+      </div></td></tr>`;
+    })
+    .join("");
+}
+
+function noteBlock(n) {
+  const sources = n.sources.length
+    ? `<ul>${n.sources.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noreferrer">${esc(s.url)}</a>${s.quote ? `<br><span class="small">“${esc(truncate(s.quote, 240))}”</span>` : ""}</li>`).join("")}</ul>`
+    : "";
+  return `<div class="notebox"><div class="by">${esc(n.writtenBy)}: ${votesText(n.votes)}</div>${esc(n.text)}${sources}</div>`;
+}
+function traceBlock(t) {
+  if (!t) return "";
+  const parts = [];
+  if (t.research) parts.push(`<h4>Research findings of the check</h4><pre>${esc(t.research)}</pre>`);
+  if (t.draftNote) parts.push(`<h4>Note the writer drafted</h4><pre>${esc(t.draftNote)}</pre>`);
+  if (t.sourceVerdict) parts.push(`<h4>Source check verdict</h4><pre>${esc(t.sourceVerdict)}</pre>`);
+  return parts.join("");
+}
+function checkerRows(points) {
+  return points
+    .map((d) => {
+      const open = state.open.has("c-" + d.id);
+      const c = d.checker;
+      const label = d.checker.claim.contextQuote ? d.checker.claim.contextQuote : "Claim: " + d.checker.claim.restatement;
+      const row = `<tr class="row" tabindex="0" data-id="c-${d.id}" aria-expanded="${open}">
+        <td class="num">${POINTS.indexOf(d) + 1}</td>
+        <td>${groupChip(d.group)}</td>
+        <td><div class="cell-quote">${esc(truncate(label, 220))}</div></td>
+        <td>${expectedText(d)}</td>
+        <td>${referenceCell(d, 230)}</td>
+        <td>${productionSummary(d.production)}</td></tr>`;
+      if (!open) return row;
+      const showAs = c.asReceived && c.asReceived.prompt ? state.open.has("as-" + d.id) : false;
+      const toggle = c.asReceived && c.asReceived.prompt
+        ? `<button class="toggle" data-as="${d.id}">${showAs ? "Show the built post" : "Show the full prompt as received"}</button>`
+        : `<span class="small">No saved prompt for this claim. It was never checked in production, or the log was not kept.</span>`;
+      const text = showAs ? c.asReceived.prompt : c.post.text + (c.post.media.length ? "\n\nImages: " + c.post.media.map((m) => m.url).join("\n") : "");
+      return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
+        <div><h4>What you wrote</h4><div class="words">${esc(d.jimsWords)}</div>
+          <h4>Expected</h4><p>${expectedText(d)}</p><h4>Reference notes</h4>${referenceCell(d, 0)}
+          <h4>What production did</h4>${d.production.notes.length ? d.production.notes.map(noteBlock).join("") : `<p>${productionSummary(d.production)}</p>`}
+          ${traceBlock(d.production.trace)}</div>
+        <div><h4>Full input: what the checker is handed ${copyButton(d.id, "Copy")}</h4>
+          ${toggle}
+          <div class="input-box" data-box="${d.id}">${esc(text)}</div>
+          <p class="meta">${showAs ? "From the " + esc(c.asReceived.from) + ". It adds the date lines and a comments section." : "Built with the pipeline's own buildClaimPost function." + (c.claim.paragraphTakenFromText ? " The paragraph was taken from the post's text, because a reader's highlight has none stored." : "")}</p>
+          <p class="small">The checker's system prompts are the pipeline's current research, writer and source verifier prompts.</p></div>
+      </div></td></tr>`;
+    })
+    .join("");
+}
+
+function renderDatasets() {
+  const points = tablePoints().filter((p) => !state.group || p.group === state.group);
+  const which = state.ds;
+  const head =
+    which === "extractor"
+      ? "<tr><th>#</th><th>Group</th><th>Passage in the text</th><th>Reference statements</th><th>Source and chunk</th><th>Production</th></tr>"
+      : "<tr><th>#</th><th>Group</th><th>Claim handed to the checker</th><th>Expected</th><th>Reference notes</th><th>Production</th></tr>";
+  document.getElementById("dsintro").innerHTML =
+    (which === "extractor"
+      ? `<p>The extractor reads one chunk of a post and returns passages. Each passage is a statement, a forecast or other, and the claims of the statements are what counts. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. A statement is found when a Muse judge says the output contains it. All reference statements are required, including those of the no-note datapoints, because the checker can only rule on a claim that exists.</p>`
+      : `<p>The checker gets one claim and ends with a note or with no note. It runs three times on each row, and the row passes when the decision was the expected one in two of the three. For 12 of the 14 rows, readers already voted on a note in production, so their votes are a second opinion next to your labels.</p>`) +
+    columnsTable(which);
+  const widths = which === "extractor" ? [40, 140, 300, 260, 190, 110] : [40, 140, 270, 110, 380, 120];
+  const cols = `<colgroup>${widths.map((w) => `<col style="width:${w}px">`).join("")}</colgroup>`;
+  document.getElementById("dstable").innerHTML = `<div class="tablewrap"><table>${cols}<thead>${head}</thead><tbody>${which === "extractor" ? extractorRows(points) : checkerRows(points)}</tbody></table></div>`;
+}
+
+
+/* ---- Results ---- */
+const money = (n) => "$" + n.toFixed(n < 0.1 ? 3 : 2);
+const pointOf = (id) => POINTS.find((p) => p.id === id);
+const VERDICT = { pass: ["v-pass", "Pass"], fail: ["v-fail", "Fail"], soft_fail: ["v-soft", "Soft fail"], error: ["v-error", "Error"] };
+const verdictPill = (v) => `<span class="verdict ${VERDICT[v][0]}">${VERDICT[v][1]}</span>`;
+
+function extractorSummary(run) {
+  const e = run.extractor;
+  const hasAtomic = e.rows.some((r) => r.atomicIn !== undefined);
+  const atomicPassed = (rows) => rows.filter((r) => r.passed && (r.atomicIn ?? 0) >= e.passAt).length;
+  const rows = GROUPS.map((g) => {
+    const inGroup = e.rows.filter((r) => r.group === g.id);
+    if (!inGroup.length) return "";
+    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${inGroup.filter((r) => r.passed).length}</td><td class="n">${inGroup.filter((r) => r.foundIn === e.samples).length}</td>${hasAtomic ? `<td class="n">${atomicPassed(inGroup)}</td>` : ""}</tr>`;
+  }).join("");
+  return `<table class="sumtable"><thead><tr><th>Group</th><th>Statements</th><th>Found (in ${e.passAt} of ${e.samples})</th><th>Found in all ${e.samples}</th>${hasAtomic ? `<th>Found and atomic</th>` : ""}</tr></thead><tbody>${rows}
+    <tr><td><b>All</b></td><td class="n">${e.rows.length}</td><td class="n"><b>${e.rows.filter((r) => r.passed).length}</b></td><td class="n">${e.rows.filter((r) => r.foundIn === e.samples).length}</td>${hasAtomic ? `<td class="n">${atomicPassed(e.rows)}</td>` : ""}</tr></tbody></table>`;
+}
+function extractorRowsResult(run) {
+  const e = run.extractor;
+  return e.rows.map((r) => {
+    const open = state.ropen.has("rx-" + r.id);
+    const pill = `<span class="verdict ${r.passed ? "v-pass" : "v-fail"}">Found ${r.foundIn} of ${e.samples}</span>${r.atomicIn !== undefined ? `<br><span class="small">atomic in ${r.atomicIn}</span>` : ""}`;
+    const row = `<tr class="row" tabindex="0" data-id="rx-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === (r.datapointId ?? r.id)) + 1}</td><td>${groupChip(r.group)}</td><td>${esc(r.referenceClaim)}</td><td>${pill}</td></tr>`;
+    if (!open) return row;
+    return row + `<tr class="detail"><td colspan="4"><div class="xdetail" id="xd-${r.id}"></div></td></tr>`;
+  }).join("");
+}
+
+/* ---- The chunk with its extracted passages ---- */
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** Where a quote sits in the chunk: word for word when it can, otherwise by its first and last words. */
+function findSpan(text, quote) {
+  const q = (quote ?? "").trim();
+  if (!q) return null;
+  const exact = text.indexOf(q);
+  if (exact !== -1) return { start: exact, end: exact + q.length };
+  const words = q.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim().split(" ");
+  if (words.length < 3) return null;
+  const matcher = (w) => new RegExp(w.map(escapeRe).join("[^a-zA-Z0-9]+"), "i");
+  const head = matcher(words.slice(0, 9)).exec(text);
+  if (!head) return null;
+  const tail = matcher(words.slice(-9)).exec(text.slice(head.index));
+  return tail ? { start: head.index, end: head.index + tail.index + tail[0].length } : null;
+}
+/** A claim with no quote rests on an image, so its place is the image's description block. */
+function imageBlockSpan(text, imageUrls) {
+  for (const url of imageUrls) {
+    const at = text.indexOf("Image: " + url);
+    if (at !== -1) return { start: text.lastIndexOf("[Image:", at + 1), end: text.indexOf("]", at) + 1 };
+  }
+  return null;
+}
+function node(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) { if (k === "text") n.textContent = v; else if (k === "class") n.className = v; else n.setAttribute(k, v); }
+  for (const kid of kids) if (kid != null) n.append(kid);
+  return n;
+}
+
+function mountExtractorDetails(run) {
+  for (const key of state.ropen) {
+    if (!key.startsWith("rx-")) continue;
+    const result = run.extractor.rows.find((r) => r.id === key.slice(3));
+    const host = document.getElementById("xd-" + key.slice(3));
+    if (host && result) mountExtractorDetail(host, result, run);
+  }
+}
+
+function mountExtractorDetail(host, result, run) {
+  const point = POINTS.find((p) => p.id === (result.datapointId ?? result.id));
+  const text = point.extractor.userMessage;
+  const target = point.extractor.highlight;
+  const chunk = run.extractor.chunkRuns.find((c) => c.key === result.chunkKey);
+  let sample = 0;
+  let focus = [];
+  let placed = [];
+  /** The forecast and other passages of the sample that could be placed in the chunk, which are shown in their own colours. */
+  let typed = [];
+
+  const textBox = node("div", { class: "xtext", tabindex: "0", "aria-label": "The chunk of the post with its extracted passages highlighted" });
+  const side = node("div", { class: "xside" });
+  const toolbar = node("div", { class: "xtoolbar" });
+  host.replaceChildren(
+    node("div", { class: "xhead" }, node("div", {}, node("h4", { text: "Reference claim" }), node("p", { text: result.referenceClaim })), node("div", {}, node("h4", { text: "Source" }), node("p", { class: "small", text: `${chunk.itemTitle}, chunk ${chunk.chunkIndex} of ${chunk.chunkCount}, ${chunk.chunkChars.toLocaleString("en")} characters. The three samples of this chunk are shared by every row in it.` }))),
+    node("div", { class: "xgrid" }, node("div", { class: "xmain" }, toolbar, textBox), side),
+  );
+
+  const jump = (el) => textBox.scrollTo({ top: Math.max(0, el.offsetTop - textBox.clientHeight / 3), behavior: "smooth" });
+  const jumpToTarget = () => { const el = textBox.querySelector(".seg.target"); if (el) jump(el); };
+  /** The claims whose passage overlaps the passage that should have been extracted. */
+  const overlapIds = () => (target ? placed.filter((p) => p.span && p.span.start < target.end && p.span.end > target.start).map((p) => p.i) : []);
+
+  function renderText() {
+    const claims = chunk.samples[sample].claims;
+    placed = claims.map((c, i) => ({ i, span: c.context ? findSpan(text, c.context) : imageBlockSpan(text, c.imageUrls) }));
+    typed = (chunk.samples[sample].passages ?? []).map((p, i) => ({ i, p, span: p.type === "statement" ? null : findSpan(text, p.text) })).filter((x) => x.span);
+    const cuts = new Set([0, text.length]);
+    for (const p of placed) if (p.span) { cuts.add(p.span.start); cuts.add(p.span.end); }
+    for (const x of typed) { cuts.add(x.span.start); cuts.add(x.span.end); }
+    if (target) { cuts.add(target.start); cuts.add(target.end); }
+    const sorted = [...cuts].sort((x, y) => x - y);
+    const parts = [];
+    for (let k = 0; k < sorted.length - 1; k++) {
+      const from = sorted[k], to = sorted[k + 1];
+      const cover = placed.filter((p) => p.span && p.span.start <= from && p.span.end >= to).map((p) => p.i);
+      const isTarget = !!target && target.start <= from && target.end >= to;
+      const piece = text.slice(from, to);
+      const pass = typed.find((x) => x.span.start <= from && x.span.end >= to);
+      if (!cover.length && !isTarget && !pass) { parts.push(document.createTextNode(piece)); continue; }
+      parts.push(node("span", { class: `seg c${Math.min(cover.length, 3)}${isTarget ? " target" : ""}${pass ? " pass-" + pass.p.type : ""}`, "data-claims": cover.join(" "), "data-pass": pass ? String(pass.i) : "" }, piece));
+    }
+    textBox.replaceChildren(...parts);
+    textBox.scrollTop = 0;
+  }
+
+  function applyFocus() {
+    for (const seg of textBox.querySelectorAll(".seg")) {
+      const ids = seg.dataset.claims ? seg.dataset.claims.split(" ").map(Number) : [];
+      seg.classList.toggle("focus", ids.some((id) => focus.includes(id)));
+    }
+    for (const item of side.querySelectorAll("[data-claim]")) item.classList.toggle("sel", focus.includes(Number(item.dataset.claim)));
+  }
+
+  function claimCard(i, claims) {
+    const c = claims[i];
+    const matched = result.judgements[sample]?.matchingClaims.includes(i + 1);
+    const where = placed[i].span ? null : c.context ? "Its quote was not found in the chunk." : c.imageUrls.length ? "It rests on an image." : "No quote.";
+    return node("button", { class: "claimitem", type: "button", "data-claim": String(i) },
+      node("span", { class: "claimno", text: String(i + 1) }),
+      node("span", { class: "claimtext" }, node("span", { text: c.claim }),
+        matched ? node("span", { class: "badge", text: "matched by the judge" }) : null,
+        where ? node("span", { class: "small block", text: where }) : null,
+        c.context ? node("span", { class: "quote", text: "“" + c.context + "”" }) : null));
+  }
+
+  function renderSide(here) {
+    const claims = chunk.samples[sample].claims;
+    const judged = result.judgements[sample];
+    const tabs = node("div", { class: "xtabs", role: "tablist" }, ...chunk.samples.map((s, i) => {
+      const j = result.judgements[i];
+      const b = node("button", { type: "button", role: "tab", class: "xtab", "aria-selected": String(i === sample) }, node("b", { text: `Sample ${i + 1}` }), node("span", { class: `verdict ${j?.found ? "v-pass" : "v-fail"}`, text: j ? (j.found ? "Found" : "Not found") : "Failed" }));
+      b.addEventListener("click", () => { sample = i; focus = []; renderText(); renderSide(null); jumpToTarget(); });
+      return b;
+    }));
+    const hereBox = node("div", { class: "xhere" });
+    if (here?.pass) {
+      hereBox.append(node("div", { class: "targetnote" }, node("b", { text: `${here.pass.type}${here.pass.why ? ": " + here.pass.why : ""}. ` }), node("span", { text: here.pass.type === "forecast" ? "A forecast is not checked." : "Nothing is checked here." }), node("div", { class: "small", text: here.pass.text })));
+    } else if (here) {
+      if (here.target) {
+        const n = here.ids.length;
+        hereBox.append(node("div", { class: "targetnote" }, node("b", { text: "The passage that should have been extracted. " }), node("span", { text: n ? `${n} extracted claim${n === 1 ? " overlaps" : "s overlap"} it, listed below.` : "No extracted claim overlaps it." })));
+      }
+      for (const id of here.ids) hereBox.append(claimCard(id, claims));
+      if (!here.target && !here.ids.length) hereBox.append(node("p", { class: "small", text: "Nothing was extracted from this text." }));
+    } else {
+      hereBox.append(node("p", { class: "small", text: "Click a highlighted passage to see the claims extracted from it, or the amber passage to see what should have been." }));
+    }
+    const list = node("details", { class: "block" }, node("summary", {}, node("span", { text: `All ${claims.length} claims of this sample` })), node("div", { class: "xlist" }, ...claims.map((_, i) => claimCard(i, claims))));
+    const unplaced = placed.filter((p) => !p.span).length;
+    const sampleInfo = chunk.samples[sample];
+    const counts = {};
+    for (const x of sampleInfo.passages ?? []) counts[x.type] = (counts[x.type] ?? 0) + 1;
+    const passStats = sampleInfo.passages
+      ? node("p", { class: "passstats", text: `Passages: ${counts.statement ?? 0} statement, ${counts.forecast ?? 0} forecast, ${counts.other ?? 0} other. They cover ${((sampleInfo.coverage ?? 1) * 100).toFixed(1)}% of the chunk${sampleInfo.attempts > 1 ? `, after ${sampleInfo.attempts} attempts` : ""}.` })
+      : null;
+    side.replaceChildren(tabs,
+      node("p", { class: "judgereason" }, node("b", { text: "Judge: " }), judged ? judged.reason + (judged.atomic === false ? " Not atomic: a matching claim bundles several statements." : "") : "The extraction of this sample failed."),
+      passStats,
+      node("div", { class: "legend2" }, node("span", {}, node("i", { class: "k-ex" }), "statement passage, darker where more claims overlap"), ...(sampleInfo.passages ? [node("span", {}, node("i", { class: "k-forecast" }), "forecast"), node("span", {}, node("i", { class: "k-other" }), "other")] : []), node("span", {}, node("i", { class: "k-target" }), "the passage that should have been extracted"), node("span", {}, node("i", { class: "k-focus" }), "chosen claim")),
+      node("p", { class: "small", text: unplaced ? `${claims.length - unplaced} of ${claims.length} claims could be placed in the text. ${unplaced} could not, because they rest on an image or their quote differs from the text.` : `All ${claims.length} claims could be placed in the text.` }),
+      hereBox, list);
+    for (const item of side.querySelectorAll("[data-claim]")) item.addEventListener("click", () => { focus = [Number(item.dataset.claim)]; applyFocus(); const el = textBox.querySelector(`.seg[data-claims~="${focus[0]}"]`); if (el) jump(el); });
+    applyFocus();
+  }
+
+  textBox.addEventListener("click", (e) => {
+    const seg = e.target.closest(".seg");
+    if (!seg) return;
+    const isTarget = seg.classList.contains("target");
+    const ids = isTarget ? overlapIds() : seg.dataset.claims ? seg.dataset.claims.split(" ").map(Number) : [];
+    focus = ids;
+    const pass = seg.dataset.pass ? (chunk.samples[sample].passages ?? [])[Number(seg.dataset.pass)] : null;
+    renderSide({ ids, target: isTarget, pass: !isTarget && !ids.length ? pass : null });
+  });
+  const jumpButton = node("button", { class: "toggle", type: "button", text: "Jump to the passage that should have been extracted" });
+  jumpButton.addEventListener("click", () => { jumpToTarget(); focus = overlapIds(); renderSide({ ids: focus, target: true }); });
+  toolbar.append(jumpButton);
+
+  renderText();
+  renderSide(null);
+  jumpToTarget();
+}
+
+function checkerSummary(run) {
+  const c = run.checker;
+  const rows = GROUPS.map((g) => {
+    const inGroup = c.rows.filter((r) => r.group === g.id);
+    if (!inGroup.length) return "";
+    const n = (v) => inGroup.filter((r) => r.verdict === v).length;
+    return `<tr><td>${groupChip(g.id)}</td><td class="n">${inGroup.length}</td><td class="n">${n("pass")}</td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td><td class="n">${inGroup.reduce((s, r) => s + r.passedIn, 0)} of ${inGroup.length * c.samples}</td></tr>`;
+  }).join("");
+  const n = (v) => c.rows.filter((r) => r.verdict === v).length;
+  const judged = c.rows.flatMap((r) => r.samples).filter((s) => s.quality);
+  return `<table class="sumtable"><thead><tr><th>Group</th><th>Rows</th><th>Pass (right in ${c.passAt} of ${c.samples})</th><th>Fail</th><th>Soft fail</th><th>Error</th><th>Samples right</th></tr></thead><tbody>${rows}
+    <tr><td><b>All</b></td><td class="n">${c.rows.length}</td><td class="n"><b>${n("pass")}</b></td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td><td class="n">${c.rows.reduce((s, r) => s + r.passedIn, 0)} of ${c.rows.length * c.samples}</td></tr></tbody></table>
+    <p class="small">Where a note was expected and written, a second judge asked whether it makes the reference point: ${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes do.</p>`;
+}
+const outcomeLine = (o) => (o.type === "note" ? `<b>Note:</b> ${esc(truncate(o.note, 110))}` : o.type === "no_note" ? `<b>No note:</b> <span class="small">${esc(o.reason)}</span>` : `<b>Error:</b> <span class="small">${esc(o.error)}</span>`);
+function checkerRowsResult(run) {
+  const c = run.checker;
+  return c.rows.map((r) => {
+    const open = state.ropen.has("rc-" + r.id);
+    const judged = r.samples.filter((s) => s.quality);
+    const quality = judged.length ? `${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes` : '<span class="small">not judged</span>';
+    const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
+      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
+    if (!open) return row;
+    return row + `<tr class="detail"><td colspan="6"><div class="cdetail" id="cd-${r.id}"></div></td></tr>`;
+  }).join("");
+}
+
+/* ---- One claim check, step by step ---- */
+function linkified(text) {
+  const fragment = document.createDocumentFragment();
+  for (const part of text.split(/(https?:\/\/[^\s)\]]+)/g)) {
+    if (/^https?:\/\//.test(part)) fragment.append(node("a", { href: part, target: "_blank", rel: "noreferrer", text: part }));
+    else fragment.append(part);
+  }
+  return fragment;
+}
+function stepCard(number, title, chip, body, { open = true } = {}) {
+  const details = node("details", { class: "stepcard" }, node("summary", {}, node("span", { class: "stepno", text: String(number) }), node("span", { class: "stepname", text: title }), chip ? node("span", { class: "chip2", text: chip }) : null), body);
+  if (open) details.setAttribute("open", "");
+  return details;
+}
+const proseBox = (text, mono = false) => node("div", { class: "prosebox" + (mono ? " mono" : "") }, linkified(text));
+
+function mountCheckerDetails(run) {
+  for (const key of state.ropen) {
+    if (!key.startsWith("rc-")) continue;
+    const result = run.checker.rows.find((r) => r.id === key.slice(3));
+    const host = document.getElementById("cd-" + key.slice(3));
+    if (host && result) mountCheckerDetail(host, result);
+  }
+}
+
+function mountCheckerDetail(host, result) {
+  const point = POINTS.find((p) => p.id === result.id);
+  let sample = 0;
+  const trace = node("div", { class: "trace" });
+  const tabs = node("div", { class: "xtabs", role: "tablist" });
+  const left = node("div", { class: "cleft" },
+    node("h4", { text: "Expected" }), node("p", {}, ...[result.expected.decision === "note" ? "Note" : "No note"], result.expected.noteTolerated ? " (a note would not be bad)" : ""),
+    node("h4", { text: "Reference notes" }),
+    ...(result.referenceNotes.length ? result.referenceNotes.map((x) => node("div", { class: "refnote" }, linkified(x))) : [node("span", { class: "small", text: "none" })]),
+    node("h4", { text: "The claim as it was handed to the checker" }), proseBox(point.checker.post.text, true));
+
+  function renderSample() {
+    const s = result.samples[sample];
+    const o = s.outcome;
+    tabs.replaceChildren(...result.samples.map((x, i) => {
+      const b = node("button", { type: "button", role: "tab", class: "xtab", "aria-selected": String(i === sample) }, node("b", { text: `Sample ${i + 1}` }), node("span", { class: `verdict ${VERDICT[x.verdict][0]}`, text: VERDICT[x.verdict][1] }), node("span", { class: "small", text: x.outcome.type === "note" ? "note" : x.outcome.type === "no_note" ? "no note" : "error" }));
+      b.addEventListener("click", () => { sample = i; renderSample(); });
+      return b;
+    }));
+    const steps = [];
+    let n = 1;
+    steps.push(stepCard(n++, "What the checker was given", "user message of the research step",
+      s.prompts?.research ? proseBox(s.prompts.research, true) : node("div", {}, node("p", { class: "small", text: "The message that was sent was not saved for this run. This is the claim as it was handed over." }), proseBox(point.checker.post.text, true))));
+    steps.push(stepCard(n++, "Research", "Muse, native search", s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." })));
+    if (s.draftNote) {
+      const body = node("div", {}, proseBox(s.draftNote));
+      if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, s.prompts.writer)));
+      steps.push(stepCard(n++, "The note the writer drafted", "Muse", body));
+    }
+    if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", "Muse", proseBox(s.sourceVerdict)));
+    const end = node("div", {});
+    if (o.type === "note") {
+      end.append(node("div", { class: "notebox" }, o.note, ...(o.sources.length ? [node("ul", { class: "small" }, ...o.sources.map((x) => node("li", {}, node("a", { href: x.url, target: "_blank", rel: "noreferrer", text: x.url }), x.quote ? node("div", { text: "“" + truncate(x.quote, 240) + "”" }) : null)))] : [])));
+    } else if (o.type === "no_note") end.append(node("p", { text: "No note. Reason: " + o.reason }));
+    else end.append(node("p", { text: o.error }));
+    if (s.quality) end.append(node("p", {}, node("b", { text: "Does it make the reference point? " }), (s.quality.samePoint ? "Yes. " : "No. ") + s.quality.reason));
+    steps.push(stepCard(n++, "Result", `check ${money(s.checkCostUsd)}${s.judgeCostUsd ? `, judge ${money(s.judgeCostUsd)}` : ""}`, end));
+    trace.replaceChildren(...steps);
+  }
+
+  host.replaceChildren(node("div", { class: "cgrid" }, left, node("div", { class: "cright" }, tabs, trace)));
+  renderSample();
+}
+
+/** The numbers of one run that the overview shows. */
+function runStats(run) {
+  const e = run.extractor;
+  const c = run.checker;
+  const cost = (e ? e.costUsd.extraction + e.costUsd.judge : 0) + (c ? c.costUsd.checks + c.costUsd.judge : 0);
+  return {
+    extractor: e ? `${e.rows.filter((r) => r.passed).length} of ${e.rows.length} statements found` : "not run",
+    checker: c ? `${c.rows.filter((r) => r.verdict === "pass").length} of ${c.rows.length} decisions right` : "not run",
+    cost,
+  };
+}
+
+function runsTable(selected) {
+  const rows = RUNS.map((r) => {
+    const s = runStats(r);
+    return `<tr class="runrow${r.id === selected.id ? " current" : ""}" tabindex="0" data-run="${esc(r.id)}"><td><b>${esc(r.label)}</b><br><span class="small">${esc(r.id)}</span></td><td>${esc(new Date(r.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}</td><td class="small">${esc(r.commit)}</td><td>${s.extractor}</td><td>${s.checker}</td><td class="n">${money(s.cost)}</td></tr>`;
+  }).join("");
+  return `<details class="block runs" open><summary><span>All runs (${RUNS.length}), newest first</span></summary><div class="tablewrap"><table class="sumtable runtable"><thead><tr><th>Run</th><th>Date</th><th>Commit</th><th>Eval 1: extractor</th><th>Eval 2: claim checker</th><th>Cost</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+}
+
+/** One row of the comparison per statement or datapoint, one column per run that ran the eval. Clicking a cell opens that run at that row. */
+function compareTable(kind, selected) {
+  const runs = RUNS.filter((r) => r[kind]);
+  if (runs.length < 2) return "";
+  const order = (id) => POINTS.findIndex((p) => p.id === id.split("#")[0]);
+  const rowIds = [...new Set(runs.flatMap((r) => r[kind].rows.map((x) => x.id)))].sort((x, y) => order(x) - order(y) || x.localeCompare(y));
+  const label = (id) => {
+    for (const r of runs) { const x = r[kind].rows.find((q) => q.id === id); if (x) return kind === "extractor" ? x.referenceClaim : id; }
+    return id;
+  };
+  const group = (id) => runs.map((r) => r[kind].rows.find((q) => q.id === id)).find(Boolean).group;
+  const cell = (run, id) => {
+    const x = run[kind].rows.find((q) => q.id === id);
+    if (!x) return '<span class="small">not in this run</span>';
+    const samples = run[kind].samples;
+    const pill = kind === "extractor"
+      ? `<span class="verdict ${x.passed ? "v-pass" : "v-fail"}">${x.foundIn}/${samples}</span>${x.atomicIn !== undefined ? `<span class="small"> atomic ${x.atomicIn}</span>` : ""}`
+      : `${verdictPill(x.verdict)}<span class="small"> ${x.passedIn ?? (x.verdict === "pass" ? 1 : 0)}/${samples}</span>`;
+    return `<button type="button" class="cmpcell" data-run="${esc(run.id)}" data-kind="${kind}" data-row="${esc(id)}">${pill}</button>`;
+  };
+  const head = runs.map((r) => `<th${r.id === selected.id ? ' class="cur"' : ""}>${esc(r.label)}<br><span class="small">${esc(r.id)}</span></th>`).join("");
+  const body = rowIds.map((id) => `<tr><td>${groupChip(group(id))}</td><td class="cmplabel">${esc(truncate(label(id), 110))}</td>${runs.map((r) => `<td${r.id === selected.id ? ' class="cur"' : ""}>${cell(r, id)}</td>`).join("")}</tr>`).join("");
+  return `<details class="block"><summary><span>Compare the ${runs.length} runs row by row</span></summary><div class="tablewrap"><table class="sumtable cmp"><thead><tr><th>Group</th><th>${kind === "extractor" ? "Reference statement" : "Datapoint"}</th>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
+}
+
+function renderResults() {
+  const box = document.getElementById("resultsbody");
+  if (!RUNS.length) { box.innerHTML = '<h2>Results</h2><p class="lede">No run yet.</p>'; return; }
+  const run = RUNS.find((r) => r.id === state.run) ?? RUNS[0];
+  const have = { extractor: !!run.extractor, checker: !!run.checker };
+  if (!have[state.rs]) state.rs = have.extractor ? "extractor" : "checker";
+  const cost = [run.extractor && `extractor eval ${money(run.extractor.costUsd.extraction + run.extractor.costUsd.judge)} (extraction ${money(run.extractor.costUsd.extraction)}, judge ${money(run.extractor.costUsd.judge)})`, run.checker && `checker eval ${money(run.checker.costUsd.checks + run.checker.costUsd.judge)} (checks ${money(run.checker.costUsd.checks)}, judge ${money(run.checker.costUsd.judge)})`].filter(Boolean).join(", ");
+  const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} statements found</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}</div>`;
+  const body = state.rs === "extractor"
+    ? `${extractorSummary(run)}${compareTable("extractor", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:170px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference statement</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
+    : `${checkerSummary(run)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
+  box.innerHTML = `<h2>Results</h2>
+    ${runsTable(run)}
+    <h3 class="runtitle">${esc(run.label)}</h3>
+    <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} datapoints. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
+    ${subtabs}${body}`;
+  mountExtractorDetails(run);
+  mountCheckerDetails(run);
+}
+
+/* ---- Evaluation plan ---- */
+const PLAN_EXTRACTOR = [
+  { id: "e-row", kind: "data", name: "Dataset row", hint: "chunk of a post and a reference statement",
+    what: "One reference statement of one datapoint of the extractor table. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. Compound claims, such as the Opus figure or the Melanie Mitchell claim, are split into several.",
+    input: "The post's chunk exactly as the extractor is given it, and the reference statement.",
+    output: "Passed on unchanged.",
+    note: "Datapoints and statements of one chunk share its extractor calls. Two datapoints are for this eval only: a sentence with two statements in a Zvi post, and a transcript line of a YouTube video about Hungary." },
+  { id: "e-img", kind: "model", name: "Frozen image descriptions", hint: "described once, saved in the dataset",
+    what: "The extractor does not see images. It reads a text description of each one that Gemini writes. Writing it afresh on every run would cost money, add chance to the result and shift the chunk borders. So each image was described once and the description is saved in the dataset. The chunks are cut after the descriptions are spliced in.",
+    input: "The 66 images of the seven posts.",
+    output: "The description and visible text of each image, saved in images.json.",
+    prompt: "Analyze this image. Describe what it shows and extract all visible text.",
+    note: "Done. The 66 images cost $0.33 once. The description of the Opus figure is the only evidence the extractor has for that row." },
+  { id: "e-ext", kind: "model", name: "Extractor under test", hint: "3 samples per chunk",
+    what: "The extraction step as it is in the branch, on the model the run names. It cuts the chunk into consecutive passages that add up to the whole chunk, and sorts each passage as a statement, a forecast or other. A statement is something where a neutral expert could find it misleading, and it is as atomic as possible. It is called three times per chunk, because the same call can give different passages each time.",
+    input: "The chunk as the user message, and the extraction system prompt (see the pipeline diagram).",
+    output: "One JSON object whose keys are the passages, word for word, and whose values give the type and, for a statement, its claims. The code checks that the passages add up to the chunk and asks again, with the missing text quoted, when they do not.",
+    note: "Production runs Muse Spark 1.3 at high reasoning. A run can name a Claude model instead, as the lab already allows." },
+  { id: "e-claims", kind: "data", name: "Extracted claims", hint: "numbered list", what: "The claims of the statement passages of one call. Forecast and other passages make no claims, and are kept so the results can show them.", input: "Output of the extractor.", output: "The list, numbered from 1. Only the claim texts go to the judge.", note: "The number of claims and the passage types per chunk are recorded, because an extractor that calls everything a statement would pass every row. The datapoints have no row that must come out as other yet." },
+  { id: "e-judge", kind: "model", name: "Muse judge", hint: "does the list contain the claim?",
+    what: "A Muse call that reads the list and says whether any claim states the reference statement, and whether the claims that match are atomic.",
+    input: "The reference statement, the passage it comes from, and the numbered claims.",
+    output: "JSON: found yes or no, atomic yes or no, which claim numbers match, and the reason.",
+    prompt: `System prompt (draft):
+You check whether a list of extracted claims contains a given claim.
+
+You get a reference claim, the passage of the text it comes from, and a numbered list of extracted claims. The list contains the reference claim if one listed claim, or several listed claims together, state the same checkable fact, even in other words. The extractor splits compound statements into several claims, so every part of the reference claim must be stated by some listed claim. A claim that only mentions the topic, leaves out a checkable part, or states something different does not count.
+
+Extracted claims should be atomic: each states one thing that could be checked on its own. "atomic" is true when every claim you matched is atomic, and false when a matching claim bundles several separate statements together, for example two facts joined by "and". When nothing matched, "atomic" is true.
+
+Answer with JSON: { "reason": string, "matching_claims": number[], "found": boolean, "atomic": boolean }. Write the reason first.
+
+User message:
+Reference claim: <the reference statement>
+
+Passage: <the highlighted passage>
+
+Extracted claims:
+1. <claim>
+2. <claim>
+...`,
+    note: "The reason comes first in the JSON so the model states its argument before the verdict. The judge sees only the claims, never the chunk, so it cannot be swayed by the surrounding text. Several claims together can still satisfy a reference statement. A first smoke run on the Opus figure row showed that a judge demanding one single claim fails an extractor for doing what its prompt says. Now that the reference statements are atomic, the judge also says whether the matching claims are. Found and atomic are reported separately: a row passes when it is found, and the atomic count shows beside it." },
+  { id: "e-score", kind: "report", name: "Score", hint: "found in how many of 3 samples",
+    what: "Per statement: found in 0, 1, 2 or 3 of the samples, and in how many of those the matching claims were atomic. Per group: the statements found in 2 of 3, in all three, and found and atomic.",
+    input: "The judge's answers.",
+    output: "A table by group, the passage types per chunk, and the cost of the run.",
+    note: "A row passes when it is found in at least 2 of 3 samples. The 3 and the 2 are my proposal." },
+];
+const PLAN_CHECKER = [
+  { id: "c-row", kind: "data", name: "Dataset row", hint: "the claim as the checker gets it",
+    what: "One of the 14 rows of the checker table.",
+    input: "The post text built from the claim: the highlighted passage and its paragraph, or the claim line and the image.",
+    output: "Passed on unchanged.", note: "The built post is the same one the pipeline's buildClaimPost makes, so the eval cannot drift from production." },
+  { id: "c-check", kind: "model", name: "Claim check under test", hint: "3 samples per row",
+    what: "The whole check of one claim as it is in the branch: the topic filter, the research with search, the note writer and the source verifier. It runs three times per row, because the same check can end differently each time: two identical baseline runs flipped 2 of 14 rows.",
+    input: "The post text. The comments fetch would be left out for article claims. In the baseline run it asked Grok about a tweet that does not exist, and for 47 of the 195 checks Grok answered with a list of replies anyway.",
+    output: "One of: a note with its sources, no note with a reason, or an error.",
+    note: "About $0.03 per claim on Muse, from the baseline run's $5.21 for 195 checks. Measured on the baseline: the 42 checks cost $1.10, which is $0.026 per check, and the whole baseline cost $1.28." },
+  { id: "c-outcome", kind: "data", name: "Outcome", hint: "note, no note, or error", what: "What the check ended with.", input: "Output of the check.", output: "The decision, the note text and sources if there is one, and the research findings.", note: "An error counts as a failure and is listed apart, so a broken run is never read as a wrong decision." },
+  { id: "c-rule", kind: "rule", name: "Decision rule", hint: "no model involved",
+    what: "A plain comparison with the expected decision.",
+    input: "Expected decision and the outcome.",
+    output: "Pass, fail or soft fail per sample, and per row: a pass when the decision was right in 2 of 3 samples.",
+    prompt: `expected note     and the check wrote a note   -> pass
+expected note     and no note                  -> fail
+expected no note  and no note                  -> pass
+expected no note  and a note                   -> fail
+expected no note, note tolerated, and a note   -> soft fail (counted apart)
+any error                                      -> error, not counted as pass or fail`,
+    note: "Only the Yudkowsky writer datapoint is marked as tolerated, from your words." },
+  { id: "c-quality", kind: "model", optional: true, name: "Note quality judge", hint: "only where a reference note exists",
+    what: "For a row that expects a note, a second check that the note makes the point you gave. Without it, a note about the wrong thing would pass.",
+    input: "The claim, the reference notes, and the pipeline's note.",
+    output: "JSON: same point yes or no, and the reason.",
+    prompt: `System prompt (draft):
+You compare a community note written by a pipeline with the correction a human expert says is right.
+
+You get a claim, one or more reference corrections and the pipeline's note. The note makes the same correction if its main point is that of any reference correction, or is consistent with it and at least as specific. A note about a different point, or one that contradicts every reference, does not.
+
+Answer with JSON: { "reason": string, "same_point": boolean }.
+
+User message:
+Claim: <the claim>
+
+Reference corrections: <your wording and the real helpful notes, one per line>
+
+Pipeline note: <the note the check wrote>`,
+    note: "All nine note rows have at least one reference note. You gave wording for 4 (EA earning to give, the pivotal act, Melanie Mitchell, EA beholden), and real notes that readers rated helpful exist for 7 (Berkeley, Czechoslovakia, CFAR/FTX, cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell)." },
+  { id: "c-score", kind: "report", name: "Score", hint: "pass rate by group",
+    what: "A table by your four groups with the rows passed (right in 2 of 3 samples), the soft failures and the errors, the number of samples that were right, plus the cost per claim.",
+    input: "The decision rule's results and, where present, the quality judge's.", output: "The table below, saved as a run next to the lab's other runs.", note: "The first line to watch is the no-note easy group. Those four are exactly the notes readers voted down." },
+];
+const PLAN_LOOP = [
+  { id: "l-change", kind: "data", name: "Change one thing", hint: "a prompt, a model, a rule", what: "For example: take the opinion rule out of the checker's system prompt, or split the extractor's chunks smaller.", input: "A branch or a flag.", output: "A labelled run.", note: "The same labels as the lab's runs, so the microsite lists it." },
+  { id: "l-pick", kind: "rule", promptLabel: "Planned commands", name: "Pick what to run", hint: "one eval, a few rows", what: "A run covers only what you choose: the extractor eval, the checker eval or both, and for each, all 14 rows, one group, or named rows. The usual case is a handful of rows of one eval.",
+    input: "Flags on the run command.", output: "The list of rows to run.",
+    prompt: `bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/runEvals.ts --label "opinion rule removed" --eval checker --only ea-beholden-to-yudkowsky,givewell-1500x,sol-subagents
+... --label "smaller chunks" --eval extractor --group note-difficult
+... --label "full run"`,
+    note: "Built. --eval is extractor, checker or both. --only takes row ids, --group takes one of the four groups, and no flag means every row. The ids are the ones in the tables. The baseline was run with just --label." },
+  { id: "l-run", kind: "model", name: "Run the chosen rows", hint: "cost scales with the rows", what: "Only the chosen rows are run, and the run records which ones it covered.", input: "The chosen rows of the dataset tables.", output: "One result per row run.",
+    note: "Measured on the baseline, with three samples per row in both evals: the extractor eval cost $0.17 (33 extraction calls $0.15, judges $0.02) and the checker eval $1.10 (42 checks at $0.026 each, except that the Opus figure row costs more because the pipeline analyses its image). A full run of both evals cost $1.28 and took about 19 minutes, because the two evals run side by side. Rows that share a chunk share its extraction calls: the seven sex-cult rows need only 4 chunks." },
+  { id: "l-compare", kind: "report", name: "Compare to an earlier run", hint: "only the rows both have, not built yet", what: "Each chosen row is compared with the latest earlier run that also covered it, so a partial run is never compared with rows it did not run. Groups show their pass rate over the rows present.", input: "Two results.", output: "A delta per row and per group, and the rows that flipped.", note: "Rows with no earlier result show as new. A gain on the note groups that costs the no-note groups shows as soon as both groups are in the run." },
+  { id: "l-look", kind: "data", name: "Open the failures", hint: "in the microsite", what: "Each flipped row opens in the lab microsite with its research, drafted note and verdict.", input: "The flipped rows.", output: "Your decision on the next change.", note: "The dataset grows from here: a failure you agree is wrong becomes a new row." },
+];
+const PLANS = [
+  { title: "Eval 1: Is the right claim in the extractor's output?", nodes: PLAN_EXTRACTOR },
+  { title: "Eval 2: Does the claim checker decide right?", nodes: PLAN_CHECKER },
+  { title: "The loop around them", nodes: PLAN_LOOP },
+];
+const KIND_LABEL = { data: "data", model: "model call", rule: "plain rule", report: "report" };
+const planSelection = {};
+
+function renderPlans() {
+  document.getElementById("plans").innerHTML = PLANS.map((plan, pi) => {
+    const sel = planSelection[pi] ?? plan.nodes[0].id;
+    const nodes = plan.nodes
+      .map((n, i) => `${i ? '<span class="arrow" aria-hidden="true">→</span>' : ""}<button class="node k-${n.kind}${n.optional ? " optional" : ""}" data-plan="${pi}" data-node="${n.id}" aria-pressed="${sel === n.id}"><span class="kind">${KIND_LABEL[n.kind]}${n.optional ? ", optional" : ""}</span><span class="name">${esc(n.name)}</span><span class="hint">${esc(n.hint)}</span></button>`)
+      .join("");
+    const n = plan.nodes.find((x) => x.id === sel);
+    return `<p class="flowlabel">${esc(plan.title)}</p><div class="flow">${nodes}</div>
+      <div class="panel"><h3>${esc(n.name)}</h3><dl>
+        <dt>What it does</dt><dd>${esc(n.what)}</dd>
+        <dt>Goes in</dt><dd>${esc(n.input)}</dd>
+        <dt>Comes out</dt><dd>${esc(n.output)}</dd>
+        ${n.prompt ? `<dt>${n.promptLabel ?? (n.kind === "rule" ? "The rule" : "Prompt")}</dt><dd><pre>${esc(n.prompt)}</pre></dd>` : ""}
+        ${n.note ? `<dt>Note</dt><dd>${esc(n.note)}</dd>` : ""}
+      </dl></div>`;
+  }).join("");
+}
+
+/* ---- Decisions ---- */
+const DECISIONS = [
+  "The groups for the datapoints you did not label are my proposal, which you accepted for now: the four no-note datapoints and Czechoslovakia and CFAR/FTX are easy, and EA earning to give and Melanie Mitchell are difficult. The EA beholden claim is a note, difficult.",
+  "The reference claims are written by me, from your words and the claims production extracted. The extractor eval stands or falls on them, so please read the column once.",
+  "The 66 images of the posts were described once by Gemini (about $0.33) and the descriptions are saved, so every run reads the same text. The Opus figure row has no passage and rests on one image, so its test depends on that description.",
+  "The stored text of the sex-cult post and of the ACX letter to Pinker has no images, because it came from a reader's browser. The other five posts keep their images as markers. The chunks are cut the way the pipeline cuts an unsplit post. In a real run the first step may split a post into topic parts first, which changes where the chunks begin.",
+  "Only 3 of the 14 checker inputs come from a saved production prompt. The July posts have no check logs. The others are built with the pipeline's own function from the stored claim, which is the same text without the date lines and the comments.",
+  "For the readers' highlights (CFAR/FTX, the cam girls, nearly impossible to prove, the pivotal act, Melanie Mitchell) the surrounding paragraph is taken from the post's text. The extractor may have chosen a different paragraph.",
+  "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. Both evals run three samples per row and pass a row at 2 of 3, because the same call can end differently each time. The checker eval ran once per row at first, and two identical runs flipped 2 of 14 rows, so you asked for three samples. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
+  "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October, and the EA beholden wording is yours from the same day. Both rest on your account of Yudkowsky's and Soares' views. I have not checked them against their writing or found sources yet.",
+  "The Sol 45% row had a wrong reference claim at first. I wrote that the author gave the 45%, but in the text it is Sol, the AI model, answering in its own reply. The extractor had it right. The production note on that claim made the same mistake and said it was the author's estimate. I fixed the reference claim and ran the baseline again.",
+  "The extractor now cuts each chunk into passages and sorts them: \"statement\" (a statement where there is some chance that a neutral expert on the topic could find it misleading, with \"when in doubt\" pointing to this type), \"forecast\" and \"other\" (with a reason). The old flags for confidently true claims and for speculation are gone. Statements must be atomic: a sentence with two statements is cut inside the sentence, and only woven statements stay in one passage as several claims. Forecast and other passages need not be atomic.",
+  "I split the compound reference claims into atomic statements (Czechoslovakia into 2, Melanie Mitchell into 2, Sol subagents into 2, the Opus figure into 4) and wrote the statements of the two new datapoints. All of these are my drafts, so please read them. The new datapoints are the Treasury Department sentence (2 statements) and the Hungary transcript line (4 statements). Both are for the extractor eval only, because nobody wrote a note on them.",
+  "Reference statements are counted one by one, so the extractor eval now has 26 rows where the baseline had 14. The baseline's numbers and the next run's cannot be compared directly. The Results tab shows them side by side, row by row, where the rows exist in both.",
+  "The Bo Nix example (a statement woven into another) is not a datapoint, because you are fine with it counting as one statement. No datapoint yet must come out as other or as a forecast, so the evals cannot catch an extractor that calls everything a statement.",
+  "No run has been made with the new format. The only run on the Results tab is the baseline of the old format.",
+  "The dataset and its build script live in the lab folder of the PR, so they stay in git. This page is built from them.",
+];
+
+/* ---- Wiring ---- */
+function setView(view) {
+  state.view = view;
+  for (const v of ["datasets", "results", "plan", "decisions"]) document.getElementById("view-" + v).hidden = v !== view;
+  for (const t of document.querySelectorAll(".tab")) t.setAttribute("aria-selected", String(t.dataset.view === view));
+  try { history.replaceState(null, "", "#" + view); } catch {}
+}
+function renderAll() {
+  for (const s of document.querySelectorAll(".subtab")) s.setAttribute("aria-selected", String(s.dataset.ds === state.ds));
+  renderChips(); renderDatasets(); renderResults(); renderPlans();
+}
+document.getElementById("decisions").innerHTML = DECISIONS.map((d) => `<li>${esc(d)}</li>`).join("");
+document.getElementById("tabs").addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) setView(t.dataset.view); });
+document.getElementById("subtabs").addEventListener("click", (e) => { const t = e.target.closest(".subtab"); if (t) { state.ds = t.dataset.ds; renderAll(); } });
+document.getElementById("chips").addEventListener("click", (e) => { const c = e.target.closest(".chip-btn"); if (c) { state.group = c.dataset.group || null; renderAll(); } });
+function toggleRow(row) {
+  const id = row.dataset.id;
+  state.open.has(id) ? state.open.delete(id) : state.open.add(id);
+  renderDatasets();
+}
+document.getElementById("dstable").addEventListener("click", (e) => {
+  const copy = e.target.closest("[data-copy]");
+  if (copy) { copyText(copy.parentElement.parentElement.querySelector(".input-box").textContent, copy); return; }
+  const as = e.target.closest("[data-as]");
+  if (as) { const k = "as-" + as.dataset.as; state.open.has(k) ? state.open.delete(k) : state.open.add(k); renderDatasets(); return; }
+  const row = e.target.closest("tr.row");
+  if (row) toggleRow(row);
+});
+document.getElementById("dstable").addEventListener("keydown", (e) => {
+  const row = e.target.closest("tr.row");
+  if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggleRow(row); }
+});
+function openRun(runId, kind, rowId) {
+  state.run = runId;
+  if (kind) state.rs = kind;
+  state.ropen.clear();
+  if (rowId) state.ropen.add((kind === "extractor" ? "rx-" : "rc-") + rowId);
+  renderResults();
+  if (rowId) document.querySelector(`tr.row[data-id="${(kind === "extractor" ? "rx-" : "rc-") + rowId}"]`)?.scrollIntoView({ block: "center" });
+}
+document.getElementById("resultsbody").addEventListener("click", (e) => {
+  const cmp = e.target.closest(".cmpcell");
+  if (cmp) { openRun(cmp.dataset.run, cmp.dataset.kind, cmp.dataset.row); return; }
+  const runRow = e.target.closest(".runrow");
+  if (runRow) { openRun(runRow.dataset.run); return; }
+  const sub = e.target.closest("[data-rs]");
+  if (sub) { state.rs = sub.dataset.rs; renderResults(); return; }
+  const row = e.target.closest("tr.row");
+  if (row) { const id = row.dataset.id; state.ropen.has(id) ? state.ropen.delete(id) : state.ropen.add(id); renderResults(); }
+});
+document.getElementById("resultsbody").addEventListener("keydown", (e) => {
+  const runRow = e.target.closest(".runrow");
+  if (runRow && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openRun(runRow.dataset.run); return; }
+  const row = e.target.closest("tr.row");
+  if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); const id = row.dataset.id; state.ropen.has(id) ? state.ropen.delete(id) : state.ropen.add(id); renderResults(); }
+});
+document.getElementById("plans").addEventListener("click", (e) => {
+  const n = e.target.closest(".node");
+  if (n) { planSelection[n.dataset.plan] = n.dataset.node; renderPlans(); }
+});
+renderAll();
+const start = storedHash();
+setView(["datasets", "results", "plan", "decisions"].includes(start) ? start : "datasets");
+</script>

@@ -5,7 +5,7 @@
  *
  * It writes nothing, checks nothing, and decides nothing. Which claims are
  * worth checking is the caller's business, so every claim found comes back,
- * including the confidently-true ones and the speculation, and the ratings
+ * including the ones that are surely true, and the ratings
  * come back as judgements rather than as a filtered list.
  *
  *   bun run src/service/extraction/main.ts
