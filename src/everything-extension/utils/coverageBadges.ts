@@ -456,11 +456,13 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
    *  their tile nodes: YouTube keeps a card element connected while swapping
    *  it to a different video during scrolling. Trusting isConnected alone left
    *  a badge sitting on the wrong video and blocked the right tile from ever
-   *  getting one. A valid badge is re-seated, which moves it onto the picture
-   *  once a lazy-loaded image has arrived. */
-  const pruneAndReseat = () => {
+   *  getting one. A badge for the page we are on goes too. That happens when
+   *  the reader navigates within a single-page site, or when the address of a
+   *  reader page has only just been translated. A valid badge is re-seated,
+   *  which moves it onto the picture once a lazy-loaded image has arrived. */
+  const pruneAndReseat = (currentKeys: Set<string>) => {
     for (const [anchor, { badge, key }] of badges) {
-      const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key;
+      const valid = badge.isConnected && anchor.isConnected && keyFor(anchor.href) === key && !currentKeys.has(key);
       const spot = valid ? spotFor(anchor) : null;
       if (spot && (badge.parentElement === spot.host || !hasBadge(spot.host))) {
         seat(badge, spot);
@@ -492,7 +494,6 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   };
 
   const scan = () => {
-    pruneAndReseat();
     // Links to the page we are already on carry no information, so they get
     // no badge. The canonical URL counts as the current page too: on a
     // custom-domain newsletter the address bar and the stored item URL can
@@ -501,15 +502,20 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     // only-while-the-path-matches guard: after a client-side navigation back
     // to the front page, Substack leaves the previous post's canonical tag in
     // the head, and trusting it raw suppressed exactly that post's badge.
-    // The current address is never translated like a reader link. A reader
-    // page such as substack.com/@author/note/p-<id> shows the post as a card
-    // with replies under it, not as the article. That card is the only place
-    // the page can say the post was checked, so it must keep its badge.
+    // A reader page such as substack.com/home/post/p-<id> shows the article
+    // itself, so its address is translated like a reader link, and the
+    // article's own title link gets no badge. A note page such as
+    // substack.com/@author/note/p-<id> is different. It shows the post as a
+    // card with replies under it. That card is the only place the page can say
+    // the post was checked, so there the address stays untranslated and the
+    // card keeps its badge.
+    const showsPostAsCard = location.pathname.includes("/note/");
     const currentKeys = new Set<string>();
     for (const href of [location.href, normalizePageUrl(location.href, document)]) {
-      const key = pageKey(href);
+      const key = showsPostAsCard ? pageKey(href) : keyFor(href);
       if (key) currentKeys.add(key);
     }
+    pruneAndReseat(currentKeys);
     const outcomes = { badged: 0, "no-surface": 0 };
     for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) {
       const outcome = placeBadge(anchor, currentKeys);
