@@ -16,7 +16,7 @@ import { useVotingNudge, VotingNudge } from "./VotingNudge";
  *  render this same component. `children` adds actions to the action row. */
 export function Note({ note, shareUrl, onDeleted, compact, children }: {
   note: NoteRow;
-  /** For a narrow column: sources show as site names and a long note starts clamped. */
+  /** For a narrow column: sources show as site names. */
   compact?: boolean;
   /** The absolute deep link the Share button copies. */
   shareUrl: string;

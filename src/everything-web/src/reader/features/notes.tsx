@@ -50,7 +50,7 @@ function NoteEntries({ blockId }: { blockId: string }) {
     const id = noteCardId(scope, note.id);
     if (isCollapsed(id)) return <ClosedEntry key={note.id} elementId={id} kind="Note" detail={statusLabel(noteStatus(note))} />;
     return <div key={note.id} id={id} className="reader-entry">
-      <NoteCard compact topBar={<EntryBar elementId={id} kind="note" />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
+      <NoteCard compact hideQuote topBar={<EntryBar elementId={id} kind="note" />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
     </div>;
   })}</>;
 }
