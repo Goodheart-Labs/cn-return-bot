@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ClaimRef, FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
+import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
 import { chipVariants } from "@cn/ui/Chip";
@@ -7,49 +7,7 @@ import { cn } from "@cn/ui/cn";
 import { ArrowDownIcon, ArrowUpIcon, PencilIcon } from "@cn/ui/icons";
 import { Note } from "@cn/features/notes/Note";
 import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
-import { ClaimContent, type NotedContent } from "./ClaimContent";
-
-/** Maps a claim's context onto the shared ContentCard shape. A context URL that
- *  points at a video becomes a YouTube clip, embedded at the claim's timestamp
- *  span. Anything else becomes an article citation. The URL decides this, not
- *  item.source, so a podcast item whose context is a YouTube deep-link still
- *  renders as a clip.
- *
- *  The citation line is the verbatim `context_quote` excerpt. The `claim` column
- *  is not source text. It is a self-contained restatement, written so the claim
- *  can be fact-checked on its own. A claim grounded in an image has no excerpt,
- *  so it falls back to that restatement, which is rendered without quote marks
- *  and captioned as coming from the image.
- *
- *  An article citation names `post` when it is given. A clip does not need it,
- *  because the embedded player already shows the video and links to it. */
-function claimContent(claim: ClaimRef, post: FeedItemRow | undefined): NotedContent {
-  const url = claim.context_url;
-  const quote = claim.context_quote || claim.claim;
-  const restated = !claim.context_quote;
-  const imageGrounded = restated && (claim.image_urls?.length ?? 0) > 0;
-  const updatedQuote = claim.updated_quote ?? undefined;
-  if (url && /youtube\.com|youtu\.be/.test(url)) {
-    return {
-      kind: "youtube",
-      url,
-      quote,
-      restated,
-      updatedQuote,
-      imageGrounded,
-      startSeconds: claim.start_seconds,
-      endSeconds: claim.end_seconds,
-    };
-  }
-  return {
-    kind: "article",
-    quote,
-    restated,
-    updatedQuote,
-    imageGrounded,
-    post: post && { title: post.title ?? "Untitled", url },
-  };
-}
+import { ClaimContent, claimContent } from "./ClaimContent";
 
 /** The images a claim is grounded in, which are usually Substack charts or
  *  screenshots. They sit above the claim's context. Each one links out to the

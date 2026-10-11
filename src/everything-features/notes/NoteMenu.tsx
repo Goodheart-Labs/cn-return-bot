@@ -30,12 +30,11 @@ const logPostFailure = (what: string) => (err: Error) => console.error(`[common-
  *  note on the same claim and shows it beside the original. You can copy a deep
  *  link to the note. On a note you wrote yourself there is also a ⋯ menu, and
  *  it holds Delete. */
-export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, onDeleted, children }: {
+export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   /** The absolute deep link to this note. The website builds it from the
    *  project slug. The extension passes the public site's URL instead. */
   shareUrl: string;
-  onDeleted?: () => void;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
   /** Extra actions rendered between Share and the ⋯ button. The feed uses this
@@ -79,7 +78,7 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, onDelet
   const del = () => {
     setExpanded(null);
     setConfirmingDelete(false);
-    void deleteNote.mutateAsync(note.id).then(() => onDeleted?.()).catch(() => {});
+    void deleteNote.mutateAsync(note.id).catch(() => {});
   };
   // A reader with no session gets an invisible anonymous account on the spot,
   // and the composer renders as soon as the new session reaches this
