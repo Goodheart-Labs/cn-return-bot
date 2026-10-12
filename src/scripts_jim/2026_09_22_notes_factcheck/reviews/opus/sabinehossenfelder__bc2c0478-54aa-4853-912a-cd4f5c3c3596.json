@@ -1,0 +1,16 @@
+{
+  "item_id": "bc2c0478-54aa-4853-912a-cd4f5c3c3596",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "95ef9e2f-61a0-4dbe-a895-97bd2dc74c43",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "She says this in her own voice and without hedging: the candidate would weigh at least 400 GeV, \"and that explains why the Large Hadron Collider hasn't found it. The energy simply wasn't high enough.\" Taken literally that is wrong, and the error is large. The LHC collides protons at 13.6 TeV, about thirty-four times the mass in question, and it has already excluded strongly produced particles well above one TeV, so a viewer who takes her sentence at face value comes away with a badly wrong picture of what the machine can reach. The real reason a 400 GeV higgsino or electroweak multiplet survives is that it is produced through the weak interaction only, so it is made far too rarely and its decay products are too soft to see. Published reach for higgsinos sits around 130 to 225 GeV and the papers give small production cross sections and large backgrounds as the cause. My hesitation is twofold. First, she has a defensible reading in which \"energy\" is shorthand for the collider's reach, since the rate for making heavy pairs falls steeply with the collider energy and the field's own answer to covering these particles is to build a higher-energy machine, so a flat \"collision energy isn't the limit\" is stronger than the physics supports. Second, the note's only source is a CMS page about extra heavy Higgs bosons, which is a different particle with different couplings, so the evidence offered does not actually cover the candidates she named. As a physicist and a well-known critic of this field she is likely to read the note as quibbling with a simplification she made for a lay audience."
+    }
+  ]
+}

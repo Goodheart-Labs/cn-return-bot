@@ -1,0 +1,29 @@
+{
+  "item_id": "0f068fd1-3c8a-491b-80e2-1dd18f85e5ce",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bfc9c196-d1b2-402a-a624-fef067a445c1",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Drop the second sentence ('The ~48-50% figure is a separate CLSA projection for 2027, not Dylan Patel's 2026 estimate.') entirely. Optionally add: 'Dylan Patel confirmed the 30% figure on this podcast on March 13, 2026 (https://www.dwarkesh.com/p/dylan-patel).'",
+      "reason": "The words are Dwarkesh's own. His published transcript marks him as the speaker of 'Dylan said hyperscalers are spending 50% of their CapEx this year on memory', and he does not just report it, he builds on it: 'they're spending half of that on memory? That is a huge constraint. That's why we're not going to get new laptops and phones this year.' The number is wrong. SemiAnalysis's post of early April 2026 says memory was about 8% of hyperscaler spend in 2023 and 2024 and 'We estimate it hits 30% in CY26', and Dylan Patel said the same thing to Dwarkesh on this podcast on March 13, 2026: 'a third of their CapEx is going to memory.' Half versus a third changes how tight the constraint looks, so the correction is substantive, and Dwarkesh would likely accept it because the 30% is on his own show. The note's second sentence must go, though: it states as fact that Dwarkesh confused the figure with CLSA's 48% projection for 2027, but that projection was published on June 23, 2026, two months after this episode came out on April 29, so it cannot be where he got the number. With that sentence removed the note is good; sent as written it contains a guess that is provably wrong."
+    },
+    {
+      "note_id": "eb8c6d87-9074-458a-bff9-fbc4baf53355",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Dwarkesh's published transcript marks him as the speaker: 'Gemini 3.1 is 50% more expensive if you go over 200k tokens than if you're below 200k tokens. At a high level, I understand why that might be, but why specifically 50%?' It is his own reading of a public price sheet, stated flatly and then made the basis of the question he puts to Reiner. Google's Gemini API pricing page lists Gemini 3.1 Pro at $2.00 input and $12.00 output per million tokens for prompts up to 200k and $4.00 input and $18.00 output above 200k, and that structure has held since the model launched in February 2026, so input doubles and only output rises by 50%, exactly as the note says. The blog sources the note cites carry the quoted lines. The correction matters to the segment, because Dwarkesh asks specifically why the surcharge is 50% and the true answer is that it is 100% on input and 50% on output, which is the larger part of a long-context bill. Reiner's own explanation, that the price break marks the crossover between memory time and compute time, is untouched, so the note strengthens the discussion rather than embarrassing anyone, and a wrong number read off a price sheet is the kind of correction Dwarkesh would take."
+    }
+  ]
+}

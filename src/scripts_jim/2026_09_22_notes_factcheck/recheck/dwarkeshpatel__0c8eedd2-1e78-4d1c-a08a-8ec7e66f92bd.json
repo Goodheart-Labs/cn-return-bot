@@ -1,0 +1,69 @@
+{
+  "item_id": "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd",
+  "project_slug": "dwarkeshpatel",
+  "creator": "Dwarkesh Patel",
+  "source": "podcast",
+  "url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+  "title": "Adam Brown",
+  "published_at": "2026-07-10",
+  "full_text": null,
+  "notes": [
+    {
+      "note_id": "06806a9f-aaea-4725-905c-fbba9b68b7a4",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=06806a9f-aaea-4725-905c-fbba9b68b7a4",
+      "note": "As of mid-2026, LIGO and partner detectors have confirmed roughly a few hundred gravitational wave events total, not thousands. The published catalogs (GWTC-1 through GWTC-3) list ~90 high-confidence detections, with O4 adding dozens more.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "claim": "We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
+      "extractor_judgement": "likely false",
+      "context_quote": "We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
+      "updated_quote": null,
+      "context_paragraph": "They all shook in exactly the same way, and we were able to back-calculate that the thing causing them to shake was the collision of two ginormous black holes. Two black holes, both of which weighed about 30 times as much as the sun, on the other side of the universe, about 1.6 billion light-years away. That collision happened about 1.6 billion years ago, and just happened to reach the Earth within weeks of us turning on the LIGO detectors. We've now felt thousands of such shakings corresponding to thousands of black hole mergers.",
+      "context_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ&t=4956s",
+      "start_seconds": 4956,
+      "end_seconds": 4966,
+      "sources": [
+        {
+          "url": "https://www.ligo.org/science/Publication-GWTC3/index.php",
+          "quote": null,
+          "explanation": null
+        }
+      ],
+      "opus_verdict": "uncertain",
+      "opus_reason": "The sentence is Adam Brown's, not Dwarkesh's, and he states it plainly as fact while explaining why we are confident black holes exist, so it is fair to check it. He really is wrong: the current catalogue, GWTC-5.0, released on 26 May 2026, lists 390 events in total, which is hundreds, not thousands. But the note's own second sentence is out of date and wrong in the other direction. It says the published catalogues list about 90 detections 'with O4 adding dozens more', when O4 alone added roughly 300, and it cites only the old GWTC-3 page while ignoring GWTC-4.0 and GWTC-5.0, both of which were published before this episode came out. A physicist would accept 'hundreds, not thousands' but would immediately spot that the note undercounts by a factor of three, and that would cost us credibility. Do not send it as written. If the second sentence is replaced with the GWTC-5.0 figure of 390 events and that source, the note becomes good."
+    },
+    {
+      "note_id": "25053799-047c-43e3-93bf-cab327d0376a",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=25053799-047c-43e3-93bf-cab327d0376a",
+      "note": "The Sun's mass is approximately 333,000 times that of the Earth, not several million. This ratio is equivalent to about one-third of a million, making the claim an overstatement by a factor of roughly ten.",
+      "votes": {
+        "helpful": 2,
+        "not_helpful": 0
+      },
+      "claim": "the sun is a few million times the mass of the Earth",
+      "extractor_judgement": "likely false",
+      "context_quote": "It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit.",
+      "updated_quote": null,
+      "context_paragraph": "Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.",
+      "context_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ&t=2524s",
+      "start_seconds": 2524,
+      "end_seconds": 2545,
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Solar_mass",
+          "quote": null,
+          "explanation": null
+        },
+        {
+          "url": "https://www.britannica.com/topic/How-Big-Is-the-Sun",
+          "quote": null,
+          "explanation": null
+        }
+      ],
+      "opus_verdict": "good",
+      "opus_reason": "Again the speaker is the guest, Adam Brown, but he asserts it directly as part of a worked calculation, so it is fair game. He says 'the sun is a few million times the mass of the Earth', and the real ratio is about 333,000, so he is out by roughly a factor of ten. This is not a simplification for a lay audience, it is a slip that breaks his own arithmetic: he reaches the famous solar surface redshift of 2x10^-6 by dividing the mass ratio by the sun's radius ratio of about 109, and 333,000 divided by 109 gives about 3,000, which is what produces 2x10^-6, whereas 'a few million' divided by 109 would give about 2x10^-5. A listener trying to follow the numbers would be unable to reproduce the answer he states one sentence later. The number is standard and easy to check, the quote is verbatim, and a physicist would accept this without any argument. The note already has two helpful votes."
+    }
+  ]
+}

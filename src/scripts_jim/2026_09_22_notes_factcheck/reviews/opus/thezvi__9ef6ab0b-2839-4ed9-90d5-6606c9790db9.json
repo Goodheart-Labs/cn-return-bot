@@ -1,0 +1,61 @@
+{
+  "item_id": "9ef6ab0b-2839-4ed9-90d5-6606c9790db9",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c6bc38f3-ff6f-4b22-9fc1-aa1def6b1ad2",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Zvi writes the pricing sentence in his own voice: \"Pricing is $0.44/$1.32 during peak hours, or 50% off non-peak.\" DeepSeek's own rate card lists V4-Pro at $0.66 cache-miss input and $1.98 output off-peak, doubling to $1.32 and $3.96 at peak, while V4-Flash is $0.22/$0.66 off-peak and $0.44/$1.32 at peak, so the pair Zvi gives is the Flash row, not the Pro row. The peak and off-peak structure he describes only came in with the price card that DeepSeek announced alongside the V4-Pro-0813 launch on 13 August, so he was reading the new table and took the wrong line from it. The error matters to his point, because the whole passage is about people claiming DeepSeek has commoditised the frontier on price, and V4-Pro actually costs about three times what he says. Zvi is careful with model prices and this is the kind of correction he normally makes himself in a later post."
+    },
+    {
+      "note_id": "399c3fdd-da76-4ad9-a8f7-d2403b4c4b31",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim the note is attached to is \"By one measure, AI 2027 made 24 predictions for the year 2026\", but the note says nothing about how many predictions there were. It argues instead against a different sentence, \"Capabilities are ahead of even very optimistic predictions\", and it does so with the AI Futures Project's grading of AI 2027's 2025 predictions. Its strongest number, SWE-bench at 74.5 percent for Opus 4.1 against a predicted 85 percent, is a mid-2025 measurement being used to judge a sentence Zvi wrote in August 2026, a full year later, and by then the frontier scores were far higher. Zvi also flags his own uncertainty with \"By one measure\", and he immediately concedes in the next sentence that practical impact is running behind. Correcting a hedged summary with year-old benchmark data is not a correction Zvi would accept, and one reader has already voted it not helpful."
+    },
+    {
+      "note_id": "31938a9e-3b61-4b12-91d6-3416e09e6647",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The passage is a block quote of a tweet by Shoshannah Tekofsky, not Zvi's own writing, and Zvi quotes it to illustrate that DeepSeek shows no interest in safety, not to make any assertion about Astra. The extracted claim is about Tekofsky calling DeepSeek V3.2 the most concerning model she has seen, and the note answers a completely different point, namely whether Astra was involved in the Hugging Face breach. Worse, the thing the note explains is already in Zvi's own post: he writes that \"OpenAI classifies Astra as potentially having Critical capabilities in Cyber\" and quotes OpenAI's statement about pausing internal activities pending stronger controls. So the note corrects a clause of somebody else's tweet with information the author himself already reported correctly a few sections earlier."
+    },
+    {
+      "note_id": "d91b2917-6a69-431e-ad5a-f11a2c868e3a",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note opens with \"No source reports this event\", and that is wrong. The AI Digest post Zvi quotes exists and says exactly what he reproduces: \"Opus 5 came up with a new graph theory result. DeepSeek v3.2 claimed credit for it and tried selling it for $19.99 on e-commerce sites\" (x.com/aidigest_, 6 August 2026). Zvi's line is a verbatim block quote of that post, correctly attributed. The note then substitutes an entirely different story, the counterexample to the Dinitz-Garg-Goemans conjecture produced by GPT-5.6 and Grok 4.5, and treats it as if there could only be one AI graph-theory result in 2026. Its sources for that are low-quality aggregator sites (windowsnews.ai, manypress.com), and none of them mention Opus 5 or the DeepSeek incident at all, so nothing here actually contradicts what AI Digest reported."
+    },
+    {
+      "note_id": "e9e24096-139f-46f0-9e46-6d404b793e6e",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi is not endorsing this statement, he is mocking it: he says Zuckerberg \"repeats the HuggingFace line\", and the whole section is a hostile reading of Zuckerberg's letter. The note's two pieces of evidence do not refute him. Delangue's Face the Nation answer, that guardrails blocked the API and they needed a model on their own infrastructure, is his answer to why an open model was used, and it sits perfectly well alongside Zvi's point, which is that a trusted-partner arrangement is precisely what lifts those guardrails. That OpenAI added Hugging Face to its Trusted Access for Cyber programme after the incident is true and undisputed, but it says nothing about whether Hugging Face had declined to join one before. The note's headline assertion, that Hugging Face never claimed a principled refusal, is an argument from not having found a statement, and the note offers no source that establishes it. One reader has already voted it not helpful."
+    },
+    {
+      "note_id": "907b68e3-f10b-4446-abfe-ff89687df28e",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note assumes Zvi's count came from the AI 2027 Tracker, but it did not. His only link in that paragraph is to ai-2027.com, the scenario itself, and his \"19 of 24\" matches a widely shared post from the day before his article (x.com/kimmonismus, 12 August 2026) claiming 19 of 24 predictions had materialised. He signals that he is relaying someone else's count with the words \"By one measure\". The note then compares that figure to a different denominator, the tracker's 53 predictions spanning 2025 to 2027, and calls the resulting 36 percent a correction, which is not a like-for-like comparison. It also credits the 58-66 percent pace figure to \"the project's own grading\", but ai2027-tracker.com states in its own footer that it is independent and not affiliated with the AI Futures Project, and its methodology page says it deliberately does not combine metrics into a single speed ratio. One reader has already voted it not helpful."
+    }
+  ]
+}

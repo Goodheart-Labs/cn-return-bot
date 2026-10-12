@@ -1,0 +1,16 @@
+{
+  "item_id": "2fcee0c3-dfd6-41db-a221-a1a5bb5fd35d",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "5883b5e9-cf56-409d-bfe5-3593bb63d4a3",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The video is about Norway and the note answers with figures for the United Kingdom. The author is reading off a chart of Norwegian business owners who moved abroad, counted by journalists at the Norwegian Broadcasting Corporation, and says \"millionaire departures dropped to just 12 in 2024\". The note replies that 12 refers to billionaires leaving the UK and that Henley & Partners counted 9,500 to 10,800 millionaires leaving, all three of its sources being about London and the UK non-dom rules. That has nothing to do with the number on screen. The Norwegian counts are in this order of magnitude: NRK found 163 business owners moved to Switzerland in total since 2020, and Finansavisen reports that the flight stopped after the exit tax was raised in 2024, so about a dozen in 2024 is entirely plausible. Sending this would look like we confused two countries, which is what happened."
+    }
+  ]
+}

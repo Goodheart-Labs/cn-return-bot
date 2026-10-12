@@ -45,10 +45,17 @@ function looksVerbatim(cleaned: string, original: string): boolean {
   return hits >= VERBATIM_MIN_HITS;
 }
 
+export interface CleanedCapture {
+  text: string;
+  /** What the cleanup call cost. Zero when no call was made or it failed. */
+  costUsd: number;
+}
+
 /** Returns the article-only text of a captured page, or the input unchanged
- *  when cleaning is unnecessary or the model's output fails verification. */
-export async function cleanCapturedPageText(pageText: string): Promise<string> {
-  if (pageText.length < MIN_CHARS_WORTH_CLEANING) return pageText;
+ *  when cleaning is unnecessary or the model's output fails verification.
+ *  The cost is returned either way, because a rejected output was still paid for. */
+export async function cleanCapturedPageText(pageText: string): Promise<CleanedCapture> {
+  if (pageText.length < MIN_CHARS_WORTH_CLEANING) return { text: pageText, costUsd: 0 };
   try {
     const response = await llm.create({
       model: GEMINI_MODEL,
@@ -65,18 +72,16 @@ export async function cleanCapturedPageText(pageText: string): Promise<string> {
     const cost = extractOpenRouterCost(response);
     if (choice?.finish_reason === "length") {
       console.log(`  [capture cleanup] output truncated — keeping the raw capture (${pageText.length} chars)`);
-      return pageText;
+      return { text: pageText, costUsd: cost.cost };
     }
     if (cleaned.length < MIN_CHARS_WORTH_CLEANING / 2 || cleaned.length > pageText.length * 1.05 || !looksVerbatim(cleaned, pageText)) {
       console.log(`  [capture cleanup] output failed verification — keeping the raw capture (${pageText.length} chars)`);
-      return pageText;
+      return { text: pageText, costUsd: cost.cost };
     }
-    console.log(
-      `  [capture cleanup] ${pageText.length} → ${cleaned.length} chars ($${(cost?.cost ?? 0).toFixed(4)})`,
-    );
-    return cleaned;
+    console.log(`  [capture cleanup] ${pageText.length} → ${cleaned.length} chars ($${cost.cost.toFixed(4)})`);
+    return { text: cleaned, costUsd: cost.cost };
   } catch (err: any) {
     console.warn(`  [capture cleanup] failed (${err?.message}) — keeping the raw capture`);
-    return pageText;
+    return { text: pageText, costUsd: 0 };
   }
 }

@@ -6,6 +6,8 @@
  *  order, which is exactly what happened in CI. Every file installs this same
  *  complete mock and steers its behaviour through `dbState`. */
 
+import type { CreatorVisitScore } from "./db";
+
 export const dbState = {
   /** What fetchItemUrlsIn / fetchItemUrlsContaining answer. */
   knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
@@ -19,18 +21,8 @@ export const dbState = {
     priority_until: string | null;
     top_posts_refreshed_at: string | null;
   }[],
-  /** What fetchCreatorAttention answers: one row per creator. */
-  creatorAttention: [] as {
-    feed_url: string;
-    visits: number;
-    pages: number;
-    readers: number;
-    regular_readers: number;
-  }[],
-  /** What fetchTwoReadersSeen answers: whether any creator has ever been
-   *  visited by two different readers, which is what switches the walk from the
-   *  old visit rule to the reader rule. */
-  twoReadersSeen: false,
+  /** What fetchCreatorVisitScores answers: one row per creator. */
+  creatorVisitScores: [] as CreatorVisitScore[],
   /** What fetchAllTopPosts answers. */
   topPosts: [] as {
     feed_url: string;
@@ -59,8 +51,7 @@ export const resetDbState = () => {
   dbState.knownItems = [];
   dbState.existingItem = null;
   dbState.creatorProjects = [];
-  dbState.creatorAttention = [];
-  dbState.twoReadersSeen = false;
+  dbState.creatorVisitScores = [];
   dbState.topPosts = [];
   dbState.feedPacing = {
     dbNow: new Date("2026-09-15T00:00:00Z"),
@@ -87,16 +78,20 @@ export const dbMock = () => ({
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),
   fetchItemUrlsContaining: () => Promise.resolve(dbState.knownItems),
   fetchCreatorProjects: () => Promise.resolve(dbState.creatorProjects),
-  fetchCreatorAttention: () => Promise.resolve(dbState.creatorAttention),
-  fetchTwoReadersSeen: () => Promise.resolve(dbState.twoReadersSeen),
+  fetchCreatorVisitScores: () => Promise.resolve(dbState.creatorVisitScores),
   fetchAllTopPosts: () => Promise.resolve(dbState.topPosts),
   fetchFeedPacing: () => Promise.resolve(dbState.feedPacing),
   fetchCostSinceUsd: () => Promise.resolve(0),
+  fetchReaderCostSinceUsd: () => Promise.resolve(0),
   setFeedAlarm: record("setFeedAlarm"),
   replaceFeedTopPosts: record("replaceFeedTopPosts"),
+  stampTopPostsAttempt: record("stampTopPostsAttempt"),
+  fetchYoutubeChannel: () => Promise.resolve(null),
+  saveYoutubeChannel: record("saveYoutubeChannel"),
+  countYoutubeNotifications: () => Promise.resolve({ notified: 0, subscribed: 0 }),
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),
-  fetchOrphanedProcessingItems: () => Promise.resolve([]),
+  fetchOrphanedProcessingItems: (_tier: "requested" | "feed") => Promise.resolve([]),
   fetchRetryableErrorItems: () => Promise.resolve([]),
   requeueErroredItem: record("requeueErroredItem"),
   fetchPendingNoteRequests: () => Promise.resolve([]),
@@ -109,6 +104,11 @@ export const dbMock = () => ({
   requeueItem: record("requeueItem"),
   resolveNoteRequest: record("resolveNoteRequest"),
   insertQueuedItem: record("insertQueuedItem"),
+  insertItemRun: record("insertItemRun"),
+  insertClaimPipelineRun: record("insertClaimPipelineRun"),
+  insertClaims: () => Promise.resolve(["requested-claim"]),
+  insertNote: record("insertNote"),
+  setClaimStatus: record("setClaimStatus"),
   resolveProjectId: record("resolveProjectId"),
   insertFollowedFeed: record("insertFollowedFeed"),
   resolveFollowRequest: record("resolveFollowRequest"),

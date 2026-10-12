@@ -1,0 +1,34 @@
+{
+  "item_id": "bbdc9713-cfaa-48de-93da-8072e62ab05c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "b3e4a47e-fe5f-4047-a562-a02daa4a0ea1",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi's sentence is \"There is a promise of Muse Spark open weights releases coming soon, presumably 1.2.\" The word \"presumably\" already tells the reader that Meta's announcement did not name a version and that Zvi is inferring which one. The note's main point, that the announcement dropped the version number, is therefore not a correction but a restatement of the hedge Zvi wrote himself. Worse, Zvi's inference turns out to be right: at the Muse Spark 1.3 launch Alexandr Wang said Meta still plans to release the weights for the previous version, Muse Spark 1.2, and has not decided whether to release 1.3's weights, which is reported by Mercury News, Financial Post, Livemint and TechRepublic. The note's closing line about 1.3 being newer and more capable also tells Zvi something he wrote two paragraphs earlier in the same post (\"Muse Spark 1.3 exists\"). The sources themselves check out, but the note corrects nothing and would read as a pedantic swipe at a clearly flagged guess."
+    },
+    {
+      "note_id": "ac16928f-dcf4-4fd4-8eca-5739d94bdb9c",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The passage is not Zvi's claim at all. It sits in the humour section at the end of the post, under the line \"Remember to celebrate your wins where you get them\", and it is a quoted tweet by someone else: \"jessicat: Google actually paused their frontier AI program and I don't see Pause AI people praising them for it.\" Zvi also quotes the reply that follows, \"Mateusz Baginski: what is the basis of this claim?\" and jessicat's answer, \"Their benchmarks\". That exchange makes it plain the tweet is a joke at the expense of Google's model quality, not an assertion that Google halted training. The note fact-checks the joke as if it were a factual claim Zvi endorsed. This is exactly the failure Andy Masley complained about, and Zvi would very likely reply that he was quoting a gag."
+    },
+    {
+      "note_id": "f351bc4d-d46f-4b3f-8552-967f201bee19",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is Zvi's own and he endorses it: \"Scott Aaronson argues that LLMs are a definitive counterexample to the 'strange loop' and self-referentiality hypothesis of Douglas Hofstadter. This seems correct.\" But the note's headline assertion, that Aaronson's post is \"tentative\", is the opposite of what the post says. Aaronson ends it with \"But the idea that you'd need explicit self-referentiality before you could get convincing and world-changing conversational intelligence? Let it be buried in a Westminster Abbey or Arlington National Cemetery for the most important wrong ideas in human history - geocentrism, Aristotle's teleological physics, aether, phlogiston... But buried it needs to be.\" The note rests \"tentative\" on the opening joke \"probably either obvious or dumb\", which is Aaronson's usual self-deprecation, not a hedge on his conclusion. Aaronson himself states the thesis he is burying as \"the secret of intelligence (and therefore, of AI) was going to have a lot to do with self-referentiality and 'strange loops'\", which is exactly the hypothesis Zvi names, so Zvi's summary is fair. The note does have one real point, that Aaronson deliberately leaves consciousness out of the burial (\"For all we know, Hofstadter could be right that those have something to do with self-reference\"), and the \"a Hofstadterian could argue\" line is a concession Aaronson immediately waves away. That one point is not enough to carry a note whose main statement misreads the post more than Zvi did."
+    }
+  ]
+}

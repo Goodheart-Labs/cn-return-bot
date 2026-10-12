@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchRecentPosts, type RecentPostRow } from "../lib/queries";
-import { VISIT_RANKING_WINDOW_DAYS } from "../../../everything-shared/readers";
+import { LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
 
 /** How many posts are fetched once, and how many more each "Show more" press
  *  reveals from them. */
@@ -36,8 +36,7 @@ const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "Post", title: "The post, and the project it belongs to" },
   { label: "Published", title: "When the author published it" },
   { label: "Checked", title: "When the pipeline finished it" },
-  { label: "Author visits", title: `Visits to anything by this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
-  { label: "Author readers", title: `Different readers of this author in the last ${VISIT_RANKING_WINDOW_DAYS} days` },
+  { label: "Author score", title: `Average number of different people per post, over the author's ${LAST_POSTS_PER_CREATOR} most recently visited posts` },
   { label: "Claims", title: "Claims extracted from the post" },
   { label: "Checked claims", title: "Claims that went through a fact-check" },
   { label: "Notes", title: "Notes the pipeline wrote" },
@@ -109,8 +108,7 @@ export function RecentPosts() {
                 <td style={{ ...cell, whiteSpace: "nowrap" }} title={new Date(post.processed_at).toLocaleString()}>
                   {timeAgo(post.processed_at)}
                 </td>
-                <td style={numberCell}>{post.author_visits}</td>
-                <td style={numberCell}>{post.author_readers}</td>
+                <td style={numberCell}>{post.author_visitors_per_post === null ? "—" : post.author_visitors_per_post.toFixed(2)}</td>
                 <td style={numberCell}>{post.claims_extracted}</td>
                 <td style={numberCell}>{post.claims_checked}</td>
                 <td style={numberCell}>{post.notes}</td>
@@ -129,8 +127,9 @@ export function RecentPosts() {
           </button>
         )}
         <span>
-          Author visits and readers cover the last {VISIT_RANKING_WINDOW_DAYS} days, the numbers the pipeline picks authors by. A visit
-          only names a reader when the extension could tell whose post it was, so readers can be lower than the people who visited.
+          The author score is the number the pipeline picks authors by. It is the average number of different people per post, over
+          the author's {LAST_POSTS_PER_CREATOR} most recently visited posts, however long ago those visits were. A post in a project
+          without a feed, such as Around the web, has no author score.
         </span>
       </div>
     </div>

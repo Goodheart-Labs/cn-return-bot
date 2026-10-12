@@ -96,7 +96,12 @@ export function formatVelocity(v: number | null): string {
 // candidates that never went through selection, such as those from the Pangram
 // pre-pass. Topic posts answer to MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR below
 // instead. Set this to 0 to disable the floor.
-export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 5_000;
+//
+// 15k again from 2026-09-22. It was lowered to 5k on 2026-08-24 (PR #390);
+// after that about a quarter of our notes went on posts under 15k views an
+// hour, and those are rated helpful about half as often (5.7% against 11-15%).
+// Raising it back costs no notes, because we write more than X accepts.
+export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 15_000;
 
 // ── Topic velocity floor ────────────────────────────────────────────────────
 // This floor comes from the same experiment in the week of 2026-07-20. The

@@ -1,0 +1,646 @@
+[
+ {
+  "id": "1f73e977-942f-4cd6-b4e6-488956dcadfc",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-08-29T01:29:02.409314+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "6e5cece8-de65-42dd-95b6-b77f8f36d088",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=haK1KoQWm18",
+    "title": "Claude Fable 5 - Full 319 page Breakdown",
+    "source": "youtube",
+    "project": {
+     "slug": "aiexplained-official"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1763
+  }
+ },
+ {
+  "id": "f265b763-41b2-43f4-b8c6-2e7c50d66865",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-08-31T12:54:15.99186+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "85331d3b-781c-4abf-a989-c4e8037b5d5c",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=s-MgHZ_oGl0",
+    "title": "The Fermi Paradox Just Got Much Worse",
+    "source": "youtube",
+    "project": {
+     "slug": "sabinehossenfelder"
+    }
+   },
+   "status": "note",
+   "start_seconds": 406
+  }
+ },
+ {
+  "id": "f2d46b05-5123-4a5a-b4ae-4745c293f8f9",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-01T00:28:56.110435+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "5c0bda16-cb30-4e77-97e6-3745ba5b35b0",
+   "item": {
+    "url": "https://thezvi.substack.com/p/huggingface-attack-postmortem-fleshing",
+    "title": "HuggingFace Attack Postmortem: Fleshing Out the Facts",
+    "source": "substack",
+    "project": {
+     "slug": "thezvi"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "d3305991-704f-4ce2-a9e2-501ea249f6ea",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-01T00:30:26.677031+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "e24837b2-9ff1-468b-9b2f-363f67d9800b",
+   "item": {
+    "url": "https://thezvi.substack.com/p/huggingface-attack-postmortem-fleshing",
+    "title": "HuggingFace Attack Postmortem: Fleshing Out the Facts",
+    "source": "substack",
+    "project": {
+     "slug": "thezvi"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "9521fc85-e351-431f-865d-6c79158e35d1",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-04T02:22:08.798842+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "3b811c3e-bd5f-489e-89e1-f01d291808f5",
+   "item": {
+    "url": "https://www.astralcodexten.com/p/college-ea-meetups-everywhere-times",
+    "title": "College EA Meetups Everywhere: Times & Places",
+    "source": "substack",
+    "project": {
+     "slug": "astralcodexten"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "31cbaa6a-5f54-432a-9a96-100dd51376f7",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-05T00:43:18.989754+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "922f930d-8321-4a30-8038-0613b64765ba",
+   "item": {
+    "url": "https://thezvi.substack.com/p/claude-fable-51-and-mythos-51-the",
+    "title": "Claude Fable 5.1 and Mythos 5.1: The System Card",
+    "source": "substack",
+    "project": {
+     "slug": "thezvi"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "38e8b6a0-cef7-41de-ba48-91d40515560b",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-05T00:54:20.820086+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "63fd1f27-73a0-4ca9-9dad-39e6a4b293c7",
+   "item": {
+    "url": "https://thezvi.substack.com/p/claude-fable-51-and-mythos-51-the",
+    "title": "Claude Fable 5.1 and Mythos 5.1: The System Card",
+    "source": "substack",
+    "project": {
+     "slug": "thezvi"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "62be63eb-585f-41b5-a449-d91537330103",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-06T01:56:40.595376+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "b67f30a2-497b-40e6-ae31-a1a2b88373e7",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=BYXbuik3dgA",
+    "title": "Elon Musk \u2013 \"In 36 months, the cheapest place to put AI will be space\u201d",
+    "source": "youtube",
+    "project": {
+     "slug": "dwarkeshpatel"
+    }
+   },
+   "status": "note",
+   "start_seconds": 8834
+  }
+ },
+ {
+  "id": "bca69669-01b1-4216-bf9d-c215e7c6cfb8",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-08T00:26:42.674274+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "f9e497cb-1c77-4cc1-b654-29426366a8bd",
+   "item": {
+    "url": "https://blog.andymasley.com/p/individual-ai-use-is-not-bad-for",
+    "title": "Using ChatGPT is not bad for the environment",
+    "source": "substack",
+    "project": {
+     "slug": "andymasley"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "f249e5bf-a709-4cd7-b438-7a78c03963bf",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-09T21:09:33.273928+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "48b33ed8-6cb5-43e5-a77a-59186d009f56",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=BAhcDwMGKYU",
+    "title": "Joe Rogan Experience #2550 - Rick Springfield",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 3049
+  }
+ },
+ {
+  "id": "d053b8c0-84ea-472c-b194-cf7a95571f48",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-09T21:48:02.829077+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "84f5f5da-c4d4-4bb8-96bb-920203830cd9",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=t6Jrww8kG24",
+    "title": "Joe Rogan Experience #2549 - Jared Diamond",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 386
+  }
+ },
+ {
+  "id": "ea1ece8a-4e69-4414-8da7-cd71ce7565fd",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-10T00:19:02.5171+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "c9fea4af-35d2-435d-9f5e-4755a144cf4b",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=t6Jrww8kG24",
+    "title": "Joe Rogan Experience #2549 - Jared Diamond",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1813
+  }
+ },
+ {
+  "id": "856226b7-804a-49b9-aa48-e72f1fecd732",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-10T00:36:20.231553+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "35e6d0af-c6da-48ad-a0c6-36c6d094bae7",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=t6Jrww8kG24",
+    "title": "Joe Rogan Experience #2549 - Jared Diamond",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 5434
+  }
+ },
+ {
+  "id": "fb721313-3492-4e70-be7b-7f66d05de5d1",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-10T00:37:14.039734+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "1bba0724-d270-416c-9bdb-318b4ee83c0f",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=t6Jrww8kG24",
+    "title": "Joe Rogan Experience #2549 - Jared Diamond",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 5631
+  }
+ },
+ {
+  "id": "a8332893-ecd1-43d1-87e4-61b7fc4922e0",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-10T01:43:58.678118+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "a9a2ee8a-0bad-4848-9d2c-fb9f6a562ba5",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=x04pr4QLl7o",
+    "title": "Joe Rogan Experience #2548 - Brian Simpson",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1554
+  }
+ },
+ {
+  "id": "2c74a3cc-006b-481e-8eac-c3b35886412e",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-10T01:49:52.736352+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "fc43b028-0f65-4d9c-acd1-79b739a098d3",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=x04pr4QLl7o",
+    "title": "Joe Rogan Experience #2548 - Brian Simpson",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 2856
+  }
+ },
+ {
+  "id": "41ed9503-24c2-4812-ba6d-7aaa015363c8",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-10T01:52:00.657666+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "c3de53ae-25b4-4c95-99c6-d1f2ab17f4f7",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=x04pr4QLl7o",
+    "title": "Joe Rogan Experience #2548 - Brian Simpson",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 6474
+  }
+ },
+ {
+  "id": "a00112c0-271b-4ffa-9272-a6bc10739c1b",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-11T00:44:02.045352+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "82e5529b-c9e1-4aba-91a5-87a4b4d55e76",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=Jw2lg96Wl1o",
+    "title": "Joe Rogan Experience #2552 - Ehsan Ahmad & Deric Poston",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 2342
+  }
+ },
+ {
+  "id": "929b0389-aca3-47a6-bdfe-2a7c1833b209",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-11T01:05:52.038505+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "a7624fd9-3488-4993-8c68-74c4a8dbd682",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=hSQ1iVqEZO4",
+    "title": "Joe Rogan Experience #2551 - Daniel Kokotajlo",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1091
+  }
+ },
+ {
+  "id": "98abf688-6411-47af-8397-076c811abd9b",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-11T01:08:28.259352+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "e73c8d2c-bbe7-4826-b302-1f2d76542dd4",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=hSQ1iVqEZO4",
+    "title": "Joe Rogan Experience #2551 - Daniel Kokotajlo",
+    "source": "youtube",
+    "project": {
+     "slug": "joerogan"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1514
+  }
+ },
+ {
+  "id": "adb08bb5-66fb-4494-b4da-83baa5391f9d",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-12T00:10:30.781907+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "10b927c9-8bb4-48fc-800d-7ea946880774",
+   "item": {
+    "url": "https://commonnotes.net/",
+    "title": "Common Notes \u2014 Community Notes on everything",
+    "source": "web",
+    "project": {
+     "slug": "web"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "af1214fc-75e7-4cbc-b2cd-e5350bf8ce5c",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-12T00:10:53.25844+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "2047cd0a-e767-48c8-ad04-e9ffe55ffe62",
+   "item": {
+    "url": "https://commonnotes.net/",
+    "title": "Common Notes \u2014 Community Notes on everything",
+    "source": "web",
+    "project": {
+     "slug": "web"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "b40453b4-8266-4db2-a522-d39ea5053686",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-12T00:19:42.294105+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "3ce016b3-3610-482e-9e1d-599d8a6f86bb",
+   "item": {
+    "url": "https://commonnotes.net/",
+    "title": "Common Notes \u2014 Community Notes on everything",
+    "source": "web",
+    "project": {
+     "slug": "web"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "ea1d6b3e-7b97-481c-a458-5c9b3d26ad5d",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-12T00:23:53.464518+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "fd4dbab5-f128-49cc-bba1-b73eaedb1fe6",
+   "item": {
+    "url": "https://commonnotes.net/",
+    "title": "Common Notes \u2014 Community Notes on everything",
+    "source": "web",
+    "project": {
+     "slug": "web"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "6844d189-66d2-475d-806b-4b42b9b25fb1",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-12T00:24:55.722136+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "f5126e9a-0428-483e-9d5f-8ec7b495b0ea",
+   "item": {
+    "url": "https://commonnotes.net/",
+    "title": "Common Notes \u2014 Community Notes on everything",
+    "source": "web",
+    "project": {
+     "slug": "web"
+    }
+   },
+   "status": "note",
+   "start_seconds": null
+  }
+ },
+ {
+  "id": "54bf5f1f-7aac-4f4c-b547-ec15cd9a1888",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-13T06:19:29.3595+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "12d48ffd-8c79-47b9-9946-371baf7cdc4f",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=KM_CcwF_NJM",
+    "title": "Why Frontier AI Labs Are Terrified of Open-Source | Ahmad Osman",
+    "source": "youtube",
+    "project": {
+     "slug": "mtsituation"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1272
+  }
+ },
+ {
+  "id": "a8775dd1-9c3e-4308-a044-da12943b8124",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-13T19:31:22.927665+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "cc164b48-e959-4e32-8c3b-542deaf07893",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=P1gPtNWjs_c",
+    "title": "What is the Worst Ice Type Pokemon?",
+    "source": "youtube",
+    "project": {
+     "slug": "wolfeyvgc"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1325
+  }
+ },
+ {
+  "id": "0b2143db-53b6-438a-b153-58c590846a2c",
+  "note": "",
+  "status": "published",
+  "author_id": null,
+  "created_at": "2026-09-13T19:31:49.196578+00:00",
+  "helpful_count": 0,
+  "somewhat_helpful_count": 0,
+  "not_helpful_count": 0,
+  "claim": {
+   "id": "9a72cdc6-8d86-4484-a6ae-07e5f600053e",
+   "item": {
+    "url": "https://www.youtube.com/watch?v=P1gPtNWjs_c",
+    "title": "What is the Worst Ice Type Pokemon?",
+    "source": "youtube",
+    "project": {
+     "slug": "wolfeyvgc"
+    }
+   },
+   "status": "note",
+   "start_seconds": 1309
+  }
+ }
+]

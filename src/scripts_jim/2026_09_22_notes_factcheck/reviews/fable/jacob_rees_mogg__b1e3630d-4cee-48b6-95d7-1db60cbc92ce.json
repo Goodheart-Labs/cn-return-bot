@@ -1,0 +1,18 @@
+{
+  "item_id": "b1e3630d-4cee-48b6-95d7-1db60cbc92ce",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "dd3049bc-db99-4edd-b33a-a700e646f9a7",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The words are Rees-Mogg's own, in his own voice, but hedged: 'It ceases to be mentioned in Erskine May I think beyond the 12th edition.' The note is right. I read both cited sections of the online Erskine May (the 25th edition of 2019, fetched via the Wayback Machine because the site blocks automated fetches): paragraph 9.10 says 'Usually, the motion for an Address is made in the form \"That an humble Address be presented to Her Majesty to ...\"', and paragraph 7.31 says 'Returns may be called for by an Order or an humble Address' and even cites humble addresses of December 2018 and March 2022. So the procedure is still fully described. But the correction is not substantive. The video is about Starmer's fall and who succeeds him; the humble address is a thirty-second aside explaining a procedure Angela Rayner used, and which edition of a procedural manual last mentioned it changes nothing about his point that it is an old procedure that forces the government to hand over papers. His own 'I think' already marks the edition number as a guess. The transcript spelling 'Urskin May' is only a mishearing of Erskine May and does not affect the reading. The first reviewer's reservation was exactly this smallness, and I settle it as disqualifying: sending a note to correct a hedged trivia point in an aside is pedantic, however much he would enjoy the procedural detail.",
+      "send_advice": null
+    }
+  ]
+}

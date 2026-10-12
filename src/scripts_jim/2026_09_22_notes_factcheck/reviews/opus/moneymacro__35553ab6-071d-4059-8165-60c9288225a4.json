@@ -1,0 +1,25 @@
+{
+  "item_id": "35553ab6-071d-4059-8165-60c9288225a4",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "dda368e4-d1c6-4b81-8445-c8391eb2445e",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The number is used in a list whose whole purpose is to show that the level of debt does not predict a default: \"Greece in 2012 at 172% debt to GDP? Venezuela in 2017 at 160%... Sri Lanka in 2022 at 114%\", followed by \"there's a big problem with how we typically look at government debt. That is we do not know how much is too much. There isn't even a clear pattern.\" Moving Venezuela from 160 to 134 per cent does not weaken that point, it strengthens it, so no viewer comes away with a belief that matters. The correction is also shakier than it sounds. Both cited pages trace back to the same series, the World Bank cross-country fiscal-space database, so they are one source and not two, and the IMF's own data mapper carries no debt-to-GDP figure for Venezuela at all. That same series prints 336.6 per cent for 2020 and 164.3 per cent for 2024, swings driven by a collapsing dollar GDP denominator rather than by borrowing, which is exactly why no single figure for Venezuela is authoritative. Telling an economist his Venezuela ratio is off by 26 points, in a video arguing that the ratio is not the thing to look at, is the definition of pedantic."
+    },
+    {
+      "note_id": "84278323-0283-45a5-a2a3-0dc2f9ed35e5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is the author speaking in his own voice in the opening line, and the underlying facts check out independently: the FY2027 request is $1.5 trillion in total defence resources, described as a 42 per cent increase by the Department of War and a 44 per cent increase by the White House fact sheet, and confirmed by CSIS, IISS, FDD and CBS. On any baseline the request is well short of a doubling, and the overstatement is roughly a factor of two on a spending number in a video that is entirely about fiscal arithmetic, so the correction is not trivial. What gives me pause is the baseline the note picks. The 42 to 44 per cent is measured against a FY2026 topline that already contained a large Trump increase to about $1 trillion, whereas against the last pre-Trump enacted level of roughly $850 to $900 billion the request is about a 70 to 75 per cent rise, which is much closer to the author's loose \"double\" than the note lets on. The note never mentions that, so a careful economist could fairly answer that he was speaking informally and that the note picked the baseline that made him look worst. I would soften it to state the dollar figures and both baselines before sending it."
+    }
+  ]
+}

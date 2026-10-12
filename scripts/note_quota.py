@@ -126,9 +126,9 @@ def main():
     pub   = fetch("note_ratings_from_public_dump", "note_id,helpful_count,somewhat_helpful_count,not_helpful_count")
     comp  = fetch("competing_notes", "our_note_id",
                   "&current_status=eq.CURRENTLY_RATED_HELPFUL&our_note_id=not.is.null",
-                  order="our_note_id.asc")
+                  order="our_note_id.asc,id.asc")
     ann   = fetch("review_dashboard_annotations", "target_id,seen,updated_at",
-                  "&source=eq.production", order="updated_at.asc")
+                  "&source=eq.production", order="updated_at.asc,id.asc")
 
     pub_by_id = {r["note_id"]: r for r in pub}
     lost_ids  = {c["our_note_id"] for c in comp}

@@ -39,6 +39,14 @@ The [Signal group bot](scripts/signal-bot/README.md) checks pasted tweets, draft
 discusses notes, and submits the current draft when someone says “yes post”.
 Run `bun src/signal-bot/main.ts --help` for local usage and setup requirements.
 
+If the Community Notes account cannot read individual tweets, configure a separate
+reader with `X_READ_API_KEY`, `X_READ_API_KEY_SECRET`, `X_READ_ACCESS_TOKEN`, and
+`X_READ_ACCESS_TOKEN_SECRET`. Set all four together. Direct tweet lookups use that
+reader; Community Notes requests use the standard `X_*` writer keys. A partial
+reader configuration fails instead of mixing credentials. The deployed Signal
+worker reads its server environment file, so changing your Mac's `.env` alone does
+not update the worker.
+
 [CLAUDE.md](CLAUDE.md) covers repository operations, including Common Notes ingestion,
 the extension, and the scraper.
 

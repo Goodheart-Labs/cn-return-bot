@@ -4,23 +4,11 @@
  * gallery-dl complements yt-dlp and is focused on images. The source verifier
  * falls back to it when yt-dlp fails on a media-host URL. It is also the first
  * choice for hosts that only serve galleries, such as Reddit, Tumblr and Imgur.
- *
- * The metadata gallery-dl returns differs from one extractor to the next and is
- * shallow. We copy a small part of it onto the YtDlpMetadata shape, so the code
- * downstream that formats verifier output does not have to know which tool
- * produced the result.
  */
 
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-
-import type { YtDlpMetadata } from "./ytDlpDownload";
-
-export interface GalleryDlResult {
-  meta: YtDlpMetadata;
-  filePath: string | null;
-}
 
 const GALLERY_DL_TIMEOUT_MS = 120_000;
 
@@ -59,7 +47,7 @@ export function normalizeUrlForGalleryDl(url: string): string {
  * yield several files, but one is enough to feed Gemini. This throws when
  * gallery-dl fails and when it produces no files at all.
  */
-export function downloadWithGalleryDl(url: string, outputDir: string): GalleryDlResult {
+export function downloadWithGalleryDl(url: string, outputDir: string): string {
   const normalizedUrl = normalizeUrlForGalleryDl(url);
   try {
     execSync(
@@ -78,15 +66,5 @@ export function downloadWithGalleryDl(url: string, outputDir: string): GalleryDl
   }
   // Sorting makes "the first file" mean the same thing on every run.
   files.sort();
-  const filePath = path.join(outputDir, files[0]!);
-
-  // gallery-dl does not write rich metadata by default. The verifier reads the
-  // title, uploader, description and timestamp fields when they are there. We fill
-  // in only what the URL and the downloaded file name give us.
-  const meta: YtDlpMetadata = {
-    id: path.basename(filePath, path.extname(filePath)),
-    title: "",
-    webpage_url: normalizedUrl,
-  };
-  return { meta, filePath };
+  return path.join(outputDir, files[0]!);
 }

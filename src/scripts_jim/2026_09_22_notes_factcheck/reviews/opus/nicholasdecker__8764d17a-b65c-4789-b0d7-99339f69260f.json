@@ -1,0 +1,25 @@
+{
+  "item_id": "8764d17a-b65c-4789-b0d7-99339f69260f",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "a49ea74e-84a0-41b6-94ac-7453fdcd27ce",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Decker states the number flatly as his own: \"around 35% of children in Uttar Pradesh go to private schools.\" The official school census contradicts that by a wide margin. The UDISE+ analysis the note cites puts private unaided enrolment in Uttar Pradesh at 44.27% in 2021-22 and 50.12% in 2024-25, and I found independent reporting of the same figure (Economic Times, July 2026: \"51.7% of Uttar Pradesh students enrolled in pvt schools\"). The 35% figure looks like the all-India rural ASER number, which was 33.2% for ages 6-14 in 2024, applied to a state whose private share is far above the national average. His parenthetical defence, \"(I am confident that higher figures are the result of people misreporting where they actually attend school)\", is about households answering survey questions, and UDISE+ is filled in by schools, not households. The known reporting bias in UDISE+ runs the other way too: children are commonly kept on government school rolls for benefits while attending private schools, which inflates the government count and so understates the private share. The one thing that gives me pause is that the essay is set in a village and the state-wide figure includes urban Uttar Pradesh, where private schooling is more common, so the rural-only gap is smaller than 15 points. He may also simply dig in, since he wrote the parenthetical precisely to pre-empt this note."
+    },
+    {
+      "note_id": "aaf8ce54-d55e-40e9-b77a-babc6176164f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note compares national figures against a claim about rural India and gets the answer backwards. Decker's sentence follows \"In 2015, 55% of individuals reported open defecation in the countryside\", so the 28% is a rural rate. NFHS-5 (2019-21) put rural households without a toilet at about 28.7%, which is essentially the number he used, and the Ideas for India review of that survey reports rural open defecation of roughly 27% nationally and 34% in the focus states including Uttar Pradesh. The note's counter-figures, 19% from NFHS-5 and 11% or 7% from the WHO/UNICEF monitoring programme, are all-India numbers that mix in urban India, where open defecation is close to zero. The note's closing sentence, \"The 28% figure reflects roughly 2015 levels\", is plainly wrong: the author's own preceding sentence gives 55% for rural 2015, and the national rate then was 39%. On top of that, the research literature he is drawing on argues the survey figures understate the problem, with the same Ideas for India piece estimating that about half of rural people in the northern focus states still defecated in the open in 2019-21. So his number is, if anything, conservative. Sending this would hand him an easy and public correction of us."
+    }
+  ]
+}

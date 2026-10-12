@@ -12,7 +12,7 @@
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { getSupabaseClient } from "../../api/supabaseClient";
-import { fetchAllRows } from "../../api/paging";
+import { fetchAllRows } from "../../everything-core/paging";
 
 const OUT_DIR = join("src/scripts_jim/2026_05_31_gemini_cheap_bot_unhelpful");
 

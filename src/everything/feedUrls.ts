@@ -24,6 +24,25 @@ export function canonicalSubstackFeed(url: string): CanonicalFeed | null {
   return { project_slug: sub, feed_type: "substack", feed_url: `https://${sub}.substack.com` };
 }
 
+/** The canonical feed of the publication a page on a *.substack.com subdomain
+ *  belongs to, or null for any other page. A post on a custom domain, a
+ *  YouTube video or a forum post does not name its creator in its URL. */
+export function substackFeedOfPage(pageUrl: string): CanonicalFeed | null {
+  const m = pageUrl.match(/^https:\/\/([\w-]+)\.substack\.com(?:[/?#]|$)/i);
+  return m ? canonicalSubstackFeed(`https://${m[1]}.substack.com`) : null;
+}
+
+/** The publication a Substack page belongs to, read from the page's HTML.
+ *  Every Substack page embeds its publication data, subdomain included, as
+ *  escaped JSON. This is how a post on a custom domain reveals its
+ *  *.substack.com form. Null for a page that is not Substack. The extension
+ *  keeps its own copy of the pattern in readSubstackPublicationFromPage,
+ *  because that function runs inside the page and cannot import. */
+export function substackFeedInPageHtml(html: string): CanonicalFeed | null {
+  const subdomain = html.match(/subdomain\\?":\\?"([\w-]+)\\?"/)?.[1];
+  return subdomain ? canonicalSubstackFeed(`https://${subdomain.toLowerCase()}.substack.com`) : null;
+}
+
 /** The canonical feed for a YouTube channel URL (@handle or /channel/id), or
  *  null when the URL is not one. The channel id's casing is preserved,
  *  because /channel/UC… ids are case-sensitive. */

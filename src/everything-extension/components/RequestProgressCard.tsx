@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { progressLines, type RequestProgress } from "../../everything-shared/requestProgress";
-import { IconButton } from "../../everything-web/src/components/IconButton";
+import { useRef, useState } from "react";
+import { progressLines, type RequestProgress } from "@cn/core/requestProgress";
+import { cardVariants } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
+import { IconButton } from "@cn/ui/IconButton";
+import { CloseIcon } from "@cn/ui/icons";
+import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 
 /** How long the finished card lingers before fading out on its own. An opened
  *  card holds it, so a reader reading the count never loses it mid-look. */
@@ -11,10 +15,9 @@ const FADE_MS = 700;
  *  legible over whatever the page puts behind it, so it has no outline of its
  *  own and only a soft shadow. Together with the trackless spinner that leaves
  *  exactly one circle on screen: the turning arc. */
-const BADGE = "flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md dark:bg-gray-900";
+const BADGE = "flex h-8 w-8 items-center justify-center rounded-full bg-surface shadow-raised";
 
-const EXPANDED_CARD =
-  "flex cursor-pointer items-center gap-3 rounded-xl bg-white p-3 shadow-lg ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10";
+const EXPANDED_CARD = cn(cardVariants({ elevation: "floating" }), "flex cursor-pointer items-center gap-3 p-3");
 
 /** How far the pointer may travel between pressing and releasing and still
  *  count as a click. Anything further is a drag, which is how a reader selects
@@ -25,20 +28,20 @@ const DRAG_SLOP_PX = 4;
  *  and a single character once it stopped. */
 function ProgressGlyph({ progress }: { progress: RequestProgress }) {
   if (progress.kind === "done") {
-    return <span className="text-base font-semibold text-green-700 dark:text-green-400">✓</span>;
+    return <span className="text-base font-semibold text-positive">✓</span>;
   }
   if (progress.kind === "failed") {
-    return <span className="text-base font-semibold text-red-600 dark:text-red-400">!</span>;
+    return <span className="text-base font-semibold text-negative">!</span>;
   }
   if (progress.kind === "unavailable") {
-    return <span className="text-base font-semibold text-gray-400 dark:text-gray-500">?</span>;
+    return <span className="text-base font-semibold text-fg-subtle">?</span>;
   }
   // The unfilled part of the ring is transparent rather than grey, so a reader
   // sees one turning arc instead of an arc drawn on top of a second circle.
   return (
     <span
       aria-hidden
-      className="h-5 w-5 animate-spin rounded-full border-2 border-transparent border-t-blue-600 dark:border-t-blue-400"
+      className="h-5 w-5 animate-spin rounded-full border-2 border-transparent border-t-link"
     />
   );
 }
@@ -57,22 +60,10 @@ export function RequestProgressCard(props: {
 }) {
   const { progress, onJump, onDismiss } = props;
   const [expanded, setExpanded] = useState(false);
-  const [fading, setFading] = useState(false);
-
   // The finished card fades out by itself after a moment. The timer only runs
   // while the card is collapsed, so an opened readout stays until it is closed
   // or dismissed.
-  useEffect(() => {
-    if (progress.kind !== "done" || expanded) return;
-    const linger = setTimeout(() => setFading(true), DONE_LINGER_MS);
-    return () => clearTimeout(linger);
-  }, [progress.kind, expanded]);
-
-  useEffect(() => {
-    if (!fading) return;
-    const gone = setTimeout(onDismiss, FADE_MS);
-    return () => clearTimeout(gone);
-  }, [fading, onDismiss]);
+  const { fading } = useAutoDismiss({ dwellMs: DONE_LINGER_MS, fadeMs: FADE_MS, paused: progress.kind !== "done" || expanded, onDismiss });
 
   const lines = progressLines(progress);
   const jumpable = progress.kind === "done" && progress.notes > 0 && onJump;
@@ -93,6 +84,9 @@ export function RequestProgressCard(props: {
       style={{ transitionDuration: `${FADE_MS}ms` }}
     >
       {expanded ? (
+        // The whole card collapses on a click as a convenience for the mouse.
+        // Keyboard users have the glyph button inside it, which does the same.
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
           className={EXPANDED_CARD}
           onPointerDown={(event) => {
@@ -106,7 +100,7 @@ export function RequestProgressCard(props: {
           <button type="button" aria-label="Hide the details" className="flex h-5 w-5 items-center justify-center">
             <ProgressGlyph progress={progress} />
           </button>
-          <div className="min-w-[8rem] text-sm text-gray-900 dark:text-gray-100">
+          <div className="min-w-[8rem] text-sm text-fg">
             {jumpable ? (
               <button
                 type="button"
@@ -133,7 +127,7 @@ export function RequestProgressCard(props: {
               onDismiss();
             }}
           >
-            ✕
+            <CloseIcon size={14} aria-hidden />
           </IconButton>
         </div>
       ) : (
@@ -141,10 +135,7 @@ export function RequestProgressCard(props: {
           type="button"
           aria-label="Show what the requested check is doing"
           className={BADGE}
-          onClick={() => {
-            setExpanded(true);
-            setFading(false);
-          }}
+          onClick={() => setExpanded(true)}
         >
           <ProgressGlyph progress={progress} />
         </button>

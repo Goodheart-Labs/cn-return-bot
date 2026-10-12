@@ -1,0 +1,18 @@
+{
+  "item_id": "b11143ac-fe2b-4ed7-a7c4-265f4470a3ea",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e5f49655-2c44-400d-8a7d-f6cef2c9efaa",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "This is Liron's own fundraising page, signed \"Liron and Ori\", and the line \"Moshe Vardi (Turing Award)\" sits in his own list of past guests under \"We Engage Top Thinkers\". Nobody is being quoted. Vardi has never won the ACM A.M. Turing Award: Wikipedia's award list for him has the Goedel Prize, the Kanellakis Award, the Knuth Prize and others but no Turing Award, and his own Rice homepage mentions Turing only for a Turing centenary event. I confirmed the X post through Twitter's syndication endpoint: on 18 September 2020 Vardi, quoting Yann LeCun's post about 24 Turing laureates endorsing Biden, wrote exactly \"I would have signed the letter too, but I don't have a Turing Award :-)(\". The ACM award page answers with a Cloudflare block from here, but the other sources settle the point without it. The error is not a one-off: Liron repeats it in his State of the Show 2026 post (\"Turing Award winner Moshe Vardi\") and in the podcast blurb (\"I've debated AI doom with Nobel Prize and Turing Award winners\"), so the credential is part of how the show is marketed to donors. It is a plain factual slip he can fix in a word, with no opinion of his at stake."
+    }
+  ]
+}

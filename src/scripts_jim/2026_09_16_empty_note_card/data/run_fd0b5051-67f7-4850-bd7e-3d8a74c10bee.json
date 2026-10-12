@@ -1,0 +1,282 @@
+{
+ "id": "fd0b5051-67f7-4850-bd7e-3d8a74c10bee",
+ "claim_id": "a7624fd9-3488-4993-8c68-74c4a8dbd682",
+ "bot_name": "simple-bot",
+ "outcome": "candidate",
+ "outcome_reason": null,
+ "final_stage": "candidate",
+ "ab_test_picks": {
+  "bot": "simple-bot",
+  "feed_size": "small",
+  "search_claim": "on",
+  "topic_filter": "on",
+  "misinfo_topic": "none",
+  "author_history": "on_with_unhelpful",
+  "note_prefilter": "off",
+  "ranking_policy": "flags_then_eval",
+  "timing_treatment": "context",
+  "simple_bot_search": "sonnet5-native",
+  "simple_bot_writer": "sonnet5",
+  "misinfo_monitoring": "no",
+  "pangram_monitoring": "no",
+  "verifier_citations": "on",
+  "simple_bot_verifier": "gemini-flash",
+  "verifier_claim_based": "classic",
+  "eval_submit_threshold": "-3",
+  "materiality_treatment": "writer_central",
+  "verifier_media_sources": "accept"
+ },
+ "bot_config": null,
+ "logs": {
+  "bot": {
+   "id": "simple-bot",
+   "picks": {
+    "bot": "simple-bot",
+    "feed_size": "small",
+    "search_claim": "on",
+    "topic_filter": "on",
+    "misinfo_topic": "none",
+    "author_history": "on_with_unhelpful",
+    "note_prefilter": "off",
+    "ranking_policy": "flags_then_eval",
+    "timing_treatment": "context",
+    "simple_bot_search": "sonnet5-native",
+    "simple_bot_writer": "sonnet5",
+    "misinfo_monitoring": "no",
+    "pangram_monitoring": "no",
+    "verifier_citations": "on",
+    "simple_bot_verifier": "gemini-flash",
+    "verifier_claim_based": "classic",
+    "eval_submit_threshold": "-3",
+    "materiality_treatment": "writer_central",
+    "verifier_media_sources": "accept"
+   }
+  },
+  "eval": {
+   "error": "Request failed with status code 403",
+   "advisory": false,
+   "threshold": -3
+  },
+  "note": {
+   "url": "",
+   "text": "",
+   "status": "CORRECTION WITH TRUSTWORTHY CITATION",
+   "charCount": 0
+  },
+  "costs": {
+   "total": {
+    "cost": 0.218292498,
+    "input_tokens": 139723,
+    "output_tokens": 5549
+   },
+   "groups": {
+    "inputs": {
+     "cost": 0.0115052,
+     "input_tokens": 3946,
+     "output_tokens": 1432
+    },
+    "search": {
+     "cost": 0.1923994,
+     "input_tokens": 129490,
+     "output_tokens": 2621
+    },
+    "note_writer": {
+     "cost": 0.010078,
+     "input_tokens": 2574,
+     "output_tokens": 493
+    },
+    "topic_filter": {
+     "cost": 0.000106398,
+     "input_tokens": 496,
+     "output_tokens": 138
+    },
+    "source_verifier": {
+     "cost": 0.0035035,
+     "input_tokens": 2069,
+     "output_tokens": 823
+    },
+    "timingExtractor": {
+     "cost": 0.0007,
+     "input_tokens": 1148,
+     "output_tokens": 42
+    }
+   },
+   "entries": [
+    {
+     "cost": 0.0065052,
+     "name": "inputs.comments",
+     "tools": [
+      {
+       "cost": 0.005,
+       "name": "x_search",
+       "input_tokens": 0,
+       "output_tokens": 0
+      }
+     ],
+     "input_tokens": 3946,
+     "output_tokens": 1432
+    },
+    {
+     "cost": 0.000106398,
+     "name": "topic_filter",
+     "tools": [],
+     "input_tokens": 496,
+     "output_tokens": 138
+    },
+    {
+     "cost": 0.1923994,
+     "name": "search",
+     "tools": [],
+     "input_tokens": 129490,
+     "output_tokens": 2621
+    },
+    {
+     "cost": 0.0007,
+     "name": "timingExtractor",
+     "tools": [],
+     "input_tokens": 1148,
+     "output_tokens": 42
+    },
+    {
+     "cost": 0.010078,
+     "name": "note_writer.1",
+     "tools": [],
+     "input_tokens": 2574,
+     "output_tokens": 493
+    },
+    {
+     "cost": 0.0035035,
+     "name": "source_verifier.turn.1",
+     "tools": [],
+     "input_tokens": 2069,
+     "output_tokens": 823
+    }
+   ]
+  },
+  "tweet": {
+   "post": {
+    "id": "dfa3e661-4",
+    "text": "Highlighted claim from Transcript: Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site.\nSurrounding context: Turns out it was it was totally accurate. Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site. I mean, they were just just randomly trying to figure out where the [ __ ] this thing was. And they said, \"Let's try this.\"",
+    "media": [],
+    "author_id": "unknown",
+    "created_at": "2026-09-09"
+   },
+   "type": "original",
+   "recencyHours": 49.07599638888889
+  },
+  "inputs": {
+   "author": {
+    "noteHistory": {
+     "helpfulNotes": [],
+     "totalHelpful": 0,
+     "totalUnhelpful": 0,
+     "unhelpfulNotes": []
+    }
+   },
+   "comments": {
+    "text": "- @user1: This sounds like classic remote viewing hype from the Stargate days. Engagement: 45 likes, 12 replies\n- @user2: Totally accurate within 1-2km? That's basically guessing in Siberia. Engagement: 32 likes, 8 replies\n- @user3: Love how they always claim \"it was totally accurate\" without any proof. Engagement: 67 likes, 15 replies\n- @user4: Remote viewing Soviet crashes? Sounds more like Cold War propaganda. Engagement: 28 likes, 5 replies\n- @user5: The transcript is wild, but where's the actual evidence from the Russians? Engagement: 51 likes, 9 replies\n- @user6: Another Stargate story that gets repeated without verification. Engagement: 19 likes, 3 replies\n- @user7: Within a kilometer in Siberia is still a huge area lol. Engagement: 40 likes, 7 replies"
+   },
+   "mediaMadeWithAiLabel": false
+  },
+  "timing": {
+   "live": false,
+   "eventTimeUtc": null,
+   "extractorWhy": "The post discusses a historical anecdote from the Stargate Project (active 1978\u20131995) rather than a specific recent event.",
+   "hoursEventToPost": null
+  },
+  "writer": {
+   "centralClaim": true
+  },
+  "outcome": {
+   "reason": "",
+   "result": "candidate",
+   "finalStage": "candidate"
+  },
+  "materiality": {},
+  "sourceCheck": {
+   "result": "YES"
+  },
+  "topic_filter": {
+   "verdict": {
+    "blocked": false,
+    "reasoning": "The post discusses a remote viewing story about a downed Soviet aircraft in Siberia, with no mention of Charlie Kirk, Tyler Robinson, Candace Owens, or Mitch McConnell."
+   },
+   "messages": {
+    "0": {
+     "model": "deepseek/deepseek-v4-flash",
+     "userMessage": "Current date: 2026-09-11\nCurrent time: 01:04 UTC\nTweet posted: 2026-09-09\nPost age: 49.1 hours\n\n## Post\n\nHighlighted claim from Transcript: Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site.\nSurrounding context: Turns out it was it was totally accurate. Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site. I mean, they were just just randomly trying to figure out where the [ __ ] this thing was. And they said, \"Let's try this.\"\n\n## Comments and replies\n\n- @user1: This sounds like classic remote viewing hype from the Stargate days. Engagement: 45 likes, 12 replies\n- @user2: Totally accurate within 1-2km? That's basically guessing in Siberia. Engagement: 32 likes, 8 replies\n- @user3: Love how they always claim \"it was totally accurate\" without any proof. Engagement: 67 likes, 15 replies\n- @user4: Remote viewing Soviet crashes? Sounds more like Cold War propaganda. Engagement: 28 likes, 5 replies\n- @user5: The transcript is wild, but where's the actual evidence from the Russians? Engagement: 51 likes, 9 replies\n- @user6: Another Stargate story that gets repeated without verification. Engagement: 19 likes, 3 replies\n- @user7: Within a kilometer in Siberia is still a huge area lol. Engagement: 40 likes, 7 replies",
+     "systemPrompt": "You decide whether an X post is about any of these topics:\n\n- the assassination of Charlie Kirk\n- Tyler Robinson\n- Candace Owens (posts about her or authored by her)\n- the health or death of Mitch McConnell\n\nReturn JSON with two fields:\n- reasoning: one sentence, written BEFORE the verdict.\n- blocked: boolean. True if the post is about (or authored by) any listed topic."
+    },
+    "1": {
+     "content": {
+      "blocked": false,
+      "reasoning": "The post discusses a remote viewing story about a downed Soviet aircraft in Siberia, with no mention of Charlie Kirk, Tyler Robinson, Candace Owens, or Mitch McConnell."
+     }
+    }
+   }
+  },
+  "note_writer_steps": {
+   "search": {
+    "messages": {
+     "0": {
+      "userMessage": "Current date: 2026-09-11\nCurrent time: 01:04 UTC\nTweet posted: 2026-09-09\nPost age: 49.1 hours\n\n## Post\n\nHighlighted claim from Transcript: Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site.\nSurrounding context: Turns out it was it was totally accurate. Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site. I mean, they were just just randomly trying to figure out where the [ __ ] this thing was. And they said, \"Let's try this.\"\n\n## Comments and replies\n\n- @user1: This sounds like classic remote viewing hype from the Stargate days. Engagement: 45 likes, 12 replies\n- @user2: Totally accurate within 1-2km? That's basically guessing in Siberia. Engagement: 32 likes, 8 replies\n- @user3: Love how they always claim \"it was totally accurate\" without any proof. Engagement: 67 likes, 15 replies\n- @user4: Remote viewing Soviet crashes? Sounds more like Cold War propaganda. Engagement: 28 likes, 5 replies\n- @user5: The transcript is wild, but where's the actual evidence from the Russians? Engagement: 51 likes, 9 replies\n- @user6: Another Stargate story that gets repeated without verification. Engagement: 19 likes, 3 replies\n- @user7: Within a kilometer in Siberia is still a huge area lol. Engagement: 40 likes, 7 replies",
+      "systemPrompt": "You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.\n\n## What you get\nA verbatim excerpt highlighted from a podcast, interview, or article \u2014 the specific claim to check \u2014 plus the surrounding passage for context. The message shows them as:\n  Highlighted claim from Transcript: <verbatim excerpt>   (or \"Highlighted claim from Article:\")\n  Surrounding context: <surrounding passage>\nSome claims rest on an image instead of (or in addition to) text. A claim with no highlighted text comes from an image; since one image can carry several claims, a \"Claim: <restatement>\" line then names the one to check \u2014 judge only that claim against the described image. Judge whether the claim is factually correct.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports \u2014 write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- correction_needed: true only if the claim contains a clear factual error supported by direct contradicting evidence.\n\n## When NOT to set correction_needed = true\n- Opinions, predictions, or subjective characterizations\n- Claims that are factually correct, or approximations that are directionally right\n- When you can't find strong contradicting evidence\n\n## Sourcing rules\n- Include what each source says that's relevant.\n- If no correction is needed, the findings can be brief \u2014 just explain why.\n\nRespond with strict JSON only matching: { findings: string, correction_needed: boolean }"
+     },
+     "1": {
+      "content": {
+       "findings": "The claim describes what is almost certainly the most famous Stargate Project remote-viewing anecdote \u2014 the location of a downed Soviet aircraft using psychic Rosemary Smith \u2014 but the podcast speaker misstates the location. Multiple independent sources confirm the crash was in Africa, not Siberia. One account states the crash occurred after \"the crash of a Soviet Tupelov TU-22 spy plane in Africa. We knew the aircraft went down in the Zaire (The Democratic Republic of Congo) but had no idea exactly where\" (https://sofrep.com/news/the-stargate-project-how-the-cia-used-mind-control-and-telepathy-to-spy-on-our-enemies/). A separate source similarly notes \"Rosemary Smith was able to accurately pinpoint the area where a Soviet aircraft crashed in Zaire, today the Democratic Republic of Congo\" (https://www.warhistoryonline.com/war-articles/project-stargate.html). Another account places the crash in a neighboring country, stating \"the plane went down in the Central African Republic\" and that Smith \"was given a map of Africa\" (https://www.wearethemighty.com/mighty-history/us-military-hired-a-psychic/). Former President Jimmy Carter, who publicly discussed this episode, also placed it in Zaire/Central Africa, not Siberia (http://ersby.blogspot.com/2019/10/remote-viewing-crashed-aircraft-in.html). The accuracy detail cited (within a few miles/kilometers) is roughly consistent with reporting that Smith's map 'pinpointed where this aircraft was, within a few miles' (https://taskandpurpose.com/history/5-true-stories-militarys-paranormal-activity-research/), so that part of the claim is not far off.\n\nThere is a genuine, separate Stargate story that does involve Siberia \u2014 remote viewer Pat Price's description of a secret Soviet missile installation there \u2014 but that involved a missile base, not a downed aircraft (https://innerknowing.substack.com/p/the-cias-remote-viewing-program). It appears the speaker conflated these two distinct, well-known Stargate anecdotes: the African downed-aircraft case and the Siberian missile-base case, mistakenly attributing the Siberia location to the aircraft story. This is a clear factual error about the crash's location, though the speaker did hedge with 'Was it Siberia?' showing some uncertainty.",
+       "correction_needed": true
+      }
+     }
+    }
+   },
+   "note_writer": {
+    "attempts": {
+     "0": {
+      "messages": [
+       {
+        "role": "system",
+        "content": "You are a Community Notes writer for X/Twitter. You receive the original post context and research findings from a prior search step. Your job: write exactly one community note that disputes a specific factual claim in the post \u2014 or return an empty note if you cannot find one to dispute.\n\n## The one rule\n\n**Your note must DISPUTE a claim that one of the post's central arguments rests on.** First decide what the post is arguing: the point a reader is meant to take away. Then look for a checkable claim that argument depends on, such that if the claim is false the argument falls. If the research findings contradict such a claim, dispute it. Otherwise return an empty note \u2014 do NOT write a note that:\n- Corrects a date, number, name, or other detail the argument would survive without\n- Disputes an opinion, prediction, joke, or framing rather than a checkable fact\n- Restates the tweet's claim in different words\n- Adds adjacent context that doesn't contradict anything (e.g. tweet says X happened, you say X was later partially reversed \u2014 that's not a dispute)\n- Cites a source that *agrees* with the tweet as if you're correcting it\n- Asserts specifics (locations, dates, who-said-what, URLs) that don't appear verbatim in the findings \u2014 never fabricate\n\nEmpty note means: `note_text` = \"\" and `sources` = []. This is the right call whenever the post's argument would still stand after your correction.\n\n## Note style\n- Lead with what IS true, not \"The post claims...\" or \"This is false\"\n  GOOD: \"This video was recorded in January 2024 during a murder trial.\"\n  BAD: \"The post falsely claims that...\"\n- One key fact. Pick the single strongest piece of evidence.\n- 1-2 sentences before the URL. Short and direct.\n- No hedging: don't say \"appears to\", \"seems to\", \"potentially\"\n- Neutral, bridging tone: people who agree AND disagree with the post should both find it fair\n- No sarcasm, no \"gotcha\" framing, no partisan language\n- Prefer primary sources (official sites, X posts, Wikipedia, YouTube originals) over news articles\n\n## Character limit\n- Target: 240-260 non-URL characters\n- Hard max: 280 non-URL characters (URLs are shortened by X and count as 1 character each)\n- Be concise. Every word must earn its place.\n\n## Source rules\n- Every source must DIRECTLY support your specific correction (not just general background)\n- Don't add redundant sources\n- Tweets or tweet replies can be valid sources\n- Pull source URLs from the research findings \u2014 do not invent URLs"
+       },
+       {
+        "role": "user",
+        "content": "Current date: 2026-09-11\nCurrent time: 01:04 UTC\nTweet posted: 2026-09-09\nPost age: 49.1 hours\n\n## Post\n\nHighlighted claim from Transcript: Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site.\nSurrounding context: Turns out it was it was totally accurate. Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site. I mean, they were just just randomly trying to figure out where the [ __ ] this thing was. And they said, \"Let's try this.\"\n\n## Comments and replies\n\n- @user1: This sounds like classic remote viewing hype from the Stargate days. Engagement: 45 likes, 12 replies\n- @user2: Totally accurate within 1-2km? That's basically guessing in Siberia. Engagement: 32 likes, 8 replies\n- @user3: Love how they always claim \"it was totally accurate\" without any proof. Engagement: 67 likes, 15 replies\n- @user4: Remote viewing Soviet crashes? Sounds more like Cold War propaganda. Engagement: 28 likes, 5 replies\n- @user5: The transcript is wild, but where's the actual evidence from the Russians? Engagement: 51 likes, 9 replies\n- @user6: Another Stargate story that gets repeated without verification. Engagement: 19 likes, 3 replies\n- @user7: Within a kilometer in Siberia is still a huge area lol. Engagement: 40 likes, 7 replies\n\n## Research findings\n\nThe claim describes what is almost certainly the most famous Stargate Project remote-viewing anecdote \u2014 the location of a downed Soviet aircraft using psychic Rosemary Smith \u2014 but the podcast speaker misstates the location. Multiple independent sources confirm the crash was in Africa, not Siberia. One account states the crash occurred after \"the crash of a Soviet Tupelov TU-22 spy plane in Africa. We knew the aircraft went down in the Zaire (The Democratic Republic of Congo) but had no idea exactly where\" (https://sofrep.com/news/the-stargate-project-how-the-cia-used-mind-control-and-telepathy-to-spy-on-our-enemies/). A separate source similarly notes \"Rosemary Smith was able to accurately pinpoint the area where a Soviet aircraft crashed in Zaire, today the Democratic Republic of Congo\" (https://www.warhistoryonline.com/war-articles/project-stargate.html). Another account places the crash in a neighboring country, stating \"the plane went down in the Central African Republic\" and that Smith \"was given a map of Africa\" (https://www.wearethemighty.com/mighty-history/us-military-hired-a-psychic/). Former President Jimmy Carter, who publicly discussed this episode, also placed it in Zaire/Central Africa, not Siberia (http://ersby.blogspot.com/2019/10/remote-viewing-crashed-aircraft-in.html). The accuracy detail cited (within a few miles/kilometers) is roughly consistent with reporting that Smith's map 'pinpointed where this aircraft was, within a few miles' (https://taskandpurpose.com/history/5-true-stories-militarys-paranormal-activity-research/), so that part of the claim is not far off.\n\nThere is a genuine, separate Stargate story that does involve Siberia \u2014 remote viewer Pat Price's description of a secret Soviet missile installation there \u2014 but that involved a missile base, not a downed aircraft (https://innerknowing.substack.com/p/the-cias-remote-viewing-program). It appears the speaker conflated these two distinct, well-known Stargate anecdotes: the African downed-aircraft case and the Siberian missile-base case, mistakenly attributing the Siberia location to the aircraft story. This is a clear factual error about the crash's location, though the speaker did hedge with 'Was it Siberia?' showing some uncertainty."
+       }
+      ],
+      "response": {
+       "sources": [],
+       "note_text": ""
+      },
+      "charCount": 0
+     }
+    }
+   },
+   "source_verifier": {
+    "turn": {
+     "1": {
+      "messages": {
+       "0": {
+        "userMessage": "## Context\nCurrent date (UTC): 2026-09-11T01:05:35.580Z\n\n## Proposed community note\n\n\n## Note's cited sources (verify these)\n\n\n## Original post (background \u2014 not a source)\nCurrent date: 2026-09-11\nCurrent time: 01:04 UTC\nTweet posted: 2026-09-09\nPost age: 49.1 hours\n\n## Post\n\nHighlighted claim from Transcript: Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site.\nSurrounding context: Turns out it was it was totally accurate. Um, another one, a remote viewer located a downed Soviet aircraft, like an experimental aircraft that crashed uh in a very specific area. I think it was Siberia. Was it Siberia? Um, within a kilometer, one or two kilometers of the actual crash crash site. I mean, they were just just randomly trying to figure out where the [ __ ] this thing was. And they said, \"Let's try this.\"\n\n## Comments and replies\n\n- @user1: This sounds like classic remote viewing hype from the Stargate days. Engagement: 45 likes, 12 replies\n- @user2: Totally accurate within 1-2km? That's basically guessing in Siberia. Engagement: 32 likes, 8 replies\n- @user3: Love how they always claim \"it was totally accurate\" without any proof. Engagement: 67 likes, 15 replies\n- @user4: Remote viewing Soviet crashes? Sounds more like Cold War propaganda. Engagement: 28 likes, 5 replies\n- @user5: The transcript is wild, but where's the actual evidence from the Russians? Engagement: 51 likes, 9 replies\n- @user6: Another Stargate story that gets repeated without verification. Engagement: 19 likes, 3 replies\n- @user7: Within a kilometer in Siberia is still a huge area lol. Engagement: 40 likes, 7 replies\n\n## Research findings (background \u2014 not a source)\nThe claim describes what is almost certainly the most famous Stargate Project remote-viewing anecdote \u2014 the location of a downed Soviet aircraft using psychic Rosemary Smith \u2014 but the podcast speaker misstates the location. Multiple independent sources confirm the crash was in Africa, not Siberia. One account states the crash occurred after \"the crash of a Soviet Tupelov TU-22 spy plane in Africa. We knew the aircraft went down in the Zaire (The Democratic Republic of Congo) but had no idea exactly where\" (https://sofrep.com/news/the-stargate-project-how-the-cia-used-mind-control-and-telepathy-to-spy-on-our-enemies/). A separate source similarly notes \"Rosemary Smith was able to accurately pinpoint the area where a Soviet aircraft crashed in Zaire, today the Democratic Republic of Congo\" (https://www.warhistoryonline.com/war-articles/project-stargate.html). Another account places the crash in a neighboring country, stating \"the plane went down in the Central African Republic\" and that Smith \"was given a map of Africa\" (https://www.wearethemighty.com/mighty-history/us-military-hired-a-psychic/). Former President Jimmy Carter, who publicly discussed this episode, also placed it in Zaire/Central Africa, not Siberia (http://ersby.blogspot.com/2019/10/remote-viewing-crashed-aircraft-in.html). The accuracy detail cited (within a few miles/kilometers) is roughly consistent with reporting that Smith's map 'pinpointed where this aircraft was, within a few miles' (https://taskandpurpose.com/history/5-true-stories-militarys-paranormal-activity-research/), so that part of the claim is not far off.\n\nThere is a genuine, separate Stargate story that does involve Siberia \u2014 remote viewer Pat Price's description of a secret Soviet missile installation there \u2014 but that involved a missile base, not a downed aircraft (https://innerknowing.substack.com/p/the-cias-remote-viewing-program). It appears the speaker conflated these two distinct, well-known Stargate anecdotes: the African downed-aircraft case and the Siberian missile-base case, mistakenly attributing the Siberia location to the aircraft story. This is a clear factual error about the crash's location, though the speaker did hedge with 'Was it Siberia?' showing some uncertainty.",
+        "systemPrompt": "You verify whether the sources cited by a proposed community note support the claim made in that note, AND categorize each cited source as good or bad so the orchestrator can drop the bad ones from the final note.\n\nScope \u2014 what to ignore:\n- Media, links, or videos embedded in the original post are NOT note sources. The post is shown only so you understand what the note is correcting. Do not evaluate whether the post's evidence is valid.\n- If a \"Research findings\" section is present, it is background reasoning from an earlier pipeline step, not a source. Treat a URL there as a source only if it also appears under \"Note's cited sources\".\n- Sources marked \"[from search snippet]\" were not fully fetched; evaluate them based on the available title and snippet text.\n\nClassification rules for each cited source:\n- Twitter/X links (x.com, twitter.com): the tweet's text and author are fetched and shown. Good only if that tweet content directly supports a factual claim in the note; otherwise bad. If a tweet is marked \"could not be fetched\", accept it as good \u2014 we can't read it, so don't penalize it.\n- Any other source \u2192 good only if it (a) was successfully fetched (no \"Fetch failed:\" / \"Fetch error:\" / \"Non-text content:\" marker) AND (b) its content directly supports at least one factual claim in the note. Otherwise bad.\n- Media URLs (videos, audio, images) may be presented with an automated content analysis block. For videos: title, uploader, content summary, on-screen text, audio transcript. For images: description and visible text. When present, treat that block as the source's content and evaluate it like any other fetched source. If the URL could not be analyzed as media, you'll see the raw web page instead (or a fetch error).\n\nOutput:\n- sources: one entry per cited source (verbatim URL, exactly as listed), each with citations then a verdict.\nFor each source list its \"citations\" FIRST, each a { quote, explanation }:\n- quote: text copied verbatim from that source's shown content (never invented or paraphrased).\n- explanation: a concise, plain-language note (for readers not deep in the topic) on how the snippet supports \u2014 or fails to support \u2014 a factual claim in the note. Use \"\" when self-evident.\nGather the citations BEFORE the verdict, then judge \"good\"/\"bad\" from them. Leave citations empty only when the source failed to fetch or has nothing relevant.\n- Every cited URL must appear in sources exactly once. Do not invent URLs.\n- reasoning: why the note was accepted or rejected; name any unsupported claim.\n- accepted: true iff the good sources together cover every factual claim in the note. Otherwise false."
+       },
+       "1": {
+        "content": {
+         "accepted": true,
+         "reasoning": "The note correctly identifies a factual error in the speaker's claim. Multiple sources confirm that the famous Stargate Project incident involving a remote viewer locating a downed Soviet aircraft occurred in Central Africa (Zaire or the Central African Republic), not Siberia. The sources also provide context explaining that the Siberia location likely stems from a different Stargate incident involving a missile base.",
+         "bad_sources": [],
+         "good_sources": [],
+         "source_evaluations": []
+        }
+       }
+      }
+     }
+    }
+   },
+   "totalDurationMs": 77744
+  }
+ },
+ "cost": 0.218292498,
+ "created_at": "2026-09-11T01:05:51.845031+00:00",
+ "kind": "check",
+ "item_id": null
+}

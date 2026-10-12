@@ -1,0 +1,62 @@
+{
+  "item_id": "e4861f80-91bd-48ed-a667-00940d7a7e87",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "32813941-c791-4b8c-b197-b545564a3919",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "This is Elon Musk answering John Collison and Dwarkesh about the 100 gigawatts a year of solar cells SpaceX and Tesla plan to make, and his point is that a cell built for space needs little glass and no heavy framing. The note answers with the price of today's specialist space cells (the Polytechnique Insights figure of 300 euros per watt is for gallium-arsenide type space-grade cells) and with the NASA 12-to-80-times figure, which the Christian Science Monitor piece applies to whole space-based power systems dominated by launch and manufacturing, not to cells. Neither number meets what Musk said. Worse, SpaceX already does what he describes: Starlink satellites fly commercial 166 mm silicon half cells behind 50 micron glass instead of gallium arsenide, because gallium arsenide was too expensive at Starlink volumes (Per Aspera, Payload, a teardown by Stan Herasimenka), so the note's assertion that space cells need thick radiation-shielding cover glass is contradicted by the very product Musk is talking about. Whether Musk's cheap-cell claim holds at scale is a forecast about his own product, and Dwarkesh would not accept a note that fact-checks it with the wrong category of cell."
+    },
+    {
+      "note_id": "731edab0-849e-4a53-befe-ebdd477da842",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": "Replace the last sentence with something like: 'He was never tried or sentenced. Neufeld, his biographer, writes that his importance to the V-2 programme protected him from a possible death sentence, which is not the same as being pulled off death row at the last minute.' Without that, the note reads as if he was in no danger at all.",
+      "reason": "Musk says von Braun 'was put on death row' and 'got pulled off death row at the last minute'. Dwarkesh does not dispute the story, he builds on it ('But then he helped them, right?'), so the anecdote stands on the video as accepted. The record, from Neufeld's biography and the National WWII Museum and Wikipedia accounts, is a Gestapo arrest on 14 or 15 March 1944, two weeks in a Stettin cell without being told the charges, and a conditional release obtained by Dornberger with Speer persuading Hitler that the V-2 programme needed him. There was no trial, no sentence and no death row, so the note's facts are right. My hesitation is that Neufeld himself writes that von Braun's importance 'protected him from a possible death sentence', so Musk's dramatisation has a true core: the charges of defeatism and sabotage could have been capital, and he was released because he was indispensable, which is what Musk's 'you're about to execute your best rocket engineer' line means. The note should say that, or it will look like it denies the danger. With that sentence it is a fair historical correction that a history-minded host may well accept, though it corrects his guest, not him."
+    },
+    {
+      "note_id": "325cee41-73fb-47d8-8ee3-02f0be8f7575",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The transcript on dwarkesh.com with speaker labels confirms this is Dwarkesh's own line: 'Dwarkesh Patel: But then he helped them, right? Or like, Heisenberg was actually an enthusiastic Nazi.' He offers Heisenberg as a counterexample to Musk's point that a scientist stuck in a system need not believe in it, so the claim carries his argument. The note is right. Heisenberg never joined the NSDAP or any affiliated organisation (Landsman 2002, Todorov 2005, and the AIP history site, which says 'He was not a Nazi, but he was a patriot for German culture'), Das Schwarze Korps called him a 'White Jew' in 1937, and he wrote to Himmler and was cleared after a year-long SS investigation. The strongest counter-evidence is that he was a German nationalist who, by Casimir's recollection, told Dutch colleagues in 1943 that German domination of Europe was a historical necessity, and that critics like Paul Lawrence Rose judge him harshly; but even those accounts describe a nationalist who worked within the regime, not a party enthusiast, and the note already says 'German nationalist'. The text here is Dwarkesh's edited transcript, not auto-captions, so the wording is not an artefact. An offhand historical slip that his own example rests on is exactly the kind of note he is likely to accept."
+    },
+    {
+      "note_id": "d2c0a070-4049-464d-9e56-aa91aa086399",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Musk says it, not Dwarkesh. The fact is right: Naomi Whitehead, born 26 September 1910, has been the oldest living American since Elizabeth Francis died on 22 October 2024, and she was 115 when this episode was recorded in early February 2026. But Musk is retelling what he found at DOGE in early 2025, when Whitehead was indeed 114, so he is quoting a year-old number, not misreading anything. And the slip changes nothing: his argument is that tens of millions of records show ages no living American has, and whether the ceiling is 114 or 115 the point stands. A note that corrects a passing number by one year inside a three-hour interview is pedantic, and Dwarkesh would not thank us for it on his guest's behalf."
+    },
+    {
+      "note_id": "6b092c28-f431-4cef-9e52-22a8134b171d",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Musk's words again, and the note fact-checks things he did not assert. He says the 20 million are 'definitely dead', so the note's point that the records show a missing death date rather than 'confirmed alive status' corrects nothing; that is exactly what he means by marked as alive. The benefits half of the note is answered in the transcript itself: when Dwarkesh asks 'Were those people getting payments?', Musk says 'Some were' and that the main fraud vector was other agencies checking the Social Security file, so a note saying almost none get benefits argues with a position he does not hold here. The one real error, that the roughly 20 million records cover everyone aged 100 and up (the 2023 inspector general audit counted 18.9 million numberholders born 1920 or earlier, and Musk's own February 2025 chart put 4.7 million of its 20.8 million in the 100 to 109 bracket) rather than people over 115, is only implied by 'born before 1920' and never stated. Even that correction is modest, because his own table still puts around 16 million above 110, so the figure for 115 and up would be of the same order. The note also says the figure 'comes from' the 2023 audit, when Musk's number came from DOGE's own query of the same file. I could not open the NewsNation source (it returns 403), but the 18.9 million and 44,000 figures are widely reported elsewhere and are not the problem."
+    }
+  ]
+}

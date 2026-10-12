@@ -1,0 +1,18 @@
+{
+  "item_id": "ca673055-74d9-4e4e-9b3c-656744671372",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e92a2a0a-85d1-487b-aae8-4999ed1c4390",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "This is Rees-Mogg's own legal assertion, stated flatly and then illustrated: 'being a traitor requires you to be British in the first place. All the argument about whether Lord Haw-Haw was justly condemned to death depends upon whether he was in fact British. Because if he were not British, he could not commit treason against Britain.' He is not quoting anyone. The note is correct and the sources hold up. The Lords Library page (read via the Wayback Machine, the live page returns 403) says 'Although not a British citizen, he lied to obtain a British passport', that he 'was convicted on 19 September 1945 and sentenced to death', was executed on 3 January 1946, and that 'his conviction has been criticised on the grounds that he was not a British subject'. The House of Lords headnote in Joyce v DPP says the assumption that Joyce was a British subject 'was proved to be incorrect' and held that 'an alien abroad holding a British passport enjoys the protection of the Crown and if he is adherent to the King's enemies he is guilty of treason', and Lord Jowitt added that 'an alien residing within the realm owes allegiance whilst resident there'. So his sentence states as law exactly what the court in his own example rejected: Joyce was not British and was still hanged for treason. It is substantive, because a viewer would come away believing a foreign national cannot commit treason in the UK, which is false and is the very point he uses the Joyce case to make. What keeps this at uncertain is his framing: the video's thesis is that a passport is what makes someone British, so he can answer that Joyce's passport made him British in the only sense he cares about and that the note only quarrels over the word 'citizen'. The note as written hands him that reply, because its one example is a passport holder. It also says 'British citizen', a status that did not exist until 1983; in 1945 the term was British subject.",
+      "send_advice": "Before sending, add one sentence closing the passport loophole, for example: 'A foreign national living in the UK with no British passport also owes allegiance and can be tried for treason (Lord Jowitt in Joyce v DPP: \"an alien residing within the realm owes allegiance whilst resident there\").' And replace 'was not a British citizen' with 'was not a British subject', the term the court and the Lords Library use."
+    }
+  ]
+}

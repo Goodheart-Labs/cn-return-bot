@@ -1,0 +1,18 @@
+{
+  "item_id": "4521490b-8f2f-4376-9ae7-edcf73bc255e",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e394e2f4-99f8-47c8-88c3-8cd815f60d50",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "This is the creator's own narration: 'Fearing for the very future of Japan, in 1871, Okubo Toshimichi did something unthinkable for a traditional samurai. He cut off his samurai topnot, put on a Victorian three-piece suit, and together with a core group of reformers, he overthrew the reigning shogun and replaced him with Emperor Meii.' As spoken, the year 1871 governs the whole sentence including the overthrow, and a viewer with no background would take the Meiji Restoration to be an 1871 event. The note's facts are right: Wikipedia says Okubo 'was central to the coup d'etat of 3 January 1868 ... which proclaimed the restoration of imperial rule', and the Boshin War that removed Tokugawa Yoshinobu ran 1868 to 1869. The video is inconsistent with itself, since its first words are 'In 1868, Japan was so poor and weak', so this is a slip rather than a caption error; 1868 and 1871 do not sound alike. What gives me pause is that 1871 is a fair date for the haircut: the Danpatsurei edict that let samurai cut the topknot came in August 1871, and Okubo left on the Iwakura Mission in late 1871, where the 1872 London photograph shows him in Western dress and short hair. The creator can reasonably answer that 1871 dated the topknot and the suit, and that the sentence compressed the story; the note does not acknowledge that reading, so it risks looking like a catch rather than a clarification. A caveat on the sources: Britannica answered 403 on every route I tried, so I could not confirm the accepted quotes on the page, and three of them are plainly from the Meiji Restoration article although the note lists them under the Okubo biography URL. The substance is confirmed independently and is not in dispute.",
+      "send_advice": "Add one clause conceding the part that is right, for example: 'The year 1871 fits the haircut edict and the Iwakura Mission, but the overthrow of the shogunate and the restoration of Emperor Meiji came earlier, on January 3, 1868.' Sending it as a plain 'not 1871' invites the reply that 1871 was meant for the topknot."
+    }
+  ]
+}

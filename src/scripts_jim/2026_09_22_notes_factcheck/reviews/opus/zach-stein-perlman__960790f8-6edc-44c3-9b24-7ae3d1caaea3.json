@@ -1,0 +1,16 @@
+{
+  "item_id": "960790f8-6edc-44c3-9b24-7ae3d1caaea3",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bd7e6e2d-8138-4366-a189-da66edcb2a3e",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The author does assert this himself: \"Each application was given an AI-generated name; many were convoluted, confusing, ambiguous, and/or incorrect.\" But the note's only source is Ethan Ashkie's comment on that same post, and Ethan runs the organisation the post criticises, so this is the criticised party's denial rather than independent evidence. The note repeats his words as established fact with no attribution, which a reader cannot check and which we cannot stand behind. Worse, the very first line of the post is \"Update: Ethan, who runs (SFC, the org that runs) SFF, replied here\", so the author has already pointed every reader at this correction. Telling him about a rebuttal he links in his own opening sentence is the same failure Andy Masley called out, and it would make us look like we did not read the post. The underlying complaint, that the names were bad and that the applicant-provided names were often hidden, is untouched by whether a human or a model wrote them, so the correction would not change what a reader takes away."
+    }
+  ]
+}

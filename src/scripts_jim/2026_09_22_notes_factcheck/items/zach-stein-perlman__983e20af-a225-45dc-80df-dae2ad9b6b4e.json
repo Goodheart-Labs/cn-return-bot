@@ -1,0 +1,51 @@
+{
+  "item_id": "983e20af-a225-45dc-80df-dae2ad9b6b4e",
+  "project_slug": "zach-stein-perlman",
+  "creator": "Zach Stein-Perlman",
+  "source": "lesswrong",
+  "url": "https://www.lesswrong.com/posts/Qm7M943R9cgWNqdwP/current-views-on-large-scale-longtermist-philanthropy",
+  "title": "Current views on large-scale longtermist philanthropy",
+  "published_at": "2026-07-06",
+  "full_text": "This post summarizes some of my views. It states uncertain things boldly in part to [surface disagreements / help readers point out things that seem wrong or missing]. Note that many things are uncertain and many claims are not justified here.\n\nOne tl;dr: money is great even on the margin, and it's crucial to invest extremely well rather than merely well.\n\nIn 2026, philanthropists will donate about $1.6B to AI safety nonprofits (being slightly picky about what counts) (~$1.2B CG, ~$400M other). This has recently been growing at about 1.6x/year; this growth rate may increase in the future, even before crunch time.[1]\n\nHow much money will ever be available for AI safety philanthropy? Present value >$100B (in the mean and median scenarios, but really the distribution matters).\n\nAI safety philanthropists have some $40B outside of Anthropic equity\n\nAnthropic is currently worth $1.5T[2] and around 7%[3] of it will be donated to good AI safety stuff, so that's present value $100B\n\nSome new people will become AI safety philanthropists in the future\n\nAnthropic will go public around December 2026. It's not obvious when shareholders will be allowed to sell their equity, but it's very likely by June 2027. Shareholders should probably sell most of their stake as soon as they can: AI safety philanthropists are massively overexposed to Anthropic and you can get similar returns elsewhere, not to mention that money may be more valuable in worlds where Anthropic fails.\n\nIf you invest very intelligently, very aggressively, and tax-free from now until superintelligence, I think you grow your expected fraction of global wealth by 400x (unstable) (before potential ~2x hedge fund fees), before considering expropriation. Footnote.[4] That's a huge deal; for people/foundations with lots of money, growing it as much as possible is very important. All three of the italicized conditions provide large multipliers; it's crucial to fulfill them all.[5] It's also nice to avoid direct Anthropic exposure and crucial to ensure that if you have lots of money you'll spend it very well rather than drifting, being captured, donating suboptimally, or waiting too long.\n\nBefore the intelligence explosion\n\nAI safety nonprofits present excellent philanthropic opportunities. Fortunately for the world but unfortunately for marginal impact, funding AI safety nonprofits until superintelligence costs just present-value $7B (depending on returns).[6] This is a tiny fraction of available money. Nevertheless, I think the community is currently underspending; I think marginal opportunities are still great (~1.2 micro-AI-takeover-prevention-equivalents per $1M—or 12 basis points per billion—plus a bonus because prosocial actions have various positive side effects, including via other universes and via retrospective compensation for people who made the AI transition go well).\n\nMisc megaprojects.\n\nDuring the intelligence explosion\n\nBuying compute—for AI labor, experiments/training, and maybe some control or resilience—seems very important. Little work has been done here and it's not certain that you will even be able to turn money into computeor use computewell. But I tentatively think this looks great even on the margin for present-value tens of billions of dollars (~0.4 micro-AI-takeover-prevention-equivalents per $1M given community-average growth; perhaps ~1 given better investing — plus bonus, but very unstable). If I was in charge of all AI safety philanthropy, I tentatively expect I would spend most of my money on this. (And this topic is super neglected; I think it's currently one of the best things to work on; it's currently my main project; I'm happy to pitch my friends on working on it.)\n\nMisc megaprojects. I think it's likely we'll identify some good opportunities to spend a few billion dollars, but I think buying compute is hard to beat.\n\nAfter the intelligence explosion\n\nTurning capital into control over the cosmic endowment. It's unlikely that this will be possible, but nevertheless I think it looks decent in expectation (~0.5 micro-AI-takeover-prevention-equivalents per $1M, assuming 150x growth in share of global wealth — but unstable).\n\nSome upshots:\n\nThere's lots of money available in the future; the community is currently underspending a bit; donations now are better than in a year even assuming excellent returns, with exceptions.\n\nPhilanthropy during (and maybe after) the intelligence explosion is important. It's also fragile: investing and then donating near-optimally requires meeting lots of conditions; even most smart altruists will fail to meet them all.If you have lots of money and you want to be a cool AI safety philanthropist, it is not chill to invest your money merely well or to plan on investing indefinitely: you have to invest extremely well and be prepared to quickly donate it all when an excellent donation opportunity appears.\n\n^I believe technical AI safety work has been growing more quickly, so as it grows to be a larger fraction of the portfolio, the total growth rate will approach its growth rate. And the increasing value of inference compute may increase the amount of money that technical AI safety orgs want.\n\n^Rough guess based on public information.\n\n^Quick guesses, don't defer: after series H, Anthropic's ownership is like 10% founder (of which 17% will be spent on good AI safety stuff), 24% staff (of which 65% is pledged for donation and 14% will be donated well), 66% investors (of which 5% are AI safety philanthropists, of which 70% will donate well) for a total of 10%*17% + 25%*14% + 65%*5%*70% = 7.5% AI safety, fudge down to 7%.\n\n^400x sounds crazy but also the hedge funds have recently been appreciating at ~5x per year (after fees, before taxes) (for some value of \"recently\"), which is crazy. I think the average AI investment will 15x as a fraction of global wealth, and you can dramatically beat that via (1) smarter investments and (2) leverage.\n\nI think Anthropic stock will merely ~25x as a fraction of global wealth. If Anthropic is currently just under 0.3% of global wealth, and at superintelligence-time it's an expected 13% of global wealth, and there's 50% dilution between now and then, that's 22x growth as a fraction of global wealth. And there are other reasons to disprefer direct Anthropic exposure: money seems lower-EV in worlds where Anthropic succeeds because (1) other philanthropists will have more money and (2) longtermist philanthropy is less important (less low-hanging fruit in expectation).\n\nMany things are unstable.\n\n^Actually I'm not sure whether tax-free is crucial. Possibly using standard best practices for tax optimization and deferral mostly suffices.\n\n^Assuming $1.5B/year now, growing at 1.6x/year forever, but 2x/year investment returns, gives $6.7B. This is unstable because 1.6 is close to 2, but whatever. Fudge down slightly because there is less than infinite time until singularity, but fudge up because spending may grow faster than 1.6x/year.",
+  "notes": [
+    {
+      "note_id": "76e40b84-377b-4e2c-8ee6-16b8289cf2ec",
+      "commonnotes_url": "https://commonnotes.net/?project=zach-stein-perlman&note=76e40b84-377b-4e2c-8ee6-16b8289cf2ec",
+      "note": "Hedge funds averaged 11.9% in 2024 and 11.8% in 2025. Even the top-performing fund in 2025 returned 55%, far below 5x per year.",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "claim": "Relevant hedge funds have recently been appreciating at about 5x per year, after fees and before taxes.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "^400x sounds crazy but also the hedge funds have recently been appreciating at ~5x per year (after fees, before taxes) (for some value of \"recently\"), which is crazy. I think the average AI investment will 15x as a fraction of global wealth, and you can dramatically beat that via (1) smarter investments and (2) leverage.",
+      "updated_quote": null,
+      "context_paragraph": "^400x sounds crazy but also the hedge funds have recently been appreciating at ~5x per year (after fees, before taxes) (for some value of \"recently\"), which is crazy. I think the average AI investment will 15x as a fraction of global wealth, and you can dramatically beat that via (1) smarter investments and (2) leverage.",
+      "context_url": "https://www.lesswrong.com/posts/Qm7M943R9cgWNqdwP/current-views-on-large-scale-longtermist-philanthropy",
+      "start_seconds": null,
+      "end_seconds": null,
+      "sources": [
+        {
+          "url": "https://hedgevision.substack.com/p/the-top-hedge-funds-of-2025",
+          "quote": "### Apis led the pack at 55%, followed by Melqart and Whale Rock",
+          "explanation": "States the top fund Apis returned 55%, supporting the note's second claim."
+        },
+        {
+          "url": "https://hedgevision.substack.com/p/the-top-hedge-funds-of-2025",
+          "quote": "# The Top Hedge Funds of 2025",
+          "explanation": "Identifies the article as ranking 2025 funds."
+        },
+        {
+          "url": "https://www.goldmansachs.com/insights/articles/hedge-funds-have-momentum-after-posting-double-digit-returns-last-year",
+          "quote": "Hedge funds returned an average of 11.8% last year and 11.9% in 2024.",
+          "explanation": "States the average hedge-fund returns for the two years, matching the note's 11.9% and 11.8% figures."
+        },
+        {
+          "url": "https://www.goldmansachs.com/insights/articles/hedge-funds-have-momentum-after-posting-double-digit-returns-last-year",
+          "quote": "Hedge fund returns beat expectations in 2025",
+          "explanation": "Identifies 'last year' as 2025, linking the 11.8% figure to 2025."
+        }
+      ]
+    }
+  ]
+}

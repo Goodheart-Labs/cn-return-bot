@@ -1,0 +1,34 @@
+{
+  "item_id": "8ab18669-a723-4867-b288-d16e7a7e84ea",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "f8e526af-12c5-4187-8a89-6fa5424f17ac",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note says the 45% figure is Zvi's own subjective probability, but the post says the opposite. The list sits in the section 'Sol Thinks You Better', which opens with 'I asked both Sol and Fable to provide editing and feedback', and the list is introduced by the lines 'Sol:' / 'My substantive posterior' / 'My current estimates:'. Every percentage in that block, including the 45%, is the model Sol's estimate about itself. Zvi then argues against it directly: 'The destructive behavior assessment by Sol seems to clearly be a mistake, given the model card says this behavior is much worse in GPT-5.6 than GPT-5.5.' So the note corrects the attribution in exactly the wrong direction, and it fact-checks a statement the author quotes and then disputes. This is the same failure Andy Masley complained about, and sending it would embarrass us."
+    },
+    {
+      "note_id": "9405ae50-14e2-44cf-9469-5d6faf3e063e",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi does write this sentence himself, but it is hedged speculation about OpenAI's motives: 'which presumably is one of the main reasons OpenAI created Terra and Luna'. He never says Terra and Luna are subagents of Sol, only that the complaints about Sol picking bad subagents are presumably part of why cheaper models exist. The note attacks a claim he did not make and then gets the facts wrong on top of it. The tweet Zvi quotes right below is a user asking that Codex be able to pick its own model 'instead of spinning up multiple subagents that are using sol on Max or High or 5.5 xHigh for simple exploring', and a search turns up the matching Codex issue 'GPT-5.6 Sol cannot specify subagent models... This setting makes it impossible to use Terra/Luna subagents' plus an OpenAI forum thread titled 'GPT-5.6 Sol can now delegate to Luna'. So Terra and Luna genuinely are usable as subagent models, and the note's assertion that Sol's subagents are internal ultra-mode processes 'unrelated to Terra or Luna' is false. The sources behind it are generic AI-written SEO summaries, not OpenAI documentation."
+    },
+    {
+      "note_id": "219e1383-5037-4569-996a-58fe95b5ccba",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is a quoted tweet in Zvi's roundup of other people's reactions, attributed by name: 'Terabit Fountainlink: Sol puts GPT back in the lead for math imo.' Zvi simply collects it alongside a dozen other reader reactions and makes no argument that rests on it. The note is also a misreading. The tweeter is saying that GPT is back in front because Anthropic's models had been ahead: both Opus 4.8 and Fable had edged out GPT-5.5, and now GPT-5.6 is on a new level. Nobody called 4.8 or Fable GPT models; that error was introduced by the pipeline's own paraphrase of the claim. Correcting a third party's tweet for something the tweet does not say is exactly the kind of note that would make Zvi dismiss the whole project."
+    }
+  ]
+}

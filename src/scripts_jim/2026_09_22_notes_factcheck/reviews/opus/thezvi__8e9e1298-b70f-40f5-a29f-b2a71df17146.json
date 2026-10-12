@@ -1,0 +1,16 @@
+{
+  "item_id": "8e9e1298-b70f-40f5-a29f-b2a71df17146",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "cb0c9281-ab91-4895-8ee9-b1b7cebef26f",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The thirteen-hour sentence is not Zvi's. It sits inside a long block quote from Samuel Hammond, which Zvi introduces as 'a very good statement about the actual thing we may be on the verge of doing' and then responds to afterwards. Zvi endorses the broad picture Hammond paints, but he never repeats or leans on the thirteen-hour number, and his own comment picks up the political argument instead. The note is factually right: METR's page says 'Measurements above 16 hrs are unreliable with our current task suite', Claude Mythos's fifty-percent horizon is given as likely at least sixteen hours, and only five of the suite's 228 tasks are sixteen hours or longer. But the correction does not change anything. Hammond's point is that METR has run out of room to measure model autonomy at all, and moving the ceiling from thirteen hours to sixteen makes that point slightly stronger rather than weaker. Sending it would repeat the Andy Masley problem twice over: it corrects a sentence Zvi quoted rather than wrote, and the correction is a detail nobody's argument rests on."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "item_id": "8c4338f1-292b-4ff2-b4dd-e10278f8902a",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "805c47ce-fc6d-4774-9779-83a601414bc7",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Masley writes this in his own voice with no source and no hedge: \"The LA area has the world's busiest port, which means a constant huge input of diesel exhaust.\" I checked the Port of Los Angeles facts page myself: it says the port \"ranks No. 16 in the world (based on 2024 throughput)\", that the combined San Pedro Bay complex \"ranks No. 9 in the world\", and that the port has been \"the No. 1 container port in Western Hemisphere for 26 consecutive years\". Shanghai handles about five times Los Angeles' 10 million containers a year, so this is not a rounding or definition issue; no throughput measure makes Los Angeles number one in the world. The note is fair, credits the Western Hemisphere record, and leaves his actual point intact, because a top-ten port complex is still a huge diesel source. The fix is one word (\"the Western Hemisphere's busiest port\"), which is the kind of correction a data-minded author accepts without argument."
+    },
+    {
+      "note_id": "6c68b302-7abb-4f06-8f11-37b03705acbc",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Drop the first sentence's EMEP/EEA numbers (the guidebook's tyre-wear PM2.5 figure is 4.5 mg/km, not 0.2-1, and the \"5-16 mg/mile\" total does not follow from the ranges given). Replace it with the OECD report's own Table 3.6: for a passenger car, brake wear PM2.5 is 2.9 mg/km and tyre wear 4.5 mg/km, about 12 mg per mile combined, and even all non-exhaust PM2.5 including road wear and dust is 12-16.5 mg/km, about 20-27 mg per mile. Keep the conclusion that nothing in the OECD report supports 30-60 mg/mile.",
+      "reason": "The claim is Masley's own footnote 28, and in the published post the words \"OECD puts at 30-60 mg/mile\" link to the OECD 2020 report \"Non-exhaust Particulate Emissions from Road Transport\", so the note is checking an attribution he really made. I read that report. Its Table 3.6 gives a petrol or diesel passenger car brake-wear PM2.5 of 0.0029 g/km and tyre-wear PM2.5 of 0.0045 g/km, about 12 mg per mile together, and a total non-exhaust PM2.5 of 0.0121-0.0165 g/km, about 20-27 mg per mile. The only number near his range is the PM10 total of 0.0296 g/km (about 48 mg per mile), so the post most likely quotes PM10, not PM2.5, and overstates the brake-and-tyre figure by a factor of 2.5 to 5. That matters a little to his own argument: it is the direct-emissions side of his Corolla comparison, though the correction only widens the CO2-versus-direct ratio he is arguing for. The problem is the note's own figures: the tyre-wear range of 0.2-1 mg/km contradicts the guidebook value of 4.5 mg/km that OECD itself uses, the combined \"5-16 mg/mile\" does not follow from the two ranges stated, and none of the three sources is the OECD report under discussion. Masley checks sources, so as written he could rebut the note's numbers even though its conclusion is right. Rewritten around Table 3.6 it becomes a clean correction."
+    },
+    {
+      "note_id": "87a55d1a-19c4-4e13-91fb-0e9a2ca1cbd4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Drop the second sentence (\"The $100/ton figure is a separate, all-damages global social cost of carbon estimate (Rennert et al.), not wildfire-smoke-specific.\"). The note cannot know where the $100 came from, and its own source gives Rennert's mean as $185. Send only the first sentence, possibly adding that the paper says outright that its estimate covers damages inside the US only.",
+      "reason": "Footnote 30 is Masley's own words, and in the published post \"this study\" links to NBER working paper 33829 (Qiu, Callahan, Burke and others), the paper the note fetched. I read the paper. It reports one number, a partial domestic US social cost of carbon of $15.1 per ton from wildfire smoke mortality, and says in as many words that it is \"domestic because we are only focused on damages in the US\" and that \"our U.S. SC-CO2 estimates only include damages occurring within the U.S.\" Neither \"$100\", \"185\" nor any global smoke figure appears anywhere in the text, so the footnote's \"$15/ton here versus around $100/ton globally\" is not in the study he cites. That footnote is the support for the main-text sentence \"Most climate-driven wildfire and ozone mortality currently lands in South America, Australia, India, and Eurasia, not the US, so the harms are many times greater there\", which feeds his conclusion that CO2 is the main air-quality worry, so the sourcing error is not cosmetic. The note's first sentence is therefore correct and worth sending. Its second sentence is a guess dressed as a fact: it asserts the $100 is Rennert et al.'s all-damages global figure, but the note's own source gives Rennert's mean as $185, and Masley can simply answer that this is not where his number came from. With that sentence cut, the note is a clean and fair sourcing correction he would most likely accept."
+    }
+  ]
+}

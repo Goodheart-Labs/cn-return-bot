@@ -1,0 +1,18 @@
+{
+  "item_id": "943b143a-13fc-4eaa-b4f2-f13ff738a616",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c17f533d-fd8c-4cb5-ab87-df143874f9a7",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Replace the last sentence (\"The S&P/Nasdaq gains cited are accurate, but the Bitcoin comparison is not.\") with: \"Bitcoin is down about 40% from a year earlier and sits below its late-2021 peak, but over the three years Liron names it roughly doubled.\" Liron did not cite specific S&P or Nasdaq gains, and the note reads as one-sided without the year-on-year drop.",
+      "reason": "This is Liron speaking, as the host, to Casey Muratori: \"now it's been, what, four years already since that whole bubble? And the Bitcoin price is lower than it was three years ago. It's had a negative return while the S&P and the NASDAQ have been on a tear.\" Casey does not adopt the figure; he says he would not use the phrase \"came out of that looking good\". The literal statement is wrong on any calendar reading. StatMuse gives the June 2023 close as $30,477 (June 25, 2023: $30,480), and Fortune's tracker gives $62,651 on June 24, 2026 and $58,980 on June 26, 2026, the days around publication, so Bitcoin roughly doubled over three years rather than losing money; even four years back (June 2022, around $20,000) it is higher. The only reading under which Liron is right is \"lower than at the November 2021 peak of about $69,000\", and the same Fortune page notes Bitcoin was about $43,500 lower than a year earlier and far off its October 2025 record of $126,198, which is the context that made the claim feel true. The error matters for his point that crypto is dead while stocks tore ahead, since a doubling beats the S&P over that span. Liron is numbers-minded and may accept it, but he can just as fairly reply that he meant since the bubble peak, and the note's last sentence talks about gains he never cited, which is why I stop at uncertain."
+    }
+  ]
+}

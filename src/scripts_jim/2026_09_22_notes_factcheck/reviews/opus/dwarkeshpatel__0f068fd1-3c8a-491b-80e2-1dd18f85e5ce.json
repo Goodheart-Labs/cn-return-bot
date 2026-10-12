@@ -1,0 +1,43 @@
+{
+  "item_id": "0f068fd1-3c8a-491b-80e2-1dd18f85e5ce",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bfc9c196-d1b2-402a-a624-fef067a445c1",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Dwarkesh is repeating something he attributes to someone else: \"This is shocking, Dylan said hyperscalers are spending 50% of their CapEx this year on memory.\" He does not merely report it, he builds on it: \"That's high hundreds of billions, maybe a trillion, and they're spending half of that on memory? That is a huge constraint. That's why we're not going to get new laptops and phones this year.\" So a correction of the number is fair game, and the number is wrong: SemiAnalysis's own post from early April 2026 says memory was ~8% of hyperscaler spend in CY23 and CY24 and that they estimate it hits 30% in CY26, and Dylan Patel gave the same 30% figure for 2026 on Dwarkesh's own podcast. Thirty percent versus half is a big enough gap to change how constrained the picture looks, so the note is substantive and the primary source holds up. What gives me pause is the note's second sentence, which states as fact that the figure Dwarkesh had in mind is CLSA's 48% projection for 2027. That is a guess about where he got the number, not something any source establishes, and the same CLSA article puts 2026 at 35% rather than 30%. If Nathan sends this, the first sentence is solid and the second invites an argument about what Dylan actually said to him."
+    },
+    {
+      "note_id": "eb8c6d87-9074-458a-bff9-fbc4baf53355",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is a flat factual statement made in the episode, not a quotation of anyone: \"First, with longer context, Gemini 3.1 is 50% more expensive if you go over 200k tokens than if you're below 200k tokens.\" I checked Google's own pricing page for the Gemini Developer API and it lists Gemini 3.1 Pro at $2.00 input and $12.00 output per million tokens for prompts up to 200K, and $4.00 input and $18.00 output above 200K. So input doubles and only output rises by 50%, exactly as the note says, and the blog sources it cites do contain the quoted lines. It matters for the argument rather than being a quibble, because the whole segment is about reading a model's serving costs off its published prices, and the long-context penalty on input tokens is twice as large as the number given on the blackboard. Reiner Pope is arguing that the price break reveals where memory time and compute time cross over, and the correction strengthens that point rather than undermining it, so he is likely to take it."
+    },
+    {
+      "note_id": "c1d889a1-02bc-4e97-bdae-51af0d7ad06b",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note misreads the sentence it is attached to. Dwarkesh says \"for GPT to be trained optimally, every single user who uses GPT-5, the total amount of tokens that they stream should equal the total amount that has gone into pre-training\", which means the total across all users, not a requirement on each individual user. The episode makes that unambiguous a moment later, when they multiply a few hundred million tokens per second by a two-month deployment to get about two hundred trillion inference tokens for the whole service. The note instead attacks a per-user reading nobody proposed. It also attributes the claim to Chinchilla, when the speakers reached it from Reiner's own cost-equalisation heuristic, which he flags as a conjecture, and they treat Chinchilla separately in the very next passage, computing a Chinchilla-optimal two trillion tokens and concluding models are roughly a hundred times over-trained. Worse, the note's own third source, the inference-aware scaling paper, is about exactly the aggregate deployment demand Reiner was reasoning about, so it supports him rather than refuting him. Sending this would be the Andy Masley problem again, a note correcting something the author did not say."
+    },
+    {
+      "note_id": "6176a692-e61f-4d39-b522-fdd563ca1ca5",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Every fact in the note checks out: Gemini 1.5 Pro offered a million tokens in February 2024, Anthropic gave Claude Sonnet 4 a million-token window on 12 August 2025, and GPT-5.5 shipped with a million-token API window on 23 April 2026, six days before this episode went up. The problem is what the passage actually says. The sentence immediately before is Dwarkesh asking \"what is the reason that there's no company which has over a million token context length\", so both speakers plainly know million-token windows exist, and the previous ten minutes were spent analysing Gemini's over-200K price tier, which only exists because Gemini accepts far more than 200K. Reiner's hedged aside about windows \"hovering around\" 100-200K is loose, but his point is that there is a balanced cost point and that going massively beyond it is cost-prohibitive, and that point survives: the ceiling has sat at a million for a while. The extracted claim, \"current large language models have context lengths of approximately 100K to 200K tokens\", is also flatter and stronger than anything said on the blackboard. A reader of the passage never comes away believing no model exceeds 200K, so the correction is not substantive, and a chip architect who just walked through Gemini's long-context pricing would read it as a reviewer who was not listening."
+    }
+  ]
+}

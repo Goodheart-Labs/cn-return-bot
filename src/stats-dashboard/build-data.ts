@@ -18,7 +18,7 @@ import { createClient } from "@supabase/supabase-js";
 import { writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import dotenv from "dotenv";
-import { fetchAllRows, fetchInBatches } from "../api/paging";
+import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { buildAbTestSlots } from "../dashboard-shared/abFilters";
 import type {
   StatsSnapshot,
@@ -28,8 +28,8 @@ import type {
   PipelineRunDayBucket,
   DailyOriginCount,
 } from "./src/lib/types";
-import { resolvePicks } from "../pipeline/ab-testing/abTests.ts";
-import { AB_TESTS } from "../pipeline/ab-testing/abTestsData.ts";
+import { resolvePicks } from "../pipeline/ab-testing/abTests";
+import { AB_TESTS } from "../pipeline/ab-testing/abTestsData";
 import { loadPipelineHealth } from "./health-data";
 
 dotenv.config({ path: join(process.cwd(), ".env") });
@@ -303,6 +303,7 @@ async function loadTweets(tweetIds: string[]): Promise<RawTweetRow[]> {
   return fetchInBatches<RawTweetRow>(
     (chunk) => supabase.from("tweets").select(TWEET_COLUMNS).in("tweet_id", chunk),
     tweetIds,
+    "tweet_id",
     { label: "tweets" },
   );
 }

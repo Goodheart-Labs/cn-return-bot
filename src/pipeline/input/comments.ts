@@ -5,9 +5,9 @@
  */
 
 import { generateText } from "ai";
-import { xai } from "../llm/xai";
+import { grokCallCost, xai } from "../llm/xai";
 import { getTweetLog } from "../utils/tweetLog";
-import { GROK_MODEL, calculateGrokCost } from "../cost-tracking/pricing";
+import { GROK_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall } from "../cost-tracking/costTracker";
 
 export async function fetchTweetComments(
@@ -26,31 +26,15 @@ export async function fetchTweetComments(
 Tweet URL: ${tweetUrl}
 Tweet text: "${tweetText}"`;
 
-  const { text, usage, steps } = await generateText({
+  const result = await generateText({
     model: xai.responses(GROK_MODEL) as any,
     prompt,
     tools: {
       x_search: xai.tools.xSearch() as any,
     },
   });
-
-  const searchCalls = steps?.reduce(
-    (n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0),
-    0,
-  ) ?? 0;
-  const cost = calculateGrokCost(
-    usage?.inputTokens ?? 0,
-    usage?.outputTokens ?? 0,
-    searchCalls,
-  );
-
-  trackLlmCall({
-    name: "inputs.comments",
-    input_tokens: cost.input_tokens,
-    output_tokens: cost.output_tokens,
-    cost: cost.cost,
-    tools: searchCalls > 0 ? [{ name: "x_search", input_tokens: 0, output_tokens: 0, cost: searchCalls * 0.005 }] : [],
-  });
+  const { text } = result;
+  trackLlmCall({ name: "inputs.comments", ...grokCallCost(result, GROK_MODEL), tools: [] });
 
   log?.set("inputs.comments", { text });
 

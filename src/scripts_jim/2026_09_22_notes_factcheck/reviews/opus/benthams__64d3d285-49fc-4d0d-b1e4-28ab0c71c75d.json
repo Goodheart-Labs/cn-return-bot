@@ -1,0 +1,16 @@
+{
+  "item_id": "64d3d285-49fc-4d0d-b1e4-28ab0c71c75d",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "94134a07-8f8d-4c4c-8508-1ce99d9a9e50",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is the author's own, but it is a throwaway aside inside an analogy: he says Stalin delegated almost everything to people with opaque brains and that this did not make Stalin disempowered. Whether Stalin's subordinates really plotted against him does nothing to his argument. If anything the correction makes his analogy cleaner, because he only raised the plotting to say that Stalin's case was harder than the AI case. The note also claims more than its source shows. Britannica's line that the accused were innocent and the cases fabricated by the NKVD is about the show trials, not about whether any subordinate ever worked against Stalin's wishes, and there was real opposition, for example the Ryutin platform of 1932 that openly called for Stalin's removal, as well as well documented resistance and distortion of central orders by regional party officials. Correcting a rhetorical flourish about Stalin in a philosophy post about AI risk is exactly the kind of tangential note that would annoy the author."
+    }
+  ]
+}

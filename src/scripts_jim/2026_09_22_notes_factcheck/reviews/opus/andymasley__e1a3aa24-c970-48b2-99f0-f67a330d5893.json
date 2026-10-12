@@ -1,0 +1,16 @@
+{
+  "item_id": "e1a3aa24-c970-48b2-99f0-f67a330d5893",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2d1db044-2d6c-4dfb-adda-226d30338f70",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The claim is Masley's own. He writes: \"In Minnesota, SEIU chapters started organizing against AV legislation before Waymo even announced plans to expand to the Twin Cities.\" But the note is wrong. Axios Twin Cities reported on 18 March 2026 that \"the push to authorize autonomous vehicles in Minnesota drew opposition from a local SEIU chapter working to organize rideshare drivers, even before Waymo announced plans to expand in the Twin Cities.\" Masley's sentence is a close paraphrase of that reporting, so the note is contradicting the very source the author was summarising. The note's argument is also only an absence of evidence. It shows that SEIU Local 26 testified at the Capitol in March 2026 and concludes that its organizing therefore began then, but testimony is the visible end of an organizing effort, not its start, and Waymo was already lobbying Minnesota legislators for a law change in October 2025, before the 20 November announcement, so there was an authorisation push to oppose. The note's own opening fact is unsupported too: it says Waymo \"began testing on the same day, Nov 20, 2025\", while the CNBC quote it cites says only that Waymo \"will soon begin manually driving\" there. Sending this would be a repeat of the complaint Masley already made about our notes, because it corrects him with a weaker version of the source he used."
+    }
+  ]
+}

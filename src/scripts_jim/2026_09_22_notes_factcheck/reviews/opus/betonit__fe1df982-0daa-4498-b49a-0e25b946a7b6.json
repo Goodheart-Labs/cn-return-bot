@@ -1,0 +1,25 @@
+{
+  "item_id": "fe1df982-0daa-4498-b49a-0e25b946a7b6",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "3ceca9a7-6ae5-4d82-9894-1c349a59592e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Caplan states this flatly in his own voice as one of his examples of Indian over-regulation: \"Developers aren't even allowed to build skyscrapers in slums.\" It is not a quote from anyone else and he does not hedge it. The statement is wrong for the most famous case. Under Mumbai's Slum Rehabilitation Authority scheme the Omkar/Piramal towers at Sai Baba Nagar in Dhobi Ghat are 42 storeys and are described by the developer as the tallest slum rehabilitation buildings in the world; I confirmed the project independently of the Times of India link, which I could not open directly. The point is not a technicality either: Mumbai's ordinary base floor space index is about 1.33, while slum rehabilitation projects are granted 3 to 4, so slum land is one of the few places in the city where tall building is actually permitted. The one thing that gives me pause is that Caplan could answer that the SRA scheme is itself a heavy piece of regulation, with mandatory free rehousing and slum-dweller consent, so developers are not free to build there in the way he meant. That would be a fair reply, but it does not repair the sentence as he wrote it, and a reader would come away believing something false."
+    },
+    {
+      "note_id": "031ff618-1770-4eb6-abc0-4939365d64c9",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The facts in the note are right. Direct Action Day was 16 August 1946, the Great Calcutta Killing followed, estimates of the dead run from 4,000 to 10,000, and the army was called in. The problem is what the note is arguing against. Caplan's sentence is \"After World War II, British India was finally at relative peace. But the Indian demagogues ... and the Pakistani demagogues ... angrily pushed for 'immediate independence' while denying the obvious fact that millions of their countrymen were itching for genocide.\" The Great Calcutta Killing was the Muslim League's Direct Action Day, which is exactly the demagogic push he blames for the violence, so the note offers as a refutation the very event his argument is about. He also explicitly says millions were itching for genocide, so he is plainly not claiming communal harmony, and the word \"relative\" is doing real work next to a world war and the partition massacres. On top of that the note never says what it is correcting; it just recites the Calcutta facts and leaves the reader to guess. Caplan would read this as a misreading of his paragraph."
+    }
+  ]
+}

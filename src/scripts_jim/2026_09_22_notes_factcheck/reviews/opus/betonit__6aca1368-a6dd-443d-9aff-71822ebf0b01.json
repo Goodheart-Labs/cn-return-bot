@@ -1,0 +1,16 @@
+{
+  "item_id": "6aca1368-a6dd-443d-9aff-71822ebf0b01",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d20924f6-56ca-4f01-a33b-b9a97d184d49",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is an analogy inside advice about dating, not a claim about the labour market: \"When firms reject job applicants, they usually don't ghost them, much less send an email saying, 'You're pathetic.'\" Caplan's word is \"usually\", and the note's number answers a different question. The Resume Genius survey it rests on asked hiring managers whether they had ever ghosted anyone, and 80 percent said yes; the same survey's breakdown is 20 percent never, 47 percent occasionally, 22 percent frequently and 11 percent always, so only about a third ghost as a matter of course. That is consistent with what Caplan wrote rather than a refutation of it. The source is also a resume-selling company's own marketing survey of 625 hiring managers, which is thin ground for contradicting an author. And even if the point landed, nothing in the post's argument about attractiveness ratings depends on it, so the note is tangential as well as unsupported."
+    }
+  ]
+}

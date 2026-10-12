@@ -1,8 +1,15 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { CARD, SECONDARY_BUTTON } from "../../../everything-shared/ui";
-import { signOut, useSession } from "../../../everything-shared/auth";
+import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import { Button, buttonVariants } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
+import { ChevronIcon } from "@cn/ui/icons";
+import { Card } from "@cn/ui/Card";
+import { Checkbox } from "@cn/ui/Field";
+import { signOut } from "@cn/core/auth";
+import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
-import { NoteFilterToggles, useNoteFilters } from "../../components/NoteFilterToggles";
+import { BOOK_CALL_URLS, FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
+import { NoteDisplayChoices, useNoteDisplay } from "../../components/NoteDisplayChoices";
+import { SafariSiteAccess } from "../../components/SafariSiteAccess";
 import {
   getSettings,
   markWelcomeSeen,
@@ -12,7 +19,7 @@ import {
   type VisitSiteKind,
 } from "../../utils/settings";
 
-/** The settings as editable state, mirroring useNoteFilters: optimistic local
+/** The settings as editable state, mirroring useNoteDisplay: optimistic local
  *  update, then a fire-and-forget write to synced storage. */
 function useExtensionSettings(): [ExtensionSettings | null, (patch: SettingsPatch) => void] {
   const [settings, setSettings] = useState<ExtensionSettings | null>(null);
@@ -34,19 +41,14 @@ const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
   { kind: "lesswrong", label: "LessWrong and the Alignment Forum" },
 ];
 
-function Checkbox({ checked, onChange, children }: { checked: boolean; onChange: (checked: boolean) => void; children: ReactNode }) {
-  return (
-    <label className="flex items-center gap-2 text-sm text-gray-700">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
-      {children}
-    </label>
-  );
-}
+/** The settings page's checkbox: the design system's, at this page's text
+ *  size. */
+const Setting = (props: ComponentProps<typeof Checkbox>) => <Checkbox className="text-sm text-fg-secondary" {...props} />;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="space-y-2 border-t border-gray-200 pt-4 first:border-t-0 first:pt-0">
-      <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
+    <section className="space-y-2 border-t border-line pt-4 first:border-t-0 first:pt-0">
+      <h2 className="text-sm font-semibold text-fg">{title}</h2>
       {children}
     </section>
   );
@@ -67,18 +69,18 @@ function VisitRecordingChoice({ settings, onToggle }: {
     onToggle({ saveVisits: { substack: checked, youtube: checked, lesswrong: checked } });
   return (
     <>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-fg-secondary">
         When you open a post on Substack, YouTube, LessWrong, or the Alignment Forum, the extension can save the link and
         the time. That tells us which posts are worth checking next. It is anonymous: never your
         account or the rest of your browsing. Each saved link carries a random code that is
         different for every author, so we can count how many people read an author without joining
         your reading together.
       </p>
-      <Checkbox checked={anyOn} onChange={setAll}>
+      <Setting checked={anyOn} onChange={setAll}>
         Share which posts you open
-      </Checkbox>
+      </Setting>
       {mixed && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-fg-muted">
           You have turned this off for some sites. The per-site choices are in the advanced settings.
         </p>
       )}
@@ -91,56 +93,73 @@ function AdvancedSettings({ settings, onToggle }: {
   settings: ExtensionSettings;
   onToggle: (patch: SettingsPatch) => void;
 }) {
-  const [filters, toggleFilters] = useNoteFilters();
+  const [display, changeDisplay] = useNoteDisplay();
   return (
     <div className="space-y-4">
       <Section title="Overlays">
-        <Checkbox
-          checked={settings.showNoteCountOverlay}
-          onChange={(checked) => onToggle({ showNoteCountOverlay: checked })}
-        >
-          Show the note-count card on pages that have been checked
-        </Checkbox>
-        <Checkbox
+        <Setting
           checked={settings.showThumbnailBadges}
           onChange={(checked) => onToggle({ showThumbnailBadges: checked })}
         >
           Show note counts on thumbnails and listings
-        </Checkbox>
+        </Setting>
       </Section>
 
       <Section title="Notes">
-        <p className="text-sm text-gray-600">Where a note opens on article pages.</p>
-        <label className="flex items-center gap-2 text-sm text-gray-700">
+        <p className="text-sm text-fg-secondary">Where a note opens on article pages.</p>
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
           <input
             type="radio"
+            className="accent-primary"
             name="note-style"
             checked={settings.noteStyle === "margin"}
             onChange={() => onToggle({ noteStyle: "margin" })}
           />
           In the margin, beside the text
         </label>
-        <label className="flex items-center gap-2 text-sm text-gray-700">
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
           <input
             type="radio"
+            className="accent-primary"
             name="note-style"
             checked={settings.noteStyle === "classic"}
             onChange={() => onToggle({ noteStyle: "classic" })}
           />
           Classic: a badge in the text, the note on top of it
         </label>
-        {filters && <NoteFilterToggles filters={filters} onToggle={toggleFilters} />}
+        {display && <NoteDisplayChoices display={display} onChange={changeDisplay} />}
+        <p className="pt-2 text-sm text-fg-secondary">How the rating buttons look.</p>
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
+          <input
+            type="radio"
+            className="accent-primary"
+            name="pill-palette"
+            checked={settings.pillPalette === "colourful"}
+            onChange={() => onToggle({ pillPalette: "colourful" })}
+          />
+          Colourful: Yes in green, Somewhat in amber, No in red
+        </label>
+        <label className="flex items-center gap-2 text-sm text-fg-secondary">
+          <input
+            type="radio"
+            className="accent-primary"
+            name="pill-palette"
+            checked={settings.pillPalette === "neutral"}
+            onChange={() => onToggle({ pillPalette: "neutral" })}
+          />
+          Neutral: all three in blue
+        </label>
       </Section>
 
       <Section title="Sharing by site">
         {VISIT_SITES.map(({ kind, label }) => (
-          <Checkbox
+          <Setting
             key={kind}
             checked={settings.saveVisits[kind]}
             onChange={(checked) => onToggle({ saveVisits: { [kind]: checked } })}
           >
             Share which posts you open on {label}
-          </Checkbox>
+          </Setting>
         ))}
       </Section>
     </div>
@@ -160,10 +179,16 @@ export function SettingsApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
-      <div className={`${CARD} mx-auto max-w-xl p-6`}>
-        <h1 className="mb-4 text-xl font-extrabold text-gray-900">Settings</h1>
+    <div className="min-h-screen bg-canvas px-4 py-8">
+      <Card className="mx-auto max-w-xl p-6">
+        <h1 className="mb-4 text-xl font-extrabold text-fg">Settings</h1>
         <div className="space-y-4">
+
+        {import.meta.env.SAFARI && (
+          <Section title="Website access">
+            <SafariSiteAccess />
+          </Section>
+        )}
 
         <Section title="Help us decide what to check">
           {settings && <VisitRecordingChoice settings={settings} onToggle={toggleSettings} />}
@@ -175,24 +200,45 @@ export function SettingsApp() {
               offering the real sign-in, which upgrades that account in place. */}
           {!ready ? null : session && !session.user.is_anonymous ? (
             <div className="space-y-2">
-              {session.user.email && <p className="text-sm text-gray-600">Signed in as {session.user.email}</p>}
-              <button onClick={() => signOut()} className={`w-full ${SECONDARY_BUTTON}`}>
+              {session.user.email && <p className="text-sm text-fg-secondary">Signed in as {session.user.email}</p>}
+              <Button variant="secondary" className="w-full" onClick={() => signOut()}>
                 Sign out
-              </button>
+              </Button>
             </div>
           ) : (
             <LoginPanel surface="settings" />
           )}
         </Section>
 
-        <section className="border-t border-gray-200 pt-4">
-          <button
+        <Section title="Feedback">
+          <p className="text-sm text-fg-secondary">
+            We would appreciate feedback. Fill in our{" "}
+            <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+              feedback form
+            </a>
+            , or book a video call with us in{" "}
+            {BOOK_CALL_URLS.map(({ label, url }, index) => (
+              <span key={url}>
+                {index > 0 && " or "}
+                <a href={url} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "link" })}>
+                  {label}
+                </a>
+              </span>
+            ))}
+            .
+          </p>
+        </Section>
+
+        <section className="border-t border-line pt-4">
+          <Button
+            variant="quiet"
             onClick={() => setAdvancedOpen((open) => !open)}
             aria-expanded={advancedOpen}
-            className="text-sm font-semibold text-gray-900"
+            className="flex items-center gap-1 text-sm"
           >
-            {advancedOpen ? "Hide advanced settings" : "Advanced settings"}
-          </button>
+            <ChevronIcon size={16} aria-hidden className={cn("transition-transform", advancedOpen && "rotate-90")} />
+            {advancedOpen ? "Hide advanced settings" : "Show advanced settings"}
+          </Button>
           {advancedOpen && settings && (
             <div className="mt-4">
               <AdvancedSettings settings={settings} onToggle={toggleSettings} />
@@ -200,7 +246,7 @@ export function SettingsApp() {
           )}
         </section>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

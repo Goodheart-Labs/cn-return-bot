@@ -11,7 +11,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import type { Post } from "../../api/fetchEligiblePosts";
-import { fetchInBatches } from "../../api/paging";
+import { fetchInBatches } from "../../everything-core/paging";
 import { sortByWeightedScore } from "../../pipeline/orchestration/utils/tweetSorting";
 import { applyRankOrder, RECENCY_AND_IMPRESSIONS_WEIGHTS } from "./run";
 
@@ -32,6 +32,7 @@ const tweetIds = (items ?? [])
 const rows = await fetchInBatches<{ tweet_id: string; posted_at: string | null; impressions: number | null }>(
   (chunk) => client.from("feed_tweets").select("tweet_id, posted_at, impressions").in("tweet_id", chunk),
   tweetIds,
+  "tweet_id",
   { label: "resortUpload feed_tweets" },
 );
 

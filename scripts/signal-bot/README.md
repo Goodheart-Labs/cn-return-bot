@@ -1,4 +1,29 @@
-The Docker worker shares the existing Signal bridge at `127.0.0.1:8080` on the
+Every reply the bot sends starts with “Bot” (plain messages as `Bot: …`, tweet
+conversations as `Bot · #n · <tweet id>`), because it may post from the owner's
+own Signal account. Tweet links start conversations; exact commands (`yes post`,
+`draft`, `cancel`, `#n …`) are matched by the application; any other message
+goes to the current conversation, or, with none, gets a plain-language answer
+about the bot and its conversations from a chat model that cannot draft or submit.
+
+To use the same engine from a terminal instead of Signal, run
+`bun src/signal-bot/main.ts --console [--dry-run]` from a checkout with the
+X, OpenRouter, and (live) Supabase variables set. It reads one message per
+line, prints replies, keeps its own state file (`output/signal-bot-console*.sqlite`),
+and submits approved notes through the same shared X queue as the Signal worker.
+Only one console worker can hold that state file at a time.
+
+With its own Signal account the bot answers only when addressed
+(`SIGNAL_ADDRESSED_ONLY=true`: tweet links, `#n`, @-mentions, quotes of its
+messages, or a leading “bot”). `signal-api.compose.yml` runs a bridge for that
+account on `127.0.0.1:8081`, with the account data in
+`/opt/cn-return-bot/signal-cli-config`. Registration needs the bridge in
+`normal` mode (`SIGNAL_API_MODE=normal … up -d`), a captcha from
+signalcaptchas.org, `POST /v1/register/<number>` with `{"captcha": …}`, the
+SMS code to `POST /v1/register/<number>/verify/<code>`, and
+`PUT /v1/profiles/<number>` for the display name; then recreate the service
+in json-rpc mode and set `SIGNAL_API_URL=http://127.0.0.1:8081` for the worker.
+
+The Docker worker otherwise shares the existing Signal bridge at `127.0.0.1:8080` on the
 Linux host. Its Compose project contains only the new notes worker. The gym
 bridge and watcher continue under their existing project.
 

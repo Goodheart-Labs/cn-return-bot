@@ -1,0 +1,29 @@
+{
+  "since": "2026-09-02T15:38:02.722Z",
+  "until": "2026-09-16T15:38:02.722Z",
+  "days": 14,
+  "xRuns": 8988,
+  "everythingCheckRuns": 3708,
+  "ratingRows": 85,
+  "ratingRowsWithLogs": 0,
+  "serperErrorMessages": [
+    {
+      "id": "ff57a51c-8bb1-40ac-8655-2389da6c74a1",
+      "created_at": "2026-09-15T18:22:37.924498+00:00",
+      "final_stage": "error",
+      "error_message": "serper loop final: model output was not valid JSON. content=\"I have sufficient evidence. The event happened Sept 12–13, 2026 at SIIMA in Bengaluru, and coverage published before/around this tweet's posting already characterized the bottle throw as playful bante\""
+    },
+    {
+      "id": "d09ca909-b028-4f73-af83-af965e8a2c22",
+      "created_at": "2026-09-14T22:53:15.838106+00:00",
+      "final_stage": "error",
+      "error_message": "serper loop final (turn 5): model output was not valid JSON. content=\"I now have all the evidence needed. The picture is clear:\n\n1. **The game was not out when the tweet was posted.** Marvel's Wolverine launches September 15, 2026, at 12 AM ET / 9 PM PT — a simultaneous\""
+    },
+    {
+      "id": "fb42e2d3-638b-49c7-b840-b8b69fba61af",
+      "created_at": "2026-09-07T16:54:31.262869+00:00",
+      "final_stage": "error",
+      "error_message": "serper loop final (turn 2): model output was not valid JSON. content=\"{\"findings\": \"The post's premise is fabricated. Ariana Grande never announced a pregnancy with Ricky Alvarez: the quoted 'ultrasound story' images are fake — the ultrasound monitor displays a differen\""
+    }
+  ]
+}
