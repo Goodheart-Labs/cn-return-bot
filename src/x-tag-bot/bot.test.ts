@@ -66,7 +66,7 @@ describe("a tag", () => {
       { handle: "priya", text: "is this true? Dharavi still exists" });
     expect(h.deps.submit).toHaveBeenCalledWith(expect.objectContaining({ id: TARGET }), NOTE);
     expect(h.replies).toHaveLength(1);
-    expect(h.lastReply().text).toStartWith(`I submitted this Community Note:\n\n${NOTE.text}`);
+    expect(h.lastReply().text).toStartWith(`I submitted this Community Note:\n\n${NOTE.text} ${NOTE.sources[0]}\n\n`);
     expect(h.lastReply().text).toContain("https://x.com/i/communitynotes/note-1");
   });
 

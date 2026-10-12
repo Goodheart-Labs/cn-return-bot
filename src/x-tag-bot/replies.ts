@@ -1,3 +1,5 @@
+import { joinNoteWithSources } from "../pipeline/utils/noteLength";
+
 /**
  * Every fixed text the bot posts. No model writes these, so a model can never
  * claim that a note was submitted. A model writes only the no-note reply.
@@ -16,12 +18,8 @@ function noteLink(noteId: string): string {
   return `https://x.com/i/communitynotes/${noteId}`;
 }
 
-function noteBlock(draft: NoteDraft): string {
-  return `${draft.text}\n\n${draft.sources.join("\n")}`;
-}
-
 export function submittedNoteReply(draft: NoteDraft, noteId: string): string {
-  return `I submitted this Community Note:\n\n${noteBlock(draft)}\n\nCommunity Notes contributors now rate it before it can show on the post.\n${noteLink(noteId)}`;
+  return `I submitted this Community Note:\n\n${joinNoteWithSources(draft.text, draft.sources)}\n\nCommunity Notes contributors now rate it before it can show on the post.\n${noteLink(noteId)}`;
 }
 
 /** The note has to wait. The bot keeps trying and says what would help. */
@@ -29,7 +27,7 @@ export function waitingNoteReply(draft: NoteDraft, reason: WaitReason): string {
   const why = reason === "eligibility"
     ? "X doesn't take notes from me on this post yet. You can help by requesting a Community Note in the post's menu. I'll keep trying for 3 hours and submit it as soon as X allows it."
     : "X's daily limit for AI-written notes is used up right now. I'll keep trying for 3 hours and submit it as soon as there's room.";
-  return `I wrote this Community Note:\n\n${noteBlock(draft)}\n\n${why}`;
+  return `I wrote this Community Note:\n\n${joinNoteWithSources(draft.text, draft.sources)}\n\n${why}`;
 }
 
 /** Posted under the bot's own waiting note once it went in. */

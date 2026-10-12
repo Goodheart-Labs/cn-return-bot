@@ -21,6 +21,7 @@ import { getSupabaseClient, SupabaseLogger } from "../api/supabaseClient";
 import { runTweetCheck } from "../pipeline/orchestration/runTweetCheck";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import { submitApprovedNote } from "../pipeline/orchestration/submitApprovedNote";
+import { joinNoteWithSources } from "../pipeline/utils/noteLength";
 import { nestDotKeys } from "../pipeline/utils/tweetLog";
 import { requestTweetCheck } from "../service/client";
 import { TAG_BOT_PICKS, TagBot } from "./bot";
@@ -96,7 +97,7 @@ async function dryRun(postUrl: string | undefined, comment: string | undefined):
       return true;
     },
     submit: async (_post: Post, draft: NoteDraft) => {
-      print("would submit", `${draft.text}\n${draft.sources.join("\n")}`);
+      print("would submit", joinNoteWithSources(draft.text, draft.sources));
       return { status: "submitted", noteId: "dry-run" };
     },
     now: () => new Date(),
