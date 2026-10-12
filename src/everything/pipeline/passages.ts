@@ -234,11 +234,27 @@ export function describeProblems(parse: PassageParse): string {
   return lines.join(" ");
 }
 
-/** The paragraph, or paragraphs, around a passage. Paragraphs are separated by a blank line. */
+/** The longest paragraph that is given as it is. A longer one, such as a whole
+ *  transcript chunk, which has no blank lines, is cut down to a window. */
+const MAX_PARAGRAPH_CHARS = 1_500;
+const PARAGRAPH_WINDOW_CHARS_EACH_SIDE = 600;
+
+/** The paragraph, or paragraphs, around a passage. Paragraphs are separated by a
+ *  blank line. A very long paragraph gives a window around the passage instead,
+ *  which starts and ends at a line break or a space. */
 export function paragraphAround(body: string, span: { start: number; end: number }): string {
   const before = body.lastIndexOf("\n\n", span.start);
   const after = body.indexOf("\n\n", span.end);
-  return body.slice(before === -1 ? 0 : before + 2, after === -1 ? body.length : after).trim();
+  const start = before === -1 ? 0 : before + 2;
+  const end = after === -1 ? body.length : after;
+  if (end - start <= MAX_PARAGRAPH_CHARS) return body.slice(start, end).trim();
+  const earliest = Math.max(start, span.start - PARAGRAPH_WINDOW_CHARS_EACH_SIDE);
+  const latest = Math.min(end, span.end + PARAGRAPH_WINDOW_CHARS_EACH_SIDE);
+  const breakBefore = Math.max(body.lastIndexOf("\n", earliest), body.lastIndexOf(" ", earliest));
+  const breakAfter = [body.indexOf("\n", latest), body.indexOf(" ", latest)].filter((i) => i !== -1);
+  const from = breakBefore < start ? start : breakBefore + 1;
+  const to = breakAfter.length === 0 ? end : Math.min(end, ...breakAfter);
+  return body.slice(from, to).trim();
 }
 
 /** The claims of the passages, each with the passage it sits in and the paragraph

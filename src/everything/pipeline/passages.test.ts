@@ -128,3 +128,32 @@ describe("paragraphAround", () => {
     expect(paragraphAround(body, { start, end: start + 10 })).toBe("The company was founded in 2010.");
   });
 });
+
+describe("paragraphAround for a very long paragraph", () => {
+  const lines = Array.from({ length: 300 }, (_, i) => `line ${i} of a transcript with a few words`);
+  const transcript = lines.join("\n");
+
+  test("gives a window of whole words around the passage, which holds the passage", () => {
+    const passage = lines[150]!;
+    const start = transcript.indexOf(passage);
+    const paragraph = paragraphAround(transcript, { start, end: start + passage.length });
+    expect(paragraph).toContain(passage);
+    expect(paragraph.length).toBeLessThan(1_500);
+    const windowStart = transcript.indexOf(paragraph);
+    expect(windowStart).toBeGreaterThan(0);
+    expect(/\s/.test(transcript[windowStart - 1]!)).toBe(true);
+    expect(/\s/.test(transcript[windowStart + paragraph.length]!)).toBe(true);
+  });
+
+  test("keeps a window inside the text at its start and its end", () => {
+    expect(paragraphAround(transcript, { start: 0, end: 10 }).startsWith("line 0 of")).toBe(true);
+    const start = transcript.indexOf(lines[299]!);
+    expect(paragraphAround(transcript, { start, end: transcript.length }).endsWith("line 299 of a transcript with a few words")).toBe(true);
+  });
+
+  test("gives a long passage in full", () => {
+    const start = transcript.indexOf(lines[10]!);
+    const end = transcript.indexOf(lines[60]!) + lines[60]!.length;
+    expect(paragraphAround(transcript, { start, end })).toContain(transcript.slice(start, end));
+  });
+});
