@@ -107,6 +107,7 @@
     "everything-consume-requests": "bun run src/everything/consumeRequests.ts",
     "everything-refresh-avatars": "bun run src/everything/projectAvatars.ts",
     "everything-prioritize": "bun run src/everything/prioritize.ts",
+    "donation-payout": "bun run src/everything/donationPayout.ts",
     "everything-auto-run": "bun run src/everything/autoRun.ts",
     "everything-worker": "bun run src/everything/worker.ts",
     "x-tag-bot": "bun run src/x-tag-bot/main.ts",
