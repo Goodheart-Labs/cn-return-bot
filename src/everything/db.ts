@@ -912,7 +912,7 @@ function inWorkerOrder(a: { priority: number; published_at: string | null; creat
 }
 
 /** Every visited creator's score, counted in the database (see
- *  everything_creator_visit_scores, migration 119). `lastPosts` is how many of
+ *  everything_creator_visit_scores, migrations 119 and 121). `lastPosts` is how many of
  *  a creator's most recently visited posts the average covers. */
 export async function fetchCreatorVisitScores(lastPosts: number): Promise<CreatorVisitScore[]> {
   // One row per creator anyone visited, which passed 1,000 rows in September

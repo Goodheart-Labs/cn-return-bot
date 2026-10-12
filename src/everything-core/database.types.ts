@@ -347,6 +347,7 @@ export type Database = {
           feed_url: string | null
           id: string
           item_id: string | null
+          page_url: string | null
           reader_hash: string | null
           url: string
           visited_at: string
@@ -355,6 +356,7 @@ export type Database = {
           feed_url?: string | null
           id?: string
           item_id?: string | null
+          page_url?: never
           reader_hash?: string | null
           url: string
           visited_at?: string
@@ -363,6 +365,7 @@ export type Database = {
           feed_url?: string | null
           id?: string
           item_id?: string | null
+          page_url?: never
           reader_hash?: string | null
           url?: string
           visited_at?: string
@@ -2294,6 +2297,14 @@ export type Database = {
         }
         Returns: string
       }
+      everything_creator_visit_score: {
+        Args: { creator_key: string; last_posts: number }
+        Returns: {
+          people: number
+          posts: number
+          visitors_per_post: number
+        }[]
+      }
       everything_creator_visit_scores: {
         Args: { last_posts: number }
         Returns: {
@@ -2429,10 +2440,6 @@ export type Database = {
       everything_start_minisite_check: {
         Args: { target_minisite: string }
         Returns: undefined
-      }
-      everything_visit_creator: {
-        Args: { feed_url: string; url: string }
-        Returns: string
       }
       everything_visit_page: { Args: { url: string }; Returns: string }
       fact_check_consume: {

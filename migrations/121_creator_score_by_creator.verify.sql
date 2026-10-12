@@ -5,8 +5,8 @@
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"   (with PGPASSWORD=test)
 --   $PSQL -f migrations/119_creator_visit_score.fixture.sql
 --   $PSQL --single-transaction -f migrations/119_creator_visit_score.sql
---   $PSQL --single-transaction -f migrations/121_visit_page_column.sql
---   $PSQL -f migrations/121_visit_page_column.verify.sql
+--   $PSQL --single-transaction -f migrations/121_creator_score_by_creator.sql
+--   $PSQL -f migrations/121_creator_score_by_creator.verify.sql
 --
 -- The scores are the ones migration 119's checks expect, with one difference.
 -- The fixture has a row with a reader hash and no feed address, on a
@@ -36,6 +36,12 @@ select
   not exists (select 1 from everything_link_visits where page_url is null) as every_row_has_its_page,
   (select page_url = 'https://astralcodexten.substack.com/p/post-1' from everything_link_visits where url like '%utm_source%') as old_row_page_strips_tracking,
   to_regprocedure('everything_visit_creator(text,text)') is null as creator_function_dropped,
+  (select visitors_per_post = 2 and posts = 10 and people = 5 from everything_creator_visit_score('https://astralcodexten.substack.com', 10)) as one_creator_scored_alone,
+  not exists (select 1 from everything_creator_visit_score('https://nobody.substack.com', 10)) as unvisited_creator_has_no_row,
   (select author_visitors_per_post = 2 from everything_recent_posts(10, 10) where title = 'ACX post') as dashboard_shows_author_score,
+  (select author_visitors_per_post is null from everything_recent_posts(10, 10) where title = 'A web page') as dashboard_project_without_feed_has_no_score,
+  to_regclass('everything_link_visits_creator_idx') is not null as creator_index_exists,
+  not has_function_privilege('anon', 'everything_creator_visit_score(text,int)', 'execute') as anon_cannot_read_one_score,
   not has_function_privilege('anon', 'everything_creator_visit_scores(int)', 'execute') as anon_cannot_read_scores,
-  has_function_privilege('service_role', 'everything_creator_visit_scores(int)', 'execute') as service_role_can_read_scores;
+  has_function_privilege('service_role', 'everything_creator_visit_scores(int)', 'execute') as service_role_can_read_scores,
+  has_function_privilege('anon', 'everything_recent_posts(int,int)', 'execute') as anon_can_read_dashboard;
