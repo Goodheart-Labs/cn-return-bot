@@ -68,12 +68,17 @@ export interface PageFilters {
   highValue?: boolean;
   ab?: Record<string, string>;
   topicIds?: string[];
+  /** Page through every pipeline run instead of the classified items. */
+  everyRun?: boolean;
 }
 
 /**
  * Turns the filter bar's settings into the single flat filter the page and counts
- * functions take. The filter bar has four modes, and the first one that applies
+ * functions take. The filter bar has five modes, and the first one that applies
  * wins. The rules below are the ones the interface promises.
+ *
+ * When "every run" is on, the list is every pipeline run, posted or not, and only
+ * the seen filter narrows it.
  *
  * When at least one topic set is selected, the topic filter takes over. Every
  * note on those topics shows, whatever its failure type. Drafts stay hidden
@@ -92,7 +97,7 @@ export interface PageFilters {
  * every failure type. Drafts are hidden unless their own pill is selected, and
  * the seen filter narrows the list.
  *
- * The A/B filters apply in all four modes.
+ * The A/B filters apply in all five modes.
  */
 export function compileFilters(filters: FilterState, abFilters: ABFilters): PageFilters {
   const f: PageFilters = {};
@@ -104,6 +109,12 @@ export function compileFilters(filters: FilterState, abFilters: ABFilters): Page
   if (Object.keys(ab).length > 0) f.ab = ab;
 
   const seen = filters.seen === "seen" ? true : filters.seen === "unseen" ? false : undefined;
+
+  if (filters.everyRun) {
+    f.everyRun = true;
+    if (seen !== undefined) f.seen = seen;
+    return f;
+  }
 
   if (filters.topicSets.size > 0) {
     f.topicIds = topicIdsForSets(filters.topicSets);
@@ -157,8 +168,9 @@ export async function fetchDashboardPage(
   cursor: PageCursor | null,
   pageSize: number = PAGE_SIZE,
 ): Promise<DashboardPage> {
-  const { data, error } = await supabase.rpc("review_dashboard_page", {
-    p_filters: filters,
+  const { everyRun, ...serverFilters } = filters;
+  const { data, error } = await supabase.rpc(everyRun ? "review_dashboard_runs_page" : "review_dashboard_page", {
+    p_filters: serverFilters,
     p_cursor_date: cursor?.d ?? null,
     p_cursor_id: cursor?.id ?? null,
     p_page_size: pageSize,
