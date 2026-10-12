@@ -445,7 +445,7 @@ Two separate X apps exist, in X's developer portal, and a third is planned.
    `X_TAG_BOT_ACCESS_TOKEN_SECRET`). The app's bearer token
    (`X_TAG_BOT_BEARER_TOKEN`) reads the X Activity API stream. OAuth 2.0 with a
    callback address is needed once, for `bun run x-tag-bot-setup`, which
-   creates the stream's two subscriptions (`post.mention.create` and
-   `post.reply.create` for the bot's user id) and prints `X_TAG_BOT_USER_ID`.
+   creates the stream's subscription (`post.mention.create` for the bot's
+   user id) and prints `X_TAG_BOT_USER_ID`.
    All of these go into the services machine's `service.env`. Record the
-   subscription ids here once they exist.
+   subscription id here once it exists.

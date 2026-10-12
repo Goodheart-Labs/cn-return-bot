@@ -1,14 +1,14 @@
 /**
- * One-time setup of the bot's X Activity API subscriptions. Run it by hand
+ * One-time setup of the bot's X Activity API subscription. Run it by hand
  * once the @CommonNotesBot account and its developer app exist (GOO-368).
  *
  *   bun run src/x-tag-bot/setup.ts
  *
- * Mentions and replies are private events, so X creates their subscriptions
+ * Mentions are private events, so X creates their subscription
  * only with a login of the bot account itself: an OAuth 2.0 user token with the
  * tweet.read scope. The script prints a login link, you open it while logged
  * in as @CommonNotesBot, and you paste back the address the browser lands on.
- * It then creates both subscriptions and prints the account's user id, which
+ * It then creates the subscription and prints the account's user id, which
  * goes into X_TAG_BOT_USER_ID. The stream itself runs on the app's bearer
  * token, so this login is never needed again.
  *
@@ -25,7 +25,7 @@ const TOKEN_URL = "https://api.x.com/2/oauth2/token";
 const ME_URL = "https://api.x.com/2/users/me";
 const SUBSCRIPTIONS_URL = "https://api.x.com/2/activity/subscriptions";
 const SCOPES = "tweet.read users.read";
-const EVENT_TYPES = ["post.mention.create", "post.reply.create"];
+const EVENT_TYPE = "post.mention.create";
 
 const clientId = requiredEnv("X_TAG_BOT_CLIENT_ID");
 const clientSecret = requiredEnv("X_TAG_BOT_CLIENT_SECRET");
@@ -61,14 +61,12 @@ const userHeaders = { Authorization: `Bearer ${token.access_token}`, "Content-Ty
 const me = (await call(ME_URL, { headers: userHeaders })).data;
 console.log(`\nLogged in as @${me.username}. Set X_TAG_BOT_USER_ID=${me.id}`);
 
-for (const eventType of EVENT_TYPES) {
-  const subscription = await call(SUBSCRIPTIONS_URL, {
-    method: "POST",
-    headers: userHeaders,
-    body: JSON.stringify({ event_type: eventType, filter: { user_id: me.id }, tag: "x-tag-bot" }),
-  });
-  console.log(`Subscribed to ${eventType}: ${JSON.stringify(subscription.data)}`);
-}
+const subscription = await call(SUBSCRIPTIONS_URL, {
+  method: "POST",
+  headers: userHeaders,
+  body: JSON.stringify({ event_type: EVENT_TYPE, filter: { user_id: me.id }, tag: "x-tag-bot" }),
+});
+console.log(`Subscribed to ${EVENT_TYPE}: ${JSON.stringify(subscription.data)}`);
 
 async function call(url: string, init: RequestInit): Promise<any> {
   const response = await fetch(url, init);

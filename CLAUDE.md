@@ -183,12 +183,12 @@ Things that are easy to get wrong:
 
 `src/x-tag-bot/` runs as `cn-x-tag-bot` on the services box (GOO-212; the plan with every prompt and reply is linked on the ticket).
 
-- A tag reaches the bot through the X Activity API stream (`post.mention.create`, `post.reply.create`). When the stream ends the process exits and systemd restarts it; a tag sent during a longer outage gets no answer, by decision.
-- The first answer is one claim-check `/check-tweet` call with `TAG_BOT_PICKS` (no filters, no verifier, no scoring gates, Opus 5.5 at medium reasoning) and the tagger's comment as the note request. Sorting replies (Muse) and revising (Opus 5.5 with web search and fetch) run in the bot.
+- A tag reaches the bot through the X Activity API stream (`post.mention.create`). When the stream ends the process exits and systemd restarts it; a tag sent during a longer outage gets no answer, by decision. Replies to the bot's own posts mention it too, and they are ignored.
+- A tag is answered once: one claim-check `/check-tweet` call with `TAG_BOT_PICKS` (no filters, no verifier, no scoring gates, Opus 5.5 at medium reasoning) and the tagger's comment as the note request. When no note is needed, Muse writes the reply that says why. A second tag on the same post gets a link to the first answer.
 - The bot submits a note itself, with no approval step, through `submitApprovedNote` in the `x_tag` lane, which shares the Signal bot's priority queue. Before submitting, `evaluate_note` checks whether X takes our notes on the post.
-- When it can't submit yet, it posts the note as waiting and says why: X doesn't take our notes on the post yet (then requesting a Community Note helps), or the daily limit is full. It retries every 2 minutes for 3 hours. Replies with corrections revise a waiting note, and the newest version on a post is the one that goes in.
-- Every fixed reply is in `replies.ts`. Conversations are stored in `x_tag_threads` and `x_tag_posts` (migration 120).
-- `bun run x-tag-bot --dry-run <post-url> "<comment>" "<reply>" ...` tries it locally without X: it prints every reply, stores nothing and submits nothing.
+- When it can't submit yet, it posts the note and says why: X doesn't take our notes on the post yet (then requesting a Community Note helps), or the daily limit is full. It retries every 2 minutes for 3 hours and replies under its answer once the note went in or it gave up.
+- Every fixed reply is in `replies.ts`. Each tag is one row in `x_tag_requests` (migration 120).
+- `bun run x-tag-bot --dry-run <post-url> "<comment>"` tries it locally without X: it prints the reply, stores nothing and submits nothing.
 
 ## Review dashboard
 

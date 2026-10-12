@@ -1,58 +1,41 @@
 -- The X tag bot (GOO-212). People tag @CommonNotesBot under a post, and the bot
 -- researches it and submits a Community Note, or says why it can't yet.
 --
--- A thread is one tag and everything below it. Every post in it, the people's
--- and the bot's, is one row in x_tag_posts, so the reply tree can be rebuilt
--- from parent_tweet_id. Only the service role reads or writes these tables.
+-- One row per tag. The bot answers every tag once, under the tag, and a note
+-- that has to wait gets one more reply under that answer when it is settled.
+-- Only the service role reads or writes this table.
 
-create table public.x_tag_threads (
-  id uuid primary key default gen_random_uuid(),
+create table public.x_tag_requests (
+  -- The post that tagged the bot. A tag the stream delivers twice is stored once.
+  request_tweet_id text primary key check (request_tweet_id ~ '^[0-9]+$'),
   -- The post a note would go on.
   target_tweet_id text not null check (target_tweet_id ~ '^[0-9]+$'),
-  -- The post that tagged the bot.
-  request_tweet_id text not null unique check (request_tweet_id ~ '^[0-9]+$'),
   requester_id text not null,
   requester_handle text not null,
-  -- The rendered post the first research read, and its findings. Revisions
-  -- read the same, so they see the same post, media and comments.
-  post_context text,
-  findings text,
-  -- The pipeline_runs row of the first answer, with its full log and cost.
-  pipeline_run_id uuid,
-  created_at timestamptz not null default now()
-);
-create index x_tag_threads_target_idx on public.x_tag_threads (target_tweet_id, created_at desc);
-
-create table public.x_tag_posts (
-  tweet_id text primary key check (tweet_id ~ '^[0-9]+$'),
-  thread_id uuid not null references public.x_tag_threads (id) on delete cascade,
-  parent_tweet_id text,
-  author_id text not null,
-  author_handle text not null,
-  role text not null check (role in ('human', 'bot')),
-  -- A human post is the request, or one of the two kinds the classifier
-  -- sorts replies into. A bot post is a note that waits or went in, a no-note
-  -- answer, the answer to feedback, or one of the fixed replies.
-  kind text not null check (kind in (
-    'request', 'feedback', 'other',
-    'waiting', 'submitted', 'no_note', 'answer', 'other_version_submitted',
-    'already_submitted', 'gave_up', 'refused', 'unreadable'
-  )),
   text text not null,
-  -- On a bot post that shows a note: the note body and its sources, exactly
-  -- what goes in when it is submitted.
+  -- 'researching' until the bot answers, then what the answer was. A
+  -- 'waiting' note is retried until it becomes 'submitted', 'gave_up',
+  -- 'already_submitted' or 'deleted'.
+  status text not null default 'researching' check (status in (
+    'researching', 'submitted', 'waiting', 'gave_up', 'no_note',
+    'already_submitted', 'repeated', 'unreadable', 'deleted'
+  )),
+  -- The bot's reply under the tag.
+  answer_tweet_id text check (answer_tweet_id ~ '^[0-9]+$'),
+  -- The note body and its sources, exactly what goes in when it is submitted.
   draft jsonb,
+  note_id text,
+  -- The pipeline_runs row of the research, with its full log and cost.
+  pipeline_run_id uuid,
   created_at timestamptz not null default now(),
-  check ((role = 'human') = (kind in ('request', 'feedback', 'other'))),
-  check (kind <> 'waiting' or draft is not null)
+  check (status not in ('waiting', 'submitted', 'gave_up') or draft is not null)
 );
-create index x_tag_posts_thread_idx on public.x_tag_posts (thread_id, created_at);
-create index x_tag_posts_parent_idx on public.x_tag_posts (parent_tweet_id);
+create index x_tag_requests_target_idx on public.x_tag_requests (target_tweet_id, created_at desc);
+create index x_tag_requests_waiting_idx on public.x_tag_requests (created_at) where status = 'waiting';
 
-alter table public.x_tag_threads enable row level security;
-alter table public.x_tag_posts enable row level security;
-revoke all on public.x_tag_threads, public.x_tag_posts from public, anon, authenticated;
-grant select, insert, update, delete on public.x_tag_threads, public.x_tag_posts to service_role;
+alter table public.x_tag_requests enable row level security;
+revoke all on public.x_tag_requests from public, anon, authenticated;
+grant select, insert, update, delete on public.x_tag_requests to service_role;
 
 -- The tag bot submits in its own lane. It shares the approved-notes queue with
 -- the Signal bot, so both get priority over the automatic pipeline.

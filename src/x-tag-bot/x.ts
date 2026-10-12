@@ -1,7 +1,7 @@
 /**
  * The bot's side of the X API. Replies are posted as @CommonNotesBot with its
- * OAuth 1.0a keys (X_TAG_BOT_*). Tags and replies arrive through the X Activity
- * API stream, read with the app's bearer token. The eligibility check uses the
+ * OAuth 1.0a keys (X_TAG_BOT_*). Tags arrive through the X Activity API
+ * stream, read with the app's bearer token. The eligibility check uses the
  * notewriter's keys, because only the notewriter can write notes.
  */
 
@@ -15,16 +15,15 @@ const STREAM_URL = "https://api.x.com/2/activity/stream";
 const BACKFILL_MINUTES = 5;
 const REQUEST_TIMEOUT_MS = 30_000;
 
-/** A post that tagged the bot or replied to one of its posts. */
-export interface IncomingPost {
-  /** "mention" when the post writes the bot's handle, "reply" when it replies
-   *  directly to one of the bot's posts. */
-  event: "mention" | "reply";
+/** A post that mentions the bot. */
+export interface Tag {
   id: string;
   text: string;
   authorId: string;
   authorHandle: string;
   repliedToId?: string;
+  /** The author of the post this one replies to. */
+  repliedToUserId?: string;
   quotedId?: string;
 }
 
@@ -54,7 +53,7 @@ export async function isEligibleForNotes(postId: string, noteText: string): Prom
 
 /** Reads the Activity API stream until it ends or the signal aborts. X sends
  *  one JSON event per line and blank lines to keep the connection alive. */
-export async function readActivityStream(onPost: (post: IncomingPost) => void, signal: AbortSignal): Promise<void> {
+export async function readActivityStream(onTag: (tag: Tag) => void, signal: AbortSignal): Promise<void> {
   const response = await fetch(`${STREAM_URL}?backfill_minutes=${BACKFILL_MINUTES}`, {
     headers: { Authorization: `Bearer ${requiredEnv("X_TAG_BOT_BEARER_TOKEN")}` },
     signal,
@@ -71,27 +70,26 @@ export async function readActivityStream(onPost: (post: IncomingPost) => void, s
     buffered = lines.pop() ?? "";
     for (const line of lines) {
       if (!line.trim()) continue;
-      const post = incomingPostOf(JSON.parse(line));
-      if (post) onPost(post);
+      const tag = tagOf(JSON.parse(line));
+      if (tag) onTag(tag);
     }
   }
 }
 
-/** The post inside a post.mention.create or post.reply.create event. Other
- *  events are ignored. */
-export function incomingPostOf(event: any): IncomingPost | null {
+/** The post inside a post.mention.create event. Other events are ignored. */
+export function tagOf(event: any): Tag | null {
   const data = event?.data;
-  if (data?.event_type !== "post.mention.create" && data?.event_type !== "post.reply.create") return null;
+  if (data?.event_type !== "post.mention.create") return null;
   const payload = data.payload;
   const author = (data.includes?.users ?? []).find((user: any) => user.id === payload.author_id);
   const referenced = (type: string) => payload.referenced_tweets?.find((ref: any) => ref.type === type)?.id;
   return {
-    event: data.event_type === "post.mention.create" ? "mention" : "reply",
     id: payload.id,
     text: payload.text,
     authorId: payload.author_id,
     authorHandle: author?.username ?? payload.author_id,
     repliedToId: referenced("replied_to"),
+    repliedToUserId: payload.in_reply_to_user_id,
     quotedId: referenced("quoted"),
   };
 }

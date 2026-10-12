@@ -1,79 +1,64 @@
 /**
- * Where the bot keeps its conversations: x_tag_threads and x_tag_posts
- * (migration 120). The Supabase store is the real one. The memory store backs
- * the tests and the dry run, so a dry run never writes made-up post ids into
- * production tables.
+ * Where the bot keeps its tags: one x_tag_requests row per tag (migration 120).
+ * The Supabase store is the real one. The memory store backs the tests and the
+ * dry run, so a dry run never writes made-up post ids into production tables.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { ReplyKind } from "./prompts";
 import type { NoteDraft } from "./replies";
 
-export type HumanKind = "request" | ReplyKind;
-export type BotKind =
-  | "waiting" | "submitted" | "no_note" | "answer" | "other_version_submitted"
-  | "already_submitted" | "gave_up" | "refused" | "unreadable";
+/** Where a tag stands. "researching" until the bot answers, then the answer:
+ *  - "submitted": the note went in, right away or after waiting.
+ *  - "waiting": the note is shown and the bot keeps trying to submit it.
+ *  - "gave_up": the note still waited after three hours.
+ *  - "no_note": the research found nothing to correct.
+ *  - "already_submitted": the post already has a note from one of our bots.
+ *  - "repeated": the answer links to the bot's earlier answer on the post.
+ *  - "unreadable", "deleted": the post can't be read or was deleted. */
+export type RequestStatus =
+  | "researching" | "submitted" | "waiting" | "gave_up" | "no_note"
+  | "already_submitted" | "repeated" | "unreadable" | "deleted";
 
-export interface ThreadRow {
-  id: string;
-  targetTweetId: string;
+export interface RequestRow {
   requestTweetId: string;
+  targetTweetId: string;
   requesterId: string;
   requesterHandle: string;
-  postContext?: string;
-  findings?: string;
+  text: string;
+  status: RequestStatus;
+  /** The bot's reply under the tag. */
+  answerTweetId?: string;
+  draft?: NoteDraft;
+  noteId?: string;
   pipelineRunId?: string;
   createdAt: string;
 }
 
-export interface PostRow {
-  tweetId: string;
-  threadId: string;
-  parentTweetId: string | null;
-  authorId: string;
-  authorHandle: string;
-  role: "human" | "bot";
-  kind: HumanKind | BotKind;
-  text: string;
-  /** Set on every bot post that shows a note: a waiting note, and a note that
-   *  went in with the first reply. */
-  draft?: NoteDraft;
-  createdAt: string;
-}
+export type NewRequest = Pick<RequestRow, "requestTweetId" | "targetTweetId" | "requesterId" | "requesterHandle" | "text">;
+export type RequestUpdate = Partial<Pick<RequestRow, "answerTweetId" | "draft" | "noteId" | "pipelineRunId">> & { status: RequestStatus };
 
-export type NewThread = Omit<ThreadRow, "id" | "createdAt">;
-export type NewPost = Omit<PostRow, "createdAt">;
+/** An earlier answer on a post that a second tag is pointed to. A note that
+ *  gave up, or a post the bot couldn't read, gets new research instead. */
+const REPEATABLE: RequestStatus[] = ["submitted", "waiting", "no_note"];
 
 export interface TagStore {
-  /** Returns null when the request post already has a thread. */
-  createThread(thread: NewThread): Promise<ThreadRow | null>;
-  updateThread(id: string, fields: Pick<ThreadRow, "postContext" | "findings" | "pipelineRunId">): Promise<void>;
-  thread(id: string): Promise<ThreadRow>;
-  /** Returns false when the post is already stored. */
-  addPost(post: NewPost): Promise<boolean>;
-  setKind(tweetId: string, kind: HumanKind): Promise<void>;
-  post(tweetId: string): Promise<PostRow | null>;
-  threadsOnTarget(targetTweetId: string): Promise<ThreadRow[]>;
-  /** Every post of every thread on the target, oldest first. */
-  postsOnTarget(targetTweetId: string): Promise<PostRow[]>;
-  /** The targets with a waiting note posted since the given time. */
-  waitingTargetsSince(since: Date): Promise<string[]>;
+  /** Returns false when the tag is already stored, so a tag the stream
+   *  delivers twice is answered once. */
+  createRequest(request: NewRequest): Promise<boolean>;
+  update(requestTweetId: string, update: RequestUpdate): Promise<void>;
+  /** The bot's newest answer on the post that a second tag is pointed to. */
+  earlierAnswerOn(targetTweetId: string): Promise<string | null>;
+  waiting(): Promise<RequestRow[]>;
   /** Our submitted note on the post, from any of our bots. */
   noteIdOnPost(targetTweetId: string): Promise<string | null>;
 }
 
-
 export function createSupabaseStore(db: SupabaseClient): TagStore {
-  const toThread = (row: any): ThreadRow => ({
-    id: row.id, targetTweetId: row.target_tweet_id, requestTweetId: row.request_tweet_id,
-    requesterId: row.requester_id, requesterHandle: row.requester_handle,
-    postContext: row.post_context ?? undefined, findings: row.findings ?? undefined,
+  const toRequest = (row: any): RequestRow => ({
+    requestTweetId: row.request_tweet_id, targetTweetId: row.target_tweet_id,
+    requesterId: row.requester_id, requesterHandle: row.requester_handle, text: row.text, status: row.status,
+    answerTweetId: row.answer_tweet_id ?? undefined, draft: row.draft ?? undefined, noteId: row.note_id ?? undefined,
     pipelineRunId: row.pipeline_run_id ?? undefined, createdAt: row.created_at,
-  });
-  const toPost = (row: any): PostRow => ({
-    tweetId: row.tweet_id, threadId: row.thread_id, parentTweetId: row.parent_tweet_id,
-    authorId: row.author_id, authorHandle: row.author_handle, role: row.role, kind: row.kind,
-    text: row.text, draft: row.draft ?? undefined, createdAt: row.created_at,
   });
   const check = <T>({ data, error }: { data: T; error: unknown }): T => {
     if (error) throw error;
@@ -81,52 +66,28 @@ export function createSupabaseStore(db: SupabaseClient): TagStore {
   };
 
   return {
-    async createThread(thread) {
-      const rows = check(await db.from("x_tag_threads").upsert({
-        target_tweet_id: thread.targetTweetId, request_tweet_id: thread.requestTweetId,
-        requester_id: thread.requesterId, requester_handle: thread.requesterHandle,
-      }, { onConflict: "request_tweet_id", ignoreDuplicates: true }).select());
-      return rows?.[0] ? toThread(rows[0]) : null;
-    },
-    async updateThread(id, fields) {
-      check(await db.from("x_tag_threads").update({
-        post_context: fields.postContext, findings: fields.findings, pipeline_run_id: fields.pipelineRunId,
-      }).eq("id", id));
-    },
-    async thread(id) {
-      return toThread(check(await db.from("x_tag_threads").select().eq("id", id).single()));
-    },
-    async addPost(post) {
-      const rows = check(await db.from("x_tag_posts").upsert({
-        tweet_id: post.tweetId, thread_id: post.threadId, parent_tweet_id: post.parentTweetId,
-        author_id: post.authorId, author_handle: post.authorHandle, role: post.role, kind: post.kind,
-        text: post.text, draft: post.draft ?? null,
-      }, { onConflict: "tweet_id", ignoreDuplicates: true }).select("tweet_id"));
+    async createRequest(request) {
+      const rows = check(await db.from("x_tag_requests").upsert({
+        request_tweet_id: request.requestTweetId, target_tweet_id: request.targetTweetId,
+        requester_id: request.requesterId, requester_handle: request.requesterHandle, text: request.text,
+      }, { onConflict: "request_tweet_id", ignoreDuplicates: true }).select("request_tweet_id"));
       return (rows?.length ?? 0) > 0;
     },
-    async setKind(tweetId, kind) {
-      check(await db.from("x_tag_posts").update({ kind }).eq("tweet_id", tweetId));
+    async update(requestTweetId, update) {
+      check(await db.from("x_tag_requests").update({
+        status: update.status, answer_tweet_id: update.answerTweetId, draft: update.draft,
+        note_id: update.noteId, pipeline_run_id: update.pipelineRunId,
+      }).eq("request_tweet_id", requestTweetId));
     },
-    async post(tweetId) {
-      const row = check(await db.from("x_tag_posts").select().eq("tweet_id", tweetId).maybeSingle());
-      return row ? toPost(row) : null;
+    async earlierAnswerOn(targetTweetId) {
+      const row = check(await db.from("x_tag_requests").select("answer_tweet_id")
+        .eq("target_tweet_id", targetTweetId).in("status", REPEATABLE)
+        .order("created_at", { ascending: false }).limit(1).maybeSingle()) as { answer_tweet_id: string } | null;
+      return row?.answer_tweet_id ?? null;
     },
-    async threadsOnTarget(targetTweetId) {
-      // A post gets a handful of threads at most, so one request is enough.
-      return (check(await db.from("x_tag_threads").select().eq("target_tweet_id", targetTweetId)) ?? []).map(toThread);
-    },
-    async postsOnTarget(targetTweetId) {
-      const threadIds = (await this.threadsOnTarget(targetTweetId)).map((thread) => thread.id);
-      if (threadIds.length === 0) return [];
-      const rows = check(await db.from("x_tag_posts").select().in("thread_id", threadIds).order("created_at"));
-      return (rows ?? []).map(toPost);
-    },
-    async waitingTargetsSince(since) {
-      const rows = check(await db.from("x_tag_posts")
-        .select("x_tag_threads!inner(target_tweet_id)")
-        .eq("kind", "waiting")
-        .gte("created_at", since.toISOString())) as any[] | null;
-      return [...new Set((rows ?? []).map((row) => row.x_tag_threads.target_tweet_id as string))];
+    async waiting() {
+      // A note waits at most three hours, so only a handful are ever waiting.
+      return (check(await db.from("x_tag_requests").select().eq("status", "waiting").order("created_at")) ?? []).map(toRequest);
     },
     async noteIdOnPost(targetTweetId) {
       const row = check(await db.from("notes").select("note_id")
@@ -136,51 +97,33 @@ export function createSupabaseStore(db: SupabaseClient): TagStore {
   };
 }
 
-export function createMemoryStore(clock: () => Date = () => new Date()): TagStore & { notes: Map<string, string> } {
-  const threads = new Map<string, ThreadRow>();
-  const posts = new Map<string, PostRow>();
-  // A counter on top of the clock, so posts written in the same millisecond
+export function createMemoryStore(clock: () => Date = () => new Date()): TagStore & { notes: Map<string, string>; requests: Map<string, RequestRow> } {
+  const requests = new Map<string, RequestRow>();
+  // A counter on top of the clock, so requests stored in the same millisecond
   // keep their order.
   let sequence = 0;
   const stamp = () => new Date(clock().getTime() + sequence++).toISOString();
+  const newestFirst = (a: RequestRow, b: RequestRow) => b.createdAt.localeCompare(a.createdAt);
 
   const store = {
     notes: new Map<string, string>(),
-    async createThread(thread: NewThread) {
-      if ([...threads.values()].some((t) => t.requestTweetId === thread.requestTweetId)) return null;
-      const row = { ...thread, id: `thread-${threads.size + 1}`, createdAt: stamp() };
-      threads.set(row.id, row);
-      return row;
-    },
-    async updateThread(id: string, fields: Pick<ThreadRow, "postContext" | "findings" | "pipelineRunId">) {
-      threads.set(id, { ...threads.get(id)!, ...fields });
-    },
-    async thread(id: string) {
-      return threads.get(id)!;
-    },
-    async addPost(post: NewPost) {
-      if (posts.has(post.tweetId)) return false;
-      posts.set(post.tweetId, { ...post, createdAt: stamp() });
+    requests,
+    async createRequest(request: NewRequest) {
+      if (requests.has(request.requestTweetId)) return false;
+      requests.set(request.requestTweetId, { ...request, status: "researching" as const, createdAt: stamp() });
       return true;
     },
-    async setKind(tweetId: string, kind: HumanKind) {
-      posts.set(tweetId, { ...posts.get(tweetId)!, kind });
+    async update(requestTweetId: string, update: RequestUpdate) {
+      const defined = Object.fromEntries(Object.entries(update).filter(([, value]) => value !== undefined));
+      requests.set(requestTweetId, { ...requests.get(requestTweetId)!, ...defined });
     },
-    async post(tweetId: string) {
-      return posts.get(tweetId) ?? null;
+    async earlierAnswerOn(targetTweetId: string) {
+      const earlier = [...requests.values()]
+        .filter((r) => r.targetTweetId === targetTweetId && REPEATABLE.includes(r.status)).sort(newestFirst)[0];
+      return earlier?.answerTweetId ?? null;
     },
-    async threadsOnTarget(targetTweetId: string) {
-      return [...threads.values()].filter((t) => t.targetTweetId === targetTweetId);
-    },
-    async postsOnTarget(targetTweetId: string) {
-      const ids = new Set((await store.threadsOnTarget(targetTweetId)).map((t) => t.id));
-      return [...posts.values()].filter((p) => ids.has(p.threadId)).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-    },
-    async waitingTargetsSince(since: Date) {
-      const targets = [...posts.values()]
-        .filter((p) => p.kind === "waiting" && new Date(p.createdAt) >= since)
-        .map((p) => threads.get(p.threadId)!.targetTweetId);
-      return [...new Set(targets)];
+    async waiting() {
+      return [...requests.values()].filter((r) => r.status === "waiting").sort(newestFirst).reverse();
     },
     async noteIdOnPost(targetTweetId: string) {
       return store.notes.get(targetTweetId) ?? null;
