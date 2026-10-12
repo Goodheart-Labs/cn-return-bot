@@ -1,0 +1,16 @@
+{
+  "item_id": "f228602f-1838-4456-bbd8-a7d76881b0b7",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e72a8ac4-9c0c-45f6-85a6-40c916414399",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Liron does say the sentence, but it is an aside in a rhetorical list, not a claim about global mortality. His point in the 2023 interview is that \"most problems we have are just engineering problems\", and the line about bacterial infection is his example of an engineering problem that was solved, followed immediately by \"And cancer is the same way\". That next sentence means cancer is also an engineering problem, not that cancer is already solved, so the note's closing fact about cancer killing nearly 10 million people argues against something he never said. The figures themselves are real, because the Lancet Global Burden of Disease study does put bacterial pathogens at 7.7 million deaths in 2019, second after ischaemic heart disease. But correcting an obvious figure of speech about the effect of antibiotics leaves his argument completely intact, and a note that reads a throwaway hyperbole literally is exactly the kind of gotcha an author pushes back on."
+    }
+  ]
+}

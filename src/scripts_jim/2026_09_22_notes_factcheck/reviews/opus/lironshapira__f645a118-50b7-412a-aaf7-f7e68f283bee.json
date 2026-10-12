@@ -1,0 +1,25 @@
+{
+  "item_id": "f645a118-50b7-412a-aaf7-f7e68f283bee",
+  "reviewer": "opus",
+  "source_read": "full_text (WebSearch budget was exhausted for this session, so facts were checked with WebFetch and curl against the two domains in question, the Wayback Machine, and the public X profile data for 0xGingerGirl)",
+  "notes": [
+    {
+      "note_id": "8ff19e52-7177-4613-9b31-7df445a04aee",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The fact is right. The line sits in the show-notes link list, \"PlzDontKillUs (applications open for round two) - https://pleasedontkillus.com\", and that domain is a GoDaddy parking page: it answers with a script that bounces the visitor to /lander, and the Wayback capture from July 2025 shows the same parking page, so it never hosted the bootcamp. The real site is plzdontkillus.com, which loads as \"plzdontkillus - creator bootcamp\" and has a working /apply page. But this is a mistyped link in a link list, not a claim anyone believes or argues from. It also does not address the claim the pipeline extracted, which was that applications are open for a second round; the note never checks that. Sending a public correction about a typo in a URL is exactly the pedantic kind of note that makes us look small. Tell Liron privately that the link is broken instead."
+    },
+    {
+      "note_id": "94483d80-f94b-4002-b327-7ca63c417894",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note is wrong on the facts. Evie's X bio reads, word for word, \"creator in tech & robotics team@evierobots.com\", so \"creator in tech and robotics\" is her own self-description, not something Liron invented, and robotics is plainly her professional focus down to her email domain. Liron is reading her profile off the screen while showing a tweet: \"So here is a social media tweet. Evie, her Twitter handle is 0xGingerGirl, creator in tech and robotics.\" The note says she \"describes herself as a creator in tech & prediction markets, not robotics\", which contradicts the primary source it should have checked first. The Polymarket partnership is real but it does not replace her bio. On top of being wrong, it corrects a one-line description of a third party in a two-hour interview about the PlzDontKillUs bootcamp, which has nothing to do with anything the episode argues. Do not send this one."
+    }
+  ]
+}

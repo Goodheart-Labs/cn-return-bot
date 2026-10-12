@@ -1,0 +1,25 @@
+{
+  "item_id": "fd13ae42-17fd-49e7-bbb6-44dd99da7521",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d37f380d-9b0a-4e12-ba76-c74b97e1096e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The sentence 'Marcus Hunter writes Job-Less Utopia, arguing that job loss futures are desirable, affordable and likely' is Zvi's own summary in the 'They Took Our Jobs' section, not a block quote from anyone else. The book is real and the author is Marcus Hutter: the title page and copyright notice on hutter1.net say so, Amazon, Barnes and Noble, Goodreads and Bookshop all list 'Prof Marcus Hutter', and Fernando Borretti's review opens 'Marcus Hutter, oldheads will remember him from AIXI, recently published a book: Job-Less Utopia'. This is more than a spelling slip, because a reader is left thinking the book is by a person who does not exist and misses that the author is the AIXI researcher, which is exactly the kind of detail Zvi's audience weighs when deciding how seriously to take an AGI economics book. Zvi corrects small factual errors like this routinely, so he would almost certainly accept it. The only reason for hesitation is that the correction does not touch the argument he summarises, but the fact it fixes is the identity of the author, which is the subject of his sentence."
+    },
+    {
+      "note_id": "fd13b842-ace7-4d77-86ee-cb58981b1e62",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The clause 'There is also Alexandria.wiki for reading the classics, although that one charges you money' is Zvi's own aside in the 'Introducing' section, so the note is at least aimed at his own words. The central fact holds up: alexandria.wiki calls itself 'a free digital library with over 4,000 classic texts' and its free tier includes 'access to library, quote of the day, classical texts, and fifteen messages per week with Virgil'. But the note itself is wrong where it is most specific. It says the paid tier 'only unlocks unlimited AI-tutor chat with Virgil', while the site's own membership box reads 'Everything in Free + Unlimited Audiobooks + Unlimited Virgil Chats', so listening to the classics is also behind the paywall, and the memberships are real money at $4.99 a week, $12.99 a month or $99.99 a year. That makes Zvi's shorthand 'that one charges you money' a difference of framing about a freemium product rather than a clear error, and he could fairly answer that the service does charge money and that the AI part he was comparing to YochaiWiki is the metered part. Correcting a one-clause aside in a link roundup with a note that misstates the paid tier is exactly the kind of thing that would make us look careless."
+    }
+  ]
+}

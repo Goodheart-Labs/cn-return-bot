@@ -1,0 +1,25 @@
+{
+  "item_id": "301aa0b7-4b89-4589-9fa8-6f6ef4ec3b4c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4020c36a-15a5-48a3-b0c3-75d03a2d70c2",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the host speaking, not Liron. The post is a transcript of Liron's guest appearance on Milk Road AI, and the line \"And then now we have 40,000 nukes, enough to nuke the world 10 times over?\" is said by the host, LG Doucet, while setting up his question about why nobody has used them. Liron's answer never repeats or relies on the number. He talks about the per-century probability of a nuclear catastrophe and about a hypothetical world with a million weapons, so the note fact-checks a figure the author of the post did not assert. The correction is also not substantive: whether the real total is 12,000 or 40,000, the host's point that we built enough weapons to destroy the world and have not used them is unchanged. The note's second sentence is muddled too, because the Federation of American Scientists puts the 1986 global peak at about 70,300 warheads, and the roughly 40,000 figure is the Soviet stockpile alone, not the \"global (mainly Soviet)\" peak the note describes."
+    },
+    {
+      "note_id": "d8212028-849f-495e-a149-fd9b3e886d99",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This one really is Liron's own statement: \"If you naively extrapolate Anthropic's valuation or revenue for another couple years — 'cause they're growing, what is it, 50x per year? So a couple more 50xs and you're talking real money.\" The multiple carries his argument that Anthropic could be the first hundred-trillion-dollar company, so the correction matters: two more rounds of 7x gets you to a few trillion, while two more rounds of 50x gets you past the size of the world economy. The sources hold up, and TechCrunch reports the run rate going from about $9 billion at the end of 2025 to $47 billion in May 2026 and past $65 billion at the end of July 2026. What gives me pause is that those same numbers make 50x a defensible off-the-cuff figure at the time of recording, because $9 billion growing to $47 billion in five months works out to roughly 50x if you annualise that stretch, and the episode was recorded on 22 July 2026, before the $65 billion number was public. Liron also hedged the figure himself, phrasing it as a question, so the note may read as correcting a guess he openly flagged as a guess rather than a claim he made."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "item_id": "45c881d4-c407-4114-b3ee-57088255fb43",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "050421ab-299d-4b3c-b579-ea542de9ef32",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The facts in the note are right: the Texas State Historical Association handbook and Wikipedia both date the Second Battle of Adobe Walls to 27 June 1874, and Mackenzie's Palo Duro Canyon campaign followed in September 1874. But the '1870' the note corrects exists only in the auto-caption transcript. The video description links LaCorte's own script document ('Script Sources and Notes'), and that script reads: 'In 1874, Comanche leader Quanah Parker launched a last-ditch assault on the trading post at Adobe Walls. It failed. U.S. Colonel Ranald Mackenzie countered with a brutal campaign in Palo Duro Canyon and burned Comanche winter stores.' The video has only an ASR caption track, no creator-uploaded one, and 'eighteen seventy-four' is exactly the kind of number captions drop the tail of. So either the captions misheard him or he misread his teleprompter for one syllable while his research has the right year. Either way, sending him a note that says he claimed 1870 when his published script says 1874 would look like we misquoted him, which is the Andy Masley failure this review exists to prevent. The first reviewer's verdict rested on the transcript alone and did not check the script."
+    }
+  ]
+}

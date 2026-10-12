@@ -2,7 +2,7 @@
  *  what that process has been doing, and whether it is still running. */
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
-import { fetchAllRows } from "../api/paging";
+import { fetchAllRows } from "../everything-core/paging";
 
 const client = getSupabaseClient();
 const since = new Date(); since.setUTCDate(since.getUTCDate() - 30);
@@ -14,9 +14,10 @@ const runs = await fetchAllRows<{
 }>(
   () => client.from("pipeline_runs")
     .select("id, note_id, tweet_id, bot_name, outcome, outcome_reason, ab_test_picks, created_at")
-    .is("bot_name", null).gte("created_at", sinceIso).order("created_at", { ascending: false }),
+    .is("bot_name", null).gte("created_at", sinceIso),
   "id", { label: "probe.runs" },
 );
+runs.sort((a, b) => b.created_at.localeCompare(a.created_at));
 
 console.log(`\nNull-bot_name pipeline_runs in last 30 days: ${runs.length}\n`);
 const byOutcome = new Map<string, number>();

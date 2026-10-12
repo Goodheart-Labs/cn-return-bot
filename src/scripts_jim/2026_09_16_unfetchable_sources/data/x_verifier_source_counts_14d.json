@@ -1,0 +1,11 @@
+{
+ "runs_with_verifier": 1820,
+ "sources_seen": 3100,
+ "sources_failed": 295,
+ "sources_snippet_only": 0,
+ "sources_via_archive": 113,
+ "sources_via_browser": 174,
+ "sources_media_analysis": 229,
+ "sources_tweet": 251,
+ "runs_unfetchable_error": 34
+}

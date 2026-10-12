@@ -1,0 +1,16 @@
+{
+  "item_id": "f05be801-ad03-4c3b-8bce-74285c8e441b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2809206c-96b1-4ef0-8d7a-fbee4112adfb",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Hank says \"This photo was taken from the International Space Station the day before Artemis launched\", and in this video Artemis means Artemis II, which lifted off on April 1, 2026. The note assumes the picture is NASA's old image iss068e027781 from December 7, 2022, which was taken during Artemis I, but nothing in the transcript points to that photo and the note gives no reason for the identification. There really was a matching ISS photo the day before this launch: the official @Space_Station account wrote that NASA astronaut Chris Williams \"photographed a full Moon from the International Space Station the day before Artemis II launched\". The coincidence the note leans on is explained by the calendar, because the full moon peaked late on April 1, 2026, so a moon photo taken the day before its full phase is also a photo taken the day before the launch. So the note corrects a true statement by pinning it to the wrong photograph, and sending it to a space communicator who got this right would be embarrassing."
+    }
+  ]
+}

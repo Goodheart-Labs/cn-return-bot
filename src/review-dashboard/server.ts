@@ -32,6 +32,9 @@ function injectCredentials(html: string): string {
 
 serve({
   port: PORT,
+  // Loopback only: the page carries the service role key (see above), and the
+  // Mac reaches this port through the tunnel, which connects to loopback.
+  hostname: "127.0.0.1",
   async fetch(req) {
     const url = new URL(req.url);
 

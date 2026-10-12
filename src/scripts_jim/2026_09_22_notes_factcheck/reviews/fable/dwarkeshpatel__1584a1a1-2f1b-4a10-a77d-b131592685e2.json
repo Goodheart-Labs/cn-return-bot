@@ -1,0 +1,18 @@
+{
+  "item_id": "1584a1a1-2f1b-4a10-a77d-b131592685e2",
+  "reviewer": "fable",
+  "source_read": "fetched:https://www.dwarkesh.com/p/jensen-huang",
+  "notes": [
+    {
+      "note_id": "2e9d29f0-458d-47fe-b392-69f734807de0",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "The words are Jensen Huang's, and Dwarkesh is arguing against him in this very exchange: Dwarkesh says 'there's a question of whether they can actually manufacture enough chips', Jensen answers 'But they do', Dwarkesh presses 'How many chips did they ship?', and Jensen replies 'A ton. Millions.' Dwarkesh's published transcript confirms this wording. So the note fact-checks a statement the host was challenging, not one he makes or relies on, which is exactly the failure Andy Masley complained about, and it fails the first question regardless of the rest. On substance the number does look overstated for datacenter accelerators: Epoch AI estimates Huawei produced about 800,000 Ascend units in 2025, SemiAnalysis put it at about 805,000, and the TechNode source the note cites is only Mizuho's May 2025 forecast of 700,000. But Jensen said 'chips', not 'Ascend accelerators', and Huawei ships tens of millions of its own phone processors a year, so he could defend 'millions' on a wider count. The note also passed no verified sources through the pipeline, and its Anthropic comparison is shaky in the other direction, since Anthropic has over a million Trainium2 chips and up to a million Google TPUs. Dwarkesh might privately enjoy a note that undercuts Jensen, but sending it to him as a correction of his episode misreads who said what."
+    }
+  ]
+}

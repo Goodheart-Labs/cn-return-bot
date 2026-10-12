@@ -30,6 +30,7 @@ import { featuresFromPost } from "../ranking/features";
 import { shadowScores, type Scorer } from "../ranking/scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
 import PQueue from "p-queue";
+import { rateCandidate } from "../score/noteRater";
 
 // Ten posts process at once. Five was the long-standing setting, and it left
 // the engine's daily output (~50 notes) below the cap X grants us (~65 and
@@ -111,7 +112,12 @@ export async function collectFastPosts(
     try {
       posts = await fetchFeed(feedSize);
     } catch (err) {
-      console.warn(`[generate] Feed ${feedSize} failed (${(err as Error)?.message}); trying next tier`);
+      // X's reason is in the response body. Without it, a stretch of 403s on
+      // the large and xl feeds (as on the night of 20-21 Sep 2026) cannot be
+      // diagnosed from the logs.
+      const r = (err as { response?: { status?: number; data?: unknown } })?.response;
+      const body = r?.data === undefined ? "" : ` body=${JSON.stringify(r.data).slice(0, 300)}`;
+      console.warn(`[generate] Feed ${feedSize} failed (${(err as Error)?.message}${r?.status ? `; status ${r.status}` : ""}${body}); trying next tier`);
       continue;
     }
 
@@ -176,16 +182,12 @@ async function fetchPosts(
   // pipeline_runs tables are not scanned twice in one run. Other callers let
   // this branch do the fetching.
   if (supabaseLogger && (!skipPostIds || !knownTweetIds)) {
-    try {
-      const [skip, known] = await Promise.all([
-        supabaseLogger.getSkipTweetIds(),
-        supabaseLogger.getKnownTweetIds(),
-      ]);
-      skipPostIds = skipPostIds ?? skip;
-      knownTweetIds = knownTweetIds ?? known;
-    } catch (err) {
-      console.warn("[generate] Failed to get known tweet IDs:", err);
-    }
+    const [skip, known] = await Promise.all([
+      supabaseLogger.getSkipTweetIds(),
+      supabaseLogger.getKnownTweetIds(),
+    ]);
+    skipPostIds = skipPostIds ?? skip;
+    knownTweetIds = knownTweetIds ?? known;
   }
   skipPostIds = skipPostIds ?? new Set<string>();
   knownTweetIds = knownTweetIds ?? new Set<string>();
@@ -362,7 +364,17 @@ export async function processPosts(
       }
 
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
-        candidateByIndex[idx] = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        // The note is a candidate before the forecast comes back, so a slow
+        // rater at the deadline cannot drop it.
+        const candidate: Candidate = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        candidateByIndex[idx] = candidate;
+        candidate.rating = await rateCandidate(supabaseLogger, {
+          tweetId: item.post.id,
+          postText: item.post.text ?? "",
+          noteText: tweetResult.noteText,
+          sourceUrl: tweetResult.pipelineResult?.noteResult?.url,
+          pipelineRunId: tweetResult.pipelineRunId,
+        });
       }
     });
   }

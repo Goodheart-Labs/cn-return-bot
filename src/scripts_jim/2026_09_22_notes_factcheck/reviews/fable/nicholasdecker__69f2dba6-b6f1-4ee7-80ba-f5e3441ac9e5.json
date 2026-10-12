@@ -1,0 +1,18 @@
+{
+  "item_id": "69f2dba6-b6f1-4ee7-80ba-f5e3441ac9e5",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6cd32628-f9b0-483d-ab0a-73ae4d2f987f",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is Decker's own summary of Handel and Kolstad (2015): \"some sense of the losses from each of the sources – inertia and misinformation – can be found by comparing the loss in welfare under models with and without them, with dropping these frictions increasing the losses by 50%.\" I read the published paper. The note's numbers are real: relative to risk-neutral consumers, the full model loses $62 per person, the baseline model with inertia $148 (\"more than double\", \"almost two-and-a-half times\") and the baseline model without inertia $511. But the same paper's Table 6 reports the raw mean welfare loss from the forced switch under each model: $789 under the full model with inertia and $1,238 under the baseline model without inertia, and dropping both frictions therefore raises the loss by 57%. That is the comparison Decker's sentence describes, \"the loss in welfare under models with and without them\", and his \"50%\" is a loose rounding of it, not a misreading. The note picks the paper's other measure, the loss relative to risk neutrality, and declares his figure wrong, so Decker can answer by pointing at Table 6 and the note looks like the error. The difference between the two measures also changes nothing in his argument, which is that misinformation and inertia distort plan choice. A note that pushes one of two valid readings of the same table is pedantic and easy to rebut, so it should not be sent."
+    }
+  ]
+}

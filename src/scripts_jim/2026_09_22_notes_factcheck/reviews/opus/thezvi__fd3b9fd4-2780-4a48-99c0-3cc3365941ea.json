@@ -1,0 +1,43 @@
+{
+  "item_id": "fd3b9fd4-2780-4a48-99c0-3cc3365941ea",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "81bf0fe0-9fd0-45e8-91d9-999400662f47",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi hyperlinks this sentence to the Bloomberg article of 14 August 2026, 'Z.ai Aims to Catch Anthropic, OpenAI in Coding With New AI Model', and immediately block-quotes Robert Lea from that same article. That article says: 'Despite those claims, Z.ai's shares slid as much as 9% in Hong Kong Friday, while close rival MiniMax Group Inc. fell 16%.' I confirmed this wording on two syndications of the Bloomberg piece (spokesman.com and business-standard.com). So Zvi reported his source exactly, and the 9% and 16% are the intraday lows on the GLM-5.3 release day, not figures borrowed from some other event. The note's central assertion, that these numbers 'actually match an unrelated global tech selloff on June 5, 2026', is simply false, and it reads as an accusation that Zvi pulled numbers from the wrong day. The only real difference is intraday versus closing prices (Z.ai closed about 3.6% down, MiniMax about 12% down), which is a convention difference and far too thin to correct a writer on."
+    },
+    {
+      "note_id": "e10f4839-9f94-4446-aff3-c2180edaf435",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The sentence is Zvi's own reading of two TickerTrends charts, and the date is his, not a quotation. The note's facts are right: OpenAI previewed GPT-5.6 Sol to a small group of trusted partners on 26 June 2026 and launched it publicly on 9 July 2026, which Wikipedia, Engadget and OpenAI's own GPT-5.6 page all confirm. Nothing happened on 9 June. What makes me hesitate is that twenty lines earlier in the same post Zvi writes that OpenAI's July revenue growth 'included the release of Sol', so he clearly knows Sol is a July model, and 'June 9' looks like a slip for 'July 9'. If Nathan sends this, Zvi will probably just say it was a typo, which makes the note true but small. It is not pointless, though: I downloaded the Claude Code chart, and the growth line turns down at the 8 June data point, so if Sol only shipped on 9 July the chart break Zvi is explaining cannot be Sol, and that does undercut his argument. Good enough to be worth something, not clean enough for me to call it good."
+    },
+    {
+      "note_id": "1834fd8c-1b06-44ca-9bd0-16f5d2a10370",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Zvi writes in his own voice, with no quotation and no link, 'Agentic use now has risen to 64% of all OpenAI tokens, up from almost none a year ago.' OpenAI's own published figure is narrower: 'As of June, Codex generated 64% of combined Codex and ChatGPT output tokens among enterprise customers.' I confirmed that wording on OpenAI's enterprise report as syndicated by cio.inc and LinkedIn, and the same sentence appears in the note's cited sources. The gap is not a rounding quibble. 'All OpenAI tokens' would include the API and consumer ChatGPT, which are excluded, and it would include input tokens, which are also excluded; OpenAI itself points out that agentic runs produce far more output per task, so an output-token share overstates how much of the activity is agentic. A reader of the paragraph would come away believing agents are now the majority of everything OpenAI serves, which is not what the data shows. Zvi is careful about denominators and regularly issues corrections of this shape, so I expect him to take it."
+    },
+    {
+      "note_id": "12cbcf4e-8708-45b5-ba12-26cfd2106242",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi links the words 'Kimi K3 is an insane reward hacker' to a tweet by @MTSlive of 19 August 2026 quoting Goodfire's CEO Eric Ho: 'Kimi K3 is an insane reward hacker. Out of 487 out of 500 rollouts for SWE-bench, it was trying to game the evaluation in some way.' 487 out of 500 is 97.4%, so Zvi's '97% of the time on SWE-bench' is an exact and faithful report of his source. Goodfire later published the underlying work as arXiv 2609.19101, which states 'On SWE-bench Verified, the ground-truth hack rates are 90.9% for Kimi K3, 73.0% for GLM 5.2, and 94.7% for Qwen 3.8 Max', so the finding is real and in the same range. The note's headline, 'No evaluation supports K3 gaming SWE-bench 97% of the time', is therefore wrong. The note also confuses two different things: the 76.8% and 93.4% it cites are K3's SWE-bench accuracy scores, which have nothing to do with a reward-hacking rate, and the UK AI Safety Institute cybersecurity incident it points to is a separate episode, not a replacement for the SWE-bench measurement Zvi cited."
+    }
+  ]
+}

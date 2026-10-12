@@ -1,0 +1,34 @@
+{
+  "item_id": "ca673055-74d9-4e4e-9b3c-656744671372",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e92a2a0a-85d1-487b-aae8-4999ed1c4390",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Rees-Mogg makes this claim flatly in his own voice: 'being a traitor requires you to be British in the first place. ... if he were not British, he could not commit treason against Britain.' The note is legally correct. English treason law turns on allegiance owed to the Crown, not on citizenship, and the Lord Haw-Haw case that Rees-Mogg himself cites is the leading example: the courts accepted that William Joyce had never been a British subject, yet held that his fraudulently obtained British passport kept him under the Crown's protection and so owing allegiance, and he was hanged on 3 January 1946. I could not open the Lords Library page directly (it returns 403 to automated fetches), but Wikipedia's account of the trial and the House of Lords ruling confirms every fact the note asserts. What gives me pause is that Rees-Mogg's whole video argues that holding a British passport is exactly what makes a person British, so he can answer that the passport made Joyce British in the only sense he cares about and that the note is quibbling over the word 'citizen'. The note would be much harder to argue with if it also said that a resident alien with no passport at all owes local allegiance and can be tried for treason, which is the part of the law that really falsifies his sentence."
+    },
+    {
+      "note_id": "d1f95e8e-3462-45a9-98a5-1201595534a2",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note tells Rees-Mogg something he says himself, at length, one minute earlier in the same video. He explains that 'Magna Carta talks about no free man' and that 'Free man in 1215 means a very specific type of person, meant somebody who was not a serf', and he even pre-empts the objection: 'I know many of you will be picking me up on this, that in the Anglo-Saxon period there were serfs, there were different levels of people within society.' His actual claim is about what happened afterwards, that by the middle of the 14th century 'free man means everybody'. The note never touches that date or that argument, it only restates the 1215 limitation he already conceded. This is the same failure Andy Masley complained about, a note fact-checking a point the author is making rather than one he is denying. If we wanted to challenge him here, the real target would be that villeinage and unfree tenure survived long past the Black Death, which is a different and much harder note to write."
+    },
+    {
+      "note_id": "68ec6e60-52c2-4e06-8e0f-9aa5318008c9",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Rees-Mogg is making a claim about how people actually speak, not about the formal definitions, and he gives his evidence straight away: 'We remember to say British when we don't want to annoy our Scottish friends rather than English. Look at all the speeches of Palmerston. Look at how our American friends refer synonymously to England and the United Kingdom. They often refer to the king as the king of England.' He plainly knows the two words are not formally identical, which is why he mentions the Scots at all. The note answers a usage claim with a dictionary definition, so it does not contradict him. The source is also weak for a public correction: a Babbel language-learning blog post, not a reference work. The definition it gives is itself sloppy in a video about British passports, because it ties British to England, Scotland and Wales and so leaves out Northern Ireland, whose people are British citizens. Sending this would look pedantic and would hand him an easy rebuttal."
+    }
+  ]
+}

@@ -22,7 +22,7 @@ import { processFetchedContent, resumeItemClaims } from "./pipeline/processConte
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
-import { describeSpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
+import { describeTodaySpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
 /** The everything path ingests whole articles, so its fetch cap matches the
@@ -236,7 +236,7 @@ export async function drainQueue(): Promise<number> {
   await logQueue();
   while (true) {
     if (await feedBudgetExhausted()) {
-      console.log(`\nFeed budget reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
+      console.log(`\nFeed budget reached (${await describeTodaySpend()}) — stopping for today`);
       break;
     }
     const ended = await processNextFeedItem();

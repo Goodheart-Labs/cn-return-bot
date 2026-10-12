@@ -2,6 +2,7 @@ import { afterEach, describe, expect, mock, spyOn, test } from "bun:test";
 import { setTimeout as sleep } from "node:timers/promises";
 import { getCostTracker, trackLlmCall, withCostTracker } from "../cost-tracking/costTracker";
 import { getLlmAbortSignal } from "../llm/llm";
+import { SERPER_COST_PER_SEARCH } from "../cost-tracking/pricing";
 import * as search from "../tool-calling/tools";
 import * as jsonLlm from "../utils/jsonLlmCall";
 import { createTweetLog, getTweetLog, withTweetLog } from "../utils/tweetLog";
@@ -158,5 +159,24 @@ describe("note-needed prefilter deadline", () => {
     expect(output.outcome).toBe("rejected");
     expect(output.outcomeReason).toBe("check_failed");
     expect(output.warnings?.some(warning => warning.includes("failing open"))).toBe(true);
+  });
+});
+
+describe("note-needed prefilter search cost", () => {
+  test("records one Serper fee for each search that returned, and none for a failed one", async () => {
+    keep(spyOn(satire, "runSatireDetector").mockResolvedValue({ isSatire: false, reasoning: "A factual claim" }));
+    keep(spyOn(queries, "runQueryWriter").mockResolvedValue({ queries: ["fails", "works"] }));
+    keep(spyOn(search, "fetchSearchResults").mockImplementation(async (query) => {
+      if (query === "fails") throw new Error("Serper HTTP 500");
+      return [{ title: "Source", url: "https://example.com/source", content: "Evidence", publishedDate: null }];
+    }));
+    keep(spyOn(analyzer, "runSearchAnalyzer").mockResolvedValue("Research brief"));
+    keep(spyOn(jsonLlm, "runJsonLlmCall").mockResolvedValue({ note_needed: true, reasoning: "Needs a note" }));
+    await withCostTracker(async () => {
+      await runNoteNeededPrefilter("The post");
+      expect(getCostTracker().filter((entry) => entry.name.endsWith(".serper"))).toEqual([
+        { name: "note_prefilter.fetch_and_format_search.serper", input_tokens: 0, output_tokens: 0, cost: SERPER_COST_PER_SEARCH, tools: [] },
+      ]);
+    });
   });
 });

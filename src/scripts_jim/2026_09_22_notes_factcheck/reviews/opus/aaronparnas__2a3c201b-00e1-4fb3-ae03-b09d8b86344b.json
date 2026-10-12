@@ -1,0 +1,34 @@
+{
+  "item_id": "2a3c201b-00e1-4fb3-ae03-b09d8b86344b",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "33118868-e7e0-4e98-aaa3-2321b6fe9d19",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Parnas writes the sentence himself as part of his news summary: \"Nineteen states also passed 88 new worker-protection laws in 2025, including paid leave in Virginia and a near-total ban on non-compete agreements in Washington.\" He is not quoting someone he disputes, so the claim is his own. Both dates in the note check out: Governor Ferguson signed Washington's ESHB 1155 on March 23, 2026 (the Littler alert opens with exactly the accepted quote), and Governor Spanberger signed Virginia's paid family and medical leave law on May 11, 2026. The underlying reporting Parnas summarised (the Illinois Economic Policy Institute study, carried by Stateline on September 4, 2026) puts the 411,000 new union members in 2025 but says the worker-protection bills passed across 19 states \"this year\", meaning 2026, so the whole sentence is dated a year early. The Virginia case is more than a rounding problem: in 2025 Governor Youngkin vetoed the paid leave bill, so the post says a law passed in the very year it was blocked. Parnas runs a daily news roundup and the correction is narrow, precise and fully sourced, so he could accept it, though it sits in one illustrative clause of a long post and he may see it as small."
+    },
+    {
+      "note_id": "edbaa3bb-c494-4c85-b75a-c252c026fe84",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The claim is again Parnas's own sentence, and the Washington half is right: ESHB 1155 was signed on March 23, 2026, which the Akin Gump alert states in the words quoted. The Virginia half is where I hesitate. The note corrects the post with Virginia's paid sick leave law, signed May 20, 2026, but the post's phrase \"paid leave in Virginia\" most naturally means the paid family and medical leave law, which is a different bill signed on May 11, 2026. Both are 2026 laws, so the correction survives either way, but the note answers a slightly different law than the one the author probably had in mind, which gives him an easy opening to say the note misread him. The note also asserts that a similar 2025 bill was vetoed by Youngkin, which is true for both Virginia paid leave bills, but it offers no source for that part. Note 33118868 makes the same correction more precisely, so this one should not be the one sent."
+    },
+    {
+      "note_id": "8aa904a1-e250-4b44-bfa1-72bd994e8e49",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The underlying correction is the same one the other two notes make, and it is right in substance, but this note gets its own central date wrong. It says Virginia's paid leave bill \"only became law after Gov. Spanberger signed it in April 2026\", while she signed it on May 11, 2026. What happened in April was that the General Assembly accepted her amendments, announced in an April 22, 2026 release titled \"Governor Spanberger Celebrates New Paid Family Medical Leave Law\", which the note appears to have confused with the signing. The note's own second source is the May 11 release, and the accompanying explanation hedges with \"specifically May/April 2026\", so the confusion is visible inside the note itself. A note whose whole point is that the author misdated two laws cannot itself misdate one of them. The Youngkin veto in March 2025 and the Washington signing on March 23, 2026 are both correct, but that does not rescue it."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "item_id": "64247104-b8b4-4a2b-ab66-c2e35e237a26",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "1ef37645-0004-4fbc-8bab-22ed63292be4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Replace the first sentence's \"not a version of Sol\" with wording the sources actually support, for example: \"The pre-July 13 attacks were driven mainly by a separate internal-only research model (OpenAI calls it IM1, METR calls it HPIM), which OpenAI describes as 'comparable in scale' to GPT-5.6 Sol rather than as a Sol variant.\" Nobody outside OpenAI knows whether IM1 shares Sol's base model, so the note should not assert that it does not.",
+      "reason": "These are Dwarkesh's own words. The official transcript on dwarkesh.com labels the passage as Dwarkesh Patel, and he says it twice: first \"a version of Sol, let's call it Persistent Sol, is being trained to be much more persistent\", then \"The previous models were a version of Sol that was trained to be persistent.\" Ajeya does not say it and he is narrating the timeline for the audience, so it is his assertion. The facts in the note check out: OpenAI's post says the incident \"was primarily driven by a highly capable, internal-only research model comparable in scale to GPT-5.6 Sol\" and names it Internal Model 1 (IM1), and METR's report says the agents \"were instances of HPIM (~95%) and GPT-5.6 Sol (~5%)\" and calls HPIM \"a research model which was not intended for production\". The distinction matters, because a listener would otherwise believe the publicly deployed Sol model, lightly retrained, did the hacking, and the episode never mentions IM1 or HPIM. Two things give me pause. Dwarkesh's own written essay on dwarkesh.com (\"The Rise and Fall of Agent Civilizations\") shows he knows the model is a separate one: he writes \"OpenAI says it was 'comparable in scale to GPT-5.6 Sol'. So we'll call it 'Persistent-Sol'\", so \"a version of Sol\" is a nickname he chose knowingly and he may treat the note as quibbling with his naming. And the note's flat \"not a version of Sol\" goes beyond the sources, which only say OpenAI treats IM1 as a distinct internal model of comparable scale; Zvi Mowshowitz publicly guesses at 70% that HPIM is the same base model as Sol, and nothing public rules that out. With the first sentence softened the note is fair and worth sending."
+    }
+  ]
+}

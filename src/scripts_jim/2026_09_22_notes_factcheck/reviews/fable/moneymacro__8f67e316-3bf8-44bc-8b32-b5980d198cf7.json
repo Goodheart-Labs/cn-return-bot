@@ -1,0 +1,18 @@
+{
+  "item_id": "8f67e316-3bf8-44bc-8b32-b5980d198cf7",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c3a33b71-ae0b-40e5-9d92-08a110389ca6",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "The numbers are the author's own, given in his own voice as the first of his two reasons why the petrodollar matters less today: \"at the height of the 1979 oil crisis, oil transactions accounted for about 13 to 15% of the American economy. But today, that's only about 5 to 7% of US GDP.\" The note's main source holds: the Dallas Fed piece of 23 June 2026 says oil and oil product expenditures fell from near 8 percent of GDP in 1980 to 3 percent in 2024. I found no oil-based measure that gets anywhere near 13 to 15 percent; Knittel's 2014 paper puts spending on oil imports above 4.5 percent of GDP in 1980, and the API's 7.4 percent is the industry's value added in 2023, not a 1979-style transactions figure. What the author's numbers do match is the EIA's total energy expenditure series, which was about 14 percent of GDP in 1981 and 5.6 to 6.7 percent in 2021 to 2023, so he almost certainly read an energy chart and called it oil. That makes the note correct, but it is a labelling error that changes nothing about his point, since energy or oil, the share fell by roughly the same proportion, and an economist will reply exactly that. The second source, eco3min.fr, is a small blog with a home-made WTI-times-consumption formula and should not carry the note. I would only send it in a softened form that names the likely mix-up.",
+      "send_advice": "Replace the whole note with: \"These look like the EIA's total energy expenditure figures (about 14% of GDP in 1981, 5-7% in recent years). Oil alone was near 8% of GDP in 1980 and about 3% in 2024 (Dallas Fed).\" Drop the eco3min.fr source and keep only the Dallas Fed link."
+    }
+  ]
+}

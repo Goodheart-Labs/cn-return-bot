@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { cutCues, cutText, locatePartStarts, parseGateSplitOutput } from "./gateAndSplit";
-import type { SubtitleCue } from "../../pipeline/media/ytDlpDownload";
+import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 
 const text = [
   "Welcome back. Today we cover two things.",

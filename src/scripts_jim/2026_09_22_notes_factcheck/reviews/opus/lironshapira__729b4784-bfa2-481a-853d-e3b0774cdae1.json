@@ -1,0 +1,16 @@
+{
+  "item_id": "729b4784-bfa2-481a-853d-e3b0774cdae1",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "f8aa200b-1ab6-441b-b511-b9f774003598",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is not Liron's. The transcript attributes it to the guest Prakash at 00:15:54, and Liron spends the whole passage arguing against him, answering \"you're leaning on the convenient fact that when there's a farmer in Uganda, their territory is far away\" and \"I think you may not be realizing how many preconditions are necessary in order for a market to be the relationship that emerges\". Sending Liron a correction of his opponent's aside is exactly the mistake Andy Masley complained about. The note also misreads what Prakash meant. A minute earlier he says \"about 50% of humanity is probably still doing kind of subsistence or near-subsistence farming, or small shopkeepers\", so he is loosely talking about the share of people, not about value added, and rebutting him with agriculture's 4% share of global GDP answers a claim he did not make. Nothing in the argument turns on the exact number either, because his point is only that a subsistence farmer has little control to lose."
+    }
+  ]
+}

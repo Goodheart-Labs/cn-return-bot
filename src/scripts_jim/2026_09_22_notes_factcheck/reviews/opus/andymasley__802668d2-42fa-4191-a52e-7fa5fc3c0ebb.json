@@ -1,0 +1,16 @@
+{
+  "item_id": "802668d2-42fa-4191-a52e-7fa5fc3c0ebb",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "8c236ef1-a1c0-4ce5-ac7c-f1c299758b6a",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note answers a question Andy never asked. His post criticises one specific paper, \"The data heat island effect: quantifying the impact of AI data centers in a warming world\", which uses MODIS satellite land surface temperature readings at data center sites. His complaint is that the paper measures hot roofs and parking lots where there used to be grass and then presents the result as heat coming out of the servers. When he writes \"They're assuming the land has warmed, but it hasn't\", the \"land\" is the ground at those particular sites, and \"they\" is that paper's two authors. The note replies with the global climate record instead: rural weather stations warm as fast as urban ones, and climate datasets homogenise urban stations against nearby rural ones. Both of its Skeptical Science sources are about the global urban heat island question, which has nothing to do with whether one satellite study of individual buildings controlled for new pavement. Worse, the note reads as if Andy were denying that the planet has warmed, which he plainly is not doing. Sending this would look like we had not read the post."
+    }
+  ]
+}

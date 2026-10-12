@@ -31,8 +31,8 @@ const METRICS: readonly Metric[] = [
   {
     kind: "count",
     key: "active_devices",
-    label: "Number of people who have used their browser with the extension",
-    qualifier: "browser open with the extension installed",
+    label: "Number of browsers with the extension open",
+    qualifier: "our own test installs left out from version 0.4.1 on",
   },
   { kind: "people", key: "note_viewers", label: "Number of people who have seen a note" },
   { kind: "people", key: "voters", label: "Number of people who have voted" },

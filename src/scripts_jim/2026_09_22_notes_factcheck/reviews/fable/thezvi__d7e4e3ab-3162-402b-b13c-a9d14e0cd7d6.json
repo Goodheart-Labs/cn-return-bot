@@ -1,0 +1,29 @@
+{
+  "item_id": "d7e4e3ab-3162-402b-b13c-a9d14e0cd7d6",
+  "reviewer": "fable",
+  "source_read": "fetched:https://thezvi.substack.com/p/dating-roundup-1-this-is-why-youre",
+  "notes": [
+    {
+      "note_id": "c998a4c1-f207-46cd-a963-3dbb7c6723c5",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The sentence is Zvi's own, but it is an explicitly hedged aside: \"as I understand it 10s actually get less attention than 8s because people are scared to approach someone too far out of their league.\" The paragraph's point is that the amount of attention is not the main advantage of attractiveness, and this clause only illustrates it. The note's evidence is OkCupid message counts from 2009, and both source quotes check out, but that data measures who men message on a dating site, on a 0-to-5 star scale, and does not test what Zvi describes, which is people being afraid to approach someone far out of their league. The Sociological Images author himself first read the chart as the 5.0s getting fewer messages than the 4.5s before deciding that was a persons-versus-messages confusion, so the top of that scale is noisy. OkCupid's own later analysis, The Mathematics of Beauty, found that when \"some men think you're cute, other men become less interested\" because they assume heavy competition, which is the mechanism Zvi names, so the data is not one-sided. Sending a 2009 inbox-count correction against an \"as I understand it\" side remark would read as pedantic, and Zvi would answer that the data is about something else. The first reviewer's reservation is disqualifying, not a pause."
+    },
+    {
+      "note_id": "a24343d6-ffe9-4545-b9d7-546598288aee",
+      "verdict": "good",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "quoted source",
+      "send_advice": null,
+      "reason": "The arithmetic is in a block quote of Kenny Easwaran's comment on Scott Alexander's post, so the words are Kenny's, but Zvi adopts the conclusion as his own in the line that introduces it: \"A great point indeed made by Kenny Easwaran in a comment on Scott's post is that there actually isn't much sorting by political affiliation, once you take into account the existence of independents and geographic clustering.\" That conclusion rests on the 9%, so the note corrects something Zvi relies on. The correction is right: with 30% Republicans and 30% Democrats, random pairing gives 2 x 0.3 x 0.3 = 18% Republican-Democrat marriages, since either spouse can be the Republican; the same halving error puts the Independent-with-partisan figure at 24% instead of 48%. The Institute for Family Studies analysis behind the \"4%\" (3.6% of marriages, per marriage, not per ordered pair) is the right thing to compare with 18%. Scott's own highlights post already flagged this: right after the comment he wrote \"Great point! (though some commenters say the correct number would be 18%)\", and Zvi's quote dropped that caveat. The fix matters: 4% against 18% (and 17% against 48%) shows strong political sorting, which reverses the \"great point\". The Gallup link only backs the party shares, but the arithmetic needs no source, and Zvi accepts clean numeric corrections."
+    }
+  ]
+}

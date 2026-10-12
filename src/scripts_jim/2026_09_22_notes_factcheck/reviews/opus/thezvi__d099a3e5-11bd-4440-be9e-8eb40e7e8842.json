@@ -1,0 +1,16 @@
+{
+ "item_id": "d099a3e5-11bd-4440-be9e-8eb40e7e8842",
+ "reviewer": "opus",
+ "source_read": "full_text",
+ "notes": [
+  {
+   "note_id": "37e010f7-d694-4fb7-8d1b-5ba7c9ecedbc",
+   "verdict": "bad",
+   "claim_is_authors_own": "no",
+   "note_is_correct": "unsure",
+   "substantive": "no",
+   "author_would_accept": "unlikely",
+   "reason": "The bullet list with \"After taxes -> $12,000,000/yr\" is a tweet by katsu that Zvi reproduces in a block quote, not Zvi's own arithmetic. All Zvi writes himself is \"The clip here is really something. Yes, it is hard to not go broke\", and then his own caveat that the tweet leaves something out: \"The agent also gets a cut, which isn't mentioned, but the NFL in particular somehow managed to cap agent fees at 3%.\" So the note fact-checks a quoted source rather than a claim Zvi makes, which is the exact complaint Andy Masley already sent back to us. The note is also not clearly right. Beckham's actual words were \"It is five years for sixty. You are getting taxed. Do the math. That is twelve million a year that you have to spend, use, save, invest\", and several outlets that covered the clip (MSN, The Observer) read the $60 million as what is left after tax rather than as the guaranteed money, which is the reading the note rules out. Finally the correction does not change anything Zvi is arguing. If the $12 million is really pre-tax, the player is worse off than the tweet says, which strengthens Zvi's point that it is hard not to go broke, and the 45-65 percent retention figure comes from a financial adviser's marketing page rather than a solid source."
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+  "item_id": "99bf45be-34d3-4c30-bf01-7b5bc0933bef",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "61caf28f-03d8-4208-a889-c8174194cdbf",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Jeff does say this himself, as an aside in the video's opening pitch: \"And besides, there's really no science on this so-called natural ceiling anyway. It might not even be a real thing.\" The study the note cites is real and all three quoted lines match the abstract of Kouri et al. 1995 word for word, so the sources hold up on their own terms. The problem is what the study actually shows. It is a cross-sectional comparison of 157 male athletes whose purpose was to find a screening tool for steroid use, and its own authors write that \"these findings must be regarded as preliminary\" - so it is weak support for the note's implied point that the natural ceiling is a settled scientific finding. It also measures a different thing from what Jeff is talking about: an upper bound on how muscular natural athletes in one sample were, not whether a lifter who has trained for fifteen years can still add muscle, which is the question the whole video is built around. Jeff also qualifies himself later in the same video, saying \"As for the so-called natural ceiling, I still do think it theoretically exists, at least on paper.\" Jeff Nippard reads this literature for a living and almost certainly knows the FFMI 25 figure, so a public note telling him peer-reviewed research exists would read as a nitpick on a throwaway line rather than a correction."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "item_id": "d2634ca4-ca58-4192-a2a6-f4c32d3c6170",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "f1c077a1-374e-4b30-81ee-896135677970",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The claim is Scott's own: \"The quote became a popular sensation, inspiring t-shirts, coffee mugs, and even a hit single.\" The note is factually right. Bob Geldof wrote \"I Don't Like Mondays\" after reading a telex about Brenda Spencer's school shooting on 29 January 1979, and the song was a UK number one for four weeks that summer; Garfield had first said \"I hate Mondays\" on 18 September 1978, but no source connects the song to the strip, and the only other candidates (Newton Faulkner's 2010 \"I Hate Mondays\", a promotional song for the 2024 Garfield film) are not hits inspired by the catchphrase either. Where the note fails is substance. The hit single is one item in a scene-setting list whose point is that the catchphrase became a sensation, and that point stands on the t-shirts and mugs alone; nothing in the essay about Dilbert or Scott Adams rests on where the song came from, so a reader who believes the aside comes away with no belief that matters to the argument. Under this review's bar a correction of a tangential detail is pedantic, and the fact that Scott would probably enjoy the correction does not rescue a note that fails that test. If Nathan wants to pass it on anyway as a friendly aside, it would not embarrass us, but it should not go out as a formal Common Note.",
+      "send_advice": null
+    }
+  ]
+}

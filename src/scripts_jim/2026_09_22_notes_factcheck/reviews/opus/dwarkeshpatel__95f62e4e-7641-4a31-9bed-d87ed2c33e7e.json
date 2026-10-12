@@ -1,0 +1,16 @@
+{
+  "item_id": "95f62e4e-7641-4a31-9bed-d87ed2c33e7e",
+  "reviewer": "opus",
+  "source_read": "fetched:https://www.dwarkesh.com/p/alex-imas-phil-trammell",
+  "notes": [
+    {
+      "note_id": "34afdb87-14a7-41a8-a144-8a591ac253d2",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is not Dwarkesh's. In the transcript it is his guest Alex Imas who says \"Atkinson has a paper showing that if you keep the accounting constant over the years, labor share hasn't even fallen ever\", and Dwarkesh only replies afterwards with \"But it's not that surprising, right?\". So the note corrects a guest's off-hand citation and sends it to the host. Worse, the correction looks wrong. I read the Atkinson 2009 paper the note itself links, \"Factor shares: the principal problem of political economy?\", and it does contain exactly this result: Atkinson builds a UK wage share measured net of capital consumption from 1954 to 2006 and writes that \"In 2006, the overall wage share is virtually the same as it was in 1954\". He also raises the possibility that the rising profit share is \"largely a statistical artefact\". Bridgman's BEA paper does make the gross-versus-net point too, but that does not make the attribution to Atkinson a mistake, and the note never even states plainly what it thinks the error is. The substantive point the guest was making, that measured falls in labour share depend on accounting conventions, is correct either way, so there is no wrong belief for a reader to take away."
+    }
+  ]
+}

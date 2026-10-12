@@ -32,9 +32,6 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
-// Search model/backend comparison. Reasoning arms set search_reasoning_effort.
-// Historical -searxng names now replay against Serper, not the removed backend.
-// 2026-09-17: 80% on the proven arms, 20% on three newcomers (numbers in the PR).
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
@@ -67,6 +64,8 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 7 },
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
+    { variant: { name: "musespark13c-native",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "openrouter_native" }}, weight: 0 },
+    { variant: { name: "gpt6luna-native",         overrides: { search_model: "openai/gpt-6-luna",                 web_search: "openrouter_native" }}, weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
@@ -79,29 +78,38 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
 };
 
 // 2026-09-17: Sonnet 5 carries the writer, three newcomers at 13 each (numbers in the PR).
+// 2026-09-18: GPT-5.6 Sol takes Gemini 3.8 Flash's share. The arm exists to keep a
+// non-Anthropic writer qualified, and Sol is priced the same as Sonnet 5.
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 60 },
-    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 13 },
+    { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 0 },
+    { variant: { name: "gpt5_6sol",        overrides: { writer_model: "openai/gpt-5.6-sol"            }}, weight: 13 },
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
     { variant: { name: "fable51",          overrides: { writer_model: "anthropic/claude-fable-5.1"    }}, weight: 13 },
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
+    // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
+    // (GOO-303), and gave it back the same day once the block was lifted (GOO-322).
     { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
 
 // Text verifier model only. Cited media is described by the media_description arm.
+// 2026-09-25: Gemini Flash alone again, as before 14 Sep. Muse killed more notes that should
+// have posted (numbers in the PR).
 const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   name: "simple_bot_verifier",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 100 },
+    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { verifier_model: "openai/gpt-6-luna"               }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"      }}, weight: 0  },
   ],
 };
@@ -115,18 +123,7 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   variants: [
     { variant: { name: "gemini3flash", overrides: { media_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
     { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
-  ],
-};
-
-// Compare prompt instructions with timing context; never enable both together.
-// The off arm was retired on 2026-08-23; it remains available for explicit comparison.
-const TIMING_TREATMENT_TEST: ABTest = {
-  name: "timing_treatment",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off",         overrides: { time_travel_prompt: false, timing_context: false } }, weight: 0 },
-    { variant: { name: "instruction", overrides: { time_travel_prompt: true,  timing_context: false } }, weight: 50 },
-    { variant: { name: "context",     overrides: { time_travel_prompt: false, timing_context: true  } }, weight: 50 },
+    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 0 },
   ],
 };
 
@@ -152,12 +149,12 @@ const MATERIALITY_TREATMENT_TEST: ABTest = {
 };
 
 // Common Notes forces on for extracted claims; ordinary X runs use off.
-const SIMPLE_BOT_CLAIM_TEST: ABTest = {
-  name: "search_claim",
+const COMMONNOTES_PIPELINE_TEST: ABTest = {
+  name: "commonnotes_pipeline",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "off", overrides: { search_claim: false } }, weight: 100 },
-    { variant: { name: "on",  overrides: { search_claim: true  } }, weight: 0   },
+    { variant: { name: "off", overrides: { commonnotes_pipeline: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { commonnotes_pipeline: true  } }, weight: 0   },
   ],
 };
 
@@ -318,10 +315,9 @@ export const AB_TESTS: ABTest[] = [
   SIMPLE_BOT_WRITER_TEST,
   SIMPLE_BOT_VERIFIER_TEST,
   MEDIA_DESCRIPTION_TEST,
-  TIMING_TREATMENT_TEST,
   WRITER_LAST_CHECK_TEST,
   MATERIALITY_TREATMENT_TEST,
-  SIMPLE_BOT_CLAIM_TEST,
+  COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,

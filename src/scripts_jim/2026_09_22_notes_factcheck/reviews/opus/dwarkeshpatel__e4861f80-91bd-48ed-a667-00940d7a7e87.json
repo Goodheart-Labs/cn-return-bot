@@ -1,0 +1,88 @@
+{
+  "item_id": "e4861f80-91bd-48ed-a667-00940d7a7e87",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "32813941-c791-4b8c-b197-b545564a3919",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is Elon Musk speaking, not Dwarkesh, and he says it while describing the solar cells SpaceX and Tesla intend to build themselves at 100 gigawatts a year, 'from raw materials to finish the cell'. So the claim is about a cell he plans to make, while the note answers with the price of today's specialist space cells. Those two numbers are real: the Polytechnique Insights article does say 300 euros per watt against 10 to 20 cents, and the Christian Science Monitor does report the NASA 12-to-80-times figure. But the NASA figure covers a whole space solar power system including launch, not the cost of making a cell, so it does not speak to what Musk said. The note's other assertion, that space cells need radiation-shielding cover glass, is not in either source, and the Polytechnique article in fact says the gap is narrowing because satellite constellations are switching to modified terrestrial cells, which is close to Musk's own argument. The underlying point is worth making, because a listener would otherwise believe space cells are cheaper today when they are not, but as written the note does not cleanly meet the claim."
+    },
+    {
+      "note_id": "731edab0-849e-4a53-befe-ebdd477da842",
+      "verdict": "good",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Musk says von Braun 'was put on death row in Nazi Germany' and 'got pulled off death row at the last minute'. The National WWII Museum interview with Michael Neufeld, the historian who wrote the standard von Braun biography, says he was arrested by the Gestapo in March 1944 over drunken party remarks that Germany would lose the war and that the real task was a spaceship, and that he was rescued by Dornberger and Speer. My own searching confirms a two-week detention in a Stettin cell and turns up no death sentence and no halted execution anywhere. The gap is large: a listener comes away believing the Nazis were about to execute their best rocket engineer for refusing weapons work, when the record shows a two-week arrest for defeatism that ended through intervention. Dwarkesh is not the speaker here, but he does not dispute the facts of the story, and a clean historical correction on his video is the sort of thing he is likely to take well."
+    },
+    {
+      "note_id": "325cee41-73fb-47d8-8ee3-02f0be8f7575",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This one is Dwarkesh's own line, not Musk's. He interrupts the von Braun story with 'But then he helped them, right? Or like, Heisenberg was actually an enthusiastic Nazi', and he offers Heisenberg as his counterexample to Musk's claim that a scientist stuck in a system need not believe in it. The note is right on the history: Heisenberg never joined the Nazi party, he was attacked in the SS paper Das Schwarze Korps as a 'White Jew' at the instigation of Johannes Stark, and he petitioned Himmler to clear his name, which took about a year. Historians describe him as a German patriot and nationalist who stayed and worked within the regime, not as an enthusiastic Nazi. The correction matters because Dwarkesh's example collapses if Heisenberg was not enthusiastic, and it is the kind of crisp, well-documented point he is likely to accept about his own offhand remark."
+    },
+    {
+      "note_id": "8b92b74c-8f2b-4d9f-9c9d-5ea508d6e7c5",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note's central comparison does not hold up. The standard 27-degrees-of-freedom figure for a human hand is 21 in the fingers and thumb plus 6 for moving and rotating the wrist, so comparing it with the 22 degrees of freedom in the Optimus hand alone is comparing two different things. Tesla's own figure is 22 in the hand plus 3 more in the wrist and forearm, which is at or above the 21 finger degrees of freedom. The second half is worse: the Wikipedia page the note cites also says the Shadow Dexterous Hand has 24 joints and 20 degrees of freedom, so the sentence the note quoted, that it 'reproduces all' of a human hand's degrees of freedom, is contradicted a line later on the same page. On top of that, Musk's actual words are 'I haven't seen any, even demo robots, that have a great hand', which is a statement about what he has seen and about hand quality generally, not a countable claim. This reads as a gotcha built on an inconsistent convention and would be easy for Tesla to rebut."
+    },
+    {
+      "note_id": "353f85f6-cc73-4ee9-90f1-44fe883b9822",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The note uses plants that were not yet running to refute a present-tense claim, and its own quotes give it away. LG Chem's Clarksville plant is 'set to become' the largest cathode facility in the United States, with mass production scheduled to begin during 2026, and the episode is from February 2026. Redwood's Nevada plant is described in the note's own source as 'nearing completion', yet the note says Redwood 'also runs a large-scale cathode plant in Nevada'. That word is not supported. So the note has not shown that Tesla's Austin cathode plant was not the only operating one in America when Musk said it. Musk also hedges the line himself, attributing it to what 'the cathode team would say', and Dwarkesh immediately answers 'Many superlatives', so the video already flags the boast. Sending this would invite an easy correction of our correction."
+    },
+    {
+      "note_id": "fecebbb3-70dd-47cc-b6e0-3b526a32e140",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The note's first sentence is not a correction at all. It says Musk called these facilities largest in 'America' or 'the Americas', but in this video he plainly says 'outside of China', so the note reads as if it were disputing words he did not use, when it is really pointing at his older posts. That will look like a misquote to anyone who watches the clip. The second sentence carries the real argument, that Indonesia's HPAL plants total 220,000 tonnes of nickel refining capacity, and that number appears in none of the note's four sources, so it is unsupported. The one solid point, that the Austin site mixes precursor with lithium hydroxide rather than refining raw nickel, is real and is sourced, but it is buried at the end of a muddled note. There is a good note to write about these superlatives; this is not it."
+    },
+    {
+      "note_id": "d2c0a070-4049-464d-9e56-aa91aa086399",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The fact is right. Naomi Whitehead was born on 26 September 1910, became the oldest living person in the United States after Elizabeth Francis died in October 2024, and turned 115 in September 2025, so in February 2026 she was 115 years and about four months old, not 114. It also bears on the sentence that follows, where Musk says it is safe to assume anyone recorded as 115 and alive is a typo or dead, since the oldest living American was in fact 115. What gives me pause is size: this is a one-year slip on a passing number inside a three-hour interview, and the wider argument, that the Social Security files list people far beyond any real human age, is untouched by it. Nathan should decide whether a note this small is worth spending on Dwarkesh, especially as the speaker is Musk rather than him."
+    },
+    {
+      "note_id": "82d5977d-d530-47da-94fa-6ed078d8f8f0",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Every fact in this note is accurate, but it answers a claim that is not made in the passage it is attached to. Musk's sentence is about records, not money: 'Maybe there shouldn't be 20 million people marked as alive in Social Security who are definitely dead, and over the age of 115.' The note replies entirely about benefits. Worse, Dwarkesh asks him directly a few lines later, 'Were those people getting payments?', and Musk answers 'Some were getting payments from Social Security. But the main fraud vector was to mark somebody as alive in Social Security and then use every other government payment system to basically do fraud.' So he already concedes the point the note is making, in the video, on camera. It is also a near-duplicate of the other note on the same sentence. This is exactly the shape of complaint Andy Masley sent back to us."
+    },
+    {
+      "note_id": "6b092c28-f431-4cef-9e52-22a8134b171d",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "There is a real error here. The 2023 Social Security inspector general audit found 18.9 million numberholders born in 1920 or earlier with no death information on the Numident, and the roughly 21 million figure Musk posted in 2025 covered everyone over 99, so neither number describes people over 115, and neither describes anyone as confirmed alive. The note's sources support this and the 44,000 payment figure. My hesitation is about how it is written. The sharpest correction, that the figure covers people aged 100 and up rather than 115 and up, is left for the reader to work out from 'born before 1920', and half the note is spent on benefits, which is the same off-target ground as the duplicate note on this sentence and which Musk himself qualifies moments later when Dwarkesh asks whether those people were getting paid. Rewritten to lead with the age range, this would be a strong note."
+    }
+  ]
+}

@@ -15,7 +15,6 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessageFromInput } from "../prompts/input/userMessage";
-import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
@@ -51,13 +50,10 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }
 
-  // The context arm of timing_treatment adds information for fog-window posts,
-  // not a gate. The instruction arm skips this stage and uses prompt rules.
-  let timingContext: string | undefined;
-  if (getBotConfig().timing_context) {
-    const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
-    if (timing.action === "inform") timingContext = timing.contextBlock;
-  }
+  // Information for the writer, not a gate: a post published within
+  // LIVE_EVENT_WINDOW_HOURS of the event it describes gets a timing block.
+  const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
+  const timingContext = timing.action === "inform" ? timing.contextBlock : undefined;
 
   const note = await runWriter(userMessage, search.findings, { timingContext });
   // The writer answers with an empty note when nothing in the findings disputes

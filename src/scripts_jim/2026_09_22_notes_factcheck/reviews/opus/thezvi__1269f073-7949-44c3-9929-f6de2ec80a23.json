@@ -1,0 +1,16 @@
+{
+  "item_id": "1269f073-7949-44c3-9929-f6de2ec80a23",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6c3ab86e-d1df-4ba7-bfa0-7ff2023bf856",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Zvi's own sentence, written to rebut the PoliMath tweet he had just quoted. PoliMath complains that a tech company will spend ten billion dollars on a data center outside a Wisconsin town and still not sponsor a little league team, and Zvi answers in his own voice: 'Actually, they do this. Meta and Google have such programs. Meta has such a program at Mount Pleasant.' The company at Mount Pleasant, Wisconsin is Microsoft, not Meta. Microsoft's Fairwater campus there sits on the old Foxconn land, and Microsoft is the one funding the Lamparek Creek restoration with Root-Pike WIN and the local training programmes. Meta's own list of United States data centers has twenty-eight sites and none of them is Mount Pleasant; its Wisconsin site is Beaver Dam. Every source in the note checks out and the wording is precise, with no misquote and no exaggeration. The one thing to flag for Nathan is that the correction does not overturn Zvi's argument, because a data center operator really does run community programmes at Mount Pleasant, just a different one, so this is a name mix-up rather than a broken point. It is still a plain factual error in a concrete example, and Zvi routinely runs corrections of exactly this size."
+    }
+  ]
+}

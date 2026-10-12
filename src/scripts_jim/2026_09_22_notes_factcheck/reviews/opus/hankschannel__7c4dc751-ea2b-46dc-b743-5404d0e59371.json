@@ -1,0 +1,16 @@
+{
+  "item_id": "7c4dc751-ea2b-46dc-b743-5404d0e59371",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "97abeb73-2a9a-4c52-abbb-b72ce2d6459f",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Hank does say \"which is again why sharks are not fish\", but he immediately adds \"You've heard me here before, folks\", which flags it as his own long-running argument rather than a stray mistake. He has a whole video called \"Sharks Aren't Fish, but Whales Are\", whose point is that \"fish\" is a paraphyletic group: any grouping that honestly contains both sharks and bony fish would also have to contain us, so the word does not pick out a real branch of the tree of life. The note answers that argument by quoting Wikipedia's ordinary usage, \"cartilaginous fishes\", which is a naming convention and not evidence against his point. The sources are accurate about the convention, but they do not touch the thing he is actually saying. Nothing in the video's argument about osmosis depends on the word, so even if the note were right it would change no belief that matters. Sending this to a science communicator who has publicly defended exactly this position would read as if we had not watched his work."
+    }
+  ]
+}

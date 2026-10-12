@@ -32,11 +32,6 @@ export interface Tweet {
 /** A piece of content that a note was written about, rendered by ContentCard. It
  *  is either an X post, a YouTube clip embedded at its timestamp span, or a
  *  citation from an article. */
-export type NotedContent =
-  | { kind: "tweet"; tweet: Tweet }
-  | { kind: "youtube"; url: string; quote?: string; fragmentText?: string; updatedQuote?: string; imageGrounded?: boolean; startSeconds?: number | null; endSeconds?: number | null }
-  | { kind: "article"; url: string | null; quote: string; fragmentText?: string; updatedQuote?: string; imageGrounded?: boolean };
-
 export interface PublicDumpRatings {
   helpful_count: number;
   somewhat_helpful_count: number;

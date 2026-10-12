@@ -1,0 +1,52 @@
+{
+  "item_id": "cf4caa34-aa6a-4122-ae55-6420a34a78d4",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "bdfcfa38-67a1-4634-b313-48c9cefd93ca",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This line is not Hank's. It comes from his guest Cali Moore of PBS Eons, answering his question \"Is there an environment that is currently just like we don't have a lot of it on current Earth, but past Earth had a lot of it?\" She is listing lost ice-age environments. The pipeline also read her sentence in the least charitable way. She says \"Even Siberia used to be this massive tundra and it's not there anymore. It's a different type of grassland.\" The natural reading is that the thing Siberia used to have was a tundra that was a different type of grassland, which is exactly the mammoth steppe. Wikipedia's own article, which this note cites, calls that biome \"steppe-tundra\" and says it was \"very different from today's swampy tundra\", so describing it as a massive tundra that was a different sort of grassland is right, not reversed. The note only works if you read \"It's a different type of grassland\" as a description of Siberia today, and Siberia today is not grassland at all, so that reading makes a paleontologist say something obviously silly. Sending this would fact-check Hank's expert guest for a correct statement that an automatic caption made ambiguous."
+    },
+    {
+      "note_id": "012bdd18-b148-45d3-b6f4-20c2f6aea093",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The Pangaea timeline is almost certainly spoken by Cali Moore, not Hank, since Hank has just said \"I had a very simplistic idea of pangia\" and she then gives the expert version. The note is right that Pangaea's breakup belongs to the late Triassic and early Jurassic, not the early Triassic, so \"early Triassic\" is a slip. But the note then says \"The Triassic ran ~252-201 million years ago, so rifting hadn't started 247 million years ago\", and nobody in the video said 247 million years ago. In the same breath she said the breakup was \"a little under 200 million years ago\", and she added \"it was around for over a 100 million years\" after dating its assembly to about 300 million years ago. Both of those numbers are correct and agree with the Britannica figure the note itself quotes. So the note invents a date to correct, and corrects only a period name that the speaker's own numbers already contradict. This is exactly the \"seems to misquote me\" complaint Andy Masley made, and it is pedantic on top of that."
+    },
+    {
+      "note_id": "7d07803d-4916-49db-8494-af7f5c99a04a",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This one is Hank's own scripted narration, and he states it as settled fact: \"we know that rocks travel between planets because there's Mars rocks on Earth and there's Earth rocks on Mars.\" The correction is real. Every meteorite identified on the Martian surface by a rover is an iron-nickel body from the asteroid belt, and I could find no confirmed or even claimed Earth-origin rock on Mars. A viewer would come away believing we have collected Earth rocks on Mars, which is one of only two pieces of evidence Hank offers for interplanetary rock transfer, so the correction matters to his point. Hank issues corrections often and would probably accept it. What gives me pause is the number inside the note: it says about 175 Mars rocks are on Earth, no cited source supports that, and Wikipedia's Martian meteorite article gives 277 classified as of September 2020. Drop that clause and the hedged Moon clause before sending, and the note is clean."
+    },
+    {
+      "note_id": "8e96ab15-5ec9-42cb-beda-4cab1236fc39",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note answers a question nobody asked. The conversation at that point is a joke about \"the only vegan meat\", meaning a human who donates part of his own body to be grown into lab meat. The line is \"That was one thing that I was bummed that they didn't put in the movie Project Hail Mary. Yeah. was that he would he would eat his himself\", followed by \"A me burger\" and \"We could each eat our own.\" The note instead talks about Rocky the Eridian stuffing food into the orifice he also uses for waste, which is a completely different scene and has nothing to do with a person eating meat grown from himself. The extracted claim is also a misreading: it turns a joke about the movie leaving something out into a claim about what is in the book. Even if the note's facts about Rocky's eating scene are right, it does not correct anything that was said, and it fact-checks laughter in a loose riff between two friends."
+    },
+    {
+      "note_id": "e8c51098-fd27-4505-9a77-a459c6dc7fd0",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The speaker here is Cali Moore again, not Hank, and she hedges: \"Because they evolve almost at the exact same time.\" The dates in the note are broadly right, trilobites from about 521 million years ago and the first xiphosurans from about 480 million years ago, but a 40 million year gap between two early Palaeozoic marine arthropods is well inside what \"almost at the exact same time\" covers in a conversation that has just been throwing around numbers like 300 and 500 million years. Her actual point is that two similar lineages overlapped for hundreds of millions of years and only one survived the end-Permian, and she develops it straight away with the nautiloid and ammonite comparison. The correction changes nothing about that argument. The note's closing sentence, that trilobites died out and horseshoe crabs survive today, is the very thing she had just said one sentence earlier when she asked \"why do we have horseshoe crabs? Why do we not have trilobytes?\", so it corrects her by repeating her. This is pedantic."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "item_id": "2da821ab-6090-4238-8168-2393aa7bd95a",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4aebdc46-9868-4cca-a015-db794e9febdf",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The note is right about the facts: the paper \"The NISQ Trap: Eight Years of Demonstrations the Hardware Was Built to Lose\" is by Amit Hagar, a philosopher of science at Indiana University, and Aram Harrow is an MIT quantum information scientist who did not write it. The problem is that the name almost certainly comes from YouTube's automatic transcription and not from Sabine. The same transcript ends with \"use my code Sabina\" when her sponsor code is SABINE (she posted \"use my code SABINE\" on X on the day the video went up), and it turns \"Kipu Quantum\" into \"Keepler Quantum\" and \"Solano\" into \"Solana\", so rare names in this transcript are unreliable while famous ones like Preskill, Aaronson and Hassabis came out right. Everything else in the passage fits Hagar and not Harrow: she calls him \"the philosopher\", and the sentence she reads out (\"A demonstration that a hardware can run a circuit and that the circuit produces an observable matching a known answer is a demonstration of competent diagnostic engineering...\") is word for word from section 5 of Hagar's paper. Sending this would most likely be telling her she said something the machine said, which is exactly the complaint Andy Masley made. If Nathan listens to the video around 1:00 and she really does say \"Aram Harrow\", the note becomes a good and worthwhile correction."
+    },
+    {
+      "note_id": "84d324aa-ce77-4820-8186-b02c50e6f54d",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Enrique Solano did co-found Kipu Quantum in Berlin and Karlsruhe, so the spellings in the note are correct. But \"Enrique Solana\" and \"Keepler Quantum\" are spoken names in an automatically transcribed video, and this transcript demonstrably mangles names it does not know well, including Sabine's own sponsor code, which it writes as \"Sabina\" instead of SABINE. Nobody can hear a spelling in a video, so there is nothing here for a viewer to get wrong. Even if she did mispronounce the name, her point is that a founder promised NISQ advantage within 18 to 36 months in August 2023 and it did not arrive, and the spelling of his surname does not touch that point at all. This is the pedantic, tangential kind of note that costs us the relationship with the author for nothing."
+    },
+    {
+      "note_id": "4772a431-847c-4296-b1c5-04ea5d29f38f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "\"The one exception he names was one of those random sampling cases\" is Sabine's own summary of the paper, not something she is quoting from someone else, and it is wrong. I checked Hagar's paper directly: section 4 says \"The October 2025 Quantum Echoes experiment is the one demonstration of the period that stands neither reproduced nor closed by theorem, and it is also the one that conforms least to the flagship template\", and the same section explicitly puts the December 2024 Willow random-circuit-sampling claim on the other side, as a result closed within ten months by a simulability theorem. Scott Aaronson's post of 18 July 2026 says the same thing (\"One is the Google OTOC experiment, as even Hagar himself acknowledges (that's his 'single clear exception')\"), so both sources the note leans on check out. The correction matters to her argument, because her point one minute earlier is that these demonstrations produce random distributions with no known use, and the single surviving one is in fact the experiment built to return a verifiable expectation value instead of random bitstrings. The one thing that could draw pushback is that Hagar calls this exception contested and spends a paragraph doubting the 65-qubit accuracy claim, so she may answer that Quantum Echoes still runs on random circuits; the note does not claim the advantage is proven, only that the exception is not a random-sampling case, which is correct."
+    }
+  ]
+}

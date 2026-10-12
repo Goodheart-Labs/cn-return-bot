@@ -1,0 +1,25 @@
+{
+  "item_id": "53a7493e-37f7-4ed6-b796-5de0b784c070",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "c722a3f4-9382-4d40-8569-0f9f69f2ad52",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence the note corrects is Zvi reporting what a model told him, not his own finding: \"Opus (this understandably hit the classifiers on Fable) notes that GRAM is only partially effective, and the ablated model version still shows improvement in the capabilities you want to avoid.\" He passes Opus's reading along without endorsing any specific number. The note is also wrong on the facts. Anthropic's own write-up says ablation removes capabilities \"nearly as effectively as never training on the data at all\", and then adds the explicit caveat \"(Caveat: these values are all in compute-normalized terms, relative to a baseline model. In absolute terms, the bigger models are still better at the forgotten capabilities.)\" That caveat is exactly what Opus said, so the post is not reporting \"the opposite\" of the paper. The note's second point, that removal gets stronger with scale, is about the compute-normalized gap and does not contradict the absolute residual capability the post refers to; the note presents two compatible measurements as if one refuted the other, and it drops the word \"nearly\" from the quote it leans on. Sending this would invite Zvi to quote the caveat back at us."
+    },
+    {
+      "note_id": "2fb3a50d-133e-437d-8637-932b69f2cd92",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "This one is Zvi's own sentence in his own voice: \"Fact checker Megan Herbst gets the facts wrong in Wired, claims AI fact checking cannot be trusted based exclusively on AI overviews.\" The word \"exclusively\" is indeed too strong. Herbst cites a March 2025 Tow Center study of eight AI search engines and a BBC study of chatbots, and she also ran her own test: \"Recently, I dug out that old test and gave it to (the free versions of) ChatGPT, Claude, Gemini, and Grok.\" So a correction here is fair game and it matters, because Zvi's whole point is that she over-generalised from a weak base. The problem is the note's own first sentence, which says her piece \"did not rely on Google's AI Overviews\". It did. She calls AI Overviews her main interaction with AI and writes \"In my professional opinion, it's unusable-wrong-about a third of the time.\" The accurate correction is \"not only AI Overviews\", and the note instead asserts something the article itself contradicts, which is the kind of overreach Andy Masley already pushed back on. The tacked-on spelling fix (Meghan, not Megan) is correct but minor on its own."
+    }
+  ]
+}
