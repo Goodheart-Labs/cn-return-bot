@@ -60,7 +60,7 @@ Cut the text into consecutive passages that together add up to all of it, word f
 Answer with one JSON object. Each key is one passage, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
 ${types.join("\n")}
 
-Statements must be as atomic as possible: a statement passage holds one statement, which a neutral expert could judge on its own. If a sentence holds two or more statements, cut inside the sentence so that each gets its own passage. Only when statements are woven into each other so that no cut can separate them, keep them in one passage and list each as a claim. Forecast and other passages do not have to be atomic: let them run as long as they naturally do.
+Statements don't have to be fully atomic, but only very very related statements should be grouped together. Let forecasts and Other passages run as long as they naturally do.
 
 "claims" is a list of the claims the passage makes or relies on, normally just one, including implicit ones. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
 
