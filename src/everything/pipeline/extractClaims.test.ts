@@ -1,5 +1,6 @@
+import PQueue from "p-queue";
 import { describe, expect, spyOn, test } from "bun:test";
-import { articleChunk, bodyOfChunkMessage, chunkText, contextTimeSpan, describeArticleImages, extractionSystemPrompt, renderImageDescriptions, runExtraction, runPassageExtraction } from "./extractClaims";
+import { articleChunk, bodyOfChunkMessage, chunkText, contextTimeSpan, describeArticleImages, extractChunks, extractionSystemPrompt, renderImageDescriptions, runExtraction, runPassageExtraction } from "./extractClaims";
 import { PASSAGE_TYPES } from "./passages";
 import { claudeExtractionModels, withExtractionModels } from "./model";
 import * as costTracker from "../../pipeline/cost-tracking/costTracker";
@@ -113,7 +114,7 @@ describe("runExtraction", () => {
     const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(
       completion({ "A is true.": { type: "statement", claims: ["A is true."] }, "B is a matter of taste.": { type: "other" } }) as any,
     );
-    const claims = await withExtractionModels(claudeExtractionModels("anthropic/claude-sonnet-5.5", "medium"), () => runExtraction(message));
+    const { claims } = await withExtractionModels(claudeExtractionModels("anthropic/claude-sonnet-5.5", "medium"), () => runExtraction(message));
     expect(claims).toEqual([{ claim: "A is true.", context: "A is true.", contextParagraph: "A is true. B is a matter of taste.", imageUrls: [] }]);
     const request = spy.mock.calls[0]![1] as any;
     expect(request.model).toBe("anthropic/claude-sonnet-5.5");
@@ -151,6 +152,47 @@ describe("runExtraction", () => {
   });
 });
 
+describe("an unfinished last statement", () => {
+  const first = "Article excerpt:\n\nA is true. B is a matter of taste. C is";
+  const second = "Article excerpt:\n\nalso true. D is false.";
+  const completion = (passages: object) => ({
+    response: { choices: [{ message: { content: JSON.stringify(passages) } }] },
+    costEntry: { name: "claim_extraction", input_tokens: 1, output_tokens: 1, cost: 0, tools: [] },
+  });
+  const statement = (claim: string) => ({ type: "statement", claims: [claim] });
+
+  test("is only mentioned to the model when another chunk follows", () => {
+    expect(extractionSystemPrompt({ hasNextChunk: true })).toContain("its last statement may be unfinished");
+    expect(extractionSystemPrompt()).not.toContain("its last statement may be unfinished");
+  });
+
+  test("comes back as the carry when the model leaves it out and another chunk follows", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(
+      completion({ "A is true.": statement("A is true."), "B is a matter of taste.": { type: "other" } }) as any,
+    );
+    const extraction = await runPassageExtraction(first, { hasNextChunk: true });
+    expect(extraction.carry).toBe("C is");
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+
+  test("is not accepted as missing text in the last chunk", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(completion({ "A is true.": statement("A is true.") }) as any);
+    await expect(runPassageExtraction(first)).rejects.toThrow("no acceptable answer");
+    spy.mockRestore();
+  });
+
+  test("is put at the start of the next chunk, whose claims come out whole", async () => {
+    const spy = spyOn(costTracker, "trackedLlmCreate")
+      .mockResolvedValueOnce(completion({ "A is true.": statement("A is true."), "B is a matter of taste.": { type: "other" } }) as any)
+      .mockResolvedValueOnce(completion({ "C is also true.": statement("C is also true."), "D is false.": statement("D is false.") }) as any);
+    const claims = await extractChunks([first, second], () => ({ kind: "none" }) as any, new PQueue({ concurrency: 3 }));
+    expect((spy.mock.calls[1]![1] as any).messages.at(-1).content).toBe("Article excerpt:\n\nC is also true. D is false.");
+    expect(claims.map((c) => c.claim)).toEqual(["A is true.", "C is also true.", "D is false."]);
+    spy.mockRestore();
+  });
+});
+
 describe("bodyOfChunkMessage", () => {
   test("strips the label of an article chunk and of a transcript chunk", () => {
     expect(bodyOfChunkMessage("Article excerpt:\n\nText.")).toBe("Text.");
@@ -169,6 +211,6 @@ describe("extractionSystemPrompt", () => {
   });
 
   test("adds the types an experiment asks for", () => {
-    expect(extractionSystemPrompt({ other: "fits none of the above" })).toContain('- "other": fits none of the above');
+    expect(extractionSystemPrompt({ extraTypes: { other: "fits none of the above" } })).toContain('- "other": fits none of the above');
   });
 });

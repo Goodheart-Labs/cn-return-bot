@@ -40,15 +40,22 @@ const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> 
   [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the passage is (stay maximally consice).`,
 };
 
-/** `extraTypes` adds types to the usual four, for experiments that want to see
- *  which passages do not fit them. */
-export function extractionSystemPrompt(extraTypes: Record<string, string> = {}): string {
+export interface ExtractionOptions {
+  /** Adds types to the usual ones, for experiments that want to see which passages do not fit them. */
+  extraTypes?: Record<string, string>;
+  /** Whether another excerpt follows, to which the model may hand over an unfinished last statement. */
+  hasNextChunk?: boolean;
+}
+
+const UNFINISHED_ENDING_RULE = `This excerpt was cut from a longer text at a fixed length, so its last statement may be unfinished. If it is, leave the unfinished words at the end out of your passages. They are given to you again at the start of the next excerpt. Leave out only that unfinished last statement, never more than a few sentences, and never anything else.`;
+
+export function extractionSystemPrompt({ extraTypes = {}, hasNextChunk = false }: ExtractionOptions = {}): string {
   const types = Object.entries({ ...PASSAGE_TYPE_DESCRIPTIONS, ...extraTypes }).map(([name, description]) => `- "${name}": ${description}`);
   return `You cut a text into passages and sort every passage by what it says. The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
 
 The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not cut it into passages. Cut only the text after "Part:".
 
-Cut the text into consecutive passages that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between passages. Make each passage as short as its content allows: normally one sentence, or several when a claim cannot stand without them. Cut between sentences, and inside a sentence only when its parts have different types.
+Cut the text into consecutive passages that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between passages. Make each passage as short as its content allows: normally one sentence, or several when a claim cannot stand without them. Cut between sentences, and inside a sentence only when its parts have different types.${hasNextChunk ? `\n\n${UNFINISHED_ENDING_RULE}` : ""}
 
 Answer with one JSON object. Each key is one passage, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
 ${types.join("\n")}
@@ -117,6 +124,8 @@ export interface PassageExtraction {
   /** The share of the chunk's characters that the passages cover. */
   coverage: number;
   attempts: number;
+  /** The unfinished last words of the chunk, which the model left out for the next chunk. */
+  carry: string;
 }
 
 /** One extraction over a rendered text chunk. The calls go through the tracked
@@ -131,13 +140,16 @@ export interface PassageExtraction {
  *  three attempts the call throws, because passages that do not cover the text
  *  would silently lose claims.
  *
- *  `extraTypes` adds types for experiments. */
-export async function runPassageExtraction(content: string, extraTypes: Record<string, string> = {}): Promise<PassageExtraction> {
+ *  When another chunk follows, the model may leave out the unfinished last
+ *  words of the chunk. They come back as `carry`, for the caller to put at the
+ *  start of the next chunk. */
+export async function runPassageExtraction(content: string, options: ExtractionOptions = {}): Promise<PassageExtraction> {
+  const { extraTypes = {}, hasNextChunk = false } = options;
   const body = bodyOfChunkMessage(content);
-  if (!hasTextOutsideImages(body)) return { passages: [], coverage: 1, attempts: 0 };
+  if (!hasTextOutsideImages(body)) return { passages: [], coverage: 1, attempts: 0, carry: "" };
   const allowedTypes = [...PASSAGE_TYPES, ...Object.keys(extraTypes)];
   const messages: ChatMessage[] = [
-    { role: "system", content: extractionSystemPrompt(extraTypes) },
+    { role: "system", content: extractionSystemPrompt(options) },
     { role: "user", content },
   ];
   let lastFeedback = "";
@@ -153,8 +165,8 @@ export async function runPassageExtraction(content: string, extraTypes: Record<s
     trackLlmCall(costEntry);
     const answer: string = (response as any).choices?.[0]?.message?.content ?? "{}";
     try {
-      const parse = parsePassages(stripJsonFences(answer), body, allowedTypes);
-      if (parse.coverage >= MIN_COVERAGE) return { passages: parse.passages, coverage: parse.coverage, attempts: attempt };
+      const parse = parsePassages(stripJsonFences(answer), body, { allowedTypes, allowCarry: hasNextChunk });
+      if (parse.coverage >= MIN_COVERAGE) return { passages: parse.passages, coverage: parse.coverage, attempts: attempt, carry: parse.carry };
       lastFeedback = describeProblems(parse);
     } catch (err) {
       if (!(err instanceof PassageFormatError)) throw err;
@@ -165,10 +177,11 @@ export async function runPassageExtraction(content: string, extraTypes: Record<s
   throw new ModelOutputInvalidError(`claim_extraction: no acceptable answer after ${MAX_PASSAGE_ATTEMPTS} attempts. ${lastFeedback}`);
 }
 
-/** The claims of one chunk, each with the passage it sits in. */
-export async function runExtraction(content: string): Promise<PassageClaim[]> {
-  const { passages } = await runPassageExtraction(content);
-  return claimsOfPassages(passages, bodyOfChunkMessage(content));
+/** The claims of one chunk, each with the passage it sits in, and the carry
+ *  for the next chunk. */
+export async function runExtraction(content: string, hasNextChunk = false): Promise<{ claims: PassageClaim[]; carry: string }> {
+  const { passages, carry } = await runPassageExtraction(content, { hasNextChunk });
+  return { claims: claimsOfPassages(passages, bodyOfChunkMessage(content)), carry };
 }
 
 function buildVideoLink(videoId: string, seconds: number): string {
@@ -323,19 +336,34 @@ function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
   };
 }
 
+/** Puts the unfinished words that the last chunk handed over at the start of the
+ *  next chunk's text. The line break or blank line that stood between them in
+ *  the stored text becomes a space, which the anchoring does not tell apart. */
+function prependCarry(message: string, carry: string): string {
+  if (!carry) return message;
+  const bodyStart = message.length - bodyOfChunkMessage(message).length;
+  return `${message.slice(0, bodyStart)}${carry} ${message.slice(bodyStart)}`;
+}
+
 /** Extract from pre-rendered chunks, then attach each claim's resolved anchor.
- *  The queue is shared across the parts of one item, so an item never runs more
- *  chunks at once than the caller allowed. */
-async function extractChunks(
+ *  The chunks of one part run one after another, because a chunk may hand its
+ *  unfinished last words to the next one. The queue is shared across the parts
+ *  of one item, so an item never runs more chunks at once than the caller
+ *  allowed, while the parts run side by side. */
+export async function extractChunks(
   renderedChunks: string[],
   anchorFor: AnchorResolver,
   queue: PQueue,
 ): Promise<ExtractedClaim[]> {
-  const perChunk = await Promise.all(renderedChunks.map((chunk) => queue.add(() => runExtraction(chunk))));
-  return perChunk
-    .flat()
-    .filter((c): c is PassageClaim => !!c)
-    .map((c) => toExtractedClaim(c, anchorFor(c.context, c.contextParagraph)));
+  const claims: PassageClaim[] = [];
+  let carry = "";
+  for (const [index, chunk] of renderedChunks.entries()) {
+    const hasNextChunk = index < renderedChunks.length - 1;
+    const extraction = await queue.add(() => runExtraction(prependCarry(chunk, carry), hasNextChunk), { throwOnTimeout: true });
+    claims.push(...extraction.claims);
+    carry = extraction.carry;
+  }
+  return claims.map((c) => toExtractedClaim(c, anchorFor(c.context, c.contextParagraph)));
 }
 
 // The LLM sees plain transcript text with no timestamps in it. We snap the

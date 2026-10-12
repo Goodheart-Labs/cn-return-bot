@@ -95,8 +95,40 @@ describe("parsePassages", () => {
   });
 
   test("accepts a type that the caller allows beyond the usual ones", () => {
-    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "other", why: "a heading" } }), body, ["statement", "other"]);
+    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "other", why: "a heading" } }), body, { allowedTypes: ["statement", "other"] });
     expect(parse.passages[0]!.extra).toEqual({ why: "a heading" });
+  });
+});
+
+describe("parsePassages with an unfinished ending", () => {
+  const text = "Revenue grew 30% last year. The company was founded in 2010 and then it";
+  const withoutEnding = answer({ "Revenue grew 30% last year.": { type: "statement", claims: ["c"] }, "The company was founded in 2010": { type: "statement", claims: ["c"] } });
+
+  test("hands the left-out last words back as the carry when the caller allows it", () => {
+    const parse = parsePassages(withoutEnding, text, { allowCarry: true });
+    expect(parse.carry).toBe("and then it");
+    expect(parse.uncovered).toEqual([]);
+    expect(parse.coverage).toBe(1);
+  });
+
+  test("counts the same gap as missing text when the caller does not allow it", () => {
+    const parse = parsePassages(withoutEnding, text);
+    expect(parse.carry).toBe("");
+    expect(parse.uncovered.map((gap) => gap.text)).toEqual(["and then it"]);
+    expect(parse.coverage).toBeLessThan(1);
+  });
+
+  test("does not take a gap in the middle of the text as the carry", () => {
+    const parse = parsePassages(answer({ "The company was founded in 2010 and then it": { type: "other" } }), text, { allowCarry: true });
+    expect(parse.carry).toBe("");
+    expect(parse.uncovered.map((gap) => gap.text)).toEqual(["Revenue grew 30% last year."]);
+  });
+
+  test("does not take a gap longer than the limit as the carry", () => {
+    const longText = `Revenue grew 30% last year. ${"Words keep coming and coming. ".repeat(40)}`;
+    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "other" } }), longText, { allowCarry: true });
+    expect(parse.carry).toBe("");
+    expect(parse.coverage).toBeLessThan(0.5);
   });
 });
 

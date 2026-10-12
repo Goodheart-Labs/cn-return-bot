@@ -23,6 +23,11 @@ export type PassageType = (typeof PASSAGE_TYPES)[number];
  *  symbol, without making the whole chunk worthless. */
 export const MIN_COVERAGE = 0.97;
 
+/** The most characters at the end of a chunk that the model may leave out because
+ *  its last statement is unfinished. The code gives them to the next chunk. A
+ *  longer gap is a mistake of the model, not a statement cut in two. */
+export const MAX_CARRY_CHARS = 500;
+
 const IMAGE_KEY_PREFIX = "Image: ";
 /** The most characters of one missing piece of text that is quoted back to the model. */
 const MAX_QUOTED_GAP_CHARS = 100;
@@ -52,6 +57,9 @@ export interface PassageParse {
   uncovered: { start: number; end: number; text: string }[];
   /** The share of the text's characters that the passages cover. */
   coverage: number;
+  /** The unfinished words at the end of the text that the model left out on purpose.
+   *  Empty unless the caller allowed it. */
+  carry: string;
 }
 
 export interface PassageClaim {
@@ -167,11 +175,19 @@ function readPassage(key: string, value: unknown, allowedTypes: readonly string[
   return { text: key, type, claims: listed, span: null, imageUrl: isImage ? key.slice(IMAGE_KEY_PREFIX.length).trim() : null, extra };
 }
 
+export interface ParseOptions {
+  allowedTypes?: readonly string[];
+  /** Whether a short gap at the very end of the text is expected, because the
+   *  model may leave out an unfinished last statement. */
+  allowCarry?: boolean;
+}
+
 /** Reads the model's answer for a chunk of text, whose words the passages must
  *  add up to. Throws PassageFormatError when the answer has the wrong shape. A
  *  gap in the coverage is not an error here, it is reported for the caller to
  *  judge. */
-export function parsePassages(raw: string, body: string, allowedTypes: readonly string[] = PASSAGE_TYPES): PassageParse {
+export function parsePassages(raw: string, body: string, options: ParseOptions = {}): PassageParse {
+  const { allowedTypes = PASSAGE_TYPES, allowCarry = false } = options;
   let object: unknown;
   try {
     object = JSON.parse(raw);
@@ -218,10 +234,12 @@ export function parsePassages(raw: string, body: string, allowedTypes: readonly 
     passages.push({ ...passage, span: found });
   }
   noteGap(cursor, body.length);
+  const lastGap = uncovered.at(-1);
+  const carry = allowCarry && lastGap && lastGap.end === body.length && lastGap.text.length <= MAX_CARRY_CHARS ? uncovered.pop()!.text : "";
 
   const total = charsWithoutSpaces(body) - images.reduce((sum, s) => sum + charsWithoutSpaces(body.slice(s.start, s.end)), 0);
   const missing = uncovered.reduce((sum, gap) => sum + charsWithoutSpaces(gap.text), 0);
-  return { passages, unmatched, uncovered, coverage: total > 0 ? Math.max(0, 1 - missing / total) : 1 };
+  return { passages, unmatched, uncovered, coverage: total > 0 ? Math.max(0, 1 - missing / total) : 1, carry };
 }
 
 /** What to tell the model when its passages do not add up to the text. */
