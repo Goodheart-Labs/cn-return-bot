@@ -1148,24 +1148,6 @@ export type Database = {
         }
         Relationships: []
       }
-      fact_check_usage: {
-        Row: {
-          count: number
-          day: string
-          key: string
-        }
-        Insert: {
-          count?: number
-          day: string
-          key: string
-        }
-        Update: {
-          count?: number
-          day?: string
-          key?: string
-        }
-        Relationships: []
-      }
       feed_tweets: {
         Row: {
           author_description: string | null
@@ -2294,6 +2276,10 @@ export type Database = {
         }
         Returns: string
       }
+      everything_creator_project: {
+        Args: { creator_feed_url: string }
+        Returns: string
+      }
       everything_creator_visit_scores: {
         Args: { last_posts: number }
         Returns: {
@@ -2302,10 +2288,6 @@ export type Database = {
           posts: number
           visitors_per_post: number
         }[]
-      }
-      everything_creator_project: {
-        Args: { creator_feed_url: string }
-        Returns: string
       }
       everything_daily_activity: {
         Args: { window_days?: number }
@@ -2435,10 +2417,6 @@ export type Database = {
         Returns: string
       }
       everything_visit_page: { Args: { url: string }; Returns: string }
-      fact_check_consume: {
-        Args: { p_key: string; p_limit: number }
-        Returns: boolean
-      }
       finish_note_submission_claim: {
         Args: {
           p_claim_id: string
