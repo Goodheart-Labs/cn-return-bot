@@ -14,13 +14,12 @@ import { useVotingNudge, VotingNudge } from "./VotingNudge";
  *  rating status, the rating pills, the donation notice that appears after a
  *  vote, and the action row. The website's feed and every extension overlay
  *  render this same component. `children` adds actions to the action row. */
-export function Note({ note, shareUrl, onDeleted, compact, children }: {
+export function Note({ note, shareUrl, compact, children }: {
   note: NoteRow;
-  /** For a narrow column: sources show as site names and a long note starts clamped. */
+  /** For a narrow column: sources show as site names. */
   compact?: boolean;
   /** The absolute deep link the Share button copies. */
   shareUrl: string;
-  onDeleted?: () => void;
   children?: ReactNode;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -60,7 +59,7 @@ export function Note({ note, shareUrl, onDeleted, compact, children }: {
           onClose={() => setCast(null)}
         />
       )}
-      <NoteMenu onDeleted={onDeleted} note={note} shareUrl={shareUrl} sourcesOpen={sourcesOpen} onToggleSources={() => setSourcesOpen((o) => !o)}>
+      <NoteMenu note={note} shareUrl={shareUrl} sourcesOpen={sourcesOpen} onToggleSources={() => setSourcesOpen((o) => !o)}>
         {children}
       </NoteMenu>
     </div>
