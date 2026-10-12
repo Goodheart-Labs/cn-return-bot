@@ -35,18 +35,9 @@ import { extractionModels } from "./model";
 import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
 
 const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
-  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading: false, out of date, overstated, missing context, cherry-picked, wrongly attributed or misleading in some other way. This covers facts, numbers, dates, events, quotations, attributions, causes, comparisons and things presupposed as background fact. When in doubt, choose this type. A sentence that mixes an opinion with a factual premise is also a statement. Also give "claims", as described below.`,
-  [FORECAST_TYPE]: `says what will or might happen in the future: a prediction, a projection, a probability or a plan.`,
-  [OTHER_TYPE]: `everything else: an opinion or value judgment with no factual premise, a recommendation, a joke, a question, a part of an invented story or an imagined scenario, a definition, and text with no content such as a heading, a transition, a greeting, a call to action, a list of links or a caption. Also give "why": a few words on what the passage is.`,
-};
-
-const PASSAGE_EXAMPLE_TEXT = `I think Berlin is the best city in Europe. It has a population of 3.7 million, and the Wall fell in 1989. By 2030 it will have 4 million people. Once upon a time a dragon lived in a cave under the Spree.`;
-const PASSAGE_EXAMPLE_ANSWER = {
-  "I think Berlin is the best city in Europe.": { type: OTHER_TYPE, why: "opinion" },
-  "It has a population of 3.7 million,": { type: STATEMENT_TYPE, claims: ["Berlin has a population of 3.7 million."] },
-  "and the Wall fell in 1989.": { type: STATEMENT_TYPE, claims: ["The Berlin Wall fell in 1989."] },
-  "By 2030 it will have 4 million people.": { type: FORECAST_TYPE },
-  "Once upon a time a dragon lived in a cave under the Spree.": { type: OTHER_TYPE, why: "invented story" },
+  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading in some way. When in doubt, choose this type. A Also give "claims", as described below.`,
+  [FORECAST_TYPE]: `says what will or might happen in the future`,
+  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the passage is (stay maximally consice).`,
 };
 
 /** `extraTypes` adds types to the usual four, for experiments that want to see
@@ -66,13 +57,7 @@ Statements must be as atomic as possible: a statement passage holds one statemen
 
 "claims" is a list of the claims the passage makes or relies on, normally just one, including implicit ones. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
 
-A claim can rest on an image, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. For such a claim, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}" and its "claims". An image with nothing to check gets no key.
-
-Example text:
-${PASSAGE_EXAMPLE_TEXT}
-
-Example answer:
-${JSON.stringify(PASSAGE_EXAMPLE_ANSWER, null, 1)}`;
+A claim can rest on an image, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. For such a claim, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}" and its "claims". An image with nothing to check gets no key.`;
 }
 
 /** Copies the claim of a passage onto an ExtractedClaim and attaches the anchor
