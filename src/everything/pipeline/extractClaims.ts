@@ -35,9 +35,9 @@ import { extractionModels } from "./model";
 import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
 
 const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
-  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading in some way. When in doubt, choose this type. A Also give "claims", as described below.`,
+  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading in some way. When in doubt, choose this type. Also give "claims", as described below.`,
   [FORECAST_TYPE]: `says what will or might happen in the future`,
-  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the passage is (stay maximally consice).`,
+  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the passage is (stay maximally concise).`,
 };
 
 export interface ExtractionOptions {
@@ -60,7 +60,7 @@ Cut the text into consecutive passages that together add up to all of it, word f
 Answer with one JSON object. Each key is one passage, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
 ${types.join("\n")}
 
-Statements must be as atomic as possible: a statement passage holds one statement, which a neutral expert could judge on its own. If a sentence holds two or more statements, cut inside the sentence so that each gets its own passage, for example at a comma, an "and", a "while" or a "which". Only when statements are woven into each other so that no cut can separate them, for example a description inside a sentence about something else, keep them in one passage and list each as a claim. Forecast and other passages do not have to be atomic: let them run as long as they naturally do.
+Statements must be as atomic as possible: a statement passage holds one statement, which a neutral expert could judge on its own. If a sentence holds two or more statements, cut inside the sentence so that each gets its own passage. Only when statements are woven into each other so that no cut can separate them, keep them in one passage and list each as a claim. Forecast and other passages do not have to be atomic: let them run as long as they naturally do.
 
 "claims" is a list of the claims the passage makes or relies on, normally just one, including implicit ones. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
 
