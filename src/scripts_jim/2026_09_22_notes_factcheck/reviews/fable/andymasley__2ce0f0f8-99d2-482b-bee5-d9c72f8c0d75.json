@@ -1,0 +1,18 @@
+{
+  "item_id": "2ce0f0f8-99d2-482b-bee5-d9c72f8c0d75",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "9650a1b8-881b-4a8a-9c3b-822cbe411349",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The sentence is Andy's own summary of his own land-use article: buildings \"that will collectively take up about a third of the land we currently use to grow Christmas trees\", and the live post still says \"a third\" with no correction. I fetched the land-use article and both accepted quotes are there verbatim: \"By 2030, data center buildings themselves will take up 1/15th of the land area we use to grow Christmas trees\" and \"1,400 square miles is about 3.5 squares here, 3.5x as much as the land we currently dedicate to Christmas trees\"; the buildings are put at about 25 square miles by 2028. Nothing in that article, or in his later posts that mention Christmas trees, gives a third for anything, so the note is right that he overstated his own building figure about fivefold. What holds me back is that the slip does not matter to the point: the sentence is about how silly the not-enough-land worry is, and 1/15th makes it sillier still, so a reader ends up believing the same thing either way. This is a corrected typo rather than a corrected belief, and Andy could fairly call it a nitpick even though he would agree it is wrong; that is why I mark it not substantive. Since the number is his own and checkable in one click, I think he would still accept it, so the note is sendable but only if Nathan is comfortable sending a small one. The extracted claim line says \"all proposed and planned data centers\" without the word \"buildings\"; the note text itself is fine.",
+      "send_advice": "If sent, frame it as him underselling his own point; the note text itself needs no change."
+    }
+  ]
+}

@@ -1,0 +1,3467 @@
+[
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/39436612/messi-bench-ronaldo-absent-al-nassr-inter-miami-game",
+  "ok": true,
+  "via": "http",
+  "chars": 3507,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/soccer/story/_/id/39436612/messi-bench-ronaldo-absent-al-nassr-inter-miami-game",
+  "ms": 723
+ },
+ {
+  "url": "https://www.espn.com/soccer/match/_/gameId/401912656/al-nassr-al-ain",
+  "ok": true,
+  "via": "http",
+  "chars": 2276,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/soccer/match/_/gameId/401912656/al-nassr-al-ain",
+  "ms": 1386
+ },
+ {
+  "url": "https://www.sciencedirect.com/science/article/pii/S022352342300805X",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.sciencedirect.com/science/article/pii/S022352342300805X",
+  "ms": 16508
+ },
+ {
+  "url": "https://www.nist.gov/pao/questions-and-answers-about-nist-wtc-towers-investigation",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.nist.gov/pao/questions-and-answers-about-nist-wtc-towers-investigation",
+  "ms": 16779
+ },
+ {
+  "url": "https://www.tennessean.com/story/sports/nfl/titans/2026/09/13/titans-moments-jets-game-top-plays",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.tennessean.com/story/sports/nfl/titans/2026/09/13/titans-moments-jets-game-top-plays",
+  "ms": 15810
+ },
+ {
+  "url": "https://www.nbcchicago.com/entertainment/billy-ray-cyrus-reveals-heartfelt-message-he-received-from-dolly-parton-before-she-died/3980578/",
+  "ok": true,
+  "via": "http",
+  "chars": 4997,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nbcchicago.com/entertainment/billy-ray-cyrus-reveals-heartfelt-message-he-received-from-dolly-parton-before-she-died/3980578/",
+  "ms": 206
+ },
+ {
+  "url": "https://www.cbsnews.com/news/kennedy-center-ceiling-collapse-renovations/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.cbsnews.com/news/kennedy-center-ceiling-collapse-renovations/",
+  "ms": 16679
+ },
+ {
+  "url": "https://www.citizen.co.za/kempton-express/news-headlines/local-crime-news/2026/09/12/saps-probes-links-between-four-bodies-found-in-kempton-park/",
+  "ok": true,
+  "via": "http",
+  "chars": 4391,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.citizen.co.za/kempton-express/news-headlines/local-crime-news/2026/09/12/saps-probes-links-between-four-bodies-found-in-kempton-park/",
+  "ms": 155
+ },
+ {
+  "url": "https://www.cbssports.com/nfl/gametracker/live/NFL_20260914_DEN@KC/",
+  "ok": true,
+  "via": "http",
+  "chars": 5615,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.cbssports.com/nfl/gametracker/live/NFL_20260914_DEN@KC/",
+  "ms": 2039
+ },
+ {
+  "url": "https://www.cbo.gov/publication/61469",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.cbo.gov/publication/61469",
+  "ms": 15533
+ },
+ {
+  "url": "https://www.maritime.dot.gov/msci/2026-004-persian-gulf-strait-hormuz-and-gulf-oman-iranian-attacks-commercial-vessels",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.maritime.dot.gov/msci/2026-004-persian-gulf-strait-hormuz-and-gulf-oman-iranian-attacks-commercial-vessels",
+  "ms": 15524
+ },
+ {
+  "url": "https://www.politifact.com/factchecks/2023/dec/13/joe-biden/fact-checking-joe-biden-on-the-creation-of-800000-/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.politifact.com/factchecks/2023/dec/13/joe-biden/fact-checking-joe-biden-on-the-creation-of-800000-/",
+  "ms": 19259
+ },
+ {
+  "url": "https://www.imdb.com/name/nm13564038/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://www.imdb.com/name/nm13564038/",
+  "ms": 15926
+ },
+ {
+  "url": "https://shop.wwe.com/en/title-belts-side-plates/d-3473903707-4506909353+z-9-1177522359",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://shop.wwe.com/en/title-belts-side-plates/d-3473903707-4506909353+z-9-1177522359",
+  "ms": 31662
+ },
+ {
+  "url": "https://euroshop.wwe.com/en/wwe-finn-balor-sideplate/p-3425254094601225+z-979-286582219",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://euroshop.wwe.com/en/wwe-finn-balor-sideplate/p-3425254094601225+z-979-286582219",
+  "ms": 31441
+ },
+ {
+  "url": "https://ballotpedia.org/Sherrod_Brown",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://ballotpedia.org/Sherrod_Brown",
+  "ms": 15789
+ },
+ {
+  "url": "https://www.mcdonalds.com/gb/en-gb/help/faq/what-s-the-average-weight-in-grams-of-a-big-mac.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.mcdonalds.com/gb/en-gb/help/faq/what-s-the-average-weight-in-grams-of-a-big-mac.html",
+  "ms": 60321
+ },
+ {
+  "url": "https://atlas.co/blog/mercator-projection-why-it-distorts-country-sizes",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://atlas.co/blog/mercator-projection-why-it-distorts-country-sizes",
+  "ms": 15549
+ },
+ {
+  "url": "https://www.nejm.org/doi/full/10.1056/NEJMc2512078",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.nejm.org/doi/full/10.1056/NEJMc2512078",
+  "ms": 15427
+ },
+ {
+  "url": "https://geohub.brampton.ca/pages/profile-diversity",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 53 chars)",
+  "fetchedUrl": "https://geohub.brampton.ca/pages/profile-diversity",
+  "ms": 16073
+ },
+ {
+  "url": "https://wordsactuallymatter.substack.com/p/elon-musk-fake-prophecy-quote",
+  "ok": true,
+  "via": "http",
+  "chars": 13199,
+  "diagnostic": null,
+  "fetchedUrl": "https://wordsactuallymatter.substack.com/p/elon-musk-fake-prophecy-quote",
+  "ms": 208
+ },
+ {
+  "url": "https://www.inc.com/amaya-nichole/researchers-tested-avocado-oil-products-90-percent-failed-purity-test/91375204",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.inc.com/amaya-nichole/researchers-tested-avocado-oil-products-90-percent-failed-purity-test/91375204",
+  "ms": 15396
+ },
+ {
+  "url": "https://www.yemenmonitor.com/Details/id/98223",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.yemenmonitor.com/Details/id/98223",
+  "ms": 17813
+ },
+ {
+  "url": "https://www.foxnews.com/entertainment/jelly-roll-says-planning-take-some-time-off-heal-after-final-tour-stop",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.foxnews.com/entertainment/jelly-roll-says-planning-take-some-time-off-heal-after-final-tour-stop",
+  "ms": 19494
+ },
+ {
+  "url": "https://mgoblue.com/news/2023/1/27/womens-track-field-awards-and-honors.aspx",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://mgoblue.com/news/2023/1/27/womens-track-field-awards-and-honors.aspx",
+  "ms": 20575
+ },
+ {
+  "url": "https://www.fastcompany.com/91593814/lindsay-clancy-family-gofundme-reveals-support-during-murder-trial",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.fastcompany.com/91593814/lindsay-clancy-family-gofundme-reveals-support-during-murder-trial",
+  "ms": 17629
+ },
+ {
+  "url": "https://www.theguardian.com/music/article/2024/sep/10/selena-gomez-reveals-unable-to-carry-children-lupus",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.theguardian.com/music/article/2024/sep/10/selena-gomez-reveals-unable-to-carry-children-lupus",
+  "ms": 18056
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49783743/karim-benzema-al-hilal-saudi-pro-league-transfers",
+  "ok": true,
+  "via": "http",
+  "chars": 1870,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/soccer/story/_/id/49783743/karim-benzema-al-hilal-saudi-pro-league-transfers",
+  "ms": 714
+ },
+ {
+  "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+  "ms": 1635
+ },
+ {
+  "url": "https://www.cp24.com/world/2026/09/05/us-strikes-3-iranian-oil-tankers-after-saying-warships-were-targeted-with-ballistic-missiles/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.cp24.com/world/2026/09/05/us-strikes-3-iranian-oil-tankers-after-saying-warships-were-targeted-with-ballistic-missiles/",
+  "ms": 18164
+ },
+ {
+  "url": "https://gamefaqs.gamespot.com/xbox/516688-fable/faqs/32779",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://gamefaqs.gamespot.com/xbox/516688-fable/faqs/32779",
+  "ms": 17842
+ },
+ {
+  "url": "https://health.ec.europa.eu/scientific-committees/scheer-opinions/leds-and-health-effects_en",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://health.ec.europa.eu/scientific-committees/scheer-opinions/leds-and-health-effects_en",
+  "ms": 17712
+ },
+ {
+  "url": "https://www.tiktok.com/@maymartins22/video/7528225534640229638",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 22 chars)",
+  "fetchedUrl": "https://www.tiktok.com/@maymartins22/video/7528225534640229638",
+  "ms": 19075
+ },
+ {
+  "url": "https://www.acg.org/nyc/people/roy-danis",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.acg.org/nyc/people/roy-danis",
+  "ms": 17099
+ },
+ {
+  "url": "https://www.washingtonpost.com/nation/2026/09/04/judge-lindsay-clancy-trial-declines-remove-juror-deliberations-continue/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/nation/2026/09/04/judge-lindsay-clancy-trial-declines-remove-juror-deliberations-continue/",
+  "ms": 60876
+ },
+ {
+  "url": "https://www.washingtonpost.com/sports/colleges/2026/09/05/indiana-hoosiers-football/f9325f82-a94b-11f1-9e38-f705d048bd5a_story.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/sports/colleges/2026/09/05/indiana-hoosiers-football/f9325f82-a94b-11f1-9e38-f705d048bd5a_story.html",
+  "ms": 60693
+ },
+ {
+  "url": "https://ge.globo.com/google/amp/video/neymar-na-bronca-com-a-arbitragem-14926216.ghtml",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 70 chars)",
+  "fetchedUrl": "https://ge.globo.com/google/amp/video/neymar-na-bronca-com-a-arbitragem-14926216.ghtml",
+  "ms": 20426
+ },
+ {
+  "url": "https://www.factcheck.org/2024/01/scicheck-no-evidence-excess-dna-in-mrna-vaccines-causes-turbo-cancer/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.factcheck.org/2024/01/scicheck-no-evidence-excess-dna-in-mrna-vaccines-causes-turbo-cancer/",
+  "ms": 20742
+ },
+ {
+  "url": "https://www.wikiservice.at/culio/wiki.cgi?CuliosWelt",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.wikiservice.at/culio/wiki.cgi?CuliosWelt",
+  "ms": 16941
+ },
+ {
+  "url": "https://thebrakereport.com/chery-claims-first-mass-produced-emb-system/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://thebrakereport.com/chery-claims-first-mass-produced-emb-system/",
+  "ms": 17232
+ },
+ {
+  "url": "https://www.snopes.com/fact-check/jesse-owens-and-hitler-shook-hands/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.snopes.com/fact-check/jesse-owens-and-hitler-shook-hands/",
+  "ms": 18120
+ },
+ {
+  "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 401 (last attempt: browser)",
+  "fetchedUrl": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+  "ms": 17227
+ },
+ {
+  "url": "https://www.facebook.com/Tubagusjakaa/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 20 chars)",
+  "fetchedUrl": "https://www.facebook.com/Tubagusjakaa/",
+  "ms": 24773
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49828781/jose-mourinho-real-madrid-betis-kylian-mbappe-penalty",
+  "ok": true,
+  "via": "http",
+  "chars": 3806,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/soccer/story/_/id/49828781/jose-mourinho-real-madrid-betis-kylian-mbappe-penalty",
+  "ms": 436
+ },
+ {
+  "url": "https://www.nytimes.com/live/2026/09/04/us/lindsay-clancy-trial-deadlock",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nytimes.com/live/2026/09/04/us/lindsay-clancy-trial-deadlock",
+  "ms": 2064
+ },
+ {
+  "url": "https://twistedvoxel.com/deltarune-chapter-6-planned-for-2027-toby-fox/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://twistedvoxel.com/deltarune-chapter-6-planned-for-2027-toby-fox/",
+  "ms": 20500
+ },
+ {
+  "url": "https://www.primetimer.com/news/is-mia-khalifa-pregnant-with-b-lou-s-kid-viral-rumor-debunked-as-rapper-reacts-to-the-news",
+  "ok": true,
+  "via": "http",
+  "chars": 2820,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.primetimer.com/news/is-mia-khalifa-pregnant-with-b-lou-s-kid-viral-rumor-debunked-as-rapper-reacts-to-the-news",
+  "ms": 213
+ },
+ {
+  "url": "https://thespun.com/nfl/tmzs-unrecognizable-photo-of-clay-matthews-has-nfl-fans-speechless",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://thespun.com/nfl/tmzs-unrecognizable-photo-of-clay-matthews-has-nfl-fans-speechless",
+  "ms": 17273
+ },
+ {
+  "url": "https://amp.nfl.com/news/packers-express-hope-rb-josh-jacobs-currently-on-commissioners-exempt-list-can-play-sometime-this-season",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://amp.nfl.com/news/packers-express-hope-rb-josh-jacobs-currently-on-commissioners-exempt-list-can-play-sometime-this-season",
+  "ms": 17866
+ },
+ {
+  "url": "https://www.justice.gov/epstein-library",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.justice.gov/epstein-library",
+  "ms": 17816
+ },
+ {
+  "url": "https://www.reddit.com/r/NFLv2/comments/1w7cktq/removed/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 6 chars)",
+  "fetchedUrl": "https://www.reddit.com/r/NFLv2/comments/1w7cktq/removed/",
+  "ms": 17809
+ },
+ {
+  "url": "https://www.tse.jus.br/comunicacao/noticias/2026/Agosto/entrevista-totalizacao-dos-votos-e-processo-aberto-auditavel-e-seguro",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.tse.jus.br/comunicacao/noticias/2026/Agosto/entrevista-totalizacao-dos-votos-e-processo-aberto-auditavel-e-seguro",
+  "ms": 17604
+ },
+ {
+  "url": "https://www.reddit.com/r/theydidthemath/comments/1bmelst/request_at_what_point_does_an_operation_like_this/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 6 chars)",
+  "fetchedUrl": "https://www.reddit.com/r/theydidthemath/comments/1bmelst/request_at_what_point_does_an_operation_like_this/",
+  "ms": 17320
+ },
+ {
+  "url": "https://www.usnews.com/news/top-news/articles/2026-09-04/us-justice-department-pauses-cooperation-with-canadian-government-wsj-reports",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.usnews.com/news/top-news/articles/2026-09-04/us-justice-department-pauses-cooperation-with-canadian-government-wsj-reports",
+  "ms": 60790
+ },
+ {
+  "url": "https://www.eleconomista.es/actualidad/noticias/14011876/09/26/polemicas-imagenes-de-la-caza-de-una-cria-de-delfin-protegido-en-ceuta-fue-agarrado-sacado-del-agua-a-la-fuerza-y-golpeado-en-la-cabeza-con-un-palo.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.eleconomista.es/actualidad/noticias/14011876/09/26/polemicas-imagenes-de-la-caza-de-una-cria-de-delfin-protegido-en-ceuta-fue-agarrado-sacado-del-agua-a-la-fuerza-y-golpeado-en-la-cabeza-con-un-palo.html",
+  "ms": 17449
+ },
+ {
+  "url": "https://www.nps.gov/bela/learn/historyculture/about.htm",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.nps.gov/bela/learn/historyculture/about.htm",
+  "ms": 18118
+ },
+ {
+  "url": "https://fullfact.org/online/london-white-population-ten-years/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://fullfact.org/online/london-white-population-ten-years/",
+  "ms": 18000
+ },
+ {
+  "url": "https://www.itechguides.com/sony-faces-unpatchable-ps5-jailbreak-threat-after-rom-keys-leak-what-the-reports-actually-show/",
+  "ok": true,
+  "via": "http",
+  "chars": 18512,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.itechguides.com/sony-faces-unpatchable-ps5-jailbreak-threat-after-rom-keys-leak-what-the-reports-actually-show/",
+  "ms": 325
+ },
+ {
+  "url": "https://www.espn.com/soccer/player/_/id/387984/hugo-camberos",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://www.espn.com/soccer/player/_/id/387984/hugo-camberos",
+  "ms": 17860
+ },
+ {
+  "url": "https://www.newsweek.com/kimber-mills-alabama-cheerleader-shot-bonfire-organ-donor-1973059",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.newsweek.com/kimber-mills-alabama-cheerleader-shot-bonfire-organ-donor-1973059",
+  "ms": 18028
+ },
+ {
+  "url": "https://factcheck.afp.com/doc.afp.com.A33U6G3",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://factcheck.afp.com/doc.afp.com.A33U6G3",
+  "ms": 18091
+ },
+ {
+  "url": "https://www.aol.com/lifestyle/low-cut-dress-advertisement-goes-200101390.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.aol.com/lifestyle/low-cut-dress-advertisement-goes-200101390.html",
+  "ms": 20013
+ },
+ {
+  "url": "https://www.tabletmag.com/the-scroll/articles/scroll-sep-1-vance-channels-tucker-rjc",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 16611,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tabletmag.com/the-scroll/articles/scroll-sep-1-vance-channels-tucker-rjc",
+  "ms": 18411
+ },
+ {
+  "url": "https://www.tmz.com/2012/08/21/tom-cruise-katie-holmes-divorce-settlement-child-support/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.tmz.com/2012/08/21/tom-cruise-katie-holmes-divorce-settlement-child-support/",
+  "ms": 18545
+ },
+ {
+  "url": "https://19thnews.org/2026/08/fauci-texts-miscarriage-rates-covid-vaccine-false-claims/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://19thnews.org/2026/08/fauci-texts-miscarriage-rates-covid-vaccine-false-claims/",
+  "ms": 18644
+ },
+ {
+  "url": "https://www.fox9.com/video/fmc-yoec55tglm6n6if0",
+  "ok": true,
+  "via": "http",
+  "chars": 6053,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fox9.com/video/fmc-yoec55tglm6n6if0",
+  "ms": 1949
+ },
+ {
+  "url": "https://www.israelhayom.com/2026/09/01/satmar-rebbes-trump-oval-office-draft-law/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.israelhayom.com/2026/09/01/satmar-rebbes-trump-oval-office-draft-law/",
+  "ms": 19063
+ },
+ {
+  "url": "https://www.usopen.org/en_US/news/articles/2026-09-01/alexandra_eala_thrills_2026_us_open_fans_with_dominant_first-round_win.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 0 chars)",
+  "fetchedUrl": "https://www.usopen.org/en_US/news/articles/2026-09-01/alexandra_eala_thrills_2026_us_open_fans_with_dominant_first-round_win.html",
+  "ms": 33795
+ },
+ {
+  "url": "https://thej.ca/2026/09/03/idf-veteran-shalev-biton-promotes-adidas-single-shoe-service-in-israel/",
+  "ok": true,
+  "via": "http",
+  "chars": 4210,
+  "diagnostic": null,
+  "fetchedUrl": "https://thej.ca/2026/09/03/idf-veteran-shalev-biton-promotes-adidas-single-shoe-service-in-israel/",
+  "ms": 3585
+ },
+ {
+  "url": "https://www.fda.gov/food/outbreaks-foodborne-illness/outbreak-investigation-e-coli-o145h28-frozen-blueberries-july-2026",
+  "ok": true,
+  "via": "http",
+  "chars": 18421,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fda.gov/food/outbreaks-foodborne-illness/outbreak-investigation-e-coli-o145h28-frozen-blueberries-july-2026",
+  "ms": 810
+ },
+ {
+  "url": "https://otda.ny.gov/programs/rmp/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 92 chars)",
+  "fetchedUrl": "https://otda.ny.gov/programs/rmp/",
+  "ms": 22347
+ },
+ {
+  "url": "https://news.adidas.com/people/adidas-launches-single-shoe-service-for-those-living-with-leg-limb-difference/s/566e1eb1-0e4f-4747-b153-0607890bacef",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://news.adidas.com/people/adidas-launches-single-shoe-service-for-those-living-with-leg-limb-difference/s/566e1eb1-0e4f-4747-b153-0607890bacef",
+  "ms": 18899
+ },
+ {
+  "url": "https://checkyourfact.com/2021/01/26/fact-check-hillary-clinton-barack-obama-pizza-arrangement/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://checkyourfact.com/2021/01/26/fact-check-hillary-clinton-barack-obama-pizza-arrangement/",
+  "ms": 19917
+ },
+ {
+  "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+  "ms": 18156
+ },
+ {
+  "url": "https://www.forbes.com/sites/stuartanderson/2026/09/01/employment-based-immigration-backlog-exceeds-1-2-million-people/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.forbes.com/sites/stuartanderson/2026/09/01/employment-based-immigration-backlog-exceeds-1-2-million-people/",
+  "ms": 18883
+ },
+ {
+  "url": "https://jrocknews.com/2021/02/interview-cdawgva-visual-kei-star-acme.html",
+  "ok": true,
+  "via": "http",
+  "chars": 6851,
+  "diagnostic": null,
+  "fetchedUrl": "https://jrocknews.com/2021/02/interview-cdawgva-visual-kei-star-acme.html",
+  "ms": 1090
+ },
+ {
+  "url": "https://www.tiktok.com/@cierra_mistt",
+  "ok": true,
+  "via": "http",
+  "chars": 388,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tiktok.com/@cierra_mistt",
+  "ms": 2013
+ },
+ {
+  "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+  "ok": true,
+  "via": "http",
+  "chars": 3566,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+  "ms": 1669
+ },
+ {
+  "url": "https://www.whitehouse.gov/briefings-statements/p20260902-6500-signed-into-law/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.whitehouse.gov/briefings-statements/p20260902-6500-signed-into-law/",
+  "ms": 19506
+ },
+ {
+  "url": "https://www.instagram.com/p/Dc1I90DjTvA/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 9 chars)",
+  "fetchedUrl": "https://www.instagram.com/p/Dc1I90DjTvA/",
+  "ms": 23182
+ },
+ {
+  "url": "https://www.nexusmods.com/reddeadredemption2/videos/2560",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 538,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nexusmods.com/reddeadredemption2/videos/2560",
+  "ms": 21921
+ },
+ {
+  "url": "https://www.timescolonist.com/world/king-charles-iii-makes-first-address-following-queens-death-read-the-full-transcript-5807183",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.timescolonist.com/world/king-charles-iii-makes-first-address-following-queens-death-read-the-full-transcript-5807183",
+  "ms": 21877
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/49794143/travis-kelce-taylor-swift-dog-tommy-hilfiger-kansas-city-chiefs-samoyed",
+  "ok": true,
+  "via": "http",
+  "chars": 1743,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/story/_/id/49794143/travis-kelce-taylor-swift-dog-tommy-hilfiger-kansas-city-chiefs-samoyed",
+  "ms": 1204
+ },
+ {
+  "url": "https://www.boomlive.in/fact-check/deepfake-king-charles-donald-trump-iran-airstrikes-viral-video-25662",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.boomlive.in/fact-check/deepfake-king-charles-donald-trump-iran-airstrikes-viral-video-25662",
+  "ms": 21288
+ },
+ {
+  "url": "https://telegram.me/aukrop/893",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 30 chars)",
+  "fetchedUrl": "https://telegram.me/aukrop/893",
+  "ms": 19307
+ },
+ {
+  "url": "https://www.minneapolismn.gov/news/2026/august/shooting-sept-2/",
+  "ok": true,
+  "via": "http",
+  "chars": 2979,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.minneapolismn.gov/news/2026/august/shooting-sept-2/",
+  "ms": 339
+ },
+ {
+  "url": "https://www.ladbible.com/entertainment/celebrity/kim-kardashian-north-west-tiktok-face-tattoos-077180-20251022",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.ladbible.com/entertainment/celebrity/kim-kardashian-north-west-tiktok-face-tattoos-077180-20251022",
+  "ms": 19793
+ },
+ {
+  "url": "https://www.manutd.com/en/teams/under-21s-team/chido-obi",
+  "ok": true,
+  "via": "http",
+  "chars": 5332,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.manutd.com/en/teams/under-21s-team/chido-obi",
+  "ms": 647
+ },
+ {
+  "url": "https://www.theguardian.com/us-news/2022/jun/30/killings-of-black-women-five-findings-investigation",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.theguardian.com/us-news/2022/jun/30/killings-of-black-women-five-findings-investigation",
+  "ms": 19280
+ },
+ {
+  "url": "https://sustainability.google/operating-sustainably/water/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://sustainability.google/operating-sustainably/water/",
+  "ms": 20022
+ },
+ {
+  "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+  "ms": 17830
+ },
+ {
+  "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 2102,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+  "ms": 18349
+ },
+ {
+  "url": "https://www.thegamer.com/mario-party-6-day-night-cycle-explained/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.thegamer.com/mario-party-6-day-night-cycle-explained/",
+  "ms": 20077
+ },
+ {
+  "url": "https://tvbrics.com/en/news/brics-are-expected-to-contribute-more-than-50-of-global-gdp-by-2030/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://tvbrics.com/en/news/brics-are-expected-to-contribute-more-than-50-of-global-gdp-by-2030/",
+  "ms": 18883
+ },
+ {
+  "url": "https://www.transfermarkt.com/oscar/rueckennummern/spieler/85314",
+  "ok": true,
+  "via": "http",
+  "chars": 7868,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.transfermarkt.com/oscar/rueckennummern/spieler/85314",
+  "ms": 457
+ },
+ {
+  "url": "https://www.transfermarkt.com/ross-barkley/rueckennummern/spieler/131978",
+  "ok": true,
+  "via": "http",
+  "chars": 12931,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.transfermarkt.com/ross-barkley/rueckennummern/spieler/131978",
+  "ms": 328
+ },
+ {
+  "url": "https://eternityaccountants.com/are-taxi-drivers-self-employed/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://eternityaccountants.com/are-taxi-drivers-self-employed/",
+  "ms": 22993
+ },
+ {
+  "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+  "ms": 61460
+ },
+ {
+  "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 13678,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+  "ms": 18396
+ },
+ {
+  "url": "https://www.shutterstock.com/video/clip-1106374935-dhaka-bangladesh---july-19-2023-purbachal",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.shutterstock.com/video/clip-1106374935-dhaka-bangladesh---july-19-2023-purbachal",
+  "ms": 17785
+ },
+ {
+  "url": "https://mostpolicyinitiative.org/science-note/data-center-water-use/",
+  "ok": true,
+  "via": "http",
+  "chars": 14421,
+  "diagnostic": null,
+  "fetchedUrl": "https://mostpolicyinitiative.org/science-note/data-center-water-use/",
+  "ms": 1166
+ },
+ {
+  "url": "https://kojiki.kokugakuin.ac.jp/about-kojiki/outline/",
+  "ok": true,
+  "via": "http",
+  "chars": 16189,
+  "diagnostic": null,
+  "fetchedUrl": "https://kojiki.kokugakuin.ac.jp/about-kojiki/outline/",
+  "ms": 1501
+ },
+ {
+  "url": "https://www.rte.ie/news/politics/2026/0617/1578882-eu-international-protection/",
+  "ok": true,
+  "via": "http",
+  "chars": 5829,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.rte.ie/news/politics/2026/0617/1578882-eu-international-protection/",
+  "ms": 613
+ },
+ {
+  "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+  "ms": 18871
+ },
+ {
+  "url": "https://athlonsports.com/wnba/indiana-fever/aliyah-boston-comments-paige-bueckers-action-toward-caitlin-clark",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://athlonsports.com/wnba/indiana-fever/aliyah-boston-comments-paige-bueckers-action-toward-caitlin-clark",
+  "ms": 17853
+ },
+ {
+  "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+  "ms": 18268
+ },
+ {
+  "url": "https://www.marketscreener.com/news/iranian-arms-and-advice-helped-yemen-s-houthis-seize-key-red-sea-city-sources-say-cefdedbd18df525",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.marketscreener.com/news/iranian-arms-and-advice-helped-yemen-s-houthis-seize-key-red-sea-city-sources-say-cefdedbd18df525",
+  "ms": 18137
+ },
+ {
+  "url": "https://ew.com/james-mcavoy-reacts-to-christopher-abbott-x-men-casting-12115787",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 3376,
+  "diagnostic": null,
+  "fetchedUrl": "https://ew.com/james-mcavoy-reacts-to-christopher-abbott-x-men-casting-12115787",
+  "ms": 18969
+ },
+ {
+  "url": "https://www.espn.com/nfl/game/_/gameId/401872923/saints-lions",
+  "ok": true,
+  "via": "http",
+  "chars": 4224,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/game/_/gameId/401872923/saints-lions",
+  "ms": 1360
+ },
+ {
+  "url": "https://www.reuters.com/fact-check/woman-speaking-about-pandemic-preparedness-soft-coup-is-not-who-official-2024-12-24/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 401 (last attempt: browser)",
+  "fetchedUrl": "https://www.reuters.com/fact-check/woman-speaking-about-pandemic-preparedness-soft-coup-is-not-who-official-2024-12-24/",
+  "ms": 18008
+ },
+ {
+  "url": "https://www.reuters.com/world/africa/uber-exit-nigeria-after-12-years-operations-2026-09-02/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 401 (last attempt: browser)",
+  "fetchedUrl": "https://www.reuters.com/world/africa/uber-exit-nigeria-after-12-years-operations-2026-09-02/",
+  "ms": 18219
+ },
+ {
+  "url": "https://www.reddit.com/r/PlayWolverine/comments/1wfhjl0/destin_legarie_on_wolverine_qte_autocomplete/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 1654,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.reddit.com/r/PlayWolverine/comments/1wfhjl0/destin_legarie_on_wolverine_qte_autocomplete/",
+  "ms": 19418
+ },
+ {
+  "url": "https://www.dallasnews.com/news/politics/article/sen-john-cornyn-condemns-bo-french-ut-fans-22429853.php",
+  "ok": true,
+  "via": "http",
+  "chars": 6308,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.dallasnews.com/news/politics/article/sen-john-cornyn-condemns-bo-french-ut-fans-22429853.php",
+  "ms": 948
+ },
+ {
+  "url": "https://www.facebook.com/story.php/?story_fbid=112345678901234",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (mobile, 88 chars)",
+  "fetchedUrl": "https://www.facebook.com/story.php/?story_fbid=112345678901234",
+  "ms": 21141
+ },
+ {
+  "url": "https://www.bloomberg.com/news/articles/2026-09-13/xi-pitches-his-ai-vision-at-brics-summit-as-china-duels-with-us",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.bloomberg.com/news/articles/2026-09-13/xi-pitches-his-ai-vision-at-brics-summit-as-china-duels-with-us",
+  "ms": 18293
+ },
+ {
+  "url": "https://allears.net/the-history-of-walt-disney-world-tickets-part-1/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://allears.net/the-history-of-walt-disney-world-tickets-part-1/",
+  "ms": 20145
+ },
+ {
+  "url": "https://caselaw.findlaw.com/court/us-dc-circuit/294948.html",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 6972,
+  "diagnostic": null,
+  "fetchedUrl": "https://caselaw.findlaw.com/court/us-dc-circuit/294948.html",
+  "ms": 19096
+ },
+ {
+  "url": "https://www.tesla.com/roadster",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.tesla.com/roadster",
+  "ms": 18005
+ },
+ {
+  "url": "https://kotaku.com/marvels-wolverine-reviews-fart-gas-insomniac-ps5-yellow-paint-handholding-controversy-release-1851833502",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://kotaku.com/marvels-wolverine-reviews-fart-gas-insomniac-ps5-yellow-paint-handholding-controversy-release-1851833502",
+  "ms": 20757
+ },
+ {
+  "url": "https://factcheck.afp.com/footage-has-circulated-online-2020-reports-about-syrian-aircraft-shot-down-rebels",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://factcheck.afp.com/footage-has-circulated-online-2020-reports-about-syrian-aircraft-shot-down-rebels",
+  "ms": 17640
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=4pu-QHO6VHA",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 161 chars)",
+  "fetchedUrl": "https://www.youtube.com/watch?v=4pu-QHO6VHA",
+  "ms": 22065
+ },
+ {
+  "url": "https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html",
+  "ok": true,
+  "via": "http",
+  "chars": 4646,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html",
+  "ms": 1305
+ },
+ {
+  "url": "https://www.theifab.com/laws/latest/the-penalty-kick/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 95 chars)",
+  "fetchedUrl": "https://www.theifab.com/laws/latest/the-penalty-kick/",
+  "ms": 22150
+ },
+ {
+  "url": "https://www.reuters.com/world/china/foreign-holdings-us-treasuries-fall-june-led-by-japan-uk-china-data-shows-2026-08-17/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 401 (last attempt: browser)",
+  "fetchedUrl": "https://www.reuters.com/world/china/foreign-holdings-us-treasuries-fall-june-led-by-japan-uk-china-data-shows-2026-08-17/",
+  "ms": 18050
+ },
+ {
+  "url": "https://www.washingtonpost.com/news/morning-mix/wp/2015/03/11/dzhokhar-tsarnaevs-scrawled-message-we-muslims-are-one-body-you-hurt-one-you-hurt-us-all/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/news/morning-mix/wp/2015/03/11/dzhokhar-tsarnaevs-scrawled-message-we-muslims-are-one-body-you-hurt-one-you-hurt-us-all/",
+  "ms": 60743
+ },
+ {
+  "url": "https://www.nbcboston.com/news/local/lindsay-clancy-holdout-juror-had-history-of-domestic-violence-allegations/4013408/",
+  "ok": true,
+  "via": "http",
+  "chars": 5940,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nbcboston.com/news/local/lindsay-clancy-holdout-juror-had-history-of-domestic-violence-allegations/4013408/",
+  "ms": 220
+ },
+ {
+  "url": "https://wagnerathletics.com/sports/football",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 218 chars)",
+  "fetchedUrl": "https://wagnerathletics.com/sports/football",
+  "ms": 19783
+ },
+ {
+  "url": "https://www.nbclosangeles.com/news/local/verdict-lil-durk-murder-trial-beverly-center-shooting/3940052/",
+  "ok": true,
+  "via": "http",
+  "chars": 4571,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nbclosangeles.com/news/local/verdict-lil-durk-murder-trial-beverly-center-shooting/3940052/",
+  "ms": 195
+ },
+ {
+  "url": "https://www.tmz.com/2026/09/11/lil-durk-found-not-guilty/",
+  "ok": true,
+  "via": "http",
+  "chars": 2195,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tmz.com/2026/09/11/lil-durk-found-not-guilty/",
+  "ms": 509
+ },
+ {
+  "url": "https://www.nisra.gov.uk/publications/quarterly-employment-survey-historical-tables-march-2026",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 187 chars)",
+  "fetchedUrl": "https://www.nisra.gov.uk/publications/quarterly-employment-survey-historical-tables-march-2026",
+  "ms": 18224
+ },
+ {
+  "url": "https://revolt.tv/article/2024-10-29/50-cent-reveals-advice-he-gave-lil-durk-amid-murder-for-hire-arrest/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://revolt.tv/article/2024-10-29/50-cent-reveals-advice-he-gave-lil-durk-amid-murder-for-hire-arrest/",
+  "ms": 18257
+ },
+ {
+  "url": "https://www.thepress.co.nz/nz-news/350288144/kiwi-students-join-global-pro-palestine-protests",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 9 chars)",
+  "fetchedUrl": "https://www.thepress.co.nz/nz-news/350288144/kiwi-students-join-global-pro-palestine-protests",
+  "ms": 17651
+ },
+ {
+  "url": "https://www.reddit.com/r/BeAmazed/comments/1we5e1p/a_double_rainbow_appeared_over_new_york_city_on/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 837,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.reddit.com/r/BeAmazed/comments/1we5e1p/a_double_rainbow_appeared_over_new_york_city_on/",
+  "ms": 18403
+ },
+ {
+  "url": "https://www.essence.com/love/big-sean-proposal-jhene-aiko-instagram-live/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.essence.com/love/big-sean-proposal-jhene-aiko-instagram-live/",
+  "ms": 17120
+ },
+ {
+  "url": "https://www.rwjbh.org/patient-stories/monmouth-medical-center/more-than-the-baby-blues/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.rwjbh.org/patient-stories/monmouth-medical-center/more-than-the-baby-blues/",
+  "ms": 18486
+ },
+ {
+  "url": "https://www.transfermarkt.us/dominik-szoboszlai/profil/spieler/451276",
+  "ok": true,
+  "via": "http",
+  "chars": 1389,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.transfermarkt.us/dominik-szoboszlai/profil/spieler/451276",
+  "ms": 261
+ },
+ {
+  "url": "https://infomemo.theocc.com/infomemos?number=56035",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://infomemo.theocc.com/infomemos?number=56035",
+  "ms": 16564
+ },
+ {
+  "url": "https://www.tmz.com/2025/06/20/kim-zolciak-kroy-biermanns-parenting-plan-for-summer-revealed/",
+  "ok": true,
+  "via": "http",
+  "chars": 3033,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tmz.com/2025/06/20/kim-zolciak-kroy-biermanns-parenting-plan-for-summer-revealed/",
+  "ms": 125
+ },
+ {
+  "url": "https://kotaku.com/marvels-wolverine-fart-gas-debate-insomniac-ps5-1851645065",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://kotaku.com/marvels-wolverine-fart-gas-debate-insomniac-ps5-1851645065",
+  "ms": 18692
+ },
+ {
+  "url": "https://www.pressreader.com/india/hindustan-times-chandigarh/20191012/281913069869645",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 60 chars)",
+  "fetchedUrl": "https://www.pressreader.com/india/hindustan-times-chandigarh/20191012/281913069869645",
+  "ms": 18077
+ },
+ {
+  "url": "https://www.aol.com/articles/wish-never-got-politics-says-172907294.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.aol.com/articles/wish-never-got-politics-says-172907294.html",
+  "ms": 19873
+ },
+ {
+  "url": "https://www.fishtank.live/clip/303908",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 86 chars)",
+  "fetchedUrl": "https://www.fishtank.live/clip/303908",
+  "ms": 18731
+ },
+ {
+  "url": "https://www.gettyimages.com/photos/trump-epstein",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (mobile, 207 chars)",
+  "fetchedUrl": "https://www.gettyimages.com/photos/trump-epstein",
+  "ms": 17522
+ },
+ {
+  "url": "https://www.magnumphotos.com/newsroom/religion/pilgrimage-to-uman/",
+  "ok": true,
+  "via": "http",
+  "chars": 15169,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.magnumphotos.com/newsroom/religion/pilgrimage-to-uman/",
+  "ms": 297
+ },
+ {
+  "url": "https://thespun.com/wnba/sophie-cunningham-makes-surprising-dating-life-announcement",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://thespun.com/wnba/sophie-cunningham-makes-surprising-dating-life-announcement",
+  "ms": 17169
+ },
+ {
+  "url": "https://www.fbi.gov/history/famous-cases/the-fbi-and-september-11",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.fbi.gov/history/famous-cases/the-fbi-and-september-11",
+  "ms": 17554
+ },
+ {
+  "url": "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-grand-theft-auto-vi-black-limited-edition-for-ps5-pc-mac-mobile",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-grand-theft-auto-vi-black-limited-edition-for-ps5-pc-mac-mobile",
+  "ms": 17233
+ },
+ {
+  "url": "https://kansasreflector.com/2026/07/13/four-years-after-value-them-both-kansas-abortion-rights-are-back-on-the-ballot-aug-4/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://kansasreflector.com/2026/07/13/four-years-after-value-them-both-kansas-abortion-rights-are-back-on-the-ballot-aug-4/",
+  "ms": 17449
+ },
+ {
+  "url": "https://www.nfl.com/news/lions-trade-rb-d-andre-swift-to-eagles-after-drafting-alabama-s-jahmyr-gibbs-in-ro",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.nfl.com/news/lions-trade-rb-d-andre-swift-to-eagles-after-drafting-alabama-s-jahmyr-gibbs-in-ro",
+  "ms": 17881
+ },
+ {
+  "url": "https://www.tmz.com/2026/08/14/pinkchyu-says-famous-musician-contacted-her-after-drake-dating-show/",
+  "ok": true,
+  "via": "http",
+  "chars": 2827,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tmz.com/2026/08/14/pinkchyu-says-famous-musician-contacted-her-after-drake-dating-show/",
+  "ms": 68
+ },
+ {
+  "url": "https://www.nbclosangeles.com/video/news/local/lil-durk-not-guilty-murder-for-hire-trial/3940972/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 213 chars)",
+  "fetchedUrl": "https://www.nbclosangeles.com/video/news/local/lil-durk-not-guilty-murder-for-hire-trial/3940972/",
+  "ms": 19039
+ },
+ {
+  "url": "https://www.nps.gov/flni/learn/historyculture/frequently-asked-questions.htm",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 149 chars)",
+  "fetchedUrl": "https://www.nps.gov/flni/learn/historyculture/frequently-asked-questions.htm",
+  "ms": 17451
+ },
+ {
+  "url": "https://www.purexbox.com/news/2026/09/sony-dropped-kojimas-physint-over-budget-profits-and-timed-exclusivity-concerns-sources-say",
+  "ok": true,
+  "via": "http",
+  "chars": 5565,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.purexbox.com/news/2026/09/sony-dropped-kojimas-physint-over-budget-profits-and-timed-exclusivity-concerns-sources-say",
+  "ms": 333
+ },
+ {
+  "url": "https://www.tms.org/pubs/journals/jom/0112/eagar/eagar-0112.html",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tms.org/pubs/journals/jom/0112/eagar/eagar-0112.html",
+  "ms": 17788
+ },
+ {
+  "url": "https://newtools.cira.state.tx.us/upload/page/7064/OfficialCanvassReport11-19-2024.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://newtools.cira.state.tx.us/upload/page/7064/OfficialCanvassReport11-19-2024.pdf",
+  "ms": 18287
+ },
+ {
+  "url": "https://lrl.texas.gov/legeleaders/members/memberdisplay.cfm?memberID=5911",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://lrl.texas.gov/legeleaders/members/memberdisplay.cfm?memberID=5911",
+  "ms": 18078
+ },
+ {
+  "url": "https://vault.fbi.gov/9-11-attacks-investigation-and-related-materials/9-11-images/9-11-pentagon-debris-1",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (browser, 32 chars)",
+  "fetchedUrl": "https://vault.fbi.gov/9-11-attacks-investigation-and-related-materials/9-11-images/9-11-pentagon-debris-1",
+  "ms": 17067
+ },
+ {
+  "url": "https://thewhistler.ng/farmer-attacks-12-year-old-fulani-herder-in-niger-state-cuts-off-his-hands/",
+  "ok": true,
+  "via": "http",
+  "chars": 3791,
+  "diagnostic": null,
+  "fetchedUrl": "https://thewhistler.ng/farmer-attacks-12-year-old-fulani-herder-in-niger-state-cuts-off-his-hands/",
+  "ms": 127
+ },
+ {
+  "url": "https://www.premiumtimesng.com/regional/north-central/642567-gunmen-attack-teenage-herder-cut-off-his-hands-in-niger-state.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 5 chars)",
+  "fetchedUrl": "https://www.premiumtimesng.com/regional/north-central/642567-gunmen-attack-teenage-herder-cut-off-his-hands-in-niger-state.html",
+  "ms": 17511
+ },
+ {
+  "url": "https://www.aramco.com/en/news-media/news/2026/aramco-announces-second-quarter-and-half-year-2026-results",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.aramco.com/en/news-media/news/2026/aramco-announces-second-quarter-and-half-year-2026-results",
+  "ms": 60727
+ },
+ {
+  "url": "https://www.reddit.com/r/worldcup/comments/1ufnmy5/sea_of_orange_in_downtown_kansas_city_this_morning/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 1219,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.reddit.com/r/worldcup/comments/1ufnmy5/sea_of_orange_in_downtown_kansas_city_this_morning/",
+  "ms": 18677
+ },
+ {
+  "url": "https://www.fda.gov/consumers/consumer-updates/have-you-given-blood-lately",
+  "ok": true,
+  "via": "http",
+  "chars": 7330,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fda.gov/consumers/consumer-updates/have-you-given-blood-lately",
+  "ms": 285
+ },
+ {
+  "url": "https://www.washingtonpost.com/opinions/2026/06/11/clinton-bush-trump-turn-80-what-summer-1946-brought/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/opinions/2026/06/11/clinton-bush-trump-turn-80-what-summer-1946-brought/",
+  "ms": 60869
+ },
+ {
+  "url": "https://www.totalprosports.com/wwe/liv-morgan-wardrobe-mishap-wwe-raw/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.totalprosports.com/wwe/liv-morgan-wardrobe-mishap-wwe-raw/",
+  "ms": 17220
+ },
+ {
+  "url": "https://www.redcrossblood.org/donate-blood/how-to-donate/eligibility-requirements/alphabetical-listing.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.redcrossblood.org/donate-blood/how-to-donate/eligibility-requirements/alphabetical-listing.html",
+  "ms": 18497
+ },
+ {
+  "url": "https://truthsocial.com/@realDonaldTrump",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://truthsocial.com/@realDonaldTrump",
+  "ms": 17242
+ },
+ {
+  "url": "https://www.911memorial.org/remember/history/personal-stories/welles-crowther",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.911memorial.org/remember/history/personal-stories/welles-crowther",
+  "ms": 18800
+ },
+ {
+  "url": "https://www.cleveland.com/court-justice/2024/06/woman-accused-of-killing-3-year-old-at-north-olmsted-giant-eagle-was-released-from-jail-days-earlier.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.cleveland.com/court-justice/2024/06/woman-accused-of-killing-3-year-old-at-north-olmsted-giant-eagle-was-released-from-jail-days-earlier.html",
+  "ms": 19201
+ },
+ {
+  "url": "https://www.espncricinfo.com/story/warner-kohli-dhawan-fined-for-altercation-810147",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.espncricinfo.com/story/warner-kohli-dhawan-fined-for-altercation-810147",
+  "ms": 17959
+ },
+ {
+  "url": "https://www.tmz.com/2026/08/14/drake-dating-show-pinkchyu-another-celebrity-barking-dms/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.tmz.com/2026/08/14/drake-dating-show-pinkchyu-another-celebrity-barking-dms/",
+  "ms": 17629
+ },
+ {
+  "url": "https://www.defense.gov/News/News-Stories/Article/Article/3741245/kabul-airport-attack-review-reaffirms-initial-findings-identifies-attacker/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.defense.gov/News/News-Stories/Article/Article/3741245/kabul-airport-attack-review-reaffirms-initial-findings-identifies-attacker/",
+  "ms": 19065
+ },
+ {
+  "url": "https://www.espn.com/nfl/recap/_/gameId/401872657",
+  "ok": true,
+  "via": "http",
+  "chars": 5613,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/recap/_/gameId/401872657",
+  "ms": 755
+ },
+ {
+  "url": "https://www.washingtontimes.com/news/2026/sep/10/jimmy-kimmel-says-trump-team-forced-james-talarico-interview/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 3036,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.washingtontimes.com/news/2026/sep/10/jimmy-kimmel-says-trump-team-forced-james-talarico-interview/",
+  "ms": 18078
+ },
+ {
+  "url": "https://www.slv.vic.gov.au/explore/our-stories/melbourne-deed",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.slv.vic.gov.au/explore/our-stories/melbourne-deed",
+  "ms": 26702
+ },
+ {
+  "url": "https://kotaku.com/final-fantasy-7-rebirth-install-size-download-preload-1851289668",
+  "ok": true,
+  "via": "http",
+  "chars": 4257,
+  "diagnostic": null,
+  "fetchedUrl": "https://kotaku.com/final-fantasy-7-rebirth-install-size-download-preload-1851289668",
+  "ms": 597
+ },
+ {
+  "url": "https://bdnews24.com/bangladesh/0fb7a8d3bf1a",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://bdnews24.com/bangladesh/0fb7a8d3bf1a",
+  "ms": 17595
+ },
+ {
+  "url": "https://people.com/golden-globes-2025-ariana-grande-wears-archival-gown-with-wicked-nod-red-carpet-photos-8710302",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 5387,
+  "diagnostic": null,
+  "fetchedUrl": "https://people.com/golden-globes-2025-ariana-grande-wears-archival-gown-with-wicked-nod-red-carpet-photos-8710302",
+  "ms": 18146
+ },
+ {
+  "url": "https://www.washingtonpost.com/archive/lifestyle/2005/10/03/and-she-loved-him/008ecd42-1d14-4a48-a7d5-29ca5c684862/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/archive/lifestyle/2005/10/03/and-she-loved-him/008ecd42-1d14-4a48-a7d5-29ca5c684862/",
+  "ms": 60624
+ },
+ {
+  "url": "https://time.com/7389146/trump-5000-dividend-republicans-midterms/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://time.com/7389146/trump-5000-dividend-republicans-midterms/",
+  "ms": 17400
+ },
+ {
+  "url": "https://www.cato.org/blog/5000-check-tariffs-cant-cover",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 82 chars)",
+  "fetchedUrl": "https://www.cato.org/blog/5000-check-tariffs-cant-cover",
+  "ms": 18301
+ },
+ {
+  "url": "https://www.cbo.gov/publication/62105",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.cbo.gov/publication/62105",
+  "ms": 17875
+ },
+ {
+  "url": "https://www.icj-cij.org/sites/default/files/case-related/192/192-20240126-ord-01-00-en.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.icj-cij.org/sites/default/files/case-related/192/192-20240126-ord-01-00-en.pdf",
+  "ms": 17814
+ },
+ {
+  "url": "https://www.rev.com/blog/transcripts/donald-trump-rally-in-philadelphia-transcript",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.rev.com/blog/transcripts/donald-trump-rally-in-philadelphia-transcript",
+  "ms": 18848
+ },
+ {
+  "url": "https://www.albawaba.com/news/houthis-take-control-port-city-mokha-1636831",
+  "ok": true,
+  "via": "http",
+  "chars": 2830,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.albawaba.com/news/houthis-take-control-port-city-mokha-1636831",
+  "ms": 216
+ },
+ {
+  "url": "https://www.cbo.gov/publication/61877",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.cbo.gov/publication/61877",
+  "ms": 17776
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=g4qjH2ONjDY",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 161 chars)",
+  "fetchedUrl": "https://www.youtube.com/watch?v=g4qjH2ONjDY",
+  "ms": 23130
+ },
+ {
+  "url": "https://investinglive.com/news/commodities-unverified-satellite-data-fuels-talk-of-fresh-hit-on-saudi-arabias-east-west-pipeline-20260910/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://investinglive.com/news/commodities-unverified-satellite-data-fuels-talk-of-fresh-hit-on-saudi-arabias-east-west-pipeline-20260910/",
+  "ms": 19969
+ },
+ {
+  "url": "https://www.tmz.com/2026/09/07/adam22-lena-the-plug-separated/",
+  "ok": true,
+  "via": "http",
+  "chars": 3068,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tmz.com/2026/09/07/adam22-lena-the-plug-separated/",
+  "ms": 339
+ },
+ {
+  "url": "https://anthrosource.onlinelibrary.wiley.com/doi/10.1002/sea2.12242",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://anthrosource.onlinelibrary.wiley.com/doi/10.1002/sea2.12242",
+  "ms": 17865
+ },
+ {
+  "url": "https://www.cbo.gov/publication/62210",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.cbo.gov/publication/62210",
+  "ms": 17481
+ },
+ {
+  "url": "https://www.researchgate.net/publication/222394541_How_the_airplane_wing_cut_through_the_exterior_columns_of_the_World_Trade_Center",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.researchgate.net/publication/222394541_How_the_airplane_wing_cut_through_the_exterior_columns_of_the_World_Trade_Center",
+  "ms": 18274
+ },
+ {
+  "url": "https://www.complex.com/music/a/trace-william-cowen/lil-durk-murder-for-hire-trial-verdict-sentencing-possibility",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.complex.com/music/a/trace-william-cowen/lil-durk-murder-for-hire-trial-verdict-sentencing-possibility",
+  "ms": 18392
+ },
+ {
+  "url": "https://www.espncricket.com/series/pakistan-tour-of-india-2012-13-589300/india-vs-pakistan-3rd-odi-589310/full-scorecard",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 10 chars)",
+  "fetchedUrl": "https://www.espncricket.com/series/pakistan-tour-of-india-2012-13-589300/india-vs-pakistan-3rd-odi-589310/full-scorecard",
+  "ms": 20667
+ },
+ {
+  "url": "https://www.reddit.com/r/popculturechat/comments/1wc94ye/lisa_touched_down_in_new_york_city_for_bvlgaris/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 1062,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.reddit.com/r/popculturechat/comments/1wc94ye/lisa_touched_down_in_new_york_city_for_bvlgaris/",
+  "ms": 18695
+ },
+ {
+  "url": "https://www.premiumtimesng.com/entertainment/naija-fashion/908401-regina-daniels-didnt-reconcile-with-ned-nwoko-mother-clarifies.html",
+  "ok": true,
+  "via": "http",
+  "chars": 4837,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.premiumtimesng.com/entertainment/naija-fashion/908401-regina-daniels-didnt-reconcile-with-ned-nwoko-mother-clarifies.html",
+  "ms": 805
+ },
+ {
+  "url": "https://www.qualcomm.com/smartphones/device-finder/xiaomi-mi-mix-fold",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 65 chars)",
+  "fetchedUrl": "https://www.qualcomm.com/smartphones/device-finder/xiaomi-mi-mix-fold",
+  "ms": 18333
+ },
+ {
+  "url": "https://www.washingtonpost.com/archive/politics/2001/09/11/tv-captured-the-terror-here-and-in-new-york/722bc86a-826b-4894-bb6c-0adfe0ee4559/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/archive/politics/2001/09/11/tv-captured-the-terror-here-and-in-new-york/722bc86a-826b-4894-bb6c-0adfe0ee4559/",
+  "ms": 60873
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49885184/chelsea-6-3-leeds-united-carabao-cup-morgan-rogers-jokes-deserved-player-match-award-not-cole-palmer",
+  "ok": true,
+  "via": "http",
+  "chars": 3527,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/soccer/story/_/id/49885184/chelsea-6-3-leeds-united-carabao-cup-morgan-rogers-jokes-deserved-player-match-award-not-cole-palmer",
+  "ms": 681
+ },
+ {
+  "url": "https://www.govinfo.gov/content/pkg/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d/pdf/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.govinfo.gov/content/pkg/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d/pdf/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d.pdf",
+  "ms": 60912
+ },
+ {
+  "url": "https://www.ctinsider.com/news/article/lindsay-clancy-verdict-watch-friday-juror-inquiry-22417353.php",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.ctinsider.com/news/article/lindsay-clancy-verdict-watch-friday-juror-inquiry-22417353.php",
+  "ms": 1339
+ },
+ {
+  "url": "https://gizmodo.com/iphone-duo-hands-on-specs-price-release-date-2000508608",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (browser, 59 chars)",
+  "fetchedUrl": "https://gizmodo.com/iphone-duo-hands-on-specs-price-release-date-2000508608",
+  "ms": 19677
+ },
+ {
+  "url": "https://blarneycastle.ie/pages/kiss-the-blarney-stone",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://blarneycastle.ie/pages/kiss-the-blarney-stone",
+  "ms": 21745
+ },
+ {
+  "url": "https://www.asianetnewsable.com",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.asianetnewsable.com",
+  "ms": 15645
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/49886582/seahawks-qb-darnold-injures-hip-opening-drive-vs-patriots",
+  "ok": true,
+  "via": "http",
+  "chars": 8241,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/story/_/id/49886582/seahawks-qb-darnold-injures-hip-opening-drive-vs-patriots",
+  "ms": 432
+ },
+ {
+  "url": "https://factcheckarabic.afp.com/doc.afp.com.66E8663",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://factcheckarabic.afp.com/doc.afp.com.66E8663",
+  "ms": 17228
+ },
+ {
+  "url": "https://www.espn.com/nfl/game/_/gameId/401772922/patriots-bills",
+  "ok": true,
+  "via": "http",
+  "chars": 3603,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/game/_/gameId/401772922/patriots-bills",
+  "ms": 630
+ },
+ {
+  "url": "https://factuel.afp.com/doc.afp.com.64ZD4T3",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://factuel.afp.com/doc.afp.com.64ZD4T3",
+  "ms": 17063
+ },
+ {
+  "url": "https://www.airuniversity.af.edu/CASI/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.airuniversity.af.edu/CASI/",
+  "ms": 17281
+ },
+ {
+  "url": "https://time.com/6553860/refaat-alareer-poetry-gaza-israel-war/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://time.com/6553860/refaat-alareer-poetry-gaza-israel-war/",
+  "ms": 17395
+ },
+ {
+  "url": "https://www.chabad.org/library/article_cdo/aid/7322665/jewish/What-a-Kohen-Needs-to-Know-About-Ritual-Impurity.htm",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 10924,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.chabad.org/library/article_cdo/aid/7322665/jewish/What-a-Kohen-Needs-to-Know-About-Ritual-Impurity.htm",
+  "ms": 17495
+ },
+ {
+  "url": "https://www.misbar.com/en/factcheck/2025/04/30/simpsons-did-not-predict-global-blackout-april-30-2025",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.misbar.com/en/factcheck/2025/04/30/simpsons-did-not-predict-global-blackout-april-30-2025",
+  "ms": 17126
+ },
+ {
+  "url": "https://www.sec.gov/news/press/2004-98.htm",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.sec.gov/news/press/2004-98.htm",
+  "ms": 17301
+ },
+ {
+  "url": "https://www.screenskills.com/job-profiles/browse/unscripted-tv/editorial/vision-mixer/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.screenskills.com/job-profiles/browse/unscripted-tv/editorial/vision-mixer/",
+  "ms": 17017
+ },
+ {
+  "url": "https://brandriskpromotions.com/events",
+  "ok": true,
+  "via": "http",
+  "chars": 2657,
+  "diagnostic": null,
+  "fetchedUrl": "https://brandriskpromotions.com/events",
+  "ms": 261
+ },
+ {
+  "url": "https://www.sangbadpratidin.in/sports/others/pole-vault-video-of-95-year-old-woman-goes-viral-people-remembers-flo-meiler/pid/1331199",
+  "ok": true,
+  "via": "http",
+  "chars": 2764,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.sangbadpratidin.in/sports/others/pole-vault-video-of-95-year-old-woman-goes-viral-people-remembers-flo-meiler/pid/1331199",
+  "ms": 1273
+ },
+ {
+  "url": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/lmsi-llckofinas-olive-oil-issues-voluntary-recall-its-garlic-mediterranean-infused-extra-virgin",
+  "ok": true,
+  "via": "http",
+  "chars": 2243,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/lmsi-llckofinas-olive-oil-issues-voluntary-recall-its-garlic-mediterranean-infused-extra-virgin",
+  "ms": 50
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=kYmZ_rYf630",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 161 chars)",
+  "fetchedUrl": "https://www.youtube.com/watch?v=kYmZ_rYf630",
+  "ms": 17879
+ },
+ {
+  "url": "https://twstalker.com/yutokanzakireal",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://twstalker.com/yutokanzakireal",
+  "ms": 16907
+ },
+ {
+  "url": "https://abcnews.go.com/Politics/trump-claims-visited-ground-zero-911-rescue-efforts/story?id=41873112",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://abcnews.go.com/Politics/trump-claims-visited-ground-zero-911-rescue-efforts/story?id=41873112",
+  "ms": 18257
+ },
+ {
+  "url": "https://www.cnbc.com/2026/08/22/us-canada-trade-talks-collapse-ushering-in-wave-of-new-tariffs.html",
+  "ok": true,
+  "via": "http",
+  "chars": 6424,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.cnbc.com/2026/08/22/us-canada-trade-talks-collapse-ushering-in-wave-of-new-tariffs.html",
+  "ms": 1138
+ },
+ {
+  "url": "https://www.transfermarkt.us/alvaro-morata/profil/spieler/128223",
+  "ok": true,
+  "via": "http",
+  "chars": 1460,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.transfermarkt.us/alvaro-morata/profil/spieler/128223",
+  "ms": 171
+ },
+ {
+  "url": "https://www.indiatvnews.com/entertainment/news/hanuman-ansh-nears-rs-100-crore-as-vishal-chaturvedi-reveals-why-an-ott-platform-rejected-his-film-2026-09-06-1053447",
+  "ok": true,
+  "via": "http",
+  "chars": 3822,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.indiatvnews.com/entertainment/news/hanuman-ansh-nears-rs-100-crore-as-vishal-chaturvedi-reveals-why-an-ott-platform-rejected-his-film-2026-09-06-1053447",
+  "ms": 124
+ },
+ {
+  "url": "https://www.kyivpost.com/post/38743",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.kyivpost.com/post/38743",
+  "ms": 17191
+ },
+ {
+  "url": "https://investors.remedygames.com/announcements/remedy-entertainment-enters-agreement-with-rockstar-games-for-new-max-payne-1-2-project/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://investors.remedygames.com/announcements/remedy-entertainment-enters-agreement-with-rockstar-games-for-new-max-payne-1-2-project/",
+  "ms": 18510
+ },
+ {
+  "url": "https://timeline.911memorial.org/timeline/10681",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 69 chars)",
+  "fetchedUrl": "https://timeline.911memorial.org/timeline/10681",
+  "ms": 17659
+ },
+ {
+  "url": "https://www.reddit.com/r/PERSoNA/comments/1wbnkkt/persona_4_revival_announced_and_persona_6_for/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 373,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.reddit.com/r/PERSoNA/comments/1wbnkkt/persona_4_revival_announced_and_persona_6_for/",
+  "ms": 17355
+ },
+ {
+  "url": "https://appleinsider.com/articles/26/09/09/rumor-says-foldable-is-iphone-duo-gets-apple-pencil-starts-at-2000",
+  "ok": true,
+  "via": "http",
+  "chars": 4718,
+  "diagnostic": null,
+  "fetchedUrl": "https://appleinsider.com/articles/26/09/09/rumor-says-foldable-is-iphone-duo-gets-apple-pencil-starts-at-2000",
+  "ms": 558
+ },
+ {
+  "url": "https://www.belfasttelegraph.co.uk/news/no-novichok-found-as-woman-taken-to-hospital-after-claiming-she-was-in-contact-with-nerve-agent/a/161189703.html",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 17107,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.belfasttelegraph.co.uk/news/no-novichok-found-as-woman-taken-to-hospital-after-claiming-she-was-in-contact-with-nerve-agent/a/161189703.html",
+  "ms": 17965
+ },
+ {
+  "url": "https://www.reddit.com/r/dostoevsky/comments/1h5d687/the_origin_of_this_line_you_were_destined_for_me/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 480,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.reddit.com/r/dostoevsky/comments/1h5d687/the_origin_of_this_line_you_were_destined_for_me/",
+  "ms": 17116
+ },
+ {
+  "url": "https://www.washingtonpost.com/politics/2026/09/09/trump-natalie-harp-cash-gifts/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/politics/2026/09/09/trump-natalie-harp-cash-gifts/",
+  "ms": 60333
+ },
+ {
+  "url": "https://www.nytimes.com/2026/09/08/us/politics/trump-sept-11-firefighters.html",
+  "ok": true,
+  "via": "http",
+  "chars": 3158,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nytimes.com/2026/09/08/us/politics/trump-sept-11-firefighters.html",
+  "ms": 873
+ },
+ {
+  "url": "https://www.reuters.com/world/middle-east/iran-attacks-us-base-jordan-ships-near-hormuz-after-tankers-sunk-2026-09-09/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 401 (last attempt: browser)",
+  "fetchedUrl": "https://www.reuters.com/world/middle-east/iran-attacks-us-base-jordan-ships-near-hormuz-after-tankers-sunk-2026-09-09/",
+  "ms": 16964
+ },
+ {
+  "url": "https://www.mass.gov/doc/2120-function-of-the-jury-what-is-evidence-credibility-of-witnesses/download",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.mass.gov/doc/2120-function-of-the-jury-what-is-evidence-credibility-of-witnesses/download",
+  "ms": 15667
+ },
+ {
+  "url": "https://www.newsweek.com/what-was-trump-doing-after-911-evolution-his-version-events-1950454",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.newsweek.com/what-was-trump-doing-after-911-evolution-his-version-events-1950454",
+  "ms": 17397
+ },
+ {
+  "url": "https://www.albawaba.com/news/us-bases-jordan-hit-massive-iranian-1636687",
+  "ok": true,
+  "via": "http",
+  "chars": 3334,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.albawaba.com/news/us-bases-jordan-hit-massive-iranian-1636687",
+  "ms": 55
+ },
+ {
+  "url": "https://www.espn.com/nfl/team/depth/_/name/cle",
+  "ok": true,
+  "via": "http",
+  "chars": 6904,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/team/depth/_/name/cle",
+  "ms": 689
+ },
+ {
+  "url": "https://www.washingtonpost.com/politics/2026/09/08/trump-gave-45000-cash-gifts-natalie-harp-two-other-close-aides/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/politics/2026/09/08/trump-gave-45000-cash-gifts-natalie-harp-two-other-close-aides/",
+  "ms": 60299
+ },
+ {
+  "url": "https://www.primetimer.com/features/is-the-north-west-and-ken-carson-story-claim-real-viral-instagram-outburst-over-allowance-being-cut-off-debunked",
+  "ok": true,
+  "via": "http",
+  "chars": 3679,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.primetimer.com/features/is-the-north-west-and-ken-carson-story-claim-real-viral-instagram-outburst-over-allowance-being-cut-off-debunked",
+  "ms": 142
+ },
+ {
+  "url": "https://global.espn.com/football/story/_/id/48184766/agent-manchester-city-erling-haaland-rubbishes-claims-barcelona",
+  "ok": true,
+  "via": "http",
+  "chars": 2915,
+  "diagnostic": null,
+  "fetchedUrl": "https://global.espn.com/football/story/_/id/48184766/agent-manchester-city-erling-haaland-rubbishes-claims-barcelona",
+  "ms": 769
+ },
+ {
+  "url": "https://elpais.com/expres/2026-09-02/final-del-mercado-de-fichajes-y-final-del-culebron-julian-alvarez-se-queda-en-el-atletico.html",
+  "ok": true,
+  "via": "http",
+  "chars": 2084,
+  "diagnostic": null,
+  "fetchedUrl": "https://elpais.com/expres/2026-09-02/final-del-mercado-de-fichajes-y-final-del-culebron-julian-alvarez-se-queda-en-el-atletico.html",
+  "ms": 401
+ },
+ {
+  "url": "https://www.tmz.com/2026/09/08/jimmy-kimmel-ending-abc-talk-show-next-season/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.tmz.com/2026/09/08/jimmy-kimmel-ending-abc-talk-show-next-season/",
+  "ms": 17432
+ },
+ {
+  "url": "https://www.cnet.com/tech/mobile/the-iphone-18-pro-max-could-start-at-1300-an-analyst-predicts-you-can-thank-ramageddon-for-that/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.cnet.com/tech/mobile/the-iphone-18-pro-max-could-start-at-1300-an-analyst-predicts-you-can-thank-ramageddon-for-that/",
+  "ms": 18155
+ },
+ {
+  "url": "https://www.arsenal.com/news/konsa-delighted-duel-filled-home-debut",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.arsenal.com/news/konsa-delighted-duel-filled-home-debut",
+  "ms": 18281
+ },
+ {
+  "url": "https://www.actionvfx.com/blog/godzilla-minus-one-vfx-oscar-on-a-budget",
+  "ok": true,
+  "via": "http",
+  "chars": 9922,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.actionvfx.com/blog/godzilla-minus-one-vfx-oscar-on-a-budget",
+  "ms": 280
+ },
+ {
+  "url": "https://www.pewresearch.org/race-and-ethnicity/2023/08/16/facts-on-hispanics-of-mexican-origin-in-the-united-states/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.pewresearch.org/race-and-ethnicity/2023/08/16/facts-on-hispanics-of-mexican-origin-in-the-united-states/",
+  "ms": 18328
+ },
+ {
+  "url": "https://eurweb.com/2025/mel-b-and-eddie-murphys-daughter-embraces-trans-identity/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://eurweb.com/2025/mel-b-and-eddie-murphys-daughter-embraces-trans-identity/",
+  "ms": 17129
+ },
+ {
+  "url": "https://en.mediamass.net/people/meryl-streep/deathhoax.html",
+  "ok": true,
+  "via": "http",
+  "chars": 4938,
+  "diagnostic": null,
+  "fetchedUrl": "https://en.mediamass.net/people/meryl-streep/deathhoax.html",
+  "ms": 244
+ },
+ {
+  "url": "https://www.yahoo.com/news/science/articles/posts-falsely-claim-ai-generated-065255776.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: login wall / anti-bot block (desktop, 2613 chars)",
+  "fetchedUrl": "https://www.yahoo.com/news/science/articles/posts-falsely-claim-ai-generated-065255776.html",
+  "ms": 18101
+ },
+ {
+  "url": "https://www.barchart.com/story/news/36286277/fact-file-how-sora-s-ai-videos-made-going-viral-easy-and-tips-on-how-to-spot-them",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://www.barchart.com/story/news/36286277/fact-file-how-sora-s-ai-videos-made-going-viral-easy-and-tips-on-how-to-spot-them",
+  "ms": 17206
+ },
+ {
+  "url": "https://hypeauditor.com/instagram/jellyroll615/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://hypeauditor.com/instagram/jellyroll615/",
+  "ms": 17659
+ },
+ {
+  "url": "https://cowboystatedaily.com/2026/08/20/mustang-advocates-say-report-proves-wild-horses-from-wyoming-sent-to-slaughter/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://cowboystatedaily.com/2026/08/20/mustang-advocates-say-report-proves-wild-horses-from-wyoming-sent-to-slaughter/",
+  "ms": 18288
+ },
+ {
+  "url": "https://www.lefigaro.fr/culture/la-tour-eiffel-fermee-en-raison-dune-greve-contre-la-mise-a-lecart-du-personnel-feminin-pour-la-visite-d-un-groupe-hindou-20260907",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.lefigaro.fr/culture/la-tour-eiffel-fermee-en-raison-dune-greve-contre-la-mise-a-lecart-du-personnel-feminin-pour-la-visite-d-un-groupe-hindou-20260907",
+  "ms": 17270
+ },
+ {
+  "url": "https://www.sportskeeda.com/us/streamers/news-n3on-ai-streamer-controversy-explained",
+  "ok": true,
+  "via": "http",
+  "chars": 4201,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.sportskeeda.com/us/streamers/news-n3on-ai-streamer-controversy-explained",
+  "ms": 156
+ },
+ {
+  "url": "https://www.espn.com/soccer/story/_/id/49404995/2026-world-cup-golden-ball-spain-unai-simon-pau-cubarsi",
+  "ok": true,
+  "via": "http",
+  "chars": 3736,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/soccer/story/_/id/49404995/2026-world-cup-golden-ball-spain-unai-simon-pau-cubarsi",
+  "ms": 227
+ },
+ {
+  "url": "https://www.instituteforgovernment.org.uk/explainer/keir-starmer-need-to-do-first-few-weeks-after-general-election",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.instituteforgovernment.org.uk/explainer/keir-starmer-need-to-do-first-few-weeks-after-general-election",
+  "ms": 16925
+ },
+ {
+  "url": "https://en.wikipedia.org/wiki/Higgsfield_AI",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://en.wikipedia.org/wiki/Higgsfield_AI",
+  "ms": 17466
+ },
+ {
+  "url": "https://fcbayern.com/en/news/2026/05/europes-best-goalscorer-harry-kane-wins-golden-shoe",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://fcbayern.com/en/news/2026/05/europes-best-goalscorer-harry-kane-wins-golden-shoe",
+  "ms": 17224
+ },
+ {
+  "url": "https://tribuna.com/en/blogs/did-lamine-yamal-really-cut-off-his-dad-after-being-told-to/",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 2503,
+  "diagnostic": null,
+  "fetchedUrl": "https://tribuna.com/en/blogs/did-lamine-yamal-really-cut-off-his-dad-after-being-told-to/",
+  "ms": 17500
+ },
+ {
+  "url": "https://www.reddit.com/r/CoronavirusCirclejerk/comments/sq5kiv/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 6 chars)",
+  "fetchedUrl": "https://www.reddit.com/r/CoronavirusCirclejerk/comments/sq5kiv/",
+  "ms": 17024
+ },
+ {
+  "url": "https://www.abc10.com/article/news/local/sacramento/golden-1-center-safety-concerns-rod-wave/103-34e8992f-b258-450f-a7fe-d0ec9c39433e",
+  "ok": true,
+  "via": "http",
+  "chars": 5121,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.abc10.com/article/news/local/sacramento/golden-1-center-safety-concerns-rod-wave/103-34e8992f-b258-450f-a7fe-d0ec9c39433e",
+  "ms": 1402
+ },
+ {
+  "url": "https://buffalonews.com/news/barker-admits-affair-with-tv-model/article_2c7cf9de-7143-5af4-b5df-2932beff3871.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 62 chars)",
+  "fetchedUrl": "https://buffalonews.com/news/barker-admits-affair-with-tv-model/article_2c7cf9de-7143-5af4-b5df-2932beff3871.html",
+  "ms": 19833
+ },
+ {
+  "url": "https://www.espn.com/nfl/story/_/id/47027215/chiefs-ot-simmons-keeping-reason-22-day-absence-house",
+  "ok": true,
+  "via": "http",
+  "chars": 5421,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/nfl/story/_/id/47027215/chiefs-ot-simmons-keeping-reason-22-day-absence-house",
+  "ms": 417
+ },
+ {
+  "url": "https://www.washingtonpost.com/national-security/2025/08/31/trump-gaza-plan-riviera-relocation/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/national-security/2025/08/31/trump-gaza-plan-riviera-relocation/",
+  "ms": 60309
+ },
+ {
+  "url": "https://www.wkyc.com/article/news/local/ohio/amy-acton-patrick-havas-incident-injured-multiple-people-at-canfield-fair/95-2e4ce697-150e-4e2d-8cf8-26b2389e6682",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (mobile, 32 chars)",
+  "fetchedUrl": "https://www.wkyc.com/article/news/local/ohio/amy-acton-patrick-havas-incident-injured-multiple-people-at-canfield-fair/95-2e4ce697-150e-4e2d-8cf8-26b2389e6682",
+  "ms": 32115
+ },
+ {
+  "url": "https://www.imdb.com/news/ni62704859/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://www.imdb.com/news/ni62704859/",
+  "ms": 19654
+ },
+ {
+  "url": "https://www.britannica.com/event/Battle-of-the-Chosin-Reservoir",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 9891,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.britannica.com/event/Battle-of-the-Chosin-Reservoir",
+  "ms": 17291
+ },
+ {
+  "url": "https://www.cbpp.org/research/official-poverty-measure-masks-gains-made-over-last-50-years",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.cbpp.org/research/official-poverty-measure-masks-gains-made-over-last-50-years",
+  "ms": 17102
+ },
+ {
+  "url": "https://www.uefa.com/news/02a9-1b32f94c0a5b-096a6058e77a-1000--2026-ballon-d-or-ceremony-date-and-host-city-announced/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.uefa.com/news/02a9-1b32f94c0a5b-096a6058e77a-1000--2026-ballon-d-or-ceremony-date-and-host-city-announced/",
+  "ms": 47158
+ },
+ {
+  "url": "https://www.facebook.com/RivalsMods1/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 11 chars)",
+  "fetchedUrl": "https://www.facebook.com/RivalsMods1/",
+  "ms": 23852
+ },
+ {
+  "url": "https://www.patreon.com/cw/RivlasMods1",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.patreon.com/cw/RivlasMods1",
+  "ms": 16882
+ },
+ {
+  "url": "https://eastcountymagazine.org/trump-order-targets-wolf-protections-as-california-wolf-center-pushes-coexistence/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://eastcountymagazine.org/trump-order-targets-wolf-protections-as-california-wolf-center-pushes-coexistence/",
+  "ms": 16915
+ },
+ {
+  "url": "https://ja.wikipedia.org/wiki/%E3%83%84%E3%83%AB%E3%83%8D_-%E9%A2%A8%E2%81%B4%E9%AB%98%E6%A0%A1%E2%81%B3%E9%81%93%E9%83%A8-",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://ja.wikipedia.org/wiki/%E3%83%84%E3%83%AB%E3%83%8D_-%E9%A2%A8%E2%81%B4%E9%AB%98%E6%A0%A1%E2%81%B3%E9%81%93%E9%83%A8-",
+  "ms": 17404
+ },
+ {
+  "url": "https://www.niigata-nippo.co.jp/articles/-/866168",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.niigata-nippo.co.jp/articles/-/866168",
+  "ms": 20112
+ },
+ {
+  "url": "https://www.railwaygazette.com/traction-rolling-stock/2026/03/11/portugal-ups-alstom-fleet-order-to-over-150-units-in-countrys-biggest-ever-train-investment/",
+  "ok": true,
+  "via": "http",
+  "chars": 6529,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.railwaygazette.com/traction-rolling-stock/2026/03/11/portugal-ups-alstom-fleet-order-to-over-150-units-in-countrys-biggest-ever-train-investment/",
+  "ms": 299
+ },
+ {
+  "url": "https://www.washingtonpost.com/business/2026/09/05/greece-economy-mitsotakis-elections-cost-of-living/72e3bb88-a95f-11f1-9e38-f705d048bd5a_story.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.washingtonpost.com/business/2026/09/05/greece-economy-mitsotakis-elections-cost-of-living/72e3bb88-a95f-11f1-9e38-f705d048bd5a_story.html",
+  "ms": 60324
+ },
+ {
+  "url": "https://www.nipc.gov.ng/wp-content/uploads/2025/07/Nigeria-Tax-Act-2025.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.nipc.gov.ng/wp-content/uploads/2025/07/Nigeria-Tax-Act-2025.pdf",
+  "ms": 20935
+ },
+ {
+  "url": "https://www.mayoclinic.org/diseases-conditions/back-pain/expert-answers/inversion-therapy/faq-20057951",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.mayoclinic.org/diseases-conditions/back-pain/expert-answers/inversion-therapy/faq-20057951",
+  "ms": 17129
+ },
+ {
+  "url": "https://www.theguardian.com/uk-news/2026/sep/06/hundreds-of-far-right-protesters-descend-on-portsmouth-after-small-boat-arrival",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.theguardian.com/uk-news/2026/sep/06/hundreds-of-far-right-protesters-descend-on-portsmouth-after-small-boat-arrival",
+  "ms": 17210
+ },
+ {
+  "url": "https://www.reddit.com/r/ufc/comments/j3ey5i",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 6 chars)",
+  "fetchedUrl": "https://www.reddit.com/r/ufc/comments/j3ey5i",
+  "ms": 17167
+ },
+ {
+  "url": "https://www.facebook.com/ItsGoneViralOfficial",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 3 chars)",
+  "fetchedUrl": "https://www.facebook.com/ItsGoneViralOfficial",
+  "ms": 25528
+ },
+ {
+  "url": "https://www.reddit.com/r/WizardingWorld/comments/1f9j87d/the_hogwarts_feast_we_remember_isnt_quite_the/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 6 chars)",
+  "fetchedUrl": "https://www.reddit.com/r/WizardingWorld/comments/1f9j87d/the_hogwarts_feast_we_remember_isnt_quite_the/",
+  "ms": 17038
+ },
+ {
+  "url": "https://news.sky.com/story/140-migrants-in-one-small-boat-intercepted-in-english-channel-sky-news-understands-13582562",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://news.sky.com/story/140-migrants-in-one-small-boat-intercepted-in-english-channel-sky-news-understands-13582562",
+  "ms": 17343
+ },
+ {
+  "url": "https://diplomacy.state.gov/discover-diplomacy/people-places/locally-employed-staff/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://diplomacy.state.gov/discover-diplomacy/people-places/locally-employed-staff/",
+  "ms": 16887
+ },
+ {
+  "url": "https://plutonium.pw/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://plutonium.pw/",
+  "ms": 17103
+ },
+ {
+  "url": "https://espndeportes.espn.com/futbol/argentina/nota/_/id/17211219/carlos-tevez-tendra-su-partido-despedida-en-la-bombonera",
+  "ok": true,
+  "via": "http",
+  "chars": 926,
+  "diagnostic": null,
+  "fetchedUrl": "https://espndeportes.espn.com/futbol/argentina/nota/_/id/17211219/carlos-tevez-tendra-su-partido-despedida-en-la-bombonera",
+  "ms": 753
+ },
+ {
+  "url": "https://www.sportskeeda.com/us/streamers/twitch-streamer-nitro-camden-s-rise-popularity-timeline-explored",
+  "ok": true,
+  "via": "http",
+  "chars": 4144,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.sportskeeda.com/us/streamers/twitch-streamer-nitro-camden-s-rise-popularity-timeline-explored",
+  "ms": 52
+ },
+ {
+  "url": "https://www.espn.com/mlb/story/_/id/49852703/pete-crow-armstrong-slugs-40th-hr-cubs-fall-marlins",
+  "ok": true,
+  "via": "http",
+  "chars": 2120,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/mlb/story/_/id/49852703/pete-crow-armstrong-slugs-40th-hr-cubs-fall-marlins",
+  "ms": 579
+ },
+ {
+  "url": "https://www.msn.com/en-gb/video/viral/israeli-tourists-fight-with-transgender-prostitutes-in-thai-sin-city-pattaya/vi-AA1Fdwtb",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 3 chars)",
+  "fetchedUrl": "https://www.msn.com/en-gb/video/viral/israeli-tourists-fight-with-transgender-prostitutes-in-thai-sin-city-pattaya/vi-AA1Fdwtb",
+  "ms": 17293
+ },
+ {
+  "url": "https://www.notus.org/congress/house-stalls-sexual-harassment-records",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.notus.org/congress/house-stalls-sexual-harassment-records",
+  "ms": 23772
+ },
+ {
+  "url": "https://www.sciencedirect.com/science/article/pii/S0025326X23013590",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.sciencedirect.com/science/article/pii/S0025326X23013590",
+  "ms": 17237
+ },
+ {
+  "url": "https://www.latimes.com/entertainment-arts/tv/story/2021-09-10/how-9-11-changed-the-way-we-watch-cable-tv-news-coverage",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.latimes.com/entertainment-arts/tv/story/2021-09-10/how-9-11-changed-the-way-we-watch-cable-tv-news-coverage",
+  "ms": 18091
+ },
+ {
+  "url": "https://arborlakes.shopkimco.com/stores",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 274 chars)",
+  "fetchedUrl": "https://arborlakes.shopkimco.com/stores",
+  "ms": 18869
+ },
+ {
+  "url": "https://encyclopedia.ushmm.org/content/en/article/soviet-forces-liberate-auschwitz",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://encyclopedia.ushmm.org/content/en/article/soviet-forces-liberate-auschwitz",
+  "ms": 19607
+ },
+ {
+  "url": "https://newsukraine.rbc.ua/news/russian-gas-grip-on-eu-tightens-despite-ban-but-ukraine-1725607200.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://newsukraine.rbc.ua/news/russian-gas-grip-on-eu-tightens-despite-ban-but-ukraine-1725607200.html",
+  "ms": 17433
+ },
+ {
+  "url": "https://www.dailyrecord.co.uk/news/scottish-news/huge-fire-breaks-glasgows-possilpark-37633466",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 157 chars)",
+  "fetchedUrl": "https://www.dailyrecord.co.uk/news/scottish-news/huge-fire-breaks-glasgows-possilpark-37633466",
+  "ms": 17541
+ },
+ {
+  "url": "https://ohiostatebuckeyes.com/news/2026/9/5/football-no-1-ohio-state-start-season-with-resounding-56-3-win-over-ball-state",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://ohiostatebuckeyes.com/news/2026/9/5/football-no-1-ohio-state-start-season-with-resounding-56-3-win-over-ball-state",
+  "ms": 20509
+ },
+ {
+  "url": "https://gwern.net/doc/politics/1997-starr-vincefosterreport.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://gwern.net/doc/politics/1997-starr-vincefosterreport.pdf",
+  "ms": 17005
+ },
+ {
+  "url": "https://www.nghomes.net/news/statement-on-stonyhurst-street-glasgow/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.nghomes.net/news/statement-on-stonyhurst-street-glasgow/",
+  "ms": 24575
+ },
+ {
+  "url": "https://www.dhs.gov/human-trafficking-quick-facts",
+  "ok": true,
+  "via": "http",
+  "chars": 12612,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.dhs.gov/human-trafficking-quick-facts",
+  "ms": 217
+ },
+ {
+  "url": "https://www.dhs.gov/blue-campaign/forced-labor-united-states/",
+  "ok": true,
+  "via": "http",
+  "chars": 5323,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.dhs.gov/blue-campaign/forced-labor-united-states/",
+  "ms": 147
+ },
+ {
+  "url": "https://www.nbcnews.com/news/us-news/mark-kelly-mark-kelly-s-dog-attacks-sea-lion-california-flna8c9161066",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.nbcnews.com/news/us-news/mark-kelly-mark-kelly-s-dog-attacks-sea-lion-california-flna8c9161066",
+  "ms": 17735
+ },
+ {
+  "url": "https://questions-statements.parliament.uk/written-questions/detail/2025-05-20/53758",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (browser, 193 chars)",
+  "fetchedUrl": "https://questions-statements.parliament.uk/written-questions/detail/2025-05-20/53758",
+  "ms": 17240
+ },
+ {
+  "url": "https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines",
+  "ok": true,
+  "via": "http",
+  "chars": 6981,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.psychiatry.org/psychiatrists/practice/clinical-practice-guidelines",
+  "ms": 663
+ },
+ {
+  "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/psychedelic-drugs-considerations-clinical-investigations",
+  "ok": true,
+  "via": "http",
+  "chars": 1642,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/psychedelic-drugs-considerations-clinical-investigations",
+  "ms": 112
+ },
+ {
+  "url": "https://www.grandviewresearch.com/industry-analysis/artificial-intelligence-military-market-report",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.grandviewresearch.com/industry-analysis/artificial-intelligence-military-market-report",
+  "ms": 16936
+ },
+ {
+  "url": "https://www.imj.org.il/en/wings/shrine-book/dead-sea-scrolls",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 0 chars)",
+  "fetchedUrl": "https://www.imj.org.il/en/wings/shrine-book/dead-sea-scrolls",
+  "ms": 17697
+ },
+ {
+  "url": "https://www.nytimes.com/2021/07/14/health/speech-brain-implant-computer.html",
+  "ok": true,
+  "via": "http",
+  "chars": 3478,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.nytimes.com/2021/07/14/health/speech-brain-implant-computer.html",
+  "ms": 941
+ },
+ {
+  "url": "https://www.yourcentralvalley.com/news/local-news/new-wildlife-coming-to-yosemite-possibly-a-wolf-too/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.yourcentralvalley.com/news/local-news/new-wildlife-coming-to-yosemite-possibly-a-wolf-too/",
+  "ms": 17138
+ },
+ {
+  "url": "https://www.apa.org/ptsd-guideline/patients-and-families/cognitive-behavioral",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 83 chars)",
+  "fetchedUrl": "https://www.apa.org/ptsd-guideline/patients-and-families/cognitive-behavioral",
+  "ms": 17146
+ },
+ {
+  "url": "https://nida.nih.gov/research-topics/cocaine",
+  "ok": true,
+  "via": "http",
+  "chars": 1510,
+  "diagnostic": null,
+  "fetchedUrl": "https://nida.nih.gov/research-topics/cocaine",
+  "ms": 1943
+ },
+ {
+  "url": "https://www.cnbc.com/2025/05/14/databricks-is-buying-database-startup-neon-for-about-1-billion.html",
+  "ok": true,
+  "via": "http",
+  "chars": 3221,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.cnbc.com/2025/05/14/databricks-is-buying-database-startup-neon-for-about-1-billion.html",
+  "ms": 959
+ },
+ {
+  "url": "https://www.sfweekly.com/archives/orfn-a-life-under-shadows/article_c3dd0a38-ab57-5405-8bc9-341236ad3745.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 451 (last attempt: browser)",
+  "fetchedUrl": "https://www.sfweekly.com/archives/orfn-a-life-under-shadows/article_c3dd0a38-ab57-5405-8bc9-341236ad3745.html",
+  "ms": 17713
+ },
+ {
+  "url": "https://www.ucsf.edu/news/2021/07/420946/neuroprosthesis-restores-words-man-paralysis",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.ucsf.edu/news/2021/07/420946/neuroprosthesis-restores-words-man-paralysis",
+  "ms": 17151
+ },
+ {
+  "url": "https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024",
+  "ms": 17284
+ },
+ {
+  "url": "https://www.investopedia.com/billionaires-who-bought-publishers-5270187",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 10600,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.investopedia.com/billionaires-who-bought-publishers-5270187",
+  "ms": 17387
+ },
+ {
+  "url": "https://www.reuters.com/world/americas/us-officials-see-closer-ties-with-trump-ally-princes-security-firm-haiti-2026-07-21/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 401 (last attempt: browser)",
+  "fetchedUrl": "https://www.reuters.com/world/americas/us-officials-see-closer-ties-with-trump-ally-princes-security-firm-haiti-2026-07-21/",
+  "ms": 17042
+ },
+ {
+  "url": "https://nmaahc.si.edu/explore/stories/african-muslims-early-america",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://nmaahc.si.edu/explore/stories/african-muslims-early-america",
+  "ms": 16978
+ },
+ {
+  "url": "https://www.fda.gov/food/alerts-advisories-safety-information/fda-issues-warning-about-toxic-amygdalin-found-apricot-seeds",
+  "ok": true,
+  "via": "http",
+  "chars": 3922,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fda.gov/food/alerts-advisories-safety-information/fda-issues-warning-about-toxic-amygdalin-found-apricot-seeds",
+  "ms": 50
+ },
+ {
+  "url": "https://devin.ai/blog/fable-5-1",
+  "ok": true,
+  "via": "http",
+  "chars": 5560,
+  "diagnostic": null,
+  "fetchedUrl": "https://devin.ai/blog/fable-5-1",
+  "ms": 283
+ },
+ {
+  "url": "https://thezvi.substack.com/p/claude-mythos-51-and-fable-51-capabilities",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://thezvi.substack.com/p/claude-mythos-51-and-fable-51-capabilities",
+  "ms": 428
+ },
+ {
+  "url": "https://stateline.org/2025/03/25/noncitizens-cannot-vote-in-new-york-citys-local-elections-state-high-court-rules/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://stateline.org/2025/03/25/noncitizens-cannot-vote-in-new-york-citys-local-elections-state-high-court-rules/",
+  "ms": 16955
+ },
+ {
+  "url": "https://www.verywellmind.com/opening-your-third-eye-7501747",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 8303,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.verywellmind.com/opening-your-third-eye-7501747",
+  "ms": 17323
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=_6WzsNO2Im8",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 161 chars)",
+  "fetchedUrl": "https://www.youtube.com/watch?v=_6WzsNO2Im8",
+  "ms": 20244
+ },
+ {
+  "url": "https://spotlight.bloomberg.com/story/battery-metals-outlook/page/7",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://spotlight.bloomberg.com/story/battery-metals-outlook/page/7",
+  "ms": 17153
+ },
+ {
+  "url": "https://thezvi.substack.com/p/claude-fable-51-and-mythos-51-the",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://thezvi.substack.com/p/claude-fable-51-and-mythos-51-the",
+  "ms": 421
+ },
+ {
+  "url": "https://aireleasetracker.com/compare/meta/muse-spark/openai/gpt-5.6-luna",
+  "ok": true,
+  "via": "http",
+  "chars": 9604,
+  "diagnostic": null,
+  "fetchedUrl": "https://aireleasetracker.com/compare/meta/muse-spark/openai/gpt-5.6-luna",
+  "ms": 638
+ },
+ {
+  "url": "https://oig.ssa.gov/assets/uploads/a-06-21-51022.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://oig.ssa.gov/assets/uploads/a-06-21-51022.pdf",
+  "ms": 17503
+ },
+ {
+  "url": "https://graphsearch.epfl.ch/en/concept/5493064",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://graphsearch.epfl.ch/en/concept/5493064",
+  "ms": 16928
+ },
+ {
+  "url": "https://www.newsnationnow.com",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (mobile, 31 chars)",
+  "fetchedUrl": "https://www.newsnationnow.com",
+  "ms": 20038
+ },
+ {
+  "url": "https://www.livescience.com/pangea",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.livescience.com/pangea",
+  "ms": 20573
+ },
+ {
+  "url": "https://mcauldronism.substack.com/p/an-automated-takedown-of-amanda-askell",
+  "ok": true,
+  "via": "http",
+  "chars": 17963,
+  "diagnostic": null,
+  "fetchedUrl": "https://mcauldronism.substack.com/p/an-automated-takedown-of-amanda-askell",
+  "ms": 83
+ },
+ {
+  "url": "https://www.uniaktuell.unibe.ch/2024/hochenergiephysik_weber/index_eng.html",
+  "ok": true,
+  "via": "http",
+  "chars": 10933,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.uniaktuell.unibe.ch/2024/hochenergiephysik_weber/index_eng.html",
+  "ms": 154
+ },
+ {
+  "url": "https://aswathdamodaran.substack.com/p/the-situational-awareness-fund-blow",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://aswathdamodaran.substack.com/p/the-situational-awareness-fund-blow",
+  "ms": 113
+ },
+ {
+  "url": "https://www2.jpl.nasa.gov/snc/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www2.jpl.nasa.gov/snc/",
+  "ms": 15352
+ },
+ {
+  "url": "https://tasminchu.substack.com",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://tasminchu.substack.com",
+  "ms": 17491
+ },
+ {
+  "url": "https://www.crunchbase.com/person/ami-vora",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.crunchbase.com/person/ami-vora",
+  "ms": 16910
+ },
+ {
+  "url": "https://www.britannica.com/topic/Semitic-languages/Classification",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 7725,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.britannica.com/topic/Semitic-languages/Classification",
+  "ms": 17340
+ },
+ {
+  "url": "https://www.researchgate.net/publication/318851806_Restoring_tone-marks_in_standard_Yoruba_electronic_text_Improved_model",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.researchgate.net/publication/318851806_Restoring_tone-marks_in_standard_Yoruba_electronic_text_Improved_model",
+  "ms": 16896
+ },
+ {
+  "url": "https://videocardz.com/newz/nvidia-announced-the-geforce-gtx-1080-and-gtx-1070-10-years-ago-today",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://videocardz.com/newz/nvidia-announced-the-geforce-gtx-1080-and-gtx-1070-10-years-ago-today",
+  "ms": 16875
+ },
+ {
+  "url": "https://www.vals.ai/news",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 185 chars)",
+  "fetchedUrl": "https://www.vals.ai/news",
+  "ms": 17420
+ },
+ {
+  "url": "https://digg.com/tech/9x3pz8ed",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://digg.com/tech/9x3pz8ed",
+  "ms": 18169
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/oSWae4bE4mqWy5a6Q/ai-2027-tracker-one-year-of-predictions-vs-reality",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 4982,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.lesswrong.com/posts/oSWae4bE4mqWy5a6Q/ai-2027-tracker-one-year-of-predictions-vs-reality",
+  "ms": 18328
+ },
+ {
+  "url": "https://www.videogameschronicle.com/news/two-thirds-of-total-pc-playtime-last-year-was-on-games-that-are-at-least-six-years-old-report-says/",
+  "ok": true,
+  "via": "http",
+  "chars": 4125,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.videogameschronicle.com/news/two-thirds-of-total-pc-playtime-last-year-was-on-games-that-are-at-least-six-years-old-report-says/",
+  "ms": 228
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/prSnGGAgfWtZexYLp/is-90-of-code-at-anthropic-being-written-by-ais",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 15984,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.lesswrong.com/posts/prSnGGAgfWtZexYLp/is-90-of-code-at-anthropic-being-written-by-ais",
+  "ms": 18913
+ },
+ {
+  "url": "https://www.vals.ai/models/google_gemini-3.8-flash",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 34 chars)",
+  "fetchedUrl": "https://www.vals.ai/models/google_gemini-3.8-flash",
+  "ms": 19274
+ },
+ {
+  "url": "https://www.vals.ai/models/meta_muse_spark_1_3",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 32 chars)",
+  "fetchedUrl": "https://www.vals.ai/models/meta_muse_spark_1_3",
+  "ms": 17936
+ },
+ {
+  "url": "https://time.com/7277591/colossal-biosciences-dire-wolf-de-extinction/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://time.com/7277591/colossal-biosciences-dire-wolf-de-extinction/",
+  "ms": 17513
+ },
+ {
+  "url": "https://www.scribd.com/document/911720849/2025-Newzoo-The-PC-and-Console-Gaming-Report-1",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.scribd.com/document/911720849/2025-Newzoo-The-PC-and-Console-Gaming-Report-1",
+  "ms": 1572
+ },
+ {
+  "url": "https://www.linkedin.com/in/mark-haefele-7a7b271/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 999 (last attempt: browser)",
+  "fetchedUrl": "https://www.linkedin.com/in/mark-haefele-7a7b271/",
+  "ms": 17316
+ },
+ {
+  "url": "https://www.pnas.org/doi/10.1073/pnas.2505.11584",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://www.pnas.org/doi/10.1073/pnas.2505.11584",
+  "ms": 18100
+ },
+ {
+  "url": "https://www.businesswire.com/news/home/20251001018306/en",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.businesswire.com/news/home/20251001018306/en",
+  "ms": 45412
+ },
+ {
+  "url": "https://www.healthaffairs.org/doi/10.1377/hlthaff.2017.0174",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.healthaffairs.org/doi/10.1377/hlthaff.2017.0174",
+  "ms": 19556
+ },
+ {
+  "url": "https://www.pnas.org/doi/10.1073/pnas.1318677111",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.pnas.org/doi/10.1073/pnas.1318677111",
+  "ms": 19385
+ },
+ {
+  "url": "https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/ketogenesis",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/ketogenesis",
+  "ms": 17253
+ },
+ {
+  "url": "https://digitalcommons.law.byu.edu/cgi/viewcontent.cgi?article=1531&context=jpl",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://digitalcommons.law.byu.edu/cgi/viewcontent.cgi?article=1531&context=jpl",
+  "ms": 16336
+ },
+ {
+  "url": "https://questions.org/attq/were-the-early-christians-capable-of-producing-the-gospels/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 27 chars)",
+  "fetchedUrl": "https://questions.org/attq/were-the-early-christians-capable-of-producing-the-gospels/",
+  "ms": 18378
+ },
+ {
+  "url": "http://blog.dialogo.it/italiane-in-formula-1/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "http://blog.dialogo.it/italiane-in-formula-1/",
+  "ms": 15421
+ },
+ {
+  "url": "https://smarthistory.org/cuneiform/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://smarthistory.org/cuneiform/",
+  "ms": 16930
+ },
+ {
+  "url": "https://www.ancient-origins.net/ancient-places-asia/rise-and-fall-sumer-and-akkad-003192",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.ancient-origins.net/ancient-places-asia/rise-and-fall-sumer-and-akkad-003192",
+  "ms": 16896
+ },
+ {
+  "url": "https://www.tandfonline.com/doi/full/10.1080/15564894.2021.1950874",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.tandfonline.com/doi/full/10.1080/15564894.2021.1950874",
+  "ms": 18278
+ },
+ {
+  "url": "https://www.espn.com/ufc/story/_/id/48814471/conor-mcgregor-vs-max-holloway-13-years-ago-happened-injury-came-next",
+  "ok": true,
+  "via": "http",
+  "chars": 5746,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/ufc/story/_/id/48814471/conor-mcgregor-vs-max-holloway-13-years-ago-happened-injury-came-next",
+  "ms": 426
+ },
+ {
+  "url": "https://africa.espn.com/mma/story/_/id/33279002/ufc-271-israel-adesanya-now-clear-no-2-middleweight-ufc-history-beating-robert-whittaker-again-catch-anderson-silva",
+  "ok": true,
+  "via": "http",
+  "chars": 7584,
+  "diagnostic": null,
+  "fetchedUrl": "https://africa.espn.com/mma/story/_/id/33279002/ufc-271-israel-adesanya-now-clear-no-2-middleweight-ufc-history-beating-robert-whittaker-again-catch-anderson-silva",
+  "ms": 884
+ },
+ {
+  "url": "https://www.businesswire.com/news/home/20041027005222/en/Amazon-Announces-Grand-Opening-Beauty-Store---",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.businesswire.com/news/home/20041027005222/en/Amazon-Announces-Grand-Opening-Beauty-Store---",
+  "ms": 45357
+ },
+ {
+  "url": "http://www.safarmer.com/Indus/OtherSites.pdf",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "http://www.safarmer.com/Indus/OtherSites.pdf",
+  "ms": 17810
+ },
+ {
+  "url": "https://pngaa.org/article/who-started-tok-pisin/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://pngaa.org/article/who-started-tok-pisin/",
+  "ms": 17645
+ },
+ {
+  "url": "https://www.espn.com/mma/story/_/id/14829338/rafael-dos-anjos-pulls-ufc-196-fight-vs-conor-mcgregor-broken-foot",
+  "ok": true,
+  "via": "http",
+  "chars": 3170,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.espn.com/mma/story/_/id/14829338/rafael-dos-anjos-pulls-ufc-196-fight-vs-conor-mcgregor-broken-foot",
+  "ms": 446
+ },
+ {
+  "url": "https://www.forbes.com/sites/brianbushard/2024/06/15/feral-swine-bomb-explained-why-wild-hogs-in-35-states-have-scientists-worried/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.forbes.com/sites/brianbushard/2024/06/15/feral-swine-bomb-explained-why-wild-hogs-in-35-states-have-scientists-worried/",
+  "ms": 17199
+ },
+ {
+  "url": "https://www.nj.gov/agriculture/divisions/ah/prog/feralhogs.html",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 0 chars)",
+  "fetchedUrl": "https://www.nj.gov/agriculture/divisions/ah/prog/feralhogs.html",
+  "ms": 17746
+ },
+ {
+  "url": "https://www.youtube.com/watch?v=TIO5hWElPqs",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 161 chars)",
+  "fetchedUrl": "https://www.youtube.com/watch?v=TIO5hWElPqs",
+  "ms": 20109
+ },
+ {
+  "url": "https://www.acs.org/education/whatischemistry/landmarks/highly-active-antiretroviral-therapy-hiv.html",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 4115,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.acs.org/education/whatischemistry/landmarks/highly-active-antiretroviral-therapy-hiv.html",
+  "ms": 17357
+ },
+ {
+  "url": "https://www.fda.gov/vaccines-blood-biologics/safety-availability-biologics/thimerosal-and-vaccines",
+  "ok": true,
+  "via": "http",
+  "chars": 20000,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.fda.gov/vaccines-blood-biologics/safety-availability-biologics/thimerosal-and-vaccines",
+  "ms": 94
+ },
+ {
+  "url": "https://www.niaid.nih.gov/diseases-conditions/antiretroviral-drug-development",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 405 (last attempt: browser)",
+  "fetchedUrl": "https://www.niaid.nih.gov/diseases-conditions/antiretroviral-drug-development",
+  "ms": 17803
+ },
+ {
+  "url": "https://patmcguinness.substack.com/p/gpt-4-details-revealed",
+  "ok": true,
+  "via": "http",
+  "chars": 9766,
+  "diagnostic": null,
+  "fetchedUrl": "https://patmcguinness.substack.com/p/gpt-4-details-revealed",
+  "ms": 106
+ },
+ {
+  "url": "https://americanhistory.si.edu/explore/stories/brief-history-azt",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://americanhistory.si.edu/explore/stories/brief-history-azt",
+  "ms": 16959
+ },
+ {
+  "url": "https://www.familysearch.org/en/wiki/Lake_Michigan",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (desktop, 83 chars)",
+  "fetchedUrl": "https://www.familysearch.org/en/wiki/Lake_Michigan",
+  "ms": 16927
+ },
+ {
+  "url": "https://www.iea.org/commentaries/the-carbon-footprint-of-streaming-video-fact-checking-the-headlines",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.iea.org/commentaries/the-carbon-footprint-of-streaming-video-fact-checking-the-headlines",
+  "ms": 16868
+ },
+ {
+  "url": "https://www.district.in/movies/the-paradise-movie-tickets-MV185027",
+  "ok": true,
+  "via": "http",
+  "chars": 4792,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.district.in/movies/the-paradise-movie-tickets-MV185027",
+  "ms": 454
+ },
+ {
+  "url": "https://jacobs.com/news/187/whats-next-for-the-water-energy-nexus",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://jacobs.com/news/187/whats-next-for-the-water-energy-nexus",
+  "ms": 18682
+ },
+ {
+  "url": "https://www.sciencedirect.com/science/article/abs/pii/S0921344922000428",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.sciencedirect.com/science/article/abs/pii/S0921344922000428",
+  "ms": 17265
+ },
+ {
+  "url": "https://glowseoul.co.kr/portfolio/suwon-starfield-project/",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 404 (last attempt: browser)",
+  "fetchedUrl": "https://glowseoul.co.kr/portfolio/suwon-starfield-project/",
+  "ms": 16963
+ },
+ {
+  "url": "https://kintousa.com/pages/about-kinto",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: thin content (browser, 14 chars)",
+  "fetchedUrl": "https://kintousa.com/pages/about-kinto",
+  "ms": 18018
+ },
+ {
+  "url": "https://www.bls.gov/opub/ted/2026/consumer-prices-up-3-4-over-the-year-in-july-2026.htm",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.bls.gov/opub/ted/2026/consumer-prices-up-3-4-over-the-year-in-july-2026.htm",
+  "ms": 17005
+ },
+ {
+  "url": "https://www.lesswrong.com/posts/tjeoLz2GzfFMysZhg/lightcone-commons",
+  "ok": true,
+  "via": "headless browser",
+  "chars": 20032,
+  "diagnostic": null,
+  "fetchedUrl": "https://www.lesswrong.com/posts/tjeoLz2GzfFMysZhg/lightcone-commons",
+  "ms": 20046
+ },
+ {
+  "url": "https://www.usnews.com/news/national-news/articles/2024-12-02/controversial-presidential-pardons-in-u-s-history",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch error: all 6 attempts failed",
+  "fetchedUrl": "https://www.usnews.com/news/national-news/articles/2024-12-02/controversial-presidential-pardons-in-u-s-history",
+  "ms": 60825
+ },
+ {
+  "url": "https://www.researchgate.net/publication/318677048_Study_and_Translation_of_Sun_Tzu's_Art_of_War_in_Recent_Years",
+  "ok": false,
+  "via": null,
+  "chars": 0,
+  "diagnostic": "Fetch failed: HTTP 403 (last attempt: browser)",
+  "fetchedUrl": "https://www.researchgate.net/publication/318677048_Study_and_Translation_of_Sun_Tzu's_Art_of_War_in_Recent_Years",
+  "ms": 16895
+ }
+]

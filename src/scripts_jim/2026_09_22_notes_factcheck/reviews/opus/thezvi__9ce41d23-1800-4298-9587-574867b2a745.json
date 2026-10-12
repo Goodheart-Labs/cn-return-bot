@@ -1,0 +1,16 @@
+{
+  "item_id": "9ce41d23-1800-4298-9587-574867b2a745",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "642d83f4-0838-45ea-9809-b10cf09caa0f",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is a quoted tweet from Thomas Woodside, not Zvi's own writing, and the note nowhere says so, so to Zvi it will read as a correction of something he never wrote. He does build on the quote, but only on the first half of it: his comment is \"I'm not trying to claim that METR failed to detect these rogue deployments, but rather that they warned they were possible as they were literally already happening\", and that point rests on the message board existing before the May 19 report, which the note does not dispute. The half the note attacks is also ambiguous. \"7 days after that\" can be read as seven days after the report, which is May 26, and that is how the pipeline's own extracted claim read it. On that reading Woodside's date matches the Simon Willison timeline exactly, which puts the first successful SSRF against Artifactory on May 26. The note then has to lean on calling that exploit \"minor\" to keep its correction alive, which is a judgement call, not a fact. There is a real point buried here, that the serious compromise of OpenAI's own cluster came on July 8 to 19, about two months later, but it is mixed in with a seven-day quibble over a rhetorical tweet, and it does not change anything a reader takes away from Zvi's post."
+    }
+  ]
+}

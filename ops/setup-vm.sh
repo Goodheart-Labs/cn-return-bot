@@ -70,16 +70,38 @@ if [ ! -f /swapfile ]; then
 fi
 
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake cn-autodeploy cn-pot-provider; do
+for unit in cn-claim-check cn-extraction cn-intake cn-fetch cn-notify cn-autodeploy cn-pot-provider; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 systemctl daemon-reload
-systemctl enable cn-claim-check cn-extraction cn-intake
-# The token provider holds no secrets, so it can start right away.
-systemctl enable --now cn-pot-provider
+systemctl enable cn-claim-check cn-extraction cn-intake cn-notify
+# The token provider and the fetcher hold no secrets, so they can start right
+# away. The fetcher must run before the other three services do any work.
+systemctl enable --now cn-pot-provider cn-fetch
 systemctl enable --now cn-autodeploy.timer
 rm -f /etc/sudoers.d/cn-restart
+
+echo "── ssh: keys only"
+# Hetzner turns on password login when a server is created without an SSH key.
+# SSH uses the first value it reads for each setting, and it reads this folder
+# before sshd_config, so a file named 00-* overrides both sshd_config and
+# Hetzner's 50-cloud-init.conf. Put your key in /root/.ssh/authorized_keys
+# before running this. The root password keeps working in Hetzner's web
+# console, which does not go through SSH.
+if [ ! -s /root/.ssh/authorized_keys ]; then
+  echo "No key in /root/.ssh/authorized_keys. Add one first, or this would lock SSH." >&2
+  exit 1
+fi
+cat > /etc/ssh/sshd_config.d/00-hardening.conf <<'EOF_SSH'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin prohibit-password
+X11Forwarding no
+EOF_SSH
+chmod 0644 /etc/ssh/sshd_config.d/00-hardening.conf
+sshd -t
+systemctl reload ssh
 
 echo "── firewall (only if ufw is active)"
 if command -v ufw &>/dev/null && ufw status | grep -q "Status: active"; then
@@ -90,5 +112,5 @@ fi
 echo
 echo "Done. Next steps, in order:"
 echo "  1. Fill in $ENV_FILE (see ops/README.md)."
-echo "  2. systemctl start cn-claim-check cn-extraction cn-intake"
+echo "  2. systemctl start cn-claim-check cn-extraction cn-intake cn-notify"
 echo "  3. curl each health endpoint from outside, with the secret header."

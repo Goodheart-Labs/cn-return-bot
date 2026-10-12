@@ -14,7 +14,7 @@ import { AB_TESTS } from "../../pipeline/ab-testing/abTestsData";
 import { createTweetLog, getLoggedBotIdentity, nestDotKeys, withTweetLog, type TweetLogMap } from "../../pipeline/utils/tweetLog";
 import type { TokenCost } from "../../pipeline/cost-tracking/pricing";
 import type { EvaluatedSource } from "../../pipeline/prompts/verify/citations";
-import { insertClaimPipelineRun } from "../db";
+import { insertClaimPipelineRun, type SpendFor } from "../db";
 import type { ClaimRunRecord } from "../../service/contract";
 import type { ClaimCheck, ExtractedClaim, ItemSource, NoteSourceCitation } from "../types";
 import { claimCheckFields } from "./claimCheckFields";
@@ -26,8 +26,9 @@ import { claimCheckFields } from "./claimCheckFields";
 // not an X post.
 // The models are pinned to Muse Spark 1.3 Contributor for search, writer and
 // source verifier alike (GOO-159, see model.ts); media descriptions stay on
-// Gemini. Muse has no built-in web
-// search, so the search arm is the client-side Serper loop. Before that, search
+// Gemini. Search runs on Meta's own search tooling through OpenRouter's web_search
+// server tool (GOO-258): Meta searches, opens pages and answers inside one
+// request. Until then it was our client-side Serper loop. Before that, search
 // and writer ran on Sonnet 5 and the verifier on Gemini 3 Flash; search ran on
 // Opus 5 until August 2026, when the daily spend cap was exhausted by early
 // morning several days in a row.
@@ -37,8 +38,8 @@ import { claimCheckFields } from "./claimCheckFields";
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
-  search_claim: "on",
-  simple_bot_search: "musespark13c-serper",
+  commonnotes_pipeline: "on",
+  simple_bot_search: "musespark13c-native",
   simple_bot_writer: "musespark13c",
   simple_bot_verifier: "musespark13c",
   media_description: "gemini3flash",
@@ -125,7 +126,7 @@ function buildRunRecord(result: ProcessTweetResult, log: TweetLogMap): ClaimRunR
 
 /** Saves the run's tweet log and LLM cost to everything_pipeline_runs. This is
  *  best effort. A failure to record must never make the claim itself fail. */
-export async function recordClaimRun(claimId: string, run: ClaimRunRecord): Promise<void> {
+export async function recordClaimRun(claimId: string, run: ClaimRunRecord, spendFor: SpendFor): Promise<void> {
   try {
     await insertClaimPipelineRun({
       claim_id: claimId,
@@ -137,6 +138,7 @@ export async function recordClaimRun(claimId: string, run: ClaimRunRecord): Prom
       bot_config: run.botConfig,
       logs: run.logs,
       cost: run.costUsd,
+      work_priority: spendFor,
     });
   } catch (err: any) {
     console.warn(`  [recordClaimRun] failed to record pipeline run for claim ${claimId}: ${err?.message}`);

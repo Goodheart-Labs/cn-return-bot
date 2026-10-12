@@ -1,0 +1,888 @@
+{
+  "ranAt": "2026-09-24T20:31:33.676Z",
+  "museResults": [
+    {
+      "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+      "engine": "native",
+      "http": 200,
+      "seconds": 14.128,
+      "provider": "OpenAI",
+      "cost": 0.0002212,
+      "promptTokens": 1575,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "HTTP 403: Forbidden",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"HTTP 403: Forbidden\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 7.874,
+      "provider": "OpenAI",
+      "cost": 0.000272452,
+      "promptTokens": 1566,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror text: HTTP 403: Forbidden\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 19.691,
+      "provider": "OpenAI",
+      "cost": 0.00021307599999999998,
+      "promptTokens": 1562,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "Exa returned no content for this URL.",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"Exa returned no content for this URL.\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+      "engine": "native",
+      "http": 200,
+      "seconds": 7.552,
+      "provider": "OpenAI",
+      "cost": 0.0001884,
+      "promptTokens": 1583,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "HTTP 401: Unauthorized",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"HTTP 401: Unauthorized\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 6.679,
+      "provider": "OpenAI",
+      "cost": 0.000299352,
+      "promptTokens": 1547,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: HTTP 401: Unauthorized\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 16.888,
+      "provider": "OpenAI",
+      "cost": 0.0001869,
+      "promptTokens": 1716,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "Exa returned no content for this URL.",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"Exa returned no content for this URL.\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+      "engine": "native",
+      "http": 200,
+      "seconds": 5.551,
+      "provider": "OpenAI",
+      "cost": 0.0001593,
+      "promptTokens": 1604,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror text: HTTP 403: Forbidden\nsection_first_sentences: empty",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 6.295,
+      "provider": "OpenAI",
+      "cost": 0.000209676,
+      "promptTokens": 1594,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: HTTP 403: Forbidden\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 6.849,
+      "provider": "OpenAI",
+      "cost": 0.000209876,
+      "promptTokens": 1586,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: Exa returned no content for this URL.\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+      "engine": "native",
+      "http": 200,
+      "seconds": 8.265,
+      "provider": "OpenAI",
+      "cost": 0.000251376,
+      "promptTokens": 1589,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: HTTP 403: Forbidden\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 8,
+      "provider": "OpenAI",
+      "cost": 0.000222976,
+      "promptTokens": 1591,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+        "status": "failed",
+        "error": "HTTP 403: Forbidden",
+        "_failure_reason": "http_error",
+        "http_status": 403
+      },
+      "rawContent": "fetched: false\nerror text: HTTP 403: Forbidden\nsection_first_sentences: []\n\nTool output:\n{\"url\":\"https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products\",\"status\":\"failed\",\"error\":\"HTTP 403: Forbidden\",\"_failure_reason\":\"http_error\",\"http_status\":403}\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 6.481,
+      "provider": "OpenAI",
+      "cost": 0.0006808,
+      "promptTokens": 6373,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\ntitle: \"FSIS Import Procedures for Meat, Poultry & Egg Products | Food Safety and Inspection Service\"\nfirst_sentence: \"USDA's Food Safety and Inspection Service (FSIS) is responsible for ensuring that domestic and imported meat, poultry, and egg products are safe, wholesome, and accurately labeled.\"\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+      "engine": "native",
+      "http": 200,
+      "seconds": 4.344,
+      "provider": "OpenAI",
+      "cost": 0.000244652,
+      "promptTokens": 1536,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: \"HTTP 403: Forbidden\"\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 8.403,
+      "provider": "OpenAI",
+      "cost": 0.00029107600000000003,
+      "promptTokens": 1546,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "HTTP 403: Forbidden",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"HTTP 403: Forbidden\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 7.478,
+      "provider": "OpenAI",
+      "cost": 0.0009752999999999999,
+      "promptTokens": 8896,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\npage title: Raiders of the Lost Ark | Cast, Plot, Movie, Awards, & Indiana Jones | Britannica\nfirst sentence: Raiders of the Lost Ark, American action-adventure film, released in 1981, that was the first film in the blockbuster Indiana Jones series about a fictional archaeologist who travels to exotic locales throughout the world in search of precious artifacts.\nsection_first_sentences: empty",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+      "engine": "native",
+      "http": 200,
+      "seconds": 6.486,
+      "provider": "OpenAI",
+      "cost": 0.000219644,
+      "promptTokens": 1556,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "HTTP 403: Forbidden",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"HTTP 403: Forbidden\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 6.818,
+      "provider": "OpenAI",
+      "cost": 0.000223544,
+      "promptTokens": 1539,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror text: HTTP 403: Forbidden\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 6.323,
+      "provider": "OpenAI",
+      "cost": 0.000485176,
+      "promptTokens": 3697,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\ntitle: Images show far-right influencer, not armed man killed near Trump estate | Fact Check\nfirst_sentence: A widespread X post claims to show photos of Austin Tucker Martin, whom police identified as the North Carolina man shot dead by law enforcement for breaching the security perimeter of US President Donald Trump's Mar-a-Lago estate while armed with a shotgun.\nsection_first_sentences:\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+      "engine": "native",
+      "http": 200,
+      "seconds": 13.449,
+      "provider": "OpenAI",
+      "cost": 0.001888088,
+      "promptTokens": 18369,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\npage title: Director Wray's Remarks at Press Briefing on Butler, Pennsylvania, Assassination Attempt — FBI\nfirst sentence of main text word for word: Thank you, Attorney General Garland.\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 14.795,
+      "provider": "OpenAI",
+      "cost": 0.001903088,
+      "promptTokens": 18373,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\n\npage title (from tool):\nDirector Wray's Remarks at Press Briefing on Butler, Pennsylvania, Assassination Attempt — FBI\n\nfirst sentence of the main text word for word (from tool):\nThank you, Attorney General Garland.\n\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 7.883,
+      "provider": "OpenAI",
+      "cost": 0.00045474400000000004,
+      "promptTokens": 3647,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\ntitle: Director Wray's Remarks at Press Briefing on Butler, Pennsylvania, Assassination Attempt — FBI\nfirst sentence of main text, word for word: Thank you, Attorney General Garland.\nsection_first_sentences: empty\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+      "engine": "native",
+      "http": 200,
+      "seconds": 35.765,
+      "provider": "OpenAI",
+      "cost": 0.000195976,
+      "promptTokens": 1627,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: Request timed out.\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 35.666,
+      "provider": "OpenAI",
+      "cost": 0.0001739,
+      "promptTokens": 1610,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror text: Request timed out.\npage title: [none - tool failed]\nfirst sentence: [none - tool failed]\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 14.385,
+      "provider": "OpenAI",
+      "cost": 0.000195776,
+      "promptTokens": 1617,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: Exa returned no content for this URL.\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+      "engine": "native",
+      "http": 200,
+      "seconds": 5.971,
+      "provider": "OpenAI",
+      "cost": 0.0001483,
+      "promptTokens": 1612,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: HTTP 403: Forbidden\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 5.017,
+      "provider": "OpenAI",
+      "cost": 0.000183076,
+      "promptTokens": 1612,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: \"HTTP 403: Forbidden\"\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 5.588,
+      "provider": "OpenAI",
+      "cost": 0.000187776,
+      "promptTokens": 1607,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: \"Exa returned no content for this URL.\"\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+      "engine": "native",
+      "http": 200,
+      "seconds": 5.198,
+      "provider": "OpenAI",
+      "cost": 0.000204876,
+      "promptTokens": 1582,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": {
+        "fetched": false,
+        "error": "HTTP 403: Forbidden",
+        "section_first_sentences": []
+      },
+      "rawContent": "{\n  \"fetched\": false,\n  \"error\": \"HTTP 403: Forbidden\",\n  \"section_first_sentences\": []\n}",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 5.175,
+      "provider": "OpenAI",
+      "cost": 0.000209376,
+      "promptTokens": 1561,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: \"HTTP 403: Forbidden\"\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 14.644,
+      "provider": "OpenAI",
+      "cost": 0.000198676,
+      "promptTokens": 1592,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: false\nerror: \"Exa returned no content for this URL.\"\nsection_first_sentences: []\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Measles",
+      "engine": "native",
+      "http": 200,
+      "seconds": 10.324,
+      "provider": "OpenAI",
+      "cost": 0.004186044,
+      "promptTokens": 39746,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\n\nPage title from tool:\nMeasles - Wikipedia\n\nFirst sentence of the main text, copied word for word from what the tool returned:\nMeasles (probably from Middle Dutch or Middle High German masel(e), meaning \"blemish, blood blister\")[11][12] is a highly contagious, vaccine-preventable infectious disease caused by the measles virus.[3][5]\n\nSigns and symptoms:\nNOT VISIBLE\n\nEurope:\nNOT VISIBLE\n\nHistory:\nNOT VISIBLE\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Measles",
+      "engine": "openrouter",
+      "http": 200,
+      "seconds": 14.838,
+      "provider": "OpenAI",
+      "cost": 0.004192544,
+      "promptTokens": 39753,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "fetched: true\n\nPage title from tool:\nMeasles - Wikipedia\n\nFirst sentence of the main text, copied word for word from tool return:\nMeasles (probably from Middle Dutch or Middle High German masel(e), meaning \"blemish, blood blister\") is a highly contagious, vaccine-preventable infectious disease caused by the measles virus.\n\nSigns and symptoms:\nNOT VISIBLE\n\nEurope:\nNOT VISIBLE\n\nHistory:\nNOT VISIBLE\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Measles",
+      "engine": "exa",
+      "http": 200,
+      "seconds": 13.948,
+      "provider": "OpenAI",
+      "cost": 0.001793,
+      "promptTokens": 14957,
+      "serverTools": {
+        "tool_calls_requested": 1,
+        "tool_calls_executed": 1
+      },
+      "report": null,
+      "rawContent": "title: Measles\n\nmain text first sentence:\nMeasles (probably from Middle Dutch or Middle High German masel(e), meaning \"blemish, blood blister\") [11] [12] is a highly contagious, vaccine-preventable infectious disease caused by the measles virus. [3] [5]\n\nSigns and symptoms:\nThe initial symptoms of measles are non-specific, resembling a common cold - raised temperature, runny nose, sneezing, cough, and sore eyes (conjunctivitis). [25] [26]\n\nEurope:\nIn England and Wales, though deaths from measles were uncommon, they averaged about 500 per year in the 1940s.\n\nHistory:\nMeasles is of zoonotic origin, having evolved from rinderpest, which infected cattle. [158]\n",
+      "error": null,
+      "messageKeys": [
+        "role",
+        "content",
+        "refusal",
+        "reasoning",
+        "reasoning_details"
+      ]
+    }
+  ],
+  "ladderResults": [
+    {
+      "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+      "engine": "our ladder (this VPS)",
+      "ok": true,
+      "seconds": 1.047,
+      "chars": 3566,
+      "head": "# Climate Change Raises Risk of Disasters Like Nepal Floods\n\nAdvertisement\n\n[SKIP ADVERTISEMENT](#after-top)\n\nYou have a preview view of this article while we are checking your access. When we have confirmed access, the full article content will load.\n\nGlaciers and permafrost in the Himalayas are me"
+    },
+    {
+      "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 20.153,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 21.857,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 22.072,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 21.83,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 22.026,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 22.673,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 69.711,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+      "engine": "our ladder (this VPS)",
+      "ok": false,
+      "seconds": 23.924,
+      "chars": 34,
+      "head": "Fetch error: all 6 attempts failed"
+    },
+    {
+      "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+      "engine": "our ladder (this VPS)",
+      "ok": true,
+      "seconds": 4.73,
+      "chars": 147193,
+      "head": "ZÄS 2022; 150(1): 101–129 Luigi Prada The Ancient Egyptian Origin of a Transcultural Trope, across Classical, Islamic, and Jewish Traditions The First Attestation of the Crocodile Bird in Egyptian, or Why Herodotus Is Not a Liar (with the First Edition of P. Vienna D 6104) https://doi.org/10.1515/za"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Measles",
+      "engine": "our ladder (this VPS)",
+      "ok": true,
+      "seconds": 0.929,
+      "chars": 168508,
+      "head": "# Measles\n\nNot to be confused with either [rubella](https://en.wikipedia.org/wiki/Rubella \"Rubella\") (sometimes called \"German measles\") or [roseola](https://en.wikipedia.org/wiki/Roseola \"Roseola\"), other viral diseases that cause a rash and fever.\n\nMeasles\n\nOther names\n\nMorbilli, rubeola, red meas"
+    }
+  ]
+}

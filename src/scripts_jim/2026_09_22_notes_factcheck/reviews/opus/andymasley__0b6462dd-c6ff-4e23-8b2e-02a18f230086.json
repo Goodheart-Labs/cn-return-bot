@@ -1,0 +1,16 @@
+{
+  "item_id": "0b6462dd-c6ff-4e23-8b2e-02a18f230086",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "7702421c-a11a-4afe-9788-cee124b47f2e",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is Andy's own sentence, not a quote from anyone else: he works out that the data centre's daily heat equals about 14.3 kilotons, and then writes 'This is about the same as the Little Boy bomb dropped on Hiroshima. While horrible, this is also one of the smallest nuclear weapons ever developed.' I checked both sources on Wikipedia and they say what the note says: Little Boy was about 15 kilotons, and the W54 warhead, the smallest nuclear weapon ever to enter US service, had versions yielding 10 to 20 tons of TNT, roughly a thousand times less. So as literally written the sentence is wrong. What holds me back from calling it good is that the correction does not touch his argument at all. His point is that the nuclear bomb is a terrible unit because yields vary enormously and journalists picked one from the low end, and learning that even smaller weapons exist only makes that point stronger. 'One of the smallest' is also loose enough that he can fairly say he meant the low end of the bombs people picture, so he may read the note as a nitpick on a throwaway line rather than a correction he wants."
+    }
+  ]
+}

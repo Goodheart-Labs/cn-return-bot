@@ -1,0 +1,25 @@
+{
+  "item_id": "1584a1a1-2f1b-4a10-a77d-b131592685e2",
+  "reviewer": "opus",
+  "source_read": "fetched:https://www.dwarkesh.com/p/jensen-huang (the page returned a summary rather than the full transcript, so I also relied on the stored context paragraphs)",
+  "notes": [
+    {
+      "note_id": "2e9d29f0-458d-47fe-b392-69f734807de0",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The words are Jensen Huang's, not Dwarkesh's, and Dwarkesh is pushing back throughout this passage, so a note here corrects the guest rather than the host. The number matters to the episode's central argument, because Jensen uses it to say China can already make enough chips without Nvidia, so the correction is not pedantic. Every public estimate I can find is well under a million Ascend accelerators: Mizuho's forecast was about 700,000 units for 2025, a US Commerce official told Congress in June 2025 the figure was no more than 200,000, and Huawei's 2026 plan of roughly 600,000 Ascend 910C units was reported as about double the 2025 output, with up to 1.6 million dies across the whole Ascend line. What gives me pause is that Jensen said 'chips' in a throwaway answer, and Huawei ships many more chips than datacenter accelerators, including the cheaper Ascend 310 edge parts and its phone processors, so he could defend 'millions' by pointing at a wider count. The note also carries no verified sources in the pipeline output, and the 700,000 number it leans on is a mid-2025 forecast rather than a measured 2025 result."
+    },
+    {
+      "note_id": "e71a3f3a-3aca-4169-baf0-3769580e4d17",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is Jensen Huang arguing with Dwarkesh about export controls, and Dwarkesh spends the whole passage challenging him, so the note fact-checks the guest on a point the host is already contesting. The note's two numbers measure something else than what Jensen means. The ITIF figure is 24.9 percent of global output in ten 'advanced industries' that include basic metals, chemicals and motor vehicles, and it is based on 2022 data, while the National Science Foundation page is from 2018 and so rests on numbers around a decade old. Jensen is talking about the technology market he is being kept out of, and on the measures that fit that meaning China looks close to his figure: it makes roughly 40 percent of the world's electronics by value and takes something like 35 to 40 percent of global semiconductor demand. Even if 40 percent were high, nothing in his argument turns on it, since conceding a quarter of the world market would be his point just as well. Sending this to Dwarkesh would invite the reply that we compared the wrong quantities against a loose figure his guest used in passing."
+    }
+  ]
+}

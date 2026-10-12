@@ -1,0 +1,18 @@
+{
+  "item_id": "b16c12e7-3e64-44a4-be3d-a869e933a1b6",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "35020d23-e71c-4574-95ff-82ce5ea7aac9",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Replace the note's first sentence with one that leads with the window: the $602,000 to $10.7 million pair is OpenSecrets' 2008 to 2018 comparison, one decade in the middle of a 26-year career (House 1997-2011, Senate 2011-2023), not his net worth on entering and leaving Congress. Add that his own script document already phrases it as 'at the start of one decade in Congress, and at the end of it', so this is a slip in the recording rather than an error in his research.",
+      "reason": "The words are LaCorte's own, spoken as the opening example of the video: 'That's the starting and ending net worth of one former Missouri Senator, Roy Blunt, after he spent about a decade in Congress.' A viewer hears that Blunt entered Congress with $602,000 and left ten years later with $10.7 million, which is wrong on the tenure: he served 26 years, 14 in the House and 12 in the Senate, and the 17-fold rise sits in the middle of that. I read the archived OpenSecrets article myself, and it says 'Sen. Roy Blunt (R-Mo.) increased his wealth from $602,000 to $10.7 million over the last decade', with the disclosures running 'through 2018' and the neighbouring examples starting 'in 2008', so the note's 2008 to 2018 window is right and the dollar figures are exactly as he gave them. His point, that a sitting member's disclosed wealth grew seventeen-fold in a decade, survives untouched, which is why this is not a clean 'good'. What tips me toward sending anyway is that the phrase 'about a decade in Congress' is a whole clause, not something captions would invent, and that his linked script says 'at the start of one decade in Congress, and at the end of it', so he knows the correct framing and misspoke on camera. He asks twice for corrections and promises a pinned comment, the point is non-partisan, and a pinned comment fixing 'starting and ending' is the kind of thing he does."
+    }
+  ]
+}

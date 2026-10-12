@@ -102,7 +102,7 @@ async function main() {
     });
     claims.push(...rating.claims);
     console.log(
-      `Research on "${part.title}" ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} searches, ${rating.webFetches} fetches):\n${rating.research}\n`,
+      `Research on "${part.title}" ($${rating.cost.cost.toFixed(2)}, ${rating.webSearches} searches):\n${rating.research}\n`,
     );
   }
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement));

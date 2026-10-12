@@ -1,7 +1,7 @@
 /** A throwaway script. It shows which bots actually ran in the last N days. */
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
-import { fetchAllRows } from "../api/paging";
+import { fetchAllRows } from "../everything-core/paging";
 
 const client = getSupabaseClient();
 const DAYS = Number(process.argv[2]) || 30;

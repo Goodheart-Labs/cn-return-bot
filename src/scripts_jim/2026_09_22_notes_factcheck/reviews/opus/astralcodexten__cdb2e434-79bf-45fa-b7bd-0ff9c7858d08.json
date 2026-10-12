@@ -1,0 +1,16 @@
+{
+  "item_id": "cdb2e434-79bf-45fa-b7bd-0ff9c7858d08",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "9a30d1f1-24c6-48ba-9099-8afdeb2060c6",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Scott writes the sentence himself, in his own voice: \"no country outside the liberal mainstream has ever managed to equal current US happiness levels. The closest near-misses are Singapore at 6.5, and Saudi Arabia at 6.6.\" Those two numbers come straight from the World Happiness Report 2025, where Singapore scores 6.57 and Saudi Arabia 6.60. In that same 2025 table the United Arab Emirates scores 6.76 and the United States 6.72, so a country that is plainly outside the liberal mainstream was already ahead of the US in the very dataset he was reading, and he simply missed it. The World Happiness Report 2026, published in March 2026 and so four months before this post, puts the UAE 21st at 6.82 and Saudi Arabia 22nd at 6.82 against the US 23rd at 6.82, the first time two Gulf states have finished above the US. I checked the 2025 and 2026 figures independently of the note's sources and they hold up. The correction matters because the parenthetical is doing real work in the argument, telling the reader that illiberal countries never reach liberal happiness levels. My one reservation, which is worth passing on to Scott rather than hiding, is that the 2026 gaps are tiny: Saudi Arabia beats the US by 0.001 points, so it is fairer to say these countries have drawn level than that they have pulled ahead, and \"equal\" is the word Scott himself used."
+    }
+  ]
+}

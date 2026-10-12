@@ -1,0 +1,16 @@
+{
+  "item_id": "e9477e3f-7d6d-4a59-9392-1e1eeb93e9a2",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "cd751784-6ff4-4baf-8eda-b4148c95748e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Rees-Mogg's own legal advice, not something he is quoting from anyone else. He says it in his own voice as the closing tip of a video titled 'How to avoid paying the TV Licence fee legally', and he frames it as a warning: 'Let me warn you of the one trap. If you watch television on an iPhone and it is running on its battery, you do not need a TV license. So you can watch it wherever you are.' The note is correct. The battery rule is not a licence-free zone, it is an extension of a licence you already hold at your home address. TV Licensing and MoneySavingExpert both state that your home licence 'covers you outside your home for a mobile device' only when the device is 'powered solely by its own internal batteries and not connected to an aerial or plugged into the mains', and gov.uk describes the same concession for students as using their out-of-term address's licence. Someone with no licence at all who watches live TV on a battery-powered phone still needs one, so his advice is wrong in exactly the case his audience is in. The correction is substantive rather than pedantic, because the whole video is telling viewers how to stop paying while staying within the law, and he explicitly says 'I want you to obey the law'. He is a stickler for the black letter of legislation and this is an apolitical point of law rather than a challenge to his argument about the BBC, so he could plausibly accept it."
+    }
+  ]
+}

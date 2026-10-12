@@ -1,0 +1,18 @@
+{
+  "item_id": "dc7731a4-a9e0-43a9-8283-d1a36380b547",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2aae9e23-4ecb-41f3-bdc9-84281d898291",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "The sentence is in Zvi's own voice in the Chip City section, not in a block quote, but the live page hyperlinks its first half to an Abundance Institute tweet that reads 'A new kind of AI data center is being cooled not with water, but helium. @NVIDIA and @ValarAtomics are partnering to build nuclear-powered...', so Zvi is restating that tweet and adding his own point that helium is scarce. The note's facts hold up. Valar's Ward250 is a high-temperature gas-cooled reactor whose sealed loop uses helium as the coolant (Reuters via KFGO: 'Valar says its high-temperature reactor is cooled with helium instead of water'; the Deseret News piece calls it 'the Ward250's helium cooling system'), and the computers in Nvidia's DSX design sit in a closed liquid loop of 75% water and 25% propylene glycol that is 'filled once and runs closed for the life of the facility', with dry coolers instead of evaporative towers. So the data center is not cooled with helium and Zvi's mockery about a scarce gas rests on a misreading; the helium in a sealed reactor loop is a fixed inventory, not consumption. That is substantive because the sentence exists only to make the helium point. What keeps this at uncertain is that Zvi is repeating exactly what the linked tweet and much of the press said (CNN: 'a waterless AI data center'; the AP story: 'Taylor said it would not use water. Instead, helium cools it'), and Nvidia's own material never mentions helium, so his 'Nvidia is advertising' framing is off in a second way the note does not address. He would probably accept a correction that says the tweet he linked got it wrong, but the note as written reads as if he invented the claim.",
+      "send_advice": "Open with the source of the confusion so it lands as fixing the tweet rather than Zvi, for example: 'The linked Abundance Institute tweet mixes two things up: the helium cools Valar Atomics' reactor that powers the site, not the data center itself.' Then keep the second sentence about Nvidia's closed-loop liquid cooling. Drop 'TRISO', it adds nothing for the reader."
+    }
+  ]
+}

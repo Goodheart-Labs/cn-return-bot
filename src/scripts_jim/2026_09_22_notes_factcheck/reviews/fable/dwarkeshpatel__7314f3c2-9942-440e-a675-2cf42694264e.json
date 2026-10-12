@@ -1,0 +1,18 @@
+{
+  "item_id": "7314f3c2-9942-440e-a675-2cf42694264e",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "a7341340-6bae-4ef5-a00a-af9be70abfdd",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "The words are Sarah Paine's, not Dwarkesh's. They come in the Q&A after her lecture, answering Dwarkesh's question about why Mao lost his shrewdness in the Great Leap Forward, and the official transcript on dwarkesh.com confirms the wording \"It's written by Peng Dehuai and others, his generals\", so this is not a caption error. Dwarkesh neither adopts nor relies on the claim; he moves on to World War II, so a note sent to him corrects something he never said and he cannot accept it on Paine's behalf. On the substance the note is probably right but thinly supported: the Small Wars Journal essay (April 2026, by a research analyst at RSIS Singapore, more than a year after this lecture) and the Chinese Wikiquote entry both give the source text of Griffith's translation as the collective work of Mao, Liu Yalou, Chen Changhao, Xiao Jinguang and Guo Huaruo, and I found no source anywhere that credits Peng Dehuai with the book, but a single new essay and an argument from silence is a weak basis for telling a naval historian she named the wrong general. The note also misstates its own source by listing the collective authors without Mao, whom the essay names first and credits with the final chapter, so it reads as if Mao had no part in the book, which is not what the research says. Paine's broader point, that the book was many people's work and not Mao's alone, is exactly what the source confirms, so the note fixes a name inside an argument that stands."
+    }
+  ]
+}

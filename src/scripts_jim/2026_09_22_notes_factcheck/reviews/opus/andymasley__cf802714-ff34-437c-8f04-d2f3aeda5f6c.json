@@ -1,0 +1,25 @@
+{
+  "item_id": "cf802714-ff34-437c-8f04-d2f3aeda5f6c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "ee788635-898b-454f-91ec-c5a3b03b2ada",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence about Mount Pleasant is not Andy's. It sits inside a long block quote from the Futurism article \"Farmer Hailed as Hero for Rejecting Huge Payment to Turn His Land Into a Giant Data Center\", which he reproduces under the heading \"Some bad recent articles on data center land use\" in order to argue against it. The mistake is Futurism's, and Andy answers the quoted passage in his own voice right after it: \"'Cost residents their land' meaning 'Could mean residents are paid way more than what their land is worth if they choose to accept the deal.'\" The note's fact is right. I checked the ABC News story and it is about a $15 billion Vantage campus in Port Washington, with Tom Uttech's 52 acres in nearby Saukville, and Mount Pleasant appears nowhere in it. But the correction does not touch anything Andy argues. He uses only the 600-acre number, which is correct, to make the point that 600 acres is about one square mile. Telling him the town name in someone else's quote is wrong is exactly the pedantic, mis-targeted note he already complained about."
+    },
+    {
+      "note_id": "ec829964-72a7-4e6d-8ea2-543d43391ff5",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is again a quotation, this time from the \"This Land is Their Land\" article, but here Andy takes the number over and builds his own argument on it: \"The 8 million-gallon data center is 0.4% of that. This data center is using as much water as a local 35 acre irrigated farm.\" So a wrong number really would leave his reader with a wrong belief that matters, and a note on it is fair in principle. The note's evidence checks out as far as it goes. The dgtlinfra page does say Google's hyperscale sites averaged 550,000 gallons a day, roughly 200 million gallons a year, and it lists Council Bluffs at 896 million gallons a year, which is about 2.5 million a day rather than the 2.8 million the note states. Two things hold me back. First, the quoted sentence says a hyperscale data center \"can use upwards of 8 million gallons\", and \"upwards of\" is satisfied by any larger number, so the sentence is an understatement rather than a falsehood. Second, the note generalises from Google, which is the most water-hungry of the big operators, to what hyperscale data centers \"typically\" use. The facility Andy is actually talking about is an Amazon site, and Amazon reports a water-use effectiveness several times better than Google's, so Andy has an easy and well-informed reply that the note overstates the real figure for this building."
+    }
+  ]
+}

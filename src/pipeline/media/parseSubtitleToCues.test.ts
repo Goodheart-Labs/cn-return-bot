@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { parseSubtitleToCues } from "./ytDlpDownload";
+import { parseSubtitleToCues } from "./youtubeCaptions";
 
 /** A German uploader track. It opens with a style block, which is what made the
  *  parser read three lines of CSS as the video's first words. */

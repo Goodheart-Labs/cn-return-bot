@@ -1,0 +1,29 @@
+{
+  "item_id": "1c382335-8b20-4f38-86bf-69721f96b74b",
+  "reviewer": "fable",
+  "source_read": "fetched:https://thezvi.substack.com/p/ai-178-a-fire-alarm-for-general-intelligence",
+  "notes": [
+    {
+      "note_id": "bb5e86d4-ac6f-4e3c-9321-baaeede234fd",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "quoted source",
+      "send_advice": "Do not send. If anyone should hear about it, it is METR: their X post says $2500K while their blog post says $2,500.",
+      "reason": "On the live page the sentence sits inside a block quote whose first words are a link to METR's X post, and the tweet itself (status 2079661102619885859) reads word for word 'We estimate the marginal returns to human labor as roughly $2500K per 1% optimization'. So Zvi reproduced METR's own typo exactly; the mistake is METR's, not his. In his own voice just above the quote Zvi gets the numbers right: 'On NanoGPT they find this currently tops up at roughly $3.3k for Opus 4.8 and $2.3k for GPT-5.5', and nothing in his commentary rests on the $2500K figure. The note's correction is true, METR's blog says 'each 1% improvement costs very roughly $2,500 in human labor', but it fact-checks a quoted source rather than anything Zvi asserts. That is exactly the complaint Andy Masley made about a note that checked a claim he was quoting rather than making, so this one should not go to Zvi."
+    },
+    {
+      "note_id": "5bfa31a1-db8c-4774-bac7-8b3182183e2f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "This is Zvi's own sentence, written in his voice with a hyperlink to a HedgieMarkets tweet that says the $6.26 of EPS 'came from paper gains on Alphabet's Anthropic stake'; Zvi adopted that attribution rather than merely quoting it. Alphabet's Q2 2026 10-Q contradicts it. The filing says other income 'included net gains on equity securities of $99.0 billion, primarily related to unrealized gains in our equity securities portfolio from SpaceX and a private company', naming SpaceX first, and its balance sheet carries $80.0 billion plus $14.1 billion of SpaceX shares under sale restrictions, the $94 billion the note cites. The quarter's unrealized gain on marketable equity securities alone was $21.4 billion, which is SpaceX after its June listing, and the cumulative upward adjustments retained in the non-marketable pool grew by only $4.9 billion in the quarter while $77.5 billion of gains were booked there, which points to SpaceX's pre-listing remeasurement being the larger part of that line too. Alphabet does not publish an exact split, so the note rightly says only that both stakes contributed, and every figure in it (the $99 billion gain, the 69% share of net income, the $124.3 billion non-marketable balance) matches the filing. The correction matters: a reader of an AI newsletter comes away thinking Anthropic's revaluation produced two thirds of Google's profit when a rocket company drove much or most of it. Zvi's wider point about the market's wrong-way move survives, but he would take a correction of this size."
+    }
+  ]
+}

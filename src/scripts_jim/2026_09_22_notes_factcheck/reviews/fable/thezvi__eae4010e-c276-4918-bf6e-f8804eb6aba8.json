@@ -1,0 +1,40 @@
+{
+  "item_id": "eae4010e-c276-4918-bf6e-f8804eb6aba8",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4000b5b7-4710-45d2-b1bf-1a12abc77c63",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "reason": "The line 'Fable stays at $10/$25, and Opus 5 is the same as previous Opus models at $5/$25' is Zvi's own paragraph in The Official Pitch section; the Anthropic block quote starts only after it, and that quote gives no prices. Anthropic's pricing page lists Claude Fable 5 at $10 per million input tokens and $50 per million output tokens, and Claude Opus 5 at $5 and $25, and the Opus 5 announcement says Opus 5 is 'priced at $5 per million input tokens and $25 per million output tokens (the same as Opus 4.8)'. So Zvi's Fable output price is wrong by a factor of two. It matters in context, because the paragraph's whole pitch is that Opus 5 is Fable 'at half the price', which is only true against $10/$50; a reader taking his numbers would think Opus 5 output costs the same as Fable output. The note states both prices correctly and nothing in it overreaches. This is a typo-class slip Zvi corrects readily.",
+      "send_advice": null
+    },
+    {
+      "note_id": "a75605a0-f4b0-4696-a561-3b052bb47c30",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "reason": "The sentence is Zvi's own summary of the Official Benchmarks, but his number is not an error. The Claude Opus 5 System Card, section 8.13.3, says: 'We tested Claude Opus 5 against 1,235 problems... It achieved a 23.58% (± 0.48, n=5) all-pass rate and a 93.74% mean criterion-pass rate', on Anthropic's internal reimplementation of Harvey's public LAB set, and then adds 'Per Harvey's evaluation on their held-out set, Claude Opus 5 achieved an 11.7% all-pass rate and a 94.1% mean criterion-pass rate.' Zvi's '23% all-pass and 94% mean criterion-pass' is the first pair, rounded. The note treats the 11.7% held-out figure from Harvey's launch post and the announcement table as the only real number and calls 23% wrong, when both numbers are Anthropic's and they are on different question sets. Zvi even flags this himself in the same paragraph: 'the two scores cannot be directly compared as they come from different question sets.' Independent trackers (benchmarklist, codepress) list the same 23.58% sourced to the system card. Sending this would repeat the Andy Masley failure: fact-checking a number the author reported correctly and already caveated.",
+      "send_advice": "Do not send. If anything were worth saying, it would be a comment, not a correction: that Harvey's own held-out number (11.7%) is far lower than the system card's public-set run, which the note's sources do show but the note frames as Zvi being wrong."
+    },
+    {
+      "note_id": "2f743cbe-fc68-4d81-ab76-76ac286dd962",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "reason": "The sentence 'ArtificialAnalysis confirms that Opus 5 has a higher hallucination rate than Fable on its benchmarks' is Zvi's own topic sentence for the Wrong On The Internet section; the block quotes from Max Weinbach and others begin after it. The AA article he links says only 'Opus 5 still has lower factual knowledge on AA-Omniscience than Fable 5' and that Opus 5's 'hallucination rate rises +14 points to 50%' relative to Opus 4.8; it never compares hallucination rates with Fable. On AA's own metric, Fable 5 was the worse hallucinator at the time: its launch figures were 61% accuracy and 54.9% hallucination rate (index 40), which also follow arithmetically from the index and accuracy, against Opus 5's 50%, so the note's two numbers were a consistent snapshot of the leaderboard in early August and its direction is right. The correction is substantive because Zvi presents AA as confirming the anecdotes that follow, and AA's data points the other way on the metric he names. Two things give me pause. First, the numbers are now stale: AA re-scored both models and the leaderboard today shows Opus 5 at 60.8% and Fable 5 at 63.6%, so a reader who clicks through will not find 54.9% or 50%. Second, Zvi has a partial defence: Opus 5 has lower accuracy, so in absolute terms it gives roughly as many wrong answers as Fable, and he may say 'hallucination rate' loosely. The direction of the correction still holds under either snapshot, so it is worth sending once the figures are made current.",
+      "send_advice": "Replace the first sentence with the current leaderboard pair, for example: 'Artificial Analysis's AA-Omniscience leaderboard currently shows Fable 5 with a higher hallucination rate (63.6%) than Opus 5 (60.8%), and at Opus 5's launch it was 54.9% against 50%.' Keep the second sentence about the article comparing factual knowledge, not hallucination rate."
+    }
+  ]
+}

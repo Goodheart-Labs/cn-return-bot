@@ -1,0 +1,16 @@
+{
+  "item_id": "b11143ac-fe2b-4ed7-a7c4-265f4470a3ea",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "e5f49655-2c44-400d-8a7d-f6cef2c9efaa",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Liron's own fundraising page, and the line \"Moshe Vardi (Turing Award)\" is his own description of a past guest, not a quote from anyone else. Vardi has not won the Turing Award. His awards are the Goedel Prize, the Kanellakis Award, the Knuth Prize, the EATCS Award and an IEEE Computer Pioneer Award, and his own ACM recipient page lists those without the Turing Award. Vardi himself wrote on X in 2020, \"I would have signed the letter too, but I don't have a Turing Award\", which the note quotes accurately. The error matters here because the whole point of the parenthesis is to show the calibre of the show's guests in a donation appeal, so a reader is told the show hosted a Turing laureate when it did not. It is a plain credential mistake with no interpretation involved, so Liron can simply fix the line, and the note stays away from any of his contested opinions."
+    }
+  ]
+}

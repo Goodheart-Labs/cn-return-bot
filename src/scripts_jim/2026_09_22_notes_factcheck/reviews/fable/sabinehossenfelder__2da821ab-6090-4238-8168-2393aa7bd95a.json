@@ -1,0 +1,18 @@
+{
+  "item_id": "2da821ab-6090-4238-8168-2393aa7bd95a",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4772a431-847c-4296-b1c5-04ea5d29f38f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Before sending, listen to the video at 1:14 to 1:23 and confirm she says the exception \"was one of those random sampling cases\" and not \"wasn't\"; the captions are the only record of the wording and the whole note rests on that one word. If she says \"was\", send the note as written; it needs no other change.",
+      "reason": "The sentence is Sabine's own summary of the paper she is leaning on, in her own voice: \"within 18 months of any of these demonstrations, they've all been reproduced on a conventional computer or at least been shown to be reproducible. The one exception he names was one of those random sampling cases.\" I checked the paper (arXiv 2607.07530, by the philosopher Amit Hagar; the captions render his name as \"Aram Harrow\", who is an MIT physicist and not the author, but the note does not depend on the name). Section 4 says the October 2025 Quantum Echoes experiment \"is the one demonstration of the period that stands neither reproduced nor closed by theorem, and it is also the one that conforms least to the flagship template\", and it puts Google's December 2024 random circuit sampling claim on the reproduced side, closed within ten months by a simulability theorem. Scott Aaronson's post of 18 July 2026 says the same: \"One is the Google OTOC experiment, as even Hagar himself acknowledges (that's his 'single clear exception')\". Google's own write-up says the experiment measures an out-of-time-order correlator, an expectation value, and contrasts that with random circuit sampling, whose bitstrings \"never appear twice\" and reveal no useful information; so the note is right that the surviving exception is not a sampling case, and it matters, because a minute earlier she told viewers these demonstrations only \"produce a random distribution of values\" with \"no known use\", which is exactly what Quantum Echoes was built not to be. Two things stop me short of good. First, the captions could have dropped a negation: \"wasn't one of those random sampling cases\" would fit the flow just as well, no written version of this script exists (her newsletter and blog only embed the video), and if she said \"wasn't\" the note fact-checks a claim she never made. I think \"was\" is the more likely reading, because it gives the sentence a rhetorical job (dismissing the exception as useless) and YouTube's captions rarely drop a \"not\", but Nathan can settle it by ear in ten seconds. Second, she has a partial comeback: Google implements the forward and backward evolutions as random quantum circuits, and Hagar himself calls the experiment \"a physics experiment booked as computational advantage\", so she may answer that it is still a random-circuit demo; the note pre-empts that by saying what the output is, which is the point, so I do not think it disqualifies the note."
+    }
+  ]
+}

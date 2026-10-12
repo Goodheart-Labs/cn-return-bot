@@ -2,20 +2,29 @@
 # written by hand once, see ops/README.md.
 [Unit]
 Description=Common Notes claim-check service
-After=network-online.target
-Wants=network-online.target
+After=network-online.target cn-fetch.service
+Wants=network-online.target cn-fetch.service
 
 [Service]
 User=cnbot
 WorkingDirectory=/opt/cn-return-bot
 EnvironmentFile=/etc/cn-return-bot/service.env
 Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+# Outside pages and images are fetched by the sandboxed fetcher, never in this
+# process (ops/cn-fetch.service). The service refuses to start without this.
+Environment=FETCH_SERVICE_SOCKET=/run/cn-fetch/fetch.sock
 ExecStart=/home/cnbot/.bun/bin/bun run src/service/claimCheck/main.ts
 Restart=always
 RestartSec=5
 # Each service gets its own private /tmp, wiped on restart, so a long-lived
 # machine never collects yt-dlp and browser leftovers.
 PrivateTmp=yes
+# No process in this service may talk to a link-local address. That range
+# holds the cloud provider's metadata service, which describes the machine and
+# is reachable from inside it only. Outside pages go through the fetcher, but a
+# few downloads still run here, such as yt-dlp and gallery-dl on media links.
+# The rule sits in the kernel, so it covers them and every redirect they follow.
+IPAddressDeny=link-local
 
 [Install]
 WantedBy=multi-user.target

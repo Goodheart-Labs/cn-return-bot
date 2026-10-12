@@ -31,16 +31,9 @@ Return JSON with two fields:
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
-/** The instruction arm of timing_treatment: judge the correction at the time
- *  the post was published, using the timestamps already in the user message. */
-export const SEARCH_TIME_TRAVEL_INSTRUCTION = `
-
-## Timing — the time-travel test
-The user message states the current date and when the post was published. Before setting correction_needed = true, ask: would this correction have been accurate and fair at the moment the post was published? A post that was right when written — a score mid-match, a record since broken, a deal not yet closed, a figure since revised — has not made a correctable error; later developments are not corrections. Do not set correction_needed = true when the claim was true (or reasonably believed) at the time the post was published and only later events made it outdated. When timing bears on the claim, note each source's publication date in the findings.`;
-
 /** The search prompt for checking a single claim, used when
- *  `config.search_claim` is on. The input is a verbatim excerpt highlighted from
- *  a podcast, an interview or an article, plus the surrounding passage for
+ *  `config.commonnotes_pipeline` is on. The input is a verbatim excerpt
+ *  highlighted from a podcast, an interview or an article, plus the surrounding passage for
  *  context. It is not an X post and it is not a paraphrase. With the X prompts
  *  the model treats the excerpt as a quoted conversation and refuses to
  *  fact-check it. Naming the input as an extracted claim fixes that. The

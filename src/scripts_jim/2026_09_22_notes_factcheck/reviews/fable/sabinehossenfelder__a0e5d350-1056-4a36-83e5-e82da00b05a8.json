@@ -1,0 +1,18 @@
+{
+  "item_id": "a0e5d350-1056-4a36-83e5-e82da00b05a8",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "7e623ded-7f0f-4d8d-9019-d68d6e8dacc8",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Sabine is summarising the Pentagon memo in her own voice and builds her setup on it: the Pentagon \"couldn't come up with any plausible explanation\", \"they couldn't explain it with any of their own technologies, either, like infrared weapons which they tested in the area at the time\", and \"So, they don't know what it is.\" She is not quoting anyone she disputes, and the sentences are plain enough that no caption mishearing could turn them into something else. The war.gov PDF blocks this machine, so I read the memo through a mirror (ufotransparency.com) and it matches every accepted quote: it is dated 5 June 2026, rates \"Military Aircraft Dispensing Flares\" as partially plausible, says \"historical flight logs confirm that U.S. military aircraft operating in the area were equipped with, and actively deployed, infrared countermeasure flares\", puts about 60 percent of the reported activity down to military aircraft, leaves about 40 percent unresolved, rates a U.S. capability as \"plausible but inconclusive\", and rules out only aircraft exhaust. So the specific sentence is wrong: the Pentagon did explain most of what the agents reported with its own infrared flares, which is the very technology she says they could not explain it with. This matters to the video, because the whole premise is that the case is a complete mystery that invites Avi Loeb's warp-drive paper. The memo also records that the agents, who know flares, said the objects did not look like them, and that the case as a whole remains unresolved; the note claims neither the opposite nor that the case is closed, and \"up to ~40% unexplained\" is exactly what the memo says. A physicist who is dismissive of the warp-drive paper will most likely welcome a correction that points back at the mundane explanation in the primary document, so I see no reason to hold this one back."
+    }
+  ]
+}

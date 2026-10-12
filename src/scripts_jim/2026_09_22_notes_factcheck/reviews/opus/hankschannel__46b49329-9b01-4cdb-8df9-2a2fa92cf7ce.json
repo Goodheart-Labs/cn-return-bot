@@ -1,0 +1,16 @@
+{
+  "item_id": "46b49329-9b01-4cdb-8df9-2a2fa92cf7ce",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6b446904-b1ab-47dd-bf7b-9f276338c3b2",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note corrects a web address that Hank never said. \"hangman.com/4x3\" is an automatic-caption mishearing of the domain he spoke, and the same transcript shows it, because at the end of the video the captions render the address as \"hankgames.com/4by3\". Two different spellings of the same spoken address in one transcript is the signature of a caption error, not of an author giving out a wrong link. The note is also shaky on its own terms: it says the real address is hankgreen.com/fourbythree, which does serve the game, but it cannot know which of several short addresses Hank read out, and viewers of the video see the real URL on screen anyway. Telling a creator he published the wrong link to his own game, on the strength of a transcription slip, is exactly the kind of note that burns the relationship."
+    }
+  ]
+}

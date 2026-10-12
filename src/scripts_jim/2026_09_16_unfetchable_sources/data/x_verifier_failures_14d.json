@@ -1,0 +1,3032 @@
+[
+ {
+  "id": "33d69592-c738-4d2f-bc87-64f54fe3c34c",
+  "tweet_id": "2099927265685410002",
+  "created_at": "2026-09-15 22:25:21.839713+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.espn.com/soccer/story/_/id/39436612/messi-bench-ronaldo-absent-al-nassr-inter-miami-game",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "4e137260-5ab3-4f1b-80ff-b07d35d9e85d",
+  "tweet_id": "2099858597668954333",
+  "created_at": "2026-09-15 22:23:01.328046+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nist.gov/pao/questions-and-answers-about-nist-wtc-towers-investigation",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "0575d30c-7a9d-4797-8a91-2fded0c40350",
+  "tweet_id": "2099716597275336810",
+  "created_at": "2026-09-15 21:51:37.167313+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.sciencedirect.com/science/article/pii/S022352342300805X",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "d1e28353-fbd9-459b-aaf5-9bcc07f69268",
+  "tweet_id": "2099923499238424670",
+  "created_at": "2026-09-15 21:23:21.012743+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/soccer/match/_/gameId/401912656/al-nassr-al-ain",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "e7a322ba-8820-4ce0-a739-9464379447cc",
+  "tweet_id": "2099643013894939087",
+  "created_at": "2026-09-15 17:56:03.328979+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.cbsnews.com/news/kennedy-center-ceiling-collapse-renovations/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "9bc6ed8d-08db-418c-9bc5-3719f9c900b5",
+  "tweet_id": "2099641952778244408",
+  "created_at": "2026-09-15 17:55:03.035291+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tennessean.com/story/sports/nfl/titans/2026/09/13/titans-moments-jets-game-top-plays",
+  "kind": "Fetch failed",
+  "reason": "HTTP 500 (last attempt: browser)"
+ },
+ {
+  "id": "040ee58e-2baf-43b5-bc1c-c047ecd81ece",
+  "tweet_id": "2099603954497712273",
+  "created_at": "2026-09-15 17:23:01.419252+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbo.gov/publication/61469",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "888549a8-bbf8-43a7-97ea-4e9d329b2e24",
+  "tweet_id": "2099576180395368726",
+  "created_at": "2026-09-15 17:21:49.056062+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.politifact.com/factchecks/2023/dec/13/joe-biden/fact-checking-joe-biden-on-the-creation-of-800000-/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "0007604b-aa07-44e3-ab2d-465760ba7a47",
+  "tweet_id": "2099541561520357382",
+  "created_at": "2026-09-15 16:27:40.564465+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nbcchicago.com/entertainment/billy-ray-cyrus-reveals-heartfelt-message-he-received-from-dolly-parton-before-she-died/3980578/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9d9cf72d-a6c7-4de4-b0cc-730668736c05",
+  "tweet_id": "2099676818664006097",
+  "created_at": "2026-09-15 15:55:37.015174+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbssports.com/nfl/gametracker/live/NFL_20260914_DEN@KC/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 429 (last attempt: browser)"
+ },
+ {
+  "id": "8888f1b4-1723-4af0-bfb7-847d96730691",
+  "tweet_id": "2099786169361805466",
+  "created_at": "2026-09-15 15:52:55.469304+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.citizen.co.za/kempton-express/news-headlines/local-crime-news/2026/09/12/saps-probes-links-between-four-bodies-found-in-kempton-park/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "5dc7d9ab-5707-40ce-8bad-cbd9db1e8804",
+  "tweet_id": "2099707746257879439",
+  "created_at": "2026-09-15 15:23:19.457532+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.mcdonalds.com/gb/en-gb/help/faq/what-s-the-average-weight-in-grams-of-a-big-mac.html",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "7e926752-170d-4b69-9dcb-b8f08a30596f",
+  "tweet_id": "2099720058498949500",
+  "created_at": "2026-09-15 14:29:30.580161+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.maritime.dot.gov/msci/2026-004-persian-gulf-strait-hormuz-and-gulf-oman-iranian-attacks-commercial-vessels",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "36a9fe2e-4dc5-4d8f-8440-2492e25dc03d",
+  "tweet_id": "2099659964285395179",
+  "created_at": "2026-09-15 09:26:54.238414+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://shop.wwe.com/en/title-belts-side-plates/d-3473903707-4506909353+z-9-1177522359",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "36a9fe2e-4dc5-4d8f-8440-2492e25dc03d",
+  "tweet_id": "2099659964285395179",
+  "created_at": "2026-09-15 09:26:54.238414+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://euroshop.wwe.com/en/wwe-finn-balor-sideplate/p-3425254094601225+z-979-286582219",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "05446b2a-d9b8-47f0-9a34-b03cf23ac50a",
+  "tweet_id": "2099645983432798369",
+  "created_at": "2026-09-15 09:22:31.679009+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.imdb.com/name/nm13564038/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "f9051cce-3c9e-4f3c-b349-5fbf747abab0",
+  "tweet_id": "2096441508333543805",
+  "created_at": "2026-09-06 15:21:36.253832+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://ballotpedia.org/Sherrod_Brown",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "d3c953df-9312-48a1-af97-00e33f271c05",
+  "tweet_id": "2096473840532471969",
+  "created_at": "2026-09-06 15:21:35.91143+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://atlas.co/blog/mercator-projection-why-it-distorts-country-sizes",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "fe2a53e1-edc9-4625-8095-019f6c33564d",
+  "tweet_id": "2096070820321784167",
+  "created_at": "2026-09-06 11:53:17.202448+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nejm.org/doi/full/10.1056/NEJMc2512078",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "67f17828-34f4-493b-9f4a-d16c2b7fabc3",
+  "tweet_id": "2096361426738921672",
+  "created_at": "2026-09-06 11:23:00.434333+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://geohub.brampton.ca/pages/profile-diversity",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 53 chars)"
+ },
+ {
+  "id": "32c1900c-24ce-49d7-898d-6ca20196800c",
+  "tweet_id": "2096468671593890124",
+  "created_at": "2026-09-06 08:53:10.080614+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.yemenmonitor.com/Details/id/98223",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "6ab13983-4122-460f-9223-e83f99cbe9fe",
+  "tweet_id": "2096388408520343559",
+  "created_at": "2026-09-06 06:22:10.64813+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.inc.com/amaya-nichole/researchers-tested-avocado-oil-products-90-percent-failed-purity-test/91375204",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "fd695bf5-a5ea-4ccb-adad-b5fdb8f8b622",
+  "tweet_id": "2096376493739766087",
+  "created_at": "2026-09-06 05:22:30.583745+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.foxnews.com/entertainment/jelly-roll-says-planning-take-some-time-off-heal-after-final-tour-stop",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "4115472d-c938-45f5-a523-f9056c5670d6",
+  "tweet_id": "2096265101020107121",
+  "created_at": "2026-09-06 03:52:37.390849+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://wordsactuallymatter.substack.com/p/elon-musk-fake-prophecy-quote",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "0e278c65-805a-4e44-9195-e514b0778022",
+  "tweet_id": "2095961624809206031",
+  "created_at": "2026-09-06 03:25:23.651573+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://mgoblue.com/news/2023/1/27/womens-track-field-awards-and-honors.aspx",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "7cc8ef33-2645-4684-b36f-1c9c67b8b78b",
+  "tweet_id": "2096383237723709591",
+  "created_at": "2026-09-06 01:52:49.119004+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fastcompany.com/91593814/lindsay-clancy-family-gofundme-reveals-support-during-murder-trial",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "e826730f-86b5-4d77-888e-cb683ba407e2",
+  "tweet_id": "2096239460090278347",
+  "created_at": "2026-09-06 00:51:16.222004+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.theguardian.com/music/article/2024/sep/10/selena-gomez-reveals-unable-to-carry-children-lupus",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "2ecb7121-10a6-4224-8acc-a70796aeba78",
+  "tweet_id": "2096338934070464676",
+  "created_at": "2026-09-06 00:21:05.230765+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cp24.com/world/2026/09/05/us-strikes-3-iranian-oil-tankers-after-saying-warships-were-targeted-with-ballistic-missiles/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "fc17a74f-dbd5-4d89-bf6f-5fe47ad553a4",
+  "tweet_id": "2096213529225498873",
+  "created_at": "2026-09-05 23:53:21.188109+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.washingtonpost.com/nation/2026/09/04/judge-lindsay-clancy-trial-declines-remove-juror-deliberations-continue/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "d3903496-81c2-4a3e-a6ae-7a71bf862566",
+  "tweet_id": "2096311548012548247",
+  "created_at": "2026-09-05 23:21:46.015156+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/sports/colleges/2026/09/05/indiana-hoosiers-football/f9325f82-a94b-11f1-9e38-f705d048bd5a_story.html",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "83231ddd-15c1-42af-8261-cdd71b8e3551",
+  "tweet_id": "2096238903460040857",
+  "created_at": "2026-09-05 21:22:28.237022+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/soccer/story/_/id/49783743/karim-benzema-al-hilal-saudi-pro-league-transfers",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "cf7867d0-3081-4f92-810e-72ef1d88cd29",
+  "tweet_id": "2096107357516476638",
+  "created_at": "2026-09-05 20:51:37.616212+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://uu.diva-portal.org/smash/get/diva2%3A1927772/FULLTEXT01.pdf",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "acd1f08d-5a8f-4fb6-a40a-3a75d4d3057f",
+  "tweet_id": "2096116736915542310",
+  "created_at": "2026-09-05 19:23:24.779461+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://gamefaqs.gamespot.com/xbox/516688-fable/faqs/32779",
+  "kind": "Fetch failed",
+  "reason": "HTTP 400 (last attempt: browser)"
+ },
+ {
+  "id": "33c322d3-d962-4a5f-9639-79f274579217",
+  "tweet_id": "2096249464042176678",
+  "created_at": "2026-09-05 18:54:58.376541+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://health.ec.europa.eu/scientific-committees/scheer-opinions/leds-and-health-effects_en",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "40f60884-6286-4106-8e9c-2932b98cfa75",
+  "tweet_id": "2096232719734751509",
+  "created_at": "2026-09-05 18:52:26.429903+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tiktok.com/@maymartins22/video/7528225534640229638",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 22 chars)"
+ },
+ {
+  "id": "58b4f845-5c5b-478e-95e7-c77d14e46945",
+  "tweet_id": "2096215114835951666",
+  "created_at": "2026-09-05 17:22:30.791572+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.acg.org/nyc/people/roy-danis",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "8756cbc3-0d29-42cd-84fd-91e690f2cbea",
+  "tweet_id": "2095860452467044648",
+  "created_at": "2026-09-05 14:54:28.087735+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://ge.globo.com/google/amp/video/neymar-na-bronca-com-a-arbitragem-14926216.ghtml",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 70 chars)"
+ },
+ {
+  "id": "78bf26df-6f62-470f-9160-98f4544eb0e5",
+  "tweet_id": "2095768497766769037",
+  "created_at": "2026-09-05 11:22:21.91728+00",
+  "outcome": "rejected",
+  "outcome_reason": "stale_at_submit",
+  "url": "https://www.factcheck.org/2024/01/scicheck-no-evidence-excess-dna-in-mrna-vaccines-causes-turbo-cancer/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a9f5841c-8565-4ae6-8a19-6a479a40762f",
+  "tweet_id": "2095988652165779473",
+  "created_at": "2026-09-05 09:22:14.780021+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.wikiservice.at/culio/wiki.cgi?CuliosWelt",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "d73f5651-fffd-4d77-bc42-bafe2ba4331b",
+  "tweet_id": "2095906967042859258",
+  "created_at": "2026-09-05 07:53:47.500359+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.snopes.com/fact-check/jesse-owens-and-hitler-shook-hands/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "95ef449f-d5b9-4765-9ba0-b5bf66261924",
+  "tweet_id": "2095703149503762886",
+  "created_at": "2026-09-05 07:53:41.258361+00",
+  "outcome": "rejected",
+  "outcome_reason": "stale_at_submit",
+  "url": "https://thebrakereport.com/chery-claims-first-mass-produced-emb-system/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "29e191dc-780f-418d-8922-b0a68053db4f",
+  "tweet_id": "2095919159742013939",
+  "created_at": "2026-09-05 06:52:28.103194+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.facebook.com/Tubagusjakaa/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 20 chars)"
+ },
+ {
+  "id": "5ca0f118-b026-40b9-9518-de74022148f8",
+  "tweet_id": "2095935244411019340",
+  "created_at": "2026-09-05 05:52:47.120104+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reuters.com/legal/government/whats-next-lindsay-clancy-after-mistrial-2026-09-04/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 401 (last attempt: browser)"
+ },
+ {
+  "id": "c4b13b35-c91f-44e4-b5bf-60315e116318",
+  "tweet_id": "2095974382048870446",
+  "created_at": "2026-09-05 05:51:33.961038+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.usnews.com/news/top-news/articles/2026-09-04/us-justice-department-pauses-cooperation-with-canadian-government-wsj-reports",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "1f0966e9-c261-4805-9011-1f37fdfab593",
+  "tweet_id": "2096037342591029692",
+  "created_at": "2026-09-05 03:51:41.991081+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://twistedvoxel.com/deltarune-chapter-6-planned-for-2027-toby-fox/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "1709c83b-0b19-447f-ba18-79f0995c5f48",
+  "tweet_id": "2095994113782952315",
+  "created_at": "2026-09-05 03:22:21.283245+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/soccer/story/_/id/49828781/jose-mourinho-real-madrid-betis-kylian-mbappe-penalty",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "407f6d1c-419c-4c71-828e-6f111f9d9b92",
+  "tweet_id": "2095926759887626446",
+  "created_at": "2026-09-04 22:51:10.605882+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nytimes.com/live/2026/09/04/us/lindsay-clancy-trial-deadlock",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "bde7df64-68eb-40c4-b64c-498d022e873a",
+  "tweet_id": "2095945114665234548",
+  "created_at": "2026-09-04 22:23:04.599308+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://thespun.com/nfl/tmzs-unrecognizable-photo-of-clay-matthews-has-nfl-fans-speechless",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "6713fc7d-795b-4efd-b395-24f856dc5778",
+  "tweet_id": "2095946592364769489",
+  "created_at": "2026-09-04 22:23:04.557577+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://amp.nfl.com/news/packers-express-hope-rb-josh-jacobs-currently-on-commissioners-exempt-list-can-play-sometime-this-season",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "7a963cb5-7e7d-475d-bc62-a330b365237d",
+  "tweet_id": "2095844253276516755",
+  "created_at": "2026-09-04 21:22:41.151047+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.primetimer.com/news/is-mia-khalifa-pregnant-with-b-lou-s-kid-viral-rumor-debunked-as-rapper-reacts-to-the-news",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "66ab02c7-98a5-4f03-99be-b7308548a7d9",
+  "tweet_id": "2095902934882042357",
+  "created_at": "2026-09-04 19:22:18.069082+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.justice.gov/epstein-library",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "790c9076-655e-4705-890e-f9abd79f06b6",
+  "tweet_id": "2095945150887563364",
+  "created_at": "2026-09-04 19:21:17.49897+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/NFLv2/comments/1w7cktq/removed/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "3abf9eeb-3e93-4517-baf2-3e4e05e9a643",
+  "tweet_id": "2095872857750294791",
+  "created_at": "2026-09-04 16:22:16.755799+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tse.jus.br/comunicacao/noticias/2026/Agosto/entrevista-totalizacao-dos-votos-e-processo-aberto-auditavel-e-seguro",
+  "kind": "Fetch failed",
+  "reason": "thin content (wayback, 208 chars)"
+ },
+ {
+  "id": "20e095db-3a21-4c94-bbbc-b2c6a95c59fd",
+  "tweet_id": "2095801463171866693",
+  "created_at": "2026-09-04 15:22:31.98322+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/theydidthemath/comments/1bmelst/request_at_what_point_does_an_operation_like_this/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "3260911c-a0de-47da-9a6d-bb75d20941f5",
+  "tweet_id": "2095661161479802965",
+  "created_at": "2026-09-04 14:53:02.276619+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.eleconomista.es/actualidad/noticias/14011876/09/26/polemicas-imagenes-de-la-caza-de-una-cria-de-delfin-protegido-en-ceuta-fue-agarrado-sacado-del-agua-a-la-fuerza-y-golpeado-en-la-cabeza-con-un-palo.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "2658df60-1033-49c8-a9bb-45fae5eee5f0",
+  "tweet_id": "2095625818219090349",
+  "created_at": "2026-09-04 13:24:23.599657+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nps.gov/bela/learn/historyculture/about.htm",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "0dbe8e08-5a15-4e3a-9377-7d0da3b6fd4b",
+  "tweet_id": "2095587965246349819",
+  "created_at": "2026-09-04 10:53:32.219651+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://fullfact.org/online/london-white-population-ten-years/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "2fa09b81-60c8-47a9-a6d0-a881e7bed60a",
+  "tweet_id": "2095794016247791665",
+  "created_at": "2026-09-04 10:52:35.597105+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/soccer/player/_/id/387984/hugo-camberos",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "20f2971e-263a-4d59-8e25-59bcb92c7812",
+  "tweet_id": "2095731447055139294",
+  "created_at": "2026-09-04 10:22:32.284418+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.newsweek.com/kimber-mills-alabama-cheerleader-shot-bonfire-organ-donor-1973059",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "ea06f10b-bad8-4ae2-a65d-c27aaf96b2b6",
+  "tweet_id": "2095512334089572727",
+  "created_at": "2026-09-04 09:53:07.52694+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://factcheck.afp.com/doc.afp.com.A33U6G3",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "97417625-fe56-4f80-9c7e-58603fd20b34",
+  "tweet_id": "2095675020270022974",
+  "created_at": "2026-09-04 08:51:40.746943+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.itechguides.com/sony-faces-unpatchable-ps5-jailbreak-threat-after-rom-keys-leak-what-the-reports-actually-show/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b4aa06d9-047e-49e9-9e4a-b16acf1fda20",
+  "tweet_id": "2095472319602790698",
+  "created_at": "2026-09-04 07:55:21.058286+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.aol.com/lifestyle/low-cut-dress-advertisement-goes-200101390.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "d3e7b232-6294-4f06-8228-bfea3f367e85",
+  "tweet_id": "2095741407440805949",
+  "created_at": "2026-09-04 06:23:05.429545+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.tabletmag.com/the-scroll/articles/scroll-sep-1-vance-channels-tucker-rjc",
+  "kind": "Fetch failed",
+  "reason": "thin content (browser, 128 chars)"
+ },
+ {
+  "id": "4d40a971-9c07-483e-a471-ee8d49c56bec",
+  "tweet_id": "2095571912021668238",
+  "created_at": "2026-09-04 03:52:22.284737+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tmz.com/2012/08/21/tom-cruise-katie-holmes-divorce-settlement-child-support/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "bb0bc7ab-29b6-4135-bd52-e1f9e12e569d",
+  "tweet_id": "2095600104300593398",
+  "created_at": "2026-09-04 03:22:21.254092+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.usopen.org/en_US/news/articles/2026-09-01/alexandra_eala_thrills_2026_us_open_fans_with_dominant_first-round_win.html",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 0 chars)"
+ },
+ {
+  "id": "18dac98c-3042-4355-ab69-ccc055bbc46f",
+  "tweet_id": "2095264610462949733",
+  "created_at": "2026-09-04 01:24:18.732448+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://19thnews.org/2026/08/fauci-texts-miscarriage-rates-covid-vaccine-false-claims/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "637aec88-cb09-4152-ae1a-af15299d88bb",
+  "tweet_id": "2095627249739268444",
+  "created_at": "2026-09-04 00:21:53.605402+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.israelhayom.com/2026/09/01/satmar-rebbes-trump-oval-office-draft-law/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "995198a8-251b-44f8-a9ff-f6b5dd9cf2e6",
+  "tweet_id": "2095530456800182349",
+  "created_at": "2026-09-03 23:53:41.836143+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://otda.ny.gov/programs/rmp/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 91 chars)"
+ },
+ {
+  "id": "357be72a-9f53-4ac9-9c9d-6260fb440f12",
+  "tweet_id": "2095293705380876764",
+  "created_at": "2026-09-03 21:22:56.927853+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fox9.com/video/fmc-yoec55tglm6n6if0",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 259 chars)"
+ },
+ {
+  "id": "54489b1f-93dd-4792-9056-651678fd7a24",
+  "tweet_id": "2095433873425584490",
+  "created_at": "2026-09-03 20:23:12.224607+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://news.adidas.com/people/adidas-launches-single-shoe-service-for-those-living-with-leg-limb-difference/s/566e1eb1-0e4f-4747-b153-0607890bacef",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "54489b1f-93dd-4792-9056-651678fd7a24",
+  "tweet_id": "2095433873425584490",
+  "created_at": "2026-09-03 20:23:12.224607+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://thej.ca/2026/09/03/idf-veteran-shalev-biton-promotes-adidas-single-shoe-service-in-israel/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 0 chars)"
+ },
+ {
+  "id": "8bd61194-bcf3-4cd4-b84a-30d2dd4dcd81",
+  "tweet_id": "2095523438832058876",
+  "created_at": "2026-09-03 19:51:04.737742+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://checkyourfact.com/2021/01/26/fact-check-hillary-clinton-barack-obama-pizza-arrangement/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "d4ced437-d862-49bf-a4d8-4ecaf48002cb",
+  "tweet_id": "2095543639921295526",
+  "created_at": "2026-09-03 19:21:07.964061+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.fda.gov/food/outbreaks-foodborne-illness/outbreak-investigation-e-coli-o145h28-frozen-blueberries-july-2026",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "3608948d-f711-46d2-bd76-6928f603619c",
+  "tweet_id": "2095548237784449187",
+  "created_at": "2026-09-03 18:22:31.472699+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.forbes.com/sites/stuartanderson/2026/09/01/employment-based-immigration-backlog-exceeds-1-2-million-people/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "f15ac757-19e2-4a5f-ae11-632a0990fe72",
+  "tweet_id": "2095523358310015424",
+  "created_at": "2026-09-03 17:52:23.735202+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.ndtv.com/sports/goat-debate-settled-lionel-messi-breaks-internet-with-receipt-style-instagram-post-12102143",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "f38bbadd-7575-403a-bd2d-5260539ea822",
+  "tweet_id": "2095475703953211831",
+  "created_at": "2026-09-03 17:21:14.381421+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.whitehouse.gov/briefings-statements/p20260902-6500-signed-into-law/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "01a6fbe0-ec67-4592-aa10-14fe84656e58",
+  "tweet_id": "2095502497011966281",
+  "created_at": "2026-09-03 16:54:21.780674+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.instagram.com/p/Dc1I90DjTvA/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 285 chars)"
+ },
+ {
+  "id": "e5ac5b01-2909-471a-8d95-13acb0a3de11",
+  "tweet_id": "2095213414490780114",
+  "created_at": "2026-09-03 16:23:36.735238+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://jrocknews.com/2021/02/interview-cdawgva-visual-kei-star-acme.html",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 84 chars)"
+ },
+ {
+  "id": "654840de-169d-4d2b-80b3-87f08611d96c",
+  "tweet_id": "2095359798413791714",
+  "created_at": "2026-09-03 15:55:41.605205+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.tiktok.com/@cierra_mistt",
+  "kind": "Fetch failed",
+  "reason": "thin content (wayback, 127 chars)"
+ },
+ {
+  "id": "4aad02d8-07b7-45c0-84dc-cfe37658a21a",
+  "tweet_id": "2095357326911791107",
+  "created_at": "2026-09-03 15:51:47.666092+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nytimes.com/2026/08/27/climate/nepal-flooding-climate-change.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "faca0604-ce8e-4d40-92bd-631d8bb03b0d",
+  "tweet_id": "2095448883463602660",
+  "created_at": "2026-09-03 15:24:26.920803+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nexusmods.com/reddeadredemption2/videos/2560",
+  "kind": "Fetch failed",
+  "reason": "thin content (browser, 240 chars)"
+ },
+ {
+  "id": "476fa583-65a5-49d1-8d90-0fff3e5f2559",
+  "tweet_id": "2095232858252009664",
+  "created_at": "2026-09-03 14:24:08.363459+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.timescolonist.com/world/king-charles-iii-makes-first-address-following-queens-death-read-the-full-transcript-5807183",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "476fa583-65a5-49d1-8d90-0fff3e5f2559",
+  "tweet_id": "2095232858252009664",
+  "created_at": "2026-09-03 14:24:08.363459+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.boomlive.in/fact-check/deepfake-king-charles-donald-trump-iran-airstrikes-viral-video-25662",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "494453ae-c602-4bc2-be81-d174704cfa77",
+  "tweet_id": "2095246157848965563",
+  "created_at": "2026-09-03 09:51:16.137627+00",
+  "outcome": "candidate",
+  "outcome_reason": null,
+  "url": "https://telegram.me/aukrop/893",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 30 chars)"
+ },
+ {
+  "id": "936839fc-dca4-450c-9afc-dc85c021d69d",
+  "tweet_id": "2095301026891039156",
+  "created_at": "2026-09-03 09:20:40.704145+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.ladbible.com/entertainment/celebrity/kim-kardashian-north-west-tiktok-face-tattoos-077180-20251022",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "6eeba88f-df52-4055-b7f9-c5bf7444aa18",
+  "tweet_id": "2095213282525425819",
+  "created_at": "2026-09-03 08:21:23.372491+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.espn.com/nfl/story/_/id/49794143/travis-kelce-taylor-swift-dog-tommy-hilfiger-kansas-city-chiefs-samoyed",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "76f7bc58-3509-4b98-b16e-2c87dbdec05e",
+  "tweet_id": "2094849740785508466",
+  "created_at": "2026-09-03 08:21:22.973602+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.theguardian.com/us-news/2022/jun/30/killings-of-black-women-five-findings-investigation",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "d6407516-ff67-41ae-8458-a58ec8fe3c82",
+  "tweet_id": "2095215802836508773",
+  "created_at": "2026-09-03 05:21:05.483943+00",
+  "outcome": "candidate",
+  "outcome_reason": null,
+  "url": "https://www.usnews.com/news/world/articles/2026-09-02/ceuta-residents-call-for-calm-as-spain-rallies-over-enclaves-migrant-crisis",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "948d30a0-5730-467a-98ac-c9193e69a7e8",
+  "tweet_id": "2095298470064132106",
+  "created_at": "2026-09-03 04:22:13.178609+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.minneapolismn.gov/news/2026/august/shooting-sept-2/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "e511c37b-916f-48d0-996c-da32f12151d5",
+  "tweet_id": "2095023917245358460",
+  "created_at": "2026-09-03 01:55:21.978074+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://sustainability.google/operating-sustainably/water/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "4e445697-c10c-4f6e-ac62-8cd312acc8dd",
+  "tweet_id": "2095152466551799999",
+  "created_at": "2026-09-03 01:54:53.65774+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.manutd.com/en/teams/under-21s-team/chido-obi",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b83e8f46-2d72-4dcd-886e-3a84ea8ab51b",
+  "tweet_id": "2095279051976155217",
+  "created_at": "2026-09-03 00:20:42.247209+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://factcheck.afp.com/doc.afp.com.98NQ2NQ",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "78f88dbb-0ad9-49df-bb7e-dbe0c1f12947",
+  "tweet_id": "2094832387524063739",
+  "created_at": "2026-09-02 22:51:42.22952+00",
+  "outcome": "rejected",
+  "outcome_reason": "low_evaluation_score",
+  "url": "https://www.fbi.gov/news/speeches-and-testimony/director-wray-s-remarks-at-press-briefing-on-butler-pennsylvania-assassination-attempt-071424",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "6192940c-3527-4950-95e3-0249a2b8e681",
+  "tweet_id": "2095211031677030523",
+  "created_at": "2026-09-02 21:22:55.086027+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.thegamer.com/mario-party-6-day-night-cycle-explained/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "ed101a14-4917-493c-8095-8f73fe5d76dd",
+  "tweet_id": "2095214260947173445",
+  "created_at": "2026-09-02 21:22:54.805663+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://eternityaccountants.com/are-taxi-drivers-self-employed/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "e2e69f37-74c0-4a5c-89b1-6d2aee14b579",
+  "tweet_id": "2095234426930082037",
+  "created_at": "2026-09-02 20:51:53.160343+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://tvbrics.com/en/news/brics-are-expected-to-contribute-more-than-50-of-global-gdp-by-2030/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "4b30aabd-729f-4b21-ac92-1648df40574d",
+  "tweet_id": "2095149376570278102",
+  "created_at": "2026-09-02 20:51:52.872367+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.britannica.com/topic/Raiders-of-the-Lost-Ark",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "862bb9d8-36f0-4a81-be0b-ac9a7e36c43f",
+  "tweet_id": "2095142420702773287",
+  "created_at": "2026-09-02 18:51:34.3704+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.transfermarkt.com/oscar/rueckennummern/spieler/85314",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "862bb9d8-36f0-4a81-be0b-ac9a7e36c43f",
+  "tweet_id": "2095142420702773287",
+  "created_at": "2026-09-02 18:51:34.3704+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.transfermarkt.com/ross-barkley/rueckennummern/spieler/131978",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "7968f470-2857-4c17-80fc-f62732e5edf7",
+  "tweet_id": "2095114748778168414",
+  "created_at": "2026-09-02 17:54:09.807374+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.shutterstock.com/video/clip-1106374935-dhaka-bangladesh---july-19-2023-purbachal",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "4524945f-3647-4bdc-85e5-42de68f09814",
+  "tweet_id": "2094969078859657342",
+  "created_at": "2026-09-02 17:52:11.05098+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.forbes.com/sites/news/2026/09/01/what-to-know-about-the-trees-trump-is-cutting-down-around-dc/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9f3ec22c-11e3-4eb5-adac-2b749cae4bf7",
+  "tweet_id": "2094995903757103450",
+  "created_at": "2026-09-02 17:21:50.222246+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://athlonsports.com/wnba/indiana-fever/aliyah-boston-comments-paige-bueckers-action-toward-caitlin-clark",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "1b4ca233-59f0-432b-850f-f8d174a49607",
+  "tweet_id": "2094859851461513436",
+  "created_at": "2026-09-02 16:51:06.954326+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fsis.usda.gov/inspection/import-export/import-guidance/fsis-import-procedures-meat-poultry-egg-products",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "f288954f-b7ee-40d8-bfde-b28775008440",
+  "tweet_id": "2095156572557078686",
+  "created_at": "2026-09-02 16:30:02.224796+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://mostpolicyinitiative.org/science-note/data-center-water-use/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 0 chars)"
+ },
+ {
+  "id": "71579029-9096-4fc4-b7f0-be46dd09f3f4",
+  "tweet_id": "2095019121385873696",
+  "created_at": "2026-09-02 15:52:41.076063+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://kojiki.kokugakuin.ac.jp/about-kojiki/outline/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "e7766a91-0384-4c91-8b0a-7645ab63147f",
+  "tweet_id": "2099430165168177313",
+  "created_at": "2026-09-14 15:29:06.534758+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.rte.ie/news/politics/2026/0617/1578882-eu-international-protection/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9b50e19b-2474-4408-ad57-3cea9618a319",
+  "tweet_id": "2099378747988132103",
+  "created_at": "2026-09-14 14:57:53.08257+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://ew.com/james-mcavoy-reacts-to-christopher-abbott-x-men-casting-12115787",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "964a5da3-2e28-4199-a976-bcc06822751e",
+  "tweet_id": "2099479953720979868",
+  "created_at": "2026-09-14 14:21:27.099023+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.marketscreener.com/news/iranian-arms-and-advice-helped-yemen-s-houthis-seize-key-red-sea-city-sources-say-cefdedbd18df525",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "d7cc368b-5ba7-4964-869f-efb8f4a52adb",
+  "tweet_id": "2099249007570898949",
+  "created_at": "2026-09-14 09:22:58.89123+00",
+  "outcome": "rejected",
+  "outcome_reason": "below_bar",
+  "url": "https://www.reuters.com/fact-check/woman-speaking-about-pandemic-preparedness-soft-coup-is-not-who-official-2024-12-24/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 401 (last attempt: browser)"
+ },
+ {
+  "id": "512d0851-ae43-4f60-b70a-2a7c6d59affc",
+  "tweet_id": "2099274399052353989",
+  "created_at": "2026-09-14 09:22:58.870091+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reuters.com/world/africa/uber-exit-nigeria-after-12-years-operations-2026-09-02/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 401 (last attempt: browser)"
+ },
+ {
+  "id": "94203520-8184-4a70-a588-600bf2ccd99f",
+  "tweet_id": "2099295458375913896",
+  "created_at": "2026-09-14 09:22:58.492213+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/nfl/game/_/gameId/401872923/saints-lions",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "fdbb8b79-9ccc-4460-9e28-4b39b2340065",
+  "tweet_id": "2099296046262206618",
+  "created_at": "2026-09-14 07:59:01.047769+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.facebook.com/story.php/?story_fbid=112345678901234",
+  "kind": "Fetch failed",
+  "reason": "thin content (mobile, 87 chars)"
+ },
+ {
+  "id": "62dfca69-39cb-45de-8241-44840f529199",
+  "tweet_id": "2099233597286678544",
+  "created_at": "2026-09-14 01:25:16.416189+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/PlayWolverine/comments/1wfhjl0/destin_legarie_on_wolverine_qte_autocomplete/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "6f589360-5272-41b9-a45b-9759ce76bc0c",
+  "tweet_id": "2099231396568916438",
+  "created_at": "2026-09-14 01:22:46.395238+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.bloomberg.com/news/articles/2026-09-13/xi-pitches-his-ai-vision-at-brics-summit-as-china-duels-with-us",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "7fe3da87-3d16-471f-b4e4-aab9ca999dac",
+  "tweet_id": "2099180586858393814",
+  "created_at": "2026-09-14 00:22:58.192345+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://allears.net/the-history-of-walt-disney-world-tickets-part-1/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "ddf3b982-6a41-4a99-b1fb-bf667689201e",
+  "tweet_id": "2099118916282810552",
+  "created_at": "2026-09-13 19:26:50.914707+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.dallasnews.com/news/politics/article/sen-john-cornyn-condemns-bo-french-ut-fans-22429853.php",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 229 chars)"
+ },
+ {
+  "id": "7722dbb2-010c-4b54-a161-3e52e22fb681",
+  "tweet_id": "2099103328370372885",
+  "created_at": "2026-09-13 19:21:53.620223+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/news/morning-mix/wp/2015/03/11/dzhokhar-tsarnaevs-scrawled-message-we-muslims-are-one-body-you-hurt-one-you-hurt-us-all/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "681285c7-b705-4439-a355-8493a4979c5e",
+  "tweet_id": "2099094267331248619",
+  "created_at": "2026-09-13 14:52:06.868687+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://caselaw.findlaw.com/court/us-dc-circuit/294948.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "083f2127-9384-4f07-9230-aeb703b1303a",
+  "tweet_id": "2098911745163084276",
+  "created_at": "2026-09-13 08:22:28.41714+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tesla.com/roadster",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "006998dd-47db-4433-8d3b-74634c17a26a",
+  "tweet_id": "2098914143093108965",
+  "created_at": "2026-09-13 07:52:29.290522+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://kotaku.com/marvels-wolverine-reviews-fart-gas-insomniac-ps5-yellow-paint-handholding-controversy-release-1851833502",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "09b021d3-a453-4d9e-b26d-78e5cd43d9a5",
+  "tweet_id": "2098960040971411923",
+  "created_at": "2026-09-13 05:20:58.094066+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://factcheck.afp.com/footage-has-circulated-online-2020-reports-about-syrian-aircraft-shot-down-rebels",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "d2248cdd-2669-4490-9433-267bc65cae19",
+  "tweet_id": "2098895322655109204",
+  "created_at": "2026-09-13 01:25:43.17658+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.youtube.com/watch?v=4pu-QHO6VHA",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 190 chars)"
+ },
+ {
+  "id": "69f92f38-62af-48dc-9cfe-b8db93559167",
+  "tweet_id": "2098893477593354504",
+  "created_at": "2026-09-13 00:55:21.632487+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.theifab.com/laws/latest/the-penalty-kick/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 95 chars)"
+ },
+ {
+  "id": "9b8d3d58-b702-43e1-8964-275984f8a8f1",
+  "tweet_id": "2098836316758983152",
+  "created_at": "2026-09-12 23:23:30.434431+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reuters.com/world/china/foreign-holdings-us-treasuries-fall-june-led-by-japan-uk-china-data-shows-2026-08-17/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 401 (last attempt: browser)"
+ },
+ {
+  "id": "9b8d3d58-b702-43e1-8964-275984f8a8f1",
+  "tweet_id": "2098836316758983152",
+  "created_at": "2026-09-12 23:23:30.434431+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cnbc.com/2026/05/19/central-banks-offload-us-treasuries-china-holdings-at-18-year-low.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "e2493823-7399-4993-8100-815c99027cb0",
+  "tweet_id": "2098866637843612021",
+  "created_at": "2026-09-12 22:56:50.960768+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://wagnerathletics.com/sports/football",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 218 chars)"
+ },
+ {
+  "id": "28cce988-e66b-41a6-9039-6110a8a69e70",
+  "tweet_id": "2098807787983647061",
+  "created_at": "2026-09-12 22:27:35.754516+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.nisra.gov.uk/publications/quarterly-employment-survey-historical-tables-march-2026",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 187 chars)"
+ },
+ {
+  "id": "8ae7ed48-074e-4aaa-be40-66ce24b18f19",
+  "tweet_id": "2098824161808302574",
+  "created_at": "2026-09-12 21:54:05.501323+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://revolt.tv/article/2024-10-29/50-cent-reveals-advice-he-gave-lil-durk-amid-murder-for-hire-arrest/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "8187b192-0aca-44ac-ab52-ca44db7cf270",
+  "tweet_id": "2098565200165458107",
+  "created_at": "2026-09-12 18:54:35.156473+00",
+  "outcome": "candidate",
+  "outcome_reason": null,
+  "url": "https://www.nbcboston.com/news/local/lindsay-clancy-holdout-juror-had-history-of-domestic-violence-allegations/4013408/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9a15293a-0f90-41ff-8a92-dfa6690efa2e",
+  "tweet_id": "2098497367922061489",
+  "created_at": "2026-09-12 17:24:45.031145+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.thepress.co.nz/nz-news/350288144/kiwi-students-join-global-pro-palestine-protests",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 9 chars)"
+ },
+ {
+  "id": "3deea7d7-146f-439a-8294-7994c265a47d",
+  "tweet_id": "2098565222889894234",
+  "created_at": "2026-09-12 11:55:58.29061+00",
+  "outcome": "candidate",
+  "outcome_reason": null,
+  "url": "https://www.nbclosangeles.com/news/local/verdict-lil-durk-murder-trial-beverly-center-shooting/3940052/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "3deea7d7-146f-439a-8294-7994c265a47d",
+  "tweet_id": "2098565222889894234",
+  "created_at": "2026-09-12 11:55:58.29061+00",
+  "outcome": "candidate",
+  "outcome_reason": null,
+  "url": "https://www.tmz.com/2026/09/11/lil-durk-found-not-guilty/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "718b147c-889d-4157-bd7c-dec645b0b379",
+  "tweet_id": "2098613070847267117",
+  "created_at": "2026-09-12 09:22:51.371178+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/BeAmazed/comments/1we5e1p/a_double_rainbow_appeared_over_new_york_city_on/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "3f2f983a-510b-48f2-acbf-49b187d87576",
+  "tweet_id": "2098358985241862303",
+  "created_at": "2026-09-12 09:21:29.570079+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.essence.com/love/big-sean-proposal-jhene-aiko-instagram-live/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9262da8a-d51e-4917-a22a-c56123c2d7e7",
+  "tweet_id": "2098494413701828918",
+  "created_at": "2026-09-12 08:52:06.937704+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.rwjbh.org/patient-stories/monmouth-medical-center/more-than-the-baby-blues/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "5e13777b-5899-4d50-bf3c-3844d7787704",
+  "tweet_id": "2098492737318228232",
+  "created_at": "2026-09-12 07:56:21.773943+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://infomemo.theocc.com/infomemos?number=56035",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "f8283f19-8b50-43a6-85d9-dd91a51358d1",
+  "tweet_id": "2098414313752928380",
+  "created_at": "2026-09-12 07:54:12.368191+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://kotaku.com/marvels-wolverine-fart-gas-debate-insomniac-ps5-1851645065",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b6ae0e84-7715-4630-92d2-d48ec1feccaa",
+  "tweet_id": "2098641675786809515",
+  "created_at": "2026-09-12 07:51:36.597954+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.pressreader.com/india/hindustan-times-chandigarh/20191012/281913069869645",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 60 chars)"
+ },
+ {
+  "id": "361075eb-9c8c-4e2c-a5ba-ee50a1d47051",
+  "tweet_id": "2098366681420615869",
+  "created_at": "2026-09-12 07:24:37.208645+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.transfermarkt.us/dominik-szoboszlai/profil/spieler/451276",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "6e7d07db-9e12-4097-b705-863a2b7cc95e",
+  "tweet_id": "2098477718652498374",
+  "created_at": "2026-09-12 05:53:02.777075+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.aol.com/articles/wish-never-got-politics-says-172907294.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "ad256a50-4c1d-4b36-9e1d-724adcf3a7a0",
+  "tweet_id": "2098580060379001142",
+  "created_at": "2026-09-12 05:26:16.372427+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tmz.com/2025/06/20/kim-zolciak-kroy-biermanns-parenting-plan-for-summer-revealed/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "aa0417aa-7b09-47a7-bff2-64b2cc5bef3d",
+  "tweet_id": "2098557198448152662",
+  "created_at": "2026-09-12 05:25:59.634319+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fishtank.live/clip/303908",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 86 chars)"
+ },
+ {
+  "id": "312a0e7d-502a-45f9-a5d2-7cb55f4cbc13",
+  "tweet_id": "2098561884655935977",
+  "created_at": "2026-09-12 05:23:24.154765+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.gettyimages.com/photos/trump-epstein",
+  "kind": "Fetch failed",
+  "reason": "thin content (mobile, 216 chars)"
+ },
+ {
+  "id": "21d0d5b5-1c3c-4793-b41d-9b049c5667b9",
+  "tweet_id": "2098569733993804247",
+  "created_at": "2026-09-12 05:23:23.972451+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nbclosangeles.com/news/local/verdict-lil-durk-murder-trial-beverly-center-shooting/3940052/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "fada2bc0-1644-4fe2-8ca2-7391fe6515aa",
+  "tweet_id": "2098550204249289215",
+  "created_at": "2026-09-12 05:23:23.946536+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://thespun.com/wnba/sophie-cunningham-makes-surprising-dating-life-announcement",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "d3c654f5-c86a-4217-ad8e-0be6d3153553",
+  "tweet_id": "2098470168892465646",
+  "created_at": "2026-09-12 04:56:22.090324+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fbi.gov/history/famous-cases/the-fbi-and-september-11",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "07c1c828-0c5a-4309-a1bc-5897d16c7933",
+  "tweet_id": "2098568743789953165",
+  "created_at": "2026-09-12 04:27:34.663326+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://direct.playstation.com/en-us/buy-accessories/dualsense-wireless-controller-grand-theft-auto-vi-black-limited-edition-for-ps5-pc-mac-mobile",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "7e863015-bc43-4f44-85fd-8f0e2e8825d7",
+  "tweet_id": "2098413828484845779",
+  "created_at": "2026-09-12 03:56:02.338957+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.magnumphotos.com/newsroom/religion/pilgrimage-to-uman/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b9fd1e26-03f6-49cd-9b16-7cc5ebce0758",
+  "tweet_id": "2098533410792751386",
+  "created_at": "2026-09-12 03:51:42.872132+00",
+  "outcome": "candidate",
+  "outcome_reason": null,
+  "url": "https://kansasreflector.com/2026/07/13/four-years-after-value-them-both-kansas-abortion-rights-are-back-on-the-ballot-aug-4/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "10c0e66f-b450-446e-ae00-6b4056f3115a",
+  "tweet_id": "2098570788526047626",
+  "created_at": "2026-09-12 03:27:41.027703+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nfl.com/news/lions-trade-rb-d-andre-swift-to-eagles-after-drafting-alabama-s-jahmyr-gibbs-in-ro",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a0c022ff-f039-4a50-ba1a-2093cb15d2e4",
+  "tweet_id": "2098567226102104345",
+  "created_at": "2026-09-12 03:22:19.165591+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.nbclosangeles.com/video/news/local/lil-durk-not-guilty-murder-for-hire-trial/3940972/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "208c9691-9947-4ecf-aa93-5f0001baa198",
+  "tweet_id": "2098437911494480145",
+  "created_at": "2026-09-12 02:53:09.969057+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nps.gov/flni/learn/historyculture/frequently-asked-questions.htm",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 149 chars)"
+ },
+ {
+  "id": "b433cc3f-71f6-4add-84f6-7a098c3b571b",
+  "tweet_id": "2098501507725611300",
+  "created_at": "2026-09-12 01:58:11.090745+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.aramco.com/en/news-media/news/2026/aramco-announces-second-quarter-and-half-year-2026-results",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "8816d384-b848-4fe4-bd82-16b0a8e08353",
+  "tweet_id": "2098416589385216495",
+  "created_at": "2026-09-12 01:52:28.782442+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tmz.com/2026/08/14/pinkchyu-says-famous-musician-contacted-her-after-drake-dating-show/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9607aa4c-7598-4a8c-98b4-255c46e28840",
+  "tweet_id": "2098406373226856759",
+  "created_at": "2026-09-12 00:52:50.139441+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/opinions/2026/06/11/clinton-bush-trump-turn-80-what-summer-1946-brought/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "4c24fdbc-1f5a-42c6-9089-81486764664d",
+  "tweet_id": "2098297029227327548",
+  "created_at": "2026-09-12 00:32:36.230154+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tms.org/pubs/journals/jom/0112/eagar/eagar-0112.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "81357ca2-1201-41bc-b943-59c4426b1e61",
+  "tweet_id": "2098514807217586260",
+  "created_at": "2026-09-12 00:32:18.416008+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.purexbox.com/news/2026/09/sony-dropped-kojimas-physint-over-budget-profits-and-timed-exclusivity-concerns-sources-say",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "a172b3c6-0722-44b8-9986-d1a9fcf7131c",
+  "tweet_id": "2098498649059893385",
+  "created_at": "2026-09-11 23:22:35.182343+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://newtools.cira.state.tx.us/upload/page/7064/OfficialCanvassReport11-19-2024.pdf",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "a172b3c6-0722-44b8-9986-d1a9fcf7131c",
+  "tweet_id": "2098498649059893385",
+  "created_at": "2026-09-11 23:22:35.182343+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://lrl.texas.gov/legeleaders/members/memberdisplay.cfm?memberID=5911",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "1894ef38-8d7a-4f23-8a3f-4d04fa9b35b6",
+  "tweet_id": "2098475766275051841",
+  "created_at": "2026-09-11 21:53:03.367628+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://vault.fbi.gov/9-11-attacks-investigation-and-related-materials/9-11-images/9-11-pentagon-debris-1",
+  "kind": "Fetch failed",
+  "reason": "thin content (browser, 32 chars)"
+ },
+ {
+  "id": "064061bb-fcbe-43f5-9295-45a0e836f40a",
+  "tweet_id": "2098196019163078971",
+  "created_at": "2026-09-11 21:25:51.823278+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.premiumtimesng.com/regional/north-central/642567-gunmen-attack-teenage-herder-cut-off-his-hands-in-niger-state.html",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 5 chars)"
+ },
+ {
+  "id": "064061bb-fcbe-43f5-9295-45a0e836f40a",
+  "tweet_id": "2098196019163078971",
+  "created_at": "2026-09-11 21:25:51.823278+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://thewhistler.ng/farmer-attacks-12-year-old-fulani-herder-in-niger-state-cuts-off-his-hands/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "8acf17e5-77f6-46e3-badb-cbcf026c5807",
+  "tweet_id": "2098445795242439116",
+  "created_at": "2026-09-11 19:55:27.441947+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/worldcup/comments/1ufnmy5/sea_of_orange_in_downtown_kansas_city_this_morning/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "2ac6a261-520e-412d-8de4-54c83f2ab6e1",
+  "tweet_id": "2098366744175710430",
+  "created_at": "2026-09-11 19:53:15.723108+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.totalprosports.com/wwe/liv-morgan-wardrobe-mishap-wwe-raw/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "893c9092-27ec-433e-ac85-3b49124a5144",
+  "tweet_id": "2098340269208772898",
+  "created_at": "2026-09-11 17:22:41.248843+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.redcrossblood.org/donate-blood/how-to-donate/eligibility-requirements/alphabetical-listing.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "893c9092-27ec-433e-ac85-3b49124a5144",
+  "tweet_id": "2098340269208772898",
+  "created_at": "2026-09-11 17:22:41.248843+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fda.gov/consumers/consumer-updates/have-you-given-blood-lately",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "7282f8ab-2323-44cb-9121-caafa065899e",
+  "tweet_id": "2098390503482179836",
+  "created_at": "2026-09-11 16:52:40.580912+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.911memorial.org/remember/history/personal-stories/welles-crowther",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "f711b886-5fae-4ef6-b483-ec823beeaeb3",
+  "tweet_id": "2098418657961320782",
+  "created_at": "2026-09-11 16:52:40.580415+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://truthsocial.com/@realDonaldTrump",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "eb58dfdd-2744-4b1c-8df9-e4f2d3518a55",
+  "tweet_id": "2098259780754169857",
+  "created_at": "2026-09-11 15:23:05.675259+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cleveland.com/court-justice/2024/06/woman-accused-of-killing-3-year-old-at-north-olmsted-giant-eagle-was-released-from-jail-days-earlier.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "7e503f86-f0db-44cc-9f8d-ef0faa4bf63a",
+  "tweet_id": "2098284947228504434",
+  "created_at": "2026-09-11 15:23:05.667538+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.washingtonpost.com/archive/lifestyle/2005/10/03/and-she-loved-him/008ecd42-1d14-4a48-a7d5-29ca5c684862/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "8f09c5d4-1f77-4b9c-8cb2-ce2a69ae6416",
+  "tweet_id": "2098313090811252883",
+  "created_at": "2026-09-11 12:54:32.779927+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.espncricinfo.com/story/warner-kohli-dhawan-fined-for-altercation-810147",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "e9dc6b2d-a5c7-4f8c-8b7a-d28c3f02851f",
+  "tweet_id": "2098190358286860357",
+  "created_at": "2026-09-11 12:52:00.831825+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tmz.com/2026/08/14/drake-dating-show-pinkchyu-another-celebrity-barking-dms/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "8dfdc355-bd8f-4c91-b532-e11cce45a525",
+  "tweet_id": "2098227324487368966",
+  "created_at": "2026-09-11 10:21:15.906293+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.defense.gov/News/News-Stories/Article/Article/3741245/kabul-airport-attack-review-reaffirms-initial-findings-identifies-attacker/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "71e4948a-da3e-4e79-8d2d-b77975eda85f",
+  "tweet_id": "2098231229757988956",
+  "created_at": "2026-09-11 09:56:42.92193+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.slv.vic.gov.au/explore/our-stories/melbourne-deed",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "cacc3b09-9c88-4d7e-afa7-e8a2a8c35fda",
+  "tweet_id": "2098109514260119713",
+  "created_at": "2026-09-11 09:27:37.190757+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtontimes.com/news/2026/sep/10/jimmy-kimmel-says-trump-team-forced-james-talarico-interview/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "332883df-99bf-4ffe-b9e3-ea6907fbebdd",
+  "tweet_id": "2098235508950491509",
+  "created_at": "2026-09-11 07:52:20.045268+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/nfl/recap/_/gameId/401872657",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "ab168cd7-7142-4e16-9d6b-bcbf8067052a",
+  "tweet_id": "2098017473391890553",
+  "created_at": "2026-09-11 07:21:26.662233+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://people.com/golden-globes-2025-ariana-grande-wears-archival-gown-with-wicked-nod-red-carpet-photos-8710302",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "8948a2fe-7877-4d92-a258-bafa48c4ecf2",
+  "tweet_id": "2098285690731847752",
+  "created_at": "2026-09-11 06:51:34.964844+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://bdnews24.com/bangladesh/0fb7a8d3bf1a",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "4ef2488c-5cf7-4fcb-86a9-0ada6f2a2efa",
+  "tweet_id": "2098023714541486548",
+  "created_at": "2026-09-11 05:59:01.942968+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://kotaku.com/final-fantasy-7-rebirth-install-size-download-preload-1851289668",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "53c593c0-a0a4-4b7a-bec5-d2c3d2914cef",
+  "tweet_id": "2098004220880334997",
+  "created_at": "2026-09-11 05:52:47.686667+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://time.com/7389146/trump-5000-dividend-republicans-midterms/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "53c593c0-a0a4-4b7a-bec5-d2c3d2914cef",
+  "tweet_id": "2098004220880334997",
+  "created_at": "2026-09-11 05:52:47.686667+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cato.org/blog/5000-check-tariffs-cant-cover",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 0 chars)"
+ },
+ {
+  "id": "c3d19b75-9cab-435d-bb22-e47c85613109",
+  "tweet_id": "2098058438391566352",
+  "created_at": "2026-09-11 05:25:35.893012+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbo.gov/publication/62105",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "d38d2a6c-332c-488d-ac77-de18fb09000e",
+  "tweet_id": "2098142199716221433",
+  "created_at": "2026-09-11 04:31:15.84424+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.icj-cij.org/sites/default/files/case-related/192/192-20240126-ord-01-00-en.pdf",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "70280ccf-7fd7-4ecd-bb70-585170d4f563",
+  "tweet_id": "2098190532010811554",
+  "created_at": "2026-09-11 03:23:25.040339+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.rev.com/blog/transcripts/donald-trump-rally-in-philadelphia-transcript",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "c58f7524-ede7-4336-9507-8f8a2ae7a1ee",
+  "tweet_id": "2097935305999524179",
+  "created_at": "2026-09-11 02:53:43.283722+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.youtube.com/watch?v=g4qjH2ONjDY",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 190 chars)"
+ },
+ {
+  "id": "25d49d9b-31c0-4a54-aa27-4153eb22cbeb",
+  "tweet_id": "2098189263397376464",
+  "created_at": "2026-09-11 02:51:31.04159+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbo.gov/publication/61877",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b42f4594-8c34-4636-9ad9-3bd64b7936af",
+  "tweet_id": "2098206576821903849",
+  "created_at": "2026-09-11 02:51:31.039175+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbo.gov/publication/62105",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "482ca1d5-8c77-4caa-8be2-7d9dde38ef83",
+  "tweet_id": "2098152930348278000",
+  "created_at": "2026-09-11 00:53:01.680617+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://investinglive.com/news/commodities-unverified-satellite-data-fuels-talk-of-fresh-hit-on-saudi-arabias-east-west-pipeline-20260910/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "317defbf-0f4a-45ab-bc04-be6b7fbe4f85",
+  "tweet_id": "2098052876346294757",
+  "created_at": "2026-09-11 00:22:10.194938+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.albawaba.com/news/houthis-take-control-port-city-mokha-1636831",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 129 chars)"
+ },
+ {
+  "id": "b7f96867-e28b-475c-930c-1782d3366de7",
+  "tweet_id": "2098185818007298206",
+  "created_at": "2026-09-11 00:22:10.139874+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://anthrosource.onlinelibrary.wiley.com/doi/10.1002/sea2.12242",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "c8394ff6-7d3b-4bcc-b881-0accc659d069",
+  "tweet_id": "2098159933812273301",
+  "created_at": "2026-09-10 23:51:37.518909+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbo.gov/publication/62210",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "3c14241b-421a-410a-9a57-1c6ecb328122",
+  "tweet_id": "2098064170231214333",
+  "created_at": "2026-09-10 21:57:55.214938+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.researchgate.net/publication/222394541_How_the_airplane_wing_cut_through_the_exterior_columns_of_the_World_Trade_Center",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "8f8cd58a-a9dc-4599-b12e-4161c08573f9",
+  "tweet_id": "2098057639796093217",
+  "created_at": "2026-09-10 21:53:28.641352+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tmz.com/2026/09/07/adam22-lena-the-plug-separated/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "5c6a3067-25f1-483f-95bd-9d90b77d18bb",
+  "tweet_id": "2097858821481775519",
+  "created_at": "2026-09-10 21:25:41.009117+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/archive/politics/2001/09/11/tv-captured-the-terror-here-and-in-new-york/722bc86a-826b-4894-bb6c-0adfe0ee4559/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "d53ead0f-179a-4aaa-8b5f-6e14bd80f383",
+  "tweet_id": "2098062620083278244",
+  "created_at": "2026-09-10 20:52:23.334284+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.govinfo.gov/content/pkg/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d/pdf/GOVPUB-C13-92ce312a3ca1c064499cfadc37dee26d.pdf",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "336fd3d1-5f58-480a-9fa4-b9dd82005192",
+  "tweet_id": "2098073165041733678",
+  "created_at": "2026-09-10 19:57:25.665922+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.complex.com/music/a/trace-william-cowen/lil-durk-murder-for-hire-trial-verdict-sentencing-possibility",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "ba6d2c50-dd4f-48e4-94fc-5b0149b93603",
+  "tweet_id": "2097998631676837990",
+  "created_at": "2026-09-10 19:52:37.832827+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espncricket.com/series/pakistan-tour-of-india-2012-13-589300/india-vs-pakistan-3rd-odi-589310/full-scorecard",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 44 chars)"
+ },
+ {
+  "id": "c6832c29-613a-4a30-ba71-72a4368300d0",
+  "tweet_id": "2097994455542550946",
+  "created_at": "2026-09-10 17:53:25.468142+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/popculturechat/comments/1wc94ye/lisa_touched_down_in_new_york_city_for_bvlgaris/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "c32a2e2d-b7b2-494a-b0d1-cf0671a47589",
+  "tweet_id": "2097885480020815999",
+  "created_at": "2026-09-10 17:22:56.418144+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.qualcomm.com/smartphones/device-finder/xiaomi-mi-mix-fold",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 65 chars)"
+ },
+ {
+  "id": "1286e467-ed73-4b44-a098-c389919ef2b1",
+  "tweet_id": "2098006620584226928",
+  "created_at": "2026-09-10 14:52:33.904925+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.premiumtimesng.com/entertainment/naija-fashion/908401-regina-daniels-didnt-reconcile-with-ned-nwoko-mother-clarifies.html",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 5 chars)"
+ },
+ {
+  "id": "93ad2d39-3a67-4748-8ab0-9199b9b63f97",
+  "tweet_id": "2097913301850001430",
+  "created_at": "2026-09-10 11:55:25.074963+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://gizmodo.com/iphone-duo-hands-on-specs-price-release-date-2000508608",
+  "kind": "Fetch failed",
+  "reason": "thin content (browser, 59 chars)"
+ },
+ {
+  "id": "66ad3e62-dd18-4a13-8894-5436fc8c683e",
+  "tweet_id": "2097927307377721619",
+  "created_at": "2026-09-10 11:52:58.916906+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://blarneycastle.ie/pages/kiss-the-blarney-stone",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "f82fd6bb-9a22-4b2e-a866-7a3285daa662",
+  "tweet_id": "2097960375673131437",
+  "created_at": "2026-09-10 11:51:48.548977+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/soccer/story/_/id/49885184/chelsea-6-3-leeds-united-carabao-cup-morgan-rogers-jokes-deserved-player-match-award-not-cole-palmer",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "c1c01a97-b08a-4438-bf5f-3e6cbe3b00ee",
+  "tweet_id": "2097778318204698927",
+  "created_at": "2026-09-10 09:56:52.861923+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.asianetnewsable.com",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "c0d91bb8-f6f5-416c-86b6-46ec8badedcc",
+  "tweet_id": "2097656339115778098",
+  "created_at": "2026-09-10 09:24:47.330617+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.ctinsider.com/news/article/lindsay-clancy-verdict-watch-friday-juror-inquiry-22417353.php",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 229 chars)"
+ },
+ {
+  "id": "28acc5a2-700c-4a13-a4a5-1468a9aca710",
+  "tweet_id": "2097898456618619122",
+  "created_at": "2026-09-10 09:24:47.057925+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://factcheckarabic.afp.com/doc.afp.com.66E8663",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "28acc5a2-700c-4a13-a4a5-1468a9aca710",
+  "tweet_id": "2097898456618619122",
+  "created_at": "2026-09-10 09:24:47.057925+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://factuel.afp.com/doc.afp.com.64ZD4T3",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "5ee4c3dc-14f2-47eb-9bd5-033f4b797d79",
+  "tweet_id": "2097753955912609899",
+  "created_at": "2026-09-10 07:54:07.165458+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.airuniversity.af.edu/CASI/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "27e834f5-28c1-453c-870f-12d18f2322a2",
+  "tweet_id": "2097850257577214137",
+  "created_at": "2026-09-10 06:57:29.449853+00",
+  "outcome": "rejected",
+  "outcome_reason": "low_materiality_score",
+  "url": "https://www.espn.com/nfl/story/_/id/49886582/seahawks-qb-darnold-injures-hip-opening-drive-vs-patriots",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "31ffc236-1292-48cc-ad71-695c4db923a2",
+  "tweet_id": "2097791924128063943",
+  "created_at": "2026-09-10 06:55:30.316447+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://time.com/6553860/refaat-alareer-poetry-gaza-israel-war/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "2065c47d-1984-4bc7-b206-2ccfc7b526fe",
+  "tweet_id": "2097889197281419432",
+  "created_at": "2026-09-10 05:52:40.466872+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/nfl/game/_/gameId/401772922/patriots-bills",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "671440b9-4ca9-4f02-8871-c0003fefd832",
+  "tweet_id": "2097804608089235510",
+  "created_at": "2026-09-10 03:53:04.176819+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.chabad.org/library/article_cdo/aid/7322665/jewish/What-a-Kohen-Needs-to-Know-About-Ritual-Impurity.htm",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "2cbb0a2e-e5e0-47b8-9edd-be86396fd3e0",
+  "tweet_id": "2097759158921548132",
+  "created_at": "2026-09-10 02:51:52.771489+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.misbar.com/en/factcheck/2025/04/30/simpsons-did-not-predict-global-blackout-april-30-2025",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9073ee78-d2a2-4a93-9e2c-ca26fbabcf86",
+  "tweet_id": "2097770273344774439",
+  "created_at": "2026-09-10 02:25:48.36673+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.sec.gov/news/press/2004-98.htm",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "09d40a7a-0177-466b-9652-ccad22acba4d",
+  "tweet_id": "2097745506139308421",
+  "created_at": "2026-09-10 02:22:39.861628+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.screenskills.com/job-profiles/browse/unscripted-tv/editorial/vision-mixer/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "c7321a25-5669-4618-9968-37a6f1478eb5",
+  "tweet_id": "2097822604392579181",
+  "created_at": "2026-09-10 02:22:38.185436+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.youtube.com/watch?v=kYmZ_rYf630",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 190 chars)"
+ },
+ {
+  "id": "0e54907f-fc95-4a20-99fc-1b139ffb6101",
+  "tweet_id": "2097736227390972070",
+  "created_at": "2026-09-10 01:55:40.153838+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://twstalker.com/yutokanzakireal",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "7ec9f208-3a9a-47f9-88d0-9c6d479ac8a1",
+  "tweet_id": "2097729961213784325",
+  "created_at": "2026-09-10 01:52:29.466893+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.sangbadpratidin.in/sports/others/pole-vault-video-of-95-year-old-woman-goes-viral-people-remembers-flo-meiler/pid/1331199",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "8e847e78-c503-4e83-8503-28d5ed4be6bc",
+  "tweet_id": "2097736725900484974",
+  "created_at": "2026-09-09 20:56:26.350572+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://brandriskpromotions.com/events",
+  "kind": "Fetch failed",
+  "reason": "HTTP 429 (last attempt: browser)"
+ },
+ {
+  "id": "304aba85-be79-4180-8a93-70da2af21ff1",
+  "tweet_id": "2097669198080061751",
+  "created_at": "2026-09-09 20:51:31.639753+00",
+  "outcome": "rejected",
+  "outcome_reason": "daily_limit_reached",
+  "url": "https://www.washingtonpost.com/politics/2026/09/09/trump-natalie-harp-cash-gifts/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "56b682fb-c226-4a9e-9e19-855f83b6367e",
+  "tweet_id": "2097732590115385555",
+  "created_at": "2026-09-09 20:51:31.622516+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts/lmsi-llckofinas-olive-oil-issues-voluntary-recall-its-garlic-mediterranean-infused-extra-virgin",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "41a347ae-ca0b-4511-80e3-ec19205463b3",
+  "tweet_id": "2097467359120228849",
+  "created_at": "2026-09-09 20:22:53.991465+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://abcnews.go.com/Politics/trump-claims-visited-ground-zero-911-rescue-efforts/story?id=41873112",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "891fec4f-f647-4f71-8597-5bd091401fd5",
+  "tweet_id": "2097702532294316433",
+  "created_at": "2026-09-09 20:22:37.675633+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.kyivpost.com/post/38743",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "5626de14-9abf-4e96-b7f4-2906dac5eb47",
+  "tweet_id": "2097660929055858996",
+  "created_at": "2026-09-09 18:54:02.97449+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://investors.remedygames.com/announcements/remedy-entertainment-enters-agreement-with-rockstar-games-for-new-max-payne-1-2-project/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a78fdb5b-2f3c-4f5a-a176-cc198d4aa84d",
+  "tweet_id": "2097654718868652113",
+  "created_at": "2026-09-09 18:27:05.185641+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.cnbc.com/2026/08/22/us-canada-trade-talks-collapse-ushering-in-wave-of-new-tariffs.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b5146160-8cf4-42f3-8888-4c6d8c6208db",
+  "tweet_id": "2097603481095790752",
+  "created_at": "2026-09-09 18:24:02.289141+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.transfermarkt.us/alvaro-morata/profil/spieler/128223",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "ec57de48-4b0f-4f1e-89cb-748e62e44e12",
+  "tweet_id": "2097634368650985611",
+  "created_at": "2026-09-09 15:52:53.195111+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.indiatvnews.com/entertainment/news/hanuman-ansh-nears-rs-100-crore-as-vishal-chaturvedi-reveals-why-an-ott-platform-rejected-his-film-2026-09-06-1053447",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "cb1ede62-19fc-4ac6-be3e-296f16b7dfce",
+  "tweet_id": "2097511625242575170",
+  "created_at": "2026-09-09 15:52:53.175775+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/politics/2026/09/08/trump-gave-45000-cash-gifts-natalie-harp-two-other-close-aides/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "39b0efd2-d79f-492d-a7fe-e86e3927187f",
+  "tweet_id": "2097641313453650080",
+  "created_at": "2026-09-09 15:21:49.408617+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://timeline.911memorial.org/timeline/10681",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 69 chars)"
+ },
+ {
+  "id": "61150e85-64d2-47de-a59a-f54fb26cef08",
+  "tweet_id": "2097697960301576549",
+  "created_at": "2026-09-09 15:21:49.389312+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/PERSoNA/comments/1wbnkkt/persona_4_revival_announced_and_persona_6_for/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "58afdc0a-be88-4756-9e2c-497fe62c20f4",
+  "tweet_id": "2097639451836985804",
+  "created_at": "2026-09-09 13:51:33.667787+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.belfasttelegraph.co.uk/news/no-novichok-found-as-woman-taken-to-hospital-after-claiming-she-was-in-contact-with-nerve-agent/a/161189703.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b13443a7-251f-4192-b525-6cfc5d162498",
+  "tweet_id": "2097591317731869109",
+  "created_at": "2026-09-09 12:52:24.543529+00",
+  "outcome": "rejected",
+  "outcome_reason": "low_materiality_score",
+  "url": "https://appleinsider.com/articles/26/09/09/rumor-says-foldable-is-iphone-duo-gets-apple-pencil-starts-at-2000",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "8ca1c395-e59d-4104-8c6d-57995d319e61",
+  "tweet_id": "2097407561737580781",
+  "created_at": "2026-09-09 07:53:38.568711+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/dostoevsky/comments/1h5d687/the_origin_of_this_line_you_were_destined_for_me/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "c7af1521-e987-44ec-94cd-d26ff4107ff1",
+  "tweet_id": "2097505426065498313",
+  "created_at": "2026-09-09 06:51:40.758261+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reuters.com/world/middle-east/iran-attacks-us-base-jordan-ships-near-hormuz-after-tankers-sunk-2026-09-09/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 401 (last attempt: browser)"
+ },
+ {
+  "id": "de62c7a9-f755-4d98-aa76-65bc7eb18048",
+  "tweet_id": "2097445154185412668",
+  "created_at": "2026-09-09 06:23:59.069618+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.mass.gov/doc/2120-function-of-the-jury-what-is-evidence-credibility-of-witnesses/download",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "f69497d9-8988-4069-b212-6407e940e3ef",
+  "tweet_id": "2097512353994551305",
+  "created_at": "2026-09-09 04:53:13.269824+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nytimes.com/2026/09/08/us/politics/trump-sept-11-firefighters.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "ffd37e12-b979-4aa6-8509-cd47400f0c7d",
+  "tweet_id": "2097427621147464180",
+  "created_at": "2026-09-09 04:22:09.703891+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.newsweek.com/what-was-trump-doing-after-911-evolution-his-version-events-1950454",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "502310ab-e405-4b07-ac3f-6c34aca4494f",
+  "tweet_id": "2097473598621667624",
+  "created_at": "2026-09-09 03:21:06.580073+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.tmz.com/2026/09/08/jimmy-kimmel-ending-abc-talk-show-next-season/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "d7b815d8-685b-4eb9-a1f8-0c32d657a949",
+  "tweet_id": "2097297138552066340",
+  "created_at": "2026-09-08 22:53:11.212763+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cnet.com/tech/mobile/the-iphone-18-pro-max-could-start-at-1300-an-analyst-predicts-you-can-thank-ramageddon-for-that/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "08f1e98c-6120-4fc7-8535-b933e3c84ae7",
+  "tweet_id": "2097442171875971271",
+  "created_at": "2026-09-08 22:51:13.48093+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.albawaba.com/news/us-bases-jordan-hit-massive-iranian-1636687",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 129 chars)"
+ },
+ {
+  "id": "0e5d7fc5-b9f0-4f0a-98ce-3a43c94b9024",
+  "tweet_id": "2097385888774824271",
+  "created_at": "2026-09-08 21:53:49.872209+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/nfl/team/depth/_/name/cle",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "c3aa12bf-b57a-402a-87c9-41c94a1f34ac",
+  "tweet_id": "2097293575092568228",
+  "created_at": "2026-09-08 21:53:27.418301+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.arsenal.com/news/konsa-delighted-duel-filled-home-debut",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "753841b2-5ad8-4b3d-bf45-728c8c6ead0e",
+  "tweet_id": "2097384712465465821",
+  "created_at": "2026-09-08 21:51:22.009608+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.primetimer.com/features/is-the-north-west-and-ken-carson-story-claim-real-viral-instagram-outburst-over-allowance-being-cut-off-debunked",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "ee71e6ca-9513-4b9a-b270-1aba7ec07cd4",
+  "tweet_id": "2097369459996463265",
+  "created_at": "2026-09-08 20:52:34.82619+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://global.espn.com/football/story/_/id/48184766/agent-manchester-city-erling-haaland-rubbishes-claims-barcelona",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "ee71e6ca-9513-4b9a-b270-1aba7ec07cd4",
+  "tweet_id": "2097369459996463265",
+  "created_at": "2026-09-08 20:52:34.82619+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://elpais.com/expres/2026-09-02/final-del-mercado-de-fichajes-y-final-del-culebron-julian-alvarez-se-queda-en-el-atletico.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "140fdadc-34ba-425c-ba95-c97be26b2b75",
+  "tweet_id": "2097363894696124687",
+  "created_at": "2026-09-08 20:52:34.531107+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.pewresearch.org/race-and-ethnicity/2023/08/16/facts-on-hispanics-of-mexican-origin-in-the-united-states/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "84b3334d-5cb6-48ef-96e2-c7ce175fdc68",
+  "tweet_id": "2097236240630239522",
+  "created_at": "2026-09-08 20:22:13.626809+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://eurweb.com/2025/mel-b-and-eddie-murphys-daughter-embraces-trans-identity/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "cd945734-c708-4a1b-9d98-d9899fd5f48b",
+  "tweet_id": "2097163479811531212",
+  "created_at": "2026-09-08 18:23:30.722859+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.yahoo.com/news/science/articles/posts-falsely-claim-ai-generated-065255776.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "55ac2e49-f306-4eb6-8d18-8822b5738885",
+  "tweet_id": "2097329797965963359",
+  "created_at": "2026-09-08 17:53:04.858072+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.actionvfx.com/blog/godzilla-minus-one-vfx-oscar-on-a-budget",
+  "kind": "Fetch failed",
+  "reason": "HTTP 429 (last attempt: browser)"
+ },
+ {
+  "id": "18d13aba-0dc5-4406-88d1-c746ab0b0866",
+  "tweet_id": "2097206912643223609",
+  "created_at": "2026-09-08 16:53:57.948456+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.barchart.com/story/news/36286277/fact-file-how-sora-s-ai-videos-made-going-viral-easy-and-tips-on-how-to-spot-them",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "97948c57-c836-4d98-b7de-a5eed5026e75",
+  "tweet_id": "2097142391400460705",
+  "created_at": "2026-09-08 15:26:04.298987+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://hypeauditor.com/instagram/jellyroll615/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "1cbecac8-3343-4131-ae6b-9ea86ceef8b9",
+  "tweet_id": "2097275958608719925",
+  "created_at": "2026-09-08 14:22:26.254899+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://en.mediamass.net/people/meryl-streep/deathhoax.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 503 (last attempt: browser)"
+ },
+ {
+  "id": "1e77aa80-56c7-4af2-bcc2-18ae4464a458",
+  "tweet_id": "2097128784637858232",
+  "created_at": "2026-09-08 13:54:13.557312+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://cowboystatedaily.com/2026/08/20/mustang-advocates-say-report-proves-wild-horses-from-wyoming-sent-to-slaughter/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "236b44f4-9538-44a8-904a-11fe69f4bd6b",
+  "tweet_id": "2097261662373892136",
+  "created_at": "2026-09-08 13:23:49.979908+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.lefigaro.fr/culture/la-tour-eiffel-fermee-en-raison-dune-greve-contre-la-mise-a-lecart-du-personnel-feminin-pour-la-visite-d-un-groupe-hindou-20260907",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "da551d17-b3be-403c-b729-44858d139c29",
+  "tweet_id": "2097245054465175644",
+  "created_at": "2026-09-08 12:52:27.087132+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.instituteforgovernment.org.uk/explainer/keir-starmer-need-to-do-first-few-weeks-after-general-election",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "246e99f3-a77c-4835-bfae-b16a97899dfb",
+  "tweet_id": "2096910045229220125",
+  "created_at": "2026-09-08 10:21:21.598291+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/national-security/2025/08/31/trump-gaza-plan-riviera-relocation/",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "1bcdd68f-4274-49b3-ac6b-d79767437756",
+  "tweet_id": "2097101412069175652",
+  "created_at": "2026-09-08 09:22:13.285223+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://en.wikipedia.org/wiki/Higgsfield_AI",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "05cd33a0-771e-445c-b8b2-843794cc9713",
+  "tweet_id": "2097132159693676859",
+  "created_at": "2026-09-08 09:22:13.274163+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.sportskeeda.com/us/streamers/news-n3on-ai-streamer-controversy-explained",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "5d9f3b01-dae0-48b5-b60e-67ef95895708",
+  "tweet_id": "2097031607903461782",
+  "created_at": "2026-09-08 08:51:07.176867+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/soccer/story/_/id/49404995/2026-world-cup-golden-ball-spain-unai-simon-pau-cubarsi",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "1b448c8b-3a06-400f-ac92-388d099e8fed",
+  "tweet_id": "2097088975219392696",
+  "created_at": "2026-09-08 07:21:28.758224+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://fcbayern.com/en/news/2026/05/europes-best-goalscorer-harry-kane-wins-golden-shoe",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "1159d969-3672-4bb1-b613-6217e56ac5ce",
+  "tweet_id": "2096886276259561495",
+  "created_at": "2026-09-08 06:54:11.077713+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://tribuna.com/en/blogs/did-lamine-yamal-really-cut-off-his-dad-after-being-told-to/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "13ad02e4-b9ff-4407-8d71-24ce1d68d422",
+  "tweet_id": "2097118824621649966",
+  "created_at": "2026-09-08 06:52:02.750198+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/CoronavirusCirclejerk/comments/sq5kiv/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "93d5bb50-f4e7-45a7-b365-f315a4d5bfcd",
+  "tweet_id": "2097037729305628979",
+  "created_at": "2026-09-08 06:22:47.499281+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://buffalonews.com/news/barker-admits-affair-with-tv-model/article_2c7cf9de-7143-5af4-b5df-2932beff3871.html",
+  "kind": "Fetch failed",
+  "reason": "thin content (googlebot, 62 chars)"
+ },
+ {
+  "id": "c89d66b5-a95f-4c1b-a76e-a750e1cd123c",
+  "tweet_id": "2097060377729077588",
+  "created_at": "2026-09-08 02:52:14.062252+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.yahoo.com/news/science/articles/posts-falsely-claim-ai-generated-065255776.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "877fbe99-6d23-4450-bb70-0e49486f7c0f",
+  "tweet_id": "2096744138272018435",
+  "created_at": "2026-09-07 22:52:44.997971+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.wkyc.com/article/news/local/ohio/amy-acton-patrick-havas-incident-injured-multiple-people-at-canfield-fair/95-2e4ce697-150e-4e2d-8cf8-26b2389e6682",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "01232957-dfcf-45a5-9dbe-2908b933eaa2",
+  "tweet_id": "2097018638788166082",
+  "created_at": "2026-09-07 22:51:05.993082+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.abc10.com/article/news/local/sacramento/golden-1-center-safety-concerns-rod-wave/103-34e8992f-b258-450f-a7fe-d0ec9c39433e",
+  "kind": "Fetch failed",
+  "reason": "thin content (mobile, 32 chars)"
+ },
+ {
+  "id": "48e028bd-2f49-4ec4-8111-7bb854e86472",
+  "tweet_id": "2096974076342378578",
+  "created_at": "2026-09-07 21:52:04.492385+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.uefa.com/news/02a9-1b32f94c0a5b-096a6058e77a-1000--2026-ballon-d-or-ceremony-date-and-host-city-announced/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "33c29b88-2052-4936-b229-40d165ed389e",
+  "tweet_id": "2096981352545435677",
+  "created_at": "2026-09-07 18:54:42.23473+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/nfl/story/_/id/47027215/chiefs-ot-simmons-keeping-reason-22-day-absence-house",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "36dd3df2-a8d7-4d65-a322-4e801cd4c2c7",
+  "tweet_id": "2096968923417620644",
+  "created_at": "2026-09-07 17:53:02.260852+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.imdb.com/news/ni62704859/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "32749f46-9116-4522-a73b-de77355e5f09",
+  "tweet_id": "2096893533672144976",
+  "created_at": "2026-09-07 17:23:41.613614+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.britannica.com/event/Battle-of-the-Chosin-Reservoir",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "b7e566f2-18ac-4d58-bf47-b3a5f95c29da",
+  "tweet_id": "2096716416741458109",
+  "created_at": "2026-09-07 16:24:15.023306+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.washingtonpost.com/business/2026/09/05/greece-economy-mitsotakis-elections-cost-of-living/72e3bb88-a95f-11f1-9e38-f705d048bd5a_story.html",
+  "kind": "Fetch error",
+  "reason": "all 6 attempts failed"
+ },
+ {
+  "id": "8e0d6a7f-1c4e-43d5-aabb-aef4784ca11a",
+  "tweet_id": "2096620186329571710",
+  "created_at": "2026-09-07 15:22:22.821519+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.cbpp.org/research/official-poverty-measure-masks-gains-made-over-last-50-years",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "dceb73bc-c159-4318-ac99-df7bd31a8a8c",
+  "tweet_id": "2096813211483771346",
+  "created_at": "2026-09-07 14:51:04.68857+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.facebook.com/RivalsMods1/",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 11 chars)"
+ },
+ {
+  "id": "dceb73bc-c159-4318-ac99-df7bd31a8a8c",
+  "tweet_id": "2096813211483771346",
+  "created_at": "2026-09-07 14:51:04.68857+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.patreon.com/cw/RivlasMods1",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "0d96cdc4-d134-4946-b202-a0af0f591bc4",
+  "tweet_id": "2096616147726786990",
+  "created_at": "2026-09-07 12:21:47.072346+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://eastcountymagazine.org/trump-order-targets-wolf-protections-as-california-wolf-center-pushes-coexistence/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "4aeb2032-2824-4c11-b581-18a5356e7134",
+  "tweet_id": "2096832929939009706",
+  "created_at": "2026-09-07 11:22:32.092215+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://www.niigata-nippo.co.jp/articles/-/866168",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "f4cb3c14-5821-43bc-bf3a-e29ca7668508",
+  "tweet_id": "2096659947815682454",
+  "created_at": "2026-09-07 10:21:50.94327+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://ja.wikipedia.org/wiki/%E3%83%84%E3%83%AB%E3%83%8D_-%E9%A2%A8%E2%81%B4%E9%AB%98%E6%A0%A1%E2%81%B3%E9%81%93%E9%83%A8-",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "4947d5ad-c324-44b7-8202-004e431332b9",
+  "tweet_id": "2096731896776397015",
+  "created_at": "2026-09-07 10:21:50.86793+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nipc.gov.ng/wp-content/uploads/2025/07/Nigeria-Tax-Act-2025.pdf",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "76cac4f7-ac55-4646-8020-2dddf9b31386",
+  "tweet_id": "2096778555472691342",
+  "created_at": "2026-09-07 09:53:49.672808+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.mayoclinic.org/diseases-conditions/back-pain/expert-answers/inversion-therapy/faq-20057951",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "9b924729-4068-477b-a757-e4d91ed9dbae",
+  "tweet_id": "2096568193565290621",
+  "created_at": "2026-09-07 09:21:17.62389+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.railwaygazette.com/traction-rolling-stock/2026/03/11/portugal-ups-alstom-fleet-order-to-over-150-units-in-countrys-biggest-ever-train-investment/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "5ffbb0e6-48ba-4cc2-8a45-6f0539ba5859",
+  "tweet_id": "2096742515739148435",
+  "created_at": "2026-09-07 08:51:24.62868+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.theguardian.com/uk-news/2026/sep/06/hundreds-of-far-right-protesters-descend-on-portsmouth-after-small-boat-arrival",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "cfebe524-7896-42b9-abbe-885eaebc3cbb",
+  "tweet_id": "2096568088573456613",
+  "created_at": "2026-09-07 08:23:17.905441+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.facebook.com/ItsGoneViralOfficial",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 3 chars)"
+ },
+ {
+  "id": "66b5c375-9eec-41eb-a0bb-05076b8e6063",
+  "tweet_id": "2096356447701647691",
+  "created_at": "2026-09-07 07:52:55.842868+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/ufc/comments/j3ey5i",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "50f929af-69ed-46c0-acb3-d89445690643",
+  "tweet_id": "2096662359331013052",
+  "created_at": "2026-09-07 07:21:39.14178+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.reddit.com/r/WizardingWorld/comments/1f9j87d/the_hogwarts_feast_we_remember_isnt_quite_the/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "4fa63507-3ffd-45ab-abcf-57be9b86598d",
+  "tweet_id": "2096702225003200786",
+  "created_at": "2026-09-07 06:56:29.762737+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://news.sky.com/story/140-migrants-in-one-small-boat-intercepted-in-english-channel-sky-news-understands-13582562",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "941b2cc1-ea26-40e1-a501-c6f0504bc0ce",
+  "tweet_id": "2096577749540544968",
+  "created_at": "2026-09-07 06:22:06.127345+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://diplomacy.state.gov/discover-diplomacy/people-places/locally-employed-staff/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a953e6de-e943-4c22-893c-fd5886b36a22",
+  "tweet_id": "2096665421214879877",
+  "created_at": "2026-09-07 05:23:26.181497+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.notus.org/congress/house-stalls-sexual-harassment-records",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "f24458a1-d843-49cf-85a0-c26ad57f25ee",
+  "tweet_id": "2096763055942033824",
+  "created_at": "2026-09-07 05:22:28.629043+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://plutonium.pw/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "98f474fe-2f0d-42ed-a66c-716cca6e0242",
+  "tweet_id": "2096492993691947434",
+  "created_at": "2026-09-07 04:51:30.315382+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.msn.com/en-gb/video/viral/israeli-tourists-fight-with-transgender-prostitutes-in-thai-sin-city-pattaya/vi-AA1Fdwtb",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 3 chars)"
+ },
+ {
+  "id": "7392f0fe-dbd4-476a-92fd-3d9c99da3ba7",
+  "tweet_id": "2096600790970327074",
+  "created_at": "2026-09-07 03:52:22.19042+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.sciencedirect.com/science/article/pii/S0025326X23013590",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "0a497f2b-695f-49a7-9fe4-cca5a53f888b",
+  "tweet_id": "2096659880765493472",
+  "created_at": "2026-09-07 01:25:21.966359+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://espndeportes.espn.com/futbol/argentina/nota/_/id/17211219/carlos-tevez-tendra-su-partido-despedida-en-la-bombonera",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "9ee6f4ca-1df2-47c8-b51e-77fcf13e693b",
+  "tweet_id": "2096691175130292288",
+  "created_at": "2026-09-07 01:22:41.404732+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.sportskeeda.com/us/streamers/twitch-streamer-nitro-camden-s-rise-popularity-timeline-explored",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ },
+ {
+  "id": "f8675031-cf9a-4f6f-b6cb-28de9a597eb2",
+  "tweet_id": "2096673634152751555",
+  "created_at": "2026-09-07 00:21:15.020156+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.espn.com/mlb/story/_/id/49852703/pete-crow-armstrong-slugs-40th-hr-cubs-fall-marlins",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "fa91f80f-c8dd-4f5e-9827-146c4ccd7ea6",
+  "tweet_id": "2096521254513586488",
+  "created_at": "2026-09-06 22:21:41.262354+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.latimes.com/entertainment-arts/tv/story/2021-09-10/how-9-11-changed-the-way-we-watch-cable-tv-news-coverage",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "14a68563-46db-4954-a636-fdd79402d255",
+  "tweet_id": "2096529411914756566",
+  "created_at": "2026-09-06 21:53:55.925482+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://arborlakes.shopkimco.com/stores",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 274 chars)"
+ },
+ {
+  "id": "20470ad1-4946-4384-84ef-e8a03de7ca19",
+  "tweet_id": "2096605335398351148",
+  "created_at": "2026-09-06 21:52:13.765239+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://encyclopedia.ushmm.org/content/en/article/soviet-forces-liberate-auschwitz",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "39633a67-a8d4-4999-a627-0ed4ac26b5f6",
+  "tweet_id": "2096640713702441332",
+  "created_at": "2026-09-06 20:52:37.195384+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://newsukraine.rbc.ua/news/russian-gas-grip-on-eu-tightens-despite-ban-but-ukraine-1725607200.html",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "b81488eb-fffc-4e86-9521-b9a30d40af79",
+  "tweet_id": "2096621271979041261",
+  "created_at": "2026-09-06 20:25:57.558374+00",
+  "outcome": "submitted",
+  "outcome_reason": null,
+  "url": "https://ohiostatebuckeyes.com/news/2026/9/5/football-no-1-ohio-state-start-season-with-resounding-56-3-win-over-ball-state",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a8ab7426-9ace-424d-85eb-34493b996404",
+  "tweet_id": "2096657343089868889",
+  "created_at": "2026-09-06 18:53:39.649311+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nghomes.net/news/statement-on-stonyhurst-street-glasgow/",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a8ab7426-9ace-424d-85eb-34493b996404",
+  "tweet_id": "2096657343089868889",
+  "created_at": "2026-09-06 18:53:39.649311+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.dailyrecord.co.uk/news/scottish-news/huge-fire-breaks-glasgows-possilpark-37633466",
+  "kind": "Fetch failed",
+  "reason": "thin content (desktop, 157 chars)"
+ },
+ {
+  "id": "1adf86a6-496b-4150-a120-d6499aaade6f",
+  "tweet_id": "2096585094958059582",
+  "created_at": "2026-09-06 18:51:39.156256+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://gwern.net/doc/politics/1997-starr-vincefosterreport.pdf",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "3f10751b-60c1-4179-88a6-f1afed36582d",
+  "tweet_id": "2096595195475226652",
+  "created_at": "2026-09-06 17:21:20.737923+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://www.nbcnews.com/news/us-news/mark-kelly-mark-kelly-s-dog-attacks-sea-lion-california-flna8c9161066",
+  "kind": "Fetch failed",
+  "reason": "HTTP 404 (last attempt: browser)"
+ },
+ {
+  "id": "a2ed0a0b-0e88-4325-a69c-a18aab752d0a",
+  "tweet_id": "2096592228789448986",
+  "created_at": "2026-09-06 16:21:30.20786+00",
+  "outcome": "rejected",
+  "outcome_reason": "check_failed",
+  "url": "https://questions-statements.parliament.uk/written-questions/detail/2025-05-20/53758",
+  "kind": "Fetch failed",
+  "reason": "HTTP 403 (last attempt: browser)"
+ }
+]

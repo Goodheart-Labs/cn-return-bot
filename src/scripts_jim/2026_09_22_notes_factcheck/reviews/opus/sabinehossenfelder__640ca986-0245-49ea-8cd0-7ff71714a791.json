@@ -1,0 +1,16 @@
+{
+  "item_id": "640ca986-0245-49ea-8cd0-7ff71714a791",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "742677b2-cf06-4b20-a608-27356a22ca95",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note does not correct the claim it is attached to. The extracted claim is 'Sources covering the SpaceX Moon crash story were mostly from the UK', and the note says nothing about that; it instead argues that Ground News rates factuality per outlet rather than per article. The sentence it lands on is inside the video's paid sponsor read for Ground News, which is advertising copy Sabine is reciting, not a factual assertion about the Fermi paradox, the subject of the video. The underlying point is technically right. Ground News' own rating page says 'Scores apply to each publication as a whole, not to their individual articles' and that the score is the average of Ad Fontes Media and Media Bias Fact Check, so Ground News does no fact-checking of its own. But the product does show that aggregated factuality breakdown on each story page, which is exactly the 'at one glance' experience Sabine describes, so her wording is loose marketing language rather than an error that leaves viewers with a wrong belief that matters. Publicly fact-checking a creator's sponsor spot over a wording nicety is precisely the pedantic, off-topic kind of note that would annoy her and put her sponsorship at risk."
+    }
+  ]
+}

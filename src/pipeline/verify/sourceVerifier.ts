@@ -24,10 +24,7 @@ import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
 import { UnfetchableSourcesError } from "../utils/errors";
 import { runJsonLlmCall } from "../utils/jsonLlmCall";
-import {
-  describeMediaFromUrl,
-  type MediaSourceDescription,
-} from "../media/mediaAnalysisGemini";
+import { describeMediaFromUrl, type MediaSourceDescription } from "../media/describeMediaSource";
 import { fetchTweetViaSyndication, type SyndicationTweet } from "./fetchTweet";
 import { buildVerifierSystemPrompt, VERIFY_RESPONSE_FORMAT, VERIFY_CITATIONS_RESPONSE_FORMAT } from "../prompts/verify/sourceVerification";
 import { CLAIM_EXTRACTION_SYSTEM_PROMPT, CLAIM_EXTRACTION_RESPONSE_FORMAT } from "../prompts/verify/claimExtraction";
@@ -110,26 +107,44 @@ function isMediaHost(url: string): boolean {
 
 const PLATFORM_DESCRIPTION_MAX_CHARS = 1500;
 
-function formatCascadeMediaSection(url: string, media: MediaSourceDescription): string {
-  const { kind, meta, analysis } = media;
-  const publishedIso = meta.timestamp ? new Date(meta.timestamp * 1000).toISOString() : null;
-  const platformDesc = meta.description?.slice(0, PLATFORM_DESCRIPTION_MAX_CHARS);
-  const header = kind === "video"
-    ? `Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.`
-    : `Automated image analysis (yt-dlp / gallery-dl + Gemini) — this URL is an image post, not a video. Treat this as the source's content.`;
+const MEDIA_SECTION_HEADERS: Record<MediaSourceDescription["kind"], string> = {
+  video: "Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.",
+  image: "Automated image analysis (yt-dlp / gallery-dl + Gemini) — this URL is an image post, not a video. Treat this as the source's content.",
+  video_too_long: "A video too long to download, so its pictures were not analysed. Below are its details and, where available, its transcript. Treat this as the source's content.",
+};
 
+function formatCascadeMediaSection(url: string, media: MediaSourceDescription): string {
+  const { details } = media;
+  const platformDesc = details.description?.slice(0, PLATFORM_DESCRIPTION_MAX_CHARS);
   const lines = [
     `### ${url}`,
-    header,
-    meta.title ? `Title: ${meta.title}` : null,
-    meta.uploader ? `Uploader: ${meta.uploader}` : null,
-    publishedIso ? `Published: ${publishedIso}` : null,
+    MEDIA_SECTION_HEADERS[media.kind],
+    details.title ? `Title: ${details.title}` : null,
+    details.uploader ? `Uploader: ${details.uploader}` : null,
+    details.published ? `Published: ${details.published}` : null,
     platformDesc ? `Uploader-provided description:\n${platformDesc}` : null,
-    `Content summary: ${analysis.description.description || "(empty)"}`,
-    analysis.description.ocrText ? (kind === "video" ? `On-screen text: ${analysis.description.ocrText}` : `Visible text: ${analysis.description.ocrText}`) : null,
-    kind === "video" ? `Audio transcript: ${analysis.transcription || "(unavailable)"}` : null,
+    ...mediaContentLines(media),
   ].filter((l): l is string => l !== null);
   return lines.join("\n");
+}
+
+function mediaContentLines(media: MediaSourceDescription): (string | null)[] {
+  switch (media.kind) {
+    case "image": {
+      const { description } = media.analysis;
+      return [`Content summary: ${description.description || "(empty)"}`, description.ocrText ? `Visible text: ${description.ocrText}` : null];
+    }
+    case "video": {
+      const { description, transcription } = media.analysis;
+      return [
+        `Content summary: ${description.description || "(empty)"}`,
+        description.ocrText ? `On-screen text: ${description.ocrText}` : null,
+        `Audio transcript: ${transcription || "(unavailable)"}`,
+      ];
+    }
+    case "video_too_long":
+      return [`Audio transcript: ${media.transcript ?? "(unavailable)"}`];
+  }
 }
 
 interface FetchedSource {

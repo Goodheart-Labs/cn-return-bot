@@ -24,9 +24,9 @@
  * restores the old behaviour, because the login wall is still there. The one
  * idea we have for getting past it is the residential proxy that already carries
  * our YouTube requests, which reaches X from a home broadband address instead of
- * a datacenter one. The secret YTDLP_PROXY_URL is already handed to the
- * create-notes workflow, and Playwright takes a proxy per browser context, so
- * that is a small change. Nobody has confirmed that the proxy actually gets past
+ * a datacenter one. withResidentialProxy (src/pipeline/utils/residentialProxy.ts)
+ * already hands out its address with retries, and Playwright takes a proxy per
+ * browser context, so that is a small change. Nobody has confirmed that the proxy actually gets past
  * the wall, and confirming it comes first.
  */
 import { getBrowser } from "../utils/browserManager";

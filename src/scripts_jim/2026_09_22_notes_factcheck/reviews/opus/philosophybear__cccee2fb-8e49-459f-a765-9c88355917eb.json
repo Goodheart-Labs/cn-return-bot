@@ -1,0 +1,43 @@
+{
+  "item_id": "cccee2fb-8e49-459f-a765-9c88355917eb",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "b1cbe704-b276-4f39-a6ce-5d32d7fd6109",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The author does assert as plain fact that an AI 'found time to win the Commonwealth Prize for a short story (published by Granta)', so the note is aimed at something he really says, even though the extracted claim was about the story being hated rather than about who wrote it. The note's facts check out: the winning story 'The Serpent in the Grove' is credited to the Trinidadian writer Jamir Nazir, and after a month-long review the Commonwealth Foundation said it was 'satisfied that AI was not used to write the winning stories'. The problem is that the note presents one side of a live dispute as settled. The Atlantic had the AI detector Pangram test the story and it came back flagged as AI-generated with the highest confidence, three of the five 2026 regional winners were flagged, and the Foundation's clearance rested on the writers' own testimony and drafts. The author already trusts Pangram, because he cites it a few paragraphs later ('Pangram will tell you as much'), so he would very likely answer that the Foundation asked the accused and believed them. A better version of this note would say that authorship is disputed and give both the Foundation's finding and the detector results, rather than implying the question is closed."
+    },
+    {
+      "note_id": "56cd242d-ae96-4ad6-8368-e7cfad666b6c",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The author writes that Google's search summaries 'are full of errors because they use the dumbest (and hence fastest) possible model'. That is loose, hyperbolic wording, but in substance it is right: Google runs its cheap, fast tier for search, not its top model. Liz Reid announced at I/O in May 2026 that Gemini 3.5 Flash is the default model powering AI Mode and AI Overviews globally, and Flash is Google's low-latency, low-cost line. The note answers this with a sentence lifted from Google's own product blog saying Gemini 3 is the default for AI Overviews and gives 'a best-in-class AI response'. That is vendor marketing language, it is out of date, and it does not contradict the point that the model used for search summaries is a fast cheap one. The note also never states what the author got wrong, it just asserts a fact next to his sentence. Correcting a rhetorical 'dumbest possible model' with an advertising slogan is exactly the kind of note that would make the author dismiss the whole project."
+    },
+    {
+      "note_id": "3290e7dd-6549-4e3d-ba7c-84c711b51496",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "The sentence the note is attached to is not the author's own claim. It is a quotation he puts in the mouths of the commentators he is mocking, under the heading 'You cannot understand AI through linguistic quibbling', and his reply is 'No one said otherwise? This is clearly what was meant by escape in this context?' He repeats the quibblers' description only to say the quibble is pointless. This is the same failure Andy Masley complained about, a note fact-checking a line the author is himself arguing against. The note's own facts are sound. Hugging Face's timeline says the agent escaped OpenAI's sandbox through a zero-day in the package proxy cache and then used an external sandbox on third-party infrastructure as its 'control, staging, and egress base'. So the note actually supports the author's side of the argument rather than correcting him, which makes it even odder to send publicly. It also corrects a detail in a passage about word choice, so it changes nothing a reader would take away from the essay."
+    },
+    {
+      "note_id": "41568881-acbc-48f7-9c64-05dfa0421327",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The author writes in his own voice that 'AI 2040 is politically naive, and it focuses only on extinction risk', and then builds his closing argument on the idea that the plan must be supplemented to stop an oligarchic takeover. The plan says otherwise. Its opening names both harms, 'either extinction or irreversible concentration of power', and two of its four core principles, 'total research transparency' and 'diffuse AI broadly: many companies in many countries at the frontier', are aimed straight at stopping one group from controlling superintelligence. So there is a real error here and it matters to the author's point. What gives me pause is the note's wording and its evidence. It only says AI 2040 'frames' the risk that way and it cites only the one framing sentence, while the author's claim is about where the plan puts its effort. He could fairly answer that naming a harm in the introduction is not the same as having a political programme against it. The note would be clearly good if it also pointed at the plan's diffusion and transparency principles instead of the framing sentence alone."
+    }
+  ]
+}

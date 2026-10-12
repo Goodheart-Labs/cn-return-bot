@@ -1,0 +1,73 @@
+{
+  "item_id": "e10e0312-199e-4eb7-a9ea-33c07c49b01e",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "fd666ffa-8be0-475b-9f10-fb37c08795fd",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "These are Ada Palmer's words, stated as plain fact and dwelt on: \"It took months in the chaos, the postal system had completely broken down. It took months for them to get word that Machiavelli was still alive.\" Dwarkesh does not challenge or repeat it, and the wording is identical in the edited transcript on dwarkesh.com, so this is not a caption error. The dinner and killings were on the night of 31 December 1502, Wikipedia carries Machiavelli's same-night dispatch (\"in my view they will not be alive tomorrow morning\"), and Wikipedia's Cesare Borgia article has Machiavelli at Borgia's court \"from 7 October 1502 through 18 January 1503\", so he was home within about three weeks. The strongest evidence is Palmer's own blog Ex Urbe, which says the letter of relief from Biagio Buonaccorsi was written on 9 January 1503, nine days after the massacre. The note's first sentence is about the official dispatch rather than the family, but the return date carries the argument and the note is right. Palmer contradicts her own published account, so she would most likely concede a slip of memory; Dwarkesh has no stake in the number."
+    },
+    {
+      "note_id": "4b81ba16-875a-4e7c-9f65-7258c7d49161",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Palmer says this in her own voice and uses it as her main example: \"So, says Thomas Paine, every country must have religion, and religious education must be mandatory in schools, but it doesn't matter which religion.\" The published transcript has the same words. Paine wrote the opposite. Common Sense says government's only business with religion is \"to protect all conscientious professors thereof, and I know of no other business which government hath to do therewith\", and The Age of Reason calls national churches inventions \"set up to terrify and enslave mankind\" and argues that schooling should consist of scientific knowledge. I found no text in which Paine calls for compulsory religion or religious schooling, and Paine wrote no such thing that I know of. The idea Palmer describes, a state religion whose content does not matter so long as it teaches a God who punishes after death and thereby makes citizens obey the law, is Rousseau's civil religion in Social Contract IV.8, whose dogmas include \"the life to come ... the punishment of the wicked, the sanctity of the social contract and the laws\". The example carries her whole parallel between Machiavelli and Enlightenment thinking about the civic use of religion, so the wrong name matters. Paine is outside her own period, which is the kind of correction a specialist takes gracefully."
+    },
+    {
+      "note_id": "09963f94-f929-449a-9ec4-c98225dc3770",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "This one is Dwarkesh's, and it is a presupposition inside a question, not an assertion: \"Why does he spend two decades writing Discourses on Livy? Unlike us ... he's presumably just reading this book again and again and again.\" The published transcript has the same words. The figure is wrong: the Discourses are dated to about 1513 to 1519, and Britannica's widest window is 1513 to 1521, so the note is accurate on the facts. But the correction does not touch his point, which is about long immersion in one book that had been in the house since his father indexed it, and Palmer answers that point, not the number. A listener's takeaway does not change if the writing took six or eight years instead of twenty. Correcting a throwaway number inside a host's rhetorical question is the kind of pedantic note that costs goodwill for no gain. The note's own \"about six years\" also sits loosely beside its Britannica source, which gives eight."
+    },
+    {
+      "note_id": "caa92d63-4d5d-4f3d-9e95-eda0f4dae881",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Palmer says it twice in her own voice: \"Old Nick, which is a nickname for the devil but became popular because of Niccolò Machiavelli.\" The note's sources hold up: Etymonline dates the devil sense to the 1640s and calls the reason \"obscure\", and Anatoly Liberman on the OUP blog calls the Machiavelli derivation \"truly bizarre\". But the etymology is genuinely unresolved, the OED offers no convincing explanation, and Liberman himself says the Machiavelli etymology \"must have been widely popular in the middle of the seventeenth century\", when Samuel Butler wrote \"Nick Machiavel had ne'er a trick, / Though he gave his name to our Old Nick\" (Hudibras, 1663). Palmer did not say the word derives from Machiavelli, she said it became popular because of him, and a historian of that period can answer with Butler in hand, so a public exchange about this is easy to lose. The note's phrase \"no factual basis\" overstates what the reference works say. The detail is also decorative: her point about the split between Machiavelli the patriot and \"the murderous Machiavel\" stands whatever the word's origin, and the fact that seventeenth-century writers linked the devil's name to Machiavelli would actually support her point."
+    },
+    {
+      "note_id": "6139e6be-833d-430f-adc5-0e096966958a",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "Palmer asserts this herself and flags it as important: \"a fact about Spinoza—and I know this feels tangential, but it's not—was that he was the first person in ages and ages to be targeted with the Jewish equivalent of excommunication.\" The published transcript has the same words, and Dwarkesh does not challenge it. It is wrong. The NEH article by Steven Nadler cites Yosef Kaplan's count of forty people put under herem by Amsterdam's Portuguese community between 1622 and 1683, and Marc Cohen writes that \"Excommunication was a very common sanction in Spinoza's community.\" Uriel da Costa was banned for heresy long before Spinoza: Venice and Hamburg in 1616 to 1618 (Haaretz dates the Venice ban to August 1618, so the note's year is defensible), Amsterdam confirmed it in 1623, and he was banned again around 1633. What Nadler singles out about Spinoza's 1656 writ is that it was the harshest ever issued there and was never rescinded, exactly as the note says. She builds the \"Spinoza the arch-heretic\" character on this rarity, so the correction matters to her argument. The evidence is standard and well known, so she would most likely accept it. This note and 768644b7 sit on adjacent sentences and share the forty-bans point; if Nathan sends both he should send them together as one correction."
+    },
+    {
+      "note_id": "768644b7-e8bb-4644-9804-decb85ea166c",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": "Replace the last clause, \"no source describes any search across Europe for someone who knew the ritual\", with a positive statement: \"The wording was a standard formula whose Spanish text had been in Amsterdam since 1618, brought from Venice before Spinoza was born (Kasher and Biderman, Tel Aviv University), so nobody had to be sent to find someone who knew the rite.\" Consider merging this with note 6139e6be, since both correct adjacent sentences with the same evidence.",
+      "reason": "Palmer's own vivid detail, in the published transcript word for word: \"It was such a rare ceremony that the Jews of his region actually had to send somebody traveling all around Europe to find a Jew who knew the ceremony, because it was so incredibly rarely done.\" The premise is false, as the previous note shows: forty bans in the same community between 1622 and 1683, several of them before 1656, and the writ was drawn up in Portuguese by the ma'amad, entered in the congregation's Book of Ordinances and read from the ark in the Houtgracht synagogue, all of which the note's sources confirm. What gives me pause is the note's final clause, which is an argument from silence, and there is a kernel Palmer could point to. Kasher and Biderman's account of the ban says \"The Hebrew original of the core of the text was well-known and its Spanish translation was brought to Amsterdam from Venice, in 1618, that is to say, before Spinoza was even born.\" That does not rescue her story, since the formula was imported decades earlier and not hunted for on Spinoza's account, but a note that states this outright is stronger than one that says no source mentions a search. With that clause replaced the note is sound."
+    }
+  ]
+}

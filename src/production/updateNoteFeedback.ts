@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { getSupabaseClient } from "../api/supabaseClient";
-import { fetchAllRows } from "../api/paging";
+import { fetchAllRows } from "../everything-core/paging";
 import { fetchNotesWritten, type WrittenNote, type NoteFactorBucketCounts } from "../api/fetchNotesWritten";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 import { execSync } from "child_process";
@@ -133,7 +133,7 @@ type ExistingState = {
 };
 
 // ─── Generic helpers ─────────────────────────────────────────────────────────
-// Pagination lives in fetchAllRows in src/api/paging.ts. This file has no copy of it.
+// Pagination lives in fetchAllRows in src/everything-core/paging.ts. This file has no copy of it.
 
 function formatDateForUrl(date: Date): string {
   const y = date.getUTCFullYear();

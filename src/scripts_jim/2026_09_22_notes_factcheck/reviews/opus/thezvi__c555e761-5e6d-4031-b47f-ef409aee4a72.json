@@ -1,0 +1,25 @@
+{
+  "item_id": "c555e761-5e6d-4031-b47f-ef409aee4a72",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "258fcf9d-3f4f-4108-8af9-3ccf984b4089",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Zvi is summarising Exponential View's report in his own words, so the number is his own assertion about what the report says, not a block quote he is passing along. I read the report and the underlying deck (ev-state-of-ai-economy-2026.pdf). The deck's growth slide says \"35% QoQ, equivalent to 3.2x annually\", the section header says \"The sector is growing 3x faster than any IT wave before it\", and a later Exponential View post says revenue was \"up 3.5x in one year\". No slide and no line of the article states 60% growth of anything. Zvi almost certainly misread the label \"1.6x gap - the spread reflects the growth rate\" on the slide that puts $110bn trailing revenue next to a $175bn run rate; that 1.6x is the gap between a trailing average and a current run rate, and it is what you get when annual growth is 3.2x, not a 60% growth rate. Both source quotes check out verbatim against the article. The error matters because it sits in the section on whether AI revenue can pay for the buildout, and 60% versus 220% changes that answer, so this is not a rounding quibble. Zvi corrects his own numbers routinely and the other details in the same paragraph (six-year chip depreciation, 0.4% of GDP, token price elasticity) are all accurate, so this reads as one slip he would want fixed."
+    },
+    {
+      "note_id": "6e5240d0-3715-4c41-9aa2-a6db48f5659e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "\"AI agents respond to nudges in similar ways to humans\" is Zvi's own one-sentence summary of the paper, written in his voice, and he leans on it for his conclusion: \"so long as the nudges impacting your agent are not that adversarial, it seems fine, especially since humans will have the same issue.\" The paper is Cherep, Maes and Singh, published in PNAS as \"AI agents are sensitive to nudges\" and on arXiv under the blunter title \"LLM Agents Are Hypersensitive to Nudges\". Its central finding, in its own words, is that \"most LLM agents are substantially more sensitive to nudges than humans across conditions\" and that \"weak cues that slightly shift human behavior have larger effects on model choices\", which \"expose a critical behavioral gap between human and model decision-making.\" The abstract also says agents are \"behaviorally brittle under subtle changes in choice architecture, even in the absence of adversarial settings\", which is the opposite of the reassurance Zvi draws. The paper does report superficial similarity in the overall choice distributions, so Zvi's sentence is not invented out of nothing, but the part he dropped is the part the paper is about and the part his inference rests on. The note states this accurately and its quotes match the published abstract."
+    }
+  ]
+}

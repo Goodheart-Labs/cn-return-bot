@@ -1,0 +1,43 @@
+{
+  "item_id": "4b776e7a-5475-4cf9-8f4b-aaf42e25ae55",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "0c02263f-760a-456b-9b2e-9d03978c54f1",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The passage is a verbatim quoted tweet by Nathan, one of several tweets Zvi pastes into the \"Ineffective Altruism\" section, and Zvi argues against exactly this framing in his own voice: \"What you definitely cannot do is say 'well she did not directly save that many lives'\" and \"If your methodology says MacKenzie Scott can be summarized as 'inefficient' on this basis, then your system of evaluation does not work and you need a new one.\" He also quotes Habryka and Richard Ngo attacking the number, with Ngo saying \"Here [Nathan] and [Max] are doing politics on GiveWell's behalf not truth-seeking.\" The note's lead sentence is also simply a misreading: nobody in the post says Nathan wrote the analysis, and Zvi quotes Max Ghenis by name three paragraphs earlier, so \"This analysis was authored by Max Ghenis, not 'Nathan'\" corrects a claim that was never made. The 1,500x point has a kernel of truth (Ghenis's July 13 update reads \"the frontier multiple ~1,500x -> ~515x\"), but the maxghenis.com page the note cites never mentions 1,500x at all, so the wording \"the source explicitly rejects the 1,500x figure as naive\" overstates what the sources say. This is the Andy Masley failure mode: fact-checking a quoted claim the author is himself criticising."
+    },
+    {
+      "note_id": "e4ae829b-2279-4ef0-9ca5-0c60f5f64ced",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is the opening line of a long quoted tweet by @levelsio (Pieter Levels) describing his own experience living in Portugal; Zvi's own claim is the one above it, \"The new EU policy of applying customs duties to tiny e-commerce parcels is remarkably close to a de facto ban on such small parcels.\" The note fact-checks a hyperbolic aside in someone else's personal anecdote, and the hyperbole is obvious from the phrasing itself (\"no exceptions for a decade or more\"). The note also does not really rebut what was said: Levels claims packages get stopped and held by customs, while the note answers with tax exemptions (gifts under 45 euros are VAT/duty-free, IOSS shipments have VAT pre-collected). A gift being duty-free does not mean Portuguese customs does not stop it, and Portuguese reporting confirms that non-EU parcels routinely sit at CTT customs awaiting clearance. The date point is the only real correction, and it changes nothing about Zvi's argument or about what the reader takes away from the section."
+    },
+    {
+      "note_id": "5f76ec61-f040-4616-9bc5-5c2ff3a87e68",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The bullet is inside Conrad Bastable's quoted thread, which Zvi introduces as \"Claim I saw\" and marks \"(abridged)\", so it is a figure Zvi passes along rather than asserts, though he does build on the general pattern (\"I think most game time going to old games is great for players\"). The note's first half is right: I pulled Newzoo's own 2026 PC & Console Gaming Report and its all-platform chart gives 54% of 2025 playtime to games 6+ years old, 33% to 1-5 year olds and 13% to new releases, while the PC-only chart gives 66%. But the note's second half is very likely wrong. It asserts the two-thirds figure \"comes from an earlier Newzoo report on 2024 data, not the same 2026 report\", and the 2026 report itself carries a PC figure of 66% for 2025, so the same report Bastable cites for the 13% supports a two-thirds PC number too. Sending Zvi a note whose second sentence is a guess about provenance that the primary source contradicts is exactly the kind of thing that costs us credibility. And the correction does not change his point: at 54% most playtime still goes to old games."
+    },
+    {
+      "note_id": "65cc8778-3127-42ec-a1ad-fcfc277c5bb7",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The thing being corrected is Zvi's own editorial parenthetical, not the quote: he writes \"Max Ghenis (incorporating his later correction into OP)\" and then gives the pre-correction numbers, ~70,000 and ~200,000 QALYs. I checked the source and the update note there reads \"Headline: median ~70,000 -> ~205,000 QALYs (credulous ~420,000); blended ~$435k -> ~$148k/QALY\", so the correction he says he folded in was only half folded in. The tell is in the very next paragraph of Zvi's own quote, where the $148k per QALY and the ~500x are the post-correction figures sitting right next to the pre-correction QALY counts. The difference matters to the section's argument: a reader comes away believing Scott's giving bought ~70,000 QALYs when the analysis Zvi is relying on now says roughly three times that. One small caveat for Nathan: the live maxghenis.com page has since drifted to ~202,000 and ~415,000, so the note's ~205,000/~420,000 match the forum update rather than today's page. Zvi tried to be accurate here and was, by his own account, incorporating the correction, so being told the merge was incomplete is a correction he should welcome."
+    }
+  ]
+}

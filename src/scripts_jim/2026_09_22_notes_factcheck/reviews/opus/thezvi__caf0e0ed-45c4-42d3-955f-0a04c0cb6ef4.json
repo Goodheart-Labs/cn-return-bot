@@ -1,0 +1,34 @@
+{
+  "item_id": "caf0e0ed-45c4-42d3-955f-0a04c0cb6ef4",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "24d16fcf-641b-4059-bd3c-1f25746f6abd",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence about Bear Stearns is not Zvi's. It is the second half of a quoted tweet by Justin Slaughter, and I confirmed on the live Substack page that both sentences sit inside the same blockquote under the link to Slaughter's tweet. Zvi quotes it in the 'Media Coverage and Political Response' section only to support his own point that the story is being under-covered, so he relies on the 'DC is asleep' part and not on any detail about how Bear Stearns ended. The note's facts are right in themselves, since Bear Stearns was bought by JPMorgan Chase in a Fed-backed rescue and it was Lehman Brothers that filed for bankruptcy in September 2008. But correcting a loose 2008 analogy inside someone else's tweet changes nothing about the argument Zvi is making, so it is exactly the pedantic, wrong-target note that Andy Masley already complained about."
+    },
+    {
+      "note_id": "166caeff-48c4-4d9c-b4ee-4c66cf1082d9",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This note does not even match its own claim. The extracted claim is 'Justin Slaughter described the OpenAI-HuggingFace incident as the biggest policy story of the summer', which is simply true and is correctly attributed in the post, yet the note text talks about Bear Stearns instead. It is also a near-duplicate of the other Bear Stearns note on the same passage, so sending both would look careless. As with that note, the Bear Stearns line belongs to Slaughter's quoted tweet and not to Zvi, and the post's argument does not rest on it. Nothing here corrects anything Zvi actually asserts."
+    },
+    {
+      "note_id": "c5f8c67d-718d-4b0f-b945-07a7ead7bae9",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This time the sentence really is Zvi's own: 'UK AISI explicitly confirms, in its unrelated report from yesterday, that this is a training problem, not a capabilities problem or an infrastructure problem. A stronger box is not the answer.' I read the report he means, AISI's 'Cheating behaviour in frontier model evaluations' from 21 July 2026, and it backs him up almost word for word. It says cheating behaviour 'is substantially shaped by the specifics of the techniques used to train the model, including alignment training, and not just raw capability', and that 'a more fundamental fix would be to train the models not to cheat in the first place'. The note's own facts about the security alert are in the report, including the line that the attempt 'could have succeeded had our evaluation infrastructure not been designed and built securely', but the conclusion the note draws from them is a rebuttal of a position Zvi never takes. He does not say containment is irrelevant, only that a stronger box is not the fundamental fix, and elsewhere in the same post he calls the infrastructure work good while arguing it is not the main thing. So the note picks a fight over emphasis rather than correcting an error, and Zvi would read it as missing his point."
+    }
+  ]
+}

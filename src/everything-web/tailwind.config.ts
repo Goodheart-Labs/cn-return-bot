@@ -1,31 +1,17 @@
 import * as path from "path";
 import type { Config } from "tailwindcss";
+import { cnPreset } from "../everything-ui/tailwind.preset";
 
-/* The site's own compiled Tailwind. Dark mode is the same `.dark` class the
- * extension uses, set on <html> by SystemTheme (and pre-paint in index.html),
- * so shared components carry exactly one dark system.
- *
- * The fontSize block bakes in the larger reading scale the site has always
- * shipped (design.css used to rescale these classes under
- * data-fontsize="large"). It is per-app: the extension compiles its own config
- * and keeps the default scale, as it always has. */
+/* The website's Tailwind build. Every design value comes from the shared
+ * preset. The website's larger reading scale lives in src/index.css, as an
+ * override of the text-size tokens. */
 export default {
-  darkMode: "class",
+  presets: [cnPreset],
   content: [
     path.resolve(__dirname, "index.html"),
     path.resolve(__dirname, "src/**/*.{ts,tsx}"),
-    path.resolve(__dirname, "../everything-shared/**/*.ts"),
-    path.resolve(__dirname, "../dashboard-shared/**/*.tsx"),
+    path.resolve(__dirname, "../everything-ui/**/*.{ts,tsx}"),
+    path.resolve(__dirname, "../everything-features/**/*.{ts,tsx}"),
+    path.resolve(__dirname, "../dashboard-shared/LinkifiedText.tsx"),
   ],
-  theme: {
-    extend: {
-      fontSize: {
-        xs: ["0.875rem", "1.25rem"],
-        sm: ["1rem", "1.5rem"],
-        base: ["1.125rem", "1.75rem"],
-        lg: ["1.25rem", "1.75rem"],
-        "2xl": ["1.875rem", "2.25rem"],
-      },
-    },
-  },
 } satisfies Config;

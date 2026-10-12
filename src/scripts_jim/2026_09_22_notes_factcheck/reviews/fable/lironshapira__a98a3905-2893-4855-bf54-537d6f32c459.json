@@ -1,0 +1,18 @@
+{
+  "item_id": "a98a3905-2893-4855-bf54-537d6f32c459",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d68f3645-5d81-4ac6-a232-7df8e8d12d3f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Liron says it himself while listing guests to donors: \"Max Tegmark, Vitalik Buterin, Nobel Prize winner Michael Levitt, Turing Award winner Moshe Vardi, Dean Ball, Gary Marcus...\", and the post's written intro repeats it: \"Now the show hosts Nobel Prize and Turing Award winners\". Nobody is being quoted and there is no hedge. Vardi has not won the Turing Award. Wikipedia's list of laureates through the 2025 award (Bennett and Brassard, announced March 2026) does not contain him, his Wikipedia page lists the Gödel Prize, Kanellakis Award, Knuth Prize and others with no Turing Award, and a Georgia Tech article from March 2026 about a Turing-laureate speaker series introduces him as a non-laureate guest. I checked the X post through Twitter's own embed endpoint: it is by @vardi, dated September 18, 2020, and reads exactly \"I would have signed the letter too, but I don't have a Turing Award :-)(\", written under Yann LeCun's post about 24 Turing laureates endorsing Biden. The correction is substantive because the credential is the point of the passage in a fundraising pitch. It is a plain checkable mistake that costs Liron nothing to fix, so he would most likely accept it."
+    }
+  ]
+}

@@ -8,15 +8,24 @@ import { generateText } from "ai";
 import { parseHTML } from "linkedom";
 import { extractText, getDocumentProxy } from "unpdf";
 import TurndownService from "turndown";
-import { xai } from "../llm/xai";
+import { grokCallCost, xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
+import { isWebUrl } from "../utils/webUrl";
+import { callFetchService } from "../../service/client";
+import {
+  FETCH_PAGE_PATH,
+  FETCH_SERVICE_SOCKET_VARIABLE,
+  type FetchedJson,
+  type FetchedPageHtml,
+  type FetchPageRequest,
+} from "../../service/contract";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
-  calculateGrokCost, extractOpenRouterCost,
+  addTokenCost, extractOpenRouterCost, serperSearchCost,
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
@@ -62,6 +71,33 @@ export const WEB_FETCH_TOOL = {
 // native-search dispatch of simple-bot uses it.
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
 
+// Claude's built-in web fetch tool, also passed through by OpenRouter. Claude
+// reads the page inside the call, so the page never round-trips through us.
+// The fetched text is billed as input tokens, hence the per-page token cap.
+export function webFetchNativeTool(limits: { maxUses: number; maxContentTokens: number }) {
+  return {
+    type: "web_fetch_20250910" as const,
+    name: "web_fetch",
+    max_uses: limits.maxUses,
+    max_content_tokens: limits.maxContentTokens,
+  };
+}
+
+// OpenRouter's web_search server tool on the model provider's own engine. For a
+// Muse request that is Meta's search, which also opens pages. OpenRouter runs it
+// inside the request and bills the searches in usage.cost.
+export const OPENROUTER_NATIVE_WEB_SEARCH_TOOL = {
+  type: "openrouter:web_search" as const,
+  parameters: { engine: "native" as const },
+};
+
+/** Meta's search tool cites the lines of the pages it opened with markers such
+ *  as 【1586541899417117766†L16-L18】, which point into its own page cache and mean
+ *  nothing to us. They are removed so they cannot leak into a note. */
+export function stripBrowserLineCitations(text: string): string {
+  return text.replace(/\s*【[^】]*†[^】]*】/g, "");
+}
+
 // --- Tool handlers ---
 
 export interface ToolResult {
@@ -99,23 +135,15 @@ export async function handleGrokSearch(query: string): Promise<ToolResult> {
     return { output: { error: "XAI_API_KEY not set" }, isTerminal: false };
   }
 
-  const { text, usage, steps } = await generateText({
+  const result = await generateText({
     model: xai.responses(GROK_MODEL) as any,
     prompt: query,
     tools: {
       x_search: xai.tools.xSearch({ enableImageUnderstanding: true }) as any,
     },
   });
-
-  const searchCalls = steps?.reduce(
-    (n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0),
-    0,
-  ) ?? 0;
-  const cost = calculateGrokCost(
-    usage?.inputTokens ?? 0,
-    usage?.outputTokens ?? 0,
-    searchCalls,
-  );
+  const { text } = result;
+  const cost = grokCallCost(result, GROK_MODEL);
 
   return { output: { results: text }, isTerminal: false, cost };
 }
@@ -137,7 +165,7 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
 export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
   try {
     const results = await fetchSearchResults(query);
-    return { output: { results: formatSearchResults(results) }, isTerminal: false };
+    return { output: { results: formatSearchResults(results) }, isTerminal: false, cost: serperSearchCost() };
   } catch (err: any) {
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
@@ -158,7 +186,8 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
     messages: [{ role: "user" as const, content: prompt }],
   });
   const summary = response.choices?.[0]?.message?.content ?? "";
-  const cost = extractOpenRouterCost(response);
+  const cost = serperSearchCost();
+  addTokenCost(cost, extractOpenRouterCost(response));
 
   return { output: { results: summary }, isTerminal: false, cost };
 }
@@ -429,11 +458,65 @@ export interface WebFetchResult {
   ok: boolean;
 }
 
-/** `maxChars` overrides the default return cap. The default is sized for a
+/** Fetches an outside page. On the services machine the sandboxed fetcher does
+ *  the fetching (src/service/fetch/main.ts), so that a hostile page never runs
+ *  inside a process that holds our keys. Everywhere else, such as GitHub
+ *  Actions and local runs, this process fetches the page itself.
+ *
+ *  `maxChars` overrides the default return cap. The default is sized for a
  *  verifier's context window; the everything pipeline passes a much larger cap
  *  because it ingests the whole article. */
 export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (!socket) return fetchWebPageInProcess(url, opts);
+  return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url, maxChars: opts?.maxChars } satisfies FetchPageRequest);
+}
+
+const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";
+
+/** The fetch ladder itself. Only the fetcher and processes without one call
+ *  this directly. */
+export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
   const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
+  if (!isWebUrl(url)) return { content: `Fetch refused: ${REFUSED_NON_WEB_URL}`, fetchedUrl: url, ok: false };
+  const outcome = await runFetchLadder(url);
+  if (!outcome.ok) return { content: outcome.diagnostic, fetchedUrl: url, ok: false };
+  const { markdown, fetchedUrl, via } = outcome.page;
+  const content = via ? `[fetched via ${via}]\n\n${markdown.slice(0, maxChars)}` : markdown.slice(0, maxChars);
+  return { content, fetchedUrl, ok: true };
+}
+
+export async function fetchWebPageHtmlInProcess(url: string): Promise<FetchedPageHtml> {
+  if (!isWebUrl(url)) return { ok: false, reason: REFUSED_NON_WEB_URL };
+  const outcome = await runFetchLadder(url);
+  if (!outcome.ok) return { ok: false, reason: outcome.diagnostic };
+  return { ok: true, html: outcome.page.html, fetchedUrl: outcome.page.fetchedUrl };
+}
+
+export async function fetchJsonInProcess(url: string): Promise<FetchedJson> {
+  if (!isWebUrl(url)) return { ok: false, reason: REFUSED_NON_WEB_URL };
+  const answer = await rawFetch(url, FETCH_UAS.desktop);
+  if (!answer.ok || !answer.body) return { ok: false, reason: answer.status ? `HTTP ${answer.status}` : answer.error ?? "empty answer" };
+  if (!answer.contentType?.includes("json")) return { ok: false, reason: `not JSON but ${answer.contentType}` };
+  try {
+    return { ok: true, json: JSON.parse(answer.body) };
+  } catch {
+    return { ok: false, reason: "the answer is not valid JSON" };
+  }
+}
+
+/** A page the ladder accepted. `via` names the fallback that produced it, or
+ *  is null when a plain HTTP request did. */
+interface LadderPage {
+  html: string;
+  markdown: string;
+  fetchedUrl: string;
+  via: string | null;
+}
+
+type LadderOutcome = { ok: true; page: LadderPage } | { ok: false; diagnostic: string };
+
+async function runFetchLadder(url: string): Promise<LadderOutcome> {
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as
@@ -448,7 +531,7 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label, cls, status: r.status, chars: markdown.length, markdown });
-      if (cls === "good") return { content: markdown.slice(0, maxChars), fetchedUrl: url, ok: true };
+      if (cls === "good") return { ok: true, page: { html: r.body, markdown, fetchedUrl: url, via: null } };
     } else {
       attempts.push({ label, cls: "fail", status: r.status, chars: 0, markdown: "" });
     }
@@ -466,11 +549,7 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
       if (cls === "good") {
         // The requested URL is dead or blocked. We read the snapshot instead, so
         // the snapshot is the URL a note may cite, not the original.
-        return {
-          content: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, maxChars)}`,
-          fetchedUrl: r.finalUrl ?? url,
-          ok: true,
-        };
+        return { ok: true, page: { html: r.body, markdown, fetchedUrl: r.finalUrl ?? url, via: `${archiveLabel} snapshot` } };
       }
     } else {
       attempts.push({ label: archiveLabel, cls: "fail", status: r.status, chars: 0, markdown: "" });
@@ -484,13 +563,7 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
   if (browser.ok && browser.body) {
     const { cls, markdown } = classifyContent(browser.body);
     attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length, markdown });
-    if (cls === "good") {
-      return {
-        content: `[fetched via headless browser]\n\n${markdown.slice(0, maxChars)}`,
-        fetchedUrl: url,
-        ok: true,
-      };
-    }
+    if (cls === "good") return { ok: true, page: { html: browser.body, markdown, fetchedUrl: url, via: "headless browser" } };
   } else {
     attempts.push({ label: "browser", cls: "fail", status: browser.status, chars: 0, markdown: "" });
   }
@@ -501,13 +574,13 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
     const tag = best.cls === "wall" ? "login wall / anti-bot block" : "thin content";
-    return { content: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, fetchedUrl: url, ok: false };
+    return { ok: false, diagnostic: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)` };
   }
   const last = attempts[attempts.length - 1];
   const failure = last?.status
     ? `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`
     : `Fetch error: all ${attempts.length} attempts failed`;
-  return { content: failure, fetchedUrl: url, ok: false };
+  return { ok: false, diagnostic: failure };
 }
 
 export function handleProposeNotes(

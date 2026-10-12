@@ -60,9 +60,8 @@ export function buildUserMessage(params: {
   parts.push(`Tweet posted: ${post.created_at}`);
   // The timing machinery turns on how old the post is, and models are unreliable
   // at timestamp arithmetic. So we work the age out here and hand them the
-  // number. It is gated on the timing_context flag, the same flag the timing
-  // stage uses, so the A/B arms stay clean.
-  if (getBotConfig().timing_context && post.created_at) {
+  // number.
+  if (post.created_at) {
     const ageMs = now.getTime() - Date.parse(post.created_at);
     if (Number.isFinite(ageMs) && ageMs >= 0) {
       parts.push(`Post age: ${(ageMs / 3_600_000).toFixed(1)} hours`);

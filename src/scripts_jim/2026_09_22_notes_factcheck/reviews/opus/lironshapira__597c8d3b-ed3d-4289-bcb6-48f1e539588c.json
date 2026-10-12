@@ -1,0 +1,25 @@
+{
+  "item_id": "597c8d3b-ed3d-4289-bcb6-48f1e539588c",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4e8fad83-1513-4c44-80cb-be1244a37f47",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The line is spoken by an unnamed audience member, labelled \"Manifest Participant 00:06:08\" in the transcript, during a group debate that Liron's producer Ori ran at Manifest 2026. Liron was not even in the room. He says so himself in the intro: \"Ori's talk this year at Manifest, it didn't have me\", and he presents the whole recording as arguments people make for getting off the doom train, that is, positions he disagrees with. So the note fact-checks a stranger's offhand remark and addresses it to Liron. The date is also beside the point. The speaker's argument is that the underlying algorithms are old, so moving PPO from 2018 back to 2017 strengthens his case rather than correcting it, which makes the note pedantic even on its own terms. The 2017 publication date itself is right, but that does not save the note."
+    },
+    {
+      "note_id": "9bfcd0ed-f638-43bc-a128-14d55d395f28",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is a near duplicate of the other PPO note on the same sentence, and it fails for the same reasons. The sentence belongs to an unnamed Manifest audience member, not to Liron, who introduces the recording as pushback he expects listeners to reject and was not present at the session. PPO was indeed released on arXiv in July 2017, so the factual core holds, but a one-year slip on a date said out loud in a live discussion changes nothing about the speaker's point that RL algorithms have not moved much. Sending two notes on one throwaway date would also look like nitpicking to the author."
+    }
+  ]
+}

@@ -1,12 +1,14 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchPrioritizedCreatorUrls, fetchItemForUrl, fetchNotedPageCounts, fetchReaderCanonical, isWholePageChecked } from "../../everything-shared/notesQuery";
-import { submitNoteRequest } from "../../everything-shared/noteRequests";
-import { canonicalizePageUrl, isSubstackReaderUrl } from "../../everything-shared/pageUrls";
-import { track } from "../../everything-shared/analytics";
+import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts, isWholePageChecked } from "@cn/core/items";
+import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
+import { fetchReaderCanonical } from "@cn/core/pageUrls";
+import { submitNoteRequest } from "@cn/core/noteRequests";
+import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
+import { signInWithTwitterInPopup } from "@cn/core/auth";
+import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
-import { signInWithXViaWebAuthFlow } from "../utils/oauth";
-import { authorFeedStatusForTab } from "../utils/authorFeed";
+import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
@@ -75,8 +77,7 @@ async function syncNotedSites() {
       fetchNotedPageCounts(),
       fetchPrioritizedCreatorUrls(),
     ]);
-    // The listing badges and count cards draw their per-page note counts from
-    // this cache.
+    // The listing badges draw their per-page note counts from this cache.
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_STATUS_COUNTS_KEY]: counts });
     // The follow-button surfaces hide the button for feeds on this list.
     if (prioritized) await browser.storage.local.set({ [PRIORITIZED_CREATOR_URLS_KEY]: prioritized });
@@ -221,6 +222,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
       pageTitle: captured?.title ?? tab.title ?? "",
       selection: selection.trim() || null,
       pageText: captured?.text,
+      creatorFeedUrl: authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null,
     });
     // This is only a local reminder. The request itself is already saved.
     await addRequestedPage(pageUrl).catch(() => {});
@@ -349,17 +351,19 @@ export default defineBackground(() => {
     }
   });
 
-  browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((message: unknown, sender, sendResponse) => {
     // This reloads the unpacked extension from disk when a content script asks
     // for it. See utils/devReload.ts. Store builds compile it out.
     if (import.meta.env.VITE_CN_DEV_RELOAD && (message as { type?: string })?.type === "cn-dev-reload") {
       browser.runtime.reload();
       return undefined;
     }
-    if ((message as { type?: string })?.type === "cn-signin-x") {
+    if (!import.meta.env.SAFARI && (message as { type?: string })?.type === "cn-signin-x") {
       // The OAuth window outlives the popup that asked for it, so the flow
       // runs here in the background.
-      signInWithXViaWebAuthFlow().then(sendResponse);
+      signInWithTwitterInPopup(browser.identity.getRedirectURL(), (url) =>
+        browser.identity.launchWebAuthFlow({ url, interactive: true }),
+      ).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {
@@ -369,6 +373,17 @@ export default defineBackground(() => {
       // applies; a content script's fetch is bound by CORS and may neither
       // follow the cross-origin redirect nor read the response.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === TAB_CREATOR_MESSAGE_TYPE && sender.tab) {
+      // The write-anywhere overlay asks which creator its page belongs to, so
+      // the page's new item lands in that creator's project. Working that out
+      // can mean scripting the tab or asking LessWrong's API, which only the
+      // background may do.
+      authorFeedForTab(sender.tab).then(
+        (creator) => sendResponse(creator?.feedUrl ?? null),
+        () => sendResponse(null),
+      );
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-request-live-forward") {

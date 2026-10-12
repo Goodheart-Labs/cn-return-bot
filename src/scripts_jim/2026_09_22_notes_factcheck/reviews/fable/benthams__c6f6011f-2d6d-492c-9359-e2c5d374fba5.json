@@ -1,0 +1,18 @@
+{
+  "item_id": "c6f6011f-2d6d-492c-9359-e2c5d374fba5",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4a49c5e9-4a57-4766-a416-04b1aa64f8ca",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Cut the second sentence about speculative realism: the note's own Wikipedia source says that movement formed against 'the dominant forms of idealism in much of contemporary Continental philosophy', which hands the author his reply. Replace it with the survey figure: in the 2020 PhilPapers Survey, 53 of the 83 philosophers who identified with the continental tradition and answered the external-world question accepted or leaned toward non-skeptical realism, 24 toward idealism and 5 toward skepticism (survey2020.philpeople.org, correlations for Tradition: Continental).",
+      "reason": "The claim is the author's own and it carries weight in the post: he writes that continental philosophers 'seem to mostly agree that reality is subjective, that there is not a world out there but only beliefs that people have', then calls it a 'loony-toons belief' that is 'a problem for the discipline'. The best evidence says the claim is wrong even in that sense. The 2020 PhilPapers Survey's correlation table for respondents identifying with the continental tradition shows 53 of 83 accepting or leaning toward non-skeptical realism about the external world, 24 toward idealism and 5 toward skepticism, so most of them do accept a world out there, though they lean idealist far more often than other philosophers (24 of 83 against 90 of 1491). The note reaches the right conclusion with the wrong evidence. Its first sentence only lists movements, which proves nothing about what their members believe (German idealism and Husserl's phenomenology are on that list and are idealist), and its second sentence rests on speculative realism, whose Wikipedia page says it defines itself against the dominant correlationism and 'the dominant forms of idealism in much of contemporary Continental philosophy', which is close to conceding the author's point. That settles the first reviewer's reservation: as written the note invites the reply that a small dissenting movement proves the mainstream is anti-realist, so it should not go out in this form. With the survey figure in place of the speculative realism sentence the note becomes a fair, checkable correction, and the author does cite PhilPapers surveys elsewhere, but he hedged with 'seem to' in an openly polemical piece and may answer that English-speaking survey respondents are not the Butler and Derrida tradition he means."
+    }
+  ]
+}

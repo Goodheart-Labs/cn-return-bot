@@ -1,0 +1,48 @@
+{
+  "item_id": "1584a1a1-2f1b-4a10-a77d-b131592685e2",
+  "project_slug": "dwarkeshpatel",
+  "creator": "Dwarkesh Patel",
+  "source": "podcast",
+  "url": "https://www.youtube.com/watch?v=Hrbq66XqtCo",
+  "title": "Jensen Huang",
+  "published_at": null,
+  "full_text": null,
+  "notes": [
+    {
+      "note_id": "2e9d29f0-458d-47fe-b392-69f734807de0",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=2e9d29f0-458d-47fe-b392-69f734807de0",
+      "note": "Huawei estimated shipments for the Ascend AI chip series were approximately 700,000 units in 2025. While 2026 projections reach 1.6 million silicon dies, this figure includes inventory and yield loss rather than millions of finished chips shipped. https://technode.com/2025/05/18/huawei-to-ship-700000-ascend-ai-chips-in-2025-despite-yield-challenges/ https://www.bloomberg.com/news/articles/2025-09-29/huawei-to-double-output-of-top-ai-chip-as-nvidia-wavers-in-china",
+      "votes": {
+        "helpful": 1,
+        "not_helpful": 0
+      },
+      "claim": "A ton. Millions. Millions is way more than Anthropic has.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "But they do. What's the evidence? Huawei just had the largest single year in the history of their company.\n\nDwarkesh Patel\n\nHow many chips did they ship?\n\nJensen Huang\n\nA ton. Millions. Millions is way more than Anthropic has.",
+      "updated_quote": null,
+      "context_paragraph": "… what do you care about performance per watt for? You get plenty. You can use old chips to do. So 7nm chips are essentially Hopper. The ability for Hopper… I've got to tell you, today's models are largely trained on Hopper, Hopper generation. So 7nm chips are plenty good. The abundance of energy is their advantage. But then there's a question of whether they can actually manufacture enough chips. But they do. What's the evidence? Huawei just had the largest single year in the history of their company. How many chips did they ship? A ton. Millions. Millions is way more than Anthropic has. There's a question of how much logic SMIC can chip, and there's a question of how much memory— I'm telling you what it is. They have plenty of logic, and they have plenty of HBM2 memory. Right. But as you know, the bottleneck often in training and doing inference on these models is the amount of bandwidth. So if you have HBM2… I don't know the numbers offhand but versus the newest thing you have, there could be almost an order of magnitude difference in memory bandwidth, which is huge. Huawei is a networking company. But that doesn't change the fact …",
+      "context_url": "https://www.youtube.com/watch?v=Hrbq66XqtCo&t=4100s",
+      "start_seconds": 4100,
+      "end_seconds": 4112,
+      "sources": []
+    },
+    {
+      "note_id": "e71a3f3a-3aca-4169-baf0-3769580e4d17",
+      "commonnotes_url": "https://commonnotes.net/?project=dwarkeshpatel&note=e71a3f3a-3aca-4169-baf0-3769580e4d17",
+      "note": "China accounts for approximately 25% of global output in advanced industries and 24% of high-technology manufacturing. https://itif.org/publications/2026/05/06/china-produces-nearly-one-quarter-global-output-advanced-industries-itif-report-finds/ https://www.nsf.gov/statistics/2018/nsb20181/report/sections/industry-technology-and-the-global-marketplace/highlights",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "claim": "China is about 40% of the world's technology industry",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Can you also acknowledge that we used to have a very large share in that market, and we no longer have a large share in that market? We can also acknowledge that China is about 40% of the world's technology industry. To concede that market for the United States technology industry is a disservice to our country. It is a disservice to our national security. It is a disservice to our technology leadership, all for the benefit of one company. It makes no sense to me.",
+      "updated_quote": null,
+      "context_paragraph": "… than anybody else, but we don't want to send enriched uranium anywhere. We're not enriched uranium. It's a chip, and it's a chip that they can make themselves. But there's a reason they're buying it from you. We have quotes from the founders of Chinese companies that say that they’re bottlenecked on compute. Because our chips are better. On balance, our chips are better. There's just no question about it. In the absence of our chip… Can you acknowledge that Huawei had a record year? Can you acknowledge that a whole bunch of chip companies have gone public? Can you acknowledge that? Yes. Can you also acknowledge that we used to have a very large share in that market, and we no longer have a large share in that market? We can also acknowledge that China is about 40% of the world's technology industry. To concede that market for the United States technology industry is a disservice to our country. It is a disservice to our national security. It is a disservice to our technology leadership, all for the benefit of one company. It makes no sense to me. I guess I'm confused. It feels like you're making two different statements. One is that we're going to win this competition with Huawei because our chips are going to be way better if we're allowed to compete. Another is that they would be doing the same exact thing without us anyway. How can both of those things be true at the same time? It's obviously true. In the absence of a better choice, you'll take the only choice you have. How is that illogical? It's so logical. The reason they want Nvidia chips is that they're better. Yeah. Better is more compute. More compute means you can train a better model. No, it's just better. It's better because it's easier to program. We have a better ecosystem. But whatever the better is, whatever the better is… And of course …",
+      "context_url": "https://www.youtube.com/watch?v=Hrbq66XqtCo&t=5029s",
+      "start_seconds": 5029,
+      "end_seconds": 5058,
+      "sources": []
+    }
+  ]
+}

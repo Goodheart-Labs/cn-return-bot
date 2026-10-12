@@ -1,0 +1,16 @@
+{
+  "item_id": "5bc136df-49f3-46da-b07f-41c5b95511f9",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "62b75fd5-2059-4d60-9ca2-d1dcf07623e9",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The author does write \"It is shared by virtually every philosopher in the world\", so the claim is his. Every source quote is verbatim correct: the Stanford Encyclopedia really does name Grisez, Finnis, MacIntyre and Murphy as contemporary defenders, and Moore, Foot and Thompson as nontheistic writers in the tradition. But the note does not actually contradict what the author wrote. \"Virtually every philosopher\" already concedes that a minority defends the view, so listing seven names out of a profession of tens of thousands is consistent with his sentence rather than a correction of it. The note also slides between two different things. In the post this replies to, the author explicitly rules out the wider senses of the term and attacks only the perverted-faculty view that grounds absolute prohibitions on gay sex and contraception, whereas Foot, Thompson, Moore and MacIntyre are neo-Aristotelian ethical naturalists or legal theorists who mostly do not hold that view. Finally the sentence is a one-line aside in a reply to a critic who accused him of being \"Very Online\"; nothing in his argument rests on it, so even a fair correction here would be tangential. He would answer that he said \"virtually every\" for exactly this reason."
+    }
+  ]
+}

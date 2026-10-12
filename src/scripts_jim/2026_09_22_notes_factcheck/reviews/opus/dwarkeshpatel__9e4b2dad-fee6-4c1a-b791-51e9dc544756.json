@@ -1,0 +1,16 @@
+{
+  "item_id": "9e4b2dad-fee6-4c1a-b791-51e9dc544756",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d9045d3e-0ab9-42d9-92e3-bea2b24b0445",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The sentence is really said in the episode by the guest, Grant Sanderson, and not quoted from anyone else. He says: \"The beauty of that problem is you can phrase it so simply. You ask about xⁿ + yⁿ = zⁿ. Do you have integer solutions for this when n is bigger than three?\" I checked the official transcript on dwarkesh.com/p/grant-sanderson-2 and it reads \"bigger than three\" there too, so this is not an artifact of our captions. The note's maths is right: Fermat's Last Theorem is about every exponent above 2, and the case of cubes was settled by Euler long before Wiles, so the correct threshold is n > 2. Two things give me pause. First, the question Grant actually asks is not false, because there really are no integer solutions when n is bigger than three; he only states a narrower version of the theorem, so the note corrects an understatement rather than a wrong statement. Second, the point he is making is that the problem is simple to phrase while the proof needs centuries of machinery, and that point survives the slip untouched, so the note may land as a well-actually correction of a spoken off-by-one by a mathematician who plainly knows the right statement. Nathan should decide whether a one-word slip in a famous theorem is worth sending; the note itself is accurate and its Wikipedia sources say exactly what the accepted quotes claim."
+    }
+  ]
+}
