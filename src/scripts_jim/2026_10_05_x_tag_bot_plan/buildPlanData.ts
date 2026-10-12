@@ -10,9 +10,8 @@ import { readFileSync, writeFileSync } from "fs";
 import { SEARCH_PROMPTED_JSON_INSTRUCTION, SEARCH_SYSTEM_PROMPT } from "../../pipeline/prompts/simple-bot/searchAgent";
 import { TIMING_EXTRACTOR_SYSTEM_PROMPT } from "../../pipeline/prompts/simple-bot/timingJudge";
 import { buildWriterUserMessage, WRITER_SYSTEM_PROMPT } from "../../pipeline/prompts/simple-bot/writer";
-import { buildClassifierUserMessage, buildNoNoteReplyUserMessage } from "./prompts";
 import { TAG_BOT_PICKS } from "../../x-tag-bot/bot";
-import { CLASSIFIER_SYSTEM_PROMPT, NO_NOTE_REPLY_SYSTEM_PROMPT, REVISION_SYSTEM_PROMPT } from "../../x-tag-bot/prompts";
+import { buildNoNoteReplyUserMessage, NO_NOTE_REPLY_SYSTEM_PROMPT } from "../../x-tag-bot/noNoteReply";
 import * as replies from "../../x-tag-bot/replies";
 import { formatNoteRequest } from "../../pipeline/prompts/input/userMessage";
 import { SIGNAL_PICKS } from "../../signal-bot/drafting";
@@ -34,16 +33,13 @@ const planData = {
     timing: TIMING_EXTRACTOR_SYSTEM_PROMPT,
     requesterSection: formatNoteRequest({ handle: "<handle>", text: "<comment without the @ tag>" }),
     noNote: NO_NOTE_REPLY_SYSTEM_PROMPT,
-    classifier: CLASSIFIER_SYSTEM_PROMPT,
-    revision: REVISION_SYSTEM_PROMPT,
-    submittedTemplate: replies.submittedNoteReply({ draft: PLACEHOLDER_DRAFT, noteId: NOTE_ID, lead: "<the revision call's reply, only on a revised note>" }),
-    waitingEligibilityTemplate: replies.waitingNoteReply({ draft: PLACEHOLDER_DRAFT, reason: "eligibility", lead: "<the revision call's reply, only on a revised note>" }),
-    waitingLimitTemplate: replies.waitingNoteReply({ draft: PLACEHOLDER_DRAFT, reason: "limit" }),
-    noNoteTemplate: replies.noNoteReply("<the no-note reply>"),
+    submittedTemplate: replies.submittedNoteReply(PLACEHOLDER_DRAFT, NOTE_ID),
+    waitingEligibilityTemplate: replies.waitingNoteReply(PLACEHOLDER_DRAFT, "eligibility"),
+    waitingLimitTemplate: replies.waitingNoteReply(PLACEHOLDER_DRAFT, "limit"),
     statusReplies: {
       submittedLater: replies.submittedLaterReply(NOTE_ID),
-      otherVersionSubmitted: replies.otherVersionSubmittedReply({ versionPostId: "<id of the submitted version's post>", noteId: NOTE_ID }),
       alreadySubmitted: replies.alreadySubmittedReply(NOTE_ID),
+      earlierAnswer: replies.earlierAnswerReply("<id of the first answer>"),
       gaveUp: replies.gaveUpReply("limit"),
       gaveUpNotEligible: replies.gaveUpReply("eligibility"),
       postDeleted: replies.POST_DELETED_REPLY,
@@ -52,9 +48,7 @@ const planData = {
     tagBotPicks: JSON.stringify(TAG_BOT_PICKS, null, 2),
     signalPicks: JSON.stringify(SIGNAL_PICKS, null, 2),
   },
-  classifierRuns: read("examples_classifier_no_approval.json"),
-  mumbaiWaitingNote: replies.waitingNoteReply({ draft: mumbai.draft, reason: "eligibility" }),
-  mumbaiRevisedNote: replies.waitingNoteReply({ draft: mumbai.revision.revision.note, reason: "eligibility", lead: mumbai.revision.revision.reply }),
+  mumbaiWaitingNote: replies.waitingNoteReply(mumbai.draft, "eligibility"),
   mumbai: {
     tweetId: mumbai.tweetId,
     requester: mumbai.requester,
@@ -65,7 +59,6 @@ const planData = {
     writerUserMessage: buildWriterUserMessage(mumbai.postContext, mumbai.pipeline.search.result.findings),
     writer: mumbai.pipeline.writer,
     draft: mumbai.draft,
-    revision: mumbai.revision,
   },
   gdp: {
     tweetId: gdp.tweetId,
@@ -74,9 +67,7 @@ const planData = {
     search: gdp.pipeline.search,
     noNoteUserMessage: buildNoNoteReplyUserMessage({ postContext: gdp.postContext, findings: gdp.pipeline.search.result.findings }),
     reason: gdp.reason,
-    noNoteText: gdp.noNoteText,
     feedback: gdp.feedback,
-    revision: gdp.revision,
   },
   costs,
 };

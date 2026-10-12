@@ -68,7 +68,7 @@ code { overflow-wrap: anywhere; font-family: var(--font-mono); font-size: 0.86em
 .chip.other { background: var(--other-soft); color: var(--other-model); }
 .chip.code { background: var(--code-soft); color: var(--code); }
 .chip.x { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
-.chip.new { background: var(--bot-soft); color: var(--bot); }
+.chip.new, .chip.reply { background: var(--bot-soft); color: var(--bot); }
 .chip.reused { background: var(--surface-2); color: var(--muted); }
 .chip.changed { background: var(--human-soft); color: var(--human); }
 .chip.skip { background: transparent; color: var(--skip); border-color: var(--skip); text-decoration: line-through; }
@@ -189,13 +189,13 @@ td code { white-space: nowrap; }
 
 <div class="page">
   <header>
-    <div class="eyebrow">GOO-212 · built, waiting for the X account · 8 October 2026</div>
+    <div class="eyebrow">GOO-212 · built, waiting for the X account · 12 October 2026</div>
     <h1>Tag-to-Note Bot</h1>
-    <p class="lede">Someone replies under a post on X and tags our bot. The bot researches the post with our existing note pipeline and submits a Community Note right away, or explains why no note is needed. When it can't submit yet, because X doesn't take our notes on that post or the daily limit is full, it shows the note, says what would help, and keeps trying for three hours. People can reply with corrections while a note waits.</p>
+    <p class="lede">Someone replies under a post on X and tags our bot. The bot researches the post with our existing note pipeline and submits a Community Note right away, or explains why no note is needed. When it can't submit yet, because X doesn't take our notes on that post or the daily limit is full, it shows the note, says what would help, and keeps trying for three hours. That is all it does: it answers each tag once and never talks back to replies.</p>
     <div class="meta">
       <a href="https://linear.app/goodheart-labs/issue/GOO-212/make-a-twitter-bot-that-automatically-posts-community-notes-when">Linear ticket GOO-212</a>
       <a href="https://github.com/Goodheart-Labs/cn-return-bot/pull/560">Draft PR #560</a>
-      <span>Every model output on this page is real. The two posts and their comments are real production data. The replies under them are written by hand.</span>
+      <span>Every model output on this page is real. The two posts and their comments are real production data. The tags under them are written by hand.</span>
     </div>
     <nav class="toc" aria-label="Sections">
       <a href="#flow">The steps</a><a href="#threads">Two example threads</a><a href="#behaviour">Behaviour</a><a href="#costs">Costs</a><a href="#limits">X's rules and limits</a><a href="#approval">X's approval</a><a href="#d-profile">Profile</a><a href="#decisions">Implementation decisions</a><a href="#risks">Risks and open questions</a><a href="#built">What's built</a><a href="#changes">Changes</a>
@@ -205,13 +205,13 @@ td code { white-space: nowrap; }
   <section id="flow">
     <h2>The steps</h2>
     <div class="prose">
-      <p>Three things set the bot to work. A new tag starts a conversation (top). A reply to one of the bot's posts continues it (middle). Every two minutes the bot tries its waiting notes again (bottom). Hover over a step for a one-line summary. Click it to see its full prompt, the real input it got and the real output it gave.</p>
+      <p>Two things set the bot to work. A tag gets one answer (top). Every two minutes the bot tries its waiting notes again (bottom). Hover over a step for a one-line summary. Click it to see its full prompt, the real input it got and the real output it gave.</p>
     </div>
     <div class="legend" aria-label="Legend">
       <span class="chip opus">Opus 5.5</span><span class="chip muse">Muse Spark 1.3</span><span class="chip other">Other model</span><span class="chip code">Plain code</span><span class="chip x">X API call</span><span class="chip new">Bot reply</span><span class="chip skip">Skipped for this bot</span>
     </div>
     <div class="flow-wrap">
-      <svg id="flow-svg" viewBox="0 0 1180 1180" role="img" aria-label="Flow diagram of the bot's steps"></svg>
+      <svg id="flow-svg" viewBox="0 0 1180 910" role="img" aria-label="Flow diagram of the bot's steps"></svg>
     </div>
     <p class="flow-hint">On a phone, scroll the diagram sideways. Every step is also reachable with the Tab key and Enter.</p>
   </section>
@@ -219,7 +219,7 @@ td code { white-space: nowrap; }
   <section id="threads">
     <h2>Two example threads</h2>
     <div class="prose">
-      <p>These are the two conversations the plan's examples come from. The first is a post with a false side claim on a post X doesn't take our notes on yet: the bot posts its note as waiting, revises it after a correction, and submits it once X allows it. The second is a post whose numbers are right, where the bot says no note is needed and holds its ground when someone pushes back. The small buttons under each bot post open the step that wrote it.</p>
+      <p>These are the two threads the plan's examples come from. The first is a post with a false side claim that X doesn't take our notes on yet: the bot shows its note, keeps trying, and replies once the note went in. The second is a post whose numbers are right, where the bot says no note is needed. The small buttons under each bot post open the step that wrote it.</p>
     </div>
     <div class="threads">
       <div class="thread" id="thread-mumbai"></div>
@@ -229,23 +229,15 @@ td code { white-space: nowrap; }
 
   <section id="behaviour" class="prose">
     <h2>Behaviour</h2>
-    <h3>A tag</h3>
     <ul>
       <li>A person replies to a post and writes <code>@CommonNotesBot</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post.</li>
       <li>The bot answers within about 30 to 60 seconds. X pushes the tag to us within a second, and the research takes 20 to 40 seconds.</li>
       <li>The person's own words go into the research. If they point at one claim, the bot checks that claim even when it is not the post's main argument. This turned out to matter, see <a href="#d-requester">the decision on the tagger's comment</a>.</li>
       <li>If the research finds a note, the bot submits it right away and replies with the note and its link. There is no approval step.</li>
-      <li>If it can't submit yet, it replies with the note and says why. When X doesn't take our notes on the post yet, the reply says that requesting a Community Note in the post's menu helps. When the daily limit is full, it says so. Either way it keeps trying every 2 minutes for 3 hours, and replies under the note once it went in.</li>
+      <li>If it can't submit yet, it replies with the note and says why. When X doesn't take our notes on the post yet, the reply says that requesting a Community Note in the post's menu helps. When the daily limit is full, it says so. Either way it keeps trying every 2 minutes for 3 hours. Then it replies under its own answer once more: "Submitted" with the note's link, or that it gave up and how to try again.</li>
       <li>If no note is needed, it replies with two or three sentences on why.</li>
-      <li>If a second person tags the bot under the same post, the bot doesn't research again. It answers with the newest answer it already has, or with the link if our note is already in. If their tag asks for a change, it is handled as feedback.</li>
-    </ul>
-    <h3>A reply to the bot</h3>
-    <ul>
-      <li>Anyone may reply to one of the bot's posts. The bot sorts each reply into feedback or anything else.</li>
-      <li>Feedback gets one answer while the note still waits: a revised note, which the bot then submits or keeps trying exactly like a first note, or a short reason why the answer stands. The bot can search the web and open links the person posted.</li>
-      <li>Feedback after the note went in gets the note's link, because a submitted note can't be changed.</li>
-      <li>Everything else, such as thanks, jokes and insults, gets no reply at all. That also stops two bots from talking to each other forever.</li>
-      <li>A post gets at most one note from us. When several versions wait on one post, the newest one is the one that goes in, and the older versions get a reply that links to it (see <a href="#d-one-note">one note per post</a>).</li>
+      <li>Every tag gets exactly one answer, plus that one follow-up for a note that waited. A second tag under the same post gets a link to the first answer, without new research. If our note on the post is already in, it gets the note's link. After the bot gave up, a new tag starts fresh research.</li>
+      <li>Replies to the bot get no answer at all, whatever they say. Someone who wants a different answer can only tag the bot again, and then gets the link to the first answer.</li>
     </ul>
   </section>
 
@@ -256,19 +248,19 @@ td code { white-space: nowrap; }
     </div>
     <div class="table-wrap" id="cost-table"></div>
     <div class="prose">
-      <p><strong>Fixed costs:</strong> X Premium for the bot account is $8 a month. Every tag and every reply X pushes to us costs $0.005, and nothing is charged while nobody writes to the bot.</p>
-      <p><strong>At scale:</strong> 20 conversations a day at about $1.50 each is about $900 a month. The revision step is the one to watch. A revision that searches and opens pages cost $1.10 in the Mumbai example, because Opus reads every fetched page as input (262,000 input tokens). With the fetch tool capped at two pages of 8,000 tokens each, the improve-and-approve revision cost $0.31. The revision also re-checks its sources on every reply: in the submission-claim test, eight short replies cost $6 together, about $0.75 each.</p>
+      <p><strong>Fixed costs:</strong> X Premium for the bot account is $8 a month. Every tag X pushes to us costs $0.005, and nothing is charged while nobody tags the bot.</p>
+      <p><strong>At scale:</strong> 20 tags a day at about $0.60 each is about $360 a month. A second tag on the same post costs only the event and a short reply, because it gets a link instead of new research.</p>
     </div>
     <div class="callout">
-      <p><strong>One price is unclear.</strong> X lists $0.01 for a "summoned" post (a reply to someone who tagged us) and $0.20 for a post with a link. A draft reply is both. X's docs don't say which wins. The table assumes $0.20, the worse case. We will know from the billing console after the first day.</p>
+      <p><strong>One price is unclear.</strong> X lists $0.01 for a "summoned" post (a reply to someone who tagged us) and $0.20 for a post with a link. A reply that shows a note is both. X's docs don't say which wins. The table assumes $0.20, the worse case. We will know from the billing console after the first day.</p>
     </div>
   </section>
 
   <section id="limits" class="prose">
     <h2>X's rules and limits</h2>
     <h3>Who the bot may reply to</h3>
-    <p>Since 23 February 2026, an app on X's self-serve API can only reply to a post whose author tagged the app's account or quoted one of its posts. Our design never breaks this rule: every post the bot answers either tags it directly or is a reply to one of its posts. A reply to one of the bot's posts carries the bot's handle as an implicit mention, so it shows up in the bot's mentions. Whether X's reply rule counts that as a tag is not documented, see <a href="#risks">Risks</a>.</p>
-    <p>X's developer guidelines add three conditions for automated accounts: at most one reply per interaction, the "Automated" label on the profile, and a bio that says who runs the bot. The bot replies once per post it is tagged in, so it meets the first.</p>
+    <p>Since 23 February 2026, an app on X's self-serve API can only reply to a post whose author tagged the app's account or quoted one of its posts. The bot answers only posts that tag it, so its first answer always meets this rule. The one exception is the follow-up a waiting note gets, which replies to the bot's own post, see <a href="#risks">Risks</a>.</p>
+    <p>X's developer guidelines add three conditions for automated accounts: at most one reply per interaction, the "Automated" label on the profile, and a bio that says who runs the bot. The bot answers each tag once, so it meets the first.</p>
     <h3>Character limits</h3>
     <ul>
       <li><strong>A Community Note</strong> may have 280 characters, and each link counts as 1 character. Our writer already works to this limit.</li>
@@ -276,15 +268,15 @@ td code { white-space: nowrap; }
       <li><strong>X Premium</strong> allows posts of up to 25,000 characters. The API needs no special flag for this: <code>POST /2/tweets</code> accepts the longer text when the account has Premium, and refuses it otherwise. We decided to buy Premium for the bot. Premium also adds a checkmark, which ranks the bot's replies higher in a thread.</li>
     </ul>
     <h3>Rate limits</h3>
-    <p>A self-serve app may hold 1,500 event subscriptions; the bot needs two. Posting is limited to 100 posts per 15 minutes and 10,000 per day, far above what we need.</p>
+    <p>A self-serve app may hold 1,500 event subscriptions; the bot needs one. Posting is limited to 100 posts per 15 minutes and 10,000 per day, far above what we need.</p>
   </section>
 
   <section id="approval" class="prose">
     <h2>X's approval: we launch without asking</h2>
     <p>X's developer guidelines and Automation Rules, last updated in April 2026, say that an app which "generates and posts replies" with AI needs "prior written approval" from X. There is no form for it. On X's developer forum in August and September 2026, X staff told several developers that replies like ours need no separate approval if they meet four conditions. We decided to rely on that and launch without asking. The bot meets all four:</p>
     <ul>
-      <li><strong>Triggered by a mention.</strong> The bot only answers posts that tag it or reply to it.</li>
-      <li><strong>One reply per interaction.</strong> Each post gets at most one answer, and the double-reply guard makes sure of it.</li>
+      <li><strong>Triggered by a mention.</strong> The bot only answers posts that tag it.</li>
+      <li><strong>One reply per interaction.</strong> Each tag gets one answer. A tag that X delivers twice is stored once and answered once.</li>
       <li><strong>The Automated label.</strong> Set once in the account settings (Settings, Your account, Account information, Automation, with our main account as the managing account). The bio says who runs the bot.</li>
       <li><strong>Never reaching out unasked.</strong> The bot does not watch keywords, and it never likes, follows or sends messages.</li>
     </ul>
@@ -298,10 +290,10 @@ td code { white-space: nowrap; }
       <div class="decision">
         <h3>Where it runs: one new service on the services box</h3>
         <p>The bot is a long-running program, a <em>daemon</em>, that runs as a new systemd service called <code>cn-x-tag-bot</code> on the services box. systemd is Linux's service manager: it starts the program at boot and restarts it if it crashes. The box's existing autodeploy timer pulls new code and restarts it, like the other <code>cn-*</code> services.</p>
-        <p>X pushes the bot's mentions to it through the X Activity API (X's name, "XAA"). The service subscribes once to two events for the bot's account: <code>post.mention.create</code>, which fires when someone writes the bot's handle in a post, and <code>post.reply.create</code>, which fires when someone replies directly to one of the bot's posts. It then opens one persistent HTTP stream (<code>GET /2/activity/stream</code>), a connection that the service opens and X keeps open, and X sends each event down it within a second. The stream needs no public web address, so it fits the services box, and it needs no cursor or schedule of our own.</p>
+        <p>X pushes the bot's mentions to it through the X Activity API (X's name, "XAA"). The service subscribes once to one event for the bot's account, <code>post.mention.create</code>, which fires when someone writes the bot's handle in a post. A reply to one of the bot's posts that writes the handle again fires it too, and the bot ignores it, because the event says whose post it replies to. It then opens one persistent HTTP stream (<code>GET /2/activity/stream</code>), a connection that the service opens and X keeps open, and X sends each event down it within a second. The stream needs no public web address, so it fits the services box, and it needs no cursor or schedule of our own.</p>
         <p>The plan deliberately does not try to be robust against outages. A tag that arrives while the service is down gets no answer, and the person can tag again. The one exception costs a single parameter: when the stream connects, it asks for <code>backfill_minutes=5</code>, so X resends the last five minutes. That covers the restart the autodeploy timer does after every code change. X also offers webhooks, where X calls a public address of ours, and polling the mentions timeline. Both need more code for no gain here.</p>
-        <p>The first answer runs on the claim-check service, like every other note our bots write. The bot sends one request to the service's <code>/check-tweet</code> route with the post, the tagger's request and <code>TAG_BOT_PICKS</code>. The picks are the existing A/B variants, forced by the caller, and they choose every step and model: no topic filter, no prefilter, Opus 5.5 for search and writer, no source verifier, no materiality judge and no X evaluation. This is built, and the Signal bot already uses it with its own <code>SIGNAL_PICKS</code>, see <a href="#built">What's built</a>.</p>
-        <p>Sorting replies and revising run in the tag bot itself. They are conversation calls about one thread, like the Signal bot's discussion call, and not pipeline steps.</p>
+        <p>The research runs on the claim-check service, like every other note our bots write. The bot sends one request to the service's <code>/check-tweet</code> route with the post, the tagger's request and <code>TAG_BOT_PICKS</code>. The picks are the existing A/B variants, forced by the caller, and they choose every step and model: no topic filter, no prefilter, Opus 5.5 for search and writer, no source verifier, no materiality judge and no X evaluation. This is built, and the Signal bot already uses it with its own <code>SIGNAL_PICKS</code>, see <a href="#built">What's built</a>.</p>
+        <p>Only one model call runs in the tag bot itself: the short reply that explains why no note is needed.</p>
       </div>
 
       <div class="decision">
@@ -316,41 +308,28 @@ td code { white-space: nowrap; }
 
       <div class="decision">
         <h3>Database changes</h3>
-        <p>Two new tables keep the conversations. A thread is one tag and everything below it. Every post in it, ours and theirs, is one row in the second table, so the tree of replies can be rebuilt from <code>parent_tweet_id</code>. The bot uses that table for four things: finding which thread a new reply belongs to, walking the path for the revision's thread, knowing which notes still wait and exactly what they say, and never answering a post twice. Costs stay in <code>pipeline_runs</code>. If the bot crashes between posting a reply and saving it, it may answer that post again after the restart, which we accept for simpler code.</p>
-        <h4><code>x_tag_threads</code> (new)</h4>
+        <p>One new table, one row per tag. It is how the bot never answers a tag twice, finds its first answer when a post is tagged again, and knows which notes still wait and exactly what they say. Costs and the full research log stay in <code>pipeline_runs</code>. If the bot crashes between posting a reply and saving it, it may answer that tag again after the restart, which we accept for simpler code.</p>
+        <h4><code>x_tag_requests</code> (new)</h4>
         <div class="table-wrap"><table>
           <thead><tr><th>Column</th><th>Type</th><th>Purpose</th></tr></thead>
           <tbody>
-            <tr><td><code>id</code></td><td>uuid</td><td>Primary key.</td></tr>
+            <tr><td><code>request_tweet_id</code></td><td>text, primary key</td><td>The post that tagged the bot. A tag X delivers twice is stored once.</td></tr>
             <tr><td><code>target_tweet_id</code></td><td>text</td><td>The post a note would go on.</td></tr>
-            <tr><td><code>request_tweet_id</code></td><td>text, unique</td><td>The post that tagged the bot.</td></tr>
             <tr><td><code>requester_id</code>, <code>requester_handle</code></td><td>text</td><td>Who tagged the bot.</td></tr>
-            <tr><td><code>post_context</code></td><td>text</td><td>The full input the first research got. Revisions get the same input, so they see the same post, media descriptions and comments.</td></tr>
-            <tr><td><code>findings</code></td><td>text</td><td>The research findings of the first run.</td></tr>
+            <tr><td><code>text</code></td><td>text</td><td>The tag's text, which goes into the research as the request.</td></tr>
+            <tr><td><code>status</code></td><td>text</td><td><code>researching</code> until the bot answers. Then <code>submitted</code>, <code>waiting</code>, <code>gave_up</code>, <code>no_note</code>, <code>already_submitted</code> (our note was already on the post), <code>repeated</code> (a link to the first answer), <code>unreadable</code> or <code>deleted</code>. A waiting note becomes <code>submitted</code>, <code>gave_up</code>, <code>already_submitted</code> or <code>deleted</code>.</td></tr>
+            <tr><td><code>answer_tweet_id</code></td><td>text</td><td>The bot's reply under the tag. A waiting note's follow-up goes under it, and a second tag links to it.</td></tr>
+            <tr><td><code>draft</code></td><td>jsonb</td><td><code>{text, sources}</code>: exactly what goes in when the note is submitted.</td></tr>
+            <tr><td><code>note_id</code></td><td>text</td><td>The Community Note's id, once it went in.</td></tr>
             <tr><td><code>pipeline_run_id</code></td><td>uuid</td><td>The <code>pipeline_runs</code> row with the full log and cost, <code>bot_name = 'x-tag'</code>.</td></tr>
-            <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
-          </tbody>
-        </table></div>
-        <h4><code>x_tag_posts</code> (new)</h4>
-        <div class="table-wrap"><table>
-          <thead><tr><th>Column</th><th>Type</th><th>Purpose</th></tr></thead>
-          <tbody>
-            <tr><td><code>tweet_id</code></td><td>text, primary key</td><td>The post's X id.</td></tr>
-            <tr><td><code>thread_id</code></td><td>uuid</td><td>Which thread it belongs to.</td></tr>
-            <tr><td><code>parent_tweet_id</code></td><td>text</td><td>The post it replies to.</td></tr>
-            <tr><td><code>author_id</code>, <code>author_handle</code></td><td>text</td><td>Who wrote it.</td></tr>
-            <tr><td><code>role</code></td><td>text</td><td><code>human</code> or <code>bot</code>.</td></tr>
-            <tr><td><code>kind</code></td><td>text</td><td>For a human post: <code>request</code>, <code>feedback</code>, <code>other</code>. For a bot post: <code>waiting</code>, <code>submitted</code>, <code>no_note</code>, <code>answer</code>, and the fixed replies <code>other_version_submitted</code>, <code>already_submitted</code>, <code>gave_up</code>, <code>refused</code>, <code>unreadable</code>.</td></tr>
-            <tr><td><code>text</code></td><td>text</td><td>The full text as posted.</td></tr>
-            <tr><td><code>draft</code></td><td>jsonb</td><td>On every bot post that shows a note, <code>{text, sources}</code>: exactly what goes in when it is submitted. That is a waiting note, and a note that went in with the first reply.</td></tr>
-            <tr><td><code>created_at</code></td><td>timestamptz</td><td></td></tr>
+            <tr><td><code>created_at</code></td><td>timestamptz</td><td>The 3 hours a note may wait count from here.</td></tr>
           </tbody>
         </table></div>
         <h4>Changes to existing tables</h4>
         <div class="table-wrap"><table>
           <thead><tr><th>Table</th><th>Change</th><th>Why</th></tr></thead>
           <tbody>
-            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions. The bot uses the Signal bot's queue table <code>signal_submission_queue</code> as it is, which gives both bots priority over the automatic pipeline. It is not renamed, because the automatic pipeline, the Signal bot and the database all read its fields by name, and a rename would have to switch all of them at the same moment. Which note waits on a post is read from <code>x_tag_posts</code>, so the queue needs no new column.</td></tr>
+            <tr><td><code>note_submission_claims</code></td><td>The <code>lane</code> check allows <code>'x_tag'</code>.</td><td>So the capacity gate counts and orders the bot's submissions. The bot uses the Signal bot's queue table <code>signal_submission_queue</code> as it is, which gives both bots priority over the automatic pipeline. It is not renamed, because the automatic pipeline, the Signal bot and the database all read its fields by name, and a rename would have to switch all of them at the same moment. Which note waits on a post is read from <code>x_tag_requests</code>, so the queue needs no new column.</td></tr>
           </tbody>
         </table></div>
       </div>
@@ -362,43 +341,33 @@ td code { white-space: nowrap; }
       </div>
 
       <div class="decision" id="d-no-approval">
-        <h3>No approval step: the bot submits on its own</h3>
-        <p>The first plan had people approve each draft before it went in. Nathan suggested the bot should submit on its own and ask for help only when something blocks it, and you agreed (8 October). So a note now goes in as soon as X takes it. The approval rule, the "improve and approve" reply and the queue of approvals are gone, and the classifier knows only two kinds of reply, feedback and anything else.</p>
-        <p>What this gives up: nobody reads a note before it is submitted, and since the ticket also dropped the source check, nothing checks the cited pages either (see the decision below). What it gains: one reply instead of two, a note on the post as early as possible, and much less code.</p>
+        <h3>No approval and no conversation: one answer per tag</h3>
+        <p>The first plan had people approve each draft before it went in, and let them reply with corrections that revised it. Nathan suggested the bot should submit on its own and ask for help only when something blocks it (8 October). You then asked for the simplest version of that (12 October): a note gets written, posted and submitted, or tried for 3 hours. So the bot no longer reads replies at all. The approval rule, "improve and approve", the reply classifier, the revision call and the handling of several versions of a note are all gone.</p>
+        <p>What this gives up: nobody reads a note before it is submitted, nothing checks the cited pages (see below), and a wrong note can't be corrected from the thread. What it gains: one answer per tag, a note on the post as early as possible, and a bot of about 200 lines with one table.</p>
       </div>
 
       <div class="decision" id="d-one-note">
-        <h3>One note per post, even with several versions</h3>
-        <p>Our AI Note Writer can submit only one note per post. Several versions of a note can still wait on one post at the same time, for example when someone's correction leads to a revised note while the first one waits, or when two threads on the same post each produce one.</p>
-        <ul>
-          <li><strong>The newest waiting version is the one tried.</strong> It is the version people corrected most recently. A newer "no note needed" answer, such as a withdrawal, stops every waiting version before it.</li>
-          <li><strong>Never two submissions.</strong> Work on one post runs one task at a time, and the database's existing <code>claim_note_submission</code> lock refuses a second claim on a post that already has one.</li>
-          <li><strong>Every waiting version gets one final reply.</strong> When the note goes in, the version that went in gets "Submitted" with the note's link. Each older version gets a reply that links to the X post of the version that went in, which X shows as a quote card.</li>
-        </ul>
+        <h3>One note per post</h3>
+        <p>Our AI Note Writer can submit only one note per post. The bot keeps that simple: a post gets researched once. A second tag on the same post, while the first answer stands, gets a link to that answer. Work on one post runs one task at a time, so two tags that arrive together can't both start research. The database's existing <code>claim_note_submission</code> lock refuses a second claim on a post that already has a note, as a second guarantee.</p>
       </div>
 
       <div class="decision">
         <h3>Waiting notes: tried every 2 minutes, for 3 hours</h3>
         <p>X lets our AI Note Writer submit only so many notes per 24 hours. On 5 October the limit was 73, and 68 of those slots were used when this plan was written. On 4 October we hit the limit at 50. The automatic pipeline fills the limit most days, so a note from the bot will often have to wait. And most posts people tag are probably not eligible for our notes yet.</p>
         <p>The database decides when a submission may go out. A slot frees up when a note submitted 24 hours earlier drops out of the window, about every 20 to 30 minutes on a typical day. After X actually refuses a note for the limit, the gate waits 95 minutes and then lets one test submission through. The bot's notes go ahead of the automatic pipeline, like Signal approvals do.</p>
-        <p>Every 2 minutes the bot asks <code>evaluate_note</code> whether the post is eligible, and then the database gate whether there is room. Neither publishes anything. A 60-minute window would fail every note that arrives just after a refusal, because the gate alone waits 95 minutes, so the bot keeps trying for 3 hours. After that it replies under the note that it gave up and how to try again: request a Community Note, or tag it again.</p>
+        <p>Every 2 minutes the bot asks <code>evaluate_note</code> whether the post is eligible, and then the database gate whether there is room. Neither publishes anything. A 60-minute window would fail every note that arrives just after a refusal, because the gate alone waits 95 minutes, so the bot keeps trying for 3 hours. After that it replies under its answer that it gave up and how to try again: request a Community Note, or tag it again. If another of our bots puts a note on the post in the meantime, the bot stops and replies with that note's link.</p>
       </div>
 
       <div class="decision">
         <h3>No source check, and no human check either</h3>
         <p>The ticket drops the source verifier, and without an approval step nobody reads a note before it goes in. An earlier test run shows what that can cost. Asked for an official source, Opus 5.5 (before the medium reasoning setting) rewrote the note around the 2011 census and cited <code>en.wikipedia.org/wiki/Slums_in_Chennai</code> for a claim about Mumbai. The verifier would likely have caught that the page does not support the claim. In the final runs at medium reasoning the sources held up: a government table filed with Parliament and Wikipedia's Dharavi article.</p>
-        <p>Options, cheapest first:</p>
-        <ul>
-          <li>Keep it as it is.</li>
-          <li>Accept a source in a revised note only if Opus actually opened it or found it in this conversation's search results. This is plain code and catches invented links, but not a real page that says something else.</li>
-          <li>Run the existing source verifier on every note before it goes in, by switching it back on in <code>TAG_BOT_PICKS</code>. It costs about $0.01 and 10 seconds per note.</li>
-        </ul>
+        <p>If this turns out to matter, the existing source verifier can be switched back on in <code>TAG_BOT_PICKS</code>. It costs about $0.01 and 10 seconds per note.</p>
       </div>
 
       <div class="decision">
         <h3>The bot's fixed text is never written by a model</h3>
-        <p>Everything around a note ("I submitted this Community Note", the waiting explanation, "Submitted", "gave up") is a fixed template in code. A model writes only the explanation in a no-note reply and the lead above a revised note. We tested whether the revision call ever claims on its own that a note was submitted, with eight replies built to tempt it ("thanks for submitting!", "did you submit it yet?", "ok publish it"). It never did, so the tag bot has no filter for such claims, unlike the Signal bot's <code>safeReply</code>. The revision prompt now says that the bot itself submits a new note and reports it, so the model has no reason to.</p>
-        <p>Everything people write in the thread, and every page the bot reads, goes into the prompts as evidence, never as instructions. Each prompt says so.</p>
+        <p>Everything around a note ("I submitted this Community Note", the waiting explanation, "Submitted", "gave up") is a fixed template in code. A model writes only the no-note reply, so no model can claim that a note was submitted, and the tag bot needs no filter like the Signal bot's <code>safeReply</code>.</p>
+        <p>The tagger's comment and every page the bot reads go into the prompts as evidence, never as instructions. The request section says so.</p>
       </div>
 
       <div class="decision" id="d-eligibility">
@@ -426,7 +395,6 @@ td code { white-space: nowrap; }
 1. Reply to a post and tag @CommonNotesBot. Say what you think is wrong, if you like.
 2. I research it and submit a Community Note, or explain why no note is needed.
 3. If X doesn't take notes from me on that post yet, request a Community Note from the post's menu. I keep trying for 3 hours.
-4. While a note waits, reply with a correction and I'll revise it.
 
 I only answer when someone tags me. Run by @NathanpmYoung.
 
@@ -438,7 +406,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
 
       <div class="decision" id="d-models">
         <h3>Models: Opus 5.5 at medium reasoning</h3>
-        <p>Search, writer and revision run at medium reasoning effort, which the model spends on thinking before it answers. The writer had no reasoning setting of its own, so it got one, <code>writer_reasoning_effort</code>, next to the existing <code>search_reasoning_effort</code>. That part is built.</p>
+        <p>Search and writer run at medium reasoning effort, which the model spends on thinking before it answers. The writer had no reasoning setting of its own, so it got one, <code>writer_reasoning_effort</code>, next to the existing <code>search_reasoning_effort</code>. That part is built.</p>
         <p>You suggested Sonnet 5.5 (<code>anthropic/claude-sonnet-5.5</code>, $2 per million input tokens and $10 per million output tokens, half the price of Opus 5.5). The first Sonnet runs looked worse, so both models ran the search step three times on each example post:</p>
         <div class="table-wrap"><table>
           <thead><tr><th>Model, medium reasoning</th><th>Post</th><th class="num">Right answer</th><th class="num">Searched the web</th><th class="num">Mean cost</th><th class="num">Mean time</th></tr></thead>
@@ -452,7 +420,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
         <p>In one GDP run Sonnet answered without searching at all, and its findings said so: "I did not run a web search. This is from background knowledge." On Mumbai it twice called the false side claim "an aside" and declined. That happened even though the request section tells it to check the claim the tagger points at, which fixed the same problem on Opus. Twelve runs are a small sample, but Opus was right every time and costs about the same per search here.</p>
         <p>You chose Opus 5.5. Every example on this page ran on Opus 5.5 at medium reasoning, except the first-try search, which is marked as such.</p>
         <ul>
-          <li>Sorting replies and writing the no-note explanation use Muse Spark 1.3 Contributor, the model Common Notes runs on. It costs about $0.0002 per call.</li>
+          <li>The no-note reply uses Muse Spark 1.3 Contributor, the model Common Notes runs on. It costs about $0.0002 per call.</li>
           <li>Image and video descriptions and the comment reading stay as they are in production (Muse or Gemini for media, Grok's X search for comments).</li>
         </ul>
       </div>
@@ -465,8 +433,8 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>X does not accept notes on any post. Tested on 6 October.</strong> A real submission on a hand-picked post by Nathan Young came back "The post is ineligible to write a note via API call". Most posts people tag will probably be ineligible at first, because X offers AI note writers mainly posts where people requested a note. The bot shows the note anyway and keeps trying, see <a href="#d-eligibility">posts X won't take notes on</a>. How many requests make a post eligible is not published, so we will learn how often the wait succeeds only once the bot runs.</li>
       <li><strong>Will such notes get rated?</strong> A note on a post outside the feed may be shown to fewer raters. The Signal note is still "Needs more ratings" two weeks later. We cannot tell yet whether that is unusual, because our scraper does not record rating counts.</li>
       <li><strong>The notewriter's API keys.</strong> An investigation on 1 October found that the notewriter app's keys are refused for reading posts, because that app is not attached to an X "Project". Submitting notes still works in production. The bot account gets its own app inside a Project, so this does not block us, but it is worth knowing.</li>
-      <li><strong>Does a reply to the bot count as tagging it?</strong> X's rule says an app may reply when the author "@mentions" it. A reply to one of our posts carries our handle as an implicit mention: X delivers it to us as a reply event, but its text may not contain the handle. X's own event list treats the two apart (<code>post.mention.create</code> "does not fire for implicit mentions carried by replies"). If X's reply check does the same, the bot could answer the first tag but not the feedback under its notes, unless the person writes the handle again. The first test with the real account must check this. If it fails, the note's last line asks people to tag the bot in their reply.</li>
-      <li><strong>Replies under its own posts.</strong> When a waiting note goes in, the bot replies under that note, which is its own post. Nobody tagged the bot in it, so if X's reply rule also covers replies to your own posts, those replies are refused. Threads that apps post by themselves suggest they are allowed. The first live test checks this too.</li>
+      <li><strong>Replies under its own posts.</strong> When a waiting note goes in or the bot gives up, it replies under its own answer. Nobody tagged the bot in that post, so if X's reply rule also covers replies to your own posts, those replies are refused. Threads that apps post by themselves suggest they are allowed. The first live test checks this. If it fails, the follow-up can go under the tagger's post instead, which did tag the bot.</li>
+      <li><strong>No way to correct a note.</strong> The bot ignores replies, so a wrong note stays as it is. Community Notes raters still judge it before it shows on the post.</li>
       <li><strong>Our AI writer's track record.</strong> You said not to worry about limits. One effect to keep in mind: every submitted note counts toward the AI writer's rating history, which X uses to set the daily limit. Without an approval step every tag can become a submission, so if many of these notes get rated unhelpful, the main pipeline's limit shrinks too.</li>
       <li><strong>Harassment.</strong> People will tag the bot under posts by people they dislike. The bot replies under the tagger's comment, not under the original post, which keeps it out of the author's direct line. Reports against the bot account could still get it limited by X.</li>
       <li><strong>Replies to replies.</strong> If someone tags the bot under a reply rather than under the original post, the bot checks that reply. The input does not yet include the post above it, which the bot may need for context. The first version adds the parent post as a section of the input.</li>
@@ -475,53 +443,50 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
 
   <section id="built" class="prose">
     <h2>What's built</h2>
-    <p>Everything on this page is built and in the draft PR, except the X account itself. The bot can't run on X until the account, its developer app and the two event subscriptions exist.</p>
+    <p>Everything on this page is built and in the draft PR, except the X account itself. The bot can't run on X until the account, its developer app and the event subscription exist.</p>
     <h3>The tag bot, <code>src/x-tag-bot/</code></h3>
     <ul>
-      <li><strong><code>bot.ts</code>, the behaviour.</strong> What happens on a tag, on a reply to a bot post, and to the waiting notes. Any note, first or revised, goes through one function that submits it right away or posts it as waiting. Work on one post runs one task at a time, and the database lock is the second guarantee of one note per post. Every outside service comes in as a dependency, which the tests and the dry run swap out.</li>
-      <li><strong><code>threads.ts</code>, reading a conversation.</strong> Pure functions: the path from the tag down to a post, the answer a reply is about, the open waiting notes on a post, and which version went in.</li>
-      <li><strong><code>prompts.ts</code> and <code>replies.ts</code>.</strong> The three new prompts, word for word as on this page, and every fixed reply.</li>
-      <li><strong><code>models.ts</code>.</strong> Muse sorts replies and writes the no-note reply. Opus 5.5 at medium reasoning revises, with web search and capped web fetch. A revised note is checked before posting: at most 280 characters with links counted as one, one to five links. A note that fails the check makes the model try again.</li>
+      <li><strong><code>bot.ts</code>, the behaviour.</strong> What happens on a tag and to the waiting notes. Work on one post runs one task at a time, and the database lock is the second guarantee of one note per post. Every outside service comes in as a dependency, which the tests and the dry run swap out.</li>
+      <li><strong><code>replies.ts</code>.</strong> Every fixed reply.</li>
+      <li><strong><code>noNoteReply.ts</code>.</strong> The one new prompt, word for word as on this page, and the Muse call that runs it.</li>
       <li><strong><code>x.ts</code>.</strong> Posting replies as the bot, reading the X Activity API stream, and the eligibility check through <code>evaluate_note</code>.</li>
-      <li><strong><code>store.ts</code>.</strong> The two tables, with an in-memory version for the tests and the dry run.</li>
+      <li><strong><code>store.ts</code>.</strong> The table, with an in-memory version for the tests and the dry run.</li>
       <li><strong><code>main.ts</code>.</strong> The service: it reads the stream, tries the waiting notes every 2 minutes, and exits when the stream ends so systemd starts it again. Also the dry run.</li>
-      <li><strong><code>setup.ts</code>.</strong> The one-time login as the bot and the creation of the two event subscriptions.</li>
+      <li><strong><code>setup.ts</code>.</strong> The one-time login as the bot and the creation of the event subscription.</li>
     </ul>
     <h3>Shared parts</h3>
     <ul>
       <li><strong>The claim-check service runs the steps a caller picks.</strong> The source verifier, the materiality judge and X's evaluate_note each got a config flag and an "off" A/B variant. The tweet route takes the note request, and its answer carries the rendered post. There are Opus 5.5 medium variants for search and writer, and a writer reasoning setting.</li>
       <li><strong>Submitting a note outside the automatic pipeline</strong> is one shared function, <code>submitApprovedNote</code>, used by the Signal bot and the tag bot in their own lanes, both with priority over the automatic pipeline.</li>
       <li><strong>The Signal bot drafts on the claim-check service</strong> with <code>SIGNAL_PICKS</code>, which keep its old steps and models.</li>
-      <li><strong>Migration 120</strong> adds the two tables and the <code>x_tag</code> lane.</li>
+      <li><strong>Migration 120</strong> adds the table and the <code>x_tag</code> lane.</li>
       <li><strong>Operations:</strong> the <code>cn-x-tag-bot</code> unit, autodeploy, and the docs in <code>ops/README.md</code>, <code>docs/prod-config.md</code> and CLAUDE.md.</li>
     </ul>
     <h3>How it was checked</h3>
     <ul>
-      <li>22 tests for the bot's behaviour, plus tests for the stream parser and the revision checks: a note that goes in at once, waiting for eligibility or room, feedback that revises a waiting note, a revised note that goes in and settles the older version, feedback after submission, a withdrawal, two waiting versions, giving up after 3 hours, a second tag, and duplicate events.</li>
-      <li>The migration ran in a throwaway Postgres (PGlite) with all 32 queue tests, including a new one for the <code>x_tag</code> lane.</li>
-      <li>A real dry run of the final version on the Mumbai post: research on Opus 5.5 medium, a note citing the 2011 census figures and Wikipedia, submitted at once in one reply, and "lol" ignored. Nothing was posted or submitted.</li>
-      <li>The whole suite passes. Type check, lint and the unused-code check are clean, apart from the type error that is already on main.</li>
+      <li>15 tests for the bot's behaviour, plus tests for the stream parser: a note that goes in at once, waiting for eligibility or room, a waiting note that goes in later, giving up after 3 hours, another bot noting the post meanwhile, a second tag, a new tag after giving up, an unreadable post, replies to the bot, and duplicate events.</li>
+      <li>The migration ran in a throwaway Postgres (PGlite) with all 32 queue tests, including the one for the <code>x_tag</code> lane.</li>
+      <li>A real dry run on the Mumbai post, see below. Nothing was posted or submitted.</li>
+      <li>Type check, lint and the unused-code check are clean.</li>
     </ul>
-    <p>Try it yourself: <code>bun run x-tag-bot --dry-run &lt;post-url&gt; "&lt;your comment&gt;" "&lt;reply&gt;" ...</code>. It needs an OpenRouter key and a working X read token.</p>
+    <p>Try it yourself: <code>bun run x-tag-bot --dry-run &lt;post-url&gt; "&lt;your comment&gt;"</code>. It needs an OpenRouter key and a working X read token.</p>
   </section>
 
-  <section id="changes" class="prose">
+    <section id="changes" class="prose">
     <h2>Changes since the first plan</h2>
     <ul>
-      <li><strong>No approval step (8 October).</strong> Nathan suggested it and you agreed: the bot submits a note on its own as soon as X takes it. When something blocks it, it shows the note, says why, and keeps trying for 3 hours. This replaced the approval rule, "improve and approve", the approval queue and the "who may approve" reply. The classifier now knows two kinds, feedback and anything else.</li>
-      <li><strong>Several versions on one post.</strong> The newest waiting version is the one tried. When it goes in, older versions get a link to it. The database lock lets only one note through. This replaced the rules for several approvals.</li>
+      <li><strong>Only tags, no conversation (12 October).</strong> You asked for the simplest version: a note gets written, posted and submitted, or tried for 3 hours. The bot no longer reads replies. Gone are the reply classifier, the revision call with web search, several versions of a note on one post, and the two conversation tables, which became one table with a row per tag. A second tag on a post gets a link to the first answer.</li>
+      <li><strong>No approval step (8 October).</strong> Nathan suggested it and you agreed: the bot submits a note on its own as soon as X takes it. When something blocks it, it shows the note, says why, and keeps trying for 3 hours. This replaced the approval rule, "improve and approve", the approval queue and the "who may approve" reply.</li>
       <li><strong>X pushes the tags.</strong> The bot gets them through the X Activity API stream instead of polling. A tag sent during an outage gets no answer, which you accepted for simpler code. One parameter resends the last five minutes, so restarts after a deploy lose nothing.</li>
       <li><strong>No approval request to X.</strong> We launch without asking, because X staff said bots like ours need none if they meet four conditions. The bot meets all four.</li>
-      <li><strong>The claim-check service runs the first answer.</strong> The steps are chosen through the existing A/B config, and the Signal bot was refactored to work the same way.</li>
+      <li><strong>The claim-check service runs the research.</strong> The steps are chosen through the existing A/B config, and the Signal bot was refactored to work the same way.</li>
       <li><strong>Opus 5.5 at medium reasoning.</strong> Sonnet 5.5 was tested and dropped: in a twelve-run comparison it was right 4 of 6 times against Opus's 6 of 6, and once answered without searching.</li>
       <li><strong>X refuses notes on posts outside its feed.</strong> Tested with a real submission on a post by Nathan Young. The bot checks eligibility with <code>evaluate_note</code>, and every "can't submit yet" reply suggests requesting a Community Note.</li>
-      <li><strong>No filter for submission claims.</strong> A test with eight tempting replies found none, so the tag bot doesn't get the Signal bot's <code>safeReply</code>.</li>
-      <li><strong>Simpler tables.</strong> <code>x_tag_posts</code> lost <code>answered_by</code> and <code>llm_cost_usd</code>, and <code>x_tag_threads</code> lost <code>status</code> and <code>note_id</code>. The queue table keeps its name and gets no new column. A crash at the wrong moment may cause one double reply, which we accept.</li>
-      <li><strong>The diagram shows every branch,</strong> now including the loop that retries waiting notes.</li>
-      <li><strong>A page-size cap on the revision.</strong> Two fetched pages of at most 8,000 tokens each. It cut a revision from $1.10 to about $0.30.</li>
-      <li><strong>While building:</strong> the service exits when the stream ends and systemd restarts it; a dry run takes replies as arguments; a setup script logs in as the bot once and creates the event subscriptions.</li>
-      <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the bio, website and pinned post above. The bio changed with the switch away from approval.</li>
-      <li><strong>Open risks:</strong> whether X lets the bot reply to someone who answered it without typing its handle, and whether it may reply under its own posts. The first live test checks both.</li>
+      <li><strong>No filter for submission claims.</strong> The only model-written reply is the no-note reply, so the tag bot doesn't need the Signal bot's <code>safeReply</code>.</li>
+      <li><strong>The diagram shows every branch,</strong> including the loop that retries waiting notes.</li>
+      <li><strong>While building:</strong> the service exits when the stream ends and systemd restarts it; a setup script logs in as the bot once and creates the event subscription.</li>
+      <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the bio, website and pinned post above.</li>
+      <li><strong>Open risk:</strong> whether X lets the bot reply under its own posts. The first live test checks it.</li>
     </ul>
   </section>
 </div>
@@ -560,34 +525,24 @@ function textBlock(title, text, hint, open) {
 
 function json(value) { return JSON.stringify(value, null, 2); }
 
-function classifierExamples() {
-  return DATA.classifierRuns.map((c, i) => ({
-    label: "Reply " + (i + 1) + ": " + c.kind,
-    input: c.userMessage,
-    output: json({ kind: c.kind }),
-    cost: c.costUsd,
-    seconds: c.seconds,
-  }));
-}
-
 const R = DATA.prompts.statusReplies;
 
 const STEPS = {
   watch: {
     title: "Event stream", chips: [["code", "Plain code"], ["x", "X Activity API"], ["new", "New"]],
-    summary: "X pushes every post that tags the bot within a second. Plain code decides whether it starts a thread or continues one.",
+    summary: "X pushes every post that tags the bot within a second. The post it replies to, or quotes, is the one to check.",
     body: [
-      "One persistent HTTP stream from GET /2/activity/stream, subscribed to post.mention.create and post.reply.create for the bot's account. It connects with backfill_minutes=5, so a restart by the autodeploy timer loses nothing. A longer outage loses the tags that arrived meanwhile, which is accepted.",
-      "Routing is plain code. A post whose parent is one of the bot's own posts continues that thread and goes to the classifier. Any other post starts a new thread, and the post it replies to (or quotes) becomes the post to check. A reply that also writes the bot's handle arrives as both events, and the second copy is skipped because x_tag_posts already has its id.",
+      "One persistent HTTP stream from GET /2/activity/stream, subscribed to post.mention.create for the bot's account. It connects with backfill_minutes=5, so a restart by the autodeploy timer loses nothing. A longer outage loses the tags that arrived meanwhile, which is accepted.",
+      "A reply to one of the bot's own posts that writes its handle also arrives here. The event says whose post it replies to, and the bot ignores it. Every tag is stored in x_tag_requests first, so a tag X delivers twice is answered once.",
     ],
-    facts: [["Cost", "$0.005 per delivered event. Nothing while nobody writes to the bot."], ["Delay", "Under a second"]],
+    facts: [["Cost", "$0.005 per delivered event. Nothing while nobody tags the bot."], ["Delay", "Under a second"]],
   },
   read: {
     title: "Read the post", chips: [["reused", "Existing code"], ["other", "Grok, Muse or Gemini"], ["changed", "Now on the claim-check service"]],
     summary: "The claim-check service fetches the media descriptions, the comments and the author's past notes, exactly as production does, and adds the tagger's request.",
     body: [
-      "From here until the writer, everything runs on the claim-check service. The bot sends one request to its /check-tweet route with the post, the tagger's request, and TAG_BOT_PICKS, the A/B variants that choose this bot's steps and models. The service answers with the outcome, the findings and the rendered post, which the bot keeps for later revisions.",
-      "This is built (see Built so far). The request is the new NoteRequest. The service puts it on the run's context, and the user message renders it as its last section. The Mumbai example's full input is below. Everything above the last section is real production input for that post.",
+      "From here until the writer, everything runs on the claim-check service. The bot sends one request to its /check-tweet route with the post, the tagger's request, and TAG_BOT_PICKS, the A/B variants that choose this bot's steps and models. The service answers with the outcome, the findings and the rendered post.",
+      "The request is the new NoteRequest. The service puts it on the run's context, and the user message renders it as its last section. The Mumbai example's full input is below. Everything above the last section is real production input for that post.",
     ],
     blocks: [["TAG_BOT_PICKS", DATA.prompts.tagBotPicks, "the step selection"], ["Request section of the user message", DATA.prompts.requesterSection, "built, word for word"], ["Full input of the Mumbai example", M.postContext, "real"]],
     facts: [["Cost", "Grok comments $0.06 to $0.16 per post, media description under $0.001"], ["Time", "10 to 20 s"]],
@@ -628,8 +583,8 @@ const STEPS = {
   noNote: {
     title: "Reply: no note", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
     summary: "Muse turns the research findings into two or three sentences that tell the tagger why no note is needed.",
-    body: ["The findings are written for the writer, not for a reader on X: long, dense and full of links. This small call turns them into a reply. The fixed line about replying with a source is added by code."],
-    blocks: [["System prompt", DATA.prompts.noNote, "new"], ["User message", G.noNoteUserMessage, "real"], ["Output", json(G.reason.result), "real", true], ["Posted reply", G.noNoteText, "real"]],
+    body: ["The findings are written for the writer, not for a reader on X: long, dense and full of links. This small call turns them into the reply, which is posted as it is."],
+    blocks: [["System prompt", DATA.prompts.noNote, "new"], ["User message", G.noNoteUserMessage, "real"], ["Output", json(G.reason.result), "real", true]],
     facts: [["Cost", fmtUsd(G.reason.costUsd)], ["Time", fmtSec(G.reason.seconds)]],
   },
   trySubmit: {
@@ -646,7 +601,7 @@ const STEPS = {
   submittedNote: {
     title: "Reply: submitted note", chips: [["reply", "Bot reply"], ["x", "X API"]],
     summary: "The note went in right away. The reply shows it and links to it.",
-    body: ["A fixed template around the note. On a revised note the revision's reply comes first. Once a note is in, it can't be changed through the API, so later feedback gets the note's link."],
+    body: ["A fixed template around the note. Once a note is in, it can't be changed through the API."],
     blocks: [["Template", DATA.prompts.submittedTemplate, "fixed text", true]],
     facts: [["Cost", "$0.20 for a reply with links"]],
   },
@@ -655,28 +610,29 @@ const STEPS = {
     summary: "The note couldn't go in yet. The reply shows it, says why and what would help, and the bot keeps trying for 3 hours.",
     body: [
       "When X doesn't take our notes on the post yet, the reply asks people to request a Community Note in the post's menu, because requests are what make a post eligible. When the daily limit is full, it says so.",
-      "Replies with corrections revise the note while it waits. Every 2 minutes the bot tries the newest waiting version again (bottom of the diagram).",
+      "The note is saved as waiting, and every 2 minutes the bot tries it again (bottom of the diagram).",
     ],
     blocks: [["Template, not eligible yet", DATA.prompts.waitingEligibilityTemplate, "fixed text", true], ["Template, daily limit full", DATA.prompts.waitingLimitTemplate, "fixed text"], ["Posted reply (Mumbai)", DATA.mumbaiWaitingNote, "real note, fixed text"]],
   },
   known: {
     title: "Seen this post?", chips: [["code", "Plain code"], ["new", "New"]],
-    summary: "Before any research, the bot looks up the post in x_tag_threads.",
+    summary: "Before any research, the bot checks the notes table and its earlier answers on the post.",
     body: [
-      "If we already submitted a note on this post, the bot replies with its link. If an earlier thread on the post already has an answer, the bot repeats the newest answer without new research, so a viral post tagged by 200 people costs one research run. A repeated note goes through the same attempt to submit as a new one.",
-      "Otherwise this is a new post, and the bot fetches it.",
+      "If one of our bots already submitted a note on this post, the bot replies with its link. If an earlier tag on the post got a note, a waiting note or a no-note answer, the bot links to that answer without new research, so a viral post tagged by 200 people costs one research run.",
+      "Otherwise, including after the bot gave up on an earlier note, it fetches the post and researches it.",
     ],
   },
   alreadyA: {
     title: "Reply: note link", chips: [["reply", "Bot reply"]],
     summary: "We already submitted a note on this post.",
-    body: ["The same fixed reply answers feedback after our note went in."],
+    body: ["The note may come from the automatic pipeline, the Signal bot or this bot."],
     blocks: [["Fixed text", R.alreadySubmitted, "fixed text"]],
   },
   repeat: {
-    title: "Repeat the answer", chips: [["reply", "Bot reply"], ["code", "Plain code"]],
-    summary: "Another thread on this post already has an answer. The bot posts the newest one again.",
-    body: ["The answer is the newest note or no-note reply on the post. A note is tried again, so it is either submitted or shown as waiting. If the new tag asks for a change, it is handled as feedback on that answer instead."],
+    title: "Reply: first answer", chips: [["reply", "Bot reply"]],
+    summary: "An earlier tag on this post already has an answer. The bot links to it.",
+    body: ["X shows the link as a quote card, so people see the first answer and, under it, whether the note went in."],
+    blocks: [["Fixed text", R.earlierAnswer, "fixed text", true]],
   },
   fetch: {
     title: "Fetch the post", chips: [["x", "X API"], ["code", "Plain code"]],
@@ -691,87 +647,34 @@ const STEPS = {
     body: ["Nothing else happens."],
     blocks: [["Fixed text", R.unreadable, "fixed text"]],
   },
-  watch2: {
-    title: "Event stream", chips: [["code", "Plain code"], ["x", "X Activity API"]],
-    summary: "The same stream. A direct reply to one of the bot's posts arrives as a post.reply.create event.",
-    body: ["The event names the post it replies to. The service looks that post up in x_tag_posts and hands the reply to the classifier together with the bot post it answers."],
-  },
-  classify: {
-    title: "Sort the reply", chips: [["muse", "Muse Spark 1.3"], ["new", "New prompt"]],
-    summary: "Muse decides whether a reply is feedback on the note or anything else.",
-    body: ["One small call per reply. There is no approval kind any more, because the bot submits on its own. Below are four real classifications with this prompt, from the two example threads plus a \"thanks\"."],
-    blocks: [["System prompt", DATA.prompts.classifier, "new"]],
-    examples: classifierExamples,
-  },
-  silent: {
-    title: "Stay silent", chips: [["code", "Plain code"]],
-    summary: "Replies sorted as \"other\" get no answer. This also ends any loop with another bot.",
-    body: ["The reply is saved with kind \"other\" and nothing is posted. Example: \"lol imagine needing a bot to tell you India has slums\"."],
-  },
-  noteIn: {
-    title: "Note already in?", chips: [["code", "Plain code"], ["new", "New"]],
-    summary: "Feedback after our note went in gets the note's link, because a submitted note can't be changed.",
-    body: ["The bot looks for our note on the post in the notes table, which every one of our bots writes to. Only while no note is in does feedback reach the revision."],
-  },
-  alreadyB: {
-    title: "Reply: note link", chips: [["reply", "Bot reply"]],
-    summary: "The post already has a note from us, so the note can't change any more.",
-    body: ["The same fixed text answers a second tag on a post that already has our note."],
-    blocks: [["Fixed text", R.alreadySubmitted, "fixed text"]],
-  },
-  revise: {
-    title: "Revise", chips: [["opus", "Opus 5.5"], ["new", "New prompt"], ["other", "Web search and web fetch"]],
-    summary: "Opus 5.5 reads the whole thread, can search and open links, and answers with a new note, a reason to keep the answer, or a withdrawal.",
-    body: [
-      "One call with Anthropic's web search and web fetch tools, run by the provider inside the call, at medium reasoning. It gets the same input as the first research, the first findings, the current answer and the thread from the tag down to the reply. Page fetches are capped at two pages of 8,000 tokens each.",
-      "A new note is checked in code: at most 280 characters with links counted as 1, one to five public links. A note that fails makes the model try again. The new note is then published like a first one: submitted, or shown as waiting.",
-      "A withdrawal posts a no-note answer, and every waiting version before it stops being tried.",
-    ],
-    tabs: [
-      { label: "Mumbai: revise", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", M.revision.userMessage, "real"], ["Output", json(M.revision.revision), "real", true]], facts: [["Cost", fmtUsd(M.revision.costUsd) + " (" + Math.round(M.revision.toolUse.usage.prompt_tokens / 1000) + ",000 input tokens, " + M.revision.toolUse.usage.server_tool_use_details.web_search_requests + " searches, pages opened, fetch not capped in this run)"], ["Time", fmtSec(M.revision.seconds)], ["Note length", M.revision.noteLength + " of 280"]] },
-      { label: "GDP: keep", blocks: [["System prompt", DATA.prompts.revision, "new, word for word"], ["User message", G.revision.userMessage, "real"], ["Output", json(G.revision.revision), "real", true]], facts: [["Cost", fmtUsd(G.revision.costUsd) + " (no search needed)"], ["Time", fmtSec(G.revision.seconds)]] },
-    ],
-  },
-  answer: {
-    title: "Reply: answer", chips: [["reply", "Bot reply"], ["opus", "Opus 5.5 wrote it"]],
-    summary: "The revision kept the answer or withdrew the note, and its reply explains why.",
-    body: ["\"Keep\" leaves a waiting note waiting. \"Withdraw\" is stored as a no-note answer, which stops every waiting version before it."],
-    blocks: [["Posted reply (GDP)", G.revision.revision.reply, "real", true]],
-  },
-  publishRevised: {
-    title: "Publish the new note", chips: [["reply", "Bot reply"], ["x", "X API"]],
-    summary: "A revised note goes through the same attempt as a first note: submitted right away, or shown as waiting.",
-    body: ["The revision's reply comes first, then the note in the same templates as on a first answer. If the new note goes in, any older waiting version on the post gets the reply that a newer version went in."],
-    blocks: [["Posted reply (Mumbai, post not eligible yet)", DATA.mumbaiRevisedNote, "real note, fixed text", true]],
-  },
   waitingList: {
     title: "Waiting notes", chips: [["code", "Plain code"], ["new", "New"]],
-    summary: "Every 2 minutes the bot looks at every post with a waiting note from the last six hours.",
-    body: ["Waiting notes live in x_tag_posts, so a restart of the service loses none of them. For each post, only the newest waiting version is tried. A newer no-note answer on the post stops every version before it."],
+    summary: "Every 2 minutes the bot takes every tag whose note is still waiting.",
+    body: ["Waiting notes are rows in x_tag_requests with status waiting, so a restart of the service loses none of them. A post has at most one, because a second tag gets a link instead of a second note."],
   },
   tryAgain: {
-    title: "Try the newest again", chips: [["x", "X API"], ["code", "Plain code"]],
+    title: "Try again", chips: [["x", "X API"], ["code", "Plain code"]],
     summary: "The same attempt as on a first note: eligible, then room in the daily limit.",
-    body: ["Asking evaluate_note and the database gate publishes nothing and costs next to nothing, so trying every 2 minutes is cheap. If the note still can't go in, the bot tries again next round, for 3 hours from when the newest version was posted."],
+    body: ["First the bot checks whether another of our bots put a note on the post meanwhile. Then it asks evaluate_note and the database gate, which publish nothing and cost next to nothing, so trying every 2 minutes is cheap. If the note still can't go in, the bot tries again next round, for 3 hours from the tag."],
   },
   gaveUp: {
     title: "Reply: gave up", chips: [["reply", "Bot reply"]],
-    summary: "After 3 hours the bot replies under every waiting version that it gave up, and how to try again.",
-    body: ["The reason decides the text. When eligibility was the blocker, the reply suggests requesting a Community Note and tagging the bot again."],
+    summary: "After 3 hours the bot replies under its answer that it gave up, and how to try again.",
+    body: ["The reason decides the text. When eligibility was the blocker, the reply suggests requesting a Community Note and tagging the bot again. A new tag then starts fresh research."],
     blocks: [["Daily limit stayed full", R.gaveUp, "fixed text"], ["Post stayed ineligible", R.gaveUpNotEligible, "fixed text"]],
   },
   submittedLater: {
     title: "Reply: submitted", chips: [["reply", "Bot reply"], ["x", "X API"]],
     summary: "Posted under the waiting note once it went in.",
-    body: ["It replies to the bot's own post, so the note and its outcome stay together. Whether X's reply rule allows a bot to reply under its own post is one of the checks for the first live test."],
+    body: ["It replies to the bot's own post, so the note and its outcome stay together. Whether X's reply rule allows a bot to reply under its own post is the check for the first live test."],
     blocks: [["Fixed text", R.submittedLater, "fixed text", true]],
     facts: [["Cost", "$0.20 for a reply with a link"]],
   },
-  olderVersions: {
-    title: "Reply: newer version in", chips: [["reply", "Bot reply"]],
-    summary: "Posted under each older waiting version when a newer one went in, with a link to the version that did.",
-    body: ["X shows the x.com link as a quote card, so people see the version that went in. If another of our bots submitted the post's note, the reply is the note link instead."],
-    blocks: [["Fixed text", R.otherVersionSubmitted, "fixed text", true], ["When another bot submitted the note", R.alreadySubmitted, "fixed text"]],
+  otherNote: {
+    title: "Reply: note link", chips: [["reply", "Bot reply"]],
+    summary: "Another of our bots put a note on the post while this one waited. The bot stops and links that note.",
+    body: ["Our AI Note Writer can submit only one note per post, so the waiting note can't go in any more."],
+    blocks: [["Fixed text", R.alreadySubmitted, "fixed text", true]],
   },
   skipped: {
     title: "Steps switched off for this bot", chips: [["skip", "Off"], ["code", "TAG_BOT_PICKS"]],
@@ -779,7 +682,7 @@ const STEPS = {
     body: [
       "Topic filter: a cheap call that blocks topics we decided not to note. Off as part of \"no precheck\".",
       "Note-needed prefilter: a DeepSeek search and judge before the main search. In production it rejects about 57% of posts. Off, because a person explicitly asked about this post.",
-      "Source verifier: checks that each cited page supports the note. Off as the ticket asks. The revision example shows what it would have caught, see the decision on source checks.",
+      "Source verifier: checks that each cited page supports the note. Off as the ticket asks, see the decision on source checks.",
       "Materiality judge and X's evaluate_note score: they filter notes for the automatic pipeline's limited daily slots. A person asked about the post, so they are not needed. The bot still calls evaluate_note itself, but only to learn whether X takes our notes on the post, never to reject a draft for its score.",
       "Each of these now has an \"off\" variant in its A/B test. That part is built.",
     ],
@@ -866,13 +769,12 @@ const KIND_STYLE = {
 // Columns and rows of the grid the nodes sit on.
 const COL = [20, 250, 480, 710, 960];
 const ROW_A = [70, 180, 290, 400];
-const ROW_B = [710, 820];
-const ROW_C = [990, 1100];
+const ROW_C = [720, 830];
 const NODES = [
   { id: "watch", x: COL[0], y: ROW_A[0], title: "Event stream", sub: "post.mention.create", kind: "code" },
   { id: "known", x: COL[1], y: ROW_A[0], title: "Seen this post?", sub: "note or answer exists", kind: "code" },
   { id: "alreadyA", x: COL[1], y: ROW_A[1], title: "Reply: note link", sub: "fixed text", kind: "reply" },
-  { id: "repeat", x: COL[1], y: ROW_A[2], title: "Repeat the answer", sub: "no new research", kind: "reply" },
+  { id: "repeat", x: COL[1], y: ROW_A[2], title: "Reply: first answer", sub: "a link, no research", kind: "reply" },
   { id: "fetch", x: COL[2], y: ROW_A[0], title: "Fetch the post", sub: "and the tagger's post", kind: "x" },
   { id: "unreadable", x: COL[2], y: ROW_A[1], title: "Reply: can't read it", sub: "fixed text", kind: "reply" },
   { id: "read", x: COL[4], y: ROW_A[0], title: "Read the post", sub: "media, comments, author", kind: "other" },
@@ -883,19 +785,11 @@ const NODES = [
   { id: "trySubmit", x: COL[3], y: ROW_A[3], title: "Try to submit", sub: "eligible? room?", kind: "x" },
   { id: "submittedNote", x: COL[2], y: ROW_A[3], title: "Reply: submitted note", sub: "note and its link", kind: "reply" },
   { id: "waitingNote", x: COL[3], y: 510, title: "Reply: waiting note", sub: "says what would help", kind: "reply" },
-  { id: "watch2", x: COL[0], y: ROW_B[0], title: "Event stream", sub: "post.reply.create", kind: "code" },
-  { id: "classify", x: COL[1], y: ROW_B[0], title: "Sort the reply", sub: "feedback or other", kind: "muse" },
-  { id: "silent", x: COL[1], y: ROW_B[1], title: "Stay silent", sub: "no reply", kind: "code" },
-  { id: "noteIn", x: COL[2], y: ROW_B[0], title: "Note already in?", sub: "one note per post", kind: "code" },
-  { id: "alreadyB", x: COL[2], y: ROW_B[1], title: "Reply: note link", sub: "can't change it now", kind: "reply" },
-  { id: "revise", x: COL[3], y: ROW_B[0], title: "Revise", sub: "search, fetch, new note", kind: "opus" },
-  { id: "answer", x: COL[3], y: ROW_B[1], title: "Reply: answer", sub: "keep or withdraw", kind: "reply" },
-  { id: "publishRevised", x: COL[4], y: ROW_B[0], title: "Publish the new note", sub: "submitted or waiting", kind: "reply" },
   { id: "waitingList", x: COL[0], y: ROW_C[0], title: "Waiting notes", sub: "every 2 minutes", kind: "code" },
-  { id: "tryAgain", x: COL[1], y: ROW_C[0], title: "Try the newest again", sub: "eligible? room?", kind: "x" },
+  { id: "tryAgain", x: COL[1], y: ROW_C[0], title: "Try again", sub: "eligible? room?", kind: "x" },
   { id: "gaveUp", x: COL[1], y: ROW_C[1], title: "Reply: gave up", sub: "after 3 hours", kind: "reply" },
   { id: "submittedLater", x: COL[2], y: ROW_C[0], title: "Reply: submitted", sub: "under the waiting note", kind: "reply" },
-  { id: "olderVersions", x: COL[3], y: ROW_C[0], title: "Reply: newer version in", sub: "under older versions", kind: "reply" },
+  { id: "otherNote", x: COL[2], y: ROW_C[1], title: "Reply: note link", sub: "another bot's note", kind: "reply" },
 ];
 const EDGES = [
   // A tag
@@ -913,25 +807,14 @@ const EDGES = [
   { d: "M960,412 C930,412 925,250 900,232", label: "empty", lx: 862, ly: 322 },
   { d: "M710,428 H674", label: "in", lx: 682, ly: 419 },
   { d: "M805,456 V506", label: "blocked", lx: 812, ly: 486 },
-  // Down to the replies
-  { d: "M575,456 V596 H8 V738 H16", dash: true, label: "people reply to the bot", lx: 250, ly: 588 },
-  { d: "M805,566 V596 H575", dash: true, arrow: false },
-  { d: "M710,208 H690 V596", dash: true, arrow: false },
-  // A reply
-  { d: "M210,738 H246" },
-  { d: "M345,766 V816", label: "other", lx: 352, ly: 796 },
-  { d: "M440,738 H476", label: "feedback", lx: 396, ly: 784 },
-  { d: "M575,766 V816", label: "yes", lx: 582, ly: 796 },
-  { d: "M670,738 H706", label: "no", lx: 680, ly: 729 },
-  { d: "M805,766 V816", label: "keep or withdraw", lx: 812, ly: 796 },
-  { d: "M900,738 H956", label: "revised", lx: 906, ly: 729 },
-  { d: "M1055,766 V900 H115 V770", dash: true, label: "people reply to the new note", lx: 470, ly: 892 },
+  // Saved as waiting
+  { d: "M805,566 V666 H8 V748 H16", dash: true, label: "saved as waiting", lx: 470, ly: 658 },
   // Waiting notes
-  { d: "M210,1018 H246" },
-  { d: "M345,1046 V1096", label: "3 hours passed", lx: 352, ly: 1076 },
-  { d: "M440,1018 H476", label: "in", lx: 452, ly: 1009 },
-  { d: "M670,1018 H706" },
-  { d: "M250,1040 H214", label: "still blocked", lx: 140, ly: 1066 },
+  { d: "M210,748 H246" },
+  { d: "M345,776 V826", label: "3 hours passed", lx: 352, ly: 806 },
+  { d: "M440,748 H476", label: "in", lx: 452, ly: 739 },
+  { d: "M440,766 H460 V858 H476", label: "our note is on the post", lx: 468, ly: 810 },
+  { d: "M250,770 H214", label: "still blocked", lx: 140, ly: 796 },
 ];
 const SKIPPED = ["Topic filter", "Note-needed prefilter", "Source verifier", "Materiality judge", "X evaluate_note"];
 
@@ -960,18 +843,17 @@ function drawFlow() {
   defs.append(marker);
   svg.append(defs);
   svg.append(svgEl("text", { x: 20, y: 34, class: "phase" }, "Someone tags the bot under a post"));
-  svg.append(svgEl("text", { x: 20, y: 690, class: "phase" }, "Someone replies to one of the bot's posts"));
-  svg.append(svgEl("text", { x: 20, y: 970, class: "phase" }, "Every two minutes: the waiting notes"));
+  svg.append(svgEl("text", { x: 20, y: 704, class: "phase" }, "Every two minutes: the waiting notes"));
   svg.append(svgEl("rect", { x: 946, y: 52, width: 218, height: 418, rx: 14, class: "service-box" }));
   svg.append(svgEl("text", { x: 960, y: 490, class: "service-label" }, "On the claim-check service"));
   drawEdges(svg, EDGES);
   const skipGroup = svgEl("g", { class: "skipnode", tabindex: "0", role: "button", "aria-label": "Steps switched off for this bot" });
-  skipGroup.append(svgEl("text", { x: 20, y: 622, class: "phase", style: "text-decoration:none" }, "Switched off by TAG_BOT_PICKS"));
+  skipGroup.append(svgEl("text", { x: 20, y: 592, class: "phase", style: "text-decoration:none" }, "Switched off by TAG_BOT_PICKS"));
   let sx = 20;
   for (const name of SKIPPED) {
     const width = name.length * 7.2 + 24;
-    skipGroup.append(svgEl("rect", { x: sx + 10, y: 632, width, height: 28, rx: 14 }));
-    skipGroup.append(svgEl("text", { x: sx + 22, y: 650 }, name));
+    skipGroup.append(svgEl("rect", { x: sx + 10, y: 602, width, height: 28, rx: 14 }));
+    skipGroup.append(svgEl("text", { x: sx + 22, y: 620 }, name));
     sx += width + 10;
   }
   bindNode(skipGroup, "skipped");
@@ -1010,7 +892,7 @@ new MutationObserver(drawFlow).observe(document.documentElement, { attributes: t
 /* ---------- Threads ---------- */
 function linkify(text) {
   const fragment = document.createDocumentFragment();
-  const parts = text.split(/(https?:\/\/\S+)/g);
+  const parts = text.split(/(https?:\/\/[^\s<]+)/g);
   for (const part of parts) {
     if (/^https?:\/\//.test(part)) fragment.append(el("a", { href: part, target: "_blank", rel: "noopener", text: part }));
     else fragment.append(part);
@@ -1046,34 +928,30 @@ function quotedText(context) {
 }
 
 const mumbaiThread = document.getElementById("thread-mumbai");
-const C = DATA.classifierRuns;
 mumbaiThread.append(
-  el("h3", { text: "A false side claim: waiting, revised, submitted" }),
+  el("h3", { text: "A false side claim: waiting, then submitted" }),
   el("div", { class: "caption", text: "Real post from 29 September 2026, which quotes a post claiming that virtually everywhere Indians live looks like a garbage-filled canal. The thread assumes X doesn't take our notes on it yet." }),
   post({ role: "root", name: "Dinesh D'Souza", handle: "DineshDSouza", text: postText(M.postContext) + "\n\nQuoting: " + quotedText(M.postContext) }),
   post({ role: "human", handle: M.requester.handle, text: M.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
   post({ role: "bot", handle: "CommonNotesBot", text: DATA.mumbaiWaitingNote, steps: [["search", "Search", 0], ["writer", "Writer"], ["trySubmit", "Try to submit"], ["waitingNote", "Waiting note"]] }),
-  post({ role: "human", handle: C[0].reply.handle, text: C[0].reply.text, steps: [["classify", "Sorted as other", 0]], silent: "The bot does not answer." }),
-  post({ role: "human", handle: C[1].reply.handle, text: C[1].reply.text, steps: [["classify", "Sorted as feedback", 1]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: DATA.mumbaiRevisedNote, steps: [["revise", "Revise", 0], ["publishRevised", "Publish"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: R.submittedLater, steps: [["waitingList", "Waiting notes"], ["tryAgain", "Try again"], ["submittedLater", "Submitted"]], silent: "Under the revised note, once people requested a note and X allowed it. Fixed template; the example submitted nothing." }),
-  post({ role: "bot", handle: "CommonNotesBot", text: R.otherVersionSubmitted, steps: [["olderVersions", "Older version"]], silent: "Under the first note, which the revision replaced." }),
+  post({ role: "human", handle: "dan_m", text: "@CommonNotesBot is this right?", silent: "A second tag under the same post while the note waits, written for this example." }),
+  post({ role: "bot", handle: "CommonNotesBot", text: R.earlierAnswer, steps: [["known", "Seen this post?"], ["repeat", "First answer"]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: R.submittedLater, steps: [["waitingList", "Waiting notes"], ["tryAgain", "Try again"], ["submittedLater", "Submitted"]], silent: "Under the waiting note, once people requested a note and X allowed it. Fixed template; the example submitted nothing." }),
 );
 
 const gdpThread = document.getElementById("thread-gdp");
 gdpThread.append(
-  el("h3", { text: "Numbers that hold up: no note, and the bot holds its ground" }),
+  el("h3", { text: "Numbers that hold up: no note" }),
   el("div", { class: "caption", text: "Real post from 5 October 2026 by the US Treasury Secretary." }),
   post({ role: "root", name: "Treasury Secretary Scott Bessent", handle: "SecScottBessent", text: postText(G.postContext) }),
   post({ role: "human", handle: G.requester.handle, text: G.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: G.noNoteText, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
-  post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, steps: [["classify", "Sorted as feedback", 3]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: G.revision.revision.reply, steps: [["revise", "Revise", 1], ["answer", "Answer"]] }),
+  post({ role: "bot", handle: "CommonNotesBot", text: G.reason.result.reply, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
+  post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, silent: "The bot doesn't answer replies, whatever they say." }),
 );
 
 /* ---------- Cost table ---------- */
 const commentsCost = { mumbai: 0.157, gdp: 0.057 };
-const classifierCost = C[0].costUsd;
+const firstNoteModels = commentsCost.mumbai + M.search.costUsd + M.timing.costUsd + M.writer.costUsd;
 const rows = [
   ["Tag whose note goes in right away", [
     ["Read comments (Grok) and media", commentsCost.mumbai], ["Search (Opus 5.5)", M.search.costUsd], ["Timing check", M.timing.costUsd], ["Writer (Opus 5.5)", M.writer.costUsd],
@@ -1081,12 +959,11 @@ const rows = [
   ["Tag that gets a no-note answer", [
     ["Read comments and media", commentsCost.gdp], ["Search (Opus 5.5)", G.search.costUsd], ["No-note reply (Muse)", G.reason.costUsd],
     ["X: tag event, post reads", 0.015], ["X: reply with one link", 0.20]]],
-  ["The full Mumbai thread", [
-    ["First note, as above", commentsCost.mumbai + M.search.costUsd + M.timing.costUsd + M.writer.costUsd], ["Sorting 2 replies (Muse)", 2 * classifierCost], ["Revision with search (Opus 5.5)", M.revision.costUsd],
-    ["X: 3 events and post reads", 0.030], ["X: waiting note, revised note, two replies after submission", 0.80]]],
-  ["The full GDP thread", [
-    ["No-note answer, as above", commentsCost.gdp + G.search.costUsd + G.reason.costUsd], ["Sorting 1 reply (Muse)", C[3].costUsd], ["Revision without search", G.revision.costUsd],
-    ["X: 2 events and post reads", 0.020], ["X: no-note reply, answer without link", 0.21]]],
+  ["Tag whose note waits, then goes in", [
+    ["Research and note, as above", firstNoteModels],
+    ["X: tag event, post reads", 0.020], ["X: waiting note, then the \"Submitted\" reply", 0.40]]],
+  ["Second tag on the same post", [
+    ["X: tag event", 0.005], ["X: reply with the link to the first answer", 0.20]]],
 ];
 const table = el("table", {});
 table.append(el("thead", {}, el("tr", {}, el("th", { text: "Conversation" }), el("th", { text: "Parts" }), el("th", { class: "num", text: "Models" }), el("th", { class: "num", text: "X API" }), el("th", { class: "num", text: "Total" }))));
