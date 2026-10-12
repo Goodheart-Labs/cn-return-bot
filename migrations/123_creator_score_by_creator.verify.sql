@@ -1,18 +1,18 @@
--- Checks for migration 121. It runs on the miniature of production that
+-- Checks for migration 123. It runs on the miniature of production that
 -- migration 119 tests on, with 119 applied first. Every value should be true.
 --
 --   sudo docker run -d --rm --name cn-migration-test -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:17
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"   (with PGPASSWORD=test)
 --   $PSQL -f migrations/119_creator_visit_score.fixture.sql
 --   $PSQL --single-transaction -f migrations/119_creator_visit_score.sql
---   $PSQL --single-transaction -f migrations/121_creator_score_by_creator.sql
---   $PSQL -f migrations/121_creator_score_by_creator.verify.sql
+--   $PSQL --single-transaction -f migrations/123_creator_score_by_creator.sql
+--   $PSQL -f migrations/123_creator_score_by_creator.verify.sql
 --
 -- The scores are the ones migration 119's checks expect, with one difference.
 -- The fixture has a row with a reader hash and no feed address, on a
 -- *.substack.com page. The extension never writes such a row, because it makes
 -- the hash from the feed address. Migration 119 still named its creator from
--- the page address. Migration 121 no longer does, so that creator is gone and
+-- the page address. Migration 123 no longer does, so that creator is gone and
 -- four creators remain.
 
 -- A row written after the migration gets its page as part of the insert, the

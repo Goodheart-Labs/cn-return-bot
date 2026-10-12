@@ -210,6 +210,10 @@ address is called.
 |---|---|---|
 | `youtube-websub` | `supabase functions deploy youtube-websub --no-verify-jwt` | `YOUTUBE_WEBSUB_SECRET` |
 
+It is the only deployed function, and `YOUTUBE_WEBSUB_SECRET` is the only
+function secret we set ourselves (checked 2026-10-12). Every deployed function
+must have its code in `supabase/functions/`.
+
 The flag `--no-verify-jwt` lets callers in without a Supabase sign-in token.
 A JWT is the signed token Supabase normally demands on every call. Google's
 notification service sends no such token, so the function checks Google's
