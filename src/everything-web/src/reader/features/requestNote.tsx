@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { PageItem } from "@cn/core/items";
+import { isWholePageChecked, type PageItem } from "@cn/core/items";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines, type RequestProgress } from "@cn/core/requestProgress";
 import { watchRequestProgress, type RequestWatch } from "@cn/core/requestProgressController";
@@ -87,7 +87,8 @@ function RequestEntries({ blockId }: { blockId: string }) {
 
 export const requestNoteModule: ReaderModule = {
   name: "requestNote",
-  selectionActions: (api, block, quote) => [{
+  // Before the article's own check, a request would replace the minisite's text with a fresh fetch of the page.
+  selectionActions: (api, block, quote) => (isWholePageChecked(api.item) ? [{
     feature: "highlight.request",
     key: "request",
     label: "Request a note",
@@ -99,7 +100,7 @@ export const requestNoteModule: ReaderModule = {
       api.setCollapsed(cardId, false);
       api.reveal(cardId, request.blockId);
     },
-  }],
+  }] : []),
   marginCount: (api, blockId) => api.noteRequests.filter((request) => request.blockId === blockId).length,
   MarginEntries: RequestEntries,
 };
