@@ -48,6 +48,7 @@
 .reader-passage > ul { list-style: disc; }
 .reader-passage > ol { list-style: decimal; }
 .reader-passage li + li { margin-top: 0.5rem; }
+.reader-passage-list:has(+ .reader-passage-list) { margin-bottom: 0.5rem; }
 .reader-passage > blockquote { padding-left: 1.25rem; border-left: 3px solid var(--cn-line-strong); color: var(--cn-fg-secondary); }
 .reader-passage > h2, .reader-passage > h3, .reader-passage > h4 { font-family: var(--cn-font-title); font-weight: 700; color: var(--cn-fg); text-wrap: balance; }
 .reader-passage > h2 { font-size: var(--cn-text-2xl); line-height: 1.3; margin-top: 2.75rem; }
