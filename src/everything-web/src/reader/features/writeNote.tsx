@@ -73,8 +73,8 @@ export const writeNoteModule: ReaderModule = {
   selectionActions: (api, block, quote) => [{
     feature: "highlight.note",
     key: "note",
-    label: "Write a note",
-    accessibleName: "Write a note on these words",
+    label: "Write note",
+    accessibleName: "Write note on these words",
     onSelect: () => api.openDialog({ kind: "note", anchor: { blockId: block.id, text: quote, paragraph: block.text, partial: true } }),
   }],
   Dialogs,
