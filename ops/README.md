@@ -141,8 +141,8 @@ cd /opt/cn-return-bot && set -a && . /etc/cn-return-bot/service.env && set +a
 bun run slack-send C0C638V19ED "hello from the services machine"
 ```
 
-`C0C638V19ED` is #daily-report. `C0C5XD2G0DR` is #trending-posts, where the
-Trending Posts workflow posts (`src/production/postTrendingPosts.ts`).
+`C0C638V19ED` is #daily-report. `C0C9LKALD2L` is #minisite-suggestion, where
+the minisite finder posts (see "Minisite finder" in CLAUDE.md).
 
 ## Slack announcements (cn-notify)
 
