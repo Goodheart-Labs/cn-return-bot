@@ -16,3 +16,11 @@ export const queryKeys = {
   leaderboard: ["leaderboard"] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
+
+/** The keys mutations are filed under in the query client's mutation cache.
+ *  Every vote, on a note or on a note-not-needed entry, is filed under `vote`,
+ *  so the website can notice that a reader voted without being told by each
+ *  vote button. */
+export const mutationKeys = {
+  vote: ["vote"] as const,
+};
