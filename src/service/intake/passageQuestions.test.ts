@@ -136,7 +136,7 @@ test("a minisite offers only the tools its features allow, with only their sente
   expect(system).not.toContain("Search the web");
   expect(system).toContain("Be clear about uncertainty.");
 
-  const keyPoints = askOpusSetup(enabledFeatures(["passage", "passage.note", "passage.askOpus", "highlight", "highlight.keyPoint", "opus", "opus.drafts", "opus.search"]));
+  const keyPoints = askOpusSetup(enabledFeatures(["passage", "passage.askOpus", "highlight", "highlight.note", "highlight.keyPoint", "opus", "opus.drafts", "opus.search"]));
   expect(toolNames(keyPoints.tools)).toEqual(["draft_key_point", "openrouter:web_search"]);
   expect(keyPoints.system).toContain("If the reader asks for a note, tell them they can write one themselves with \"Add a note\". Use draft_key_point for key point drafts;");
 });

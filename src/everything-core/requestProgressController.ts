@@ -1,10 +1,10 @@
-import { fetchProgressClaimRows, fetchProgressItemRow, fetchRequestStatus, subscribeToItemProgress } from "@cn/core/requestStatus";
+import { fetchProgressClaimRows, fetchProgressItemRow, fetchRequestStatus, subscribeToItemProgress } from "./requestStatus";
 import {
   deriveRequestProgress,
   progressIsTerminal,
   type RequestProgress,
   type RequestStatusRow,
-} from "@cn/core/requestProgress";
+} from "./requestProgress";
 
 /* The watcher behind the progress card. Phase one exchanges the request's
  * token for its status until the intake has turned it into an item. Phase two
