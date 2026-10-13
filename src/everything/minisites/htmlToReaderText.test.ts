@@ -47,9 +47,9 @@ describe("the big-tent Substack post", () => {
       "“Yes, there’s still enormous uncertainty about what the rest of our lives will look like, but as far as I can tell, there’s no longer any real uncertainty that it’ll all mostly revolve around AI, and the extent to which we succeed or fail at directing its power toward human flourishing.”",
     ]);
     const lists = ofKind(blocks, "list");
-    expect(lists.map((list) => [list.ordered, list.start, list.items.length])).toEqual([[true, 1, 2], [false, 1, 3]]);
+    expect(lists.map((list) => [list.ordered, list.start])).toEqual([[true, 1], [true, 2], [false, 1], [false, 2], [false, 3]]);
     expect(allRuns(blocks).filter((run) => run.em).map((run) => run.text)).toContain("counterproductive to AI safety");
-    expect(lists[1]!.items[1]![0]).toEqual({ text: "Values and movement building.", strong: true });
+    expect(lists[3]!.items[0]![0]).toEqual({ text: "Values and movement building.", strong: true });
   });
 
   test("starts with the article, not with its title, subtitle or byline", () => {
@@ -89,13 +89,15 @@ describe("a page with an image, embeds and a table", () => {
 
   test("keeps the list's start number and lists nested items as bullets after their parent", () => {
     expect(ofKind(blocks, "list").map((list) => [list.ordered, list.start, list.text])).toEqual([
-      [true, 3, "Third, and most important.\nFourth, with details:"],
-      [false, 1, "first detail\nsecond detail"],
+      [true, 3, "Third, and most important."],
+      [true, 4, "Fourth, with details:"],
+      [false, 1, "first detail"],
+      [false, 2, "second detail"],
       [true, 5, "Fifth, in bold italics."],
     ]);
     const [third] = ofKind(blocks, "list")[0]!.items;
     expect(third).toContainEqual({ text: "most", em: true, strong: true });
-    expect(ofKind(blocks, "list")[2]!.items[0]![0]).toEqual({ text: "Fifth", em: true, strong: true });
+    expect(ofKind(blocks, "list")[4]!.items[0]![0]).toEqual({ text: "Fifth", em: true, strong: true });
   });
 
   test("escapes text the parser would read as markup", () => {
