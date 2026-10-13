@@ -36,6 +36,16 @@ export interface RequestStatusRow {
   item_id: string | null;
 }
 
+/** The status_reason of a request whose selected passage is checked on its
+ *  own, on a page that was already checked in full. The page's item stays done
+ *  throughout, so only the request row tells the card the check is running,
+ *  and whether it wrote a note. */
+export const PASSAGE_CHECK = {
+  running: "checking the selected passage",
+  note: "the selected passage got a note",
+  noNote: "the selected passage needs no note",
+} as const;
+
 /** Every state the card can display.
  *  - "saved" is a request the intake has not picked up yet.
  *  - "queued" is an item waiting for a worker.
@@ -113,6 +123,10 @@ export function deriveRequestProgress(
     return { kind: "extracting" };
   }
   if (item.status === "done") {
+    if (request?.status === "error") return { kind: "failed" };
+    if (request?.status_reason === PASSAGE_CHECK.running) return { kind: "checking", done: 0, total: 1, notes: 0 };
+    if (request?.status_reason === PASSAGE_CHECK.note) return { kind: "done", notes: 1 };
+    if (request?.status_reason === PASSAGE_CHECK.noNote) return { kind: "done", notes: 0 };
     return { kind: "done", notes: claims.filter((c) => c.status === "note").length };
   }
   // The item errored. The pipeline requeues errored requested items, so the
