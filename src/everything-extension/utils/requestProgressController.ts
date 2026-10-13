@@ -55,14 +55,15 @@ export async function fetchProgressSnapshot(entry: {
   itemId?: string;
 }): Promise<{ progress: RequestProgress; itemId: string | null }> {
   let itemId = entry.itemId ?? null;
-  let request: RequestStatusRow | null = null;
+  // The request row is read even when the item is known, because a passage
+  // checked on an already-checked page shows only there (PASSAGE_CHECK).
+  const lookup = await lookUpRequest(entry.token);
+  const request = lookup.kind === "row" ? lookup.row : null;
   if (!itemId) {
-    const lookup = await lookUpRequest(entry.token);
     // A transient lookup failure, or a request row the intake has not written
     // yet: the request stands, so the reader is simply waiting.
-    if (lookup.kind === "error" || lookup.kind === "no_row") return { progress: { kind: "saved" }, itemId: null };
-    request = lookup.row;
-    itemId = lookup.row.item_id;
+    if (!request) return { progress: { kind: "saved" }, itemId: null };
+    itemId = request.item_id;
   }
   if (!itemId) return { progress: deriveRequestProgress(null, [], request), itemId: null };
   const [item, claims] = await Promise.all([fetchProgressItemRow(itemId), fetchProgressClaimRows(itemId)]);
@@ -128,7 +129,10 @@ export function watchRequestProgress(params: {
     const refetch = async () => {
       if (stopped) return;
       try {
-        const [item, claims] = await Promise.all([fetchProgressItemRow(itemId), fetchProgressClaimRows(itemId)]);
+        // The request row is re-read too, because a passage checked on an
+        // already-checked page shows only there (PASSAGE_CHECK).
+        const [item, claims, lookup] = await Promise.all([fetchProgressItemRow(itemId), fetchProgressClaimRows(itemId), lookUpRequest(params.token)]);
+        if (lookup.kind === "row") lastRequest = lookup.row;
         if (!stopped) emit(deriveRequestProgress(item, claims, lastRequest));
       } catch {
         // A failed refetch keeps the last state on screen. The backstop
