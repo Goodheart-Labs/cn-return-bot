@@ -311,8 +311,11 @@ export function parseReaderText(source: string | null | undefined): ReaderBlock[
           break;
         }
       }
-      const parsed = items.map((item) => parseInline(item));
-      add({ kind: "list", ordered, start, items: parsed, text: parsed.map(runsText).join("\n") });
+      // One block per item, so notes on a long list sit beside their own item.
+      items.forEach((item, index) => {
+        const runs = parseInline(item);
+        add({ kind: "list", ordered, start: start + index, items: [runs], text: runsText(runs) });
+      });
       continue;
     }
 
@@ -334,20 +337,32 @@ export function parseReaderText(source: string | null | undefined): ReaderBlock[
  *  markup removed, images as [[IMAGE:url]] markers and footnotes as "[1] …".
  *  Embeds carry no words and are left out. */
 export function plainText(source: string): string {
-  return parseReaderText(source).map((block) => {
-    switch (block.kind) {
-      case "list":
-        return block.items.map((item, index) => `${block.ordered ? `${block.start + index}.` : "-"} ${runsText(item)}`).join("\n");
-      case "figure":
-        return [`[[IMAGE:${block.src}]]`, block.text].filter(Boolean).join("\n");
-      case "footnote":
-        return `[${block.label}] ${block.text}`;
-      case "embed":
-        return "";
-      default:
-        return block.text;
-    }
-  }).filter(Boolean).join("\n\n");
+  let text = "";
+  let previous: ReaderBlock | null = null;
+  for (const block of parseReaderText(source)) {
+    const words = blockPlainText(block);
+    if (!words) continue;
+    // Items of one list stay on consecutive lines, though each is its own block.
+    const sameList = block.kind === "list" && previous?.kind === "list" && previous.ordered === block.ordered;
+    text += text ? (sameList ? "\n" : "\n\n") + words : words;
+    previous = block;
+  }
+  return text;
+}
+
+function blockPlainText(block: ReaderBlock): string {
+  switch (block.kind) {
+    case "list":
+      return block.items.map((item, index) => `${block.ordered ? `${block.start + index}.` : "-"} ${runsText(item)}`).join("\n");
+    case "figure":
+      return [`[[IMAGE:${block.src}]]`, block.text].filter(Boolean).join("\n");
+    case "footnote":
+      return `[${block.label}] ${block.text}`;
+    case "embed":
+      return "";
+    default:
+      return block.text;
+  }
 }
 
 /** Leading paragraphs that only repeat the header (title, description or
