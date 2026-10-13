@@ -69,6 +69,12 @@ export async function fetchProjectNotes(projectId: string): Promise<NoteRow[]> {
   return notes.map(toNoteRow);
 }
 
+/** Every visible note on the site, from every project. */
+export async function fetchAllNotes(): Promise<NoteRow[]> {
+  const notes = await fetchAllRows<RawNote>(() => noteQuery().neq("status", "hidden"), "id", { label: "allNotes" });
+  return notes.map(toNoteRow);
+}
+
 /** One note of this project, by id. A note from another project comes back as
  *  null, which is what lets the website's realtime handler ignore changes on
  *  projects the reader is not looking at. */

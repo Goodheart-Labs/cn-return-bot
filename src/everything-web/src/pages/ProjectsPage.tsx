@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedProjectRow } from "@cn/core/types";
-import { Button } from "@cn/ui/Button";
-import { cn } from "@cn/ui/cn";
+import { Button, buttonVariants } from "@cn/ui/Button";
 import { ExternalLinkIcon } from "@cn/ui/icons";
+import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
 import { useProjects } from "../lib/feedQueries";
-import type { Route } from "../lib/routing";
+import { ALL_NOTES, type Route } from "../lib/routing";
+import { useStoredChoice } from "../lib/useStoredChoice";
 
 type Order = "votes" | "name";
 
@@ -18,27 +18,6 @@ const ORDERS: { id: Order; label: string }[] = [
 
 /** The order the reader picked last time, remembered on this device. */
 const ORDER_KEY = "cn:projectsOrder";
-
-function readOrder(): Order {
-  try {
-    return window.localStorage.getItem(ORDER_KEY) === "name" ? "name" : "votes";
-  } catch {
-    return "votes";
-  }
-}
-
-function useOrder(): [Order, (order: Order) => void] {
-  const [order, setOrder] = useState(readOrder);
-  const choose = (next: Order) => {
-    setOrder(next);
-    try {
-      window.localStorage.setItem(ORDER_KEY, next);
-    } catch {
-      // Without storage the choice lasts until the page reloads.
-    }
-  };
-  return [order, choose];
-}
 
 /** The projects arrive ordered by the votes on their notes (migration 094). */
 const byName = (a: FeedProjectRow, b: FeedProjectRow) => a.name.localeCompare(b.name, "en", { sensitivity: "base" });
@@ -83,10 +62,11 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
 }
 
 /** Every project with notes: the creator's picture, how many notes it has, a
- *  link to its notes here, and a link to the creator's own page. */
+ *  link to its notes here, and a link to the creator's own page. A link at the
+ *  top leads to the notes of every project in one feed. */
 export function ProjectsPage({ navigate }: { navigate: (route: Route) => void }) {
   const projects = useProjects();
-  const [order, setOrder] = useOrder();
+  const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "votes");
   // A project whose items have no notes yet has nothing to show here.
   const withNotes = (projects.data ?? []).filter((p) => p.note_count > 0);
   const shown = order === "name" ? [...withNotes].sort(byName) : withNotes;
@@ -99,23 +79,10 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
           <p className="mt-1 max-w-xl text-base text-fg-muted">The creators we check, and the notes readers are rating on their posts and videos.</p>
         </div>
         <div className="flex items-center gap-4">
-          <div role="radiogroup" aria-label="Order" className="flex rounded-control border border-line bg-surface-muted p-0.5">
-            {ORDERS.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                role="radio"
-                aria-checked={order === id}
-                onClick={() => setOrder(id)}
-                className={cn(
-                  "whitespace-nowrap rounded-[calc(var(--cn-radius-control)-2px)] px-3 py-1 text-sm font-medium text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                  order === id ? "bg-surface text-fg shadow-raised" : "hover:text-fg",
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <RouteLink to={ALL_NOTES} navigate={navigate} className={buttonVariants({ variant: "secondary" })}>
+            All notes
+          </RouteLink>
+          <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
         </div>
       </div>
 
