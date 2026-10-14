@@ -162,8 +162,8 @@ describe("an unfinished last statement", () => {
   const statement = (claim: string) => ({ type: "statement", claims: [claim] });
 
   test("is only mentioned to the model when another chunk follows", () => {
-    expect(extractionSystemPrompt({ hasNextChunk: true })).toContain("its last statement may be unfinished");
-    expect(extractionSystemPrompt()).not.toContain("its last statement may be unfinished");
+    expect(extractionSystemPrompt({ hasNextChunk: true })).toContain("its last point may be unfinished");
+    expect(extractionSystemPrompt()).not.toContain("its last point may be unfinished");
   });
 
   test("comes back as the carry when the model leaves it out and another chunk follows", async () => {
