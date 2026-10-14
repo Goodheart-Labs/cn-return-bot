@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   deriveRequestProgress,
+  PASSAGE_CHECK,
   progressIsTerminal,
   progressLines,
   type ProgressClaimRow,
@@ -113,6 +114,27 @@ describe("deriveRequestProgress", () => {
 
   test("an errored item is failed", () => {
     expect(deriveRequestProgress(item({ status: "error" }), [], null)).toEqual({ kind: "failed" });
+  });
+});
+
+/* A passage checked on its own on an already-checked page: the item is done
+ * throughout, so the request row decides what the card shows. */
+describe("deriveRequestProgress for a passage on an already-checked page", () => {
+  const done = item({ status: "done" });
+  const pageNotes = [claim("note"), claim("note", "n2"), claim("note", "n3")];
+
+  test("a running check reads as checking one claim, not as the page's notes", () => {
+    const progress = deriveRequestProgress(done, pageNotes, request({ status: "enqueued", status_reason: PASSAGE_CHECK.running }));
+    expect(progress).toEqual({ kind: "checking", done: 0, total: 1, notes: 0 });
+  });
+
+  test("a finished check counts only the passage's note", () => {
+    expect(deriveRequestProgress(done, pageNotes, request({ status: "done", status_reason: PASSAGE_CHECK.note }))).toEqual({ kind: "done", notes: 1 });
+    expect(deriveRequestProgress(done, pageNotes, request({ status: "done", status_reason: PASSAGE_CHECK.noNote }))).toEqual({ kind: "done", notes: 0 });
+  });
+
+  test("a check that failed is failed, though the page itself is done", () => {
+    expect(deriveRequestProgress(done, pageNotes, request({ status: "error", status_reason: "Daily budget reached" }))).toEqual({ kind: "failed" });
   });
 });
 

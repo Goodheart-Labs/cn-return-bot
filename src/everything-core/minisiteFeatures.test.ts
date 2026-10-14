@@ -6,9 +6,9 @@ test("every feature on gives every feature", () => {
 });
 
 test("a child counts only while its parent is on", () => {
-  const on = enabledFeatures(["highlight.note", "passage", "passage.note"]);
-  expect(on.has("highlight.note")).toBe(false);
-  expect(on.has("passage.note")).toBe(true);
+  const on = enabledFeatures(["highlight.request", "passage", "passage.askOpus"]);
+  expect(on.has("highlight.request")).toBe(false);
+  expect(on.has("passage.askOpus")).toBe(true);
 });
 
 test("Opus's abilities need a place to ask Opus", () => {
@@ -26,4 +26,8 @@ test("drafting needs a highlight kind to draft", () => {
 
 test("unknown stored ids are ignored", () => {
   expect([...enabledFeatures(["notes", "notes.checked", "retired"])]).toEqual(["notes"]);
+});
+
+test("a stored paragraph note button is ignored", () => {
+  expect([...enabledFeatures(["passage", "passage.note", "passage.askOpus"])]).toEqual(["passage", "passage.askOpus"]);
 });

@@ -95,8 +95,8 @@ export const askOpusModule: ReaderModule = {
   passageActions: (api, block) => [{
     feature: "passage.askOpus",
     key: "ask",
-    label: "Ask Opus",
-    accessibleName: `Ask Opus about this passage: ${block.text.slice(0, 60)}`,
+    label: "Ask Opus about this paragraph",
+    accessibleName: `Ask Opus about this paragraph: ${block.text.slice(0, 60)}`,
     onSelect: () => api.openAsk(block, null),
   }],
   marginCount: (api, blockId) => (api.asking?.blockId === blockId ? 1 : 0),

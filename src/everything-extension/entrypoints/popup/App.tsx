@@ -7,9 +7,9 @@ import { COMMONNOTES_ORIGIN, extractYoutubeVideoId, normalizePageUrl } from "@cn
 import type { NoteRow } from "@cn/core/types";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines } from "@cn/core/requestProgress";
+import { fetchProgressSnapshot } from "@cn/core/requestProgressController";
 import { authorFeedStatusForTab, type AuthorFeedStatus } from "../../utils/authorFeed";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "../../utils/liveRequests";
-import { fetchProgressSnapshot } from "../../utils/requestProgressController";
 import { noteCounts, type NoteCounts } from "../../utils/claimGroups";
 import { genericScriptId } from "../../utils/genericScript";
 import { resolveReaderCanonical } from "../../utils/readerCanonical";

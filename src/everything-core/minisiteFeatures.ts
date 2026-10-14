@@ -23,6 +23,7 @@ export const FEATURE_TREE = [
     description: "When a reader selects words, a small toolbar appears right above them.",
     children: [
       { id: "highlight.note", label: "Write a note on the words", description: "A note anchored to exactly the selected words." },
+      { id: "highlight.request", label: "Request a note", description: "Asks for an AI-written note on exactly the selected words." },
       { id: "highlight.forecast", label: "Add a forecast", description: "\"This is a forecast of a N% chance of …\", rated by other readers." },
       { id: "highlight.keyPoint", label: "Add a key point", description: "\"A key point in this article is …\", rated by other readers." },
       { id: "highlight.askOpus", label: "Ask Opus about the words", description: "Opens the question panel with the words quoted." },
@@ -33,7 +34,6 @@ export const FEATURE_TREE = [
     label: "Passage buttons",
     description: "Buttons that appear when a reader points at or taps a paragraph.",
     children: [
-      { id: "passage.note", label: "Add a note on the passage", description: "A note on the whole paragraph." },
       { id: "passage.askOpus", label: "Ask Opus about the passage", description: "Opens the question panel for the paragraph." },
     ],
   },

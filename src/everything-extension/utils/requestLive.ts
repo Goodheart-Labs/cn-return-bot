@@ -6,7 +6,7 @@ import { jumpToNextNote } from "./jumpBus";
 import { getLiveRequest, removeLiveRequest, saveLiveRequest, type LiveRequest } from "./liveRequests";
 import { mountRequestProgress, type RequestProgressHandle } from "./mountRequestProgress";
 import type { RequestProgress } from "@cn/core/requestProgress";
-import { watchRequestProgress, type RequestWatch } from "./requestProgressController";
+import { watchRequestProgress, type RequestWatch } from "@cn/core/requestProgressController";
 import { forgetRequestedPage } from "./settings";
 
 /** Fired on the page's window whenever the request behind the live card has
