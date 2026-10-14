@@ -159,11 +159,17 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
   return queue;
 }
 
-/** Whether any feed-tier item is waiting. The feed run walks for new posts
- *  only when this is false, so a resumed or retried item is finished before
- *  fresh content is pulled in front of it. */
-export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
-  queue.some((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested);
+/** Whether a fresh feed item is waiting: one at the prioritized or backlog
+ *  tier, which includes an item a killed run left half done. The feed run walks
+ *  for new posts only when this is false, so such an item is finished before
+ *  another post is pulled in. Items waiting for a retry do not count. They run
+ *  only once the walk finds every creator caught up. Before 2026-10-14 they did
+ *  count. After Muse's outage on 2026-10-13 the feed run spent about 40 hours on
+ *  147 retried items and picked up a single new post, so even Zvi's posts waited. */
+export const freshFeedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
+  queue.some(
+    (item) => item.status === "queued" && item.priority >= QUEUE_PRIORITY.backlog && item.priority < QUEUE_PRIORITY.requested,
+  );
 
 /** Runs one claimed item through fetch, extraction and checking, and records
  *  where it ended: done, put back because a budget ran out part way, or
