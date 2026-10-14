@@ -50,7 +50,7 @@ function draftSentence(drafts: readonly DraftTool[]): string {
  *  Notes, where a note request either does nothing or replaces the minisite's
  *  text. It sends readers to their own "Add a note" where they have one. */
 function noteSentence(features: ReadonlySet<FeatureId>): string {
-  const readersWriteNotes = features.has("highlight.note") || features.has("passage.note");
+  const readersWriteNotes = features.has("highlight.note");
   return readersWriteNotes ? `${PROMPT.noNoteText} ${PROMPT.writeYourOwnNote}` : PROMPT.noNoteText;
 }
 

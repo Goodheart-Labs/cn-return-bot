@@ -4,6 +4,7 @@ import type { NoteNavigation } from "@cn/features/notes/NextNoteButton";
 import type { FeatureId } from "@cn/core/minisiteFeatures";
 import type { HighlightDraft, PassageHighlight } from "@cn/core/passageHighlights";
 import type { ReaderBlock } from "@cn/core/readerText";
+import type { RequestProgress } from "@cn/core/requestProgress";
 import type { NnnRow, NoteRow } from "@cn/core/types";
 
 /** The words a note, key point or question is about, and the paragraph they
@@ -27,6 +28,13 @@ export interface AskingState {
   quote: string | null;
 }
 
+export interface ReaderNoteRequest {
+  id: string;
+  blockId: string;
+  quote: string;
+  progress: RequestProgress;
+}
+
 /** The id of the margin group that holds entries we could not place beside a
  *  passage. */
 export const UNANCHORED = "unanchored";
@@ -48,6 +56,9 @@ export interface ReaderApi {
   asking: AskingState | null;
   openAsk: (block: ReaderBlock, quote: string | null) => void;
   closeAsk: () => void;
+  noteRequests: readonly ReaderNoteRequest[];
+  /** Returns the existing request when the same words were already requested this visit. */
+  requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;
   dialog: ReaderDialog | null;
   openDialog: (dialog: ReaderDialog) => void;
   closeDialog: () => void;
