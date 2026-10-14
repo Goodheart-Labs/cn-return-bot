@@ -31,7 +31,7 @@ export type EvalName = "extractor" | "checker";
 
 export interface JudgeAnswer {
   found: boolean;
-  /** Whether every matching claim states a single statement. Missing in a run made before the judge asked. */
+  /** Whether every matching claim states a single statement. Only runs made while the judge asked have it. */
   atomic?: boolean;
   matchingClaims: number[];
   reason: string;
@@ -90,7 +90,7 @@ export interface ExtractorRowResult {
   /** The judge's answer per sample. A sample whose extraction failed has none. */
   judgements: (JudgeAnswer | null)[];
   foundIn: number;
-  /** In how many samples the statement was found and every matching claim was atomic. Missing in a run made before the judge asked. */
+  /** In how many samples the statement was found and every matching claim was atomic. Only runs made while the judge asked have it. */
   atomicIn?: number;
   passed: boolean;
 }
