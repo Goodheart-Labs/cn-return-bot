@@ -112,10 +112,10 @@ describe("runExtraction", () => {
 
   test("sends the chunk to the model that extractionModels names and returns the claims of its passages", async () => {
     const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(
-      completion({ "A is true.": { type: "statement", claims: ["A is true."] }, "B is a matter of taste.": { type: "other" } }) as any,
+      completion({ "A is true.": { type: "statement" }, "B is a matter of taste.": { type: "other" } }) as any,
     );
     const { claims } = await withExtractionModels(claudeExtractionModels("anthropic/claude-sonnet-5.5", "medium"), () => runExtraction(message));
-    expect(claims).toEqual([{ claim: "A is true.", context: "A is true.", contextParagraph: "A is true. B is a matter of taste.", imageUrls: [] }]);
+    expect(claims).toEqual([{ claim: "A is true.", context: "A is true.", imageUrls: [] }]);
     const request = spy.mock.calls[0]![1] as any;
     expect(request.model).toBe("anthropic/claude-sonnet-5.5");
     expect(request.reasoning_effort).toBe("medium");
@@ -126,8 +126,8 @@ describe("runExtraction", () => {
 
   test("tells the model which text its passages left out and asks again", async () => {
     const spy = spyOn(costTracker, "trackedLlmCreate")
-      .mockResolvedValueOnce(completion({ "A is true.": { type: "statement", claims: ["A is true."] } }) as any)
-      .mockResolvedValueOnce(completion({ "A is true.": { type: "statement", claims: ["A is true."] }, "B is a matter of taste.": { type: "other" } }) as any);
+      .mockResolvedValueOnce(completion({ "A is true.": { type: "statement" } }) as any)
+      .mockResolvedValueOnce(completion({ "A is true.": { type: "statement" }, "B is a matter of taste.": { type: "other" } }) as any);
     const extraction = await runPassageExtraction(message);
     expect(extraction.attempts).toBe(2);
     expect(extraction.passages).toHaveLength(2);
@@ -137,7 +137,7 @@ describe("runExtraction", () => {
   });
 
   test("gives up when the passages never add up to the text", async () => {
-    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(completion({ "A is true.": { type: "statement", claims: ["A is true."] } }) as any);
+    const spy = spyOn(costTracker, "trackedLlmCreate").mockResolvedValue(completion({ "A is true.": { type: "statement" } }) as any);
     await expect(runPassageExtraction(message)).rejects.toThrow("no acceptable answer after 3 attempts");
     expect(spy).toHaveBeenCalledTimes(3);
     spy.mockRestore();
@@ -152,14 +152,14 @@ describe("runExtraction", () => {
   });
 });
 
-describe("an unfinished last statement", () => {
+describe("an unfinished last point", () => {
   const first = "Article excerpt:\n\nA is true. B is a matter of taste. C is";
   const second = "Article excerpt:\n\nalso true. D is false.";
   const completion = (passages: object) => ({
     response: { choices: [{ message: { content: JSON.stringify(passages) } }] },
     costEntry: { name: "claim_extraction", input_tokens: 1, output_tokens: 1, cost: 0, tools: [] },
   });
-  const statement = (claim: string) => ({ type: "statement", claims: [claim] });
+  const statement = (_claim: string) => ({ type: "statement" });
 
   test("is only mentioned to the model when another chunk follows", () => {
     expect(extractionSystemPrompt({ hasNextChunk: true })).toContain("its last point may be unfinished");
@@ -205,9 +205,9 @@ describe("bodyOfChunkMessage", () => {
 });
 
 describe("extractionSystemPrompt", () => {
-  test("names every passage type and asks for the claims of a passage", () => {
+  test("names every point type and does not ask for claims", () => {
     for (const type of PASSAGE_TYPES) expect(extractionSystemPrompt()).toContain(`"${type}"`);
-    expect(extractionSystemPrompt()).toContain('"claims"');
+    expect(extractionSystemPrompt()).not.toContain('"claims"');
   });
 
   test("adds the types an experiment asks for", () => {

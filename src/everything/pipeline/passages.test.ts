@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { PassageFormatError, claimsOfPassages, describeProblems, imageSpans, paragraphAround, parsePassages, topLevelKeys } from "./passages";
+import { PassageFormatError, claimsOfPassages, describeProblems, imageSpans, parsePassages, topLevelKeys } from "./passages";
 
 const body = [
   "Revenue grew 30% last year. I think that is great.",
@@ -35,9 +35,9 @@ describe("imageSpans", () => {
 
 describe("parsePassages", () => {
   const good = answer({
-    "Revenue grew 30% last year.": { type: "statement", claims: ["The company's revenue grew 30% last year."] },
+    "Revenue grew 30% last year.": { type: "statement" },
     "I think that is great.": { type: "other" },
-    "The company was founded in 2010.": { type: "statement", claims: ["The company was founded in 2010."] },
+    "The company was founded in 2010.": { type: "statement" },
   });
 
   test("accepts passages that add up to the text, leaving out the image block and the line breaks", () => {
@@ -50,25 +50,25 @@ describe("parsePassages", () => {
   });
 
   test("reports the text that no passage covers", () => {
-    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "statement", claims: ["c"] }, "The company was founded in 2010.": { type: "statement", claims: ["c"] } }), body);
+    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "statement" }, "The company was founded in 2010.": { type: "statement" } }), body);
     expect(parse.uncovered.map((g) => g.text)).toEqual(["I think that is great."]);
     expect(parse.coverage).toBeLessThan(1);
     expect(describeProblems(parse)).toContain("I think that is great.");
   });
 
   test("finds a passage the model reworded in its punctuation and capitals", () => {
-    const parse = parsePassages(answer({ "revenue grew 30 % last year": { type: "statement", claims: ["c"] }, "I think that is great.": { type: "other" }, "The company was founded in 2010.": { type: "statement", claims: ["c"] } }), body);
+    const parse = parsePassages(answer({ "revenue grew 30 % last year": { type: "statement" }, "I think that is great.": { type: "other" }, "The company was founded in 2010.": { type: "statement" } }), body);
     expect(parse.unmatched).toEqual([]);
     expect(parse.coverage).toBe(1);
   });
 
   test("reports a passage that is not in the text", () => {
-    const parse = parsePassages(answer({ "Sales doubled.": { type: "statement", claims: ["c"] }, "I think that is great.": { type: "other" } }), body);
+    const parse = parsePassages(answer({ "Sales doubled.": { type: "statement" }, "I think that is great.": { type: "other" } }), body);
     expect(parse.unmatched).toEqual(["Sales doubled."]);
   });
 
   test("takes an image key when the image is in the text", () => {
-    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "other" }, "Image: https://x/a.png": { type: "statement", claims: ["Revenue is shown in a chart."] } }), body);
+    const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "other" }, "Image: https://x/a.png": { type: "statement" } }), body);
     expect(parse.passages[1]!.imageUrl).toBe("https://x/a.png");
     expect(parse.unmatched).toEqual([]);
   });
@@ -80,9 +80,8 @@ describe("parsePassages", () => {
     expect(parse.passages.map((p) => p.span!.start)).toEqual([0, 21, 35]);
   });
 
-  test("takes a forecast, which lists no claims", () => {
+  test("takes a forecast, which makes no claim", () => {
     const parse = parsePassages(answer({ "Revenue grew 30% last year.": { type: "forecast" }, "I think that is great.": { type: "other" } }), body);
-    expect(parse.passages[0]!.claims).toEqual([]);
     expect(claimsOfPassages(parse.passages, body)).toEqual([]);
   });
 
@@ -90,7 +89,6 @@ describe("parsePassages", () => {
     expect(() => parsePassages("not json", body)).toThrow(PassageFormatError);
     expect(() => parsePassages("[]", body)).toThrow(PassageFormatError);
     expect(() => parsePassages(answer({ "Revenue grew 30% last year.": { type: "gossip" } }), body)).toThrow('The type must be one of: "statement", "forecast", "other"');
-    expect(() => parsePassages(answer({ "Revenue grew 30% last year.": { type: "statement" } }), body)).toThrow('needs "claims"');
     expect(() => parsePassages(answer({ "Revenue grew 30% last year.": "claim" }), body)).toThrow("must be an object");
   });
 
@@ -102,7 +100,7 @@ describe("parsePassages", () => {
 
 describe("parsePassages with an unfinished ending", () => {
   const text = "Revenue grew 30% last year. The company was founded in 2010 and then it";
-  const withoutEnding = answer({ "Revenue grew 30% last year.": { type: "statement", claims: ["c"] }, "The company was founded in 2010": { type: "statement", claims: ["c"] } });
+  const withoutEnding = answer({ "Revenue grew 30% last year.": { type: "statement" }, "The company was founded in 2010": { type: "statement" } });
 
   test("hands the left-out last words back as the carry when the caller allows it", () => {
     const parse = parsePassages(withoutEnding, text, { allowCarry: true });
@@ -133,59 +131,23 @@ describe("parsePassages with an unfinished ending", () => {
 });
 
 describe("claimsOfPassages", () => {
-  test("gives every claim of a passage the passage and its paragraph, and none for other text", () => {
+  test("makes one claim of every statement point, which is the point itself, and none of other text", () => {
     const parse = parsePassages(
       answer({
-        "Revenue grew 30% last year.": { type: "statement", claims: ["Revenue grew 30% last year.", "Revenue grew."] },
-        "I think that is great.": { type: "other" },
-        "The company was founded in 2010.": { type: "statement", claims: ["The company was founded in 2010."] },
+        "Revenue grew 30% last year. I think that is great.": { type: "statement" },
+        "The company was founded in 2010.": { type: "forecast" },
       }),
       body,
     );
-    const claims = claimsOfPassages(parse.passages, body);
-    expect(claims).toHaveLength(3);
-    expect(claims[0]).toEqual({ claim: "Revenue grew 30% last year.", context: "Revenue grew 30% last year.", contextParagraph: "Revenue grew 30% last year. I think that is great.", imageUrls: [] });
-    
+    expect(claimsOfPassages(parse.passages, body)).toEqual([
+      { claim: "Revenue grew 30% last year. I think that is great.", context: "Revenue grew 30% last year. I think that is great.", imageUrls: [] },
+    ]);
   });
 
-  test("gives a claim that rests on an image the image and no passage", () => {
-    const parse = parsePassages(answer({ "Image: https://x/a.png": { type: "statement", claims: ["Revenue is shown in a chart."] } }), body);
-    expect(claimsOfPassages(parse.passages, body)).toEqual([{ claim: "Revenue is shown in a chart.", context: "", contextParagraph: "", imageUrls: ["https://x/a.png"] }]);
-  });
-});
-
-describe("paragraphAround", () => {
-  test("returns the paragraph between blank lines", () => {
-    const start = body.indexOf("The company");
-    expect(paragraphAround(body, { start, end: start + 10 })).toBe("The company was founded in 2010.");
-  });
-});
-
-describe("paragraphAround for a very long paragraph", () => {
-  const lines = Array.from({ length: 300 }, (_, i) => `line ${i} of a transcript with a few words`);
-  const transcript = lines.join("\n");
-
-  test("gives a window of whole words around the passage, which holds the passage", () => {
-    const passage = lines[150]!;
-    const start = transcript.indexOf(passage);
-    const paragraph = paragraphAround(transcript, { start, end: start + passage.length });
-    expect(paragraph).toContain(passage);
-    expect(paragraph.length).toBeLessThan(1_500);
-    const windowStart = transcript.indexOf(paragraph);
-    expect(windowStart).toBeGreaterThan(0);
-    expect(/\s/.test(transcript[windowStart - 1]!)).toBe(true);
-    expect(/\s/.test(transcript[windowStart + paragraph.length]!)).toBe(true);
-  });
-
-  test("keeps a window inside the text at its start and its end", () => {
-    expect(paragraphAround(transcript, { start: 0, end: 10 }).startsWith("line 0 of")).toBe(true);
-    const start = transcript.indexOf(lines[299]!);
-    expect(paragraphAround(transcript, { start, end: transcript.length }).endsWith("line 299 of a transcript with a few words")).toBe(true);
-  });
-
-  test("gives a long passage in full", () => {
-    const start = transcript.indexOf(lines[10]!);
-    const end = transcript.indexOf(lines[60]!) + lines[60]!.length;
-    expect(paragraphAround(transcript, { start, end })).toContain(transcript.slice(start, end));
+  test("makes the claim of a point that is an image from its description and its visible text, with no quote", () => {
+    const parse = parsePassages(answer({ "Image: https://x/a.png": { type: "statement" } }), body);
+    expect(claimsOfPassages(parse.passages, body)).toEqual([
+      { claim: "Description: A bar chart [2025] of revenue.\nVisible text: Revenue", context: "", imageUrls: ["https://x/a.png"] },
+    ]);
   });
 });

@@ -26,7 +26,6 @@ import type { ExtractedClaim } from "../types";
 const claim = (text: string): ExtractedClaim => ({
   claim: text,
   context: text,
-  contextParagraph: text,
   imageUrls: [],
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 });

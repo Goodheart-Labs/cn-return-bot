@@ -52,7 +52,7 @@ export interface NewClaimRow {
   claim: string;
   judgement: string;
   context_quote: string | null;
-  context_paragraph: string | null;
+  context_paragraph?: string | null;
   image_urls: string[];
   context_url: string | null;
   start_seconds: number | null;

@@ -41,7 +41,6 @@ export interface Passage {
   /** The passage as the text holds it, or the "Image: <address>" line for an image. */
   text: string;
   type: string;
-  claims: string[];
   /** Where the passage sits in the text. Null for an image, and for a passage that was not found. */
   span: { start: number; end: number } | null;
   imageUrl: string | null;
@@ -63,11 +62,10 @@ export interface PassageParse {
 }
 
 export interface PassageClaim {
+  /** What the pipeline checks: the point as the author wrote it, or for an image its description. */
   claim: string;
-  /** The passage the claim sits in. Empty for a claim that rests on an image. */
+  /** The point, which is also the quote the claim is anchored by. Empty for an image. */
   context: string;
-  /** The paragraph around the passage, which the code adds. */
-  contextParagraph: string;
   imageUrls: string[];
 }
 
@@ -161,18 +159,12 @@ function extendOverPunctuation(body: string, floor: number, start: number, end: 
 
 function readPassage(key: string, value: unknown, allowedTypes: readonly string[]): Passage {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new PassageFormatError(`The value of the point "${key.slice(0, 60)}" must be an object.`);
-  const { type, claims, ...extra } = value as Record<string, unknown>;
+  const { type, ...extra } = value as Record<string, unknown>;
   if (typeof type !== "string" || !allowedTypes.includes(type)) {
     throw new PassageFormatError(`The point "${key.slice(0, 60)}" has the type ${JSON.stringify(type)}. The type must be one of: ${allowedTypes.map((t) => `"${t}"`).join(", ")}.`);
   }
-  let listed: string[] = [];
-  if (type === STATEMENT_TYPE) {
-    const valid = Array.isArray(claims) && claims.length > 0 && claims.every((c) => typeof c === "string" && c.trim() !== "");
-    if (!valid) throw new PassageFormatError(`The point "${key.slice(0, 60)}" has the type "${type}", so it needs "claims": a list of one or more claims as strings.`);
-    listed = claims as string[];
-  }
   const isImage = key.startsWith(IMAGE_KEY_PREFIX);
-  return { text: key, type, claims: listed, span: null, imageUrl: isImage ? key.slice(IMAGE_KEY_PREFIX.length).trim() : null, extra };
+  return { text: key, type, span: null, imageUrl: isImage ? key.slice(IMAGE_KEY_PREFIX.length).trim() : null, extra };
 }
 
 export interface ParseOptions {
@@ -252,40 +244,23 @@ export function describeProblems(parse: PassageParse): string {
   return lines.join(" ");
 }
 
-/** The longest paragraph that is given as it is. A longer one, such as a whole
- *  transcript chunk, which has no blank lines, is cut down to a window. */
-const MAX_PARAGRAPH_CHARS = 1_500;
-const PARAGRAPH_WINDOW_CHARS_EACH_SIDE = 600;
-
-/** The paragraph, or paragraphs, around a passage. Paragraphs are separated by a
- *  blank line. A very long paragraph gives a window around the passage instead,
- *  which starts and ends at a line break or a space. */
-export function paragraphAround(body: string, span: { start: number; end: number }): string {
-  const before = body.lastIndexOf("\n\n", span.start);
-  const after = body.indexOf("\n\n", span.end);
-  const start = before === -1 ? 0 : before + 2;
-  const end = after === -1 ? body.length : after;
-  if (end - start <= MAX_PARAGRAPH_CHARS) return body.slice(start, end).trim();
-  const earliest = Math.max(start, span.start - PARAGRAPH_WINDOW_CHARS_EACH_SIDE);
-  const latest = Math.min(end, span.end + PARAGRAPH_WINDOW_CHARS_EACH_SIDE);
-  const breakBefore = Math.max(body.lastIndexOf("\n", earliest), body.lastIndexOf(" ", earliest));
-  const breakAfter = [body.indexOf("\n", latest), body.indexOf(" ", latest)].filter((i) => i !== -1);
-  const from = breakBefore < start ? start : breakBefore + 1;
-  const to = breakAfter.length === 0 ? end : Math.min(end, ...breakAfter);
-  return body.slice(from, to).trim();
+/** The text of the image block with this address, without the brackets and the
+ *  line that holds the address: the description and the text visible in the image. */
+function imageBlockText(body: string, url: string): string | null {
+  const span = imageSpans(body).find((s) => body.startsWith(`[Image: ${url}`, s.start));
+  return span ? body.slice(span.start + 1, span.end - 1).split("\n").slice(1).join("\n").trim() : null;
 }
 
-/** The claims of the passages, each with the passage it sits in and the paragraph
- *  around it. A claim that rests on an image has no passage and no paragraph. */
+/** The claims of the statement points. A point is checked as the author wrote
+ *  it, so its text is the claim and also its quote. A point that is an image has
+ *  no text of its own. Its claim is the description of the image and the text
+ *  visible in it, and it has no quote. */
 export function claimsOfPassages(passages: Passage[], body: string): PassageClaim[] {
   return passages
     .filter((p) => p.type === STATEMENT_TYPE)
-    .flatMap((p) =>
-      p.claims.map((claim) => ({
-        claim,
-        context: p.imageUrl ? "" : p.text,
-        contextParagraph: p.imageUrl || !p.span ? "" : paragraphAround(body, p.span),
-        imageUrls: p.imageUrl ? [p.imageUrl] : [],
-      })),
+    .map((p) =>
+      p.imageUrl
+        ? { claim: imageBlockText(body, p.imageUrl) ?? p.text, context: "", imageUrls: [p.imageUrl] }
+        : { claim: p.text, context: p.text, imageUrls: [] },
     );
 }

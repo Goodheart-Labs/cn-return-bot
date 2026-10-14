@@ -87,7 +87,6 @@ function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
     claim: claim.claim,
     judgement: claim.judgement,
     context_quote: claim.context || null,
-    context_paragraph: claim.contextParagraph || null,
     image_urls: claim.imageUrls,
     context_url:
       anchor.kind === "youtube" ? (anchor.deepLinkUrl ?? null) : isSyntheticDocUrl(anchor.url) ? null : anchor.url,
@@ -299,7 +298,6 @@ function toExtractedClaim(row: ItemClaimRow): ExtractedClaim {
   return {
     claim: row.claim,
     context: row.context_quote ?? "",
-    contextParagraph: row.context_paragraph ?? "",
     imageUrls: row.image_urls ?? [],
     anchor: { kind: "substack", url: "" },
   };
