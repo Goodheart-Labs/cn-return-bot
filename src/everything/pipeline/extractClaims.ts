@@ -50,7 +50,7 @@ const UNFINISHED_ENDING_RULE = `This excerpt was cut from a longer text at a fix
 
 export function extractionSystemPrompt({ extraTypes = {}, hasNextChunk = false }: ExtractionOptions = {}): string {
   const types = Object.entries({ ...PASSAGE_TYPE_DESCRIPTIONS, ...extraTypes }).map(([name, description]) => `- "${name}": ${description}`);
-  return `You cut a text into points. A point is a stretch of text in which the author makes one point, held together by one purpose the author has for the reader (it is similar to how people sometimes set small paragraphs). One point should at most contain a few sentences. The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
+  return `You cut a text into points. A point is a stretch of text in which the author makes one point, held together by one purpose the author has for the reader (it is similar to how people sometimes set small paragraphs). ONE POINT SHOULD CONTAIN AT MOST A FEW SENTENCES!!! The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
 
 The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not cut it into points. Cut only the text after "Part:".
 
