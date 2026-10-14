@@ -148,6 +148,9 @@ storybook-static
 .impeccable/config.local.json
 .impeccable/hook.cache.json
 
+# Local note-tweets feed, staging and screenshots
+/src/note-tweets/.state/
+
 # Xcode's build output and per-user state for the Safari container app
 src/everything-extension/safari/build/
 xcuserdata/
