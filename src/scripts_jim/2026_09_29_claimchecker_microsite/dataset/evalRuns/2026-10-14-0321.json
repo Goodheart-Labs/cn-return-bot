@@ -1,0 +1,1543 @@
+{
+ "id": "2026-10-14-0321",
+ "label": "Few sentences per point, stressed",
+ "createdAt": "2026-10-14T03:21:37.879Z",
+ "commit": "3b7a2d98",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 3,
+   "checker": 0
+  }
+ },
+ "rowIds": [
+  "melanie-mitchell"
+ ],
+ "extractor": {
+  "samples": 3,
+  "passAt": 2,
+  "rows": [
+   {
+    "id": "melanie-mitchell#1",
+    "datapointId": "melanie-mitchell",
+    "group": "note-difficult",
+    "referenceClaim": "Melanie Mitchell spent the 1990s and 2000s pursuing a road to AI that did not work out (teaching computers to make analogies).",
+    "passage": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person",
+    "chunkKey": "60c2e7ea-42ef-4a38-9e5d-6b0b22dd6599#3",
+    "judgements": [
+     {
+      "found": true,
+      "matchingClaims": [
+       19
+      ],
+      "reason": "Claim 19 states that Melanie Mitchell spent the 1990s and 2000s pursuing an unsuccessful road to AI: teaching computers to make analogies."
+     },
+     {
+      "found": true,
+      "matchingClaims": [
+       17
+      ],
+      "reason": "Claim 17 states that Melanie Mitchell spent the 1990s and 2000s pursuing an unsuccessful approach to AI: teaching computers to make analogies."
+     },
+     {
+      "found": true,
+      "matchingClaims": [
+       20
+      ],
+      "reason": "Claim 20 states that Melanie Mitchell spent the 1990s and 2000s pursuing a road to AI that did not work out, namely teaching computers to make analogies."
+     }
+    ],
+    "foundIn": 3,
+    "passed": true
+   },
+   {
+    "id": "melanie-mitchell#2",
+    "datapointId": "melanie-mitchell",
+    "group": "note-difficult",
+    "referenceClaim": "Melanie Mitchell has no expertise in modern LLMs.",
+    "passage": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person",
+    "chunkKey": "60c2e7ea-42ef-4a38-9e5d-6b0b22dd6599#3",
+    "judgements": [
+     {
+      "found": true,
+      "matchingClaims": [
+       19
+      ],
+      "reason": "Claim 19 explicitly states that Melanie Mitchell has no expertise in modern LLMs, which matches the reference claim."
+     },
+     {
+      "found": true,
+      "matchingClaims": [
+       17
+      ],
+      "reason": "Claim 17 explicitly states that Melanie Mitchell has no expertise in modern LLMs, matching the reference claim."
+     },
+     {
+      "found": true,
+      "matchingClaims": [
+       20
+      ],
+      "reason": "Claim 20 explicitly states that Melanie Mitchell has no expertise in modern LLMs, matching the reference claim."
+     }
+    ],
+    "foundIn": 3,
+    "passed": true
+   }
+  ],
+  "chunkRuns": [
+   {
+    "key": "60c2e7ea-42ef-4a38-9e5d-6b0b22dd6599#3",
+    "itemTitle": "An Open Letter To Steven Pinker On AI - by Scott Alexander",
+    "chunkIndex": 3,
+    "chunkCount": 6,
+    "chunkChars": 11962,
+    "samples": [
+     {
+      "claims": [
+       {
+        "claim": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct. Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "context": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct. Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "imageUrls": []
+       },
+       {
+        "claim": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "context": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "imageUrls": []
+       },
+       {
+        "claim": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.",
+        "context": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.",
+        "imageUrls": []
+       },
+       {
+        "claim": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "context": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "context": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "context": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "context": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "context": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "imageUrls": []
+       },
+       {
+        "claim": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "context": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "context": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own.",
+        "context": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own.",
+        "imageUrls": []
+       },
+       {
+        "claim": "It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "context": "It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons.",
+        "context": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding. Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "context": "Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding. Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "context": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "imageUrls": []
+       },
+       {
+        "claim": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.",
+        "context": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.",
+        "imageUrls": []
+       },
+       {
+        "claim": "In the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”. The article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "context": "In the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”. The article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "imageUrls": []
+       },
+       {
+        "claim": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "context": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "context": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "context": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "imageUrls": []
+       },
+       {
+        "claim": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "context": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "context": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "context": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence. Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "context": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence. Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "context": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "imageUrls": []
+       },
+       {
+        "claim": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "context": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "context": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "imageUrls": []
+       },
+       {
+        "claim": "4: You falsely represent studies and experts who disagree with you as being on your side.",
+        "context": "4: You falsely represent studies and experts who disagree with you as being on your side.",
+        "imageUrls": []
+       },
+       {
+        "claim": "A 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "context": "A 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated. After doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.",
+        "context": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated. After doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.",
+        "imageUrls": []
+       },
+       {
+        "claim": "…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "context": "…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "imageUrls": []
+       },
+       {
+        "claim": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "context": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "imageUrls": []
+       },
+       {
+        "claim": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "context": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "context": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "imageUrls": []
+       },
+       {
+        "claim": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world.",
+        "context": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world.",
+        "imageUrls": []
+       },
+       {
+        "claim": "And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”. Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "context": "And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”. Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "imageUrls": []
+       },
+       {
+        "claim": "5: You employ weird pseudo-arguments that could prove anything",
+        "context": "5: You employ weird pseudo-arguments that could prove anything",
+        "imageUrls": []
+       },
+       {
+        "claim": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "context": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "imageUrls": []
+       },
+       {
+        "claim": "But this could disprove any concept. For example:",
+        "context": "But this could disprove any concept. For example:",
+        "imageUrls": []
+       },
+       {
+        "claim": "Age is meaningless. After all, there’s no point at which someone was young yesterday, but old today.",
+        "context": "Age is meaningless. After all, there’s no point at which someone was young yesterday, but old today.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Height is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.",
+        "context": "Height is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Lakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "context": "Lakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "context": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "imageUrls": []
+       },
+       {
+        "claim": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.",
+        "context": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Again in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "context": "Again in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Humanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "context": "Humanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "context": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "imageUrls": []
+       },
+       {
+        "claim": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "context": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "imageUrls": []
+       }
+      ],
+      "passages": [
+       {
+        "text": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct. Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "type": "statement",
+        "why": "Estimates of AI extinction risk"
+       },
+       {
+        "text": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "type": "statement",
+        "why": "Pessimistic estimates and responses"
+       },
+       {
+        "text": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.",
+        "type": "statement",
+        "why": "Accusation about the portrayal of AI risk views"
+       },
+       {
+        "text": "Across the years, you have written things like",
+        "type": "other",
+        "why": "Introduces examples"
+       },
+       {
+        "text": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "type": "statement",
+        "why": "Examples of claims about omnipotent AI"
+       },
+       {
+        "text": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "type": "statement",
+        "why": "Examples of claims about omniscience and omnipotence"
+       },
+       {
+        "text": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "type": "statement",
+        "why": "Examples of claims about AI capabilities"
+       },
+       {
+        "text": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "type": "statement",
+        "why": "Further example of the alleged portrayal"
+       },
+       {
+        "text": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "type": "statement",
+        "why": "Introduces a contrary definition of superintelligence"
+       },
+       {
+        "text": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "type": "statement",
+        "why": "Description of superintelligence as bounded"
+       },
+       {
+        "text": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "type": "statement",
+        "why": "Definition of superintelligence"
+       },
+       {
+        "text": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own.",
+        "type": "statement",
+        "why": "AI 2027 scenario limits the superintelligence"
+       },
+       {
+        "text": "It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "type": "statement",
+        "why": "Timeline in the AI 2027 scenario"
+       },
+       {
+        "text": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons.",
+        "type": "statement",
+        "why": "Explains uncertainty about specific capabilities"
+       },
+       {
+        "text": "Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding. Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "type": "statement",
+        "why": "Protein-folding example"
+       },
+       {
+        "text": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "type": "statement",
+        "why": "Distinguishes uncertainty from belief in omnipotence"
+       },
+       {
+        "text": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.",
+        "type": "statement",
+        "why": "Accusation about cherry-picked experts"
+       },
+       {
+        "text": "In the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”. The article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "type": "statement",
+        "why": "Identifies experts cited in an article"
+       },
+       {
+        "text": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "type": "statement",
+        "why": "Comments on the addressee’s expertise"
+       },
+       {
+        "text": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "type": "statement",
+        "why": "Critiques Melanie Mitchell’s expertise and cited view"
+       },
+       {
+        "text": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "type": "statement",
+        "why": "Critiques Gary Marcus’s expertise"
+       },
+       {
+        "text": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "type": "statement",
+        "why": "Questions Gary Marcus’s authority on modern AI"
+       },
+       {
+        "text": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "type": "statement",
+        "why": "Critiques the article’s selection and characterization"
+       },
+       {
+        "text": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "type": "statement",
+        "why": "Examples of prominent researchers warning about AI risk"
+       },
+       {
+        "text": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence. Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "type": "statement",
+        "why": "Examples of prominent figures concerned about AI risk"
+       },
+       {
+        "text": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "type": "statement",
+        "why": "Statements and survey findings on extinction risk"
+       },
+       {
+        "text": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "type": "statement",
+        "why": "Critique of the article and open letter"
+       },
+       {
+        "text": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "type": "statement",
+        "why": "Claims the open letter omits prominent AI figures"
+       },
+       {
+        "text": "4: You falsely represent studies and experts who disagree with you as being on your side.",
+        "type": "statement",
+        "why": "Accusation about misrepresenting sources"
+       },
+       {
+        "text": "For example, in your open letter to me, you wrote:",
+        "type": "other",
+        "why": "Introduces a quotation"
+       },
+       {
+        "text": "A 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "type": "statement",
+        "why": "Quoted characterization of the RAND analysis"
+       },
+       {
+        "text": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated. After doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.",
+        "type": "statement",
+        "why": "Correction of the RAND study’s conclusion"
+       },
+       {
+        "text": "…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "type": "statement",
+        "why": "Reports the RAND study’s recommendation"
+       },
+       {
+        "text": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "type": "statement",
+        "why": "Introduces the book’s argument and quotation"
+       },
+       {
+        "text": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "type": "statement",
+        "why": "Quoted argument about developing safe AI"
+       },
+       {
+        "text": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "type": "statement",
+        "why": "Describes Russell’s alignment work and advocacy"
+       },
+       {
+        "text": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world.",
+        "type": "statement",
+        "why": "Interprets Russell’s bridge analogy"
+       },
+       {
+        "text": "And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”. Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "type": "statement",
+        "why": "Explains Russell’s view of alignment research"
+       },
+       {
+        "text": "5: You employ weird pseudo-arguments that could prove anything",
+        "type": "statement",
+        "why": "Accusation about the use of pseudo-arguments"
+       },
+       {
+        "text": "(source)",
+        "type": "other",
+        "why": "Source reference"
+       },
+       {
+        "text": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "type": "statement",
+        "why": "Summarizes an argument about defining superintelligence"
+       },
+       {
+        "text": "But this could disprove any concept. For example:",
+        "type": "statement",
+        "why": "Introduces analogies against the argument"
+       },
+       {
+        "text": "Age is meaningless. After all, there’s no point at which someone was young yesterday, but old today.",
+        "type": "statement",
+        "why": "Age analogy"
+       },
+       {
+        "text": "Height is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.",
+        "type": "statement",
+        "why": "Height analogy"
+       },
+       {
+        "text": "Lakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "type": "statement",
+        "why": "Lake analogy"
+       },
+       {
+        "text": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "type": "statement",
+        "why": "Identifies the argument as a sorites paradox"
+       },
+       {
+        "text": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.",
+        "type": "statement",
+        "why": "Accusation about framing AI risk concerns"
+       },
+       {
+        "text": "Again in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "type": "statement",
+        "why": "Quotes the claim about distraction"
+       },
+       {
+        "text": "You expand on this theme in your book:",
+        "type": "other",
+        "why": "Introduces a quotation"
+       },
+       {
+        "text": "Humanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "type": "statement",
+        "why": "Quoted argument about competing risks"
+       },
+       {
+        "text": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "type": "statement",
+        "why": "Challenges the claim that alignment concerns distract from present harms"
+       },
+       {
+        "text": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "type": "statement",
+        "why": "Cites shared activism as a counterexample"
+       }
+      ],
+      "coverage": 1,
+      "attempts": 1,
+      "costUsd": 0.00224309
+     },
+     {
+      "claims": [
+       {
+        "claim": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct. Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "context": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct. Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "imageUrls": []
+       },
+       {
+        "claim": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "context": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "imageUrls": []
+       },
+       {
+        "claim": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.\n\nAcross the years, you have written things like",
+        "context": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.\n\nAcross the years, you have written things like",
+        "imageUrls": []
+       },
+       {
+        "claim": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "context": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "context": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "context": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "context": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "context": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "imageUrls": []
+       },
+       {
+        "claim": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "context": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "context": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own. It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "context": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own. It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons. Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding.",
+        "context": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons. Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "context": "Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "context": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "imageUrls": []
+       },
+       {
+        "claim": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.\n\nIn the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”.\n\nThe article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "context": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.\n\nIn the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”.\n\nThe article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "imageUrls": []
+       },
+       {
+        "claim": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "context": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "context": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "context": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "imageUrls": []
+       },
+       {
+        "claim": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "context": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "context": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "context": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence. Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "context": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence. Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "context": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "imageUrls": []
+       },
+       {
+        "claim": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "context": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "context": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "imageUrls": []
+       },
+       {
+        "claim": "4: You falsely represent studies and experts who disagree with you as being on your side.\n\nFor example, in your open letter to me, you wrote:\n\nA 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "context": "4: You falsely represent studies and experts who disagree with you as being on your side.\n\nFor example, in your open letter to me, you wrote:\n\nA 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated.\n\nAfter doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.\n\n…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "context": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated.\n\nAfter doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.\n\n…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "imageUrls": []
+       },
+       {
+        "claim": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "context": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "imageUrls": []
+       },
+       {
+        "claim": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "context": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "context": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "imageUrls": []
+       },
+       {
+        "claim": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world. And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”.",
+        "context": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world. And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "context": "Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "imageUrls": []
+       },
+       {
+        "claim": "5: You employ weird pseudo-arguments that could prove anything\n\n(source)",
+        "context": "5: You employ weird pseudo-arguments that could prove anything\n\n(source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "context": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "imageUrls": []
+       },
+       {
+        "claim": "But this could disprove any concept. For example:\n\nAge is meaningless. After all, there’s no point at which someone was young yesterday, but old today.\n\nHeight is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.\n\nLakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "context": "But this could disprove any concept. For example:\n\nAge is meaningless. After all, there’s no point at which someone was young yesterday, but old today.\n\nHeight is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.\n\nLakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "context": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "imageUrls": []
+       },
+       {
+        "claim": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.\n\nAgain in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "context": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.\n\nAgain in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "You expand on this theme in your book:\n\nHumanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "context": "You expand on this theme in your book:\n\nHumanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "context": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "imageUrls": []
+       },
+       {
+        "claim": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "context": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "imageUrls": []
+       }
+      ],
+      "passages": [
+       {
+        "text": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct. Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "type": "statement",
+        "why": "Estimates of AI extinction risk"
+       },
+       {
+        "text": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "type": "statement",
+        "why": "Pessimistic estimates and responses"
+       },
+       {
+        "text": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.\n\nAcross the years, you have written things like",
+        "type": "statement",
+        "why": "Accusation about misrepresenting AI risk views"
+       },
+       {
+        "text": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "type": "statement",
+        "why": "Examples of attributed claims"
+       },
+       {
+        "text": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "type": "statement",
+        "why": "Examples of attributed claims"
+       },
+       {
+        "text": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "type": "statement",
+        "why": "Examples of attributed claims"
+       },
+       {
+        "text": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "type": "statement",
+        "why": "Further examples of attributed claims"
+       },
+       {
+        "text": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "type": "statement",
+        "why": "Denial and introduction to a definition"
+       },
+       {
+        "text": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "type": "statement",
+        "why": "Definition of bounded superintelligence"
+       },
+       {
+        "text": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "type": "statement",
+        "why": "Claim about definitions of superintelligence"
+       },
+       {
+        "text": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own. It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "type": "statement",
+        "why": "AI 2027 scenario and limits"
+       },
+       {
+        "text": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons. Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding.",
+        "type": "statement",
+        "why": "Explains the disagreement about capabilities"
+       },
+       {
+        "text": "Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "type": "statement",
+        "why": "Protein-folding example"
+       },
+       {
+        "text": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "type": "statement",
+        "why": "Distinguishes uncertainty from omnipotence claims"
+       },
+       {
+        "text": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.\n\nIn the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”.\n\nThe article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "type": "statement",
+        "why": "Criticizes the selection of quoted experts"
+       },
+       {
+        "text": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "type": "statement",
+        "why": "Comments on the addressee’s expertise"
+       },
+       {
+        "text": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "type": "statement",
+        "why": "Characterizes Mitchell’s expertise and cited view"
+       },
+       {
+        "text": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "type": "statement",
+        "why": "Characterizes Marcus’s expertise"
+       },
+       {
+        "text": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "type": "statement",
+        "why": "Criticizes Marcus’s suitability as an expert"
+       },
+       {
+        "text": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "type": "statement",
+        "why": "Criticizes the article’s sourcing and conclusions"
+       },
+       {
+        "text": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "type": "statement",
+        "why": "Examples of prominent AI researchers warning of risk"
+       },
+       {
+        "text": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence. Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "type": "statement",
+        "why": "Examples of researchers’ warnings and actions"
+       },
+       {
+        "text": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "type": "statement",
+        "why": "Warnings by AI leaders and survey result"
+       },
+       {
+        "text": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "type": "statement",
+        "why": "Criticizes the article and open letter"
+       },
+       {
+        "text": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "type": "statement",
+        "why": "Claims the open letter omits prominent researchers"
+       },
+       {
+        "text": "4: You falsely represent studies and experts who disagree with you as being on your side.\n\nFor example, in your open letter to me, you wrote:\n\nA 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "type": "statement",
+        "why": "Accuses the letter of misrepresenting a study"
+       },
+       {
+        "text": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated.\n\nAfter doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.\n\n…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "type": "statement",
+        "why": "Describes the RAND study’s findings and recommendation"
+       },
+       {
+        "text": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "type": "statement",
+        "why": "Introduces a claim about alignment and a quotation"
+       },
+       {
+        "text": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "type": "statement",
+        "why": "Quoted view on AI development and safety"
+       },
+       {
+        "text": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "type": "statement",
+        "why": "Describes Russell’s alignment work and advocacy"
+       },
+       {
+        "text": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world. And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”.",
+        "type": "statement",
+        "why": "Interprets Russell’s position on alignment research"
+       },
+       {
+        "text": "Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "type": "statement",
+        "why": "Summarizes Russell’s view of alignment"
+       },
+       {
+        "text": "5: You employ weird pseudo-arguments that could prove anything\n\n(source)",
+        "type": "statement",
+        "why": "Criticizes an argument about superintelligence"
+       },
+       {
+        "text": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "type": "statement",
+        "why": "Describes the disputed argument"
+       },
+       {
+        "text": "But this could disprove any concept. For example:\n\nAge is meaningless. After all, there’s no point at which someone was young yesterday, but old today.\n\nHeight is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.\n\nLakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "type": "statement",
+        "why": "Illustrates the sorites-style reasoning"
+       },
+       {
+        "text": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "type": "statement",
+        "why": "Identifies and critiques the argument"
+       },
+       {
+        "text": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.\n\nAgain in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "type": "statement",
+        "why": "Introduces criticism of a distraction claim"
+       },
+       {
+        "text": "You expand on this theme in your book:\n\nHumanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "type": "statement",
+        "why": "Quotes the argument about allocating attention"
+       },
+       {
+        "text": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "type": "statement",
+        "why": "Challenges the claim that alignment concerns distract"
+       },
+       {
+        "text": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "type": "statement",
+        "why": "Cites the author’s experience with affected people"
+       }
+      ],
+      "coverage": 1,
+      "attempts": 1,
+      "costUsd": 0.002461675
+     },
+     {
+      "claims": [
+       {
+        "claim": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct.",
+        "context": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "context": "Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "imageUrls": []
+       },
+       {
+        "claim": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "context": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "imageUrls": []
+       },
+       {
+        "claim": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.",
+        "context": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.",
+        "imageUrls": []
+       },
+       {
+        "claim": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "context": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "context": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "context": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "imageUrls": []
+       },
+       {
+        "claim": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "context": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "context": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "imageUrls": []
+       },
+       {
+        "claim": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "context": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "context": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own. It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "context": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own. It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons.",
+        "context": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding. Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "context": "Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding. Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "context": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "imageUrls": []
+       },
+       {
+        "claim": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.",
+        "context": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.",
+        "imageUrls": []
+       },
+       {
+        "claim": "In the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”.",
+        "context": "In the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "The article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "context": "The article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "imageUrls": []
+       },
+       {
+        "claim": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "context": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "context": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "context": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "imageUrls": []
+       },
+       {
+        "claim": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "context": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "context": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "context": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence.",
+        "context": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "context": "Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "context": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "imageUrls": []
+       },
+       {
+        "claim": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "context": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "context": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "imageUrls": []
+       },
+       {
+        "claim": "4: You falsely represent studies and experts who disagree with you as being on your side.",
+        "context": "4: You falsely represent studies and experts who disagree with you as being on your side.",
+        "imageUrls": []
+       },
+       {
+        "claim": "A 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "context": "A 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated. After doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.",
+        "context": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated. After doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.",
+        "imageUrls": []
+       },
+       {
+        "claim": "…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "context": "…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "imageUrls": []
+       },
+       {
+        "claim": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "context": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "imageUrls": []
+       },
+       {
+        "claim": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "context": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "context": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "imageUrls": []
+       },
+       {
+        "claim": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world.",
+        "context": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world.",
+        "imageUrls": []
+       },
+       {
+        "claim": "And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”. Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "context": "And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”. Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "imageUrls": []
+       },
+       {
+        "claim": "5: You employ weird pseudo-arguments that could prove anything",
+        "context": "5: You employ weird pseudo-arguments that could prove anything",
+        "imageUrls": []
+       },
+       {
+        "claim": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "context": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "imageUrls": []
+       },
+       {
+        "claim": "But this could disprove any concept. For example:",
+        "context": "But this could disprove any concept. For example:",
+        "imageUrls": []
+       },
+       {
+        "claim": "Age is meaningless. After all, there’s no point at which someone was young yesterday, but old today.\n\nHeight is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.",
+        "context": "Age is meaningless. After all, there’s no point at which someone was young yesterday, but old today.\n\nHeight is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Lakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "context": "Lakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "context": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "imageUrls": []
+       },
+       {
+        "claim": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.",
+        "context": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Again in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "context": "Again in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Humanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "context": "Humanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "imageUrls": []
+       },
+       {
+        "claim": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "context": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "imageUrls": []
+       },
+       {
+        "claim": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "context": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "imageUrls": []
+       }
+      ],
+      "passages": [
+       {
+        "text": "In fact, most people in the community think doom is less likely than not. I’ve previously said that I think there’s about a 25-30% chance that AI drives humanity extinct.",
+        "type": "statement",
+        "why": "AI extinction estimates"
+       },
+       {
+        "text": "Geoffrey Hinton has said 10-50% chance. Dario Amodei has said 10-25%, Elon Musk 10-30%, and the average AI researcher in Grace’s 1,600 person sample said 18%.",
+        "type": "statement",
+        "why": "Reported extinction estimates"
+       },
+       {
+        "text": "There are some people who are more pessimistic; my AI 2027 co-author Daniel Kokotajlo says 70-80%, and Eliezer Yudkowsky says 90%+. But both of these people have devoted their lives to fighting back, which is the opposite of calling it inevitable.",
+        "type": "statement",
+        "why": "Pessimistic estimates and responses"
+       },
+       {
+        "text": "2: You falsely portray the AI risk community as expecting a perfect omniscient omnipotent superintelligence that controls every atom in the universe.",
+        "type": "statement",
+        "why": "Accusation of misrepresenting AI risk beliefs"
+       },
+       {
+        "text": "Across the years, you have written things like",
+        "type": "other",
+        "why": "Introduces quotations"
+       },
+       {
+        "text": "“[These arguments] depend on the premises that humans are so gifted that they can design an omniscient and omnipotent AI” (source)\n\n“They assumed that human engineers would grant [AIs] unlimited and irreversible control over the earth’s physical infrastructure, amounting to omnipotence over every atom on the planet.” (source)",
+        "type": "statement",
+        "why": "Examples of cited claims"
+       },
+       {
+        "text": "“Important not to confuse the notion of “general intelligence” from psychometrics … with the (somewhat mystical) notion bandied about in AI of omniscience and omnipotence.” (source)\n\n“It will never be omniscient . . . it’ll never be omnipotent. That’s out of comic books or religion.” (source)",
+        "type": "statement",
+        "why": "Examples of cited claims"
+       },
+       {
+        "text": "“There’s no system that could learn the position and velocity of every particle in the universe. So long as that is true, there can’t be an AI system that can do anything or know everything.” (source)\n\n“When we put aside fantasies like foom, digital megalomania, instant omniscience, and perfect control of every molecule in the universe…” (source)",
+        "type": "statement",
+        "why": "Examples of cited claims"
+       },
+       {
+        "text": "“From animals to dull humans to smart humans to AI to Artificial Superintelligence, the latter consisting of perfect omniscience.” (source)\n\n…and many more statements along the same lines.",
+        "type": "statement",
+        "why": "Further examples of cited claims"
+       },
+       {
+        "text": "But not only is this not our belief, but we try hard to explicitly specify that we believe the opposite. From a wiki page on superintelligence by Eliezer Yudkowsky:",
+        "type": "statement",
+        "why": "Contrasts the attributed belief with their stated view"
+       },
+       {
+        "text": "Superintelligences are still bounded … They are (presumably) not infinitely smart, infinitely fast, all-knowing, or able to achieve every describable outcome using their available resources and options … A superintelligence doesn’t know everything and can’t perfectly estimate every quantity … A superintelligence is not omnipotent and can’t obtain every describable outcome.",
+        "type": "statement",
+        "why": "Quoted definition of bounded superintelligence"
+       },
+       {
+        "text": "Every definition of superintelligence, from Bostrom’s to Yudkowsky’s to Good’s, agrees that a superintelligence is merely a mind which is significantly smarter than any human’s.",
+        "type": "statement",
+        "why": "Claim about definitions of superintelligence"
+       },
+       {
+        "text": "Nor are we motte-and-baileying here, pretending we don’t think it’s omnipotent, but then treating it as omnipotent anyway. In the AI 2027 scenario, we state that superintelligence is achieved in late 2027 or early 2028, but that it’s unable to cleanly eliminate humans at that time, because it can’t maintain the data centers on its own. It takes two years of plotting before the superintelligence is able to finally eliminate humanity while preserving its own existence.",
+        "type": "statement",
+        "why": "AI 2027 scenario and omnipotence claim"
+       },
+       {
+        "text": "Where I think you are getting this is that we’re uncomfortable saying that superintelligence definitely can’t do any specific non-physically-impossible thing. For example, in the 2010s, we argued that people needed to be prepared for superintelligence designing dangerous biological weapons.",
+        "type": "statement",
+        "why": "Explains the source of the alleged misunderstanding"
+       },
+       {
+        "text": "Many people objected that this was absurd, because bioweapon design was bottlenecked on the protein folding problem, and there was no way that even superintelligence could solve protein folding. Then in 2020 one of Demis Hassabis’ narrow pre-LLM AIs solved protein folding easily. See also this this essay.",
+        "type": "statement",
+        "why": "Protein-folding example"
+       },
+       {
+        "text": "But being uncomfortable asserting that superintelligence can’t do any specific thing is not the same as affirmatively asserting that superintelligence will be omniscient and omnipotent. The latter would of course be shituf, which is a sin.",
+        "type": "statement",
+        "why": "Distinguishes uncertainty from belief in omnipotence"
+       },
+       {
+        "text": "3: You falsely claim to have an expert consensus on your side by cherry-picking a small group of non-experts and pretending the most eminent researchers don’t exist.",
+        "type": "statement",
+        "why": "Accusation of cherry-picking experts"
+       },
+       {
+        "text": "In the tweet that made me challenge you to a debate, you were linking an article titled “Leading scientists reject apocalyptic rogue AI extinction warnings”.",
+        "type": "statement",
+        "why": "Identifies the linked article"
+       },
+       {
+        "text": "The article names three such “leading scientists”: you yourself, Melanie Mitchell, and Gary Marcus.",
+        "type": "statement",
+        "why": "Names the article’s experts"
+       },
+       {
+        "text": "You are a psychologist. I assume on priors that you have used an LLM at some point in your life, but I have no affirmative evidence for this.",
+        "type": "statement",
+        "why": "Comments on the addressee’s expertise"
+       },
+       {
+        "text": "Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+        "type": "statement",
+        "why": "Assesses Mitchell’s expertise and cited view"
+       },
+       {
+        "text": "Gary Marcus is a cognitive scientist who spent the 2000s and 2010s pursuing a different road to AI that didn’t work out (hybrid neurosymbolics). He also has no expertise in modern LLMs.",
+        "type": "statement",
+        "why": "Assesses Marcus’s expertise"
+       },
+       {
+        "text": "He is the person you retweeted in 2019 who was saying that deep learning had failed and would never amount to anything. He was also the person whose opinion you were affirming in 2022 when you said modern AI wouldn’t be able to do simple math. I am unclear which of these qualifications make him one of the three world experts in what the current AI paradigm will or will not be able to do in the future.",
+        "type": "statement",
+        "why": "Challenges Marcus’s status as an expert"
+       },
+       {
+        "text": "Yet these were the only three “experts” that Lehmann interviewed for her article. Based on this, she goes on to call the idea of superintelligence a “fantasy”, “kooky”, like a “magical wizard”.",
+        "type": "statement",
+        "why": "Criticizes the article’s selection and framing"
+       },
+       {
+        "text": "Meanwhile, Geoffrey Hinton, the Nobel Prize and Turing Award winning inventor of modern AI, quit his job to become a full-time activist warning about the possibility of superintelligence destroying the world. Yoshua Bengio, another Turing Award winning inventor of modern AI, also did that.",
+        "type": "statement",
+        "why": "Examples of prominent researchers warning about AI"
+       },
+       {
+        "text": "Ilya Sutskever, the former Chief Scientist of OpenAI who helped invent ChatGPT and the modern LLM, wrote that superintelligence “could lead to the disempowerment of humanity or even human extinction”, and quit his job at OpenAI to found a company called Safe Superintelligence.",
+        "type": "statement",
+        "why": "Sutskever’s warning and career move"
+       },
+       {
+        "text": "Paul Christiano, who invented RLHF and headed safety at the US government’s AISI, says he thinks there’s a 20-50% chance AI kills everyone, and quit his job to start the Alignment Research Center.",
+        "type": "statement",
+        "why": "Christiano’s estimate and career move"
+       },
+       {
+        "text": "Sam Altman, Elon Musk, Dario Amodei, and Demis Hassabis - the latter two of whom are great AI researchers in their own right even aside from their business credentials - have all said or suggested that they think human extinction is a plausible outcome of their work. Katja Grace surveyed AI researchers who published at various important conferences and journals, and found that on average, her sample of 1,600 gave the proposition an 18% chance.",
+        "type": "statement",
+        "why": "Warnings from AI leaders and researchers’ survey estimate"
+       },
+       {
+        "text": "I don’t believe the article that you linked can be defended as an honest attempt to inform the public about what “experts” think. And it’s not an isolated incident: your open letter to me also gives a list of “experts” who agree with you.",
+        "type": "statement",
+        "why": "Challenges the article’s fairness"
+       },
+       {
+        "text": "Once again, it’s Gary Marcus, Melanie Mitchell, and other people with obsolete AI paradigms from the 2000s - and once again, Bengio, Sutskever, Hassabis, and the thousands of people on the forefront of modern AI are entirely absent.",
+        "type": "statement",
+        "why": "Claims the open letter omits prominent AI researchers"
+       },
+       {
+        "text": "4: You falsely represent studies and experts who disagree with you as being on your side.",
+        "type": "statement",
+        "why": "Accusation of misrepresenting sources"
+       },
+       {
+        "text": "For example, in your open letter to me, you wrote:",
+        "type": "other",
+        "why": "Introduces a quotation"
+       },
+       {
+        "text": "A 2025 Rand Corporation modelling analysis steel-manned the AI-extinction hypothesis by granting the assumption that AI had the objective to wipe out humanity, and concluded that there is “no describable scenario in which AI is conclusively an extinction threat to humanity”.",
+        "type": "statement",
+        "why": "Quoted description of the RAND study"
+       },
+       {
+        "text": "But the RAND study actually concluded the opposite of this. Rand proposed the statement that you quoted as its null hypothesis, ie the claim to be investigated. After doing their investigation, they concluded that contrary to their null hypothesis, they “could not rule out the possibility” that AI was such an extinction threat.",
+        "type": "statement",
+        "why": "Corrects the account of the RAND study"
+       },
+       {
+        "text": "…and recommended that policy-makers “continue to perform AI risk research, but maintain a wide focus on other risks in addition to extinction risk.”",
+        "type": "statement",
+        "why": "Reports the study’s recommendation"
+       },
+       {
+        "text": "Or consider your book, Enlightenment Now. You argued that we didn’t need to worry too hard about alignment, because it will happen naturally in the context of developing AI. You quoted AI expert Stuart Russell:",
+        "type": "statement",
+        "why": "Introduces the book’s argument and quotation"
+       },
+       {
+        "text": "[AI] is developed incrementally, designed to satisfy multiple conditions, tested before it is implemented, and constantly tweaked for efficacy and safety. As the AI expert Stuart Russell puts it, “No one in civil engineering talks about ‘building bridges that don’t fall down.’ They just call it ‘building bridges.’” Likewise, he notes, AI that is beneficial rather than dangerous is simply AI.",
+        "type": "statement",
+        "why": "Quoted argument about AI development and safety"
+       },
+       {
+        "text": "Stuart Russell has devoted his life to studying AI alignment, and is now a full-time activist raising awareness of the apocalyptic dangers of superintelligence. His most recent contribution is an article in Newsweek warning about The Race To Human Extinction.",
+        "type": "statement",
+        "why": "Describes Russell’s alignment work and advocacy"
+       },
+       {
+        "text": "When Russell says that there is no distinction between bridge capabilities and bridge safety, he’s not claiming that no extra research is needed to study alignment - otherwise he wouldn’t have founded the Center For Human-Compatible Artificial Intelligence, probably the biggest academic alignment research center in the world.",
+        "type": "statement",
+        "why": "Interprets Russell’s bridge analogy"
+       },
+       {
+        "text": "And he’s not saying that alignment research will happen naturally at whatever speed it has to: otherwise he wouldn’t have signed a petition calling for “a prohibition on the development of superintelligence”. Russell is saying that AI alignment is so important that it should be viewed as foundational to all AI research, the same way that to a first approximation the whole point of building bridges is figuring out whether they will fall down or not.",
+        "type": "statement",
+        "why": "Explains Russell’s view of alignment research"
+       },
+       {
+        "text": "5: You employ weird pseudo-arguments that could prove anything",
+        "type": "statement",
+        "why": "Introduces criticism of an argument"
+       },
+       {
+        "text": "(source)",
+        "type": "other",
+        "why": "Source reference"
+       },
+       {
+        "text": "You argue that superintelligence is “meaningless” because “there’s no point at which it’s meaningful to say” that “yesterday we didn’t have superintelligence. Today we do have superintelligence.”",
+        "type": "statement",
+        "why": "Summarizes the disputed argument"
+       },
+       {
+        "text": "But this could disprove any concept. For example:",
+        "type": "statement",
+        "why": "Introduces analogies"
+       },
+       {
+        "text": "Age is meaningless. After all, there’s no point at which someone was young yesterday, but old today.\n\nHeight is meaningless. After all, there is no specific line where one centimeter below the line is short, but one centimeter above the line is tall.",
+        "type": "statement",
+        "why": "Analogies about gradual categories"
+       },
+       {
+        "text": "Lakes don’t exist. After all, a puddle is not a lake. But there is no point at which adding one extra drop of water to a non-lake turns it into a lake.",
+        "type": "statement",
+        "why": "Analogy about gradual categories"
+       },
+       {
+        "text": "Several people with philosophical backgrounds commented that this was the sorites argument, a well-known pseudo-paradox which shouldn’t be employed for real work.",
+        "type": "statement",
+        "why": "Identifies the argument as sorites"
+       },
+       {
+        "text": "6: You unfairly accuse us of “distracting from” AI’s mundane harms and near-term risks.",
+        "type": "statement",
+        "why": "Introduces a rebuttal about near-term risks"
+       },
+       {
+        "text": "Again in the tweet that made me challenge you, you said that AI extinction scenarios “distract from the more mundane and realistic safety challenges”.",
+        "type": "statement",
+        "why": "Quotes the accusation"
+       },
+       {
+        "text": "You expand on this theme in your book:",
+        "type": "other",
+        "why": "Introduces a quotation"
+       },
+       {
+        "text": "Humanity has a finite budget of resources, brainpower, and anxiety. You can’t worry about everything. Some of the threats facing us, like climate change and nuclear war, are unmistakable, and will require immense effort and ingenuity to mitigate. Folding them into a list of exotic scenarios with minuscule or unknown probabilities can only dilute the sense of urgency.",
+        "type": "statement",
+        "why": "Quoted argument about prioritizing risks"
+       },
+       {
+        "text": "Even in your open letter, you say that our “obsession” with alignment distracts us from the problems AI is causing today, like hacking. So: are concerns about speculative distant risks offensive to the people whose lives are being harmed by AI right now?",
+        "type": "statement",
+        "why": "Challenges the alleged conflict between risk concerns"
+       },
+       {
+        "text": "That’s not what those people told me when I marched beside them at our joint protests. Or when I helped them coordinate political action campaigns. Or when I donated money to our joint candidates.",
+        "type": "statement",
+        "why": "Counters the accusation with personal experience"
+       }
+      ],
+      "coverage": 1,
+      "attempts": 1,
+      "costUsd": 0.00226109
+     }
+    ]
+   }
+  ],
+  "costUsd": {
+   "extraction": 0.006965855,
+   "judge": 0.0024764249999999995
+  }
+ },
+ "checker": null
+}

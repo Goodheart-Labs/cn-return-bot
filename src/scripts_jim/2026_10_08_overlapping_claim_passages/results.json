@@ -1,0 +1,164 @@
+{
+  "all_claims": 133414,
+  "reader_added_claims": 26,
+  "extractor_claims": 133388,
+  "extractor_claims_without_quote": 7971,
+  "extractor_claims_with_quote": 125417,
+  "items": 1647,
+  "quote": {
+    "claims_with_text": 125417,
+    "placed_exact": 49637,
+    "placed_same_words": 74088,
+    "placed_drifted": 640,
+    "not_placed": 1052,
+    "not_placed_share": 0.0084,
+    "items_used": 1641,
+    "pairs": {
+      "IDENTICAL": 3219,
+      "NESTED": 8798,
+      "PARTIAL": 6337
+    },
+    "claims_in_class": {
+      "IDENTICAL": 5132,
+      "NESTED": 15325,
+      "PARTIAL": 9833
+    },
+    "claims_in_any_overlap": 27210,
+    "claims_placed": 124365,
+    "coverage_share_by_depth": {
+      "0": 0.6145,
+      "1": 0.3472,
+      "2": 0.0337,
+      "3": 0.0046
+    },
+    "median_overlap_share_of_shorter_quote": {
+      "NESTED": 1.0,
+      "PARTIAL": 0.532
+    },
+    "merged_passage_chars_median": 121,
+    "merged_passage_chars_p90": 241,
+    "merged_passage_claims_median": 1,
+    "merged_passage_claims_p90": 2,
+    "merged_passages": 108597,
+    "merged_passage_chars_p99": 421,
+    "merged_passage_chars_max": 2035,
+    "merged_passage_claims_max": 21,
+    "claims_in_multi_claim_passages": 27210
+  },
+  "paragraph": {
+    "claims_with_text": 123857,
+    "placed_exact": 40013,
+    "placed_same_words": 81146,
+    "placed_drifted": 1528,
+    "not_placed": 1170,
+    "not_placed_share": 0.0094,
+    "items_used": 1627,
+    "pairs": {
+      "IDENTICAL": 50186,
+      "NESTED": 12519,
+      "PARTIAL": 34852
+    },
+    "claims_in_class": {
+      "IDENTICAL": 49254,
+      "NESTED": 19397,
+      "PARTIAL": 37375
+    },
+    "claims_in_any_overlap": 88531,
+    "claims_placed": 122687,
+    "coverage_share_by_depth": {
+      "0": 0.4483,
+      "1": 0.2827,
+      "2": 0.1577,
+      "3": 0.1113
+    },
+    "median_overlap_share_of_shorter_quote": {
+      "NESTED": 1.0,
+      "PARTIAL": 0.497
+    },
+    "merged_passage_chars_median": 279.0,
+    "merged_passage_chars_p90": 591,
+    "merged_passage_claims_median": 1.0,
+    "merged_passage_claims_p90": 4,
+    "merged_passages": 63384,
+    "merged_passage_chars_p99": 1199,
+    "merged_passage_chars_max": 5244,
+    "merged_passage_claims_max": 58,
+    "claims_in_multi_claim_passages": 88531
+  },
+  "importance_by_quote_category": {
+    "NONE": {
+      "claims": 97155,
+      "with_any_note": 1339,
+      "with_ai_note": 1339,
+      "with_reader_note": 2,
+      "fact_checked": 20352,
+      "judgements": {
+        "somewhat likely true": 6708,
+        "uncertain": 16061,
+        "certainly true": 33472,
+        "likely true": 36623,
+        "certainly false": 1139,
+        "likely false": 1968,
+        "somewhat likely false": 1184
+      }
+    },
+    "IDENTICAL": {
+      "claims": 4364,
+      "with_any_note": 58,
+      "with_ai_note": 58,
+      "with_reader_note": 1,
+      "fact_checked": 1187,
+      "judgements": {
+        "uncertain": 1109,
+        "likely true": 1997,
+        "certainly true": 1032,
+        "somewhat likely true": 148,
+        "likely false": 36,
+        "somewhat likely false": 36,
+        "certainly false": 6
+      }
+    },
+    "NESTED": {
+      "claims": 13013,
+      "with_any_note": 196,
+      "with_ai_note": 196,
+      "with_reader_note": 0,
+      "fact_checked": 2627,
+      "judgements": {
+        "certainly true": 4830,
+        "likely true": 4801,
+        "uncertain": 2066,
+        "somewhat likely true": 755,
+        "certainly false": 157,
+        "likely false": 266,
+        "somewhat likely false": 138
+      }
+    },
+    "PARTIAL": {
+      "claims": 9833,
+      "with_any_note": 175,
+      "with_ai_note": 175,
+      "with_reader_note": 0,
+      "fact_checked": 1765,
+      "judgements": {
+        "certainly true": 3777,
+        "somewhat likely true": 636,
+        "uncertain": 1210,
+        "likely true": 3655,
+        "likely false": 269,
+        "certainly false": 159,
+        "somewhat likely false": 127
+      }
+    }
+  },
+  "all_judgements": {
+    "certainly true": 46094,
+    "likely true": 50578,
+    "uncertain": 22710,
+    "somewhat likely true": 8434,
+    "certainly false": 1500,
+    "somewhat likely false": 1499,
+    "likely false": 2573
+  },
+  "notes_total": 1888
+}

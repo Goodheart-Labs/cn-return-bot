@@ -37,26 +37,15 @@ export type ClaimAnchor =
 
 export interface ExtractedClaim {
   steer?: string | null;
-  /** Neutral, self-contained restatement of the claim. */
+  /** What is checked: the point as the author wrote it. For a point that is an
+   *  image, the description of the image and the text visible in it. */
   claim: string;
-  /** Verbatim excerpt with all the context needed to evaluate the claim.
-   *  Empty for an image-only claim that carries no supporting text. */
+  /** The point, word for word, which is the quote the claim is anchored by.
+   *  Empty for a point that is an image. */
   context: string;
-  /** Wider verbatim excerpt, usually the paragraph or paragraphs around the
-   *  claim. It contains `context` word for word. Readers see it as the passage
-   *  the claim sits in. It is empty when the claim rests only on an image and
-   *  has no surrounding text. */
-  contextParagraph: string;
   /** Article images the claim is grounded in. Only Substack articles supply
    *  these. A claim can rest on text, on images, or on both. */
   imageUrls: string[];
-  /** True when the extractor is very confident the claim is correct as
-   *  stated. Such a claim is stored as skipped and never rated or checked. */
-  veryConfidentTrue: boolean;
-  /** True when the claim describes a hypothetical or future scenario rather
-   *  than the present or the past. Such claims are filtered out before
-   *  fact-checking. */
-  speculation: boolean;
   anchor: ClaimAnchor;
 }
 

@@ -25,8 +25,8 @@ export async function consumeDirectedNoteRequest(request: NoteRequestRow, existi
   if (claimError) throw claimError;
   if (!claimed) return { kind: "deferred", detail: "another consumer took the request" };
   const claim: ExtractedClaim = {
-    claim: passage, context: passage, contextParagraph: passage, steer: request.steer,
-    imageUrls: [], veryConfidentTrue: false, speculation: false, anchor: { kind: "substack", url: request.page_url },
+    claim: passage, context: passage, steer: request.steer,
+    imageUrls: [], anchor: { kind: "substack", url: request.page_url },
   };
   const [claimId] = await insertClaims([{
     item_id: item.id, claim: passage, judgement: "uncertain", context_quote: passage, context_paragraph: passage,

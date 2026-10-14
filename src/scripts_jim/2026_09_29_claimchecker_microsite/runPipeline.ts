@@ -109,8 +109,8 @@ async function runExtraction(content: FetchedContent): Promise<Pick<RunStages, "
 }
 
 async function runRating(extraction: RunStages["extraction"]): Promise<{ rated: PartClaim[]; ratingCostUsd: number | null }> {
-  const { parts, extracted, speculation, duplicates } = freshClaimsPerPart(extraction.parts, []);
-  console.log(`${extracted} claims extracted, ${speculation} predictions dropped, ${duplicates} duplicates dropped`);
+  const { parts, extracted, duplicates } = freshClaimsPerPart(extraction.parts, []);
+  console.log(`${extracted} claims extracted, ${duplicates} duplicates dropped`);
   // freshClaimsPerPart already removed claims with the same text, so the text
   // is enough to find each rated claim's part again.
   const partOf = new Map(parts.flatMap((part) => part.claims.map((c) => [c.claim, part.title] as const)));
@@ -128,7 +128,7 @@ function unchecked(claim: PartClaim, index: number, runId: string): LabClaim {
     id: `${runId}-${index}`,
     claim: claim.claim,
     contextQuote: claim.context || null,
-    contextParagraph: claim.contextParagraph || null,
+    contextParagraph: null,
     imageUrls: claim.imageUrls,
     judgement: claim.judgement,
     part: claim.part,
@@ -141,7 +141,7 @@ function unchecked(claim: PartClaim, index: number, runId: string): LabClaim {
 }
 
 function skipped(claim: PartClaim, index: number, runId: string): LabClaim {
-  const reason = claim.veryConfidentTrue ? "extractor very confident it is true" : `judged ${claim.judgement}`;
+  const reason = `judged ${claim.judgement}`;
   return { ...unchecked(claim, index, runId), outcome: { type: "skipped", reason } };
 }
 
