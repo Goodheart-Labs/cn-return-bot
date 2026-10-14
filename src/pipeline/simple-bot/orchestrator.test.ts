@@ -32,7 +32,7 @@ describe("simple bot orchestrator", () => {
   test("an empty note from the writer is a no-correction outcome and skips the verifier", async () => {
     const verify = arrange({ noteText: "", sources: [] });
     const outcome = await withBotConfig(DEFAULT_CONFIG, () => runSimpleBotPipeline(post, input));
-    expect(outcome.type).toBe("no_correction");
+    expect(outcome).toMatchObject({ type: "no_correction", searchResults: "The findings" });
     expect(verify).not.toHaveBeenCalled();
   });
 
@@ -46,8 +46,15 @@ describe("simple bot orchestrator", () => {
   test("a written note still goes through the verifier", async () => {
     const verify = arrange({ noteText: "The crash was in Zaire, not Siberia.", sources: ["https://example.com"] });
     const outcome = await withBotConfig(DEFAULT_CONFIG, () => runSimpleBotPipeline(post, input));
-    expect(outcome.type).toBe("note");
+    expect(outcome).toMatchObject({ type: "note", verified: true });
     expect(verify).toHaveBeenCalledTimes(1);
+  });
+
+  test("with the source verifier off, a written note is an unverified note", async () => {
+    const verify = arrange({ noteText: "The crash was in Zaire, not Siberia.", sources: ["https://example.com"] });
+    const outcome = await withBotConfig({ ...DEFAULT_CONFIG, source_verifier: false }, () => runSimpleBotPipeline(post, input));
+    expect(outcome).toMatchObject({ type: "note", verified: false, sources: ["https://example.com"] });
+    expect(verify).not.toHaveBeenCalled();
   });
 
   test("the timing stage always runs and its block reaches the writer", async () => {

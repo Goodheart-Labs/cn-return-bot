@@ -1,0 +1,22 @@
+# The cn-x-tag-bot service: @CommonNotesBot on X (src/x-tag-bot/). Installed by
+# hand once, see "The X tag bot" in ops/README.md.
+[Unit]
+Description=Common Notes X tag bot
+After=network-online.target cn-claim-check.service
+Wants=network-online.target cn-claim-check.service
+
+[Service]
+User=cnbot
+WorkingDirectory=/opt/cn-return-bot
+EnvironmentFile=/etc/cn-return-bot/service.env
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/cnbot/.bun/bin/bun run src/x-tag-bot/main.ts
+# The bot exits when X's event stream ends. systemd starts it again, and the
+# stream then resends the last five minutes of tags.
+Restart=always
+RestartSec=5
+PrivateTmp=yes
+IPAddressDeny=link-local
+
+[Install]
+WantedBy=multi-user.target

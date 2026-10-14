@@ -2,7 +2,7 @@
  * The simple bot's orchestrator.
  *
  * The pipeline is linear. It searches, then writes a note, then verifies the
- * note's sources.
+ * note's sources unless the bot config switches the verifier off.
  *
  * The search and write stages are wrapped in withWriterCache. When the
  * WRITER_CACHE directory already holds an entry for this tweet, the run is a
@@ -15,6 +15,7 @@ import type { Post } from "../../api/fetchEligiblePosts";
 import type { PipelineOutcome } from "../../bots/types";
 import type { BotInput } from "../input/createBotInput";
 import { buildUserMessageFromInput } from "../prompts/input/userMessage";
+import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
@@ -47,7 +48,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
 
   const search = await runSearch(userMessage);
   if (!search.correctionNeeded) {
-    return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings, searchResults: search.findings } };
   }
 
   // Information for the writer, not a gate: a post published within
@@ -62,7 +63,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   // to the verifier, which sometimes accepted it by judging the findings, and
   // Common Notes then published notes with no text.
   if (note.noteText.trim() === "") {
-    return { kind: "early_exit", outcome: { type: "no_correction", reason: WRITER_EMPTY_NOTE_REASON } };
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: WRITER_EMPTY_NOTE_REASON, searchResults: search.findings } };
   }
   return {
     kind: "writer_done",
@@ -75,10 +76,13 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   };
 }
 
-/** Runs the source verifier. It runs on every full pipeline run and on every
- *  cache replay. */
+/** Runs the source verifier, on every full pipeline run and on every cache
+ *  replay, unless the bot config switches it off. */
 async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" }>): Promise<PipelineOutcome> {
   const { userMessage, findings, noteText, sources } = stage;
+  if (!getBotConfig().source_verifier) {
+    return { type: "note", noteText, sources, verified: false, searchResults: findings };
+  }
 
   const verification = await verifySources({
     noteText,
@@ -103,6 +107,7 @@ async function runGates(stage: Extract<WriterStageResult, { kind: "writer_done" 
       type: "note",
       noteText,
       sources: verification.good_sources,
+      verified: true,
       searchResults: findings,
       // Keep only the evaluations for sources the published note carries.
       sourceEvaluations: verification.source_evaluations?.filter((e) => goodSet.has(e.url)),

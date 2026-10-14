@@ -1,3 +1,4 @@
+import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { EvaluatedSource } from "../pipeline/prompts/verify/citations";
 
 export interface PipelineResult {
@@ -20,9 +21,12 @@ export interface PipelineResult {
   checkResult?: string;
 }
 
+/** `verified` is false when the run had the source verifier switched off, so
+ *  nobody checked the sources. `searchResults` on a no_correction outcome are
+ *  the findings that led to it, when the search ran. */
 export type PipelineOutcome =
-  | { type: "note"; noteText: string; sources: string[]; evalScore?: number; searchResults?: string; sourceEvaluations?: EvaluatedSource[] }
-  | { type: "no_correction"; reason: string }
+  | { type: "note"; noteText: string; sources: string[]; verified: boolean; evalScore?: number; searchResults?: string; sourceEvaluations?: EvaluatedSource[] }
+  | { type: "no_correction"; reason: string; searchResults?: string }
   | { type: "verification_failed"; noteText: string; sources: string[]; reason: string; searchResults?: string };
 
 export function outcomeToResult(
@@ -47,7 +51,7 @@ export function outcomeToResult(
           citations: outcome.sources,
         },
         sourceEvaluations: outcome.sourceEvaluations,
-        checkResult: "YES",
+        checkResult: outcome.verified ? "YES" : undefined,
       };
     case "verification_failed":
       return {
@@ -61,7 +65,7 @@ export function outcomeToResult(
         checkResult: `NO: ${outcome.reason}`,
       };
     case "no_correction":
-      return base;
+      return { ...base, searchContextResult: { ...base.searchContextResult, searchResults: outcome.searchResults ?? "" } };
   }
 }
 
@@ -94,4 +98,21 @@ export interface Bot {
   description: string;
 
   runPipeline(post: any, content: PostContent): Promise<PipelineResult | null>;
+}
+
+/** The reverse of outcomeToResult: reads the bot's outcome back out of the
+ *  claim-check service's answer to a tweet check. */
+export function pipelineOutcomeOf(output: TweetComputeOutput): PipelineOutcome {
+  if (output.outcome === "failed") throw new Error(output.errorMessage ?? "The tweet check failed.");
+  const result = output.pipelineResult;
+  const searchResults = result?.searchContextResult.searchResults;
+  if (!result?.noteResult.note) {
+    return { type: "no_correction", reason: searchResults || output.outcomeReason || "No correction is needed.", searchResults };
+  }
+  const noteText = result.noteResult.note;
+  const sources = result.noteResult.url.split(" ").filter(Boolean);
+  if (result.checkResult?.startsWith("NO")) {
+    return { type: "verification_failed", noteText, sources, reason: result.checkResult.replace(/^NO:\s*/, ""), searchResults };
+  }
+  return { type: "note", noteText, sources, verified: result.checkResult != null, searchResults };
 }

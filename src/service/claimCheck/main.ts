@@ -52,7 +52,7 @@ const checkTweetRoute: ServiceRoute<CheckTweetRequest, CheckTweetResponse> = {
   priorityOf: (body) => body.priority,
   handle: async (body) => {
     if (!body?.post?.id) throw new Error("A tweet check needs a post with an id");
-    const output = await runTweetCheck(body.post, body.picks ?? {}, body.monitoring);
+    const output = await runTweetCheck({ ...body, picks: body.picks ?? {} });
     console.log(`[claim-check] ${body.priority} tweet ${body.post.id}: ${output.outcome} (${output.finalStage})`);
     return { output };
   },

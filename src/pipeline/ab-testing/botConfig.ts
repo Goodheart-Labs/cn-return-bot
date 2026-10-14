@@ -94,6 +94,10 @@ export interface BotConfig {
    * SIMPLE_BOT_SEARCH_TEST sets it.
    */
   search_reasoning_effort?: "low" | "medium" | "high";
+  /** The same for the writer call only. When it is unset, `reasoning_effort`
+   *  applies, and when that is unset too, the model's own default.
+   *  SIMPLE_BOT_WRITER_TEST sets it. */
+  writer_reasoning_effort?: "low" | "medium" | "high";
   /**
    * When this is set, it is passed through to OpenRouter as `temperature` for
    * every LLM call this bot makes. The note-needed prefilter pins it to 0, so
@@ -124,8 +128,7 @@ export interface BotConfig {
    * The input is then a claim extracted from a podcast, an interview, or an
    * article, together with its surrounding context. The Common Notes pipeline
    * forces this on, and it applies to simple-bot only.
-   * Two steps read it. The search step uses the claim-check prompt. Scoring
-   * skips X's evaluate_note call, because the claim has no real tweet behind it.
+   * The search step reads it and uses the claim-check prompt.
    * COMMONNOTES_PIPELINE_TEST sets it and it defaults to false.
    */
   commonnotes_pipeline?: boolean;
@@ -169,6 +172,21 @@ export interface BotConfig {
   /** The lowest materiality persuasion score at which a note is submitted.
    *  Undefined disables the gate. MATERIALITY_TREATMENT_TEST sets it. */
   materiality_gate_threshold?: number;
+  /**
+   * The three steps after the writer can each be switched off. DEFAULT_CONFIG
+   * turns all three on, and the "off" variant of each one's A/B test turns it
+   * off. A caller that wants a different chain of steps forces those variants,
+   * the way the Signal bot does.
+   * `source_verifier` checks that every cited page supports the note
+   * (SIMPLE_BOT_VERIFIER_TEST). Without it a written note counts as verified.
+   */
+  source_verifier?: boolean;
+  /** `materiality_judge` scores how much the note matters to the post's point
+   *  (MATERIALITY_TREATMENT_TEST). Without it there is no score and no gate. */
+  materiality_judge?: boolean;
+  /** `note_evaluation` asks X's evaluate_note endpoint for its score
+   *  (EVAL_SUBMIT_THRESHOLD_TEST). Without it there is no score and no gate. */
+  note_evaluation?: boolean;
 }
 
 // --- Default config ---
@@ -182,6 +200,9 @@ export const DEFAULT_CONFIG: BotConfig = {
   video_description_strategy: "frames",
   parallel_research: false,
   eval_submit_threshold: 0,
+  source_verifier: true,
+  materiality_judge: true,
+  note_evaluation: true,
 };
 
 // --- AsyncLocalStorage ---
