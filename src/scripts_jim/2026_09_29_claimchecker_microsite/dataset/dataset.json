@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-14T02:45:45.831Z",
+ "generatedAt": "2026-10-14T03:19:56.192Z",
  "datapoints": [
   {
    "id": "berkeley-as",
@@ -1239,6 +1239,98 @@
    },
    "checker": null,
    "production": null
+  },
+  {
+   "id": "sun-mass-ratio",
+   "group": "note-easy",
+   "groupTitle": "Note should be written (easy)",
+   "jimsWords": "Not from the ticket. Claude picked this on 14 October 2026, at Jim's request, so that the evals cover a YouTube transcript: a note on the Dwarkesh Patel episode with Adam Brown that the community rated helpful (2 Helpful, 1 Somewhat, 0 Not helpful). The note says the Sun is about 333,000 times the mass of the Earth, not a few million.",
+   "writtenOn": "2026-10-14",
+   "referenceClaims": [
+    "The Sun is a few million times the mass of the Earth."
+   ],
+   "item": {
+    "id": "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd",
+    "title": "Adam Brown",
+    "url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+    "source": "podcast",
+    "publishedAt": "2026-07-10",
+    "textChars": 89640
+   },
+   "extractorOnly": false,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": {
+    "userMessage": "Transcript segment:\n\nFirst observation: this is small. In other words, the gravitational binding energy of something on the Earth’s surface is quite small in natural units. That’s why we didn’t really notice general relativity on the Earth’s surface until we did very sensitive experiments, because general relativity is in some sense a Taylor expansion in this number, where the relativistic effects, where the first order term is just Newtonian, and then the next order terms will give you the GR corrections to the Newtonian answer.\n\nObservation number two, and this is something of a digression, is that by essentially sheer coincidence, this number here is very close to the chemical binding energy of rocket fuel. So if you take a rocket fuel like an oxygen-hydrogen mix, the chemical energy binding the rocket together, which is the energy that you’re going to extract when you burn it to make your rocket go, divided by the mc2 of the oxygen and hydrogen you’re going to mix together, is given by 1.5x10-10.\n\nFirst observation: these two are close to each other, even though they came from completely different calculations. This was a gravitational calculation that was something to do with the Earth. This is a chemical property of hydrogen and oxygen. This is also very small. The reason it’s very small is that almost all of the energy in hydrogen and oxygen is not stored in the chemical binding energy of these things going together.\n\nThe vast majority of it is stored in just the rest mass energy of the protons and the neutrons, which chemical burning doesn’t affect at all. The second largest amount is stored in the nuclear binding energy of the protons and the neutrons to each other, given by the strong force and the weak force, which again chemical reactions don’t touch at all. This is a small number because chemical bonds are very weak compared to the rest mass of the things we’re considering.\n\nThese two small numbers are almost exactly equal to each other, which is why we can use chemical rockets to get to space, but it’s hard. In particular, this number is a few times bigger than this number, which means that your payload fraction is quite small when trying to use chemical rockets to get to space, because most of your fuel cannot get to orbit. You have to pay a rocket factor that’s going to tell you that most of what’s sitting there on the launch pad is going to have to be burnt up before you get to space, in order to get a small fraction of the rocket up to space. In other words, we can use chemical rockets to get to space in a way that would be totally impossible if we tried to do it from the surface of the sun, but it’s hard.\n\nOkay, that’s the fraction on the Earth. But this formula tells you that if you have an object that’s heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth’s surface but down to the sun’s surface, this would be larger. It’d be a million times larger, because the sun is a few million times the mass of the Earth, but then it’s also bigger, so that takes it away a little bit. You end up with 2x10-6, the famous redshift from the sun’s surface.\n\nYou can escalate from there. You can imagine cramming a sun-like mass into an Earth-like radius to make this formula even bigger. Sun mass, Earth radius. That’s pretty much exactly what happens in a white dwarf like Sirius B. And this would get even bigger again. A larger fraction of the mass of the object you’d be extracting by lowering it down to the surface.\n\nBut it really feels like something has to give before we make an object that is too massive and too compact. In particular, if you look at this formula, what happens for r less than or equal to GM over c2? If this object were so compact and so heavy that it had a radius less than the mass of the object divided by c2, it sure looks like you could get more than a hundred percent. The fraction would be bigger than one. You could get more than a hundred percent of the mass of your brick back by lowering it down to the surface of this object.\n\nAnd that feels wrong. That feels, in fact, more wrong than what’s going on here, because now you’ve got all this energy a long way away. You could perhaps use it to make a whole new brick. You’ve got all this more than mc2 out there. Lower that one down, and it feels like we’ve figured out a way to make a huge amount of energy where there was no energy before.\n\nThis argument is pretty suggestive that something has to go wrong by the time you get down to that radius. Indeed, when you do the calculation—this is a Newtonian calculation, so it’s only suggestive —in full general relativity, indeed something does go wrong. The thing that goes wrong is that you form a black hole.\n\nYou can imagine two ways that you could avoid this conclusion. One would be somehow that gravity becomes very weak when you get close to a massive object, weaker than the Newtonian law would predict. That’s sort of what saves you if you try and repeat this same trick in electromagnetism, lowering a charge down towards another charge and trying to extract the electrostatic energy between them. What happens is, essentially due to quantum effects, when one gets too close to the other, they start to fuzz out. The energy going like inverse r gets softened, and you can’t extract more energy because they stop attracting each other so hard. So that’s one possibility, the force gets weaker than Newtonian law would predict as you approach the other object.\n\nThat’s actually the opposite of how general relativity resolves this. General relativity resolves this paradox by the force getting stronger than Newtonian law would predict. In particular, the force gets so strong when you try to get within this radius, that in fact you cannot slowly lower the brick down towards the surface because you’ve formed a black hole. The gravitational force becomes infinite at a finite distance away—not at r=0, but at some finite value of r—and the brick simply gets ripped out of your hand and you’re unable to extract any more energy out of it. That’s the resolution that general relativity provides to this paradox. In particular, you will find that you’ve formed a black hole.\n\n00:47:12 – Black holes are the ultimate power plants\n\nSo far, everything we’ve written down on the board is Newtonian. It’s just Newtonian, and you start plugging in the speed of light, and you start getting confused. To actually answer some of these questions that we’re asking, you need to go to general relativity, the theory that correctly unifies the speed of light with gravity. This was first done in the context of black holes by Schwarzschild, who wrote down the Schwarzschild metric that describes the gravitational field around a central mass, including potentially around a black hole.\n\nLet me write down some of the formulas that emerge. In fact, I think I’m going to write down three formulas, three direct consequences of the Schwarzschild metric. They’re going to give us intuition for what it’s like outside and indeed inside a black hole.\n\nThe first formula I’m going to write down is the formula for the gravitational field that you would experience if you were trying to remain static outside a central mass. So let’s just talk about static observers. I can discuss how these will get upgraded for observers who are moving around. But for now, I’m just going to imagine that you’re trying to sit here at some fixed radius r away from the black hole. The reason you don’t fall in, maybe I’m lowering you down on a pulley. You’re just sitting here holding the pulley. The question is, how strong a force do you need to stop you falling down? You’re abseiling down very slowly. You’re static. What is the local force of gravity that you experience?\n\nOr you can imagine that you’re sitting here, and the reason you’re static is that you’re firing a rocket very hard. The question is, how much acceleration do you locally feel? So by whatever mechanism, you’re remaining static. What is the local force of gravity that you feel? In Newtonian physics, you know what the answer to that question would be. The force of gravity is GM/r2, which is Newton’s famous inverse-square law. But this gets a correction from general relativity. The correction is 1/√(1-2GM/(c2r)), this same 2GM/c2 that we find all over the place.\n\nWhat this tells you: first of all, if you’re a very long way away from the black hole, this here is essentially one. r is very big, and you get Newton’s force law back again. For the Earth, this is very small. As we discussed, it’s down by a factor of 10-10, and then you take the square root.\n\nSo you don’t really notice it, but you can Taylor-expand this at large r, and you find that you get corrections. You get an inverse-square law plus an inverse-cube law correction plus an inverse-fourth law correction. You find that gravity at short distances is stronger than it would have been in Newtonian physics. This is the general relativity correction and it’s making the gravitational field stronger. You have to accelerate harder to not fall into the black hole.\n\nIn particular, once r is equal to 2GM/c2, what’s called the Schwarzschild radius, you have to accelerate infinitely. The proper acceleration required to not move in r goes to infinity. In fact, if we now convert this Earth to a black hole, this is a very significant radius over here, 2GM/c2. It’s called the event horizon.\n\nIt’s called the event horizon because if you want to remain static outside the event horizon, further away from the event horizon, you just need to accelerate with some finite velocity in order to remain static. You need to have a finite gravitational field. But the gravitational field, as you approach the event horizon, becomes infinite. So once you’re at or beyond the event horizon, it is impossible to remain static. You will inevitably get sucked into the black hole no matter how hard you fire your rocket.\n\nNow, this is just a static formula. You might imagine, “Okay, it’s impossible to remain static closer than that, but maybe I could avoid falling into the black hole by orbiting really, really fast. If I orbit really fast, I have a huge centrifugal force that pushes me away from the black hole, and I can stay out of the black hole that way.” That actually doesn’t work. The reason it doesn’t work is somewhat instructive for the way gravitational attraction happens in general relativity.\n\nOf course, if you think about the International Space Station, why doesn’t it fall towards the Earth? It is precisely the fact that it’s orbiting. The fact that it’s orbiting gives it a centrifugal force that shoots the astronauts away from the Earth and precisely balances the gravitational field on the astronauts, which is why they feel weightless there. So orbital angular momentum, if you’re a long way away from the black hole, helps you stay away from the black hole, stops you falling in.\n\nThere is this kind of sci-fi notion that black holes just suck in everything around them. Not true. You are perfectly able to orbit around a black hole if you’re a long way away from it, just like you would orbit around any central mass. You are not inevitably falling into the black hole. You can orbit just fine. But orbiting stops helping when you get too close to the black hole.\n\nWe said that the event horizon is 2GM/c2. In fact, once you’re already within 3GM/c2, orbiting is counterproductive if you’re trying to stay away from the black hole. That’s because there are two effects of orbiting. One effect helps you stay away from the black hole. That’s the centrifugal effect. Orbital angular momentum pushes you away from the black hole due to the centrifugal effect. It’s not too hard to write down the version of this formula that applies when you have angular momentum, and you would see that pushing you away from the black hole.",
+    "chunkIndex": 4,
+    "chunkCount": 8,
+    "chunkChars": 11961,
+    "highlight": {
+     "start": 3019,
+     "end": 3174
+    },
+    "imageBlocksInChunk": 0
+   },
+   "checker": {
+    "claim": {
+     "id": "2779f66c-712f-450b-8e92-fa11bbdaf8f8",
+     "restatement": "the sun is a few million times the mass of the Earth",
+     "contextQuote": "It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit.",
+     "contextParagraph": "Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "0c8eedd2-0",
+     "author_id": "unknown",
+     "created_at": "2026-07-10",
+     "text": "Passage from Transcript: It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit.",
+     "media": []
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2779f66c-712f-450b-8e92-fa11bbdaf8f8",
+    "status": "note",
+    "reason": null,
+    "judgement": "likely false",
+    "notes": [
+     {
+      "text": "The Sun's mass is approximately 333,000 times that of the Earth, not a few million times greater. https://en.wikipedia.org/wiki/Solar_mass https://www.britannica.com/topic/How-Big-Is-the-Sun",
+      "writtenBy": "reader anonymous",
+      "votes": {
+       "helpful": 1,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": []
+     },
+     {
+      "text": "The Sun's mass is approximately 333,000 times that of the Earth, not several million. This ratio is equivalent to about one-third of a million, making the claim an overstatement by a factor of roughly ten.",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 2,
+       "somewhatHelpful": 1,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://en.wikipedia.org/wiki/Solar_mass",
+        "quote": null,
+        "explanation": null
+       },
+       {
+        "url": "https://www.britannica.com/topic/How-Big-Is-the-Sun",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
   }
  ]
 }

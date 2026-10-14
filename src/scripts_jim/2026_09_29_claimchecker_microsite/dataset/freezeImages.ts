@@ -30,7 +30,7 @@ if (import.meta.main) {
   // The local OPENROUTER_API_KEY is dead. The testing key works.
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
   const frozen = loadFrozenDescriptions();
-  const texts = await loadItemTexts(DATAPOINTS.map((d) => d.itemId));
+  const texts = await loadItemTexts(DATAPOINTS);
   let totalCost = 0;
   for (const [itemId, text] of texts) {
     const missing = imageUrlsOf(text).filter((url) => !frozen.has(url));

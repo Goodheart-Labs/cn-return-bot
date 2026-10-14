@@ -19,11 +19,12 @@ import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { buildClaimPost } from "../../../everything/pipeline/checkClaims";
 import { articleChunk, chunkText, renderImageDescriptions, transcriptChunk } from "../../../everything/pipeline/extractClaims";
-import type { ExtractedClaim } from "../../../everything/types";
+import type { ExtractedClaim, ItemSource } from "../../../everything/types";
 import { checkTraceOf, type LabRun } from "../labRun";
 import { LAB_DIR, RUNS_DIR } from "../runStore";
 import { DATAPOINTS, GROUP_TITLE, type CheckedDatapoint, type Datapoint, type ExtractorOnlyDatapoint } from "./datapoints";
 import { loadFrozenDescriptions } from "./freezeImages";
+import { loadItemTexts } from "./itemTexts";
 import { locate, paragraphsAround } from "./text";
 
 const DATASET_PATH = join(LAB_DIR, "dataset", "dataset.json");
@@ -130,10 +131,14 @@ function labPromptAsReceived(runId: string, claimId: string): string | null {
   }
 }
 
-const itemColumns = "id, title, url, source, published_at, created_at, full_text";
+const itemColumns = "id, title, url, source, published_at, created_at";
+const itemTexts = await loadItemTexts(DATAPOINTS);
+
+/** An episode that the old podcast importer stored under its YouTube address is a YouTube video to the pipeline. */
+const sourceOf = (item: { source: string; url: string | null }) => (item.url?.includes("youtube.com/watch") ? "youtube" : item.source);
 
 /** A transcript chunk is labelled differently from an article chunk. */
-const labelOf = (source: string) => (source === "youtube" ? transcriptChunk : articleChunk);
+const labelOf = (item: { source: string; url: string | null }) => (sourceOf(item) === "youtube" ? transcriptChunk : articleChunk);
 
 function recordBase(datapoint: Datapoint, item: { id: string; title: string; url: string | null; source: string; published_at: string | null }, text: string) {
   return {
@@ -151,16 +156,16 @@ function recordBase(datapoint: Datapoint, item: { id: string; title: string; url
 async function buildExtractorOnlyRecord(datapoint: ExtractorOnlyDatapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
   const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
   if (error) throw error;
-  const text = item.full_text as string;
+  const text = itemTexts.get(item.id)!;
   const passage = { id: datapoint.id, contextQuote: datapoint.passage, imageUrls: [] };
-  return { ...recordBase(datapoint, item, text), extractorOnly: true, expected: null, extractor: extractorInput(text, passage, descriptions, labelOf(item.source)), checker: null, production: null };
+  return { ...recordBase(datapoint, item, text), extractorOnly: true, expected: null, extractor: extractorInput(text, passage, descriptions, labelOf(item)), checker: null, production: null };
 }
 
 async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
   const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
   if (error) throw error;
   const claim = await claimOf(datapoint);
-  const text = item.full_text as string;
+  const text = itemTexts.get(item.id)!;
 
   // A passage a reader highlighted has no surrounding paragraph in the
   // database, so it is taken from the text, which is what the extractor would
@@ -173,7 +178,7 @@ async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType
     contextParagraph: paragraph ?? "",
     imageUrls: claim.imageUrls,
   } as ExtractedClaim;
-  const post = buildClaimPost({ claim: extractedClaim, source: "substack", itemId: item.id, index: 0, publishedAt: item.published_at ?? item.created_at });
+  const post = buildClaimPost({ claim: extractedClaim, source: sourceOf(item) as ItemSource, itemId: item.id, index: 0, publishedAt: item.published_at ?? item.created_at });
 
   const productionClaimId = datapoint.claimSource.from === "lab" ? datapoint.claimSource.productionClaimId : datapoint.claimSource.claimId;
   const production = await productionOutcome(productionClaimId);
@@ -188,7 +193,7 @@ async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType
     ...recordBase(datapoint, item, text),
     extractorOnly: false,
     expected: datapoint.expected,
-    extractor: extractorInput(text, claim, descriptions, labelOf(item.source)),
+    extractor: extractorInput(text, claim, descriptions, labelOf(item)),
     checker: {
       claim: { ...claim, paragraphTakenFromText: !storedParagraph && !!paragraph },
       post,

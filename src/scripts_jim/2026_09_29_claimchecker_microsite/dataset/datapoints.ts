@@ -42,6 +42,10 @@ interface DatapointBase {
    *  extractor eval asks, for each of them, whether the extractor's output
    *  contains it. */
   referenceClaims: string[];
+  /** For an item whose text production did not store, such as an episode imported
+   *  by the old podcast importer. The text is read from this Substack post, the
+   *  same way the pipeline reads Substack posts. */
+  textFromSubstackPost?: { publicationUrl: string; postUrl: string };
 }
 
 /** A datapoint for both evals: the extractor eval and the claim checker eval. */
@@ -75,6 +79,7 @@ const ACX_ESCAPE_ARTIST = "6af85fd3-7903-429e-83a0-6fa3749178e3";
 const ACX_PINKER = "60c2e7ea-42ef-4a38-9e5d-6b0b22dd6599";
 const SEX_CULT_POST = "b5e5ff9c-8862-4b98-90bc-1e9ad0933f81";
 const HUNGARY_VIDEO = "8bc6a469-5c64-4859-b8a8-09cc97ca5379";
+const DWARKESH_ADAM_BROWN = "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd";
 
 export const DATAPOINTS: Datapoint[] = [
   {
@@ -307,6 +312,20 @@ export const DATAPOINTS: Datapoint[] = [
       "Hungary's population is steadily falling.",
       "The populations of Hungary's neighboring countries are rising.",
       "Hungary's very low fertility, combined with its ultra strict immigration policies, is why its population is steadily falling.",
+    ],
+  },
+  {
+    id: "sun-mass-ratio",
+    group: "note-easy",
+    itemId: DWARKESH_ADAM_BROWN,
+    textFromSubstackPost: { publicationUrl: "https://dwarkesh.substack.com", postUrl: "https://www.dwarkesh.com/p/adam-brown-gr" },
+    claimSource: { from: "production", claimId: "2779f66c-712f-450b-8e92-fa11bbdaf8f8" },
+    jimsWords:
+      "Not from the ticket. Claude picked this on 14 October 2026, at Jim's request, so that the evals cover a YouTube transcript: a note on the Dwarkesh Patel episode with Adam Brown that the community rated helpful (2 Helpful, 1 Somewhat, 0 Not helpful). The note says the Sun is about 333,000 times the mass of the Earth, not a few million.",
+    writtenOn: "2026-10-14",
+    expected: { decision: "note" },
+    referenceClaims: [
+      "The Sun is a few million times the mass of the Earth.",
     ],
   },
 ];

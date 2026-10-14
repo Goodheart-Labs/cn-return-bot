@@ -19,6 +19,7 @@ import { LAB_DIR } from "../runStore";
 import { GROUP_TITLE, type Group } from "./datapoints";
 import { runCheckerEval } from "./checkerEval";
 import { isCheckable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
+import { buildEvalSetsPage } from "./buildArtifact";
 import { runExtractorEval } from "./extractorEval";
 
 const RESULTS_DIR = join(LAB_DIR, "dataset", "evalRuns");
@@ -79,6 +80,7 @@ async function main() {
   writeFileSync(join(RESULTS_DIR, `${runId}.json`), JSON.stringify(run, null, 1));
   const total = (extractor ? extractor.costUsd.extraction + extractor.costUsd.judge : 0) + (checker ? checker.costUsd.checks + checker.costUsd.judge : 0);
   console.log(`Saved evalRuns/${runId}.json, $${total.toFixed(2)} in total`);
+  console.log(buildEvalSetsPage());
 }
 
 await main();
