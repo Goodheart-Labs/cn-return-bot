@@ -42,6 +42,29 @@ function Thinking({ question }: { question: PassageQuestion }) {
   </p>;
 }
 
+/** A question asked about selected words is stored with those words in front,
+ *  in curly quotes, so Opus knows which part of the passage is meant. */
+const QUOTED_QUESTION = /^“([^”]+)” ([\s\S]*)$/;
+
+/** Builds the stored question, which `splitQuestion` takes apart again. */
+const joinQuestion = (quote: string | null, text: string) => (quote ? `“${quote.trim()}” ${text.trim()}` : text.trim());
+
+/** The words a stored question was about, and what the reader typed. */
+function splitQuestion(question: string): { quote: string | null; text: string } {
+  const match = QUOTED_QUESTION.exec(question);
+  return match ? { quote: match[1]!, text: match[2]! } : { quote: null, text: question };
+}
+
+/** One question in the chat: only what the reader typed, with the words it
+ *  was about above it when they differ from the words this dialog is about. */
+function AskedQuestion({ question, dialogQuote }: { question: string; dialogQuote: string | null }) {
+  const { quote, text } = splitQuestion(question);
+  return <>
+    {quote && quote !== dialogQuote?.trim() && <p className="reader-ask-quote"><span>About</span> “{quote}”</p>}
+    <p className="reader-ask-question">{text}</p>
+  </>;
+}
+
 /** The reader's edits to a draft, as a draft again, or null while they are
  *  not postable. */
 function editedDraft(kind: OpusDraft["kind"], text: string, probability: string): OpusDraft | null {
@@ -128,16 +151,14 @@ function AskDialog({ blockId, quote }: { blockId: string; quote: string | null }
   }, [exchanges.length, lastStatus]);
 
   async function send() {
-    // Quoted words go first, so Opus sees which part of the passage is meant.
-    const question = quote ? `“${quote.trim()}” ${text.trim()}` : text.trim();
-    if (await ask(question)) setText("");
+    if (await ask(joinQuestion(quote, text))) setText("");
   }
 
   return <Modal title="Ask Opus" onClose={closeDialog} widthClassName="max-w-[44rem]">
     <DialogQuote text={anchor.text} />
     {exchanges.length > 0 && <div ref={chat} className="reader-ask-chat">
       {exchanges.map((question) => <div key={question.id} className="reader-ask-exchange">
-        <p className="reader-ask-question">{question.question}</p>
+        <AskedQuestion question={question.question} dialogQuote={quote} />
         {question.status === "done" ? <div className="reader-answer">{renderAnswerMarkdown(question.answer ?? "")}</div>
           : question.status === "error" ? <p role="alert" className="reader-dialog-error">{question.error ?? "Opus could not answer. Please try again."}</p>
             : <Thinking question={question} />}
