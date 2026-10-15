@@ -35,7 +35,7 @@ export function buildMaterialityJudgeUserMessage(params: {
 ${params.postText}
 
 ## Research findings (context for what the post is about)
-${params.findings.slice(0, 1500)}
+${params.findings}
 
 ## The draft note
 ${params.noteText}`;
