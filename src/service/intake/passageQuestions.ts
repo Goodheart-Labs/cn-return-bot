@@ -6,7 +6,7 @@ import { parseHighlightDraft, type PassageQuestion } from "../../everything-core
 import { requestBudgetExhausted } from "../../everything/spendCap";
 import { llm, withLlmAbortSignal } from "../../pipeline/llm/llm";
 import { OPENROUTER_PRICING } from "../../pipeline/cost-tracking/pricing";
-import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
+import { MAX_PAGE_TEXT_CHARS, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
 import { checked } from "../../api/supabaseResult";
 
 const MODEL = "anthropic/claude-opus-5.5";
@@ -104,7 +104,7 @@ export async function answerPassageQuestion(question: PassageQuestion, deps = {
     const offered = new Set(tools.map(functionName));
     const messages: OpenAI.ChatCompletionMessageParam[] = [
       { role: "system", content: `${system} Today is ${new Date().toISOString().slice(0, 10)}.` },
-      { role: "user", content: JSON.stringify({ title: item.title, url: item.url, article: item.full_text?.slice(0, 60000), passage: question.passage, earlier: (history ?? []).reverse(), question: question.question }) },
+      { role: "user", content: JSON.stringify({ title: item.title, url: item.url, article: item.full_text?.slice(0, MAX_PAGE_TEXT_CHARS), passage: question.passage, earlier: (history ?? []).reverse(), question: question.question }) },
     ];
     for (let turn = 0; turn < 4; turn++) {
       // A minisite may switch every tool off, and an empty tool list is not a valid request.

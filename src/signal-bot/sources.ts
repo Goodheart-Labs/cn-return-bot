@@ -14,6 +14,9 @@ export interface DiscussionSource {
   content: string;
 }
 
+/** A message names at most 3 sources, so three whole sources still fit in the
+ *  research the discussion model gets (MAX_RESEARCH_CHARS in drafting.ts). */
+const MAX_SOURCE_CHARS = 50_000;
 const linkify = new LinkifyIt().set({ fuzzyLink: false, fuzzyEmail: false });
 const blocked = new BlockList();
 for (const [network, prefix] of [
@@ -104,7 +107,7 @@ export async function readDiscussionSource(originalUrl: string): Promise<Discuss
           content = new Readability(document as unknown as Document).parse()?.textContent ?? "";
         } else content = raw;
       } else throw new Error("Source is not an HTML, text, or PDF document");
-      content = content.trim().slice(0, 12_000);
+      content = content.trim().slice(0, MAX_SOURCE_CHARS);
       if (content.length < 80) throw new Error("Too little readable source content; it may require login or JavaScript");
       return { url: originalUrl, fetchedUrl: url.href, ok: true, content };
     }

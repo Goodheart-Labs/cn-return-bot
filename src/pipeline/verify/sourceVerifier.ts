@@ -105,7 +105,7 @@ function isMediaHost(url: string): boolean {
   }
 }
 
-const PLATFORM_DESCRIPTION_MAX_CHARS = 1500;
+const PLATFORM_DESCRIPTION_MAX_CHARS = 10_000;
 
 const MEDIA_SECTION_HEADERS: Record<MediaSourceDescription["kind"], string> = {
   video: "Automated video analysis (yt-dlp + Gemini). Treat this as the source's content.",

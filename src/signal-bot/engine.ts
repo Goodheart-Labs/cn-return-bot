@@ -1,5 +1,5 @@
 import type { ConversationSummary, DraftingAdapter } from "./drafting";
-import { validateSignalDraft } from "./drafting";
+import { MAX_MESSAGE_CHARS, validateSignalDraft } from "./drafting";
 import { joinNoteWithSources } from "../pipeline/utils/noteLength";
 import type { SubmissionResult } from "../pipeline/orchestration/submitNoteForTweet";
 import type { IncomingMessage } from "./transport";
@@ -29,7 +29,6 @@ interface EngineDependencies {
   pipelineNotes?: () => Promise<unknown>;
 }
 
-const MAX_INPUT_CHARS = 6000;
 const NO_TARGET_HELP = "Paste a tweet link to get an access check and draft. For an existing tweet, reply to its draft or start your message with its #number.";
 const BOT_PREFIX = /^\s*@?(?:cn\s*)?bot\b[:,]?\s*/i;
 const TWEET_URL = /https?:\/\/(?:(?:www|mobile)\.)?(?:x\.com|twitter\.com)\/(?:[A-Za-z0-9_]+|i\/web)\/status\/(\d{1,25})(?:[/?#][^\s]*)?/gi;
@@ -198,7 +197,7 @@ export class SignalBot {
     const { store } = this.dependencies;
     // Also check replayed pending messages against the durable output ledger.
     if (message.isSelf && store.isBotOutput(message.text)) return;
-    if (message.text.length > MAX_INPUT_CHARS) {
+    if (message.text.length > MAX_MESSAGE_CHARS) {
       await this.reply("Please keep each message under 6,000 characters; you can send sources in separate replies.", message);
       return;
     }
@@ -403,7 +402,7 @@ export class SignalBot {
       await this.reply(NO_TARGET_HELP, message);
       return;
     }
-    store.saveGeneralHistory([...history, { role: "user" as const, content: text.slice(0, 2_000) }, { role: "assistant" as const, content: reply.slice(0, 2_000) }].slice(-12));
+    store.saveGeneralHistory([...history, { role: "user" as const, content: text.slice(0, MAX_MESSAGE_CHARS) }, { role: "assistant" as const, content: reply.slice(0, MAX_MESSAGE_CHARS) }].slice(-12));
     await this.reply(reply, message);
   }
 
