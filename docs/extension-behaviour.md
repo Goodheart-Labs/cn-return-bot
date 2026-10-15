@@ -38,6 +38,14 @@ Every note has one of three statuses: rated helpful, needs more ratings, or rate
 
 By default, helpful notes are open, notes that need ratings are collapsed, and not-helpful notes are dot only. One claim can hold several notes. It shows in the most prominent choice among its notes, so a claim with one open note is open. (`utils/settings.ts` `DEFAULT_NOTE_DISPLAY`, `utils/claimGroups.ts`, `components/NoteDisplayChoices.tsx`)
 
+### Overlapping quotes and pointing at a claim
+
+Two claims can quote overlapping words, for example one sentence and the whole paragraph around it. Each claim's words are tinted in their own see-through layer, so words covered by two claims look darker than words covered by one. Darkness stops growing after three overlapping claims, so the text stays readable. (`utils/passageHighlights.ts`, `assignLayers` in `utils/overlaps.ts`)
+
+When you point at a claim's marker with the mouse, reach it with the Tab key, or point at its open card, exactly that claim's words get a stronger tint. The card you opened last keeps its words strongly tinted while it is open. This shows which words a marker is about, even where several quotes overlap, and for a claim set to dot only, whose words otherwise have no tint.
+
+A click on tinted words opens the claim whose quote is shortest among those covering the clicked spot, because it is the most specific. The other claims there stay reachable through their own markers. A second click on the same spot closes the card again. (`components/InlineNotes.tsx`, `mostSpecific` in `utils/overlaps.ts`)
+
 ### Marker colours
 
 Each marker takes the colour of the best status among the notes on its passage. Green means helpful, blue means it needs more ratings, and red means not helpful. These are the same colours as the status dot on the note card. (`utils/claimGroups.ts`, `utils/markerPalette.ts`)

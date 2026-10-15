@@ -8,7 +8,7 @@ import { fetchItemForUrl } from "@cn/core/items";
 import { normalizePageUrl } from "@cn/core/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { anchorGroups } from "./anchorGroups";
-import { applyHighlights, ensureHighlightStyle, hasHighlightApi, HIGHLIGHT_NAME } from "./passageHighlights";
+import { applyHighlights, clearHighlights, ensureHighlightStyle, hasHighlightApi } from "./passageHighlights";
 import { claimGroups, itemNoteSetQuery, noteCounts } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
@@ -210,7 +210,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     },
     onRemove(root) {
       root?.unmount();
-      if (hasHighlightApi()) CSS.highlights.delete(HIGHLIGHT_NAME);
+      clearHighlights();
     },
   });
   ui.mount();
