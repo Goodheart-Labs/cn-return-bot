@@ -43,7 +43,7 @@ const IDLE_TIMEOUT_SECONDS = 255;
 const SOCKET_MODE = 0o666;
 
 const routes: Record<string, (body: any) => Promise<unknown>> = {
-  [FETCH_PAGE_PATH]: (body: FetchPageRequest) => fetchWebPageInProcess(body.url, { maxChars: body.maxChars }),
+  [FETCH_PAGE_PATH]: (body: FetchPageRequest) => fetchWebPageInProcess(body.url),
   [READ_PAGE_PATH]: (body: FetchUrlRequest) => readPageAnswer(body.url),
   [FETCH_IMAGE_PATH]: (body: FetchUrlRequest) => downloadImageInlineData(body.url),
 };

@@ -49,7 +49,7 @@ test("a question sends the article, the reader's earlier exchanges and records i
   expect(writes.filter((w) => "cost_usd" in w.values).at(-1)?.values.cost_usd).toBe(0.004);
   expect(reads).toContainEqual({ table: "everything_passage_questions", field: "author_id", value: "reader1" });
   const context = JSON.parse(complete.mock.calls[0]![0].messages[1]!.content as string);
-  expect(context.article).toHaveLength(60000);
+  expect(context.article).toBe("body ".repeat(20000));
   expect(context.earlier).toEqual([{ question: "Earlier question", answer: "Earlier answer" }]);
 });
 
