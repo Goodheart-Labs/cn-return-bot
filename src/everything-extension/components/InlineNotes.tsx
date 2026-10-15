@@ -13,6 +13,8 @@ import { IconButton } from "@cn/ui/IconButton";
 import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
 import { rememberClosedClaim } from "../utils/closedNotes";
 import { placeMarginCards } from "../utils/marginCards";
+import { mostSpecific } from "../utils/overlaps";
+import { applyFocusHighlight } from "../utils/passageHighlights";
 import { NextNoteButton, type NoteNavigation } from "@cn/features/notes/NextNoteButton";
 import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
@@ -124,20 +126,33 @@ interface MarkerProps {
   group: ClaimGroup;
   open: boolean;
   onClick: () => void;
+  /** Called with true when the pointer or the keyboard focus reaches the
+   *  marker, and with false when it leaves. The claim's exact words are drawn
+   *  more strongly meanwhile. */
+  onPoint: (pointing: boolean) => void;
   style: React.CSSProperties;
   label: string;
   ref: React.Ref<HTMLButtonElement>;
 }
 
+/** The event handlers that report pointing at a marker. */
+const pointHandlers = (onPoint: (pointing: boolean) => void) => ({
+  onMouseEnter: () => onPoint(true),
+  onMouseLeave: () => onPoint(false),
+  onFocus: () => onPoint(true),
+  onBlur: () => onPoint(false),
+});
+
 /** The small badge at the end of an anchored passage. It draws the community
  *  glyph in the colour of the claim's status on a surface that follows the
  *  host page's light or dark theme. This is the classic style's marker. */
-function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
+function Badge({ group, open, onClick, onPoint, style, label, ref }: MarkerProps) {
   return (
     <button
       ref={ref}
       type="button"
       onClick={onClick}
+      {...pointHandlers(onPoint)}
       title={label}
       aria-label={label}
       aria-expanded={open}
@@ -159,12 +174,13 @@ function Badge({ group, open, onClick, style, label, ref }: MarkerProps) {
  *  helpful (Jim, 2026-09-29). It gains a soft halo when the pointer is near.
  *  The button box stays badge-sized so the positioning and collision math is
  *  shared; the dot is drawn smaller inside it. */
-function MarginDot({ group, open, onClick, style, label, ref }: MarkerProps) {
+function MarginDot({ group, open, onClick, onPoint, style, label, ref }: MarkerProps) {
   return (
     <button
       ref={ref}
       type="button"
       onClick={onClick}
+      {...pointHandlers(onPoint)}
       title={label}
       aria-label={label}
       aria-expanded={open}
@@ -182,7 +198,7 @@ function MarginDot({ group, open, onClick, style, label, ref }: MarkerProps) {
   );
 }
 
-function NotePopover({ group, projectSlug, navigation, style, label, openedByReader, takeFocus, onHeight, onClose }: {
+function NotePopover({ group, projectSlug, navigation, style, label, openedByReader, takeFocus, onHeight, onPoint, onClose }: {
   group: AnchoredGroup;
   projectSlug: string | null;
   navigation: NoteNavigation;
@@ -199,6 +215,8 @@ function NotePopover({ group, projectSlug, navigation, style, label, openedByRea
   /** Reports the card's height whenever it changes, so open margin cards can
    *  be stacked without overlapping. */
   onHeight: (height: number) => void;
+  /** Reports the pointer entering and leaving the card. */
+  onPoint: (pointing: boolean) => void;
   /** Closes the note and returns the focus to its marker. */
   onClose: () => void;
 }) {
@@ -238,6 +256,8 @@ function NotePopover({ group, projectSlug, navigation, style, label, openedByRea
       aria-label={label}
       tabIndex={-1}
       style={style}
+      onMouseEnter={() => onPoint(true)}
+      onMouseLeave={() => onPoint(false)}
       className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
     >
       <div className="-mt-1 mb-3 flex items-center justify-between">
@@ -474,6 +494,18 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     },
     [isOpen, choices, closeNote, open],
   );
+  // The claim whose exact words are drawn more strongly: the one the reader
+  // points at, or else the card the reader opened last.
+  const [pointed, setPointed] = useState<string | null>(null);
+  const point = useCallback((claimId: string, pointing: boolean) => {
+    setPointed((prev) => (pointing ? claimId : prev === claimId ? null : prev));
+  }, []);
+  const emphasized = pointed ?? cards.focused;
+  useEffect(() => {
+    applyFocusHighlight(groups.find((group) => group.claimId === emphasized)?.range ?? null);
+  }, [groups, emphasized]);
+  useEffect(() => () => applyFocusHighlight(null), []);
+
   // Escape pressed inside the note is handled by the note itself. This covers
   // an Escape pressed anywhere else on the page while a note is focused.
   const focused = cards.focused;
@@ -494,17 +526,13 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   // the reader's opened cards on an outside press lives here too, and it skips
   // tinted passages. Closing on mousedown and reopening from the click's hit
   // test made a click on a highlight flash the popover shut and open it again
-  // straight away.
+  // straight away. Where several tinted quotes cover the clicked words, the
+  // shortest one opens, because it is the most specific.
   useEffect(() => {
-    const groupAt = (x: number, y: number): ClaimGroup | null => {
-      for (const group of groups) {
-        if (group.display === "dot") continue;
-        for (const rect of group.range.getClientRects()) {
-          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return group;
-        }
-      }
-      return null;
-    };
+    const covers = (group: AnchoredGroup, x: number, y: number) =>
+      [...group.range.getClientRects()].some((rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+    const groupAt = (x: number, y: number): ClaimGroup | null =>
+      mostSpecific(groups.filter((group) => group.display !== "dot" && covers(group, x, y)), (group) => group.range.toString().length);
     const onDown = (e: MouseEvent) => {
       // Clicks inside our own overlay bubble out of the shadow root as well. The
       // popover overlaps the page text, so without this guard a click on a vote
@@ -613,6 +641,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
               label: markerLabel(group),
               open: cardOpen,
               onClick: () => toggle(group),
+              onPoint: (pointing: boolean) => point(group.claimId, pointing),
               style: badgeStyle,
             };
             const index = indexOf(group.claimId);
@@ -635,6 +664,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
                     openedByReader={choices.get(group.claimId) === true}
                     takeFocus={focused === group.claimId}
                     onHeight={(height) => reportHeight(group.claimId, height)}
+                    onPoint={(pointing) => point(group.claimId, pointing)}
                     onClose={() => closeNote(group.claimId)}
                   />
                 )}
