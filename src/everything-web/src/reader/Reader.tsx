@@ -193,9 +193,17 @@ export function Reader({ item, content, header, features, scope }: {
   // As in the extension, the reader has one card of their own open at a time.
   // Opening another hands the previous one back to the margin layout, which
   // keeps it open where it fits and shows its dot where it does not.
-  const openEntry = useCallback((slotKey: string) => setSlotModes((current) => new Map(
+  const markOpened = useCallback((slotKey: string) => setSlotModes((current) => new Map(
     [...current].map(([key, mode]): [string, SlotMode] => [key, mode === "opened" ? "auto" : mode]),
   ).set(slotKey, "opened")), []);
+  // A card opened from its dot or its words can land partly off screen, for
+  // example under the site header, so the page scrolls just enough to show it.
+  const openEntry = useCallback((slotKey: string) => {
+    markOpened(slotKey);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.querySelector(`[data-slot="${CSS.escape(slotKey)}"] .reader-slot-card`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }));
+  }, [markOpened]);
   const closeEntry = useCallback((slotKey: string) => setSlotModes((current) => new Map(current).set(slotKey, "closed")), []);
   const [notice, setNotice] = useState("");
 
@@ -217,12 +225,20 @@ export function Reader({ item, content, header, features, scope }: {
   const notesByBlock = useMemo(() => new Map([...placedNotes.byBlock, ...(placedNotes.unanchored.length ? [[UNANCHORED, placedNotes.unanchored] as const] : [])]), [placedNotes]);
   const highlightsByBlock = useMemo(() => new Map([...placedHighlights.byBlock, ...(placedHighlights.unanchored.length ? [[UNANCHORED, placedHighlights.unanchored] as const] : [])]), [placedHighlights]);
 
-  // Every margin card in reading order: by passage, notes before key points
-  // and forecasts, and the unanchored ones last. The "N of M" buttons walk it.
-  const entryOrder = useMemo(() => [...blocks.map((block) => block.id), UNANCHORED].flatMap((blockId) => [
-    ...(notesByBlock.get(blockId) ?? []).map((note) => ({ elementId: noteCardId(scope, note.id), blockId })),
-    ...(highlightsByBlock.get(blockId) ?? []).map((highlight) => ({ elementId: highlightCardId(scope, highlight.id), blockId })),
-  ]), [blocks, notesByBlock, highlightsByBlock, scope]);
+  // Every margin card in reading order: by passage, then by where its quote
+  // starts in the passage, and the unanchored ones last. The "N of M" buttons
+  // walk it.
+  const entryOrder = useMemo(() => [...blocks.map((block) => block.id), UNANCHORED].flatMap((blockId) => {
+    const text = blocks.find((block) => block.id === blockId)?.text.toLowerCase() ?? "";
+    const position = (quote: string | null | undefined) => {
+      const index = quote ? text.indexOf(quote.trim().toLowerCase()) : -1;
+      return index < 0 ? text.length : index;
+    };
+    return [
+      ...(notesByBlock.get(blockId) ?? []).map((note) => ({ elementId: noteCardId(scope, note.id), blockId, at: position(noteQuoteText(note)) })),
+      ...(highlightsByBlock.get(blockId) ?? []).map((highlight) => ({ elementId: highlightCardId(scope, highlight.id), blockId, at: position(highlight.quote) })),
+    ].sort((a, b) => a.at - b.at);
+  }), [blocks, notesByBlock, highlightsByBlock, scope]);
 
   const notify = useCallback((message: string) => setNotice(message), []);
   useEffect(() => {
@@ -243,7 +259,7 @@ export function Reader({ item, content, header, features, scope }: {
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),
     notify,
-    reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId, openEntry); },
+    reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId, markOpened); },
     entryNavigation: (elementId) => {
       const index = entryOrder.findIndex((entry) => entry.elementId === elementId);
       if (index < 0 || entryOrder.length <= 1) return null;

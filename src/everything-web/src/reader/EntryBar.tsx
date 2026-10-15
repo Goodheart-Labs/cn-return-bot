@@ -8,14 +8,19 @@ import { useSlotKey } from "./MarginSlot";
  *  left, the close button on the right, as on the extension's note cards.
  *  The card supplies the bar's row. Closing shrinks the card's whole slot to
  *  its dot, which frees the room for the cards below it. */
-export function EntryBar({ elementId, kind }: { elementId: string; kind: string }) {
+export function EntryBar({ elementId, kind, closable = true }: {
+  elementId: string;
+  kind: string;
+  /** Several notes in one slot share one close button, on the first note. */
+  closable?: boolean;
+}) {
   const { entryNavigation, closeEntry } = useReader();
   const slotKey = useSlotKey();
   const navigation = entryNavigation(elementId);
   return <>
     {navigation && <NextNoteButton {...navigation} />}
-    <IconButton label={`Close ${kind}`} className="-mr-1.5 ml-auto" onClick={() => closeEntry(slotKey)}>
+    {closable && <IconButton label={`Close ${kind}`} className="-mr-1.5 ml-auto" onClick={() => closeEntry(slotKey)}>
       <CloseIcon size={14} aria-hidden />
-    </IconButton>
+    </IconButton>}
   </>;
 }

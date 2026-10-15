@@ -105,10 +105,10 @@ function NoteEntries({ blockId }: { blockId: string }) {
     const label = `${group.length > 1 ? `${group.length} notes` : "Note"} · ${statusLabel(status)}`;
     return <MarginSlot key={group[0]!.id} slotKey={noteSlotKey(scope, group[0]!.id)} colorClass={statusColorClass(status)} priority={groupPriority(group, status)} label={label}>
       <div className="reader-slot-stack">
-        {group.map((note) => {
+        {group.map((note, index) => {
           const id = noteCardId(scope, note.id);
           return <div key={note.id} id={id} className="reader-entry">
-            <NoteCard topBar={<EntryBar elementId={id} kind="note" />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
+            <NoteCard topBar={<EntryBar elementId={id} kind={group.length > 1 ? "notes" : "note"} closable={index === 0} />} note={note} shareUrl={shareUrl(note.id, scope)} nnnEntries={nnnEntries.filter((entry) => entry.claim_id === note.claim_id)} />
           </div>;
         })}
       </div>

@@ -222,7 +222,7 @@
   /* The margin layout places each card, or its dot when the card does not fit
    * near its words, the way the extension does. A dot sits at the cards' left
    * edge, and an open card covers the dots of the entries beside it. */
-  .reader-slot-card { position: absolute; left: 0; right: 0; z-index: 2; transition: top 150ms ease; }
+  .reader-slot-card { position: absolute; left: 0; right: 0; z-index: 2; transition: top 150ms ease; scroll-margin-top: var(--reader-anchor-offset); scroll-margin-bottom: 1rem; }
   .reader-slot[data-shown="dot"] .reader-slot-card { display: none; }
   .reader-slot .reader-dot { display: none; left: 0; z-index: 1; }
   .reader-slot[data-shown="dot"] .reader-dot { display: flex; }
