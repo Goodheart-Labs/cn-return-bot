@@ -220,18 +220,12 @@
   .reader-unanchored .reader-margin-group { position: absolute; }
   .reader-mark { cursor: pointer; }
   /* The margin layout places each card, or its dot when the card does not fit
-   * near its words. Dots sit on a rail in the gap between the text and the
-   * cards. */
-  .reader-slot-card { position: absolute; left: 0; right: 0; transition: top 150ms ease; }
+   * near its words, the way the extension does. A dot sits at the cards' left
+   * edge, and an open card covers the dots of the entries beside it. */
+  .reader-slot-card { position: absolute; left: 0; right: 0; z-index: 2; transition: top 150ms ease; }
   .reader-slot[data-shown="dot"] .reader-slot-card { display: none; }
-  .reader-dot { display: none; position: absolute; left: calc(var(--reader-gap) / -2 - 0.4rem); width: 0.8rem; height: 0.8rem; margin-top: 0.45rem; border-radius: 9999px; border: 2px solid var(--cn-canvas); box-shadow: 0 0 0 1px var(--cn-line-strong); cursor: pointer; transition: transform 120ms; }
-  .reader-slot[data-shown="dot"] .reader-dot { display: block; }
-  .reader-dot:hover, .reader-slot.reader-active .reader-dot { transform: scale(1.35); }
-  .reader-dot-helpful { background: var(--cn-positive); }
-  .reader-dot-needs-ratings { background: var(--cn-link); }
-  .reader-dot-not-helpful { background: var(--cn-negative); }
-  .reader-dot-highlight { background: var(--cn-highlighter-line); }
-  .reader-dot-request { background: var(--cn-fg-subtle); }
+  .reader-slot .reader-dot { display: none; left: 0; z-index: 1; }
+  .reader-slot[data-shown="dot"] .reader-dot { display: flex; }
 }
 @media (min-width: 900px) and (max-width: 1199px) {
   .reader-layout { grid-template-columns: minmax(0, var(--reader-measure)) 20rem; }

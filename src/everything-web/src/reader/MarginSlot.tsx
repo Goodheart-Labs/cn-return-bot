@@ -1,13 +1,17 @@
 import { createContext, useContext, type ReactNode } from "react";
+import { MarginDot } from "@cn/features/margin/MarginDot";
 import { ChevronIcon } from "@cn/ui/icons";
 import { useReader } from "./context";
 
-/** The colour of an entry's dot: a note's status, or a reader highlight. */
-export type DotTone = "helpful" | "needs-ratings" | "not-helpful" | "highlight" | "request";
+/** The dot colours of the entries that are not notes. A note's dot takes the
+ *  colour of its status, as in the extension. */
+export const HIGHLIGHT_DOT = "text-caution-solid";
+export const REQUEST_DOT = "text-fg-subtle";
 
-/** The order in which entries of one passage claim the room beside it. Lower
- *  goes first: a helpful note before a note that needs ratings, an AI note
- *  before a reader's, and notes before key points and forecasts. */
+/** The order in which entries whose words start on the same line claim the
+ *  room beside them. Lower goes first: a helpful note before a note that needs
+ *  ratings, an AI note before a reader's, and notes before key points and
+ *  forecasts. */
 export const SLOT_PRIORITY = { request: 0, helpful: 0, aiNote: 1, readerNote: 2, highlight: 3, notHelpful: 4 } as const;
 
 const SlotKeyContext = createContext<string | null>(null);
@@ -19,12 +23,14 @@ export function useSlotKey(): string {
   return key;
 }
 
-/** One entry in the margin: a card, or the dot it shrinks to. On wide screens
- *  the margin layout decides which one shows and where. On narrow screens
- *  there is no margin, so a closed entry is one line under the passage. */
-export function MarginSlot({ slotKey, tone, priority, label, children }: {
+/** One entry in the margin: a card, or the extension's dot it shrinks to. On
+ *  wide screens the margin layout decides which one shows and where. On
+ *  narrow screens there is no margin, so a closed entry is one line under
+ *  the passage. */
+export function MarginSlot({ slotKey, colorClass, priority, label, children }: {
   slotKey: string;
-  tone: DotTone;
+  /** The text colour class the dot is drawn in. */
+  colorClass: string;
   priority: number;
   /** What the dot and the closed line say, such as "Note · Needs more ratings". */
   label: string;
@@ -42,7 +48,7 @@ export function MarginSlot({ slotKey, tone, priority, label, children }: {
   }
   return <SlotKeyContext.Provider value={slotKey}>
     <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority}>
-      {wide && <button type="button" className={`reader-dot reader-dot-${tone}`} aria-label={`Open ${label}`} title={label} onClick={() => openEntry(slotKey)} />}
+      {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={() => openEntry(slotKey)} />}
       <div className="reader-slot-card">{children}</div>
     </div>
   </SlotKeyContext.Provider>;

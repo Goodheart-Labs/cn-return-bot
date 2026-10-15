@@ -52,7 +52,7 @@ Each marker takes the colour of the best status among the notes on its passage. 
 
 ### Margin cards and the 200 px rule
 
-By default, markers sit in the right margin beside the text, and a card opens in the margin in its marker's place. This is the **margin style**. Overlapping cards are pushed down so they stack. A card that opens by itself only does so if, after that push, it sits at most 200 px below its passage. Further down it would sit beside unrelated text, so its claim keeps just its dot until you click it. A card that you opened is always shown. (`utils/marginCards.ts`, `components/InlineNotes.tsx`)
+By default, markers sit in the right margin beside the text, and a card opens in the margin in its marker's place. This is the **margin style**. Overlapping cards are pushed down so they stack. A card that opens by itself only does so if, after that push, it sits at most 200 px below its passage. Further down it would sit beside unrelated text, so its claim keeps just its dot until you click it. A card that you opened always sits level with its own passage. Any other card in its way, above or below, moves down below it, and closes to its dot when that puts it more than 200 px below its own passage. The minisite reader on commonnotes.net places its margin with the same code. (`src/everything-core/marginCards.ts`, `components/InlineNotes.tsx`)
 
 When the window is too narrow for a 300 px card, or the page clips its margin, the extension falls back to the **classic style**: a badge at the end of the passage and a popover over the text. You can also pick the classic style in the settings. In the classic style an "open" note behaves like a collapsed one. (`components/InlineNotes.tsx`)
 

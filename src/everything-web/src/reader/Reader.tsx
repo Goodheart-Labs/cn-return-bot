@@ -189,9 +189,13 @@ export function Reader({ item, content, header, features, scope }: {
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
   const [slotModes, setSlotModes] = useState<ReadonlyMap<string, SlotMode>>(new Map());
-  const setSlotMode = useCallback((slotKey: string, mode: SlotMode) => setSlotModes((current) => new Map(current).set(slotKey, mode)), []);
-  const openEntry = useCallback((slotKey: string) => setSlotMode(slotKey, "opened"), [setSlotMode]);
-  const closeEntry = useCallback((slotKey: string) => setSlotMode(slotKey, "closed"), [setSlotMode]);
+  // As in the extension, the reader has one card of their own open at a time.
+  // Opening another hands the previous one back to the margin layout, which
+  // keeps it open where it fits and shows its dot where it does not.
+  const openEntry = useCallback((slotKey: string) => setSlotModes((current) => new Map(
+    [...current].map(([key, mode]): [string, SlotMode] => [key, mode === "opened" ? "auto" : mode]),
+  ).set(slotKey, "opened")), []);
+  const closeEntry = useCallback((slotKey: string) => setSlotModes((current) => new Map(current).set(slotKey, "closed")), []);
   const [notice, setNotice] = useState("");
 
   const blocks = useMemo(() => withoutRepeatedHeader(

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { browser } from "#imports";
 import { createPortal } from "react-dom";
 import type { PageItem } from "@cn/core/items";
+import { MarginDot, MARKER_FOCUS, pointHandlers } from "@cn/features/margin/MarginDot";
 import { statusColorClass, statusLabel } from "@cn/features/notes/NoteBox";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
@@ -12,7 +13,7 @@ import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
 import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
 import { rememberClosedClaim } from "../utils/closedNotes";
-import { placeMarginCards } from "../utils/marginCards";
+import { MARKER_SIZE, placeMarginCards, placeMarkers } from "@cn/core/marginCards";
 import { mostSpecific } from "../utils/overlaps";
 import { applyFocusHighlight } from "../utils/passageHighlights";
 import { NextNoteButton, type NoteNavigation } from "@cn/features/notes/NextNoteButton";
@@ -25,7 +26,6 @@ import { WriteNoteOverlay } from "./WriteNoteOverlay";
  *  its note-not-needed entries, and the stretch of page text it sits on. */
 export type AnchoredGroup = ClaimGroup & { range: Range };
 
-const BADGE_SIZE = 20;
 const BADGE_GAP = 4; // Pixels between the end of the passage and the badge.
 const POPOVER_GAP = 8; // Pixels between the passage and the opened popover.
 const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
@@ -39,9 +39,6 @@ const MARGIN_CARD_WIDTH = 380;
 // Below this much usable margin the style falls back to the classic popover:
 // a cramped margin card is worse than the old overlay.
 const MARGIN_CARD_MIN_WIDTH = 300;
-// Two markers whose passages start on the same line would overlap; later ones
-// are nudged down by one marker height plus breathing room.
-const MARGIN_MARKER_STEP = BADGE_SIZE + 6;
 
 /** The element (the container itself or an ancestor) that would clip content
  *  drawn this far right of the viewport's left edge, or null when nothing
@@ -117,9 +114,6 @@ function cardLabel(group: ClaimGroup): string {
   return `${markerLabel(group)}: “${quote}”`;
 }
 
-/** The markers are real buttons, so they are reachable with Tab and show the
- *  same focus ring as every other control. */
-const MARKER_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 /** What both marker styles are drawn from. */
 interface MarkerProps {
@@ -135,13 +129,6 @@ interface MarkerProps {
   ref: React.Ref<HTMLButtonElement>;
 }
 
-/** The event handlers that report pointing at a marker. */
-const pointHandlers = (onPoint: (pointing: boolean) => void) => ({
-  onMouseEnter: () => onPoint(true),
-  onMouseLeave: () => onPoint(false),
-  onFocus: () => onPoint(true),
-  onBlur: () => onPoint(false),
-});
 
 /** The small badge at the end of an anchored passage. It draws the community
  *  glyph in the colour of the claim's status on a surface that follows the
@@ -169,34 +156,6 @@ function Badge({ group, open, onClick, onPoint, style, label, ref }: MarkerProps
   );
 }
 
-/** The margin style's marker: a small dot in the colour of the claim's
- *  status, green for helpful, blue for needs more ratings and red for not
- *  helpful (Jim, 2026-09-29). It gains a soft halo when the pointer is near.
- *  The button box stays badge-sized so the positioning and collision math is
- *  shared; the dot is drawn smaller inside it. */
-function MarginDot({ group, open, onClick, onPoint, style, label, ref }: MarkerProps) {
-  return (
-    <button
-      ref={ref}
-      type="button"
-      onClick={onClick}
-      {...pointHandlers(onPoint)}
-      title={label}
-      aria-label={label}
-      aria-expanded={open}
-      style={style}
-      className={cn("absolute flex items-center justify-center rounded-full group", MARKER_FOCUS)}
-    >
-      <span
-        className={cn(
-          "h-2.5 w-2.5 rounded-full bg-current transition",
-          statusColorClass(group.status),
-          !open && "group-hover:ring-4 group-hover:ring-focus-halo",
-        )}
-      />
-    </button>
-  );
-}
 
 function NotePopover({ group, projectSlug, navigation, style, label, openedByReader, takeFocus, onHeight, onPoint, onClose }: {
   group: AnchoredGroup;
@@ -380,7 +339,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
       : containerRect.right;
     const marginLeft = columnRight + MARGIN_MARKER_GAP;
     const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
-    const clipper = marginClipper(container, marginLeft + BADGE_SIZE);
+    const clipper = marginClipper(container, marginLeft + MARKER_SIZE);
     const fallbackReason =
       noteStyle !== "margin"
         ? null // Classic was chosen in the settings; nothing to explain.
@@ -392,20 +351,10 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     logMarginFallback(fallbackReason);
     const useMargin = noteStyle === "margin" && fallbackReason === null;
 
-    // Markers of passages that start on the same lines would land on top of
-    // each other; walking them from top to bottom and pushing each below the
-    // previous keeps every one clickable. The nudged tops are computed per
-    // group first, because `groups` arrives in fetch order, not page order.
+    // Markers of passages that start on the same lines are pushed below each
+    // other, so every one stays clickable.
     const rects = groups.map((group) => relRect(group.range, origin));
-    const marginTops = new Map<AnchoredGroup, number>();
-    if (useMargin) {
-      let previousBottom = -Infinity;
-      for (const index of [...groups.keys()].sort((a, b) => rects[a]!.top - rects[b]!.top)) {
-        const top = Math.max(rects[index]!.top, previousBottom + MARGIN_MARKER_STEP - BADGE_SIZE);
-        previousBottom = top + BADGE_SIZE;
-        marginTops.set(groups[index]!, top);
-      }
-    }
+    const marginTops = useMargin ? placeMarkers(groups.map((group, index) => ({ key: group, top: rects[index]!.top }))) : new Map<AnchoredGroup, number>();
 
     const placed = groups.map((group, index) => {
       const rect = rects[index]!;
@@ -413,7 +362,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
         return {
           group,
           passageTop: rect.top,
-          badgeStyle: { top: marginTops.get(group)!, left: marginLeft - origin.left, width: BADGE_SIZE, height: BADGE_SIZE } satisfies React.CSSProperties,
+          badgeStyle: { top: marginTops.get(group)!, left: marginLeft - origin.left, width: MARKER_SIZE, height: MARKER_SIZE } satisfies React.CSSProperties,
           // The top is filled in once the open cards are stacked.
           popoverStyle: {
             left: marginLeft - origin.left,
@@ -432,10 +381,10 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
         group,
         passageTop: rect.top,
         badgeStyle: {
-          top: rect.top - BADGE_SIZE / 2,
+          top: rect.top - MARKER_SIZE / 2,
           left: rect.right + BADGE_GAP,
-          width: BADGE_SIZE,
-          height: BADGE_SIZE,
+          width: MARKER_SIZE,
+          height: MARKER_SIZE,
         } satisfies React.CSSProperties,
         popoverStyle: {
           top: rect.bottom + POPOVER_GAP,
@@ -648,7 +597,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
             return (
               <div key={group.claimId}>
                 {/* In the margin an open card takes its dot's place. */}
-                {layout.useMargin ? !cardOpen && <MarginDot {...marker} /> : <Badge {...marker} />}
+                {layout.useMargin ? !cardOpen && <MarginDot {...marker} colorClass={statusColorClass(group.status)} /> : <Badge {...marker} />}
                 {cardOpen && (
                   <NotePopover
                     group={group}

@@ -1,22 +1,12 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-
-/** The space between two cards in the margin, in pixels. */
-const CARD_GAP_PX = 16;
-/** A card the reader has not touched shows only when it lands at most this far
- *  below its words. Further down it would sit beside unrelated text, so it
- *  stays a dot until the reader opens it. This is the extension's rule. */
-const MAX_DRIFT_PX = 200;
-/** The height assumed for a card that has never been on screen. */
-const UNMEASURED_CARD_HEIGHT_PX = 320;
-/** Dots whose words start on the same line would overlap, so each one sits at
- *  least this far below the one above. */
-const DOT_STEP_PX = 18;
+import { MARKER_SIZE, placeMarginCards, placeMarkers } from "@cn/core/marginCards";
 
 /** The last height each card had while it was on screen. A dot's card is
  *  hidden and measures zero, so its old height is what the next pass uses. */
 const cardHeights = new WeakMap<HTMLElement, number>();
 
 interface Slot {
+  key: string;
   slot: HTMLElement;
   card: HTMLElement;
   dot: HTMLElement | null;
@@ -30,12 +20,13 @@ function readSlots(root: HTMLElement): Slot[] {
   const base = root.getBoundingClientRect().top;
   const topOf = (element: Element) => element.getBoundingClientRect().top - base;
   return Array.from(root.querySelectorAll<HTMLElement>("[data-margin-group] [data-slot]")).map((slot) => {
+    const key = slot.dataset.slot!;
     const passage = slot.closest(".reader-passage")!;
-    const mark = passage.querySelector(`mark[data-key="${CSS.escape(slot.dataset.slot!)}"]`);
+    const mark = passage.querySelector(`mark[data-key="${CSS.escape(key)}"]`);
     const card = slot.querySelector<HTMLElement>(".reader-slot-card")!;
     if (slot.dataset.shown !== "dot" && card.offsetHeight > 0) cardHeights.set(card, card.offsetHeight);
     return {
-      slot, card, dot: slot.querySelector<HTMLElement>(".reader-dot"),
+      key, slot, card, dot: slot.querySelector<HTMLElement>(".reader-dot"),
       passageTop: topOf(passage),
       anchorTop: mark ? topOf(mark) : topOf(passage),
       priority: Number(slot.dataset.priority),
@@ -44,42 +35,41 @@ function readSlots(root: HTMLElement): Slot[] {
   });
 }
 
-/** Places every margin entry as a card or a dot, as the extension does. Each
- *  card starts level with its own words, and a card that would overlap the
- *  one above moves down below it. Within a passage the entries claim room in
- *  priority order, after any card the reader opened. A card the reader has
- *  not touched shows only if that push leaves it close to its words.
- *  Otherwise it shrinks to a dot on a rail
- *  between the text and the cards, level with its words. A card the reader
- *  opened always shows, and one the reader closed is always a dot. The
- *  article grows at the bottom when the margin runs past its last passage. */
+/** Places every margin entry with the extension's own rules
+ *  (`@cn/core/marginCards`). Each card starts level with its own words, and a
+ *  card that would overlap the one above moves down below it. A card the
+ *  reader has not touched shows only if that push leaves it close to its
+ *  words; otherwise only its dot shows. A card the reader opened always
+ *  shows, and one the reader closed is always a dot. Entries whose words
+ *  start on the same line claim room in priority order. The article grows at
+ *  the bottom when the margin runs past its last passage. */
 function layoutMargin(root: HTMLElement) {
-  // A card the reader opened claims its place first, so it lands beside its
-  // words and the untouched cards of its passage move around it.
-  const openedFirst = (slot: Slot) => (slot.mode === "opened" ? 0 : 1);
-  const slots = readSlots(root).sort((a, b) => a.passageTop - b.passageTop || openedFirst(a) - openedFirst(b) || a.priority - b.priority || a.anchorTop - b.anchorTop);
-  let cardFloor = 0;
-  const dots: Slot[] = [];
+  const slots = readSlots(root).sort((a, b) => a.anchorTop - b.anchorTop || a.priority - b.priority);
+  const heights = new Map(slots.flatMap((entry) => {
+    const height = cardHeights.get(entry.card);
+    return height === undefined ? [] : [[entry.key, height] as const];
+  }));
+  const cardTops = placeMarginCards(
+    slots.filter((entry) => entry.mode !== "closed").map((entry) => ({ claimId: entry.key, passageTop: entry.anchorTop, openedByReader: entry.mode === "opened" })),
+    heights,
+  );
+  const markerTops = placeMarkers(slots.map((entry) => ({ key: entry.key, top: entry.anchorTop })));
+  let bottom = 0;
   for (const entry of slots) {
-    const top = Math.max(entry.anchorTop, cardFloor);
-    const fits = entry.mode === "opened" || (entry.mode === "auto" && top - entry.anchorTop <= MAX_DRIFT_PX);
-    if (!fits) {
-      dots.push(entry);
-      continue;
+    const cardTop = cardTops.get(entry.key);
+    if (cardTop !== undefined) {
+      entry.slot.dataset.shown = "card";
+      entry.card.style.top = `${cardTop - entry.passageTop}px`;
+      bottom = Math.max(bottom, cardTop + (heights.get(entry.key) ?? 0));
+    } else {
+      const markerTop = markerTops.get(entry.key)!;
+      entry.slot.dataset.shown = "dot";
+      if (entry.dot) entry.dot.style.top = `${markerTop - entry.passageTop}px`;
+      bottom = Math.max(bottom, markerTop + MARKER_SIZE);
     }
-    entry.slot.dataset.shown = "card";
-    entry.card.style.top = `${top - entry.passageTop}px`;
-    cardFloor = top + (cardHeights.get(entry.card) ?? UNMEASURED_CARD_HEIGHT_PX) + CARD_GAP_PX;
-  }
-  let dotFloor = -Infinity;
-  for (const entry of dots.sort((a, b) => a.anchorTop - b.anchorTop)) {
-    const top = Math.max(entry.anchorTop, dotFloor);
-    entry.slot.dataset.shown = "dot";
-    if (entry.dot) entry.dot.style.top = `${top - entry.passageTop}px`;
-    dotFloor = top + DOT_STEP_PX;
   }
   root.style.paddingBottom = "";
-  const overflow = Math.max(cardFloor, dotFloor) - root.getBoundingClientRect().height;
+  const overflow = bottom - root.getBoundingClientRect().height;
   if (overflow > 0) root.style.paddingBottom = `${overflow}px`;
 }
 

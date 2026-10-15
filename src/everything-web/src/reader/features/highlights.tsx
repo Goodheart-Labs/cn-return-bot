@@ -15,7 +15,7 @@ import { LoginModal } from "../../components/LoginModal";
 import { useReader, type ReaderAnchor, type ReaderModule } from "../context";
 import { DialogFooter, DialogQuote } from "../DialogParts";
 import { EntryBar } from "../EntryBar";
-import { MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
+import { HIGHLIGHT_DOT, MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
 import { DraftSuggestion, useHighlightPost, usePassageQuestions } from "./passageQuestions";
 
 /** The longest quote handed to Opus when it drafts from selected words. */
@@ -101,7 +101,7 @@ function HighlightCard({ highlight, myVote, pending, onVote, onDelete }: {
   const { scope } = useReader();
   const kind = highlight.kind === "forecast" ? "forecast" : "key point";
   const id = highlightCardId(scope, highlight.id);
-  return <MarginSlot slotKey={id} tone="highlight" priority={SLOT_PRIORITY.highlight} label={kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}>
+  return <MarginSlot slotKey={id} colorClass={HIGHLIGHT_DOT} priority={SLOT_PRIORITY.highlight} label={kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}>
     <section id={id} className="reader-entry reader-highlight-card" aria-label={kind}>
     <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind={kind} /></div>
     <p className="reader-entry-kind">{kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}<span>{highlight.author_name || "Anonymous reader"}</span></p>

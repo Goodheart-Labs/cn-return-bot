@@ -8,7 +8,7 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 import { Card } from "@cn/ui/Card";
 import { useReader, type ReaderModule, type ReaderNoteRequest } from "../context";
 import { EntryBar } from "../EntryBar";
-import { MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
+import { MarginSlot, REQUEST_DOT, SLOT_PRIORITY } from "../MarginSlot";
 
 export const requestCardId = (scope: string, requestId: string) => `${scope}-request-${requestId}`;
 
@@ -70,7 +70,7 @@ function RequestCard({ request }: { request: ReaderNoteRequest }) {
   const { scope } = useReader();
   const id = requestCardId(scope, request.id);
   const lines = progressLines(request.progress);
-  return <MarginSlot slotKey={id} tone="request" priority={SLOT_PRIORITY.request} label={`Note request · ${lines.join(", ")}`}>
+  return <MarginSlot slotKey={id} colorClass={REQUEST_DOT} priority={SLOT_PRIORITY.request} label={`Note request · ${lines.join(", ")}`}>
     <section id={id} className="reader-entry" aria-label="Note request">
       <Card className="min-w-0 p-4">
         <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind="note request" /></div>

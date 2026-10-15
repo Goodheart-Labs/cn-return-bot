@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNnnForClaims } from "@cn/core/noteNotNeeded";
 import { fetchNotesForItem } from "@cn/core/notes";
 import { subscribeToItemProgress } from "@cn/core/requestStatus";
-import { statusLabel } from "@cn/features/notes/NoteBox";
+import { statusColorClass, statusLabel } from "@cn/features/notes/NoteBox";
 import { noteStatus, type NoteStatus } from "@cn/core/noteScore";
 import { Note } from "@cn/features/notes/Note";
 import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
@@ -13,7 +13,7 @@ import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { useReader, type ReaderModule } from "../context";
 import { EntryBar } from "../EntryBar";
-import { MarginSlot, SLOT_PRIORITY, type DotTone } from "../MarginSlot";
+import { MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
 
 /** The article's notes and note-not-needed entries, refreshed whenever the
  *  pipeline or a reader changes them. */
@@ -53,7 +53,6 @@ export function groupNotesByQuote(notes: readonly NoteRow[]): NoteRow[][] {
 }
 
 const STATUS_ORDER: readonly NoteStatus[] = ["helpful", "needs_ratings", "not_helpful"];
-const STATUS_TONE: Record<NoteStatus, DotTone> = { helpful: "helpful", needs_ratings: "needs-ratings", not_helpful: "not-helpful" };
 
 function bestStatus(notes: readonly NoteRow[]): NoteStatus {
   const statuses = new Set(notes.map(noteStatus));
@@ -104,7 +103,7 @@ function NoteEntries({ blockId }: { blockId: string }) {
   return <>{groupNotesByQuote(notesByBlock.get(blockId) ?? []).map((group) => {
     const status = bestStatus(group);
     const label = `${group.length > 1 ? `${group.length} notes` : "Note"} · ${statusLabel(status)}`;
-    return <MarginSlot key={group[0]!.id} slotKey={noteSlotKey(scope, group[0]!.id)} tone={STATUS_TONE[status]} priority={groupPriority(group, status)} label={label}>
+    return <MarginSlot key={group[0]!.id} slotKey={noteSlotKey(scope, group[0]!.id)} colorClass={statusColorClass(status)} priority={groupPriority(group, status)} label={label}>
       <div className="reader-slot-stack">
         {group.map((note) => {
           const id = noteCardId(scope, note.id);
