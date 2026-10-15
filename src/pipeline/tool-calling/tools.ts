@@ -251,9 +251,14 @@ const FETCH_UAS = {
 } as const;
 
 const MIN_GOOD_CONTENT_CHARS = 300;
+/** The most text of one page that any step reads: a fetched source, an
+ *  article the Common Notes worker ingests, and the article Ask Opus gets as
+ *  context. It matches the limit on note_requests.page_text. Until 2026-10-15
+ *  a fetched source was cut at 20,000 characters, so the source verifier never
+ *  saw quotes further down a long report. */
+export const MAX_PAGE_TEXT_CHARS = 500_000;
 const FETCH_TIMEOUT_MS = 15_000;
 const BROWSER_RENDER_TIMEOUT_MS = 20_000;
-const MAX_RETURN_CHARS = 20_000;
 
 // Patterns that mark a login wall or an anti-bot interstitial page. A body that
 // came back 200 OK and matches two or more of them counts as a wall. That is
@@ -461,28 +466,24 @@ export interface WebFetchResult {
 /** Fetches an outside page. On the services machine the sandboxed fetcher does
  *  the fetching (src/service/fetch/main.ts), so that a hostile page never runs
  *  inside a process that holds our keys. Everywhere else, such as GitHub
- *  Actions and local runs, this process fetches the page itself.
- *
- *  `maxChars` overrides the default return cap. The default is sized for a
- *  verifier's context window; the everything pipeline passes a much larger cap
- *  because it ingests the whole article. */
-export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
+ *  Actions and local runs, this process fetches the page itself. */
+export async function fetchWebPage(url: string): Promise<WebFetchResult> {
   const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
-  if (!socket) return fetchWebPageInProcess(url, opts);
-  return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url, maxChars: opts?.maxChars } satisfies FetchPageRequest);
+  if (!socket) return fetchWebPageInProcess(url);
+  return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url } satisfies FetchPageRequest);
 }
 
 const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";
 
 /** The fetch ladder itself. Only the fetcher and processes without one call
  *  this directly. */
-export async function fetchWebPageInProcess(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
-  const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
+export async function fetchWebPageInProcess(url: string): Promise<WebFetchResult> {
   if (!isWebUrl(url)) return { content: `Fetch refused: ${REFUSED_NON_WEB_URL}`, fetchedUrl: url, ok: false };
   const outcome = await runFetchLadder(url);
   if (!outcome.ok) return { content: outcome.diagnostic, fetchedUrl: url, ok: false };
   const { markdown, fetchedUrl, via } = outcome.page;
-  const content = via ? `[fetched via ${via}]\n\n${markdown.slice(0, maxChars)}` : markdown.slice(0, maxChars);
+  const text = markdown.slice(0, MAX_PAGE_TEXT_CHARS);
+  const content = via ? `[fetched via ${via}]\n\n${text}` : text;
   return { content, fetchedUrl, ok: true };
 }
 
