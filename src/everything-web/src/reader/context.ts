@@ -63,10 +63,16 @@ export interface ReaderApi {
   /** A card's place among all margin cards in reading order, and the move to
    *  the next one. Null when the card is the only one. */
   entryNavigation: (elementId: string) => NoteNavigation | null;
-  /** Closed cards shrink to one line in the margin. */
-  isCollapsed: (elementId: string) => boolean;
-  setCollapsed: (elementId: string, closed: boolean) => void;
+  /** How the margin entry `slotKey` shows. A closed entry is a dot on wide
+   *  screens and one line on narrow ones. An opened entry is always a card. An
+   *  entry the reader has not touched is a card when it fits near its words,
+   *  and a dot otherwise. */
+  slotMode: (slotKey: string) => SlotMode;
+  openEntry: (slotKey: string) => void;
+  closeEntry: (slotKey: string) => void;
 }
+
+export type SlotMode = "closed" | "opened" | "auto";
 
 export const ReaderContext = createContext<ReaderApi | null>(null);
 

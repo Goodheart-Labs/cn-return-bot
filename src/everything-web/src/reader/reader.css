@@ -79,8 +79,14 @@
 
 /* Marked words. Notes are blue; readers' key points and forecasts are yellow. */
 .reader-mark { color: inherit; border-radius: 2px; }
+/* Each quote is its own see-through layer, so words that several notes quote
+ * look darker. Key points and forecasts are underlined instead of tinted, so
+ * where they sit inside a note both stay visible. */
 .reader-mark-note { background: var(--cn-note-mark); box-shadow: inset 0 -2px 0 var(--cn-note-mark-line); }
-.reader-mark-highlight { background: var(--cn-highlighter); box-shadow: inset 0 -2px 0 var(--cn-highlighter-line); }
+.reader-mark-highlight { background: none; text-decoration: underline 3px var(--cn-highlighter-line); text-decoration-skip-ink: none; text-underline-offset: 0.3em; }
+/* The words of the entry the reader points at. */
+.reader-mark-note.reader-active { background: var(--cn-note-mark-active); }
+.reader-mark-highlight.reader-active { background: var(--cn-highlighter); }
 
 /* A passage with entries carries a bar in the gutter. */
 .reader-passage-noted::before { content: ""; position: absolute; left: -1rem; top: 0.4rem; bottom: 0.4rem; border-left: 3px solid var(--cn-tint-line); border-radius: 2px; }
@@ -100,6 +106,8 @@
 
 /* Entries beside a passage. */
 .reader-margin-group { display: grid; gap: 1rem; margin: 1rem 0 0.5rem; font-size: var(--cn-text-sm); line-height: var(--cn-leading-sm); }
+/* Several notes on the same words share one slot, one card under the other. */
+.reader-slot-stack { display: grid; gap: 0.5rem; }
 .reader-entry { min-width: 0; border-radius: var(--cn-radius-card); transition: outline-color 200ms; outline: 2px solid transparent; outline-offset: 4px; }
 .reader-flash { outline-color: var(--cn-focus); }
 .reader-entry-kind { display: flex; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.375rem; font-size: var(--cn-text-xs); line-height: var(--cn-leading-xs); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--cn-fg-muted); }
@@ -210,6 +218,20 @@
   .reader-margin-column { display: grid; align-content: end; gap: 0.75rem; padding-bottom: 2rem; }
   .reader-margin-group { position: absolute; top: 0; left: calc(100% + var(--reader-gap)); width: min(var(--reader-margin), calc(100vw - 100% - 2 * var(--reader-gap))); margin: 0; transition: top 150ms ease; }
   .reader-unanchored .reader-margin-group { position: absolute; }
+  .reader-mark { cursor: pointer; }
+  /* The margin layout places each card, or its dot when the card does not fit
+   * near its words. Dots sit on a rail in the gap between the text and the
+   * cards. */
+  .reader-slot-card { position: absolute; left: 0; right: 0; transition: top 150ms ease; }
+  .reader-slot[data-shown="dot"] .reader-slot-card { display: none; }
+  .reader-dot { display: none; position: absolute; left: calc(var(--reader-gap) / -2 - 0.4rem); width: 0.8rem; height: 0.8rem; margin-top: 0.45rem; border-radius: 9999px; border: 2px solid var(--cn-canvas); box-shadow: 0 0 0 1px var(--cn-line-strong); cursor: pointer; transition: transform 120ms; }
+  .reader-slot[data-shown="dot"] .reader-dot { display: block; }
+  .reader-dot:hover, .reader-slot.reader-active .reader-dot { transform: scale(1.35); }
+  .reader-dot-helpful { background: var(--cn-positive); }
+  .reader-dot-needs-ratings { background: var(--cn-link); }
+  .reader-dot-not-helpful { background: var(--cn-negative); }
+  .reader-dot-highlight { background: var(--cn-highlighter-line); }
+  .reader-dot-request { background: var(--cn-fg-subtle); }
 }
 @media (min-width: 900px) and (max-width: 1199px) {
   .reader-layout { grid-template-columns: minmax(0, var(--reader-measure)) 20rem; }

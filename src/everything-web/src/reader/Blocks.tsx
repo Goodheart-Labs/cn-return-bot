@@ -1,9 +1,26 @@
 import type { ReactNode } from "react";
 import { findQuoteMarks, markRuns, runsText, type InlineRun, type QuoteMark, type ReaderBlock } from "@cn/core/readerText";
 
-/** What kind of entry a mark in the text belongs to. Notes and reader
- *  highlights get different colours, so a reader can tell them apart. */
+/** What kind of entry a mark in the text belongs to. Notes get a blue tint
+ *  and reader highlights a yellow underline, so where they overlap both stay
+ *  visible instead of mixing into a third colour. */
 export type MarkKind = "note" | "highlight";
+
+/** The words to mark in a block, and the margin entry each quote belongs to. */
+export type BlockQuote = { quote: string; kind: MarkKind; key: string };
+
+/** Overlapping tints darken with every layer. Beyond this many the text gets
+ *  hard to read, so the longest quotes are left out of the stack. Every quote
+ *  still lights up by itself when the reader points at it. */
+const MAX_MARK_LAYERS = 3;
+
+/** Wraps text in one <mark> per quote that covers it. The shortest quote is
+ *  the innermost element, so the mark under the pointer is always the most
+ *  specific quote there. */
+function layeredMarks(node: ReactNode, marks: readonly QuoteMark[]): ReactNode {
+  const shortestFirst = [...marks].reverse().slice(0, MAX_MARK_LAYERS);
+  return shortestFirst.reduce<ReactNode>((inner, mark) => <mark className={`reader-mark reader-mark-${mark.kind}`} data-key={mark.key}>{inner}</mark>, node);
+}
 
 export const footnoteId = (scope: string, label: string) => `${scope}-fn-${label}`;
 const footnoteRefId = (scope: string, label: string) => `${scope}-fnref-${label}`;
@@ -18,14 +35,14 @@ function Runs({ runs, marks, scope }: { runs: readonly InlineRun[]; marks: reado
     if (run.em) node = <em>{node}</em>;
     if (run.strong) node = <strong>{node}</strong>;
     if (run.href) node = <a href={run.href} target="_blank" rel="noopener noreferrer">{node}</a>;
-    if (run.mark) node = <mark className={`reader-mark reader-mark-${run.mark}`} data-mark={run.mark}>{node}</mark>;
+    if (run.marks) node = layeredMarks(node, run.marks);
     return <span key={index}>{node}</span>;
   })}</>;
 }
 
 /** Marks for one stretch of runs. Quotes are matched against the runs' own
  *  text, so a quote spanning two list items marks neither, which is fine. */
-function marksFor(runs: readonly InlineRun[], quotes: readonly { quote: string; kind: MarkKind }[]) {
+function marksFor(runs: readonly InlineRun[], quotes: readonly BlockQuote[]) {
   return quotes.length ? findQuoteMarks(runsText(runs), quotes) : [];
 }
 
@@ -41,7 +58,7 @@ function embedLabel(href: string): string {
 }
 
 /** One block of the article. `quotes` are the words to mark inside it. */
-export function BlockContent({ block, quotes, scope }: { block: ReaderBlock; quotes: readonly { quote: string; kind: MarkKind }[]; scope: string }) {
+export function BlockContent({ block, quotes, scope }: { block: ReaderBlock; quotes: readonly BlockQuote[]; scope: string }) {
   switch (block.kind) {
     case "heading": {
       const Heading = (`h${block.level}`) as "h2" | "h3" | "h4";

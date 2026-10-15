@@ -6,14 +6,15 @@ import type { PassageHighlight } from "@cn/core/passageHighlights";
 import { fetchPassageHighlights, subscribeToPassages } from "@cn/core/passages";
 import { anchorForSelection, mapQuotesToBlocks, parseReaderText, withoutRepeatedHeader, type ReaderBlock } from "@cn/core/readerText";
 import type { NoteRow } from "@cn/core/types";
-import { BlockContent, type MarkKind } from "./Blocks";
-import { ReaderContext, UNANCHORED, useReader, type ReaderAction, type ReaderApi, type ReaderDialog } from "./context";
+import { BlockContent, type BlockQuote } from "./Blocks";
+import { ReaderContext, UNANCHORED, useReader, type ReaderAction, type ReaderApi, type ReaderDialog, type SlotMode } from "./context";
 import { READER_MODULES } from "./features";
 import { highlightCardId } from "./features/highlights";
-import { noteCardId, useReaderNoteSet } from "./features/notes";
+import { groupNotesByQuote, noteCardId, noteQuoteText, noteSlotKey, useReaderNoteSet } from "./features/notes";
 import { useNoteRequests } from "./features/requestNote";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useMarginLayout } from "./useMarginLayout";
+import { useMarkPointing } from "./useMarkPointing";
 import "./reader.css";
 
 /** Wide screens have room for the margin beside the article. */
@@ -56,15 +57,24 @@ function flash(element: HTMLElement, attempt = 0) {
   element.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
-/** Flashes the element with this id as soon as it is in the page. */
-function revealWhenRendered(elementId: string) {
+/** Opens the margin slot the element sits in, then flashes the element once
+ *  the slot has turned from a dot into a card. */
+function openAndFlash(element: HTMLElement, openEntry: (slotKey: string) => void) {
+  const slotKey = element.closest<HTMLElement>("[data-slot]")?.dataset.slot;
+  if (slotKey) openEntry(slotKey);
+  // One frame for React to render the opened slot, one for the margin layout.
+  requestAnimationFrame(() => requestAnimationFrame(() => flash(element)));
+}
+
+/** Opens and flashes the element with this id as soon as it is in the page. */
+function revealWhenRendered(elementId: string, openEntry: (slotKey: string) => void) {
   const found = document.getElementById(elementId);
-  if (found) return flash(found);
+  if (found) return openAndFlash(found, openEntry);
   const watcher = new MutationObserver(() => {
     const element = document.getElementById(elementId);
     if (!element) return;
     watcher.disconnect();
-    flash(element);
+    openAndFlash(element, openEntry);
   });
   watcher.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => watcher.disconnect(), REVEAL_TIMEOUT_MS);
@@ -143,7 +153,7 @@ function JumpButton({ count, onJump }: { count: number; onJump: () => void }) {
 
 function Passage({ block, quotes, actions, entryCount, label, open, onToggle, children }: {
   block: ReaderBlock;
-  quotes: { quote: string; kind: MarkKind }[];
+  quotes: BlockQuote[];
   actions: ReaderAction[];
   entryCount: number;
   label: string;
@@ -178,7 +188,10 @@ export function Reader({ item, content, header, features, scope }: {
   const wide = useWide();
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
-  const [collapsed, setCollapsedSet] = useState<ReadonlySet<string>>(new Set());
+  const [slotModes, setSlotModes] = useState<ReadonlyMap<string, SlotMode>>(new Map());
+  const setSlotMode = useCallback((slotKey: string, mode: SlotMode) => setSlotModes((current) => new Map(current).set(slotKey, mode)), []);
+  const openEntry = useCallback((slotKey: string) => setSlotMode(slotKey, "opened"), [setSlotMode]);
+  const closeEntry = useCallback((slotKey: string) => setSlotMode(slotKey, "closed"), [setSlotMode]);
   const [notice, setNotice] = useState("");
 
   const blocks = useMemo(() => withoutRepeatedHeader(
@@ -223,30 +236,33 @@ export function Reader({ item, content, header, features, scope }: {
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),
     notify,
-    reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId); },
+    reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId, openEntry); },
     entryNavigation: (elementId) => {
       const index = entryOrder.findIndex((entry) => entry.elementId === elementId);
       if (index < 0 || entryOrder.length <= 1) return null;
       const next = entryOrder[(index + 1) % entryOrder.length]!;
-      return { position: index + 1, total: entryOrder.length, onNext: () => { api.setCollapsed(next.elementId, false); api.reveal(next.elementId, next.blockId); } };
+      return { position: index + 1, total: entryOrder.length, onNext: () => api.reveal(next.elementId, next.blockId) };
     },
-    isCollapsed: (elementId) => collapsed.has(elementId),
-    setCollapsed: (elementId, closed) => setCollapsedSet((current) => {
-      const next = new Set(current);
-      if (closed) next.add(elementId); else next.delete(elementId);
-      return next;
-    }),
+    slotMode: (slotKey) => slotModes.get(slotKey) ?? "auto",
+    openEntry,
+    closeEntry,
   };
 
+  // Each quote carries the key of its margin slot, so pointing at the words
+  // finds the card, and the card finds its words.
   const quotesByBlock = useMemo(() => {
-    const quotes = new Map<string, { quote: string; kind: MarkKind }[]>();
-    const add = (blockId: string, quote: string | null | undefined, kind: MarkKind) => {
-      if (quote?.trim()) quotes.set(blockId, [...(quotes.get(blockId) ?? []), { quote, kind }]);
+    const quotes = new Map<string, BlockQuote[]>();
+    const add = (blockId: string, quote: BlockQuote) => {
+      if (quote.quote) quotes.set(blockId, [...(quotes.get(blockId) ?? []), quote]);
     };
-    for (const [blockId, group] of placedNotes.byBlock) for (const note of group) add(blockId, note.claim?.updated_quote ?? note.claim?.context_quote, "note");
-    for (const [blockId, group] of placedHighlights.byBlock) for (const highlight of group) add(blockId, highlight.quote, "highlight");
+    for (const [blockId, notesHere] of placedNotes.byBlock) {
+      for (const group of groupNotesByQuote(notesHere)) add(blockId, { quote: noteQuoteText(group[0]!), kind: "note", key: noteSlotKey(scope, group[0]!.id) });
+    }
+    for (const [blockId, group] of placedHighlights.byBlock) {
+      for (const highlight of group) add(blockId, { quote: highlight.quote.trim(), kind: "highlight", key: highlightCardId(scope, highlight.id) });
+    }
     return quotes;
-  }, [placedNotes, placedHighlights]);
+  }, [placedNotes, placedHighlights, scope]);
 
   const marginCount = (blockId: string) => READER_MODULES.reduce((sum, module) => sum + (module.marginCount?.(api, blockId) ?? 0), 0);
   const totalEntries = notes.length + highlights.length;
@@ -256,6 +272,7 @@ export function Reader({ item, content, header, features, scope }: {
     : [];
 
   const article = useMarginLayout(wide && blocks.length > 0);
+  useMarkPointing(article, wide, api);
 
   // A shared link to a note (?note=…&edition=…) or a passage (#passage-…)
   // opens the page scrolled to it, once the notes have loaded.
@@ -281,8 +298,9 @@ export function Reader({ item, content, header, features, scope }: {
     setOpenBlock(first);
     const target = first === UNANCHORED ? `${scope}-${UNANCHORED}` : first;
     requestAnimationFrame(() => {
-      const group = document.getElementById(target)?.querySelector<HTMLElement>(".reader-entry") ?? document.getElementById(target);
-      if (group) flash(group);
+      const entry = document.getElementById(target)?.querySelector<HTMLElement>(".reader-entry[id]");
+      if (entry) api.reveal(entry.id);
+      else { const passage = document.getElementById(target); if (passage) flash(passage); }
     });
   }
 

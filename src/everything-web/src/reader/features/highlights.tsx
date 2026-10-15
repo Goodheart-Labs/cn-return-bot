@@ -14,7 +14,8 @@ import { Modal } from "@cn/ui/Modal";
 import { LoginModal } from "../../components/LoginModal";
 import { useReader, type ReaderAnchor, type ReaderModule } from "../context";
 import { DialogFooter, DialogQuote } from "../DialogParts";
-import { ClosedEntry, EntryBar } from "../EntryBar";
+import { EntryBar } from "../EntryBar";
+import { MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
 import { DraftSuggestion, useHighlightPost, usePassageQuestions } from "./passageQuestions";
 
 /** The longest quote handed to Opus when it drafts from selected words. */
@@ -97,11 +98,11 @@ function HighlightCard({ highlight, myVote, pending, onVote, onDelete }: {
   onVote: (vote: Vote) => void;
   onDelete: (() => void) | null;
 }) {
-  const { scope, isCollapsed } = useReader();
+  const { scope } = useReader();
   const kind = highlight.kind === "forecast" ? "forecast" : "key point";
   const id = highlightCardId(scope, highlight.id);
-  if (isCollapsed(id)) return <ClosedEntry elementId={id} kind={kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"} detail={highlight.statement} />;
-  return <section id={id} className="reader-entry reader-highlight-card" aria-label={kind}>
+  return <MarginSlot slotKey={id} tone="highlight" priority={SLOT_PRIORITY.highlight} label={kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}>
+    <section id={id} className="reader-entry reader-highlight-card" aria-label={kind}>
     <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind={kind} /></div>
     <p className="reader-entry-kind">{kind === "forecast" ? `Forecast · ${highlight.probability}%` : "Key point"}<span>{highlight.author_name || "Anonymous reader"}</span></p>
     <p className="reader-highlight-sentence">{highlightSentence(highlight)}</p>
@@ -109,7 +110,8 @@ function HighlightCard({ highlight, myVote, pending, onVote, onDelete }: {
       <VoteRatings helpful={highlight.helpful_count} somewhatHelpful={highlight.somewhat_helpful_count} notHelpful={highlight.not_helpful_count} myVote={myVote} onVote={onVote} />
     </RatingPanel>
     {onDelete && <Button variant="quiet" className="mt-2 text-xs" disabled={pending} onClick={onDelete}>Delete</Button>}
-  </section>;
+    </section>
+  </MarginSlot>;
 }
 
 function HighlightEntries({ blockId }: { blockId: string }) {
