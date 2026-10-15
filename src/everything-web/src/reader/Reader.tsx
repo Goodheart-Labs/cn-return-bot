@@ -11,6 +11,7 @@ import { ReaderContext, UNANCHORED, useReader, type AskingState, type ReaderActi
 import { READER_MODULES } from "./features";
 import { highlightCardId } from "./features/highlights";
 import { noteCardId, useReaderNoteSet } from "./features/notes";
+import { useNoteRequests } from "./features/requestNote";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useMarginLayout } from "./useMarginLayout";
 import "./reader.css";
@@ -212,6 +213,7 @@ export function Reader({ item, content, header, features, scope }: {
     const timer = setTimeout(() => setNotice(""), NOTICE_MS);
     return () => clearTimeout(timer);
   }, [notice]);
+  const noteRequests = useNoteRequests(item, notify);
 
   const api: ReaderApi = {
     item, scope, blocks, features, wide, notesByBlock, nnnEntries, highlightsByBlock,
@@ -219,6 +221,8 @@ export function Reader({ item, content, header, features, scope }: {
     asking,
     openAsk: (block, quote) => { setAsking({ blockId: block.id, quote }); setOpenBlock(block.id); document.getSelection()?.removeAllRanges(); },
     closeAsk: () => setAsking(null),
+    noteRequests: noteRequests.requests,
+    requestNote: noteRequests.request,
     dialog,
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),

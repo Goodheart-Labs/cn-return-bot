@@ -93,9 +93,10 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
     // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
-    // (GOO-303), and gave it back the same day once the block was lifted (GOO-322).
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
-    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 0 },
+    // (GOO-303) and gave it back once the block was lifted (GOO-322). Meta blocked us again on 2026-10-13,
+    // so Luna holds the share again.
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 13 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -122,8 +123,8 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "gemini3flash", overrides: { media_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
-    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 0 },
+    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 50 },
   ],
 };
 

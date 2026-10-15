@@ -3,11 +3,14 @@ import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, WEB_SEARCH_TOOL, webFetchNativeTool 
 
 /** The model every LLM step of the everything pipeline runs on: the gate and
  *  split call, claim extraction and claim rating here, and the per-claim
- *  search, writer and verifier through the forced arms in checkClaims.ts. Muse
- *  Spark 1.3 on Meta's contributor tier costs $0.10 in and $0.20 out per million
- *  tokens, fifty times less than Sonnet 5 (GOO-159). The contributor tier means
- *  Meta may train on what we send. */
-const EVERYTHING_MODEL = "meta/muse-spark-1.3-contributor";
+ *  search, writer and verifier through the forced arms in checkClaims.ts.
+ *  GPT-6 Luna costs $0.10 in and $0.50 out per million tokens, and its native
+ *  web search $0.01 a search. It replaced Muse Spark 1.3 Contributor on
+ *  2026-10-13, because Meta blocked our access again with "repeated policy
+ *  violations", as it did on 2026-10-01 (GOO-303). Switching back to Muse is
+ *  this constant, the forced arms in checkClaims.ts and the weights in
+ *  abTestsData.ts. */
+const EVERYTHING_MODEL = "openai/gpt-6-luna";
 
 type ReasoningEffort = "low" | "medium" | "high";
 
@@ -23,10 +26,11 @@ export interface ExtractionModels {
 
 const PRODUCTION_MODELS: ExtractionModels = {
   model: EVERYTHING_MODEL,
+  // Luna runs at medium effort throughout, as it did during the first block.
   // The rater researches through the search tool, so it does not need to think
   // long on its own. High effort would only add reasoning tokens.
-  reasoning: { extraction: "high", rating: "medium" },
-  // Meta's own search tooling, which also opens pages (GOO-258).
+  reasoning: { extraction: "medium", rating: "medium" },
+  // The provider's own search tooling, which also opens pages (GOO-258).
   ratingTools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL],
 };
 

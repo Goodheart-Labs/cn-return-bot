@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { ensureSession } from "@cn/core/auth";
-import { anchorForSelection, type ReaderBlock } from "@cn/core/readerText";
 import { displayName } from "@cn/core/session";
 import { useSession } from "@cn/features/auth/useSession";
 import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
@@ -68,25 +67,15 @@ function Dialogs() {
   return dialog?.kind === "note" ? <NoteDialog key={dialog.anchor.blockId + dialog.anchor.text} anchor={dialog.anchor} /> : null;
 }
 
-const passageAnchor = (block: ReaderBlock): ReaderAnchor => ({ blockId: block.id, text: block.text, paragraph: block.text, partial: false });
-
-/** Writing notes: on the selected words, and on a whole passage. */
+/** Writing a note on the selected words. */
 export const writeNoteModule: ReaderModule = {
   name: "writeNote",
   selectionActions: (api, block, quote) => [{
     feature: "highlight.note",
     key: "note",
-    label: "Note",
-    accessibleName: "Add a note on these words",
+    label: "Write note",
+    accessibleName: "Write note on these words",
     onSelect: () => api.openDialog({ kind: "note", anchor: { blockId: block.id, text: quote, paragraph: block.text, partial: true } }),
   }],
-  // A passage too short to anchor a note offers no button.
-  passageActions: (api, block) => (anchorForSelection(block, block.text) ? [{
-    feature: "passage.note",
-    key: "note",
-    label: "Add a note",
-    accessibleName: `Add a note on this passage: ${block.text.slice(0, 60)}`,
-    onSelect: () => api.openDialog({ kind: "note", anchor: passageAnchor(block) }),
-  }] : []),
   Dialogs,
 };
