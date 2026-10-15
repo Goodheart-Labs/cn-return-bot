@@ -7,7 +7,7 @@ import { fetchPassageHighlights, subscribeToPassages } from "@cn/core/passages";
 import { anchorForSelection, mapQuotesToBlocks, parseReaderText, withoutRepeatedHeader, type ReaderBlock } from "@cn/core/readerText";
 import type { NoteRow } from "@cn/core/types";
 import { BlockContent, type MarkKind } from "./Blocks";
-import { ReaderContext, UNANCHORED, useReader, type AskingState, type ReaderAction, type ReaderApi, type ReaderDialog } from "./context";
+import { ReaderContext, UNANCHORED, useReader, type ReaderAction, type ReaderApi, type ReaderDialog } from "./context";
 import { READER_MODULES } from "./features";
 import { highlightCardId } from "./features/highlights";
 import { noteCardId, useReaderNoteSet } from "./features/notes";
@@ -176,7 +176,6 @@ export function Reader({ item, content, header, features, scope }: {
   scope: string;
 }) {
   const wide = useWide();
-  const [asking, setAsking] = useState<AskingState | null>(null);
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
   const [collapsed, setCollapsedSet] = useState<ReadonlySet<string>>(new Set());
@@ -218,9 +217,6 @@ export function Reader({ item, content, header, features, scope }: {
   const api: ReaderApi = {
     item, scope, blocks, features, wide, notesByBlock, nnnEntries, highlightsByBlock,
     refetchHighlights: () => void refetchHighlightQuery(),
-    asking,
-    openAsk: (block, quote) => { setAsking({ blockId: block.id, quote }); setOpenBlock(block.id); document.getSelection()?.removeAllRanges(); },
-    closeAsk: () => setAsking(null),
     noteRequests: noteRequests.requests,
     requestNote: noteRequests.request,
     dialog,

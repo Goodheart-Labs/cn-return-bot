@@ -20,13 +20,9 @@ export interface ReaderAnchor {
 /** The dialog the reader has open. Each kind belongs to one feature module. */
 export type ReaderDialog =
   | { kind: "note"; anchor: ReaderAnchor }
-  | { kind: "highlight"; anchor: ReaderAnchor; highlightKind: HighlightDraft["kind"]; draft?: HighlightDraft };
-
-/** The passage the Ask Opus panel is open on, and the words quoted in it. */
-export interface AskingState {
-  blockId: string;
-  quote: string | null;
-}
+  | { kind: "highlight"; anchor: ReaderAnchor; highlightKind: HighlightDraft["kind"]; draft?: HighlightDraft }
+  /** Ask Opus about a passage, or about the words `quote` in it. */
+  | { kind: "ask"; blockId: string; quote: string | null };
 
 export interface ReaderNoteRequest {
   id: string;
@@ -53,9 +49,6 @@ export interface ReaderApi {
   nnnEntries: readonly NnnRow[];
   highlightsByBlock: ReadonlyMap<string, PassageHighlight[]>;
   refetchHighlights: () => void;
-  asking: AskingState | null;
-  openAsk: (block: ReaderBlock, quote: string | null) => void;
-  closeAsk: () => void;
   noteRequests: readonly ReaderNoteRequest[];
   /** Returns the existing request when the same words were already requested this visit. */
   requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;

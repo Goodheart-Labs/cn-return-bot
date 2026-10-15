@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ensureSession } from "@cn/core/auth";
+import { MAX_READER_NOTE_LENGTH } from "@cn/core/passageHighlights";
 import { displayName } from "@cn/core/session";
 import { useSession } from "@cn/features/auth/useSession";
 import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
@@ -13,9 +14,7 @@ import { noteCardId } from "./notes";
 
 /** A note shorter than this is almost certainly unfinished (the same rule as
  *  the shared composer). */
-const MIN_NOTE_LENGTH = 10;
-/** The database refuses a reader's note longer than this (migration 114). */
-const MAX_NOTE_LENGTH = 2000;
+export const MIN_NOTE_LENGTH = 10;
 
 function NoteDialog({ anchor }: { anchor: ReaderAnchor }) {
   const { item, scope, closeDialog, notify, reveal } = useReader();
@@ -51,7 +50,7 @@ function NoteDialog({ anchor }: { anchor: ReaderAnchor }) {
   return <Modal title="Add a note" onClose={closeDialog} widthClassName="max-w-[35rem]">
     <DialogQuote text={anchor.text} />
     <form ref={form} className="reader-dialog-form" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
-      <Textarea autoGrow aria-label="Your note" value={text} onChange={(event) => setText(event.target.value)} rows={4} maxLength={MAX_NOTE_LENGTH} placeholder="Add context, a correction, or a source for this passage." />
+      <Textarea autoGrow aria-label="Your note" value={text} onChange={(event) => setText(event.target.value)} rows={4} maxLength={MAX_READER_NOTE_LENGTH} placeholder="Add context, a correction, or a source for this passage." />
       {session && !session.user.is_anonymous && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
       {post.isError && <p role="alert" className="reader-dialog-error">That didn't post. Check your connection and try again.</p>}
       <DialogFooter>
