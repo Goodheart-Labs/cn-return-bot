@@ -66,3 +66,8 @@ test("markers on the same line are pushed down one below the other", () => {
   expect(placeMarkers([{ key: "b", top: 10 }, { key: "a", top: 0 }, { key: "c", top: 200 }]))
     .toEqual(new Map([["a", 0], ["b", MARKER_SIZE + 6], ["c", 200]]));
 });
+
+test("a marker under an open card moves below it", () => {
+  expect(placeMarkers([{ key: "a", top: 50 }, { key: "b", top: 400 }], [{ top: 0, bottom: 300 }]))
+    .toEqual(new Map([["a", 306], ["b", 400]]));
+});

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { MARKER_SIZE, placeMarginCards, placeMarkers } from "@cn/core/marginCards";
+import { MARKER_SIZE, placeMarginCards, placeMarkers, UNMEASURED_CARD_HEIGHT } from "@cn/core/marginCards";
 
 /** The last height each card had while it was on screen. A dot's card is
  *  hidden and measures zero, so its old height is what the next pass uses. */
@@ -53,7 +53,11 @@ function layoutMargin(root: HTMLElement) {
     slots.filter((entry) => entry.mode !== "closed").map((entry) => ({ claimId: entry.key, passageTop: entry.anchorTop, openedByReader: entry.mode === "opened" })),
     heights,
   );
-  const markerTops = placeMarkers(slots.map((entry) => ({ key: entry.key, top: entry.anchorTop })));
+  const shownCards = slots.flatMap((entry) => {
+    const top = cardTops.get(entry.key);
+    return top === undefined ? [] : [{ top, bottom: top + (heights.get(entry.key) ?? UNMEASURED_CARD_HEIGHT) }];
+  });
+  const markerTops = placeMarkers(slots.filter((entry) => !cardTops.has(entry.key)).map((entry) => ({ key: entry.key, top: entry.anchorTop })), shownCards);
   let bottom = 0;
   for (const entry of slots) {
     const cardTop = cardTops.get(entry.key);

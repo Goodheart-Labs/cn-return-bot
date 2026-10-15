@@ -14,17 +14,18 @@ const MARGIN_CARD_STACK_GAP = 12;
 const DEFAULT_OPEN_MAX_DRIFT = 200;
 // The height assumed for a card that has not been measured yet. It keeps the
 // first layout close to the final one, so cards do not appear and then vanish.
-const UNMEASURED_CARD_HEIGHT = 320;
+export const UNMEASURED_CARD_HEIGHT = 320;
 
 type MarginCard = { claimId: string; passageTop: number; openedByReader: boolean };
-type Span = { top: number; bottom: number };
+/** A stretch of the margin a card covers, from its top to its bottom. */
+export type Span = { top: number; bottom: number };
 
-/** The first top at or below `top` where a card of this height overlaps none
- *  of the spans. The spans are sorted from top to bottom. */
-function firstFreeTop(top: number, height: number, taken: readonly Span[]): number {
+/** The first top at or below `top` where something of this height, with
+ *  `gap` around it, overlaps none of the spans. */
+function firstFreeTop(top: number, height: number, taken: readonly Span[], gap: number): number {
   let free = top;
-  for (const span of taken) {
-    if (free < span.bottom + MARGIN_CARD_STACK_GAP && free + height + MARGIN_CARD_STACK_GAP > span.top) free = span.bottom + MARGIN_CARD_STACK_GAP;
+  for (const span of [...taken].sort((a, b) => a.top - b.top)) {
+    if (free < span.bottom + gap && free + height + gap > span.top) free = span.bottom + gap;
   }
   return free;
 }
@@ -50,7 +51,7 @@ export function placeMarginCards(cards: MarginCard[], heights: ReadonlyMap<strin
   }
   previousBottom = -Infinity;
   for (const { claimId, passageTop } of byTop.filter((card) => !card.openedByReader)) {
-    const top = firstFreeTop(Math.max(passageTop, previousBottom + MARGIN_CARD_STACK_GAP), heightOf(claimId), opened);
+    const top = firstFreeTop(Math.max(passageTop, previousBottom + MARGIN_CARD_STACK_GAP), heightOf(claimId), opened, MARGIN_CARD_STACK_GAP);
     if (top - passageTop > DEFAULT_OPEN_MAX_DRIFT) continue;
     tops.set(claimId, top);
     previousBottom = top + heightOf(claimId);
@@ -59,12 +60,14 @@ export function placeMarginCards(cards: MarginCard[], heights: ReadonlyMap<strin
 }
 
 /** The top of each marker. Each starts level with its words, and one that
- *  would overlap the marker above it is pushed down below it. */
-export function placeMarkers<K>(markers: { key: K; top: number }[]): Map<K, number> {
+ *  would overlap the marker above it is pushed down below it. A marker that
+ *  would sit under an open card, given in `cards`, moves below that card, so
+ *  no marker is ever hidden. */
+export function placeMarkers<K>(markers: { key: K; top: number }[], cards: readonly Span[] = []): Map<K, number> {
   const tops = new Map<K, number>();
   let previousBottom = -Infinity;
   for (const { key, top } of [...markers].sort((a, b) => a.top - b.top)) {
-    const placed = Math.max(top, previousBottom + MARKER_GAP);
+    const placed = firstFreeTop(Math.max(top, previousBottom + MARKER_GAP), MARKER_SIZE, cards, MARKER_GAP);
     tops.set(key, placed);
     previousBottom = placed + MARKER_SIZE;
   }
