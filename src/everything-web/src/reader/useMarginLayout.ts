@@ -47,13 +47,17 @@ function readSlots(root: HTMLElement): Slot[] {
 /** Places every margin entry as a card or a dot, as the extension does. Each
  *  card starts level with its own words, and a card that would overlap the
  *  one above moves down below it. Within a passage the entries claim room in
- *  priority order. A card the reader has not touched shows only if that push
- *  leaves it close to its words. Otherwise it shrinks to a dot on a rail
+ *  priority order, after any card the reader opened. A card the reader has
+ *  not touched shows only if that push leaves it close to its words.
+ *  Otherwise it shrinks to a dot on a rail
  *  between the text and the cards, level with its words. A card the reader
  *  opened always shows, and one the reader closed is always a dot. The
  *  article grows at the bottom when the margin runs past its last passage. */
 function layoutMargin(root: HTMLElement) {
-  const slots = readSlots(root).sort((a, b) => a.passageTop - b.passageTop || a.priority - b.priority || a.anchorTop - b.anchorTop);
+  // A card the reader opened claims its place first, so it lands beside its
+  // words and the untouched cards of its passage move around it.
+  const openedFirst = (slot: Slot) => (slot.mode === "opened" ? 0 : 1);
+  const slots = readSlots(root).sort((a, b) => a.passageTop - b.passageTop || openedFirst(a) - openedFirst(b) || a.priority - b.priority || a.anchorTop - b.anchorTop);
   let cardFloor = 0;
   const dots: Slot[] = [];
   for (const entry of slots) {
