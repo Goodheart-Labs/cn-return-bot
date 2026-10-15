@@ -1,3 +1,4 @@
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 import type { TablesInsert } from "./database.types";
 import type { PassageHighlight, PassageQuestion } from "./passageHighlights";
@@ -8,6 +9,16 @@ export async function fetchPassageQuestions(itemId: string, passage: string, aut
     .eq("item_id", itemId).eq("passage", passage).eq("author_id", authorId).order("created_at");
   if (error) throw error;
   return data;
+}
+
+/** The passage of every question one reader asked on one article. */
+export async function fetchAskedPassages(itemId: string, authorId: string): Promise<string[]> {
+  const rows = await fetchAllRows<{ id: string; passage: string }>(
+    () => supabase.from("everything_passage_questions").select("id, passage").eq("item_id", itemId).eq("author_id", authorId),
+    "id",
+    { label: "askedPassages" },
+  );
+  return rows.map((row) => row.passage);
 }
 
 export async function askPassageQuestion(itemId: string, passage: string, question: string, authorId: string): Promise<string> {

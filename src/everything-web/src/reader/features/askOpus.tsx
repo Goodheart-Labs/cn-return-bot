@@ -1,6 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ensureSession } from "@cn/core/auth";
 import { MAX_READER_NOTE_LENGTH, parseHighlightDraft, parseOpusDraft, type OpusDraft, type PassageQuestion } from "@cn/core/passageHighlights";
+import type { PageItem } from "@cn/core/items";
+import { fetchAskedPassages } from "@cn/core/passages";
+import type { ReaderBlock } from "@cn/core/readerText";
 import { displayName } from "@cn/core/session";
 import { useSession } from "@cn/features/auth/useSession";
 import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
@@ -12,6 +16,7 @@ import { LoginModal } from "../../components/LoginModal";
 import { renderAnswerMarkdown } from "../../lib/readerMarkdown";
 import { useReader, type ReaderAnchor, type ReaderModule } from "../context";
 import { DialogQuote } from "../DialogParts";
+import { ASK_DOT, MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
 import { useHighlightPost, usePassageQuestions } from "./passageQuestions";
 import { MIN_NOTE_LENGTH } from "./writeNote";
 
@@ -175,6 +180,36 @@ function AskDialog({ blockId, quote }: { blockId: string; quote: string | null }
   </Modal>;
 }
 
+/** How many questions the reader asked about each passage, by block id. The
+ *  question queries share one cache prefix, so asking a new question refreshes
+ *  this too. */
+export function useAskedQuestions(item: PageItem, blocks: readonly ReaderBlock[]): ReadonlyMap<string, number> {
+  const { session } = useSession();
+  const asked = useQuery({
+    queryKey: ["passageQuestions", item.id, "asked", session?.user.id],
+    queryFn: () => fetchAskedPassages(item.id, session!.user.id),
+    enabled: !!session,
+  });
+  return useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const passage of asked.data ?? []) {
+      const block = blocks.find((candidate) => candidate.text === passage);
+      if (block) counts.set(block.id, (counts.get(block.id) ?? 0) + 1);
+    }
+    return counts;
+  }, [asked.data, blocks]);
+}
+
+/** A grey dot beside every passage the reader asked Opus about. It opens the
+ *  conversation again. */
+function AskEntries({ blockId }: { blockId: string }) {
+  const { scope, askedQuestions, openDialog } = useReader();
+  const count = askedQuestions.get(blockId) ?? 0;
+  if (!count) return null;
+  return <MarginSlot slotKey={`${scope}-ask-${blockId}`} colorClass={ASK_DOT} priority={SLOT_PRIORITY.ask}
+    label={`Ask Opus · ${count} question${count === 1 ? "" : "s"}`} onOpen={() => openDialog({ kind: "ask", blockId, quote: null })} />;
+}
+
 function Dialogs() {
   const { dialog } = useReader();
   return dialog?.kind === "ask" ? <AskDialog key={`${dialog.blockId}-${dialog.quote ?? ""}`} blockId={dialog.blockId} quote={dialog.quote} /> : null;
@@ -197,5 +232,7 @@ export const askOpusModule: ReaderModule = {
     accessibleName: `Ask Opus about this paragraph: ${block.text.slice(0, 60)}`,
     onSelect: () => api.openDialog({ kind: "ask", blockId: block.id, quote: null }),
   }],
+  marginCount: (api, blockId) => (api.askedQuestions.has(blockId) ? 1 : 0),
+  MarginEntries: AskEntries,
   Dialogs,
 };

@@ -11,6 +11,7 @@ import { ReaderContext, UNANCHORED, useReader, type ReaderAction, type ReaderApi
 import { READER_MODULES } from "./features";
 import { highlightCardId } from "./features/highlights";
 import { groupNotesByQuote, noteCardId, noteQuoteText, noteSlotKey, useReaderNoteSet } from "./features/notes";
+import { useAskedQuestions } from "./features/askOpus";
 import { useNoteRequests } from "./features/requestNote";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useMarginLayout } from "./useMarginLayout";
@@ -230,11 +231,13 @@ export function Reader({ item, content, header, features, scope }: {
     return () => clearTimeout(timer);
   }, [notice]);
   const noteRequests = useNoteRequests(item, notify);
+  const askedQuestions = useAskedQuestions(item, blocks);
 
   const api: ReaderApi = {
     item, scope, blocks, features, wide, notesByBlock, nnnEntries, highlightsByBlock,
     refetchHighlights: () => void refetchHighlightQuery(),
     noteRequests: noteRequests.requests,
+    askedQuestions,
     requestNote: noteRequests.request,
     dialog,
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },

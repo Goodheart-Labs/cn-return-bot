@@ -50,6 +50,8 @@ export interface ReaderApi {
   highlightsByBlock: ReadonlyMap<string, PassageHighlight[]>;
   refetchHighlights: () => void;
   noteRequests: readonly ReaderNoteRequest[];
+  /** How many questions the reader asked Opus about each passage, by block id. */
+  askedQuestions: ReadonlyMap<string, number>;
   /** Returns the existing request when the same words were already requested this visit. */
   requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;
   dialog: ReaderDialog | null;

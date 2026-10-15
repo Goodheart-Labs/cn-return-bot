@@ -7,12 +7,13 @@ import { useReader } from "./context";
  *  colour of its status, as in the extension. */
 export const HIGHLIGHT_DOT = "text-caution-solid";
 export const REQUEST_DOT = "text-fg-subtle";
+export const ASK_DOT = "text-fg-muted";
 
 /** The order in which entries whose words start on the same line claim the
  *  room beside them. Lower goes first: a helpful note before a note that needs
  *  ratings, an AI note before a reader's, and notes before key points and
  *  forecasts. */
-export const SLOT_PRIORITY = { request: 0, helpful: 0, aiNote: 1, readerNote: 2, highlight: 3, notHelpful: 4 } as const;
+export const SLOT_PRIORITY = { request: 0, helpful: 0, aiNote: 1, readerNote: 2, highlight: 3, notHelpful: 4, ask: 5 } as const;
 
 const SlotKeyContext = createContext<string | null>(null);
 
@@ -27,20 +28,24 @@ export function useSlotKey(): string {
  *  wide screens the margin layout decides which one shows and where. On
  *  narrow screens there is no margin, so a closed entry is one line under
  *  the passage. */
-export function MarginSlot({ slotKey, colorClass, priority, label, children }: {
+export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, children }: {
   slotKey: string;
   /** The text colour class the dot is drawn in. */
   colorClass: string;
   priority: number;
   /** What the dot and the closed line say, such as "Note · Needs more ratings". */
   label: string;
-  children: ReactNode;
+  /** An entry that opens somewhere else, such as a dialog, has no card. It
+   *  is always a dot, and this runs when the dot is clicked. */
+  onOpen?: () => void;
+  children?: ReactNode;
 }) {
   const { wide, slotMode, openEntry } = useReader();
-  const mode = slotMode(slotKey);
+  const mode = onOpen ? "closed" : slotMode(slotKey);
+  const open = onOpen ?? (() => openEntry(slotKey));
   if (!wide && mode === "closed") {
     return <div className="reader-entry">
-      <button type="button" className="reader-entry-closed" aria-expanded={false} onClick={() => openEntry(slotKey)}>
+      <button type="button" className="reader-entry-closed" aria-expanded={false} onClick={open}>
         <span className="reader-entry-closed-kind">{label}</span>
         <ChevronIcon size={16} aria-hidden />
       </button>
@@ -48,7 +53,7 @@ export function MarginSlot({ slotKey, colorClass, priority, label, children }: {
   }
   return <SlotKeyContext.Provider value={slotKey}>
     <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority}>
-      {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={() => openEntry(slotKey)} />}
+      {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={open} />}
       <div className="reader-slot-card">{children}</div>
     </div>
   </SlotKeyContext.Provider>;
