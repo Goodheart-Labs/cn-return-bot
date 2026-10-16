@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { MARKER_SIZE, placeMarginCards, placeMarkers } from "./marginCards";
+import { flowMarginColumn, MARKER_SIZE, placeMarginCards, placeMarkers, type ColumnEntry } from "./marginCards";
 
 const HEIGHTS = new Map([["a", 300], ["b", 300], ["c", 300]]);
 
@@ -70,4 +70,32 @@ test("markers on the same line are pushed down one below the other", () => {
 test("a marker under an open card moves below it", () => {
   expect(placeMarkers([{ key: "a", top: 50 }, { key: "b", top: 400 }], [{ top: 0, bottom: 300 }]))
     .toEqual(new Map([["a", 306], ["b", 400]]));
+});
+
+const DOT_STEP = MARKER_SIZE + 6;
+const entry = (key: string, anchor: number, mode: ColumnEntry<string>["mode"] = "auto", height = 300): ColumnEntry<string> => ({ key, anchor, height, mode });
+
+test("a crowded paragraph starts as dots, and the last of them opens when nothing follows close by", () => {
+  const layout = flowMarginColumn([entry("a", 0), entry("b", 10), entry("c", 20), entry("d", 2000)]);
+  expect(layout).toEqual(new Map([
+    ["a", { top: 0, shown: "dot" }],
+    ["b", { top: DOT_STEP, shown: "dot" }],
+    ["c", { top: 2 * DOT_STEP, shown: "card" }],
+    ["d", { top: 2000, shown: "card" }],
+  ]));
+});
+
+test("opening a dot turns it into a card in place, moves only what is below, and keeps earlier cards still", () => {
+  const before = flowMarginColumn([entry("a", 0), entry("b", 10), entry("c", 20)]);
+  const openedB = flowMarginColumn([entry("a", 0), entry("b", 10, "opened"), entry("c", 20)]);
+  expect(openedB.get("a")).toEqual(before.get("a"));
+  expect(openedB.get("b")).toEqual({ top: before.get("b")!.top, shown: "card" });
+  expect(openedB.get("c")).toEqual({ top: DOT_STEP + 300 + 12, shown: "dot" });
+  const thenA = flowMarginColumn([entry("a", 0, "opened"), entry("b", 10, "opened"), entry("c", 20)]);
+  expect(thenA.get("a")).toEqual({ top: 0, shown: "card" });
+  expect(thenA.get("b")).toEqual({ top: 312, shown: "card" });
+});
+
+test("a card the reader closed stays a dot", () => {
+  expect(flowMarginColumn([entry("a", 0, "closed")]).get("a")).toEqual({ top: 0, shown: "dot" });
 });

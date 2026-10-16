@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { MARKER_SIZE, placeMarginCards, placeMarkers, UNMEASURED_CARD_HEIGHT } from "@cn/core/marginCards";
+import { flowMarginColumn, MARKER_SIZE, UNMEASURED_CARD_HEIGHT, type ColumnMode } from "@cn/core/marginCards";
 
 /** The last height each card had while it was on screen. A dot's card is
  *  hidden and measures zero, so its old height is what the next pass uses. */
@@ -35,42 +35,24 @@ function readSlots(root: HTMLElement): Slot[] {
   });
 }
 
-/** Places every margin entry with the extension's own rules
- *  (`@cn/core/marginCards`). Each card starts level with its own words, and a
- *  card that would overlap the one above moves down below it. A card the
- *  reader has not touched shows only if that push leaves it close to its
- *  words; otherwise only its dot shows. A card the reader opened always
- *  shows, and one the reader closed is always a dot. Entries whose words
- *  start on the same line claim room in priority order. The article grows at
- *  the bottom when the margin runs past its last passage. */
+/** Lays the margin out as one column with `flowMarginColumn`: every entry
+ *  sits at its words or right below the entry above it, as a card or a dot.
+ *  Entries whose words start on the same line go in priority order. The
+ *  article grows at the bottom when the margin runs past its last passage. */
 function layoutMargin(root: HTMLElement) {
   const slots = readSlots(root).sort((a, b) => a.anchorTop - b.anchorTop || a.priority - b.priority);
-  const heights = new Map(slots.flatMap((entry) => {
-    const height = cardHeights.get(entry.card);
-    return height === undefined ? [] : [[entry.key, height] as const];
-  }));
-  const cardTops = placeMarginCards(
-    slots.filter((entry) => entry.mode !== "closed").map((entry) => ({ claimId: entry.key, passageTop: entry.anchorTop, openedByReader: entry.mode === "opened" })),
-    heights,
-  );
-  const shownCards = slots.flatMap((entry) => {
-    const top = cardTops.get(entry.key);
-    return top === undefined ? [] : [{ top, bottom: top + (heights.get(entry.key) ?? UNMEASURED_CARD_HEIGHT) }];
-  });
-  const markerTops = placeMarkers(slots.filter((entry) => !cardTops.has(entry.key)).map((entry) => ({ key: entry.key, top: entry.anchorTop })), shownCards);
+  const layout = flowMarginColumn(slots.map((entry) => ({
+    key: entry,
+    anchor: entry.anchorTop,
+    height: cardHeights.get(entry.card),
+    mode: entry.mode as ColumnMode,
+  })));
   let bottom = 0;
-  for (const entry of slots) {
-    const cardTop = cardTops.get(entry.key);
-    if (cardTop !== undefined) {
-      entry.slot.dataset.shown = "card";
-      entry.card.style.top = `${cardTop - entry.passageTop}px`;
-      bottom = Math.max(bottom, cardTop + (heights.get(entry.key) ?? 0));
-    } else {
-      const markerTop = markerTops.get(entry.key)!;
-      entry.slot.dataset.shown = "dot";
-      if (entry.dot) entry.dot.style.top = `${markerTop - entry.passageTop}px`;
-      bottom = Math.max(bottom, markerTop + MARKER_SIZE);
-    }
+  for (const [entry, { top, shown }] of layout) {
+    entry.slot.dataset.shown = shown;
+    const element = shown === "card" ? entry.card : entry.dot;
+    if (element) element.style.top = `${top - entry.passageTop}px`;
+    bottom = Math.max(bottom, top + (shown === "card" ? cardHeights.get(entry.card) ?? UNMEASURED_CARD_HEIGHT : MARKER_SIZE));
   }
   root.style.paddingBottom = "";
   const overflow = bottom - root.getBoundingClientRect().height;
