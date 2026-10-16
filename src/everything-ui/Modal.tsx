@@ -28,12 +28,15 @@ export function Modal({ title, onClose, widthClassName = "max-w-sm", children }:
   return (
     // The dialog element itself only receives clicks on the dimmed area around
     // the card. Keyboard users close the modal with Escape instead, which the
-    // browser handles and reports through onClose.
+    // browser handles and reports through onClose. React passes a close event
+    // up through the components, so a modal opened inside this one, such as
+    // the sign-in form over a note, would close this one too. So only this
+    // dialog's own close counts.
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
     <dialog
       ref={dialog}
       aria-label={title}
-      onClose={onClose}
+      onClose={(e) => { if (e.target === e.currentTarget) onClose(); }}
       onMouseDown={(e) => { pressedOnBackdrop.current = e.target === e.currentTarget; }}
       onClick={(e) => { if (pressedOnBackdrop.current && e.target === e.currentTarget) onClose(); }}
       // The dim is stronger on a dark page, where a light one disappears.
