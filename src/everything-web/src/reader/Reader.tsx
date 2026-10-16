@@ -206,7 +206,12 @@ export function Reader({ item, content, header, features, scope }: {
       document.querySelector(`[data-slot="${CSS.escape(slotKey)}"] .reader-slot-card`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }));
   }, [markOpened]);
-  const closeEntry = useCallback((slotKey: string) => setSlotModes((current) => new Map(current).set(slotKey, "closed")), []);
+  const closeEntries = useCallback((slotKeys: string[]) => setSlotModes((current) => {
+    const next = new Map(current);
+    for (const key of slotKeys) next.set(key, "closed");
+    return next;
+  }), []);
+  const closeEntry = useCallback((slotKey: string) => closeEntries([slotKey]), [closeEntries]);
   const [notice, setNotice] = useState("");
 
   const blocks = useMemo(() => withoutRepeatedHeader(
@@ -297,7 +302,7 @@ export function Reader({ item, content, header, features, scope }: {
     ? READER_MODULES.flatMap((module) => module.selectionActions?.(api, selection.block, selection.quote) ?? []).filter((action) => features.has(action.feature))
     : [];
 
-  const article = useMarginLayout(wide && blocks.length > 0);
+  const article = useMarginLayout(wide && blocks.length > 0, closeEntries);
   useMarkPointing(article, wide, api);
 
   // A shared link to a note (?note=…&edition=…) or a passage (#passage-…)

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { flowMarginColumn, MARKER_SIZE, UNMEASURED_CARD_HEIGHT, type ColumnMode } from "@cn/core/marginCards";
 
 /** The last height each card had while it was on screen. A dot's card is
@@ -41,7 +41,7 @@ function readSlots(root: HTMLElement): Slot[] {
  *  sits at its words or right below the entry above it, as a card or a dot.
  *  Entries whose words start on the same line go in priority order. The
  *  article grows at the bottom when the margin runs past its last passage. */
-function layoutMargin(root: HTMLElement) {
+function layoutMargin(root: HTMLElement): string[] {
   const slots = readSlots(root).sort((a, b) => a.anchorTop - b.anchorTop || a.priority - b.priority);
   const layout = flowMarginColumn(slots.map((entry) => ({
     key: entry,
@@ -51,7 +51,9 @@ function layoutMargin(root: HTMLElement) {
     openedRank: entry.openedRank,
   })));
   let bottom = 0;
+  const displaced: string[] = [];
   for (const [entry, { top, shown }] of layout) {
+    if (entry.mode === "opened" && shown === "dot") displaced.push(entry.key);
     entry.slot.dataset.shown = shown;
     const element = shown === "card" ? entry.card : entry.dot;
     if (element) element.style.top = `${top - entry.passageTop}px`;
@@ -60,6 +62,7 @@ function layoutMargin(root: HTMLElement) {
   root.style.paddingBottom = "";
   const overflow = bottom - root.getBoundingClientRect().height;
   if (overflow > 0) root.style.paddingBottom = `${overflow}px`;
+  return displaced;
 }
 
 /** Returns the ref for the article element and keeps its margin laid out.
@@ -67,33 +70,41 @@ function layoutMargin(root: HTMLElement) {
  *  because they depend on rendered heights, which change as fonts load, cards
  *  expand and answers arrive. The pass runs after every render, on resize,
  *  and whenever the article or a card changes size or a card appears. */
-export function useMarginLayout(enabled: boolean) {
+export function useMarginLayout(enabled: boolean, onDisplaced: (slotKeys: string[]) => void) {
   const article = useRef<HTMLElement>(null);
+  // An opened card that a more recently opened card pushed aside is closed for
+  // real, so it does not come back when the cards around it change again.
+  const latestOnDisplaced = useRef(onDisplaced);
+  useLayoutEffect(() => { latestOnDisplaced.current = onDisplaced; });
+  const run = useCallback((root: HTMLElement) => {
+    const displaced = layoutMargin(root);
+    if (displaced.length) latestOnDisplaced.current(displaced);
+  }, []);
 
   useLayoutEffect(() => {
-    if (enabled && article.current) layoutMargin(article.current);
+    if (enabled && article.current) run(article.current);
   });
 
   useEffect(() => {
     const root = article.current;
     if (!enabled || !root) return;
-    const run = () => layoutMargin(root);
-    const resize = new ResizeObserver(run);
+    const relayout = () => run(root);
+    const resize = new ResizeObserver(relayout);
     const watchCards = () => root.querySelectorAll(".reader-slot-card").forEach((card) => resize.observe(card));
     // Setting a card's position changes only its style and data attributes,
     // so watching added and removed elements cannot loop.
-    const added = new MutationObserver(() => { watchCards(); run(); });
+    const added = new MutationObserver(() => { watchCards(); relayout(); });
     resize.observe(root);
     watchCards();
     added.observe(root, { childList: true, subtree: true });
-    window.addEventListener("resize", run);
+    window.addEventListener("resize", relayout);
     return () => {
       resize.disconnect();
       added.disconnect();
-      window.removeEventListener("resize", run);
+      window.removeEventListener("resize", relayout);
       root.querySelectorAll<HTMLElement>("[data-slot]").forEach((slot) => { delete slot.dataset.shown; });
     };
-  }, [enabled]);
+  }, [enabled, run]);
 
   return article;
 }
