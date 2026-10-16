@@ -104,7 +104,7 @@ function DraftEditor({ draft, anchor, onDone }: { draft: OpusDraft; anchor: Read
   }
 
   return <form className="reader-draft-card reader-draft-editor" onSubmit={(event) => { event.preventDefault(); void post(); }}>
-    <p className="reader-entry-kind">Opus suggests a {name}</p>
+    <p className="reader-entry-kind">Suggested {name}</p>
     {draft.kind === "forecast" && <p className="reader-highlight-lead">
       This is a forecast of a <span className="reader-nowrap"><Input aria-label="Probability in percent" type="number" inputMode="numeric" min={0} max={100} step={1} required className="reader-highlight-probability" value={probability} onChange={(event) => setProbability(event.target.value)} />% chance of</span>
     </p>}
