@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ensureUser } from "@cn/core/auth";
+import { ensureSession, ensureUser } from "@cn/core/auth";
 import type { PageItem } from "@cn/core/items";
 import { highlightSentence, type HighlightDraft, type PassageQuestion } from "@cn/core/passageHighlights";
 import { askPassageQuestion, fetchPassageQuestions, postPassageHighlight, subscribeToPassages } from "@cn/core/passages";
 import { useSession } from "@cn/features/auth/useSession";
+import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
 import { Button } from "@cn/ui/Button";
 import { LoginModal } from "../../components/LoginModal";
 import type { ReaderAnchor } from "../context";
@@ -79,6 +80,35 @@ export function useHighlightPost(item: PageItem) {
     } catch {
       setError(`Your ${highlight.kind === "forecast" ? "forecast" : "key point"} did not post. Please try again.`);
       return false;
+    } finally {
+      setPosting(false);
+    }
+  }
+  return { post, posting, error, login: <LoginModal open={login} onClose={() => setLogin(false)} /> };
+}
+
+/** Posting a reader's note on selected words. The invisible account is made
+ *  when the reader posts, not when the dialog opens, so opening and cancelling
+ *  leaves nothing behind. `posting` is already true while that account is
+ *  being made, so a second Enter or click cannot send the note twice. */
+export function useNotePost(item: PageItem) {
+  const [posting, setPosting] = useState(false);
+  const [error, setError] = useState("");
+  const [login, setLogin] = useState(false);
+  const postClaimWithNote = usePostClaimWithNote();
+  async function post(anchor: Pick<ReaderAnchor, "text" | "paragraph">, note: string, signed: boolean) {
+    setPosting(true);
+    setError("");
+    try {
+      const session = await ensureSession();
+      if (!session) { setLogin(true); return null; }
+      return await postClaimWithNote.mutateAsync({
+        item, page: { url: item.url, title: item.title ?? "" }, anchorText: anchor.text, contextParagraph: anchor.paragraph,
+        note, session, signed: signed && !session.user.is_anonymous,
+      });
+    } catch {
+      setError("That didn't post. Check your connection and try again.");
+      return null;
     } finally {
       setPosting(false);
     }

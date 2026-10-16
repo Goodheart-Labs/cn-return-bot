@@ -1,23 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ensureSession } from "@cn/core/auth";
 import { MAX_READER_NOTE_LENGTH, parseHighlightDraft, parseOpusDraft, type OpusDraft, type PassageQuestion } from "@cn/core/passageHighlights";
 import type { PageItem } from "@cn/core/items";
 import { fetchAskedPassages } from "@cn/core/passages";
 import type { ReaderBlock } from "@cn/core/readerText";
 import { displayName } from "@cn/core/session";
 import { useSession } from "@cn/features/auth/useSession";
-import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
 import { Button } from "@cn/ui/Button";
 import { Checkbox, Input, Textarea } from "@cn/ui/Field";
 import { Modal } from "@cn/ui/Modal";
 import { Spinner } from "@cn/ui/Spinner";
-import { LoginModal } from "../../components/LoginModal";
 import { renderAnswerMarkdown } from "../../lib/readerMarkdown";
 import { useReader, type ReaderAnchor, type ReaderModule } from "../context";
 import { DialogQuote } from "../DialogParts";
 import { ASK_DOT, MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
-import { useHighlightPost, usePassageQuestions } from "./passageQuestions";
+import { useHighlightPost, useNotePost, usePassageQuestions } from "./passageQuestions";
 import { MIN_NOTE_LENGTH } from "./writeNote";
 
 /** The database refuses a question longer than this. */
@@ -86,8 +83,7 @@ function DraftEditor({ draft, anchor, onDone }: { draft: OpusDraft; anchor: Read
   const [text, setText] = useState(draft.kind === "note" ? draft.text : draft.statement);
   const [probability, setProbability] = useState(draft.kind === "forecast" ? String(draft.probability) : "");
   const [signed, setSigned] = useState(false);
-  const [login, setLogin] = useState(false);
-  const notePost = usePostClaimWithNote();
+  const notePost = useNotePost(item);
   const highlightPost = useHighlightPost(item);
   const name = DRAFT_NAME[draft.kind];
   const edited = editedDraft(draft.kind, text, probability);
@@ -102,12 +98,9 @@ function DraftEditor({ draft, anchor, onDone }: { draft: OpusDraft; anchor: Read
       onDone();
       return;
     }
-    const current = await ensureSession();
-    if (!current) { setLogin(true); return; }
-    notePost.mutate(
-      { item, page: { url: item.url, title: item.title ?? "" }, anchorText: anchor.text, contextParagraph: anchor.paragraph, note: edited.text, session: current, signed: signed && !current.user.is_anonymous },
-      { onSuccess: () => { notify("Your note is posted."); onDone(); } },
-    );
+    if (!(await notePost.post(anchor, edited.text, signed))) return;
+    notify("Your note is posted.");
+    onDone();
   }
 
   return <form className="reader-draft-card reader-draft-editor" onSubmit={(event) => { event.preventDefault(); void post(); }}>
@@ -118,12 +111,12 @@ function DraftEditor({ draft, anchor, onDone }: { draft: OpusDraft; anchor: Read
     {draft.kind === "key_point" && <p className="reader-highlight-lead">A key point in this article is</p>}
     <Textarea autoGrow aria-label={`The suggested ${name}`} rows={3} maxLength={draft.kind === "note" ? MAX_READER_NOTE_LENGTH : 2000} value={text} onChange={(event) => setText(event.target.value)} />
     {signedIn && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
-    {(notePost.isError || highlightPost.error) && <p role="alert" className="reader-dialog-error">{highlightPost.error || "That didn't post. Check your connection and try again."}</p>}
+    {(notePost.error || highlightPost.error) && <p role="alert" className="reader-dialog-error">{notePost.error || highlightPost.error}</p>}
     <div className="reader-draft-actions">
       <Button variant="quiet" onClick={onDone}>Discard</Button>
-      <Button type="submit" disabled={!edited || notePost.isPending || highlightPost.posting}>Post {name}</Button>
+      <Button type="submit" disabled={!edited || notePost.posting || highlightPost.posting}>Post {name}</Button>
     </div>
-    {login && <LoginModal open onClose={() => setLogin(false)} />}
+    {notePost.login}
     {highlightPost.login}
   </form>;
 }
