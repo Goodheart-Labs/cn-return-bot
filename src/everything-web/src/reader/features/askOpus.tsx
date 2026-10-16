@@ -394,7 +394,7 @@ function AskEntries({ blockId }: { blockId: string }) {
     stopAsking(blockId);
     requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-slot="${CSS.escape(slotKey)}"] .reader-dot`)?.focus()));
   };
-  return <MarginSlot slotKey={slotKey} colorClass={ASK_DOT} priority={SLOT_PRIORITY.ask} label={label} busy={asked?.waiting} closedUntilOpened
+  return <MarginSlot slotKey={slotKey} colorClass={ASK_DOT} priority={SLOT_PRIORITY.ask} label={label} busy={asked?.waiting} closedUntilOpened onClose={close}
     onOpen={wide ? undefined : () => ask(blockId, null)}>
     {open && <AskPanel blockId={blockId} quote={asking?.blockId === blockId ? asking.quote : null} onClose={close} onShow={reveal} />}
   </MarginSlot>;

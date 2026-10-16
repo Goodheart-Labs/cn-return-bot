@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useRef, type ReactNode } from "react";
 import { MarginDot } from "@cn/features/margin/MarginDot";
 import { ChevronIcon } from "@cn/ui/icons";
 import { useReader } from "./context";
@@ -28,7 +28,7 @@ export function useSlotKey(): string {
  *  wide screens the margin layout decides which one shows and where. On
  *  narrow screens there is no margin, so a closed entry is one line under
  *  the passage. */
-export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, closedUntilOpened, busy, children }: {
+export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, onClose, closedUntilOpened, busy, children }: {
   slotKey: string;
   /** The text colour class the dot is drawn in. */
   colorClass: string;
@@ -38,16 +38,23 @@ export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, close
   /** An entry that opens somewhere else, such as a sheet on a phone, has no
    *  card. It is always closed, and this runs when it is clicked. */
   onOpen?: () => void;
+  /** Runs when the reader clicks the dot while its card shows beside it.
+   *  By default the entry closes. */
+  onClose?: () => void;
   /** The card never opens by itself. It shows only once the reader opens it. */
   closedUntilOpened?: boolean;
   /** Something is under way, such as Opus answering, so the dot pulses. */
   busy?: boolean;
   children?: ReactNode;
 }) {
-  const { wide, slotMode, openedRank, openEntry } = useReader();
+  const { wide, slotMode, openedRank, openEntry, closeEntry } = useReader();
+  // The margin layout writes whether the card shows straight onto the slot.
+  const slot = useRef<HTMLDivElement>(null);
   const storedMode = slotMode(slotKey);
   const mode = onOpen || (closedUntilOpened && storedMode === "auto") ? "closed" : storedMode;
   const open = onOpen ?? (() => openEntry(slotKey));
+  // A dot stays visible beside its open card, and a second click closes it.
+  const toggle = () => (slot.current?.dataset.shown === "card" ? (onClose ?? (() => closeEntry(slotKey)))() : open());
   if (!wide && mode === "closed") {
     return <div className="reader-entry">
       <button type="button" className="reader-entry-closed" aria-expanded={false} onClick={open}>
@@ -57,8 +64,8 @@ export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, close
     </div>;
   }
   return <SlotKeyContext.Provider value={slotKey}>
-    <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority} data-opened-rank={openedRank(slotKey)} data-busy={busy || undefined}>
-      {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={open} />}
+    <div ref={slot} className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority} data-opened-rank={openedRank(slotKey)} data-busy={busy || undefined}>
+      {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={toggle} />}
       <div className="reader-slot-card">{children}</div>
     </div>
   </SlotKeyContext.Provider>;

@@ -258,7 +258,7 @@
   .reader-slot-card { position: absolute; left: 0; right: 0; z-index: 2; transition: top 150ms ease; scroll-margin-top: var(--reader-anchor-offset); scroll-margin-bottom: 1rem; }
   .reader-slot[data-shown="dot"] .reader-slot-card { display: none; }
   .reader-slot .reader-dot { display: none; left: 0; z-index: 1; }
-  .reader-slot[data-shown="dot"] .reader-dot { display: flex; }
+  .reader-slot[data-dot-shown] .reader-dot { display: flex; }
   /* The dot of a conversation pulses while Opus is answering. */
   .reader-slot[data-busy] .reader-dot { animation: reader-pulse 1.4s ease-in-out infinite; }
 }

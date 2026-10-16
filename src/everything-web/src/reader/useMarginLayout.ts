@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { flowMarginColumn, MARKER_SIZE, UNMEASURED_CARD_HEIGHT, type ColumnMode } from "@cn/core/marginCards";
+import { CARD_BESIDE_OFFSET, flowMarginColumn, MARKER_SIZE, UNMEASURED_CARD_HEIGHT, type ColumnMode } from "@cn/core/marginCards";
 
 /** The last height each card had while it was on screen. A dot's card is
  *  hidden and measures zero, so its old height is what the next pass uses. */
@@ -37,10 +37,11 @@ function readSlots(root: HTMLElement): Slot[] {
   });
 }
 
-/** Lays the margin out as one column with `flowMarginColumn`: every entry
- *  sits at its words or right below the entry above it, as a card or a dot.
- *  Entries whose words start on the same line go in priority order. The
- *  article grows at the bottom when the margin runs past its last passage. */
+/** Lays the margin out as one column with `flowMarginColumn` and its default
+ *  options: every dot stays beside its words, and a card covers the dot
+ *  column unless that would hide another dot. Entries whose words start on
+ *  the same line go in priority order. The article grows at the bottom when
+ *  the margin runs past its last passage. */
 function layoutMargin(root: HTMLElement): string[] {
   const slots = readSlots(root).sort((a, b) => a.anchorTop - b.anchorTop || a.priority - b.priority);
   const layout = flowMarginColumn(slots.map((entry) => ({
@@ -52,12 +53,19 @@ function layoutMargin(root: HTMLElement): string[] {
   })));
   let bottom = 0;
   const displaced: string[] = [];
-  for (const [entry, { top, shown, displaced: pushedAside }] of layout) {
+  for (const [entry, { dotTop, dotShown, card, displaced: pushedAside }] of layout) {
     if (pushedAside) displaced.push(entry.key);
-    entry.slot.dataset.shown = shown;
-    const element = shown === "card" ? entry.card : entry.dot;
-    if (element) element.style.top = `${top - entry.passageTop}px`;
-    bottom = Math.max(bottom, top + (shown === "card" ? cardHeights.get(entry.card) ?? UNMEASURED_CARD_HEIGHT : MARKER_SIZE));
+    entry.slot.dataset.shown = card ? "card" : "dot";
+    entry.slot.toggleAttribute("data-dot-shown", dotShown);
+    if (entry.dot) {
+      entry.dot.style.top = `${dotTop - entry.passageTop}px`;
+      entry.dot.setAttribute("aria-expanded", String(card !== null));
+    }
+    bottom = Math.max(bottom, dotTop + MARKER_SIZE);
+    if (!card) continue;
+    entry.card.style.top = `${card.top - entry.passageTop}px`;
+    entry.card.style.left = card.side === "beside" ? `${CARD_BESIDE_OFFSET}px` : "";
+    bottom = Math.max(bottom, card.top + (cardHeights.get(entry.card) ?? UNMEASURED_CARD_HEIGHT));
   }
   root.style.paddingBottom = "";
   const overflow = bottom - root.getBoundingClientRect().height;
@@ -102,7 +110,10 @@ export function useMarginLayout(enabled: boolean, onDisplaced: (slotKeys: string
       resize.disconnect();
       added.disconnect();
       window.removeEventListener("resize", relayout);
-      root.querySelectorAll<HTMLElement>("[data-slot]").forEach((slot) => { delete slot.dataset.shown; });
+      root.querySelectorAll<HTMLElement>("[data-slot]").forEach((slot) => {
+        delete slot.dataset.shown;
+        delete slot.dataset.dotShown;
+      });
     };
   }, [enabled, run]);
 
