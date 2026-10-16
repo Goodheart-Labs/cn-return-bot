@@ -1,6 +1,8 @@
-# The cn-notify service: posts good Common Notes to Slack (GOO-228). Installed
-# by ops/setup-vm.sh; the environment file is written by hand once, see
-# ops/README.md.
+# The retired cn-notify service, which posted Common Notes to four Slack
+# channels (GOO-228) until GOO-452 removed it on 2026-10-16. Its code is gone.
+# This file stays for one deploy only. The deploy that removes cn-notify runs
+# the previous ops/autodeploy.sh, which still copies this file and stops when it
+# is missing. Delete it in the next pull request.
 [Unit]
 Description=Common Notes Slack announcements
 After=network-online.target
