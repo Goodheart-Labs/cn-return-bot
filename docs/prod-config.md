@@ -288,10 +288,10 @@ named `commonnotes`. Both `commonnotes.net` and `www.commonnotes.net` answer
 (checked on 2026-10-01). How the two addresses are attached to the project in
 the Cloudflare dashboard was not checked.
 
-The website on this domain changes only when someone deploys it by hand. Open
-the "Deploy Pages" workflow in GitHub Actions and press "Run workflow". Only a
-run started that way includes the Cloudflare step. Runs started by a merge or
-by the four-hourly timetable update GitHub Pages alone. The step is in
+Every merge to main deploys the website on this domain. So does a run of the
+"Deploy Pages" workflow started by hand in GitHub Actions with "Run workflow".
+The four-hourly run updates GitHub Pages alone. Until 2026-10-16 only a run
+started by hand deployed the website. The step is in
 [.github/workflows/deploy-pages.yml](../.github/workflows/deploy-pages.yml),
 and it needs the two Cloudflare secrets above. The API token must be allowed
 to edit Cloudflare Pages.

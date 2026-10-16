@@ -6,8 +6,13 @@ name: Deploy Pages
 # dashboard reads Supabase live (anon key baked into the build, locked down by
 # migration 050).
 #
-# The Common Notes website lives only on commonnotes.net. A run started by
-# hand also builds it and deploys it to Cloudflare Pages.
+# The Common Notes website lives only on commonnotes.net. Every merge to main
+# builds it and deploys it to Cloudflare Pages, and so does a run started by
+# hand. The four-hourly run leaves it alone, because the code has not changed.
+#
+# A merge runs this workflow whatever it touched. A list of the website's
+# folders would miss the next shared folder someone adds, and the site would
+# then go stale without anyone noticing.
 
 on:
   schedule:
@@ -15,14 +20,6 @@ on:
     - cron: "0 */4 * * *"
   push:
     branches: [main]
-    paths:
-      - "src/stats-dashboard/**"
-      - "src/everything-core/**"
-      - "src/analytics-dashboard/**"
-      - "src/dashboard-shared/**"
-      - "package.json"
-      - "bun.lock"
-      - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -76,17 +73,16 @@ jobs:
           cp -r src/analytics-dashboard/dist/. site/analytics/
 
       - name: Build the Common Notes website
-        # Manual only, like the deploy below.
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name != 'schedule'
         run: cd src/everything-web && bunx vite build
         env:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Deploy commonnotes.net (Cloudflare Pages)
-        # Manual only (Nathan 2026-07-10): merges must NOT silently update the
-        # public domain. Trigger via workflow_dispatch when he says deploy.
-        if: github.event_name == 'workflow_dispatch'
+        # Until 2026-10-16 only a run started by hand deployed the site (Nathan,
+        # 2026-07-10). Jim changed that, so merged work reaches readers at once.
+        if: github.event_name != 'schedule'
         run: bunx wrangler pages deploy src/everything-web/dist --project-name=commonnotes --branch=main --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
