@@ -9,7 +9,7 @@ import type { NnnRow, NoteRow } from "@cn/core/types";
 import { clearVote, fetchMyVotes, type Vote } from "@cn/core/votes";
 import { useActingUser } from "../auth/useActingUser";
 import { useSession } from "../auth/useSession";
-import { queryKeys } from "../query/queryKeys";
+import { mutationKeys, queryKeys } from "../query/queryKeys";
 import { updateNnnInNoteSets, updateNoteInNoteSets } from "./noteSet";
 
 const NO_VOTES: ReadonlyMap<string, Vote> = new Map();
@@ -60,6 +60,7 @@ export function useVoteOnNote(): (note: NoteRow, vote: Vote) => Promise<MintedDo
   const client = useQueryClient();
   const actingUser = useActingUser();
   const { mutateAsync } = useMutation({
+    mutationKey: mutationKeys.vote,
     mutationFn: async (v: VoteVariables<NoteRow>) =>
       isRetraction(v)
         ? (await clearVote(v.target.id), null)
@@ -92,6 +93,7 @@ export function useVoteOnNnn(): (entry: NnnRow, vote: Vote) => Promise<void> {
   const client = useQueryClient();
   const actingUser = useActingUser();
   const { mutateAsync } = useMutation({
+    mutationKey: mutationKeys.vote,
     mutationFn: (v: VoteVariables<NnnRow>) =>
       isRetraction(v) ? clearNnnVote(v.target.id) : castNnnVote(v.target.id, v.user.id, v.vote),
     onMutate: (v) => setCachedVote(client, queryKeys.myNnnVotes(v.user.id), v.target.id, isRetraction(v) ? undefined : v.vote),

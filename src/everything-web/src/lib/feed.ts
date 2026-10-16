@@ -159,3 +159,53 @@ export function rankFeed(ordered: NoteRow[], rankTally: (note: NoteRow) => RankT
     staleSource: ordered.filter(stale).sort(bestFirst),
   };
 }
+
+/** The orders a reader can pick on the All notes page. `mixed` is the order
+ *  every project's own page uses. */
+export type FeedOrder = "mixed" | "recent" | "helpful";
+
+/** One plain list with no dividers below it. */
+const plainList = (notes: NoteRow[]): FeedSections => ({ leading: notes, unhelpful: [], staleSource: [] });
+
+/** Every note, newest first. Content order breaks a tie. */
+function newestFirst(ordered: NoteRow[]): NoteRow[] {
+  return ordered.map((note, contentIndex) => ({ note, contentIndex }))
+    .sort((a, b) => b.note.created_at.localeCompare(a.note.created_at) || a.contentIndex - b.contentIndex)
+    .map(({ note }) => note);
+}
+
+/** Every note, by the chance it is rated helpful, best first. More votes break
+ *  a tie, then content order. Unhelpful notes and notes whose source changed
+ *  sort like any other note, so they have no band of their own. */
+function mostHelpfulFirst(ordered: NoteRow[], rankTally: (note: NoteRow) => RankTally): NoteRow[] {
+  return ordered.map((note, contentIndex) => {
+    const ranked = { ...note, ...rankTally(note) };
+    return { note, p: probabilityHelpful(noteTally(ranked)), votes: totalVotes(ranked), contentIndex };
+  })
+    .sort((a, b) => b.p - a.p || b.votes - a.votes || a.contentIndex - b.contentIndex)
+    .map(({ note }) => note);
+}
+
+/** Arranges notes that are already in content order in the order the reader
+ *  picked. Only the mixed order has the bands for unhelpful notes and notes
+ *  whose source changed. */
+export function arrangeFeed(ordered: NoteRow[], order: FeedOrder, rankTally: (note: NoteRow) => RankTally): FeedSections {
+  if (order === "recent") return plainList(newestFirst(ordered));
+  if (order === "helpful") return plainList(mostHelpfulFirst(ordered, rankTally));
+  return rankFeed(ordered, rankTally);
+}
+
+/** The first `count` notes of the feed, taken from its bands in the order they
+ *  render. A page that renders a long feed in steps shows this much of it. */
+export function firstNotes({ leading, unhelpful, staleSource }: FeedSections, count: number): FeedSections {
+  const fromUnhelpful = Math.max(0, count - leading.length);
+  const fromStale = Math.max(0, fromUnhelpful - unhelpful.length);
+  return {
+    leading: leading.slice(0, count),
+    unhelpful: unhelpful.slice(0, fromUnhelpful),
+    staleSource: staleSource.slice(0, fromStale),
+  };
+}
+
+/** How many notes the feed holds across its bands. */
+export const feedLength = ({ leading, unhelpful, staleSource }: FeedSections) => leading.length + unhelpful.length + staleSource.length;
