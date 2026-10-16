@@ -8,6 +8,22 @@ export type NoteDraft = { kind: "note"; text: string };
 /** Anything Ask Opus can draft. */
 export type OpusDraft = HighlightDraft | NoteDraft;
 
+/** What the reader did with the draft Opus wrote for a question: posted it as
+ *  the note or highlight `postedId`, or discarded it. Null while it waits. */
+export type DraftOutcome = { kind: "posted"; postedId: string } | { kind: "discarded" };
+
+export function draftOutcome(question: Pick<PassageQuestion, "draft_outcome" | "draft_posted_id">): DraftOutcome | null {
+  if (question.draft_outcome === "posted" && question.draft_posted_id) return { kind: "posted", postedId: question.draft_posted_id };
+  return question.draft_outcome === "discarded" ? { kind: "discarded" } : null;
+}
+
+/** The error the intake service stores on a question once the day's budget
+ *  for reader requests is spent. */
+export const QUESTION_BUDGET_ERROR = "Daily budget reached";
+
+/** Whether Opus has yet to answer the question. */
+export const isWaiting = (question: Pick<PassageQuestion, "status">) => question.status === "pending" || question.status === "answering";
+
 /** The database refuses a reader's note longer than this (migration 114). */
 export const MAX_READER_NOTE_LENGTH = 2000;
 

@@ -143,7 +143,7 @@ function EditMinisiteDialog({ minisite, onClose, onDeleted }: { minisite: Minisi
         <Button variant="quiet" onClick={() => setConfirmingDelete(false)}>Keep it</Button>
         <Button className="minisite-delete-confirm-button" disabled={busy} onClick={() => void remove()}>{busy ? "Deleting…" : "Delete minisite"}</Button>
       </div>
-    </div> : <>
+    </div> : <form onSubmit={(event) => { event.preventDefault(); void save(); }}>
       <div className="minisite-edit-fields">
         <label htmlFor="edit-title">Title</label>
         <Input id="edit-title" value={title} maxLength={300} onChange={(event) => setTitle(event.target.value)} />
@@ -160,9 +160,9 @@ function EditMinisiteDialog({ minisite, onClose, onDeleted }: { minisite: Minisi
       <div className="minisite-dialog-actions">
         <Button variant="quiet" className="minisite-delete-button" onClick={() => setConfirmingDelete(true)}>Delete minisite</Button>
         <Button variant="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={busy || !title.trim() || !imageValid} onClick={() => void save()}>{busy ? "Saving…" : "Save"}</Button>
+        <Button type="submit" disabled={busy || !title.trim() || !imageValid}>{busy ? "Saving…" : "Save"}</Button>
       </div>
-    </>}
+    </form>}
   </Modal>;
 }
 

@@ -19,6 +19,7 @@ export const CN_COLORS = {
   "fg-subtle": "var(--cn-fg-subtle)",
   "line": "var(--cn-line)",
   "line-strong": "var(--cn-line-strong)",
+  "line-input": "var(--cn-line-input)",
   "primary": "var(--cn-primary)",
   "primary-hover": "var(--cn-primary-hover)",
   "on-primary": "var(--cn-on-primary)",

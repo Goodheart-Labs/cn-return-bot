@@ -1,19 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PageItem } from "@cn/core/items";
 import type { FeatureId } from "@cn/core/minisiteFeatures";
 import type { PassageHighlight } from "@cn/core/passageHighlights";
 import { fetchPassageHighlights, subscribeToPassages } from "@cn/core/passages";
 import { anchorForSelection, mapQuotesToBlocks, parseReaderText, withoutRepeatedHeader, type ReaderBlock } from "@cn/core/readerText";
 import type { NoteRow } from "@cn/core/types";
-import { BlockContent, type MarkKind } from "./Blocks";
-import { ReaderContext, UNANCHORED, useReader, type AskingState, type ReaderAction, type ReaderApi, type ReaderDialog } from "./context";
+import { BlockContent, type BlockQuote } from "./Blocks";
+import { ReaderContext, UNANCHORED, useReader, type AskTarget, type ReaderAction, type ReaderApi, type ReaderDialog, type SlotMode } from "./context";
 import { READER_MODULES } from "./features";
 import { highlightCardId } from "./features/highlights";
-import { noteCardId, useReaderNoteSet } from "./features/notes";
+import { groupNotesByQuote, noteCardId, noteQuoteText, noteSlotKey, useReaderNoteSet } from "./features/notes";
+import { askSlotKey, useAskedQuestions } from "./features/askOpus";
 import { useNoteRequests } from "./features/requestNote";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useMarginLayout } from "./useMarginLayout";
+import { useMarkPointing } from "./useMarkPointing";
 import "./reader.css";
 
 /** Wide screens have room for the margin beside the article. */
@@ -56,15 +58,24 @@ function flash(element: HTMLElement, attempt = 0) {
   element.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
-/** Flashes the element with this id as soon as it is in the page. */
-function revealWhenRendered(elementId: string) {
+/** Opens the margin slot the element sits in, then flashes the element once
+ *  the slot has turned from a dot into a card. */
+function openAndFlash(element: HTMLElement, openEntry: (slotKey: string) => void) {
+  const slotKey = element.closest<HTMLElement>("[data-slot]")?.dataset.slot;
+  if (slotKey) openEntry(slotKey);
+  // One frame for React to render the opened slot, one for the margin layout.
+  requestAnimationFrame(() => requestAnimationFrame(() => flash(element)));
+}
+
+/** Opens and flashes the element with this id as soon as it is in the page. */
+function revealWhenRendered(elementId: string, openEntry: (slotKey: string) => void) {
   const found = document.getElementById(elementId);
-  if (found) return flash(found);
+  if (found) return openAndFlash(found, openEntry);
   const watcher = new MutationObserver(() => {
     const element = document.getElementById(elementId);
     if (!element) return;
     watcher.disconnect();
-    flash(element);
+    openAndFlash(element, openEntry);
   });
   watcher.observe(document.body, { childList: true, subtree: true });
   setTimeout(() => watcher.disconnect(), REVEAL_TIMEOUT_MS);
@@ -143,7 +154,7 @@ function JumpButton({ count, onJump }: { count: number; onJump: () => void }) {
 
 function Passage({ block, quotes, actions, entryCount, label, open, onToggle, children }: {
   block: ReaderBlock;
-  quotes: { quote: string; kind: MarkKind }[];
+  quotes: BlockQuote[];
   actions: ReaderAction[];
   entryCount: number;
   label: string;
@@ -176,10 +187,32 @@ export function Reader({ item, content, header, features, scope }: {
   scope: string;
 }) {
   const wide = useWide();
-  const [asking, setAsking] = useState<AskingState | null>(null);
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
+  const [asking, setAsking] = useState<AskTarget | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
-  const [collapsed, setCollapsedSet] = useState<ReadonlySet<string>>(new Set());
+  const [slotModes, setSlotModes] = useState<ReadonlyMap<string, SlotMode>>(new Map());
+  // The map keeps its keys in the order they were last set, so the most
+  // recently opened card is the last one. The margin layout gives the newest
+  // card its place first.
+  const markOpened = useCallback((slotKey: string) => setSlotModes((current) => {
+    const next = new Map(current);
+    next.delete(slotKey);
+    return next.set(slotKey, "opened");
+  }), []);
+  // A card opened from its dot or its words can land partly off screen, for
+  // example under the site header, so the page scrolls just enough to show it.
+  const openEntry = useCallback((slotKey: string) => {
+    markOpened(slotKey);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.querySelector(`[data-slot="${CSS.escape(slotKey)}"] .reader-slot-card`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }));
+  }, [markOpened]);
+  const closeEntries = useCallback((slotKeys: string[]) => setSlotModes((current) => {
+    const next = new Map(current);
+    for (const key of slotKeys) next.set(key, "closed");
+    return next;
+  }), []);
+  const closeEntry = useCallback((slotKey: string) => closeEntries([slotKey]), [closeEntries]);
   const [notice, setNotice] = useState("");
 
   const blocks = useMemo(() => withoutRepeatedHeader(
@@ -192,7 +225,13 @@ export function Reader({ item, content, header, features, scope }: {
   const nnnEntries = useMemo(() => [...(noteQuery.data?.nnn.values() ?? [])], [noteQuery.data]);
   const highlightQuery = useQuery({ queryKey: ["passageHighlights", item.id], queryFn: () => fetchPassageHighlights(item.id) });
   const { refetch: refetchHighlightQuery } = highlightQuery;
-  useEffect(() => subscribeToPassages(item.id, () => { void refetchHighlightQuery(); }), [item.id, refetchHighlightQuery]);
+  const queryClient = useQueryClient();
+  // One live subscription serves the whole reader: new key points and
+  // forecasts, and the progress of the reader's questions to Opus.
+  useEffect(() => subscribeToPassages(item.id, () => {
+    void refetchHighlightQuery();
+    void queryClient.invalidateQueries({ queryKey: ["passageQuestions", item.id] });
+  }), [item.id, refetchHighlightQuery, queryClient]);
   const highlights = useMemo(() => (highlightQuery.data ?? []).filter((h) => highlightShown(features, h)), [highlightQuery.data, features]);
 
   const placedNotes = useMemo(() => mapQuotesToBlocks(blocks, notes, noteQuote), [blocks, notes]);
@@ -200,12 +239,20 @@ export function Reader({ item, content, header, features, scope }: {
   const notesByBlock = useMemo(() => new Map([...placedNotes.byBlock, ...(placedNotes.unanchored.length ? [[UNANCHORED, placedNotes.unanchored] as const] : [])]), [placedNotes]);
   const highlightsByBlock = useMemo(() => new Map([...placedHighlights.byBlock, ...(placedHighlights.unanchored.length ? [[UNANCHORED, placedHighlights.unanchored] as const] : [])]), [placedHighlights]);
 
-  // Every margin card in reading order: by passage, notes before key points
-  // and forecasts, and the unanchored ones last. The "N of M" buttons walk it.
-  const entryOrder = useMemo(() => [...blocks.map((block) => block.id), UNANCHORED].flatMap((blockId) => [
-    ...(notesByBlock.get(blockId) ?? []).map((note) => ({ elementId: noteCardId(scope, note.id), blockId })),
-    ...(highlightsByBlock.get(blockId) ?? []).map((highlight) => ({ elementId: highlightCardId(scope, highlight.id), blockId })),
-  ]), [blocks, notesByBlock, highlightsByBlock, scope]);
+  // Every margin card in reading order: by passage, then by where its quote
+  // starts in the passage, and the unanchored ones last. The "N of M" buttons
+  // walk it.
+  const entryOrder = useMemo(() => [...blocks.map((block) => block.id), UNANCHORED].flatMap((blockId) => {
+    const text = blocks.find((block) => block.id === blockId)?.text.toLowerCase() ?? "";
+    const position = (quote: string | null | undefined) => {
+      const index = quote ? text.indexOf(quote.trim().toLowerCase()) : -1;
+      return index < 0 ? text.length : index;
+    };
+    return [
+      ...(notesByBlock.get(blockId) ?? []).map((note) => ({ elementId: noteCardId(scope, note.id), blockId, at: position(noteQuoteText(note)) })),
+      ...(highlightsByBlock.get(blockId) ?? []).map((highlight) => ({ elementId: highlightCardId(scope, highlight.id), blockId, at: position(highlight.quote) })),
+    ].sort((a, b) => a.at - b.at);
+  }), [blocks, notesByBlock, highlightsByBlock, scope]);
 
   const notify = useCallback((message: string) => setNotice(message), []);
   useEffect(() => {
@@ -214,43 +261,60 @@ export function Reader({ item, content, header, features, scope }: {
     return () => clearTimeout(timer);
   }, [notice]);
   const noteRequests = useNoteRequests(item, notify);
+  const askedQuestions = useAskedQuestions(item, blocks, notify);
 
   const api: ReaderApi = {
     item, scope, blocks, features, wide, notesByBlock, nnnEntries, highlightsByBlock,
     refetchHighlights: () => void refetchHighlightQuery(),
-    asking,
-    openAsk: (block, quote) => { setAsking({ blockId: block.id, quote }); setOpenBlock(block.id); document.getSelection()?.removeAllRanges(); },
-    closeAsk: () => setAsking(null),
     noteRequests: noteRequests.requests,
+    askedQuestions,
     requestNote: noteRequests.request,
     dialog,
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),
+    asking,
+    ask: (blockId, quote) => {
+      setAsking({ blockId, quote });
+      document.getSelection()?.removeAllRanges();
+      if (wide) openEntry(askSlotKey(scope, blockId));
+    },
+    stopAsking: (blockId) => {
+      setAsking((current) => (current?.blockId === blockId ? null : current));
+      if (wide) closeEntry(askSlotKey(scope, blockId));
+    },
     notify,
-    reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId); },
+    reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId, markOpened); },
     entryNavigation: (elementId) => {
       const index = entryOrder.findIndex((entry) => entry.elementId === elementId);
       if (index < 0 || entryOrder.length <= 1) return null;
       const next = entryOrder[(index + 1) % entryOrder.length]!;
-      return { position: index + 1, total: entryOrder.length, onNext: () => { api.setCollapsed(next.elementId, false); api.reveal(next.elementId, next.blockId); } };
+      return { position: index + 1, total: entryOrder.length, onNext: () => api.reveal(next.elementId, next.blockId) };
     },
-    isCollapsed: (elementId) => collapsed.has(elementId),
-    setCollapsed: (elementId, closed) => setCollapsedSet((current) => {
-      const next = new Set(current);
-      if (closed) next.add(elementId); else next.delete(elementId);
-      return next;
-    }),
+    slotMode: (slotKey) => slotModes.get(slotKey) ?? "auto",
+    openedRank: (slotKey) => (slotModes.get(slotKey) === "opened" ? [...slotModes.keys()].indexOf(slotKey) : undefined),
+    openEntry,
+    closeEntry,
   };
 
+  // Each quote carries the key of its margin slot, so pointing at the words
+  // finds the card, and the card finds its words. The words the reader is
+  // asking Opus about stay marked while the conversation is open beside them.
+  const askKey = asking && askSlotKey(scope, asking.blockId);
+  const askMarked = wide && !!asking?.quote && slotModes.get(askKey!) === "opened";
   const quotesByBlock = useMemo(() => {
-    const quotes = new Map<string, { quote: string; kind: MarkKind }[]>();
-    const add = (blockId: string, quote: string | null | undefined, kind: MarkKind) => {
-      if (quote?.trim()) quotes.set(blockId, [...(quotes.get(blockId) ?? []), { quote, kind }]);
+    const quotes = new Map<string, BlockQuote[]>();
+    const add = (blockId: string, quote: BlockQuote) => {
+      if (quote.quote) quotes.set(blockId, [...(quotes.get(blockId) ?? []), quote]);
     };
-    for (const [blockId, group] of placedNotes.byBlock) for (const note of group) add(blockId, note.claim?.updated_quote ?? note.claim?.context_quote, "note");
-    for (const [blockId, group] of placedHighlights.byBlock) for (const highlight of group) add(blockId, highlight.quote, "highlight");
+    for (const [blockId, notesHere] of placedNotes.byBlock) {
+      for (const group of groupNotesByQuote(notesHere)) add(blockId, { quote: noteQuoteText(group[0]!), kind: "note", key: noteSlotKey(scope, group[0]!.id) });
+    }
+    for (const [blockId, group] of placedHighlights.byBlock) {
+      for (const highlight of group) add(blockId, { quote: highlight.quote.trim(), kind: "highlight", key: highlightCardId(scope, highlight.id) });
+    }
+    if (askMarked) add(asking!.blockId, { quote: asking!.quote!, kind: "ask", key: askKey! });
     return quotes;
-  }, [placedNotes, placedHighlights]);
+  }, [placedNotes, placedHighlights, scope, askMarked, asking, askKey]);
 
   const marginCount = (blockId: string) => READER_MODULES.reduce((sum, module) => sum + (module.marginCount?.(api, blockId) ?? 0), 0);
   const totalEntries = notes.length + highlights.length;
@@ -259,7 +323,8 @@ export function Reader({ item, content, header, features, scope }: {
     ? READER_MODULES.flatMap((module) => module.selectionActions?.(api, selection.block, selection.quote) ?? []).filter((action) => features.has(action.feature))
     : [];
 
-  const article = useMarginLayout(wide && blocks.length > 0);
+  const article = useMarginLayout(wide && blocks.length > 0, closeEntries);
+  useMarkPointing(article, wide, api);
 
   // A shared link to a note (?note=…&edition=…) or a passage (#passage-…)
   // opens the page scrolled to it, once the notes have loaded.
@@ -285,8 +350,9 @@ export function Reader({ item, content, header, features, scope }: {
     setOpenBlock(first);
     const target = first === UNANCHORED ? `${scope}-${UNANCHORED}` : first;
     requestAnimationFrame(() => {
-      const group = document.getElementById(target)?.querySelector<HTMLElement>(".reader-entry") ?? document.getElementById(target);
-      if (group) flash(group);
+      const entry = document.getElementById(target)?.querySelector<HTMLElement>(".reader-entry[id]");
+      if (entry) api.reveal(entry.id);
+      else { const passage = document.getElementById(target); if (passage) flash(passage); }
     });
   }
 
