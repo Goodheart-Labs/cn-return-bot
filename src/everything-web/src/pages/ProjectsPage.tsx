@@ -1,7 +1,7 @@
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedProjectRow } from "@cn/core/types";
-import { Button, buttonVariants } from "@cn/ui/Button";
-import { ExternalLinkIcon } from "@cn/ui/icons";
+import { Button } from "@cn/ui/Button";
+import { ExternalLinkIcon, NoteStackIcon } from "@cn/ui/icons";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
@@ -24,20 +24,51 @@ const byName = (a: FeedProjectRow, b: FeedProjectRow) => a.name.localeCompare(b.
 
 const noteCount = (n: number) => `${n.toLocaleString("en-US")} ${n === 1 ? "note" : "notes"}`;
 
+const CARD = "relative flex items-center gap-4 rounded-card border border-line bg-surface p-4 transition-colors hover:border-line-strong";
+
+/** The card's main link. It covers the whole card, so the card is one big
+ *  target. */
+const CARD_LINK =
+  "line-clamp-2 after:absolute after:inset-0 after:rounded-card focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-focus";
+
+/** How large the cards' pictures are, and how much of the circle the All
+ *  creators card's icon fills. */
+const AVATAR_SIZE = 56;
+const ICON_SCALE = 0.5;
+
+/** The first card of the grid. It leads to every note of every creator in one
+ *  feed, and it counts all of them. */
+function AllCreatorsCard({ noteTotal, navigate }: { noteTotal: number; navigate: (route: Route) => void }) {
+  return (
+    <li className={CARD}>
+      <span
+        aria-hidden="true"
+        className="grid shrink-0 place-items-center rounded-full border border-line bg-surface-muted text-fg-secondary"
+        style={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
+      >
+        <NoteStackIcon size={AVATAR_SIZE * ICON_SCALE} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <h2 className="font-title text-lg font-bold leading-snug text-fg">
+          <RouteLink to={ALL_NOTES} navigate={navigate} className={CARD_LINK}>
+            All creators
+          </RouteLink>
+        </h2>
+        <p className="mt-1 text-sm text-fg-muted">{noteCount(noteTotal)}</p>
+      </div>
+    </li>
+  );
+}
+
 function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate: (route: Route) => void }) {
   const platform = project.feed_url ? creatorPlatform(project.feed_url) : null;
   return (
-    <li className="relative flex items-center gap-4 rounded-card border border-line bg-surface p-4 transition-colors hover:border-line-strong">
-      <ProjectAvatar project={project} size={56} />
+    <li className={CARD}>
+      <ProjectAvatar project={project} size={AVATAR_SIZE} />
       <div className="min-w-0 flex-1">
         <h2 className="font-title text-lg font-bold leading-snug text-fg">
-          {/* The name's link covers the whole card, so the card is one big
-            * target. The link to the creator's own site sits above it. */}
-          <RouteLink
-            to={{ view: "notes", project: project.slug, item: null, note: null }}
-            navigate={navigate}
-            className="line-clamp-2 after:absolute after:inset-0 after:rounded-card focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-focus"
-          >
+          {/* The link to the creator's own site sits above the card's link. */}
+          <RouteLink to={{ view: "notes", project: project.slug, item: null, note: null }} navigate={navigate} className={CARD_LINK}>
             {project.name}
           </RouteLink>
         </h2>
@@ -62,8 +93,8 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
 }
 
 /** Every project with notes: the creator's picture, how many notes it has, a
- *  link to its notes here, and a link to the creator's own page. A link at the
- *  top leads to the notes of every project in one feed. */
+ *  link to its notes here, and a link to the creator's own page. The first
+ *  card, whatever the order, leads to the notes of every project in one feed. */
 export function ProjectsPage({ navigate }: { navigate: (route: Route) => void }) {
   const projects = useProjects();
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "votes");
@@ -78,12 +109,7 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
           <h1 className="font-title text-3xl font-bold text-fg">Notes</h1>
           <p className="mt-1 max-w-xl text-base text-fg-muted">The creators we check, and the notes readers are rating on their posts and videos.</p>
         </div>
-        <div className="flex items-center gap-4">
-          <RouteLink to={ALL_NOTES} navigate={navigate} className={buttonVariants({ variant: "secondary" })}>
-            All notes
-          </RouteLink>
-          <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
-        </div>
+        <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
       </div>
 
       {projects.isError ? (
@@ -95,6 +121,7 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
         <p className="mt-8 text-sm text-fg-muted">Loading…</p>
       ) : (
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <AllCreatorsCard noteTotal={withNotes.reduce((total, p) => total + p.note_count, 0)} navigate={navigate} />
           {shown.map((project) => (
             <ProjectCard key={project.id} project={project} navigate={navigate} />
           ))}
