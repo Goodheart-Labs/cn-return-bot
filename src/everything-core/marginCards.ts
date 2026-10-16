@@ -89,17 +89,21 @@ export interface ColumnEntry<K> {
   openedRank?: number;
 }
 
-type ColumnLayout<K> = Map<K, { top: number; shown: "card" | "dot" }>;
+/** Where each entry goes. `displaced` marks a card that showed, or was opened,
+ *  but now shows as a dot to make room for a card the reader opened later. */
+type ColumnLayout<K> = Map<K, { top: number; shown: "card" | "dot"; displaced: boolean }>;
 
-/** One pass down the column with exactly the cards in `open` opened. */
-function flowOnce<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>): ColumnLayout<K> {
+/** One pass down the column with exactly the cards in `open` opened. A card
+ *  the reader has not touched stays a dot when it is in `yielded`. */
+function flowOnce<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>, yielded: ReadonlySet<K> = new Set()): ColumnLayout<K> {
   const placed: ColumnLayout<K> = new Map();
   let floor = -Infinity;
   for (const entry of entries) {
     const top = Math.max(entry.anchor, floor);
     const height = entry.height ?? UNMEASURED_CARD_HEIGHT;
-    const card = open.has(entry.key) || (entry.mode === "auto" && top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT);
-    placed.set(entry.key, { top, shown: card ? "card" : "dot" });
+    const card = open.has(entry.key) || (entry.mode === "auto" && !yielded.has(entry.key) && top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT);
+    const displaced = !card && ((entry.mode === "opened") || yielded.has(entry.key));
+    placed.set(entry.key, { top, shown: card ? "card" : "dot", displaced });
     floor = card ? top + height + MARGIN_CARD_STACK_GAP : top + MARKER_SIZE + MARKER_GAP;
   }
   return placed;
@@ -127,5 +131,21 @@ export function flowMarginColumn<K>(entries: readonly ColumnEntry<K>[]): ColumnL
     const nearItsWords = (entry: ColumnEntry<K>) => layout.get(entry.key)!.top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT;
     if (index === 0 || newestFirst.filter((entry) => trial.has(entry.key)).every(nearItsWords)) kept.add(candidate.key);
   });
-  return flowOnce(entries, kept);
+  return yieldUntouchedCards(entries, kept);
+}
+
+/** Cards the reader has not touched give way to the cards the reader opened.
+ *  While an opened card sits more than 200 px below its words, the nearest
+ *  untouched card above it turns into a dot, until it fits or nothing above
+ *  is left to give way. */
+function yieldUntouchedCards<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>): ColumnLayout<K> {
+  const yielded = new Set<K>();
+  for (;;) {
+    const layout = flowOnce(entries, open, yielded);
+    const tooFar = entries.findIndex((entry) => open.has(entry.key) && layout.get(entry.key)!.top - entry.anchor > DEFAULT_OPEN_MAX_DRIFT);
+    if (tooFar < 0) return layout;
+    const inTheWay = entries.slice(0, tooFar).findLast((entry) => entry.mode === "auto" && layout.get(entry.key)!.shown === "card");
+    if (!inTheWay) return layout;
+    yielded.add(inTheWay.key);
+  }
 }

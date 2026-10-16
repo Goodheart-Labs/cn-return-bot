@@ -52,8 +52,8 @@ function layoutMargin(root: HTMLElement): string[] {
   })));
   let bottom = 0;
   const displaced: string[] = [];
-  for (const [entry, { top, shown }] of layout) {
-    if (entry.mode === "opened" && shown === "dot") displaced.push(entry.key);
+  for (const [entry, { top, shown, displaced: pushedAside }] of layout) {
+    if (pushedAside) displaced.push(entry.key);
     entry.slot.dataset.shown = shown;
     const element = shown === "card" ? entry.card : entry.dot;
     if (element) element.style.top = `${top - entry.passageTop}px`;
@@ -72,8 +72,8 @@ function layoutMargin(root: HTMLElement): string[] {
  *  and whenever the article or a card changes size or a card appears. */
 export function useMarginLayout(enabled: boolean, onDisplaced: (slotKeys: string[]) => void) {
   const article = useRef<HTMLElement>(null);
-  // An opened card that a more recently opened card pushed aside is closed for
-  // real, so it does not come back when the cards around it change again.
+  // A card that gave way to a more recently opened card is closed for real,
+  // so it does not come back when the cards around it change again.
   const latestOnDisplaced = useRef(onDisplaced);
   useLayoutEffect(() => { latestOnDisplaced.current = onDisplaced; });
   const run = useCallback((root: HTMLElement) => {
