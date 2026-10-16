@@ -247,7 +247,6 @@ hides it in logs. The names below were checked against the live repository on
 | YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine and the timestamp backfill. |
 | Substack relay | `SUBSTACK_PROXY_URL`, `SUBSTACK_PROXY_KEY` | Everything Priority Feeds. |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
-| Slack | `SLACK_BOT_TOKEN` | Nothing since 2026-10-16 (GOO-452). Trending Posts used it to post as the bot "Claudy". The secret can be deleted. |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
 limited to that probe's own table. When it is unset, the probe falls back to
