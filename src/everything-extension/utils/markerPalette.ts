@@ -34,6 +34,7 @@ export const MARKER_SHADOW = "0 1px 3px rgba(0,0,0,0.25)";
 export const PASSAGE_TINT_LIGHT = "rgba(59, 130, 246, 0.16)";
 export const PASSAGE_TINT_DARK = "rgba(96, 165, 250, 0.25)";
 /** The stronger tint on the exact words of the claim the reader points at or
- *  opened. It is drawn over the passage tint. */
-export const PASSAGE_FOCUS_TINT_LIGHT = "rgba(59, 130, 246, 0.32)";
-export const PASSAGE_FOCUS_TINT_DARK = "rgba(96, 165, 250, 0.4)";
+ *  opened. It is drawn over the passage tint, and together the two come to
+ *  about the same strength as a minisite's emphasized words. */
+export const PASSAGE_FOCUS_TINT_LIGHT = "rgba(59, 130, 246, 0.14)";
+export const PASSAGE_FOCUS_TINT_DARK = "rgba(96, 165, 250, 0.17)";

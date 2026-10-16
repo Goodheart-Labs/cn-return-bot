@@ -122,7 +122,7 @@
   --cn-note-mark: rgb(var(--cn-blue-400) / 0.18);
   --cn-note-mark-line: rgb(var(--cn-blue-400));
   /* The words of the entry the reader points at. */
-  --cn-note-mark-active: rgb(var(--cn-blue-400) / 0.42);
+  --cn-note-mark-active: rgb(var(--cn-blue-400) / 0.3);
   /* Words a reader marked as a key point or a forecast: a highlighter yellow,
    * so they read apart from note quotes. */
   --cn-highlighter: rgb(var(--cn-amber-100));
@@ -259,7 +259,7 @@
   --cn-tint-line: rgb(var(--cn-blue-900));
   --cn-note-mark: rgb(var(--cn-blue-400) / 0.2);
   --cn-note-mark-line: rgb(var(--cn-blue-400));
-  --cn-note-mark-active: rgb(var(--cn-blue-400) / 0.45);
+  --cn-note-mark-active: rgb(var(--cn-blue-400) / 0.33);
   --cn-highlighter: rgb(var(--cn-amber-900) / 0.6);
   --cn-highlighter-line: rgb(var(--cn-amber-400));
   --cn-inverse: rgb(var(--cn-gray-800));
