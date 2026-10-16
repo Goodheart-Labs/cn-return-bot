@@ -14,6 +14,7 @@ interface Slot {
   anchorTop: number;
   priority: number;
   mode: string;
+  openedRank: number | undefined;
 }
 
 function readSlots(root: HTMLElement): Slot[] {
@@ -31,6 +32,7 @@ function readSlots(root: HTMLElement): Slot[] {
       anchorTop: mark ? topOf(mark) : topOf(passage),
       priority: Number(slot.dataset.priority),
       mode: slot.dataset.mode ?? "auto",
+      openedRank: slot.dataset.openedRank === undefined ? undefined : Number(slot.dataset.openedRank),
     };
   });
 }
@@ -46,6 +48,7 @@ function layoutMargin(root: HTMLElement) {
     anchor: entry.anchorTop,
     height: cardHeights.get(entry.card),
     mode: entry.mode as ColumnMode,
+    openedRank: entry.openedRank,
   })));
   let bottom = 0;
   for (const [entry, { top, shown }] of layout) {

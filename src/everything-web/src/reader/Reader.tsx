@@ -190,9 +190,14 @@ export function Reader({ item, content, header, features, scope }: {
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
   const [slotModes, setSlotModes] = useState<ReadonlyMap<string, SlotMode>>(new Map());
-  // A card the reader opened stays open until they close it, so opening
-  // another one never moves it.
-  const markOpened = useCallback((slotKey: string) => setSlotModes((current) => new Map(current).set(slotKey, "opened")), []);
+  // The map keeps its keys in the order they were last set, so the most
+  // recently opened card is the last one. The margin layout gives the newest
+  // card its place first.
+  const markOpened = useCallback((slotKey: string) => setSlotModes((current) => {
+    const next = new Map(current);
+    next.delete(slotKey);
+    return next.set(slotKey, "opened");
+  }), []);
   // A card opened from its dot or its words can land partly off screen, for
   // example under the site header, so the page scrolls just enough to show it.
   const openEntry = useCallback((slotKey: string) => {
@@ -264,6 +269,7 @@ export function Reader({ item, content, header, features, scope }: {
       return { position: index + 1, total: entryOrder.length, onNext: () => api.reveal(next.elementId, next.blockId) };
     },
     slotMode: (slotKey) => slotModes.get(slotKey) ?? "auto",
+    openedRank: (slotKey) => (slotModes.get(slotKey) === "opened" ? [...slotModes.keys()].indexOf(slotKey) : undefined),
     openEntry,
     closeEntry,
   };

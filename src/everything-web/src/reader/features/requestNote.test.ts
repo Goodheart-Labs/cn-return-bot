@@ -19,6 +19,7 @@ test("a request's card shows its words and the shared progress lines, only besid
       noteRequests: [{ id: "0", blockId: "b1", quote, progress }],
       wide: true,
       slotMode: () => "auto",
+      openedRank: () => undefined,
       openEntry: () => {},
       closeEntry: () => {},
       entryNavigation: () => null,

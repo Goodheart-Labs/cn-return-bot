@@ -85,18 +85,15 @@ export interface ColumnEntry<K> {
   /** The card's height when known. */
   height: number | undefined;
   mode: ColumnMode;
+  /** For an opened entry, when it was opened: a higher number is more recent. */
+  openedRank?: number;
 }
 
-/** Lays the margin out as one column, filled from the top. Each entry sits
- *  level with its words, or right below the entry above it when that one is
- *  in the way, so nothing ever overlaps or hides a dot. Opening an entry turns
- *  its dot into a card in the same place: the entries above it stay where
- *  they are and the ones below move down. A card the reader has not touched
- *  opens by itself only when neither it nor the entry after it then sits
- *  more than 200 px below its words; otherwise it shows as a dot. Entries are
- *  given in reading order. */
-export function flowMarginColumn<K>(entries: readonly ColumnEntry<K>[]): Map<K, { top: number; shown: "card" | "dot" }> {
-  const placed = new Map<K, { top: number; shown: "card" | "dot" }>();
+type ColumnLayout<K> = Map<K, { top: number; shown: "card" | "dot" }>;
+
+/** One pass down the column with exactly the cards in `open` opened. */
+function flowOnce<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>): ColumnLayout<K> {
+  const placed: ColumnLayout<K> = new Map();
   let floor = -Infinity;
   entries.forEach((entry, index) => {
     const top = Math.max(entry.anchor, floor);
@@ -104,9 +101,33 @@ export function flowMarginColumn<K>(entries: readonly ColumnEntry<K>[]): Map<K, 
     const next = entries[index + 1];
     const pushesNext = next ? top + height + MARGIN_CARD_STACK_GAP - next.anchor : 0;
     const fits = top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT && pushesNext <= DEFAULT_OPEN_MAX_DRIFT;
-    const card = entry.mode === "opened" || (entry.mode === "auto" && fits);
+    const card = open.has(entry.key) || (entry.mode === "auto" && fits);
     placed.set(entry.key, { top, shown: card ? "card" : "dot" });
     floor = card ? top + height + MARGIN_CARD_STACK_GAP : top + MARKER_SIZE + MARKER_GAP;
   });
   return placed;
+}
+
+/** Lays the margin out as one column, filled from the top. Each entry sits
+ *  level with its words, or right below the entry above it when that one is
+ *  in the way, so nothing ever overlaps or hides a dot. Opening an entry turns
+ *  its dot into a card in the same place: the entries above it stay where
+ *  they are and the ones below move down.
+ *
+ *  The card the reader opened last always shows. Each earlier opened card
+ *  stays open only while it and every more recent open card still sit within
+ *  200 px of their words; otherwise it shows as a dot until the cards in its
+ *  way close. A card the reader has not touched opens by itself only when
+ *  neither it nor the entry after it then sits more than 200 px below its
+ *  words. Entries are given in reading order. */
+export function flowMarginColumn<K>(entries: readonly ColumnEntry<K>[]): ColumnLayout<K> {
+  const newestFirst = entries.filter((entry) => entry.mode === "opened").sort((a, b) => (b.openedRank ?? 0) - (a.openedRank ?? 0));
+  const kept = new Set<K>();
+  newestFirst.forEach((candidate, index) => {
+    const trial = new Set([...kept, candidate.key]);
+    const layout = flowOnce(entries, trial);
+    const nearItsWords = (entry: ColumnEntry<K>) => layout.get(entry.key)!.top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT;
+    if (index === 0 || newestFirst.filter((entry) => trial.has(entry.key)).every(nearItsWords)) kept.add(candidate.key);
+  });
+  return flowOnce(entries, kept);
 }

@@ -70,6 +70,8 @@ export interface ReaderApi {
    *  entry the reader has not touched is a card when it fits near its words,
    *  and a dot otherwise. */
   slotMode: (slotKey: string) => SlotMode;
+  /** For an opened entry, when the reader opened it: higher is more recent. */
+  openedRank: (slotKey: string) => number | undefined;
   openEntry: (slotKey: string) => void;
   closeEntry: (slotKey: string) => void;
 }

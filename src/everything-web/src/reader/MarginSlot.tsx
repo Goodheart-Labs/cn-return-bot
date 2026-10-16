@@ -40,7 +40,7 @@ export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, child
   onOpen?: () => void;
   children?: ReactNode;
 }) {
-  const { wide, slotMode, openEntry } = useReader();
+  const { wide, slotMode, openedRank, openEntry } = useReader();
   const mode = onOpen ? "closed" : slotMode(slotKey);
   const open = onOpen ?? (() => openEntry(slotKey));
   if (!wide && mode === "closed") {
@@ -52,7 +52,7 @@ export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, child
     </div>;
   }
   return <SlotKeyContext.Provider value={slotKey}>
-    <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority}>
+    <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority} data-opened-rank={openedRank(slotKey)}>
       {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={open} />}
       <div className="reader-slot-card">{children}</div>
     </div>
