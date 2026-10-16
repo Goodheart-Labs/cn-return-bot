@@ -95,16 +95,13 @@ type ColumnLayout<K> = Map<K, { top: number; shown: "card" | "dot" }>;
 function flowOnce<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>): ColumnLayout<K> {
   const placed: ColumnLayout<K> = new Map();
   let floor = -Infinity;
-  entries.forEach((entry, index) => {
+  for (const entry of entries) {
     const top = Math.max(entry.anchor, floor);
     const height = entry.height ?? UNMEASURED_CARD_HEIGHT;
-    const next = entries[index + 1];
-    const pushesNext = next ? top + height + MARGIN_CARD_STACK_GAP - next.anchor : 0;
-    const fits = top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT && pushesNext <= DEFAULT_OPEN_MAX_DRIFT;
-    const card = open.has(entry.key) || (entry.mode === "auto" && fits);
+    const card = open.has(entry.key) || (entry.mode === "auto" && top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT);
     placed.set(entry.key, { top, shown: card ? "card" : "dot" });
     floor = card ? top + height + MARGIN_CARD_STACK_GAP : top + MARKER_SIZE + MARKER_GAP;
-  });
+  }
   return placed;
 }
 
@@ -117,9 +114,10 @@ function flowOnce<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>): 
  *  The card the reader opened last always shows. Each earlier opened card
  *  stays open only while it and every more recent open card still sit within
  *  200 px of their words; otherwise it shows as a dot until the cards in its
- *  way close. A card the reader has not touched opens by itself only when
- *  neither it nor the entry after it then sits more than 200 px below its
- *  words. Entries are given in reading order. */
+ *  way close. A card the reader has not touched opens by itself when it sits
+ *  at most 200 px below its words, so in a crowded paragraph the first entry
+ *  opens and the ones after it show as dots below it. Entries are given in
+ *  reading order. */
 export function flowMarginColumn<K>(entries: readonly ColumnEntry<K>[]): ColumnLayout<K> {
   const newestFirst = entries.filter((entry) => entry.mode === "opened").sort((a, b) => (b.openedRank ?? 0) - (a.openedRank ?? 0));
   const kept = new Set<K>();

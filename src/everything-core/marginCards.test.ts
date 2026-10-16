@@ -75,19 +75,19 @@ test("a marker under an open card moves below it", () => {
 const DOT_STEP = MARKER_SIZE + 6;
 const entry = (key: string, anchor: number, mode: ColumnEntry<string>["mode"] = "auto", openedRank?: number, height = 300): ColumnEntry<string> => ({ key, anchor, height, mode, openedRank });
 
-test("a crowded paragraph starts as dots, and the last of them opens when nothing follows close by", () => {
+test("in a crowded paragraph the first entry opens and the others are dots below it", () => {
   const layout = flowMarginColumn([entry("a", 0), entry("b", 10), entry("c", 20), entry("d", 2000)]);
   expect(layout).toEqual(new Map([
-    ["a", { top: 0, shown: "dot" }],
-    ["b", { top: DOT_STEP, shown: "dot" }],
-    ["c", { top: 2 * DOT_STEP, shown: "card" }],
+    ["a", { top: 0, shown: "card" }],
+    ["b", { top: 312, shown: "dot" }],
+    ["c", { top: 312 + DOT_STEP, shown: "dot" }],
     ["d", { top: 2000, shown: "card" }],
   ]));
 });
 
 test("opening a dot turns it into a card in place, moves only what is below, and keeps earlier cards still", () => {
-  const before = flowMarginColumn([entry("a", 0), entry("b", 10), entry("c", 20)]);
-  const openedB = flowMarginColumn([entry("a", 0), entry("b", 10, "opened", 1), entry("c", 20)]);
+  const before = flowMarginColumn([entry("a", 0, "closed"), entry("b", 10), entry("c", 20)]);
+  const openedB = flowMarginColumn([entry("a", 0, "closed"), entry("b", 10, "opened", 1), entry("c", 20)]);
   expect(openedB.get("a")).toEqual(before.get("a"));
   expect(openedB.get("b")).toEqual({ top: before.get("b")!.top, shown: "card" });
   expect(openedB.get("c")).toEqual({ top: DOT_STEP + 300 + 12, shown: "dot" });
