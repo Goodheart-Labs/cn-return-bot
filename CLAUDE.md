@@ -41,7 +41,6 @@ One always-on Linux server (the "services box") runs these systemd services, des
 - `cn-intake`: picks up reader requests for Common Notes at once and drives them through the other two.
 - `cn-fetch`: fetches every outside page and image in a sandbox without keys.
 - `cn-pot-provider`: a Docker container that hands out YouTube PO tokens on 127.0.0.1:4416 (see "Fetching sources").
-- `cn-notify`: posts new notes and votes to four Slack channels as the bot "Claudy" (see "Slack announcements" in `ops/README.md`).
 
 The X bot run and the Common Notes feed run are thin callers. They first check that the services they use are reachable and not stuck, and fail if not. Then they send the work over HTTP (`src/service/client.ts`, URLs in `CLAIM_CHECK_URL` and `EXTRACTION_URL`). The X bot uses only claim-check. So a change to note writing or claim checking reaches production only once the services box has deployed it. Deploying is a pull: a systemd timer runs `ops/autodeploy.sh` every 5 minutes, which pulls the checkout's branch and restarts the services once they are idle. A new unit file must be installed by hand once.
 
@@ -90,7 +89,7 @@ bun run commonnotes-dashboard-local
 
 ### How an item is processed
 
-Every LLM step runs on Meta's Muse Spark 1.3 Contributor (`meta/muse-spark-1.3-contributor`, the constant `EVERYTHING_MODEL` in `src/everything/pipeline/model.ts`), except image descriptions, which stay on Gemini. GPT-6 Luna is the fallback: on 2026-10-01 Meta blocked our access for most of a day, and everything ran on Luna until the block was lifted (GOO-303, GOO-322). Its arms stay in `abTestsData.ts` at weight 0, and llm.ts runs it at medium reasoning effort, so switching back is a change of weights and of `EVERYTHING_MODEL`. The devbox's `muse-probe` messages Jim on Telegram whenever Muse's availability changes. Search is the model provider's own search through OpenRouter's `openrouter:web_search` server tool with `engine: "native"`: one request searches, reads pages and answers, and the cited pages come back as `url_citation` annotations.
+Every LLM step runs on GPT-6 Luna (`openai/gpt-6-luna`, the constant `EVERYTHING_MODEL` in `src/everything/pipeline/model.ts`) at medium reasoning effort, except image descriptions, which stay on Gemini. Until 2026-10-13 it was Meta's Muse Spark 1.3 Contributor (`meta/muse-spark-1.3-contributor`). Meta blocked our access on 2026-10-01 for most of a day (GOO-303, GOO-322) and again on 2026-10-13, and each time the traffic moved to Luna. Muse's arms stay in `abTestsData.ts` at weight 0, so switching back is a change of weights, of the forced arms in `checkClaims.ts` and of `EVERYTHING_MODEL`. The devbox's `muse-probe` messages Jim on Telegram whenever Muse's availability changes. Search is the model provider's own search through OpenRouter's `openrouter:web_search` server tool with `engine: "native"`: one request searches, reads pages and answers, and the cited pages come back as `url_citation` annotations.
 
 `src/everything/pipeline/processContent.ts` drives the steps. Steps 1 to 3 run on the extraction service and step 4 on the claim-check service. The services send records back, and the caller writes the claim rows and the `everything_pipeline_runs` rows.
 
@@ -111,7 +110,7 @@ An item stranded in `processing` by a killed run is resumed, not lost. Every cla
 
 ### Data model
 
-`everything_projects → everything_items → everything_claims → everything_notes`, plus `everything_note_sources` (one row per supporting quote), `everything_votes` (retracting deletes the row; `everything_vote_history` keeps every cast, change and retraction of all three vote tables, migration 115), `everything_note_not_needed` and its votes, `everything_note_requests` (reader requests, which the intake service turns into tier-2 items within seconds), `everything_donations`, `everything_events`, `everything_link_visits` (visits), `everything_pipeline_runs` (one row per LLM step with its cost), `everything_passage_highlights` and `everything_passage_questions`, the walk's caches `everything_top_posts` and `everything_youtube_channels`, `everything_slack_announcements` (what cn-notify already posted), and `everything_minisites` with `everything_minisite_jobs` (pages an admin asked the intake service to read for a new minisite, and fact-check wake-ups). A claim stores the highlighted `context_quote`, the wider `context_paragraph`, and `image_urls` when it rests on an image (then `context_quote` may be null). `everything_items.full_text` is the item's body.
+`everything_projects → everything_items → everything_claims → everything_notes`, plus `everything_note_sources` (one row per supporting quote), `everything_votes` (retracting deletes the row; `everything_vote_history` keeps every cast, change and retraction of all three vote tables, migration 115), `everything_note_not_needed` and its votes, `everything_note_requests` (reader requests, which the intake service turns into tier-2 items within seconds), `everything_donations`, `everything_events`, `everything_link_visits` (visits), `everything_pipeline_runs` (one row per LLM step with its cost), `everything_passage_highlights` and `everything_passage_questions`, the walk's caches `everything_top_posts` and `everything_youtube_channels`, `everything_slack_announcements` (what the retired cn-notify service posted to Slack until 2026-10-16), and `everything_minisites` with `everything_minisite_jobs` (pages an admin asked the intake service to read for a new minisite, and fact-check wake-ups). A claim stores the highlighted `context_quote`, the wider `context_paragraph`, and `image_urls` when it rests on an image (then `context_quote` may be null). `everything_items.full_text` is the item's body.
 
 The website ships the anon key, so the anon role is locked out of every table except what the public site and the extension need. After a migration, regenerate the frontend's types with `bun run gen-db-types`.
 
@@ -181,9 +180,15 @@ Things that are easy to get wrong:
 
 `bun run review` (prod) or `bun run review-local` serves it on port 8001 and frees the port first.
 
-## Trending posts
+## Postable notes
 
-The `Trending Posts` workflow runs `bun run trending-posts` (`src/production/postTrendingPosts.ts`) once a day at 13:00 UTC, 6am in California in summer. For each topic of Nathan Young's crowd, one `grok-4.3` call with Grok's `x_search` tool, limited to posts from yesterday and today, finds posts that went viral there and are about an article or blog post. Each topic with new posts becomes one Slack message in #trending-posts. The table `trending_posts` remembers every post already posted, so none is posted twice. It requests no Common Notes, because too many of the posts are false positives for that. `--dry-run` prints the messages instead. The investigation behind it is in `src/scripts_jim/2026_10_01_article_traction/` (GOO-289).
+A standing Claude session on the devbox, `cn-return-bot--sandbox-daily-good-notes-to-slack`, looks every day at 6am California time for Common Notes worth posting on X, fact-checks them, and posts the good ones to Slack's #notes-we-can-post (GOO-452). Jim and Nathan steer it in that channel. Its brief, cron entry and Slack bridge live in the devbox repository (`postable-notes/BRIEF.md`). Its tool:
+
+```bash
+bun run candidate-notes [--days N | --since <ISO>] [--posted <file>] [--json]
+```
+
+It lists every note that was rated helpful, got a Helpful or Somewhat helpful vote, was written by a person, or is new on an important creator in the window (`src/postable-notes/candidates.ts`). It replaced the `cn-notify` service, which posted those four kinds of note to four Slack channels, and the `Trending Posts` workflow. The tables they used to remember what they posted, `everything_slack_announcements` and `trending_posts`, are no longer written.
 
 ## Database
 

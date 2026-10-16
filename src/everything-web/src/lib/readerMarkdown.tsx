@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 
 const BULLET = /^\s*[-*]\s+(.*)$/;
-// One level of parentheses inside a URL, as in Wikipedia links.
-const INLINE = /\*\*(.+?)\*\*|\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
+// Bold, then italics, then links. One level of parentheses inside a URL, as
+// in Wikipedia links.
+const INLINE = /\*\*(.+?)\*\*|\*([^*\s](?:[^*\n]*[^*\s])?)\*|\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
 
 function httpsUrl(url: string): boolean {
   try { return new URL(url).protocol === "https:"; } catch { return false; }
@@ -12,9 +13,10 @@ function inline(text: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   let last = 0;
   for (const match of text.matchAll(INLINE)) {
-    const [whole, bold, label, url] = match;
+    const [whole, bold, italic, label, url] = match;
     if (match.index > last) nodes.push(text.slice(last, match.index));
     if (bold !== undefined) nodes.push(<strong key={match.index}>{inline(bold)}</strong>);
+    else if (italic !== undefined) nodes.push(<em key={match.index}>{inline(italic)}</em>);
     else if (httpsUrl(url!)) nodes.push(<a key={match.index} href={url} target="_blank" rel="noopener noreferrer">{inline(label!)}</a>);
     else nodes.push(whole);
     last = match.index + whole.length;

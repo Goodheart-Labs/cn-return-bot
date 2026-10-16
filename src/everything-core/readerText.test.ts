@@ -41,18 +41,27 @@ describe("reader text blocks", () => {
     const blocks = parseReaderText(
       "# A Synthetic Essay\r\n\r\nFirst paragraph, with *emphasis*.\r\nA wrapped line.\r\n\r\nSecond section\r\n--------------\r\n\r\n- First choice\r\n  with a continuation\r\n- Second choice\r\n\r\n1. First step\r\n2. Second step",
     );
-    expect(blocks.map((block) => block.kind)).toEqual(["heading", "paragraph", "heading", "list", "list"]);
+    expect(blocks.map((block) => block.kind)).toEqual(["heading", "paragraph", "heading", "list", "list", "list", "list"]);
     expect(blocks[0]).toMatchObject({ text: "A Synthetic Essay", level: 2 });
     expect(blocks[1]?.text).toBe("First paragraph, with emphasis.\nA wrapped line.");
     expect(blocks[2]).toMatchObject({ text: "Second section", level: 3 });
-    expect(blocks[3]).toMatchObject({ ordered: false, text: "First choice\nwith a continuation\nSecond choice" });
-    expect(blocks[4]).toMatchObject({ ordered: true, start: 1, text: "First step\nSecond step" });
+    expect(blocks[3]).toMatchObject({ ordered: false, text: "First choice\nwith a continuation" });
+    expect(blocks[4]).toMatchObject({ ordered: false, text: "Second choice" });
+    expect(blocks[5]).toMatchObject({ ordered: true, start: 1, text: "First step" });
+    expect(blocks[6]).toMatchObject({ ordered: true, start: 2, text: "Second step" });
   });
 
-  test("list items separated by blank lines stay one list, and numbering keeps its start", () => {
+  test("each list item is its own block, and numbering carries on across blank lines", () => {
     const blocks = parseReaderText("3. Third\n\n4. Fourth\n\nAfter.");
-    expect(blocks.map((block) => block.kind)).toEqual(["list", "paragraph"]);
-    expect(blocks[0]).toMatchObject({ ordered: true, start: 3, text: "Third\nFourth" });
+    expect(blocks.map((block) => block.kind)).toEqual(["list", "list", "paragraph"]);
+    expect(blocks[0]).toMatchObject({ ordered: true, start: 3, text: "Third" });
+    expect(blocks[1]).toMatchObject({ ordered: true, start: 4, text: "Fourth" });
+  });
+
+  test("a note on a later list item is placed beside that item, not the list's first", () => {
+    const blocks = parseReaderText("1. The first item talks about hospitals and doctors.\n2. The second item says the population grew faster than ever.");
+    const { byBlock } = mapQuotesToBlocks(blocks, [{ context_quote: "the population grew faster than ever", context_paragraph: null }], (entry) => entry);
+    expect([...byBlock.keys()]).toEqual([blocks[1]!.id]);
   });
 
   test("quotes, figures, embeds, tables, code and footnotes", () => {
@@ -175,22 +184,24 @@ describe("anchoring quotes to blocks", () => {
 });
 
 describe("marking quotes inside styled text", () => {
-  test("marks merge per kind and split runs at their edges", () => {
+  test("overlapping marks stay separate layers, longest first, and split runs at their edges", () => {
     const runs = parseInline("Demand could *double* by 2035. Storage matters.");
     const text = runs.map((run) => run.text).join("");
-    const marks = findQuoteMarks(text, [{ quote: "could double", kind: "note" }, { quote: "double by 2035.", kind: "note" }]);
-    expect(marks).toEqual([{ start: 7, end: 28, kind: "note" }]);
+    const marks = findQuoteMarks(text, [{ quote: "could double", kind: "note", key: "a" }, { quote: "double by 2035.", kind: "note", key: "b" }]);
+    const a = { start: 7, end: 19, kind: "note", key: "a" };
+    const b = { start: 13, end: 28, kind: "note", key: "b" };
+    expect(marks).toEqual([a, b]);
     expect(markRuns(runs, marks)).toEqual([
       { text: "Demand " },
-      { text: "could ", mark: "note" },
-      { text: "double", em: true, mark: "note" },
-      { text: " by 2035.", mark: "note" },
+      { text: "could ", marks: [a] },
+      { text: "double", em: true, marks: [b, a] },
+      { text: " by 2035.", marks: [b] },
       { text: " Storage matters." },
     ]);
   });
 
   test("quote matching crosses line breaks and escapes regular expression punctuation", () => {
-    expect(findQuoteMarks("A [50%]\nchance.", [{ quote: "[50%] chance.", kind: "key_point" }, { quote: " ", kind: "x" }]))
-      .toEqual([{ start: 2, end: 15, kind: "key_point" }]);
+    expect(findQuoteMarks("A [50%]\nchance.", [{ quote: "[50%] chance.", kind: "key_point", key: "k" }, { quote: " ", kind: "x", key: "x" }]))
+      .toEqual([{ start: 2, end: 15, kind: "key_point", key: "k" }]);
   });
 });

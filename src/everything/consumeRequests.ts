@@ -91,6 +91,9 @@ export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteR
     // exists because a reader wrote a note on the page, or because one
     // paragraph was checked, is promoted to a whole-page check instead.
     if (existing.status === "done" && existing.checked_scope === "page") {
+      // The whole-page check may have found no claim in a selected passage,
+      // or rated it true and skipped it, so the passage gets a check of its own.
+      if (request.selection) return consumeDirectedNoteRequest(request, existing);
       await resolveNoteRequest(request.id, "done", "page was already checked", existing.id);
       return { kind: "already_checked", detail: `already checked: ${request.page_url}` };
     }

@@ -5,6 +5,7 @@
  */
 
 export const NOTE_RATER_SCORE_TYPE = "note_rater";
+const MAX_POST_OR_NOTE_CHARS = 10_000;
 
 export const NOTE_RATER_TOPICS = [
   "politics_us", "politics_world", "war_conflict", "health_medicine", "science_environment",
@@ -23,7 +24,7 @@ You are given only the post, the proposed note, and the note's sources. You do n
 // The backtest never had the author's handle, so the live prompt leaves it out
 // too and keeps the inputs the ranking was measured on.
 export function buildNoteRaterUserMessage(p: { postText: string; noteText: string; urls: string[] }): string {
-  const clip = (s: string, n = 8000) => (s.length <= n ? s : s.slice(0, n) + " [truncated]");
+  const clip = (s: string, n = MAX_POST_OR_NOTE_CHARS) => (s.length <= n ? s : s.slice(0, n) + " [truncated]");
   const urlBlock = p.urls.length ? p.urls.map((u) => `- ${u}`).join("\n") : "(none recorded)";
   return `POST by (handle not recorded):
 <post>

@@ -3,6 +3,7 @@ import { requestClaimCheck } from "../service/client";
 import { buildClaimPost, recordClaimRun } from "./pipeline/checkClaims";
 import { insertClaims, insertNote, raiseItemPriority, requeueItem, resolveNoteRequest, setClaimStatus, type NoteRequestRow } from "./db";
 import { requestBudgetExhausted } from "./spendCap";
+import { PASSAGE_CHECK } from "../everything-core/requestProgress";
 import type { NoteRequestOutcome } from "./consumeRequests";
 import type { ExtractedClaim, ItemSource } from "./types";
 
@@ -20,7 +21,7 @@ export async function consumeDirectedNoteRequest(request: NoteRequestRow, existi
   const passage = request.selection || request.page_text || item.full_text;
   if (!passage) throw new Error("No passage to check");
   const { data: claimed, error: claimError } = await db.from("everything_note_requests")
-    .update({ status: "enqueued", item_id: item.id }).eq("id", request.id).eq("status", "pending").select("id").maybeSingle();
+    .update({ status: "enqueued", status_reason: PASSAGE_CHECK.running, item_id: item.id }).eq("id", request.id).eq("status", "pending").select("id").maybeSingle();
   if (claimError) throw claimError;
   if (!claimed) return { kind: "deferred", detail: "another consumer took the request" };
   const claim: ExtractedClaim = {
@@ -36,7 +37,7 @@ export async function consumeDirectedNoteRequest(request: NoteRequestRow, existi
     await recordClaimRun(claimId!, run, "reader");
     if (check.kind === "note") await insertNote(claimId!, check.note, check.sources);
     await setClaimStatus(claimId!, check.kind, check.kind === "no_note" ? check.reason : null);
-    await resolveNoteRequest(request.id, "done", null, item.id);
+    await resolveNoteRequest(request.id, "done", check.kind === "note" ? PASSAGE_CHECK.note : PASSAGE_CHECK.noNote, item.id);
   } catch (err) {
     await setClaimStatus(claimId!, "error", "Requested check failed");
     throw err;

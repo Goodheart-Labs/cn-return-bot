@@ -25,10 +25,6 @@ import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from 
 import { describeTodaySpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
-/** The everything path ingests whole articles, so its fetch cap matches the
- *  page_text column limit rather than a verifier's context window. */
-const WEB_FETCH_MAX_CHARS = 500_000;
-
 /** How many queued items the log lists before summarising the rest. */
 const QUEUE_LINES = 8;
 
@@ -68,7 +64,7 @@ function markdownToPlainText(markdown: string): string {
  *  from the body either way. The stored published date is preserved, because a
  *  web fetch has none and processing would otherwise wipe it. */
 async function fetchWebContent(item: EverythingItem): Promise<FetchedContent> {
-  const result = await fetchWebPage(item.url, { maxChars: WEB_FETCH_MAX_CHARS });
+  const result = await fetchWebPage(item.url);
   if (!result.ok) throw new Error(result.content);
   const markdown = result.content.replace(FETCHED_VIA_PREFIX, "");
   const heading = markdown.match(/^# (.+)\n+/);

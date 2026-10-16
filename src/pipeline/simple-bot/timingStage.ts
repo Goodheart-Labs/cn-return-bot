@@ -30,6 +30,7 @@ import {
 
 // Same cheap judge model as the note-needed prefilter family.
 const TIMING_MODEL = "google/gemini-3-flash-preview";
+const MAX_FINDINGS_CHARS = 10_000;
 
 export type TimingVerdict =
   | { action: "pass" }
@@ -49,7 +50,7 @@ export async function runTimingStage(params: {
 }): Promise<TimingVerdict> {
   const log = getTweetLog();
   try {
-    const input = `${params.userMessage}\n\n## Research findings\n\n${params.findings.slice(0, 2000)}`;
+    const input = `${params.userMessage}\n\n## Research findings\n\n${params.findings.slice(0, MAX_FINDINGS_CHARS)}`;
 
     const extracted = await runJsonLlmCall<ExtractorOut>({
       costName: "timingExtractor",

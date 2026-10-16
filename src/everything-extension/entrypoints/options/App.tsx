@@ -5,6 +5,7 @@ import { ChevronIcon } from "@cn/ui/icons";
 import { Card } from "@cn/ui/Card";
 import { Checkbox } from "@cn/ui/Field";
 import { signOut } from "@cn/core/auth";
+import type { CardPlacement } from "@cn/core/marginCards";
 import { useSession } from "@cn/features/auth/useSession";
 import { LoginPanel } from "../../components/LoginPanel";
 import { BOOK_CALL_URLS, FEEDBACK_FORM_URL } from "../../utils/feedbackLinks";
@@ -34,6 +35,12 @@ function useExtensionSettings(): [ExtensionSettings | null, (patch: SettingsPatc
   };
   return [settings, toggle];
 }
+
+const CARD_PLACEMENTS: { placement: CardPlacement; label: string }[] = [
+  { placement: "overUnlessHidesDot", label: "Over the dots, unless it would hide another dot" },
+  { placement: "over", label: "Over the dots" },
+  { placement: "beside", label: "Beside the dots" },
+];
 
 const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
   { kind: "substack", label: "Substack" },
@@ -127,6 +134,26 @@ function AdvancedSettings({ settings, onToggle }: {
           />
           Classic: a badge in the text, the note on top of it
         </label>
+        {settings.noteStyle === "margin" && (
+          <div className="space-y-2 pl-6">
+            <Setting checked={settings.dotsMakeRoom} onChange={(checked) => onToggle({ dotsMakeRoom: checked })}>
+              Move the dots below an open note down below it
+            </Setting>
+            <p className="text-sm text-fg-secondary">Where an open note sits.</p>
+            {CARD_PLACEMENTS.map(({ placement, label }) => (
+              <label key={placement} className="flex items-center gap-2 text-sm text-fg-secondary">
+                <input
+                  type="radio"
+                  className="accent-primary"
+                  name="card-placement"
+                  checked={settings.cardPlacement === placement}
+                  onChange={() => onToggle({ cardPlacement: placement })}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        )}
         {display && <NoteDisplayChoices display={display} onChange={changeDisplay} />}
         <p className="pt-2 text-sm text-fg-secondary">How the rating buttons look.</p>
         <label className="flex items-center gap-2 text-sm text-fg-secondary">
