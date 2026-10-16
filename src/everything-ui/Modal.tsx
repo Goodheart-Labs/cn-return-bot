@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { cardVariants } from "./Card";
 import { cn } from "./cn";
 import { IconButton } from "./IconButton";
@@ -20,7 +20,9 @@ function ModalDialog({ label, onClose, className, children }: {
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const pressedOnBackdrop = useRef(false);
-  useEffect(() => {
+  // showModal() moves focus to the first button inside. It runs before the
+  // content's own effects, so a field that focuses itself on opening wins.
+  useLayoutEffect(() => {
     dialog.current?.showModal();
   }, []);
 

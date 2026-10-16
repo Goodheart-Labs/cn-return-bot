@@ -101,16 +101,21 @@ const draftText = (draft: OpusDraft) => (draft.kind === "note" ? draft.text : hi
  *  conversation, so closing it and opening it again keeps them. */
 const draftEdits = new Map<string, { text: string; probability: string }>();
 
+/** What the reader did with each draft during this visit, by question id,
+ *  with null for a draft they restored. The page shows it at once and does
+ *  not wait for the database, so a draft cannot be posted twice even when
+ *  storing the outcome fails. */
+const settledDrafts = new Map<string, DraftOutcome | null>();
+
 /** A draft Opus wrote, in an editable box under its answer. The reader edits
- *  it and posts it as their own, or discards it. Either way the outcome is
- *  stored with the question, so the conversation never offers it again. */
+ *  it and posts it as their own, or discards it. */
 function DraftEditor({ question, draft, anchor, autoFocus, onSettled }: {
   question: PassageQuestion;
   draft: OpusDraft;
   anchor: ReaderAnchor;
   autoFocus: boolean;
-  /** Runs when the reader posts or discards the draft. */
-  onSettled: () => void;
+  /** Runs when the reader has posted or discarded the draft. */
+  onSettled: (outcome: DraftOutcome) => void;
 }) {
   const { item, refetchHighlights, notify } = useReader();
   const { session } = useSession();
@@ -119,11 +124,9 @@ function DraftEditor({ question, draft, anchor, autoFocus, onSettled }: {
   const [probability, setProbability] = useState(saved?.probability ?? (draft.kind === "forecast" ? String(draft.probability) : ""));
   useEffect(() => { draftEdits.set(question.id, { text, probability }); }, [question.id, text, probability]);
   const [signed, setSigned] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [posting, setPosting] = useState(false);
   const notePost = useNotePost(item);
   const highlightPost = useHighlightPost(item);
-  const recordOutcome = useRecordDraftOutcome(item.id);
   const name = DRAFT_NAME[draft.kind];
   const edited = editedDraft(draft.kind, text, probability);
   const signedIn = !!session && !session.user.is_anonymous;
@@ -138,30 +141,19 @@ function DraftEditor({ question, draft, anchor, autoFocus, onSettled }: {
     return postedId;
   }
 
-  /** Runs one way of settling the draft, and stores its outcome. */
-  async function settle(outcome: () => Promise<DraftOutcome | null>, failure: string) {
-    setSaving(true);
-    setError("");
+  async function post() {
+    if (!edited) return;
+    setPosting(true);
     try {
-      const settled = await outcome();
-      if (!settled) return;
-      onSettled();
-      await recordOutcome(question.id, settled);
-    } catch {
-      setError(failure);
+      const postedId = await postDraft(edited);
+      if (!postedId) return;
+      draftEdits.delete(question.id);
+      notify(`Your ${name} is posted.`);
+      onSettled({ kind: "posted", postedId });
     } finally {
-      setSaving(false);
+      setPosting(false);
     }
   }
-  const post = () => settle(async () => {
-    if (!edited) return null;
-    const postedId = await postDraft(edited);
-    if (!postedId) return null;
-    draftEdits.delete(question.id);
-    notify(`Your ${name} is posted.`);
-    return { kind: "posted", postedId };
-  }, `Your ${name} is posted, but this conversation could not remember that. It may offer the draft again.`);
-  const discard = () => settle(async () => ({ kind: "discarded" }), "That didn't save. Check your connection and try again.");
 
   return <form className="reader-draft-card reader-draft-editor" onSubmit={(event) => { event.preventDefault(); void post(); }}>
     <p className="reader-entry-kind">Suggested {name}</p>
@@ -173,10 +165,10 @@ function DraftEditor({ question, draft, anchor, autoFocus, onSettled }: {
     {chanceInvalid && <p className="reader-dialog-error">Give a chance from 0 to 100.</p>}
     {signedIn && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
     <p className="reader-draft-public">{signedName ? `Posts publicly as ${signedName}.` : "Posts publicly, without your name."} Other readers rate it.</p>
-    {(error || notePost.error || highlightPost.error) && <p role="alert" className="reader-dialog-error">{error || notePost.error || highlightPost.error}</p>}
+    {(notePost.error || highlightPost.error) && <p role="alert" className="reader-dialog-error">{notePost.error || highlightPost.error}</p>}
     <div className="reader-draft-actions">
-      <Button variant="quiet" disabled={saving} onClick={() => void discard()}>Discard</Button>
-      <Button type="submit" disabled={!edited || saving}>{saving ? "Posting…" : `Post ${name}`}</Button>
+      <Button variant="quiet" disabled={posting} onClick={() => onSettled({ kind: "discarded" })}>Discard</Button>
+      <Button type="submit" disabled={!edited || posting}>{posting ? "Posting…" : `Post ${name}`}</Button>
     </div>
     {notePost.login}
     {highlightPost.login}
@@ -216,18 +208,20 @@ function ExchangeDraft({ question, draft, anchor, onShow }: { question: PassageQ
   // Focus follows the reader's own action: from the draft to its receipt, and
   // back to the draft when they restore it.
   const [moveFocus, setMoveFocus] = useState(false);
-  const outcome = draftOutcome(question);
+  const outcome = settledDrafts.has(question.id) ? settledDrafts.get(question.id) : draftOutcome(question);
+  // Stores the outcome with the question, so a later visit remembers it too.
+  const settle = (next: DraftOutcome | null) => {
+    settledDrafts.set(question.id, next);
+    setMoveFocus(true);
+    recordOutcome(question.id, next).catch(() => notify("This conversation could not save that, so it may offer the draft again after you reload the page."));
+  };
   if (outcome?.kind === "posted") return <PostedDraft draft={draft} postedId={outcome.postedId} focus={moveFocus} onShow={onShow} />;
   if (outcome?.kind === "discarded") {
-    const restore = () => {
-      setMoveFocus(true);
-      recordOutcome(question.id, null).catch(() => notify("That didn't save. Check your connection and try again."));
-    };
     return <p ref={moveFocus ? focusOnMount : undefined} tabIndex={-1} className="reader-draft-discarded">
-      You discarded the suggested {DRAFT_NAME[draft.kind]}. <button type="button" className="reader-text-button" onClick={restore}>Restore</button>
+      You discarded the suggested {DRAFT_NAME[draft.kind]}. <button type="button" className="reader-text-button" onClick={() => settle(null)}>Restore</button>
     </p>;
   }
-  return <DraftEditor question={question} draft={draft} anchor={anchor} autoFocus={moveFocus} onSettled={() => setMoveFocus(true)} />;
+  return <DraftEditor question={question} draft={draft} anchor={anchor} autoFocus={moveFocus} onSettled={settle} />;
 }
 
 /** One question, its answer, and the draft Opus wrote with it. */
@@ -249,7 +243,7 @@ function Exchange({ question, block, contextQuote, onRetry, onShow }: {
     {quote && quote !== contextQuote?.trim() && <p className="reader-ask-quote"><span>About</span> “{quote}”</p>}
     <p className="reader-ask-question">{text}</p>
     {question.status === "done" ? <div className="reader-answer">{renderAnswerMarkdown(question.answer ?? "")}</div>
-      : failure ? <div className="reader-ask-error">
+      : failure ? <div className={failure.retryable ? "reader-ask-error" : "reader-ask-error reader-ask-error-limit"}>
         <p>{failure.text}</p>
         {failure.retryable && <Button variant="secondary" onClick={onRetry}>Ask again</Button>}
       </div>
@@ -258,6 +252,23 @@ function Exchange({ question, block, contextQuote, onRetry, onShow }: {
       * the words the conversation is about now. */}
     {draft && <ExchangeDraft question={question} draft={draft} anchor={{ blockId: block.id, text: quote ?? block.text, paragraph: block.text, partial: !!quote }} onShow={onShow} />}
   </div>;
+}
+
+/** Scrolls the chat so the latest exchange starts at its top: the question
+ *  just asked, or the beginning of the answer that just arrived. */
+function showLatestExchange(chat: HTMLElement) {
+  const latest = chat.lastElementChild;
+  if (!latest) return;
+  chat.scrollTop += latest.getBoundingClientRect().top - chat.getBoundingClientRect().top - parseFloat(getComputedStyle(chat).paddingTop);
+}
+
+/** The panel grows as answers arrive, and its question box can slide below
+ *  the screen. The page then scrolls just enough to show the box again, but
+ *  only while the panel's top is on screen: a reader who scrolled on to read
+ *  the article stays where they are. */
+function keepComposerInView(panel: HTMLElement, composer: HTMLElement | null) {
+  const top = panel.getBoundingClientRect().top;
+  if (top >= 0 && top < window.innerHeight) composer?.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 /** What the empty conversation suggests asking. */
@@ -275,12 +286,20 @@ function AskPanel({ blockId, quote, onClose, onShow }: { blockId: string; quote:
   const block = blocks.find((b) => b.id === blockId)!;
   const [text, setText] = useState("");
   const { questions, ask, waiting, error, login } = usePassageQuestions(item, block.text);
+  const panel = useRef<HTMLElement>(null);
   const chat = useRef<HTMLDivElement>(null);
+  const composer = useRef<HTMLFormElement>(null);
   const titleId = useId();
   const exchanges = questions.data ?? [];
   const lastStatus = exchanges.at(-1)?.status;
+  // The question box takes focus once the margin layout has shown the panel.
+  // A card that was a dot is still hidden while React renders it, and a
+  // hidden field cannot take focus.
+  useEffect(() => composer.current?.querySelector("textarea")?.focus(), []);
   useEffect(() => {
-    chat.current?.scrollTo({ top: chat.current.scrollHeight });
+    if (!chat.current || !panel.current) return;
+    showLatestExchange(chat.current);
+    keepComposerInView(panel.current, composer.current);
   }, [exchanges.length, lastStatus]);
 
   async function send() {
@@ -293,7 +312,7 @@ function AskPanel({ blockId, quote, onClose, onShow }: { blockId: string; quote:
   };
 
   // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-  return <section className="reader-ask" aria-labelledby={titleId} onKeyDown={closeOnEscape}>
+  return <section ref={panel} className="reader-ask" aria-labelledby={titleId} onKeyDown={closeOnEscape}>
     <header className="reader-ask-header">
       <div>
         <h2 id={titleId} className="reader-ask-title">Ask Opus</h2>
@@ -306,12 +325,14 @@ function AskPanel({ blockId, quote, onClose, onShow }: { blockId: string; quote:
         ? <p className="reader-ask-empty">{emptyHint(features)}</p>
         : exchanges.map((question) => <Exchange key={question.id} question={question} block={block} contextQuote={quote} onRetry={() => void ask(question.question)} onShow={onShow} />)}
     </div>
-    <form className="reader-ask-composer" onSubmit={(event) => { event.preventDefault(); void send(); }}>
+    <form ref={composer} className="reader-ask-composer" onSubmit={(event) => { event.preventDefault(); void send(); }}>
       <p className="reader-ask-context">{quote ? <>About “{quote.trim()}”</> : "About this paragraph"}</p>
-      <Textarea autoGrow autoFocus aria-label={quote ? `Your question about “${quote.trim()}”` : "Your question about this paragraph"} maxLength={MAX_QUESTION_LENGTH} rows={2} value={text} onChange={(event) => setText(event.target.value)}
-        placeholder="Ask a question" />
+      <div className="reader-ask-input">
+        <Textarea autoGrow aria-label={quote ? `Your question about “${quote.trim()}”` : "Your question about this paragraph"} maxLength={MAX_QUESTION_LENGTH} rows={1} value={text} onChange={(event) => setText(event.target.value)}
+          placeholder={waiting ? "Opus is answering…" : "Ask a question"} />
+        <Button type="submit" disabled={waiting || !text.trim()}>Ask</Button>
+      </div>
       {error && <p role="alert" className="reader-dialog-error">{error}</p>}
-      <div className="reader-ask-actions"><Button type="submit" disabled={waiting || !text.trim()}>{waiting ? "Opus is answering…" : "Ask"}</Button></div>
     </form>
     {login}
   </section>;
@@ -367,9 +388,15 @@ function AskEntries({ blockId }: { blockId: string }) {
   // Only an open conversation is rendered, so a page with many asked
   // passages does not load all their conversations.
   const open = wide && slotMode(slotKey) === "opened";
+  // Closing hands keyboard focus to the dot the panel shrinks to, once the
+  // margin layout has drawn it.
+  const close = () => {
+    stopAsking(blockId);
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-slot="${CSS.escape(slotKey)}"] .reader-dot`)?.focus()));
+  };
   return <MarginSlot slotKey={slotKey} colorClass={ASK_DOT} priority={SLOT_PRIORITY.ask} label={label} busy={asked?.waiting} closedUntilOpened
     onOpen={wide ? undefined : () => ask(blockId, null)}>
-    {open && <AskPanel blockId={blockId} quote={asking?.blockId === blockId ? asking.quote : null} onClose={() => stopAsking(blockId)} onShow={reveal} />}
+    {open && <AskPanel blockId={blockId} quote={asking?.blockId === blockId ? asking.quote : null} onClose={close} onShow={reveal} />}
   </MarginSlot>;
 }
 
