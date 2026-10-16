@@ -1,7 +1,7 @@
 import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 import type { TablesInsert } from "./database.types";
-import type { PassageHighlight, PassageQuestion } from "./passageHighlights";
+import type { DraftOutcome, PassageHighlight, PassageQuestion } from "./passageHighlights";
 import type { Vote } from "./votes";
 
 export async function fetchPassageQuestions(itemId: string, passage: string, authorId: string): Promise<PassageQuestion[]> {
@@ -11,14 +11,23 @@ export async function fetchPassageQuestions(itemId: string, passage: string, aut
   return data;
 }
 
-/** The passage of every question one reader asked on one article. */
-export async function fetchAskedPassages(itemId: string, authorId: string): Promise<string[]> {
-  const rows = await fetchAllRows<{ id: string; passage: string }>(
-    () => supabase.from("everything_passage_questions").select("id, passage").eq("item_id", itemId).eq("author_id", authorId),
+/** Every question one reader asked on one article: its passage, and whether
+ *  Opus has answered it yet. */
+export async function fetchAskedPassages(itemId: string, authorId: string): Promise<Pick<PassageQuestion, "id" | "passage" | "status">[]> {
+  return fetchAllRows<Pick<PassageQuestion, "id" | "passage" | "status">>(
+    () => supabase.from("everything_passage_questions").select("id, passage, status").eq("item_id", itemId).eq("author_id", authorId),
     "id",
     { label: "askedPassages" },
   );
-  return rows.map((row) => row.passage);
+}
+
+/** Records what the reader did with the draft of a question. Null puts a
+ *  discarded draft back. */
+export async function setDraftOutcome(questionId: string, outcome: DraftOutcome | null): Promise<void> {
+  const { error } = await supabase.from("everything_passage_questions")
+    .update({ draft_outcome: outcome?.kind ?? null, draft_posted_id: outcome?.kind === "posted" ? outcome.postedId : null })
+    .eq("id", questionId);
+  if (error) throw error;
 }
 
 export async function askPassageQuestion(itemId: string, passage: string, question: string, authorId: string): Promise<string> {
@@ -41,9 +50,11 @@ export async function fetchPassageHighlights(itemId: string): Promise<PassageHig
   return data;
 }
 
-export async function postPassageHighlight(row: TablesInsert<"everything_passage_highlights">): Promise<void> {
-  const { error } = await supabase.from("everything_passage_highlights").insert(row);
+/** Posts a key point or forecast and returns its id. */
+export async function postPassageHighlight(row: TablesInsert<"everything_passage_highlights">): Promise<string> {
+  const { data, error } = await supabase.from("everything_passage_highlights").insert(row).select("id").single();
   if (error) throw error;
+  return data.id;
 }
 
 export async function deletePassageHighlight(id: string): Promise<void> {

@@ -3,8 +3,9 @@ import { findQuoteMarks, markRuns, runsText, type InlineRun, type QuoteMark, typ
 
 /** What kind of entry a mark in the text belongs to. Notes get a blue tint
  *  and reader highlights a yellow underline, so where they overlap both stay
- *  visible instead of mixing into a third colour. */
-export type MarkKind = "note" | "highlight";
+ *  visible instead of mixing into a third colour. The words the reader is
+ *  asking Opus about get a grey underline, the colour of the Ask Opus dot. */
+export type MarkKind = "note" | "highlight" | "ask";
 
 /** The words to mark in a block, and the margin entry each quote belongs to. */
 export type BlockQuote = { quote: string; kind: MarkKind; key: string };

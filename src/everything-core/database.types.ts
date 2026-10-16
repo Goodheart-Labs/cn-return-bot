@@ -816,6 +816,8 @@ export type Database = {
           cost_usd: number
           created_at: string
           draft: Json | null
+          draft_outcome: string | null
+          draft_posted_id: string | null
           error: string | null
           id: string
           item_id: string
@@ -832,6 +834,8 @@ export type Database = {
           cost_usd?: number
           created_at?: string
           draft?: Json | null
+          draft_outcome?: string | null
+          draft_posted_id?: string | null
           error?: string | null
           id?: string
           item_id: string
@@ -848,6 +852,8 @@ export type Database = {
           cost_usd?: number
           created_at?: string
           draft?: Json | null
+          draft_outcome?: string | null
+          draft_posted_id?: string | null
           error?: string | null
           id?: string
           item_id?: string

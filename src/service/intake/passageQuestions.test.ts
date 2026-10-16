@@ -7,6 +7,7 @@ import type { PassageQuestion } from "../../everything-core/passageHighlights";
 const question: PassageQuestion = {
   id: "q1", item_id: "article1", author_id: "reader1", passage: "The grid will double in size.", question: "Help me understand this.",
   status: "answering", answer: null, draft: null, error: null, model: null, cost_usd: 0, created_at: "2026-09-29T10:00:00Z", started_at: "2026-09-29T10:00:01Z", answered_at: null,
+  draft_outcome: null, draft_posted_id: null,
 };
 
 function setup(calls: { name: string; args: unknown }[] = [], options: { budget?: boolean; failure?: boolean; answer?: string; searches?: number[]; minisiteFeatures?: string[] } = {}) {

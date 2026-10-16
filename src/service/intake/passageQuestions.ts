@@ -2,7 +2,7 @@ import type OpenAI from "openai";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ALL_FEATURES, enabledFeatures, type FeatureId } from "../../everything-core/minisiteFeatures";
-import { MAX_READER_NOTE_LENGTH, parseOpusDraft, type OpusDraft, type PassageQuestion } from "../../everything-core/passageHighlights";
+import { MAX_READER_NOTE_LENGTH, parseOpusDraft, QUESTION_BUDGET_ERROR, type OpusDraft, type PassageQuestion } from "../../everything-core/passageHighlights";
 import { requestBudgetExhausted } from "../../everything/spendCap";
 import { llm, withLlmAbortSignal } from "../../pipeline/llm/llm";
 import { OPENROUTER_PRICING } from "../../pipeline/cost-tracking/pricing";
@@ -111,7 +111,7 @@ export async function answerPassageQuestion(question: PassageQuestion, deps = {
   const signal = AbortSignal.timeout(5 * 60_000);
   const save = async (values: Record<string, unknown>) => checked(await db.from("everything_passage_questions").update(values).eq("id", question.id));
   try {
-    if (await deps.budgetExhausted()) throw new Error("Daily budget reached");
+    if (await deps.budgetExhausted()) throw new Error(QUESTION_BUDGET_ERROR);
     const item = checked(await db.from("everything_items").select("title, url, full_text").eq("id", question.item_id).single());
     if (!item) throw new Error("Article no longer available");
     const history = checked(await db.from("everything_passage_questions").select("question, answer")
@@ -156,7 +156,7 @@ export async function answerPassageQuestion(question: PassageQuestion, deps = {
     throw new Error("The model did not finish answering");
   } catch (err) {
     console.error(`[intake] passage question ${question.id}:`, err);
-    await save({ status: "error", error: err instanceof Error && err.message === "Daily budget reached" ? err.message : "Could not answer this question. Please try again.", cost_usd: cost, model: MODEL, answered_at: new Date().toISOString() });
+    await save({ status: "error", error: err instanceof Error && err.message === QUESTION_BUDGET_ERROR ? err.message : "Could not answer this question. Please try again.", cost_usd: cost, model: MODEL, answered_at: new Date().toISOString() });
   }
 }
 

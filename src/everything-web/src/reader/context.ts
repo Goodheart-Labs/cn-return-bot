@@ -20,9 +20,21 @@ export interface ReaderAnchor {
 /** The dialog the reader has open. Each kind belongs to one feature module. */
 export type ReaderDialog =
   | { kind: "note"; anchor: ReaderAnchor }
-  | { kind: "highlight"; anchor: ReaderAnchor; highlightKind: HighlightDraft["kind"]; draft?: HighlightDraft }
-  /** Ask Opus about a passage, or about the words `quote` in it. */
-  | { kind: "ask"; blockId: string; quote: string | null };
+  | { kind: "highlight"; anchor: ReaderAnchor; highlightKind: HighlightDraft["kind"]; draft?: HighlightDraft };
+
+/** The passage the reader is asking Opus about, and the words `quote` in it,
+ *  or null for the whole passage. */
+export interface AskTarget {
+  blockId: string;
+  quote: string | null;
+}
+
+/** The reader's questions about one passage. */
+export interface AskedPassage {
+  count: number;
+  /** Opus is still answering one of them. */
+  waiting: boolean;
+}
 
 export interface ReaderNoteRequest {
   id: string;
@@ -50,11 +62,18 @@ export interface ReaderApi {
   highlightsByBlock: ReadonlyMap<string, PassageHighlight[]>;
   refetchHighlights: () => void;
   noteRequests: readonly ReaderNoteRequest[];
-  /** How many questions the reader asked Opus about each passage, by block id. */
-  askedQuestions: ReadonlyMap<string, number>;
+  /** The reader's questions to Opus, by block id. */
+  askedQuestions: ReadonlyMap<string, AskedPassage>;
   /** Returns the existing request when the same words were already requested this visit. */
   requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;
   dialog: ReaderDialog | null;
+  /** The conversation with Opus the reader opened last. On a wide screen it
+   *  is a panel in the margin beside its passage, on a narrow one a sheet. */
+  asking: AskTarget | null;
+  /** Opens the conversation about a passage, or about the words `quote` in it. */
+  ask: (blockId: string, quote: string | null) => void;
+  /** Closes the conversation about a passage. */
+  stopAsking: (blockId: string) => void;
   openDialog: (dialog: ReaderDialog) => void;
   closeDialog: () => void;
   /** Shows a short message at the bottom of the screen. */

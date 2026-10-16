@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PageItem } from "@cn/core/items";
 import type { FeatureId } from "@cn/core/minisiteFeatures";
 import type { PassageHighlight } from "@cn/core/passageHighlights";
@@ -7,11 +7,11 @@ import { fetchPassageHighlights, subscribeToPassages } from "@cn/core/passages";
 import { anchorForSelection, mapQuotesToBlocks, parseReaderText, withoutRepeatedHeader, type ReaderBlock } from "@cn/core/readerText";
 import type { NoteRow } from "@cn/core/types";
 import { BlockContent, type BlockQuote } from "./Blocks";
-import { ReaderContext, UNANCHORED, useReader, type ReaderAction, type ReaderApi, type ReaderDialog, type SlotMode } from "./context";
+import { ReaderContext, UNANCHORED, useReader, type AskTarget, type ReaderAction, type ReaderApi, type ReaderDialog, type SlotMode } from "./context";
 import { READER_MODULES } from "./features";
 import { highlightCardId } from "./features/highlights";
 import { groupNotesByQuote, noteCardId, noteQuoteText, noteSlotKey, useReaderNoteSet } from "./features/notes";
-import { useAskedQuestions } from "./features/askOpus";
+import { askSlotKey, useAskedQuestions } from "./features/askOpus";
 import { useNoteRequests } from "./features/requestNote";
 import { SelectionToolbar } from "./SelectionToolbar";
 import { useMarginLayout } from "./useMarginLayout";
@@ -188,6 +188,7 @@ export function Reader({ item, content, header, features, scope }: {
 }) {
   const wide = useWide();
   const [dialog, setDialog] = useState<ReaderDialog | null>(null);
+  const [asking, setAsking] = useState<AskTarget | null>(null);
   const [openBlock, setOpenBlock] = useState<string | null>(null);
   const [slotModes, setSlotModes] = useState<ReadonlyMap<string, SlotMode>>(new Map());
   // The map keeps its keys in the order they were last set, so the most
@@ -224,7 +225,13 @@ export function Reader({ item, content, header, features, scope }: {
   const nnnEntries = useMemo(() => [...(noteQuery.data?.nnn.values() ?? [])], [noteQuery.data]);
   const highlightQuery = useQuery({ queryKey: ["passageHighlights", item.id], queryFn: () => fetchPassageHighlights(item.id) });
   const { refetch: refetchHighlightQuery } = highlightQuery;
-  useEffect(() => subscribeToPassages(item.id, () => { void refetchHighlightQuery(); }), [item.id, refetchHighlightQuery]);
+  const queryClient = useQueryClient();
+  // One live subscription serves the whole reader: new key points and
+  // forecasts, and the progress of the reader's questions to Opus.
+  useEffect(() => subscribeToPassages(item.id, () => {
+    void refetchHighlightQuery();
+    void queryClient.invalidateQueries({ queryKey: ["passageQuestions", item.id] });
+  }), [item.id, refetchHighlightQuery, queryClient]);
   const highlights = useMemo(() => (highlightQuery.data ?? []).filter((h) => highlightShown(features, h)), [highlightQuery.data, features]);
 
   const placedNotes = useMemo(() => mapQuotesToBlocks(blocks, notes, noteQuote), [blocks, notes]);
@@ -254,7 +261,7 @@ export function Reader({ item, content, header, features, scope }: {
     return () => clearTimeout(timer);
   }, [notice]);
   const noteRequests = useNoteRequests(item, notify);
-  const askedQuestions = useAskedQuestions(item, blocks);
+  const askedQuestions = useAskedQuestions(item, blocks, notify);
 
   const api: ReaderApi = {
     item, scope, blocks, features, wide, notesByBlock, nnnEntries, highlightsByBlock,
@@ -265,6 +272,16 @@ export function Reader({ item, content, header, features, scope }: {
     dialog,
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),
+    asking,
+    ask: (blockId, quote) => {
+      setAsking({ blockId, quote });
+      document.getSelection()?.removeAllRanges();
+      if (wide) openEntry(askSlotKey(scope, blockId));
+    },
+    stopAsking: (blockId) => {
+      setAsking((current) => (current?.blockId === blockId ? null : current));
+      if (wide) closeEntry(askSlotKey(scope, blockId));
+    },
     notify,
     reveal: (elementId, blockId) => { if (blockId) setOpenBlock(blockId); revealWhenRendered(elementId, markOpened); },
     entryNavigation: (elementId) => {
@@ -280,7 +297,10 @@ export function Reader({ item, content, header, features, scope }: {
   };
 
   // Each quote carries the key of its margin slot, so pointing at the words
-  // finds the card, and the card finds its words.
+  // finds the card, and the card finds its words. The words the reader is
+  // asking Opus about stay marked while the conversation is open beside them.
+  const askKey = asking && askSlotKey(scope, asking.blockId);
+  const askMarked = wide && !!asking?.quote && slotModes.get(askKey!) === "opened";
   const quotesByBlock = useMemo(() => {
     const quotes = new Map<string, BlockQuote[]>();
     const add = (blockId: string, quote: BlockQuote) => {
@@ -292,8 +312,9 @@ export function Reader({ item, content, header, features, scope }: {
     for (const [blockId, group] of placedHighlights.byBlock) {
       for (const highlight of group) add(blockId, { quote: highlight.quote.trim(), kind: "highlight", key: highlightCardId(scope, highlight.id) });
     }
+    if (askMarked) add(asking!.blockId, { quote: asking!.quote!, kind: "ask", key: askKey! });
     return quotes;
-  }, [placedNotes, placedHighlights, scope]);
+  }, [placedNotes, placedHighlights, scope, askMarked, asking, askKey]);
 
   const marginCount = (blockId: string) => READER_MODULES.reduce((sum, module) => sum + (module.marginCount?.(api, blockId) ?? 0), 0);
   const totalEntries = notes.length + highlights.length;

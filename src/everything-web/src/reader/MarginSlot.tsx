@@ -28,20 +28,25 @@ export function useSlotKey(): string {
  *  wide screens the margin layout decides which one shows and where. On
  *  narrow screens there is no margin, so a closed entry is one line under
  *  the passage. */
-export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, children }: {
+export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, closedUntilOpened, busy, children }: {
   slotKey: string;
   /** The text colour class the dot is drawn in. */
   colorClass: string;
   priority: number;
   /** What the dot and the closed line say, such as "Note · Needs more ratings". */
   label: string;
-  /** An entry that opens somewhere else, such as a dialog, has no card. It
-   *  is always a dot, and this runs when the dot is clicked. */
+  /** An entry that opens somewhere else, such as a sheet on a phone, has no
+   *  card. It is always closed, and this runs when it is clicked. */
   onOpen?: () => void;
+  /** The card never opens by itself. It shows only once the reader opens it. */
+  closedUntilOpened?: boolean;
+  /** Something is under way, such as Opus answering, so the dot pulses. */
+  busy?: boolean;
   children?: ReactNode;
 }) {
   const { wide, slotMode, openedRank, openEntry } = useReader();
-  const mode = onOpen ? "closed" : slotMode(slotKey);
+  const storedMode = slotMode(slotKey);
+  const mode = onOpen || (closedUntilOpened && storedMode === "auto") ? "closed" : storedMode;
   const open = onOpen ?? (() => openEntry(slotKey));
   if (!wide && mode === "closed") {
     return <div className="reader-entry">
@@ -52,7 +57,7 @@ export function MarginSlot({ slotKey, colorClass, priority, label, onOpen, child
     </div>;
   }
   return <SlotKeyContext.Provider value={slotKey}>
-    <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority} data-opened-rank={openedRank(slotKey)}>
+    <div className="reader-slot" data-slot={slotKey} data-mode={mode} data-priority={priority} data-opened-rank={openedRank(slotKey)} data-busy={busy || undefined}>
       {wide && <MarginDot className="reader-dot" colorClass={colorClass} open={false} label={label} onClick={open} />}
       <div className="reader-slot-card">{children}</div>
     </div>

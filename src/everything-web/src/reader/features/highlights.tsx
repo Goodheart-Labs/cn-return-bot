@@ -16,7 +16,7 @@ import { useReader, type ReaderAnchor, type ReaderModule } from "../context";
 import { DialogFooter, DialogQuote } from "../DialogParts";
 import { EntryBar } from "../EntryBar";
 import { HIGHLIGHT_DOT, MarginSlot, SLOT_PRIORITY } from "../MarginSlot";
-import { DraftSuggestion, useHighlightPost, usePassageQuestions } from "./passageQuestions";
+import { DraftSuggestion, useHighlightPost, usePassageQuestions, useRecordDraftOutcome } from "./passageQuestions";
 
 /** The longest quote handed to Opus when it drafts from selected words. */
 const MAX_DRAFT_QUOTE_CHARS = 1500;
@@ -35,6 +35,10 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
   const [answer, setAnswer] = useState<PassageQuestion | null>(null);
   const agent = usePassageQuestions(item, anchor.paragraph, setAnswer);
   const poster = useHighlightPost(item);
+  const recordOutcome = useRecordDraftOutcome(item.id);
+  // The question whose draft the reader took, so Ask Opus does not offer that
+  // draft again once it is posted.
+  const [draftFrom, setDraftFrom] = useState<string | null>(null);
   const suggestion = parseHighlightDraft(answer?.draft);
   const current = parseHighlightDraft({ kind, probability: kind === "forecast" && probability.trim() ? Number(probability) : null, statement });
   const canDraft = features.has("opus.drafts");
@@ -43,14 +47,17 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
   // before this effect, so the first field takes focus here.
   useEffect(() => form.current?.querySelector<HTMLElement>("input, textarea")?.focus(), []);
 
-  async function post(highlight: HighlightDraft, authorName: string | null) {
-    if (!(await poster.post(anchor, highlight, authorName))) return;
+  async function post(highlight: HighlightDraft, authorName: string | null, fromQuestion = draftFrom) {
+    const postedId = await poster.post(anchor, highlight, authorName);
+    if (!postedId) return;
+    const remembered = !fromQuestion || await recordOutcome(fromQuestion, { kind: "posted", postedId }).then(() => true, () => false);
     closeDialog();
     document.getSelection()?.removeAllRanges();
     refetchHighlights();
-    notify(`Your ${kindName(highlight.kind)} is posted.`);
+    notify(`Your ${kindName(highlight.kind)} is posted.${remembered ? "" : " Ask Opus may still offer its draft."}`);
   }
   function edit(next: HighlightDraft) {
+    setDraftFrom(answer?.id ?? null);
     setKind(next.kind);
     setStatement(next.statement);
     setProbability(next.kind === "forecast" ? String(next.probability) : "");
@@ -73,8 +80,9 @@ function HighlightDialog({ anchor, initialKind, draft }: { anchor: ReaderAnchor;
       <Textarea autoGrow id="reader-highlight-statement" aria-label={kind === "forecast" ? "What the forecast is about" : "The key point"} placeholder={kind === "forecast" ? "what the article expects to happen" : "the point, in a sentence"} required maxLength={2000} rows={2} value={statement} onChange={(event) => setStatement(event.target.value)} />
       {session && !session.user.is_anonymous && <Checkbox checked={signed} onChange={setSigned}>Post as {displayName(session)}</Checkbox>}
       {suggestion
-        ? <DraftSuggestion draft={suggestion} posting={poster.posting} onUse={() => void post(suggestion, null)} onEdit={() => edit(suggestion)} />
-        : answer?.status === "done" && <p className="reader-draft-card" role="status">{answer.answer}</p>}
+        ? <DraftSuggestion draft={suggestion} posting={poster.posting} onUse={() => void post(suggestion, null, answer?.id ?? null)} onEdit={() => edit(suggestion)} />
+        : answer?.status === "done" ? <p className="reader-draft-card" role="status">{answer.answer}</p>
+          : answer?.status === "error" && <p role="alert" className="reader-dialog-error">Opus could not write a draft. Please try again.</p>}
       {(poster.error || agent.error) && <p role="alert" className="reader-dialog-error">{poster.error || agent.error}</p>}
       <DialogFooter helper={canDraft && <Button variant="secondary" disabled={agent.waiting} onClick={askForDraft}>{agent.waiting ? "Drafting…" : "Draft with Opus"}</Button>}>
         <Button variant="quiet" onClick={closeDialog}>Cancel</Button>

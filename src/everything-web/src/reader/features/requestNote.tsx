@@ -76,7 +76,7 @@ function RequestCard({ request }: { request: ReaderNoteRequest }) {
         <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind="note request" /></div>
         <p className="reader-entry-kind">Note request</p>
         <p className="reader-ask-quote">“{request.quote}”</p>
-        <div role="status" className="reader-ask-status">{lines.map((line) => <p key={line}>{line}</p>)}</div>
+        <div role="status" className="reader-request-status">{lines.map((line) => <p key={line}>{line}</p>)}</div>
       </Card>
     </section>
   </MarginSlot>;
