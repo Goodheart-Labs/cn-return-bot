@@ -13,7 +13,7 @@ import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
 import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
 import { rememberClosedClaim } from "../utils/closedNotes";
-import { MARKER_SIZE, placeMarginCards, placeMarkers } from "@cn/core/marginCards";
+import { flowMarginColumn, MARKER_SIZE, type ColumnMode } from "@cn/core/marginCards";
 import { mostSpecific } from "../utils/overlaps";
 import { applyFocusHighlight } from "../utils/passageHighlights";
 import { NextNoteButton, type NoteNavigation } from "@cn/features/notes/NextNoteButton";
@@ -114,6 +114,14 @@ function cardLabel(group: ClaimGroup): string {
   return `${markerLabel(group)}: “${quote}”`;
 }
 
+
+/** How a claim enters the margin column. A card the reader opened or closed
+ *  stays that way. A card the reader has not touched opens by itself only
+ *  when its display setting is open, which by default means a helpful note. */
+function columnMode(choice: boolean | undefined, display: ClaimGroup["display"]): ColumnMode {
+  if (choice !== undefined) return choice ? "opened" : "closed";
+  return display === "open" ? "auto" : "closed";
+}
 
 /** What both marker styles are drawn from. */
 interface MarkerProps {
@@ -351,19 +359,15 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     logMarginFallback(fallbackReason);
     const useMargin = noteStyle === "margin" && fallbackReason === null;
 
-    // Markers of passages that start on the same lines are pushed below each
-    // other, so every one stays clickable.
-    const rects = groups.map((group) => relRect(group.range, origin));
-    const marginTops = useMargin ? placeMarkers(groups.map((group, index) => ({ key: group, top: rects[index]!.top }))) : new Map<AnchoredGroup, number>();
-
-    const placed = groups.map((group, index) => {
-      const rect = rects[index]!;
+    const placed = groups.map((group) => {
+      const rect = relRect(group.range, origin);
       if (useMargin) {
+        // The tops of the marker and the card come from the margin column,
+        // which also depends on which cards are open.
         return {
           group,
           passageTop: rect.top,
-          badgeStyle: { top: marginTops.get(group)!, left: marginLeft - origin.left, width: MARKER_SIZE, height: MARKER_SIZE } satisfies React.CSSProperties,
-          // The top is filled in once the open cards are stacked.
+          badgeStyle: { left: marginLeft - origin.left, width: MARKER_SIZE, height: MARKER_SIZE } satisfies React.CSSProperties,
           popoverStyle: {
             left: marginLeft - origin.left,
             width: Math.min(MARGIN_CARD_WIDTH, availableMargin),
@@ -402,20 +406,26 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   const reportHeight = useCallback((claimId: string, height: number) => {
     setCardHeights((prev) => (prev.get(claimId) === height ? prev : new Map(prev).set(claimId, height)));
   }, []);
-  // The top of every open card in the margin style, or null in the classic
-  // style, where only the cards the reader opened are shown.
+  // Where each claim sits in the margin style, as a card or a dot, laid out
+  // by the same rules as a minisite's margin. It is null in the classic
+  // style, where only the cards the reader opened are shown. Every layout
+  // pass computes it afresh from the positions on screen, so passages that
+  // the host page adds or moves later simply take their place.
   const { choices } = cards;
-  const marginCardTops = useMemo(() => {
+  const column = useMemo(() => {
     if (!layout.useMargin) return null;
-    const candidates = layout.placed.filter(({ group }) => choices.get(group.claimId) ?? group.display === "open");
-    return placeMarginCards(
-      candidates.map(({ group, passageTop }) => ({ claimId: group.claimId, passageTop, openedByReader: choices.get(group.claimId) === true })),
-      cardHeights,
-    );
+    const readingOrder = [...layout.placed].sort((a, b) =>
+      a.passageTop - b.passageTop || a.group.range.compareBoundaryPoints(Range.START_TO_START, b.group.range));
+    return flowMarginColumn(readingOrder.map(({ group, passageTop }) => ({
+      key: group.claimId,
+      anchor: passageTop,
+      height: cardHeights.get(group.claimId),
+      mode: columnMode(choices.get(group.claimId), group.display),
+    })));
   }, [layout, choices, cardHeights]);
   const isOpen = useCallback(
-    (group: ClaimGroup) => (marginCardTops ? marginCardTops.has(group.claimId) : choices.get(group.claimId) === true),
-    [marginCardTops, choices],
+    (group: ClaimGroup) => (column ? column.get(group.claimId)?.shown === "card" : choices.get(group.claimId) === true),
+    [column, choices],
   );
 
   // Closing a note hands the focus back to its marker, the way any dialog
@@ -607,6 +617,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
           {/* Rendered in reading order, so Tab walks the markers down the page. */}
           {[...layout.placed].sort((a, b) => indexOf(a.group.claimId) - indexOf(b.group.claimId)).map(({ group, badgeStyle, popoverStyle }) => {
             const cardOpen = isOpen(group);
+            const columnTop = column?.get(group.claimId)?.top;
             const marker = {
               group,
               ref: (el: HTMLButtonElement | null) => {
@@ -617,7 +628,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
               open: cardOpen,
               onClick: () => toggle(group),
               onPoint: (pointing: boolean) => point(group.claimId, pointing),
-              style: badgeStyle,
+              style: { ...badgeStyle, top: columnTop ?? badgeStyle.top },
             };
             const index = indexOf(group.claimId);
             return (
@@ -631,7 +642,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
                     navigation={{ position: index + 1, total: ordered.length, onNext: () => jumpAfter(index) }}
                     style={{
                       ...popoverStyle,
-                      ...(marginCardTops && { top: marginCardTops.get(group.claimId) }),
+                      top: columnTop ?? popoverStyle.top,
                       // The card the reader opened last sits above the others.
                       zIndex: focused === group.claimId ? 3 : 2,
                     }}
