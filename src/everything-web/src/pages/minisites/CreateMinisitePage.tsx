@@ -176,7 +176,7 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
       {job?.status === "error" && <p role="alert" className="factcheck-error">{job.error ?? "We couldn't read this page."} <button type="button" className="minisites-retry" onClick={() => void read()}>Try again</button></p>}
     </form>}
 
-    {step === "check" && result && <section className="create-check">
+    {step === "check" && result && <form className="create-check" onSubmit={(event) => { event.preventDefault(); setStep("features"); }}>
       {known && <p className="create-known">This page is already on Common Notes: {known.notes} {known.notes === 1 ? "note" : "notes"}, {known.highlights} {known.highlights === 1 ? "key point or forecast" : "key points and forecasts"}{known.checked ? ", fact-checked" : ""}.</p>}
       <div className="create-columns">
         <div className="create-fields">
@@ -193,9 +193,9 @@ export function CreateMinisitePage({ navigate }: { navigate: (route: Route) => v
       </div>
       <div className="minisite-dialog-actions">
         <Button variant="quiet" onClick={() => { setStep("paste"); setJobId(null); }}>Start over</Button>
-        <Button disabled={!title.trim() || !slugValid} onClick={() => setStep("features")}>Next: choose features</Button>
+        <Button type="submit" disabled={!title.trim() || !slugValid}>Next: choose features</Button>
       </div>
-    </section>}
+    </form>}
 
     {step === "features" && <section className="create-features">
       <FeatureChecklist value={features} onChange={setFeatures} />
