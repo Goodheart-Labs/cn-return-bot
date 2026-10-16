@@ -184,22 +184,24 @@ describe("anchoring quotes to blocks", () => {
 });
 
 describe("marking quotes inside styled text", () => {
-  test("marks merge per kind and split runs at their edges", () => {
+  test("overlapping marks stay separate layers, longest first, and split runs at their edges", () => {
     const runs = parseInline("Demand could *double* by 2035. Storage matters.");
     const text = runs.map((run) => run.text).join("");
-    const marks = findQuoteMarks(text, [{ quote: "could double", kind: "note" }, { quote: "double by 2035.", kind: "note" }]);
-    expect(marks).toEqual([{ start: 7, end: 28, kind: "note" }]);
+    const marks = findQuoteMarks(text, [{ quote: "could double", kind: "note", key: "a" }, { quote: "double by 2035.", kind: "note", key: "b" }]);
+    const a = { start: 7, end: 19, kind: "note", key: "a" };
+    const b = { start: 13, end: 28, kind: "note", key: "b" };
+    expect(marks).toEqual([a, b]);
     expect(markRuns(runs, marks)).toEqual([
       { text: "Demand " },
-      { text: "could ", mark: "note" },
-      { text: "double", em: true, mark: "note" },
-      { text: " by 2035.", mark: "note" },
+      { text: "could ", marks: [a] },
+      { text: "double", em: true, marks: [b, a] },
+      { text: " by 2035.", marks: [b] },
       { text: " Storage matters." },
     ]);
   });
 
   test("quote matching crosses line breaks and escapes regular expression punctuation", () => {
-    expect(findQuoteMarks("A [50%]\nchance.", [{ quote: "[50%] chance.", kind: "key_point" }, { quote: " ", kind: "x" }]))
-      .toEqual([{ start: 2, end: 15, kind: "key_point" }]);
+    expect(findQuoteMarks("A [50%]\nchance.", [{ quote: "[50%] chance.", kind: "key_point", key: "k" }, { quote: " ", kind: "x", key: "x" }]))
+      .toEqual([{ start: 2, end: 15, kind: "key_point", key: "k" }]);
   });
 });

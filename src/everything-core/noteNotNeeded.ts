@@ -37,6 +37,12 @@ export async function fetchProjectNnn(projectId: string): Promise<NnnRow[]> {
   return asNnnRows(rows.map(({ claim: _claim, ...entry }) => entry)).sort(oldestFirst);
 }
 
+/** Every entry on the site, oldest first. */
+export async function fetchAllNnn(): Promise<NnnRow[]> {
+  const entries = await fetchAllRows<NnnRow>(() => supabase.from("everything_note_not_needed").select("*"), "id", { label: "allNnn" });
+  return entries.sort(oldestFirst);
+}
+
 /** Fetches one entry by id, to pick up the counts the database trigger
  *  recomputed after a vote. */
 export async function fetchNnnEntry(entryId: string): Promise<NnnRow | null> {

@@ -1,37 +1,46 @@
 import { useEffect } from "react";
-import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import { fetchProjects } from "@cn/core/creators";
-import { fetchProjectItems } from "@cn/core/items";
-import { fetchProjectNnn } from "@cn/core/noteNotNeeded";
-import { fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
+import { fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
+import { fetchAllNnn, fetchProjectNnn } from "@cn/core/noteNotNeeded";
+import { fetchAllNotes, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
 import { subscribeToProjectChanges } from "@cn/core/projectRealtime";
 import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
 import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
 
-/* The website reads one project at a time, because that is what the feed
- * shows. Every query names the project it needs and lists the columns the
- * page renders. Switching project loads that project, and the previous one
- * drops out of the cache after a few minutes. */
+/* The website reads one project at a time, because that is what a creator's
+ * feed shows. The All notes page is the exception and reads every note at
+ * once. Every query names what it needs and lists the columns the page
+ * renders. Switching page loads that page's notes, and the previous ones drop
+ * out of the cache after a few minutes. */
 
 /** The projects the sidebar lists. */
 export const useProjects = () => useQuery({ queryKey: queryKeys.projects, queryFn: fetchProjects });
 
-/** One project's items, its notes and its note-not-needed entries, kept
- *  current over a realtime channel while the project is open. */
-export function useProjectFeed(projectId: string | null) {
+/** Where one feed's items, notes and note-not-needed entries come from, and
+ *  the cache keys they are kept under. */
+interface FeedSource {
+  itemsKey: QueryKey;
+  fetchItems: () => Promise<FeedItemRow[]>;
+  noteSetKey: QueryKey;
+  fetchNotes: () => Promise<NoteRow[]>;
+  fetchNnn: () => Promise<NnnRow[]>;
+  enabled: boolean;
+}
+
+function useFeed({ itemsKey, fetchItems, noteSetKey, fetchNotes, fetchNnn, enabled }: FeedSource) {
   const items = useQuery({
-    queryKey: queryKeys.projectItems(projectId ?? ""),
-    queryFn: () => fetchProjectItems(projectId!),
-    enabled: !!projectId,
+    queryKey: itemsKey,
+    queryFn: fetchItems,
+    enabled,
     select: (rows) => new Map(rows.map((r) => [r.id, r])),
   });
   const noteSet = useQuery({
-    queryKey: queryKeys.projectNoteSet(projectId ?? ""),
-    queryFn: async () => noteSetOf(...(await Promise.all([fetchProjectNotes(projectId!), fetchProjectNnn(projectId!)]))),
-    enabled: !!projectId,
+    queryKey: noteSetKey,
+    queryFn: async () => noteSetOf(...(await Promise.all([fetchNotes(), fetchNnn()]))),
+    enabled,
   });
-  useProjectRealtime(projectId);
   return {
     items: items.data,
     noteSet: noteSet.data,
@@ -39,6 +48,35 @@ export function useProjectFeed(projectId: string | null) {
     retry: () => void Promise.all([items.refetch(), noteSet.refetch()]),
   };
 }
+
+/** One project's items, its notes and its note-not-needed entries, kept
+ *  current over a realtime channel while the project is open. */
+export function useProjectFeed(projectId: string | null) {
+  const feed = useFeed({
+    itemsKey: queryKeys.projectItems(projectId ?? ""),
+    fetchItems: () => fetchProjectItems(projectId!),
+    noteSetKey: queryKeys.projectNoteSet(projectId ?? ""),
+    fetchNotes: () => fetchProjectNotes(projectId!),
+    fetchNnn: () => fetchProjectNnn(projectId!),
+    enabled: !!projectId,
+  });
+  useProjectRealtime(projectId);
+  return feed;
+}
+
+/** Every visible note on the site, with the items they are on, for the All
+ *  notes page. It has no realtime channel. A vote still shows up at once,
+ *  because a vote refreshes its note in every cached NoteSet. Notes written
+ *  by others appear when the page is opened again. */
+export const useAllNotesFeed = () =>
+  useFeed({
+    itemsKey: queryKeys.itemsWithNotes,
+    fetchItems: fetchItemsWithNotes,
+    noteSetKey: queryKeys.allNoteSet,
+    fetchNotes: fetchAllNotes,
+    fetchNnn: fetchAllNnn,
+    enabled: true,
+  });
 
 /** Keeps only the columns the feed renders. A realtime message always carries
  *  the whole row, including the item's body text, and holding on to that

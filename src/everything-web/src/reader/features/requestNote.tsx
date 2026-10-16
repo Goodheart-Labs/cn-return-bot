@@ -7,7 +7,8 @@ import { watchRequestProgress, type RequestWatch } from "@cn/core/requestProgres
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Card } from "@cn/ui/Card";
 import { useReader, type ReaderModule, type ReaderNoteRequest } from "../context";
-import { ClosedEntry, EntryBar } from "../EntryBar";
+import { EntryBar } from "../EntryBar";
+import { MarginSlot, REQUEST_DOT, SLOT_PRIORITY } from "../MarginSlot";
 
 export const requestCardId = (scope: string, requestId: string) => `${scope}-request-${requestId}`;
 
@@ -66,18 +67,19 @@ export function useNoteRequests(item: PageItem, notify: (message: string) => voi
 }
 
 function RequestCard({ request }: { request: ReaderNoteRequest }) {
-  const { scope, isCollapsed } = useReader();
+  const { scope } = useReader();
   const id = requestCardId(scope, request.id);
   const lines = progressLines(request.progress);
-  if (isCollapsed(id)) return <ClosedEntry elementId={id} kind="Note request" detail={lines.join(", ")} />;
-  return <section id={id} className="reader-entry" aria-label="Note request">
-    <Card className="min-w-0 p-4">
-      <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind="note request" /></div>
-      <p className="reader-entry-kind">Note request</p>
-      <p className="reader-ask-quote">“{request.quote}”</p>
-      <div role="status" className="reader-ask-status">{lines.map((line) => <p key={line}>{line}</p>)}</div>
-    </Card>
-  </section>;
+  return <MarginSlot slotKey={id} colorClass={REQUEST_DOT} priority={SLOT_PRIORITY.request} label={`Note request · ${lines.join(", ")}`}>
+    <section id={id} className="reader-entry" aria-label="Note request">
+      <Card className="min-w-0 p-4">
+        <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind="note request" /></div>
+        <p className="reader-entry-kind">Note request</p>
+        <p className="reader-ask-quote">“{request.quote}”</p>
+        <div role="status" className="reader-request-status">{lines.map((line) => <p key={line}>{line}</p>)}</div>
+      </Card>
+    </section>
+  </MarginSlot>;
 }
 
 function RequestEntries({ blockId }: { blockId: string }) {
@@ -97,7 +99,6 @@ export const requestNoteModule: ReaderModule = {
       const request = api.requestNote(block.id, quote);
       const cardId = requestCardId(api.scope, request.id);
       document.getSelection()?.removeAllRanges();
-      api.setCollapsed(cardId, false);
       api.reveal(cardId, request.blockId);
     },
   }] : []),

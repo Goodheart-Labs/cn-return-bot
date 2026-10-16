@@ -5,6 +5,7 @@ import { InlineNotesApp, type AnchoredGroup } from "../components/InlineNotes";
 import { anchorGroups } from "../utils/anchorGroups";
 import { claimGroups, itemNoteSetQuery } from "../utils/claimGroups";
 import { applyHighlights, ensureHighlightStyle } from "../utils/passageHighlights";
+import { DEFAULT_MARGIN_OPTIONS } from "@cn/core/marginCards";
 import { DEFAULT_NOTE_DISPLAY } from "../utils/settings";
 import { CHART_IMAGE, PAGE_ITEM, PAGE_SEEDS } from "../../everything-storybook/fixtures";
 
@@ -29,7 +30,7 @@ function Overlay({ article, layer, noteStyle }: { article: HTMLElement; layer: H
     applyHighlights(groups.filter((g) => g.display !== "dot").map((g) => g.range));
     return groups;
   });
-  return <InlineNotesApp groups={anchored} item={PAGE_ITEM} container={article} inlineContainer={layer} noteStyle={noteStyle} initiallyClosed={NOTHING_CLOSED} />;
+  return <InlineNotesApp groups={anchored} item={PAGE_ITEM} container={article} inlineContainer={layer} noteStyle={noteStyle} marginOptions={DEFAULT_MARGIN_OPTIONS} initiallyClosed={NOTHING_CLOSED} />;
 }
 
 function SubstackPost({ noteStyle }: { noteStyle: "margin" | "classic" }) {

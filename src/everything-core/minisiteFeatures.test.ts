@@ -18,10 +18,11 @@ test("Opus's abilities need a place to ask Opus", () => {
   expect(withAsk.has("opus.search")).toBe(true);
 });
 
-test("drafting needs a highlight kind to draft", () => {
+test("drafting needs a note, key point or forecast to draft", () => {
   const ask = ["opus", "opus.drafts", "passage", "passage.askOpus"];
   expect(enabledFeatures(ask).has("opus.drafts")).toBe(false);
   expect(enabledFeatures([...ask, "highlight", "highlight.keyPoint"]).has("opus.drafts")).toBe(true);
+  expect(enabledFeatures([...ask, "highlight", "highlight.note"]).has("opus.drafts")).toBe(true);
 });
 
 test("unknown stored ids are ignored", () => {
