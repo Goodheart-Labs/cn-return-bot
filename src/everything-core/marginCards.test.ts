@@ -120,3 +120,11 @@ test("a card that opened by itself gives way to a card the reader opens below it
   expect(layout.get("b")).toEqual({ top: DOT_STEP, shown: "dot", displaced: true });
   expect(layout.get("c")).toEqual({ top: 2 * DOT_STEP, shown: "card", displaced: false });
 });
+
+test("a card opens at its home, where its dot sits when every entry is a dot, even below an open card", () => {
+  // a is open at 0 and reaches to 300. c's home is two dot steps down, inside
+  // a, so opening c closes a and puts c at its home.
+  const layout = flowMarginColumn([entry("a", 0, "opened", 1), entry("b", 0), entry("c", 0, "opened", 2)]);
+  expect(layout.get("a")).toEqual({ top: 0, shown: "dot", displaced: true });
+  expect(layout.get("c")).toEqual({ top: 2 * DOT_STEP, shown: "card", displaced: false });
+});

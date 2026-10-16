@@ -93,59 +93,75 @@ export interface ColumnEntry<K> {
  *  but now shows as a dot to make room for a card the reader opened later. */
 type ColumnLayout<K> = Map<K, { top: number; shown: "card" | "dot"; displaced: boolean }>;
 
-/** One pass down the column with exactly the cards in `open` opened. A card
- *  the reader has not touched stays a dot when it is in `yielded`. */
-function flowOnce<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>, yielded: ReadonlySet<K> = new Set()): ColumnLayout<K> {
-  const placed: ColumnLayout<K> = new Map();
+/** Positions closer than this count as the same place. */
+const SAME_PLACE_PX = 0.5;
+
+/** Each entry's home: where its dot sits when every entry is a dot. */
+function homeTops<K>(entries: readonly ColumnEntry<K>[]): Map<K, number> {
+  const homes = new Map<K, number>();
   let floor = -Infinity;
   for (const entry of entries) {
     const top = Math.max(entry.anchor, floor);
+    homes.set(entry.key, top);
+    floor = top + MARKER_SIZE + MARKER_GAP;
+  }
+  return homes;
+}
+
+/** One pass down the column with exactly the cards in `open` opened. A card
+ *  the reader has not touched stays a dot when it is in `yielded`. */
+function flowOnce<K>(entries: readonly ColumnEntry<K>[], homes: ReadonlyMap<K, number>, open: ReadonlySet<K>, yielded: ReadonlySet<K>): ColumnLayout<K> {
+  const placed: ColumnLayout<K> = new Map();
+  let floor = -Infinity;
+  for (const entry of entries) {
+    const home = homes.get(entry.key)!;
+    const top = Math.max(home, floor);
     const height = entry.height ?? UNMEASURED_CARD_HEIGHT;
-    const card = open.has(entry.key) || (entry.mode === "auto" && !yielded.has(entry.key) && top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT);
-    const displaced = !card && ((entry.mode === "opened") || yielded.has(entry.key));
+    const card = open.has(entry.key) || (entry.mode === "auto" && !yielded.has(entry.key) && top - home <= DEFAULT_OPEN_MAX_DRIFT);
+    const displaced = !card && (entry.mode === "opened" || yielded.has(entry.key));
     placed.set(entry.key, { top, shown: card ? "card" : "dot", displaced });
     floor = card ? top + height + MARGIN_CARD_STACK_GAP : top + MARKER_SIZE + MARKER_GAP;
   }
   return placed;
 }
 
-/** Lays the margin out as one column, filled from the top. Each entry sits
- *  level with its words, or right below the entry above it when that one is
- *  in the way, so nothing ever overlaps or hides a dot. Opening an entry turns
- *  its dot into a card in the same place: the entries above it stay where
- *  they are and the ones below move down.
+/** Cards the reader has not touched give way to the cards the reader opened:
+ *  while an opened card is pushed off its home, the nearest untouched card
+ *  above it turns into a dot. */
+function yieldUntouchedCards<K>(entries: readonly ColumnEntry<K>[], homes: ReadonlyMap<K, number>, open: ReadonlySet<K>): ColumnLayout<K> {
+  const yielded = new Set<K>();
+  for (;;) {
+    const layout = flowOnce(entries, homes, open, yielded);
+    const pushed = entries.findIndex((entry) => open.has(entry.key) && layout.get(entry.key)!.top > homes.get(entry.key)! + SAME_PLACE_PX);
+    if (pushed < 0) return layout;
+    const inTheWay = entries.slice(0, pushed).findLast((entry) => entry.mode === "auto" && layout.get(entry.key)!.shown === "card");
+    if (!inTheWay) return layout;
+    yielded.add(inTheWay.key);
+  }
+}
+
+/** Lays the margin out as one column, filled from the top, so nothing ever
+ *  overlaps or hides a dot. Every entry has a home: the place its dot takes
+ *  when every entry is a dot, level with its words or stacked below the dot
+ *  above it.
  *
- *  The card the reader opened last always shows. Each earlier opened card
- *  stays open only while it and every more recent open card still sit within
- *  200 px of their words; otherwise it shows as a dot until the cards in its
- *  way close. A card the reader has not touched opens by itself when it sits
- *  at most 200 px below its words, so in a crowded paragraph the first entry
- *  opens and the ones after it show as dots below it. Entries are given in
- *  reading order. */
+ *  The card the reader opened last sits exactly at its home. Any card above
+ *  it that reaches into that place turns into a dot, whether the reader
+ *  opened it or it opened by itself. Each earlier opened card stays open only
+ *  while it, and every more recent open card, still sit at their homes.
+ *  Everything below an open card moves down below it. A card the reader has
+ *  not touched opens by itself when it lands at most 200 px below its home,
+ *  so in a crowded paragraph the first entry opens and the rest show as dots
+ *  below it. Entries are given in reading order. */
 export function flowMarginColumn<K>(entries: readonly ColumnEntry<K>[]): ColumnLayout<K> {
+  const homes = homeTops(entries);
   const newestFirst = entries.filter((entry) => entry.mode === "opened").sort((a, b) => (b.openedRank ?? 0) - (a.openedRank ?? 0));
   const kept = new Set<K>();
   newestFirst.forEach((candidate, index) => {
     const trial = new Set([...kept, candidate.key]);
-    const layout = flowOnce(entries, trial);
-    const nearItsWords = (entry: ColumnEntry<K>) => layout.get(entry.key)!.top - entry.anchor <= DEFAULT_OPEN_MAX_DRIFT;
-    if (index === 0 || newestFirst.filter((entry) => trial.has(entry.key)).every(nearItsWords)) kept.add(candidate.key);
+    const layout = yieldUntouchedCards(entries, homes, trial);
+    const atHome = (entry: ColumnEntry<K>) => layout.get(entry.key)!.top <= homes.get(entry.key)! + SAME_PLACE_PX;
+    if (index === 0 || newestFirst.filter((entry) => trial.has(entry.key)).every(atHome)) kept.add(candidate.key);
   });
-  return yieldUntouchedCards(entries, kept);
-}
-
-/** Cards the reader has not touched give way to the cards the reader opened.
- *  While an opened card sits more than 200 px below its words, the nearest
- *  untouched card above it turns into a dot, until it fits or nothing above
- *  is left to give way. */
-function yieldUntouchedCards<K>(entries: readonly ColumnEntry<K>[], open: ReadonlySet<K>): ColumnLayout<K> {
-  const yielded = new Set<K>();
-  for (;;) {
-    const layout = flowOnce(entries, open, yielded);
-    const tooFar = entries.findIndex((entry) => open.has(entry.key) && layout.get(entry.key)!.top - entry.anchor > DEFAULT_OPEN_MAX_DRIFT);
-    if (tooFar < 0) return layout;
-    const inTheWay = entries.slice(0, tooFar).findLast((entry) => entry.mode === "auto" && layout.get(entry.key)!.shown === "card");
-    if (!inTheWay) return layout;
-    yielded.add(inTheWay.key);
-  }
+  return yieldUntouchedCards(entries, homes, kept);
 }
