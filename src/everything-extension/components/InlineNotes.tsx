@@ -463,16 +463,17 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   const [pointedText, setPointedText] = useState<string | null>(null);
   useEffect(() => {
     let frame = 0;
+    let latest = { x: 0, y: 0, overText: false };
     const onMove = (e: MouseEvent) => {
-      if (frame) return;
       // Our own overlay sits over the page text, so pointing at a card must
       // not count as pointing at the words under it.
-      const overText = !insideCommonNotesUi(e);
-      const { clientX, clientY } = e;
-      // At most one test per frame, however fast the mouse moves.
+      latest = { x: e.clientX, y: e.clientY, overText: !insideCommonNotesUi(e) };
+      if (frame) return;
+      // At most one test per frame, however fast the mouse moves, and always
+      // at the newest position.
       frame = requestAnimationFrame(() => {
         frame = 0;
-        setPointedText(overText ? groupAt(clientX, clientY)?.claimId ?? null : null);
+        setPointedText(latest.overText ? groupAt(latest.x, latest.y)?.claimId ?? null : null);
       });
     };
     document.addEventListener("mousemove", onMove, { passive: true });
