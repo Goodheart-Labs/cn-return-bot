@@ -443,13 +443,45 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     },
     [isOpen, choices, closeNote, open],
   );
-  // The claim whose exact words are drawn more strongly: the one the reader
-  // points at, or else the card the reader opened last.
+  // The tinted claim under a point on the screen. The tint is a CSS highlight
+  // rather than an element, so it cannot receive events, and every pointer
+  // event is tested against each tinted claim's range instead. Where several
+  // tinted quotes cover the words, the shortest one wins, because it is the
+  // most specific.
+  const groupAt = useCallback((x: number, y: number): ClaimGroup | null => {
+    const covers = (group: AnchoredGroup) =>
+      [...group.range.getClientRects()].some((rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+    return mostSpecific(groups.filter((group) => group.display !== "dot" && covers(group)), (group) => group.range.toString().length);
+  }, [groups]);
+  // The claim whose exact words are drawn more strongly: the one whose marker
+  // or card the reader points at, else the one whose tinted words the pointer
+  // is over, else the card the reader opened last.
   const [pointed, setPointed] = useState<string | null>(null);
   const point = useCallback((claimId: string, pointing: boolean) => {
     setPointed((prev) => (pointing ? claimId : prev === claimId ? null : prev));
   }, []);
-  const emphasized = pointed ?? cards.focused;
+  const [pointedText, setPointedText] = useState<string | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    const onMove = (e: MouseEvent) => {
+      if (frame) return;
+      // Our own overlay sits over the page text, so pointing at a card must
+      // not count as pointing at the words under it.
+      const overText = !insideCommonNotesUi(e);
+      const { clientX, clientY } = e;
+      // At most one test per frame, however fast the mouse moves.
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        setPointedText(overText ? groupAt(clientX, clientY)?.claimId ?? null : null);
+      });
+    };
+    document.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, [groupAt]);
+  const emphasized = pointed ?? pointedText ?? cards.focused;
   useEffect(() => {
     applyFocusHighlight(groups.find((group) => group.claimId === emphasized)?.range ?? null);
   }, [groups, emphasized]);
@@ -467,21 +499,14 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     return () => document.removeEventListener("keydown", onKey);
   }, [focused, closeNote]);
 
-  // The passage tint is a CSS highlight rather than an element, so it cannot
-  // receive events. We test every host-page click against each tinted claim's
-  // range instead. Clicking a tinted passage then toggles its note, just as
-  // clicking the badge does. A claim set to dot only has no tint, so its text
-  // stays plain page text and only its marker opens it. The listener that closes
-  // the reader's opened cards on an outside press lives here too, and it skips
-  // tinted passages. Closing on mousedown and reopening from the click's hit
-  // test made a click on a highlight flash the popover shut and open it again
-  // straight away. Where several tinted quotes cover the clicked words, the
-  // shortest one opens, because it is the most specific.
+  // Clicking a tinted passage toggles its note, just as clicking the badge
+  // does. A claim set to dot only has no tint, so its text stays plain page
+  // text and only its marker opens it. The listener that closes the reader's
+  // opened cards on an outside press lives here too, and it skips tinted
+  // passages. Closing on mousedown and reopening from the click's hit test
+  // made a click on a highlight flash the popover shut and open it again
+  // straight away.
   useEffect(() => {
-    const covers = (group: AnchoredGroup, x: number, y: number) =>
-      [...group.range.getClientRects()].some((rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
-    const groupAt = (x: number, y: number): ClaimGroup | null =>
-      mostSpecific(groups.filter((group) => group.display !== "dot" && covers(group, x, y)), (group) => group.range.toString().length);
     const onDown = (e: MouseEvent) => {
       // Clicks inside our own overlay bubble out of the shadow root as well. The
       // popover overlaps the page text, so without this guard a click on a vote
@@ -508,7 +533,7 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("click", onClick);
     };
-  }, [groups, toggle, closeOpenedByReader]);
+  }, [groupAt, toggle, closeOpenedByReader]);
 
   // The claims in document order. The popup's jump button, the request
   // progress card and the note count in every card all step through them,
