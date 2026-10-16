@@ -242,7 +242,7 @@ function Exchange({ question, block, contextQuote, onRetry, onShow }: {
   return <div className="reader-ask-exchange">
     {quote && quote !== contextQuote?.trim() && <p className="reader-ask-quote"><span>About</span> “{quote}”</p>}
     <p className="reader-ask-question">{text}</p>
-    {question.status === "done" ? <div className="reader-answer">{renderAnswerMarkdown(question.answer ?? "")}</div>
+    {question.status === "done" ? question.answer && <div className="reader-answer">{renderAnswerMarkdown(question.answer)}</div>
       : failure ? <div className={failure.retryable ? "reader-ask-error" : "reader-ask-error reader-ask-error-limit"}>
         <p>{failure.text}</p>
         {failure.retryable && <Button variant="secondary" onClick={onRetry}>Ask again</Button>}
