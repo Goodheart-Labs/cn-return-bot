@@ -259,13 +259,19 @@ function useCardChoices(initiallyClosed: ReadonlySet<string>) {
     setFocused((prev) => (prev === claimId ? null : prev));
     void rememberClosedClaim(claimId);
   }, []);
+  /** Cards that made room for the card the reader opened close for good on
+   *  this page, as on a minisite, so they stay dots after the reader closes
+   *  theirs. Unlike the close button, this is not remembered across visits. */
+  const giveWay = useCallback((claimIds: string[]) => {
+    setChoices((prev) => new Map([...prev, ...claimIds.map((claimId) => [claimId, false] as const)]));
+  }, []);
   /** A press on empty page surface closes every card the reader opened.
    *  Cards that opened by themselves stay. */
   const closeOpenedByReader = useCallback(() => {
     setChoices(closeCardsOpenedByReader);
     setFocused(null);
   }, []);
-  return { choices, open, close, closeOpenedByReader, focused };
+  return { choices, open, close, giveWay, closeOpenedByReader, focused };
 }
 
 /** Every badge and popover for one page. They are rendered through a portal into
@@ -423,6 +429,11 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
       mode: columnMode(choices.get(group.claimId), group.display),
     })));
   }, [layout, choices, cardHeights]);
+  const { giveWay } = cards;
+  useEffect(() => {
+    const displaced = column ? [...column].filter(([, { displaced }]) => displaced).map(([claimId]) => claimId) : [];
+    if (displaced.length) giveWay(displaced);
+  }, [column, giveWay]);
   const isOpen = useCallback(
     (group: ClaimGroup) => (column ? column.get(group.claimId)?.shown === "card" : choices.get(group.claimId) === true),
     [column, choices],
