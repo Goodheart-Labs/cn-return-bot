@@ -26,11 +26,11 @@ describe("Signal discussion source fetching", () => {
 
   test("readable source text is bounded and failed HTTP responses are not evidence", async () => {
     get = spyOn(axios, "get").mockResolvedValueOnce({
-      status: 200, headers: { "content-type": "text/plain" }, data: Buffer.from("primary evidence ".repeat(2_000)),
+      status: 200, headers: { "content-type": "text/plain" }, data: Buffer.from("primary evidence ".repeat(4_000)),
     }).mockResolvedValueOnce({ status: 403, headers: {}, data: Buffer.from("Access denied") });
     const read = await readDiscussionSource("https://8.8.8.8/article");
     expect(read.ok).toBe(true);
-    expect(read.content.length).toBe(12_000);
+    expect(read.content.length).toBe(50_000);
     const failed = await readDiscussionSource("https://8.8.8.8/article");
     expect(failed.ok).toBe(false);
     expect(failed.content).toContain("HTTP 403");

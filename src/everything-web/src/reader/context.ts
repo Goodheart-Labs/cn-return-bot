@@ -22,10 +22,18 @@ export type ReaderDialog =
   | { kind: "note"; anchor: ReaderAnchor }
   | { kind: "highlight"; anchor: ReaderAnchor; highlightKind: HighlightDraft["kind"]; draft?: HighlightDraft };
 
-/** The passage the Ask Opus panel is open on, and the words quoted in it. */
-export interface AskingState {
+/** The passage the reader is asking Opus about, and the words `quote` in it,
+ *  or null for the whole passage. */
+export interface AskTarget {
   blockId: string;
   quote: string | null;
+}
+
+/** The reader's questions about one passage. */
+export interface AskedPassage {
+  count: number;
+  /** Opus is still answering one of them. */
+  waiting: boolean;
 }
 
 export interface ReaderNoteRequest {
@@ -53,13 +61,19 @@ export interface ReaderApi {
   nnnEntries: readonly NnnRow[];
   highlightsByBlock: ReadonlyMap<string, PassageHighlight[]>;
   refetchHighlights: () => void;
-  asking: AskingState | null;
-  openAsk: (block: ReaderBlock, quote: string | null) => void;
-  closeAsk: () => void;
   noteRequests: readonly ReaderNoteRequest[];
+  /** The reader's questions to Opus, by block id. */
+  askedQuestions: ReadonlyMap<string, AskedPassage>;
   /** Returns the existing request when the same words were already requested this visit. */
   requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;
   dialog: ReaderDialog | null;
+  /** The conversation with Opus the reader opened last. On a wide screen it
+   *  is a panel in the margin beside its passage, on a narrow one a sheet. */
+  asking: AskTarget | null;
+  /** Opens the conversation about a passage, or about the words `quote` in it. */
+  ask: (blockId: string, quote: string | null) => void;
+  /** Closes the conversation about a passage. */
+  stopAsking: (blockId: string) => void;
   openDialog: (dialog: ReaderDialog) => void;
   closeDialog: () => void;
   /** Shows a short message at the bottom of the screen. */
@@ -70,10 +84,18 @@ export interface ReaderApi {
   /** A card's place among all margin cards in reading order, and the move to
    *  the next one. Null when the card is the only one. */
   entryNavigation: (elementId: string) => NoteNavigation | null;
-  /** Closed cards shrink to one line in the margin. */
-  isCollapsed: (elementId: string) => boolean;
-  setCollapsed: (elementId: string, closed: boolean) => void;
+  /** How the margin entry `slotKey` shows. A closed entry is a dot on wide
+   *  screens and one line on narrow ones. An opened entry is always a card. An
+   *  entry the reader has not touched is a card when it fits near its words,
+   *  and a dot otherwise. */
+  slotMode: (slotKey: string) => SlotMode;
+  /** For an opened entry, when the reader opened it: higher is more recent. */
+  openedRank: (slotKey: string) => number | undefined;
+  openEntry: (slotKey: string) => void;
+  closeEntry: (slotKey: string) => void;
 }
+
+export type SlotMode = "closed" | "opened" | "auto";
 
 export const ReaderContext = createContext<ReaderApi | null>(null);
 

@@ -173,7 +173,6 @@ export const FETCH_SERVICE_SOCKET_VARIABLE = "FETCH_SERVICE_SOCKET";
 
 export interface FetchPageRequest {
   url: string;
-  maxChars?: number;
 }
 
 export interface FetchUrlRequest {
