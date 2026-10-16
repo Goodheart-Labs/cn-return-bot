@@ -41,10 +41,10 @@ export function Composer({ session, text, onTextChange, placeholder, rows, submi
 }) {
   const [signed, setSigned] = useSignedByline();
   return (
-    <div className="mt-2 space-y-2">
+    <form className="mt-2 space-y-2" onSubmit={(event) => { event.preventDefault(); onSubmit(signed); }}>
       <Textarea autoGrow value={text} onChange={(e) => onTextChange(e.target.value)} rows={rows} maxLength={MAX_TEXT_LENGTH} autoFocus placeholder={placeholder} />
       <div className="flex gap-2 items-center">
-        <Button onClick={() => onSubmit(signed)} disabled={pending || text.trim().length < MIN_TEXT_LENGTH}>
+        <Button type="submit" disabled={pending || text.trim().length < MIN_TEXT_LENGTH}>
           {pending ? "Posting…" : submitLabel}
         </Button>
         <Button variant="quiet" className="text-sm" onClick={onCancel}>Cancel</Button>
@@ -53,6 +53,6 @@ export function Composer({ session, text, onTextChange, placeholder, rows, submi
         </Checkbox>
       </div>
       {error && <p className="text-sm text-negative">{error}</p>}
-    </div>
+    </form>
   );
 }

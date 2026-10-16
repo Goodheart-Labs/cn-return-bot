@@ -35,6 +35,7 @@ import { getSupabaseClient } from "../api/supabaseClient";
 import { noteStatus } from "../everything-core/noteScore";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import type { NoteRow } from "../everything-core/types";
+import { teamVoterIds } from "./teamAccounts";
 
 interface Donation {
   id: string;
@@ -121,21 +122,6 @@ async function voteEventsSince(checkTime: Date): Promise<VoteEvent[]> {
     "id",
     { label: "vote history" },
   );
-}
-
-async function teamVoterIds(): Promise<Set<string>> {
-  const { data: admins, error } = await db.from("everything_admins").select("email");
-  if (error) throw error;
-  const adminEmails = new Set(admins.map((a) => a.email.toLowerCase()));
-  const teamIds = new Set<string>();
-  const USERS_PER_PAGE = 1000;
-  for (let page = 1; ; page++) {
-    const { data, error: usersError } = await db.auth.admin.listUsers({ page, perPage: USERS_PER_PAGE });
-    if (usersError) throw usersError;
-    for (const user of data.users) if (user.email && adminEmails.has(user.email.toLowerCase())) teamIds.add(user.id);
-    if (data.users.length < USERS_PER_PAGE) break;
-  }
-  return teamIds;
 }
 
 const COUNT_COLUMN = { 1: "helpful_count", 0: "somewhat_helpful_count", [-1]: "not_helpful_count" } as const;
