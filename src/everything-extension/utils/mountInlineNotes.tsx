@@ -8,7 +8,7 @@ import { fetchItemForUrl } from "@cn/core/items";
 import { normalizePageUrl } from "@cn/core/pageUrls";
 import { resolveReaderCanonical } from "./readerCanonical";
 import { anchorGroups } from "./anchorGroups";
-import { applyHighlights, ensureHighlightStyle, hasHighlightApi, HIGHLIGHT_NAME } from "./passageHighlights";
+import { applyHighlights, clearHighlights, ensureHighlightStyle, hasHighlightApi } from "./passageHighlights";
 import { claimGroups, itemNoteSetQuery, noteCounts } from "./claimGroups";
 import { mountCoverageBadges } from "./coverageBadges";
 import { getCoveredPageUrls, pageIsCovered } from "./coveredPages";
@@ -17,7 +17,7 @@ import { getClosedClaims } from "./closedNotes";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
 import { listenForRequestInfo } from "./requestInfo";
-import { getNoteDisplay, getSettings, onNoteDisplayChanged, onSettingsChanged, type NoteStyle } from "./settings";
+import { getNoteDisplay, getSettings, onNoteDisplayChanged, onSettingsChanged, type ExtensionSettings } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
 import { InlineNotesApp } from "../components/InlineNotes";
 import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
@@ -96,9 +96,11 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     });
   }
 
-  // The note style is read once here and kept fresh by the settings listener
-  // below, so flipping it in the settings applies without a reload.
-  let noteStyle: NoteStyle = (await getSettings()).noteStyle;
+  // The settings that decide where notes sit are read once here and kept
+  // fresh by the settings listener below, so changing them in the settings
+  // applies without a reload.
+  const layoutOf = ({ noteStyle, dotsMakeRoom, cardPlacement }: ExtensionSettings) => ({ noteStyle, marginOptions: { dotsMakeRoom, cardPlacement } });
+  let layout = layoutOf(await getSettings());
   const closedClaims = await getClosedClaims();
 
   let reactRoot: Root | null = null;
@@ -157,7 +159,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     reactRoot?.render(
       <QueryClientProvider client={queryClient}>
         <PillPaletteFromSettings>
-          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={noteStyle} initiallyClosed={closedClaims} />
+          <InlineNotesApp groups={anchored} item={item} container={container} inlineContainer={inlineUi.uiContainer} noteStyle={layout.noteStyle} marginOptions={layout.marginOptions} initiallyClosed={closedClaims} />
         </PillPaletteFromSettings>
       </QueryClientProvider>,
     );
@@ -179,11 +181,12 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
       render();
     });
   });
-  // A note-style flip in the settings re-renders the markers in place.
+  // A change to where notes sit re-renders the markers in place.
   const stopSettings = onSettingsChanged(() => {
     void getSettings().then((settings) => {
-      if (settings.noteStyle === noteStyle) return;
-      noteStyle = settings.noteStyle;
+      const next = layoutOf(settings);
+      if (JSON.stringify(next) === JSON.stringify(layout)) return;
+      layout = next;
       render();
     });
   });
@@ -210,7 +213,7 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     },
     onRemove(root) {
       root?.unmount();
-      if (hasHighlightApi()) CSS.highlights.delete(HIGHLIGHT_NAME);
+      clearHighlights();
     },
   });
   ui.mount();

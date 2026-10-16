@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
@@ -179,8 +179,11 @@ function ImprovementLinks({ note, improvements }: { note: NoteRow; improvements:
 /** One card of the website's feed: the claim in its source, the note on it,
  *  and the claim's note-not-needed list. On a wide screen the paragraph around
  *  the claim sits beside the card. */
-export function FeedNoteCard({ note, post, improvements, nnnEntries, shareUrl }: {
+export function FeedNoteCard({ note, byline, post, improvements, nnnEntries, shareUrl }: {
   note: NoteRow;
+  /** A line at the top of the card. The All notes page names the note's
+   *  creator there, because its feed mixes every creator's notes. */
+  byline?: ReactNode;
   /** The post the note is on. The project's All page passes it, so each card
    *  names its post. A page for one post leaves it out, because the page's
    *  heading already names the post. */
@@ -223,6 +226,7 @@ export function FeedNoteCard({ note, post, improvements, nnnEntries, shareUrl }:
         </div>
       )}
       <Card ref={cardColRef} className="p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
+      {byline && <div className="mb-3">{byline}</div>}
       <div className="mb-4">
         {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
         {paragraph && (

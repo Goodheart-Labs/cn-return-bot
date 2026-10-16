@@ -17,8 +17,11 @@ test("a request's card shows its words and the shared progress lines, only besid
     const api = {
       scope: "main",
       noteRequests: [{ id: "0", blockId: "b1", quote, progress }],
-      isCollapsed: () => false,
-      setCollapsed: () => {},
+      wide: true,
+      slotMode: () => "auto",
+      openedRank: () => undefined,
+      openEntry: () => {},
+      closeEntry: () => {},
       entryNavigation: () => null,
     } as unknown as ReaderApi;
     expect(requestNoteModule.marginCount!(api, "b1")).toBe(1);

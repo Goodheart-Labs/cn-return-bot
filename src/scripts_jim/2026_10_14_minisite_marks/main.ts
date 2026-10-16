@@ -40,7 +40,7 @@ for (const block of blocks) {
   console.log(`--- ${block.id} (${block.kind}): ${block.text.slice(0, 90)}...`);
   for (const entry of group) {
     cards++;
-    const marks = texts.flatMap((text) => findQuoteMarks(text, [{ quote: entry.quote ?? "", kind: entry.kind }]));
+    const marks = texts.flatMap((text) => findQuoteMarks(text, [{ quote: entry.quote ?? "", kind: entry.kind, key: entry.kind }]));
     if (marks.length) marked++;
     console.log(`  [${marks.length ? "underlined" : "NO MARK   "}] ${entry.kind}: ${JSON.stringify(entry.quote)}`);
   }

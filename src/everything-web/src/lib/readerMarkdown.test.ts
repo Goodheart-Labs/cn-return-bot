@@ -18,6 +18,10 @@ test("bold and https links open in a new tab", () => {
 });
 
 test("other links and markup stay as plain, escaped text", () => {
-  expect(html("[click](javascript:alert(1)) [plain](http://example.com) <b>x</b> *not bold*"))
-    .toBe("<p>[click](javascript:alert(1)) [plain](http://example.com) &lt;b&gt;x&lt;/b&gt; *not bold*</p>");
+  expect(html("[click](javascript:alert(1)) [plain](http://example.com) <b>x</b>"))
+    .toBe("<p>[click](javascript:alert(1)) [plain](http://example.com) &lt;b&gt;x&lt;/b&gt;</p>");
+});
+
+test("single asterisks around words make italics, but not around spaces", () => {
+  expect(html("It asked about *legal personhood*, and 2 * 3 * 4 is 24.")).toBe("<p>It asked about <em>legal personhood</em>, and 2 * 3 * 4 is 24.</p>");
 });

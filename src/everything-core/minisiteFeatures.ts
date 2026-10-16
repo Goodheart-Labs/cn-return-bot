@@ -43,7 +43,7 @@ export const FEATURE_TREE = [
     description: "Applies wherever Ask Opus is on. Questions are paid from the daily budget for reader requests.",
     children: [
       { id: "opus.search", label: "Search the web", description: "Searches as often as it needs, and cites what it uses as links." },
-      { id: "opus.drafts", label: "Draft forecasts and key points", description: "Shows a draft card the reader can post or edit. Only for the kinds switched on above." },
+      { id: "opus.drafts", label: "Draft notes, forecasts and key points", description: "Shows a draft card the reader can post or edit. Only for the kinds switched on above." },
     ],
   },
   {
@@ -66,7 +66,8 @@ export const ALL_FEATURES: readonly FeatureId[] = collectIds(FEATURE_TREE);
 
 /** The features in effect for a stored list. A child counts only while its
  *  parent is on. Opus's abilities count only where readers can ask Opus at
- *  all, and drafting only while a highlight kind it can draft is on. */
+ *  all, and drafting only while a kind it can draft (a note, key point or
+ *  forecast on selected words) is on. */
 export function enabledFeatures(stored: readonly string[]): ReadonlySet<FeatureId> {
   const picked = new Set(stored);
   const on = new Set<FeatureId>();
@@ -83,6 +84,6 @@ export function enabledFeatures(stored: readonly string[]): ReadonlySet<FeatureI
     on.delete("opus.search");
     on.delete("opus.drafts");
   }
-  if (!on.has("highlight.forecast") && !on.has("highlight.keyPoint")) on.delete("opus.drafts");
+  if (!on.has("highlight.note") && !on.has("highlight.forecast") && !on.has("highlight.keyPoint")) on.delete("opus.drafts");
   return on;
 }
