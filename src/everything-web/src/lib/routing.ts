@@ -5,6 +5,7 @@ import { capturePageview } from "./analytics";
  *   /                     the homepage
  *   /install              the homepage, scrolled to the install section
  *   /notes                the overview of all projects
+ *   /notes/all            every note of every project in one feed
  *   /notes/<slug>         one project
  *   /notes/<slug>/<item>  one post or video of a project
  *   /minisites            every minisite
@@ -13,6 +14,7 @@ import { capturePageview } from "./analytics";
  *   /leaderboard          the rating leaderboard
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
+ * The path /notes/all wins over a project whose slug is "all".
  * A link to one note adds ?note=<id> to its project's path. The static pages
  * /privacy/ and /terms/ sit beside the app.
  *
@@ -31,6 +33,7 @@ import { capturePageview } from "./analytics";
 export type Route =
   | { view: "home"; section: "install" | null }
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
+  | { view: "allNotes" }
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" };
@@ -38,6 +41,7 @@ export type Route =
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
+export const ALL_NOTES: Route = { view: "allNotes" };
 export const MINISITES: Route = { view: "minisites", slug: null };
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
@@ -61,6 +65,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
+  if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;
 }
@@ -68,6 +73,7 @@ export function readRoute(pathname: string, search: string): Route {
 /** The address of a route, for the href of a link that navigates in-app. */
 export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
+  if (route.view === "allNotes") return "/notes/all";
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
   if (route.view === "home") return route.section ? `/${route.section}` : "/";

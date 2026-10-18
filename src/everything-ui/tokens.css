@@ -26,6 +26,10 @@
   --cn-gray-200: 229 231 235;
   --cn-gray-300: 209 213 219;
   --cn-gray-400: 156 163 175;
+  /* Between 400 and 500, for the border of a text field: the lightest grey
+   * that still stands out at 3 to 1 against white, as WCAG asks of the edge
+   * of a control. */
+  --cn-gray-450: 134 141 152;
   --cn-gray-500: 107 114 128;
   /* Between 500 and 600, for muted text: the lightest grey that still reads at
    * 4.5 to 1 on every light surface we draw, including the pale blue tint. */
@@ -88,12 +92,15 @@
   --cn-fg-secondary: rgb(var(--cn-gray-600));
   /* Captions, metadata and help text. */
   --cn-fg-muted: rgb(var(--cn-gray-550));
-  /* The quietest text: section labels, placeholders, idle icons. */
+  /* The quietest text: section labels and idle icons. It is too faint for
+   * text a reader must read, so placeholders use fg-muted. */
   --cn-fg-subtle: rgb(var(--cn-gray-400));
   /* Borders and dividers. */
   --cn-line: rgb(var(--cn-gray-200));
-  /* Borders of inputs and outlined buttons. */
+  /* Borders of outlined buttons. */
   --cn-line-strong: rgb(var(--cn-gray-300));
+  /* Borders of text fields, which must stand out from the surface. */
+  --cn-line-input: rgb(var(--cn-gray-450));
   /* The fill of the main action. */
   --cn-primary: rgb(var(--cn-blue-600));
   /* That fill under the pointer. */
@@ -110,9 +117,12 @@
   --cn-tint: rgb(var(--cn-blue-50));
   /* Their border. */
   --cn-tint-line: rgb(var(--cn-blue-100));
-  /* Words in an article that a note is about, as the reader marks them. */
-  --cn-note-mark: rgb(var(--cn-blue-100));
+  /* Words in an article that a note is about, as the reader marks them. The
+   * tint is see-through, so words that several notes quote look darker. */
+  --cn-note-mark: rgb(var(--cn-blue-400) / 0.18);
   --cn-note-mark-line: rgb(var(--cn-blue-400));
+  /* The words of the entry the reader points at. */
+  --cn-note-mark-active: rgb(var(--cn-blue-400) / 0.3);
   /* Words a reader marked as a key point or a forecast: a highlighter yellow,
    * so they read apart from note quotes. */
   --cn-highlighter: rgb(var(--cn-amber-100));
@@ -238,6 +248,7 @@
   --cn-fg-subtle: rgb(var(--cn-gray-500));
   --cn-line: rgb(var(--cn-gray-700));
   --cn-line-strong: rgb(var(--cn-gray-600));
+  --cn-line-input: rgb(var(--cn-gray-500));
   --cn-primary: rgb(var(--cn-blue-600));
   --cn-primary-hover: rgb(var(--cn-blue-700));
   --cn-on-primary: rgb(255 255 255);
@@ -246,8 +257,9 @@
   --cn-focus-halo: rgb(var(--cn-blue-400) / 0.25);
   --cn-tint: rgb(var(--cn-blue-950) / 0.5);
   --cn-tint-line: rgb(var(--cn-blue-900));
-  --cn-note-mark: rgb(var(--cn-blue-900) / 0.6);
+  --cn-note-mark: rgb(var(--cn-blue-400) / 0.2);
   --cn-note-mark-line: rgb(var(--cn-blue-400));
+  --cn-note-mark-active: rgb(var(--cn-blue-400) / 0.33);
   --cn-highlighter: rgb(var(--cn-amber-900) / 0.6);
   --cn-highlighter-line: rgb(var(--cn-amber-400));
   --cn-inverse: rgb(var(--cn-gray-800));
