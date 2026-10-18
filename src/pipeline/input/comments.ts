@@ -9,6 +9,7 @@ import { grokCallCost, xai } from "../llm/xai";
 import { getTweetLog } from "../utils/tweetLog";
 import { GROK_MODEL } from "../cost-tracking/pricing";
 import { trackLlmCall } from "../cost-tracking/costTracker";
+import { isRealTweetId } from "../utils/tweetId";
 
 export async function fetchTweetComments(
   tweetId: string,
@@ -19,6 +20,10 @@ export async function fetchTweetComments(
   if (!process.env.XAI_API_KEY) {
     return "";
   }
+
+  // A claim from an article or a video has no replies. Its id is not a tweet id,
+  // so the address below would point at nothing, and Grok would invent replies.
+  if (!isRealTweetId(tweetId)) return "";
 
   const tweetUrl = `https://x.com/i/status/${tweetId}`;
   const prompt = `Look at the replies and quote tweets to this tweet. Pick 5-10 representative comments (including the top comments). Give each reply's author name, full text and engagement. Please respond with only the list of comments and no other text besides that.
