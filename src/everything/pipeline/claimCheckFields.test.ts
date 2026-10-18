@@ -12,24 +12,18 @@ const base: ExtractedClaim = {
 };
 
 describe("claimCheckFields", () => {
-  test("gives the restatement, the author's highlighted words and the passage", () => {
+  test("uses the author's highlighted words and the passage, not the restatement", () => {
     expect(claimCheckFields(base, "youtube")).toEqual({
-      Claim: "The bridge opened in 1932.",
       "Highlighted claim from Transcript": "the bridge opened in '32",
       "Surrounding context": "As everyone knows, the bridge opened in '32, to great fanfare.",
     });
   });
 
   test("labels a Substack claim as coming from an article", () => {
-    expect(Object.keys(claimCheckFields(base, "substack"))[1]).toBe("Highlighted claim from Article");
+    expect(Object.keys(claimCheckFields(base, "substack"))[0]).toBe("Highlighted claim from Article");
   });
 
-  test("leaves out the restatement of a passage that a reader highlighted, which is its own restatement", () => {
-    const highlight = { ...base, claim: "the bridge opened in '32" };
-    expect(Object.keys(claimCheckFields(highlight, "substack"))).toEqual(["Highlighted claim from Article", "Surrounding context"]);
-  });
-
-  test("gives only the restatement for an image-only claim", () => {
+  test("falls back to the restatement for an image-only claim", () => {
     const imageOnly = { ...base, context: "", contextParagraph: "", imageUrls: ["https://example.com/chart.png"] };
     expect(claimCheckFields(imageOnly, "substack")).toEqual({ Claim: "The bridge opened in 1932." });
   });
