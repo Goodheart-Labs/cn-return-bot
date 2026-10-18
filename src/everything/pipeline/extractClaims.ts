@@ -3,13 +3,14 @@
  *
  * The gate and split step (gateAndSplit.ts) first decides whether the text is
  * worth checking at all and cuts it into topic parts. We then ask the model,
- * with high thinking effort, to cut each chunk of a part into points that add
- * up to the whole chunk, and to sort every point as a statement that a
+ * with high thinking effort, to cut each chunk of a part into passages that add
+ * up to the whole chunk, and to sort every passage as a statement that a
  * neutral expert could find misleading, a forecast or something else
- * (passages.ts reads the answer). The text is either a timestamped YouTube
- * transcript or a plain article. Every statement point is one claim, and its
- * text is the author's own words. How true a claim is gets decided afterwards
- * by the rating step in rateClaims.ts, which has web access.
+ * (passages.ts reads the answer). The text is either a timestamped YouTube transcript or a plain
+ * article. A passage of claims lists them in neutral, self-contained language,
+ * and the passage itself is the verbatim excerpt that the claims sit in. How
+ * true a claim is gets decided afterwards by the rating step in rateClaims.ts,
+ * which has web access.
  *
  * A claim from a YouTube video has its context snapped back onto the subtitle
  * cues, which gives us a deep link into the video.
@@ -34,7 +35,7 @@ import { extractionModels } from "./model";
 import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
 
 const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
-  [STATEMENT_TYPE]: `a point that makes statements about the world, where there is some chance that a neutral expert on their topic could find one of them misleading in some way. When in doubt, choose this type.`,
+  [STATEMENT_TYPE]: `a point that makes statements about the world, where there is some chance that a neutral expert on their topic could find one of them misleading in some way. When in doubt, choose this type. Also give "claims", as described below.`,
   [FORECAST_TYPE]: `says what will or might happen in the future`,
   [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the point is (stay maximally concise).`,
 };
@@ -50,24 +51,27 @@ const UNFINISHED_ENDING_RULE = `This excerpt was cut from a longer text at a fix
 
 export function extractionSystemPrompt({ extraTypes = {}, hasNextChunk = false }: ExtractionOptions = {}): string {
   const types = Object.entries({ ...PASSAGE_TYPE_DESCRIPTIONS, ...extraTypes }).map(([name, description]) => `- "${name}": ${description}`);
-  return `You cut a text into points. A point is a stretch of text in which the author makes one point, held together by one purpose the author has for the reader (Its similar to how people sometimes set small praragraphs). The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
+  return `You cut a text into points and sort every point by what it says. A point is a stretch of text in which the author makes one point, held together by one purpose the author has for the reader. The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
 
 The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not cut it into points. Cut only the text after "Part:".
 
-Cut the text into consecutive points that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between points. Statements that push in the same direction, or where one supports, denies or explains another, belong to the same point.. Start a new point when the author moves on to something else.${hasNextChunk ? `\n\n${UNFINISHED_ENDING_RULE}` : ""}
+Cut the text into consecutive points that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between points. A point can be one sentence or several. Statements that push in the same direction, or where one supports, denies or explains another, belong to the same point, for example a view, its denial and the reasons for the denial. Start a new point when the author moves on to something else.${hasNextChunk ? `\n\n${UNFINISHED_ENDING_RULE}` : ""}
 
 Answer with one JSON object. Each key is one point, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
 ${types.join("\n")}
 
-An image can be part of a point or contain one or several points, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. If an image contains points, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}". An image with nothing to check gets no key.`;
+"claims" is a list of the claims the point makes or relies on, including implicit ones: one claim for each statement that a neutral expert could judge on its own. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
+
+An image can be part of a point or contain one or several points, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. For the claims that rest on an image, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}" and its "claims". An image with nothing to check gets no key.`;
 }
 
-/** Copies the claim of a point onto an ExtractedClaim and attaches the anchor
+/** Copies the claim of a passage onto an ExtractedClaim and attaches the anchor
  *  we resolved for it. */
 function toExtractedClaim(raw: PassageClaim, anchor: ClaimAnchor): ExtractedClaim {
   return {
     claim: raw.claim,
     context: raw.context,
+    contextParagraph: raw.contextParagraph,
     imageUrls: raw.imageUrls,
     anchor,
   };
@@ -171,7 +175,7 @@ export async function runPassageExtraction(content: string, options: ExtractionO
   throw new ModelOutputInvalidError(`claim_extraction: no acceptable answer after ${MAX_PASSAGE_ATTEMPTS} attempts. ${lastFeedback}`);
 }
 
-/** The claims of one chunk, one for each statement point, and the carry
+/** The claims of one chunk, each with the passage it sits in, and the carry
  *  for the next chunk. */
 export async function runExtraction(content: string, hasNextChunk = false): Promise<{ claims: PassageClaim[]; carry: string }> {
   const { passages, carry } = await runPassageExtraction(content, { hasNextChunk });
@@ -306,17 +310,21 @@ export function chunkText(text: string): string[] {
   return chunks;
 }
 
-/** Resolves a claim's quote to where it lives in the source. */
-type AnchorResolver = (context: string) => ClaimAnchor;
+/** Resolves each claim's context excerpts to where they live in the source. */
+type AnchorResolver = (context: string, contextParagraph: string) => ClaimAnchor;
 
 /** Snaps a claim's context onto the video's cues and returns a YouTube anchor we
  *  can deep-link to. Two paths share this. A live YouTube video extracts its
  *  claims from the cues themselves. A transcript import extracts them from a
  *  supplied transcript, but the timestamps still come from the video's own
- *  cues. */
+ *  cues. When the tight context excerpt cannot be located in the cues, we snap
+ *  the wider paragraph instead — a looser clip, but the claim keeps its
+ *  timestamp and the extension can still pin it on the player. */
 function youtubeAnchor(videoId: string, cues: SubtitleCue[]): AnchorResolver {
-  return (context) => {
-    const { start, end } = contextTimeSpan(context, cues);
+  return (context, contextParagraph) => {
+    let span = contextTimeSpan(context, cues);
+    if (span.start === undefined) span = contextTimeSpan(contextParagraph, cues);
+    const { start, end } = span;
     return {
       kind: "youtube",
       startSeconds: start,
@@ -353,7 +361,7 @@ export async function extractChunks(
     claims.push(...extraction.claims);
     carry = extraction.carry;
   }
-  return claims.map((c) => toExtractedClaim(c, anchorFor(c.context)));
+  return claims.map((c) => toExtractedClaim(c, anchorFor(c.context, c.contextParagraph)));
 }
 
 // The LLM sees plain transcript text with no timestamps in it. We snap the

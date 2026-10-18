@@ -5,25 +5,27 @@ import type { ExtractedClaim } from "../types";
 
 const base: ExtractedClaim = {
   claim: "The bridge opened in 1932.",
-  context: "As everyone knows, the bridge opened in '32, to great fanfare.",
+  context: "the bridge opened in '32",
+  contextParagraph: "As everyone knows, the bridge opened in '32, to great fanfare.",
   imageUrls: [],
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 };
 
 describe("claimCheckFields", () => {
-  test("gives only the author's own words, not the restatement", () => {
+  test("uses the author's highlighted words and the passage, not the restatement", () => {
     expect(claimCheckFields(base, "youtube")).toEqual({
-      "Passage from Transcript": "As everyone knows, the bridge opened in '32, to great fanfare.",
+      "Highlighted claim from Transcript": "the bridge opened in '32",
+      "Surrounding context": "As everyone knows, the bridge opened in '32, to great fanfare.",
     });
   });
 
   test("labels a Substack claim as coming from an article", () => {
-    expect(Object.keys(claimCheckFields(base, "substack"))[0]).toBe("Passage from Article");
+    expect(Object.keys(claimCheckFields(base, "substack"))[0]).toBe("Highlighted claim from Article");
   });
 
-  test("gives the description of an image for a point that is an image", () => {
-    const image = { ...base, claim: "Description: A bar chart of bridge traffic.", context: "", imageUrls: ["https://example.com/chart.png"] };
-    expect(claimCheckFields(image, "substack")).toEqual({ Image: "Description: A bar chart of bridge traffic." });
+  test("falls back to the restatement for an image-only claim", () => {
+    const imageOnly = { ...base, context: "", contextParagraph: "", imageUrls: ["https://example.com/chart.png"] };
+    expect(claimCheckFields(imageOnly, "substack")).toEqual({ Claim: "The bridge opened in 1932." });
   });
 });
 

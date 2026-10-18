@@ -94,8 +94,9 @@ export async function runExtractorEval(rows: DatasetRow[]): Promise<ExtractorEva
         ),
       );
       const foundIn = judgements.filter((j) => j?.found).length;
-      console.log(`  ${c.id}: found in ${foundIn} of ${SAMPLES_PER_CHUNK}`);
-      return { id: c.id, datapointId: c.datapointId, group: c.group, referenceClaim: c.referenceClaim, passage: c.passage, chunkKey: c.chunkKey, judgements, foundIn, passed: foundIn >= PASS_AT };
+      const atomicIn = judgements.filter((j) => j?.found && j.atomic).length;
+      console.log(`  ${c.id}: found in ${foundIn} of ${SAMPLES_PER_CHUNK}, atomic in ${atomicIn}`);
+      return { id: c.id, datapointId: c.datapointId, group: c.group, referenceClaim: c.referenceClaim, passage: c.passage, chunkKey: c.chunkKey, judgements, foundIn, atomicIn, passed: foundIn >= PASS_AT };
     }),
   );
   return {

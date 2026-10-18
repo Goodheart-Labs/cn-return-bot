@@ -18,7 +18,7 @@ export const GROUP_TITLE: Record<Group, string> = {
   "note-difficult": "Note should be written (difficult)",
   "no-note-easy": "No note should be written (easy)",
   "no-note-difficult": "No note should be written (difficult)",
-  atomicity: "Several statements close together (extractor only)",
+  atomicity: "Several statements in one sentence (extractor only)",
 };
 
 /** Where the claim that the checker is given comes from. */

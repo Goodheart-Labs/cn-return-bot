@@ -473,7 +473,7 @@ function renderDatasets() {
       : "<tr><th>#</th><th>Group</th><th>Claim handed to the checker</th><th>Expected</th><th>Reference notes</th><th>Production</th></tr>";
   document.getElementById("dsintro").innerHTML =
     (which === "extractor"
-      ? `<p>The extractor reads one chunk of a post and returns points. A point is a stretch of text in which the author makes one point, and it can hold several statements. Each point is a statement, a forecast or other, and the claims of the statement points are what counts. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. A reference statement is found when a Muse judge says that some extracted claim, or several together, state it. All reference statements are required, including those of the no-note datapoints, because the checker can only rule on a claim that exists.</p>`
+      ? `<p>The extractor reads one chunk of a post and returns passages. Each passage is a statement, a forecast or other, and the claims of the statements are what counts. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. A statement is found when a Muse judge says the output contains it. All reference statements are required, including those of the no-note datapoints, because the checker can only rule on a claim that exists.</p>`
       : `<p>The checker gets one claim and ends with a note or with no note. It runs three times on each row, and the row passes when the decision was the expected one in two of the three. For 12 of the 14 rows, readers already voted on a note in production, so their votes are a second opinion next to your labels.</p>`) +
     columnsTable(which);
   const widths = which === "extractor" ? [40, 140, 300, 260, 190, 110] : [40, 140, 270, 110, 380, 120];
@@ -841,7 +841,7 @@ function renderResults() {
 /* ---- Evaluation plan ---- */
 const PLAN_EXTRACTOR = [
   { id: "e-row", kind: "data", name: "Dataset row", hint: "chunk of a post and a reference statement",
-    what: "One reference statement of one datapoint of the extractor table. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. Compound claims, such as the Opus figure or the Melanie Mitchell claim, are split into several. The extractor may put several of them in one point.",
+    what: "One reference statement of one datapoint of the extractor table. A datapoint has one or more reference statements, each atomic: one statement that a neutral expert could judge on its own. Compound claims, such as the Opus figure or the Melanie Mitchell claim, are split into several.",
     input: "The post's chunk exactly as the extractor is given it, and the reference statement.",
     output: "Passed on unchanged.",
     note: "Datapoints and statements of one chunk share its extractor calls. Two datapoints are for this eval only: a sentence with two statements in a Zvi post, and a transcript line of a YouTube video about Hungary." },
@@ -852,21 +852,23 @@ const PLAN_EXTRACTOR = [
     prompt: "Analyze this image. Describe what it shows and extract all visible text.",
     note: "Done. The 66 images cost $0.33 once. The description of the Opus figure is the only evidence the extractor has for that row." },
   { id: "e-ext", kind: "model", name: "Extractor under test", hint: "3 samples per chunk",
-    what: "The extraction step as it is in the branch, on the model the run names. It cuts the chunk into consecutive points that add up to the whole chunk, and sorts each point as a statement, a forecast or other. A point is a stretch of text in which the author makes one point. It can be one sentence or several, for example a view, its denial and the reasons for the denial. A statement point lists one claim for each statement in it. The step is called three times per chunk, because the same call can give different points each time.",
+    what: "The extraction step as it is in the branch, on the model the run names. It cuts the chunk into consecutive passages that add up to the whole chunk, and sorts each passage as a statement, a forecast or other. A statement is something where a neutral expert could find it misleading, and it is as atomic as possible. It is called three times per chunk, because the same call can give different passages each time.",
     input: "The chunk as the user message, and the extraction system prompt (see the pipeline diagram).",
     output: "One JSON object whose keys are the passages, word for word, and whose values give the type and, for a statement, its claims. The code checks that the passages add up to the chunk and asks again, with the missing text quoted, when they do not.",
     note: "Production runs Muse Spark 1.3 at high reasoning. A run can name a Claude model instead, as the lab already allows." },
   { id: "e-claims", kind: "data", name: "Extracted claims", hint: "numbered list", what: "The claims of the statement passages of one call. Forecast and other passages make no claims, and are kept so the results can show them.", input: "Output of the extractor.", output: "The list, numbered from 1. Only the claim texts go to the judge.", note: "The number of claims and the passage types per chunk are recorded, because an extractor that calls everything a statement would pass every row. The datapoints have no row that must come out as other yet." },
   { id: "e-judge", kind: "model", name: "Muse judge", hint: "does the list contain the claim?",
-    what: "A Muse call that reads the list and says whether any claim, or several together, state the reference statement.",
+    what: "A Muse call that reads the list and says whether any claim states the reference statement, and whether the claims that match are atomic.",
     input: "The reference statement, the passage it comes from, and the numbered claims.",
-    output: "JSON: found yes or no, which claim numbers match, and the reason.",
+    output: "JSON: found yes or no, atomic yes or no, which claim numbers match, and the reason.",
     prompt: `System prompt (draft):
 You check whether a list of extracted claims contains a given claim.
 
 You get a reference claim, the passage of the text it comes from, and a numbered list of extracted claims. The list contains the reference claim if one listed claim, or several listed claims together, state the same checkable fact, even in other words. The extractor splits compound statements into several claims, so every part of the reference claim must be stated by some listed claim. A claim that only mentions the topic, leaves out a checkable part, or states something different does not count.
 
-Answer with JSON: { "reason": string, "matching_claims": number[], "found": boolean }. Write the reason first.
+Extracted claims should be atomic: each states one thing that could be checked on its own. "atomic" is true when every claim you matched is atomic, and false when a matching claim bundles several separate statements together, for example two facts joined by "and". When nothing matched, "atomic" is true.
+
+Answer with JSON: { "reason": string, "matching_claims": number[], "found": boolean, "atomic": boolean }. Write the reason first.
 
 User message:
 Reference claim: <the reference statement>
@@ -879,7 +881,7 @@ Extracted claims:
 ...`,
     note: "The reason comes first in the JSON so the model states its argument before the verdict. The judge sees only the claims, never the chunk, so it cannot be swayed by the surrounding text. Several claims together can still satisfy a reference statement. A first smoke run on the Opus figure row showed that a judge demanding one single claim fails an extractor for doing what its prompt says. Now that the reference statements are atomic, the judge also says whether the matching claims are. Found and atomic are reported separately: a row passes when it is found, and the atomic count shows beside it." },
   { id: "e-score", kind: "report", name: "Score", hint: "found in how many of 3 samples",
-    what: "Per statement: found in 0, 1, 2 or 3 of the samples. Per group: the statements found in 2 of 3 and in all three. Runs made while the judge also asked whether the matching claims were atomic show that count too.",
+    what: "Per statement: found in 0, 1, 2 or 3 of the samples, and in how many of those the matching claims were atomic. Per group: the statements found in 2 of 3, in all three, and found and atomic.",
     input: "The judge's answers.",
     output: "A table by group, the passage types per chunk, and the cost of the run.",
     note: "A row passes when it is found in at least 2 of 3 samples. The 3 and the 2 are my proposal." },
@@ -978,11 +980,11 @@ const DECISIONS = [
   "A run can cover just a few rows of one eval. The comparison to an earlier run only uses rows both runs have. Both evals run three samples per row and pass a row at 2 of 3, because the same call can end differently each time. The checker eval ran once per row at first, and two identical runs flipped 2 of 14 rows, so you asked for three samples. The Yudkowsky writer row counts a note as a soft failure, not a failure.",
   "The reference notes are your wording plus the real notes from production that readers rated helpful. The pivotal act wording is rewritten from what you said on 8 October, and the EA beholden wording is yours from the same day. Both rest on your account of Yudkowsky's and Soares' views. I have not checked them against their writing or found sources yet.",
   "The Sol 45% row had a wrong reference claim at first. I wrote that the author gave the 45%, but in the text it is Sol, the AI model, answering in its own reply. The extractor had it right. The production note on that claim made the same mistake and said it was the author's estimate. I fixed the reference claim and ran the baseline again.",
-  "The extractor now cuts each chunk into points and sorts them: \"statement\" (a point that makes statements about the world where there is some chance that a neutral expert on the topic could find one of them misleading, with \"when in doubt\" pointing to this type), \"forecast\" and \"other\" (with a reason). A point is a stretch of text in which the author makes one point, held together by one purpose the author has for the reader. It can hold several statements that push in the same direction, and each of them is a claim of the point. Earlier versions asked for atomic statements. The old flags for confidently true claims and for speculation are gone.",
+  "The extractor now cuts each chunk into passages and sorts them: \"statement\" (a statement where there is some chance that a neutral expert on the topic could find it misleading, with \"when in doubt\" pointing to this type), \"forecast\" and \"other\" (with a reason). The old flags for confidently true claims and for speculation are gone. Statements must be atomic: a sentence with two statements is cut inside the sentence, and only woven statements stay in one passage as several claims. Forecast and other passages need not be atomic.",
   "I split the compound reference claims into atomic statements (Czechoslovakia into 2, Melanie Mitchell into 2, Sol subagents into 2, the Opus figure into 4) and wrote the statements of the two new datapoints. All of these are my drafts, so please read them. The new datapoints are the Treasury Department sentence (2 statements) and the Hungary transcript line (4 statements). Both are for the extractor eval only, because nobody wrote a note on them.",
   "Reference statements are counted one by one, so the extractor eval now has 26 rows where the baseline had 14. The baseline's numbers and the next run's cannot be compared directly. The Results tab shows them side by side, row by row, where the rows exist in both.",
   "The Bo Nix example (a statement woven into another) is not a datapoint, because you are fine with it counting as one statement. No datapoint yet must come out as other or as a forecast, so the evals cannot catch an extractor that calls everything a statement.",
-    "Three runs of the passage and point formats are on the Results tab next to the baseline: atomic statements, a relaxed atomicity rule, and points with one claim each (14 October). The judge no longer asks whether the claims are atomic, so only the first two show an atomic count. The eval cannot tell whether points grow too large, so the results need to be read by hand.",
+  "The Results tab holds the baseline of the old format, runs of the passage format (atomic statements, then a relaxed atomicity rule) and runs of a points format from 14 October. The points format was rolled back on 18 October and is kept under the git tag backup/points-format-2026-10-14. The checker run of 18 October is the baseline for the rolled-back state: the relaxed atomicity extractor, with the passage and its paragraph as checker input. The eval cannot tell whether passages are too large or too small, so the results need to be read by hand.",
   "The dataset and its build script live in the lab folder of the PR, so they stay in git. This page is built from them.",
 ];
 

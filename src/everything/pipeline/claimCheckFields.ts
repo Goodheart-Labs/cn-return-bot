@@ -1,20 +1,29 @@
 import type { ExtractedClaim, ItemSource } from "../types";
 
-// We fact-check the author's own words. The point is the verbatim text the
-// author wrote, and nothing else comes with it: no restatement and no
-// surrounding paragraph. A restatement can drift away from the source, and the
-// search model can read what the author actually wrote.
-// A point that is an image has no text of its own. Its claim is the description
-// of the image and the text visible in it, which goes in under "Image". The
-// image itself reaches the model through the pipeline's media analysis.
+// We fact-check the author's own words. The claim text carries the verbatim
+// highlighted span, the passage around it, and any images the claim rests on. It
+// does not carry the extractor's neutral restatement of the claim. That restatement is
+// useful during extraction, because it forces the model to state the claim, but it
+// can drift away from the source. So we keep it out of the fact-check input and
+// let the search model read what the author actually wrote. The surrounding
+// passage contains the highlighted span word for word, and labelling the span
+// separately tells the model which part of the passage to check.
+// There is one exception. A claim with no highlighted span is grounded in an
+// image, and a single image such as an infographic can carry several claims. In
+// that case the restatement is the only thing that says which claim to check, so
+// it goes back in. The images themselves reach the model through the pipeline's
+// media analysis.
 // The fact-check reads these fields as labelled lines of a synthetic post. The
 // rating step reads them as a JSON object. Both steps judge the same words.
 export function claimCheckFields(claim: ExtractedClaim, source: ItemSource): Record<string, string> {
   const origin = source === "youtube" ? "Transcript" : "Article";
-  const point = claim.context.trim();
+  const highlighted = claim.context.trim();
+  const paragraph = claim.contextParagraph.trim();
   const fields: Record<string, string> = {};
-  if (point) fields[`Passage from ${origin}`] = point;
-  else fields["Image"] = claim.claim;
+  if (highlighted) fields[`Highlighted claim from ${origin}`] = highlighted;
+  else fields["Claim"] = claim.claim;
+  if (paragraph) fields["Surrounding context"] = paragraph;
   if (claim.steer) fields["A reader asked for a note about"] = claim.steer.replace(/\s+/g, " ").trim();
   return fields;
 }
+
