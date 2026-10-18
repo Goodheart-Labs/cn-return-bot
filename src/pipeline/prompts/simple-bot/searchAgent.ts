@@ -32,19 +32,19 @@ Return JSON with two fields:
 - If no correction is needed, the findings can be brief — just explain why.`;
 
 /** The search prompt for checking a single claim, used when
- *  `config.commonnotes_pipeline` is on. The input is a verbatim excerpt
- *  highlighted from a podcast, an interview or an article, plus the surrounding passage for
- *  context. It is not an X post and it is not a paraphrase. With the X prompts
+ *  `config.commonnotes_pipeline` is on. The input is a claim drawn from a
+ *  podcast, an interview or an article, plus a short excerpt around it for
+ *  context. It is not an X post. With the X prompts
  *  the model treats the excerpt as a quoted conversation and refuses to
  *  fact-check it. Naming the input as an extracted claim fixes that. The
  *  everything pipeline uses this prompt. */
 export const SEARCH_SYSTEM_PROMPT_CLAIM = `You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.
 
 ## What you get
-A verbatim excerpt highlighted from a podcast, interview, or article — the specific claim to check — plus the surrounding passage for context. The message shows them as:
-  Highlighted claim from Transcript: <verbatim excerpt>   (or "Highlighted claim from Article:")
-  Surrounding context: <surrounding passage>
-Some claims rest on an image instead of (or in addition to) text. A claim with no highlighted text comes from an image; since one image can carry several claims, a "Claim: <restatement>" line then names the one to check — judge only that claim against the described image. Judge whether the claim is factually correct.
+A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
+  Text from Transcript: <excerpt>   (or "Text from Article:")
+  Claim: <the claim>
+Judge whether the claim is factually correct.
 
 ## Output format
 Return JSON with two fields:

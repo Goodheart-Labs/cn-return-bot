@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-18T14:35:47.381Z",
+ "generatedAt": "2026-10-18T15:15:08.909Z",
  "datapoints": [
   {
    "id": "berkeley-as",
@@ -46,7 +46,7 @@
      "id": "3a030aad-0",
      "author_id": "unknown",
      "created_at": "2026-07-09",
-     "text": "Highlighted claim from Article: At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nSurrounding context: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.",
+     "text": "Text from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.",
      "media": []
     },
     "asReceived": null
@@ -134,7 +134,7 @@
      "id": "6af85fd3-0",
      "author_id": "unknown",
      "created_at": "2026-08-14",
-     "text": "Highlighted claim from Article: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nSurrounding context: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.",
+     "text": "Text from Article: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nClaim: Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries during the Holocaust.",
      "media": []
     },
     "asReceived": {
@@ -253,7 +253,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\nSurrounding context: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.",
+     "text": "Text from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
      "media": []
     },
     "asReceived": null
@@ -325,7 +325,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity.\nSurrounding context: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.",
+     "text": "Text from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.",
      "media": []
     },
     "asReceived": null
@@ -385,7 +385,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: She also recruited her sisters as cam girls once.\nSurrounding context: She also recruited her sisters as cam girls once. I am vague on the details.",
+     "text": "Text from Article: She also recruited her sisters as cam girls once. I am vague on the details.\nClaim: She also recruited her sisters as cam girls once.",
      "media": []
     },
     "asReceived": null
@@ -456,7 +456,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: What is troubling about this is that it would be nearly impossible to prove.\nSurrounding context: What is troubling about this is that it would be nearly impossible to prove. You showed up for an actual group sex fake rape party. If the rules are messed up and you outright get raped when you are trying to say no, you are going to have to explain to a cop exactly the difference between what happened and what was supposed to happen, or you are going to have to deal with some Effective Altruist mediator who is likely going to send you to counseling with your rapist,",
+     "text": "Text from Article: What is troubling about this is that it would be nearly impossible to prove. You showed up for an actual group sex fake rape party. If the rules are messed up and you outright get raped when you are trying to say no, you are going to have to explain to a cop exactly the difference between what happened and what was supposed to happen, or you are going to have to deal with some Effective Altruist mediator who is likely going to send you to counseling with your rapist,\nClaim: What is troubling about this is that it would be nearly impossible to prove.",
      "media": []
     },
     "asReceived": null
@@ -528,7 +528,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: acts of terrorism that he believes anyone making AGI must do\nSurrounding context: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.",
+     "text": "Text from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
      "media": []
     },
     "asReceived": null
@@ -601,7 +601,7 @@
      "id": "60c2e7ea-0",
      "author_id": "unknown",
      "created_at": "2026-10-06T23:44:21.970146+00:00",
-     "text": "Highlighted claim from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nSurrounding context: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.",
+     "text": "Text from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa",
      "media": []
     },
     "asReceived": null
@@ -673,7 +673,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true.\nSurrounding context: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.",
+     "text": "Text from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.\nClaim: Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.",
      "media": []
     },
     "asReceived": {
@@ -736,7 +736,7 @@
      "id": "4b776e7a-0",
      "author_id": "unknown",
      "created_at": "2026-07-15",
-     "text": "Highlighted claim from Article: Her donations bought about 1500x less improvement per $ than the marginal GiveWell $\nSurrounding context: Nathan: Comparing MacKenzie Scott's giving to if the money had gone to @GiveWell . Her donations bought about 1500x less improvement per $ than the marginal GiveWell $",
+     "text": "Text from Article: Nathan: Comparing MacKenzie Scott's giving to if the money had gone to @GiveWell . Her donations bought about 1500x less improvement per $ than the marginal GiveWell $\nClaim: Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 times less health improvement per dollar than the marginal GiveWell dollar.",
      "media": []
     },
     "asReceived": null
@@ -834,7 +834,7 @@
      "id": "8ab18669-0",
      "author_id": "unknown",
      "created_at": "2026-07-13",
-     "text": "Highlighted claim from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna\nSurrounding context: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:",
+     "text": "Text from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\nClaim: OpenAI created Terra and Luna as subagent models for Sol to select from.",
      "media": []
     },
     "asReceived": null
@@ -941,7 +941,7 @@
      "id": "8ab18669-0",
      "author_id": "unknown",
      "created_at": "2026-07-13",
-     "text": "Highlighted claim from Article: Sol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\nSurrounding context: Sol is the better default for bounded coding, browsing and computer-use work: 80%.\n\nSol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\n\nFully abandoning Fable is clearly a mistake for a coding-heavy user: 30%. Your categorical judgment here is too strong.",
+     "text": "Text from Article: Sol is the better default for bounded coding, browsing and computer-use work: 80%.\n\nSol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\n\nFully abandoning Fable is clearly a mistake for a coding-heavy user: 30%. Your categorical judgment here is too strong.\nClaim: Sol assessed a 45% probability that its alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely due to the harness and permissions.",
      "media": []
     },
     "asReceived": null
@@ -1121,7 +1121,7 @@
      "id": "b5e5ff9c-0",
      "author_id": "unknown",
      "created_at": "2026-09-24T15:35:42.184532+00:00",
-     "text": "Highlighted claim from Article: Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters.\nSurrounding context: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.",
+     "text": "Text from Article: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\nClaim: Eliezer Yudkowsky is a writer and not a scientist.",
      "media": []
     },
     "asReceived": {
@@ -1285,7 +1285,7 @@
      "id": "0c8eedd2-0",
      "author_id": "unknown",
      "created_at": "2026-07-10",
-     "text": "Highlighted claim from Transcript: It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit.\nSurrounding context: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.",
+     "text": "Text from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth",
      "media": []
     },
     "asReceived": null

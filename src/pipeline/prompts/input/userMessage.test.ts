@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { Post } from "../../../api/fetchEligiblePosts";
 import { buildUserMessage } from "./userMessage";
 
-const postWithId = (id: string): Post => ({ id, author_id: "unknown", created_at: "2026-09-24T12:00:00+00:00", text: "Highlighted claim from Article: x", media: [] }) as Post;
+const postWithId = (id: string): Post => ({ id, author_id: "unknown", created_at: "2026-09-24T12:00:00+00:00", text: "Text from Article: x", media: [] }) as Post;
 const messageOf = (post: Post) => buildUserMessage({ post, tweetMedia: [], quotedTweetMedia: [] });
 
 describe("buildUserMessage", () => {
@@ -18,6 +18,6 @@ describe("buildUserMessage", () => {
     expect(message).not.toContain("Tweet posted");
     expect(message).not.toContain("Post age");
     expect(message).not.toContain("Tweet URL");
-    expect(message).toContain("Highlighted claim from Article: x");
+    expect(message).toContain("Text from Article: x");
   });
 });

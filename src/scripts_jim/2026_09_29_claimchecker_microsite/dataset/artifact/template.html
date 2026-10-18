@@ -366,7 +366,7 @@ const COLUMNS = {
   ],
   checker: [
     ["id, group", "text, one of four", "As in the extractor table."],
-    ["post_text", "text", "What the claim checker is handed, built by the pipeline's own function. A text claim is the highlighted passage plus its surrounding paragraph. An image claim is the claim line and the image."],
+    ["post_text", "text", "What the claim checker is handed, built by the pipeline's own function. A text claim is the paragraph around it (\"Text from Article\") and the extractor's restated claim (\"Claim\"). An image claim is the claim line and the image."],
     ["post_media", "list of urls", "Images the claim rests on. Only the Opus figure has one."],
     ["paragraph_source", "stored or from text", "Readers' highlights have no stored paragraph, so it is taken from the post's text, as the extractor would have stored it."],
     ["expected_decision", "note or no_note", "What the checker should end with."],
@@ -891,7 +891,7 @@ Extracted claims:
 const PLAN_CHECKER = [
   { id: "c-row", kind: "data", name: "Dataset row", hint: "the claim as the checker gets it",
     what: "One of the 14 rows of the checker table.",
-    input: "The post text built from the claim: the highlighted passage and its paragraph, or the claim line and the image.",
+    input: "The post text built from the claim: the paragraph and the restated claim, or the claim line and the image.",
     output: "Passed on unchanged.", note: "The built post is the same one the pipeline's buildClaimPost makes, so the eval cannot drift from production." },
   { id: "c-check", kind: "model", name: "Claim check under test", hint: "3 samples per row",
     what: "The whole check of one claim as it is in the branch: the topic filter, the research with search, the note writer and the source verifier. It runs three times per row, because the same check can end differently each time: two identical baseline runs flipped 2 of 14 rows.",
