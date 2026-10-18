@@ -53,7 +53,7 @@ async function sampleChunk(userMessage: string): Promise<ChunkSample> {
     const claims = claimsOfPassages(value.passages, bodyOfChunkMessage(userMessage));
     return {
       claims: claims.map((c) => ({ claim: c.claim, context: c.context, imageUrls: c.imageUrls })),
-      passages: value.passages.map((p) => ({ text: p.text, type: p.type, ...(typeof p.extra.why === "string" ? { why: p.extra.why } : {}) })),
+      passages: value.passages.map((p) => ({ text: p.text, type: p.type, ...(typeof p.extra.why === "string" ? { why: p.extra.why } : {}), claims: p.claims })),
       coverage: value.coverage,
       attempts: value.attempts,
       costUsd,

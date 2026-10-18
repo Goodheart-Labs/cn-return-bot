@@ -43,14 +43,13 @@ export interface ExtractedClaimSummary {
   imageUrls: string[];
 }
 
-/** A point the extractor cut out of a chunk, sorted as a statement, a forecast or other. */
+/** A passage the extractor cut out of a chunk, sorted as a statement, a forecast or other. */
 export interface PassageSummary {
   text: string;
   type: string;
   /** What an "other" passage is, in the model's words. */
   why?: string;
-  /** What the extractor listed as the claims of the passage. Only runs made before points have it. */
-  claims?: string[];
+  claims: string[];
 }
 
 /** One call of the extractor on one chunk. A failed call has an error and no claims. */

@@ -128,7 +128,7 @@ function unchecked(claim: PartClaim, index: number, runId: string): LabClaim {
     id: `${runId}-${index}`,
     claim: claim.claim,
     contextQuote: claim.context || null,
-    contextParagraph: null,
+    contextParagraph: claim.contextParagraph || null,
     imageUrls: claim.imageUrls,
     judgement: claim.judgement,
     part: claim.part,
