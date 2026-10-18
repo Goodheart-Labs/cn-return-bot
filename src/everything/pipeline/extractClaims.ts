@@ -35,9 +35,9 @@ import { extractionModels } from "./model";
 import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
 
 const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
-  [STATEMENT_TYPE]: `a point that makes statements about the world, where there is some chance that a neutral expert on their topic could find one of them misleading in some way. When in doubt, choose this type. Also give "claims", as described below.`,
+  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading in some way. When in doubt, choose this type. Also give "claims", as described below.`,
   [FORECAST_TYPE]: `says what will or might happen in the future`,
-  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the point is (stay maximally concise).`,
+  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the passage is (stay maximally concise).`,
 };
 
 export interface ExtractionOptions {
@@ -47,22 +47,24 @@ export interface ExtractionOptions {
   hasNextChunk?: boolean;
 }
 
-const UNFINISHED_ENDING_RULE = `This excerpt was cut from a longer text at a fixed length, so its last point may be unfinished. If it is, leave that point out of your answer. It is given to you again at the start of the next excerpt. Leave out only that unfinished last point, never more than a few sentences, and never anything else.`;
+const UNFINISHED_ENDING_RULE = `This excerpt was cut from a longer text at a fixed length, so its last statement may be unfinished. If it is, leave the unfinished words at the end out of your passages. They are given to you again at the start of the next excerpt. Leave out only that unfinished last statement, never more than a few sentences, and never anything else.`;
 
 export function extractionSystemPrompt({ extraTypes = {}, hasNextChunk = false }: ExtractionOptions = {}): string {
   const types = Object.entries({ ...PASSAGE_TYPE_DESCRIPTIONS, ...extraTypes }).map(([name, description]) => `- "${name}": ${description}`);
-  return `You cut a text into points and sort every point by what it says. A point is a stretch of text in which the author makes one point, held together by one purpose the author has for the reader. The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
+  return `You cut a text into passages and sort every passage by what it says. The text is an excerpt of a podcast transcript or an article. It may contain bracketed image blocks: an "Image: <url>" line followed by "Description:" and/or "Visible text:" lines generated from that image. They are a text rendering of the image (you are not shown the image itself), not part of the prose.
 
-The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not cut it into points. Cut only the text after "Part:".
+The user message may begin with an "Introduction (context only):" block. It is the opening of the whole piece and is there so you understand what the part is about. Do not cut it into passages. Cut only the text after "Part:".
 
-Cut the text into consecutive points that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between points. A point can be one sentence or several. Statements that push in the same direction, or where one supports, denies or explains another, belong to the same point, for example a view, its denial and the reasons for the denial. Start a new point when the author moves on to something else.${hasNextChunk ? `\n\n${UNFINISHED_ENDING_RULE}` : ""}
+Cut the text into consecutive passages that together add up to all of it, word for word and in order. Leave nothing out and change nothing: no rewording, no fixing of typos. Do not include the label line at the start ("${ARTICLE_LABEL}" or "${TRANSCRIPT_LABEL}") or the image blocks. You may leave out the line breaks between passages. Make each passage as short as its content allows: normally one sentence, or several when a claim cannot stand without them. Cut between sentences, and inside a sentence only when its parts have different types.${hasNextChunk ? `\n\n${UNFINISHED_ENDING_RULE}` : ""}
 
-Answer with one JSON object. Each key is one point, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
+Answer with one JSON object. Each key is one passage, copied from the text. Each value is an object whose FIRST key is "type", set to one of:
 ${types.join("\n")}
 
-"claims" is a list of the claims the point makes or relies on, including implicit ones: one claim for each statement that a neutral expert could judge on its own. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
+Statements don't have to be fully atomic, but only very very related statements should be grouped together. Let forecasts and Other passages run as long as they naturally do.
 
-An image can be part of a point or contain one or several points, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. For the claims that rest on an image, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}" and its "claims". An image with nothing to check gets no key.`;
+"claims" is a list of the claims the passage makes or relies on, normally just one, including implicit ones. Write each claim in NEUTRAL, SELF-CONTAINED language: strip the author's rhetoric, framing, hedging and tone, and state the underlying factual proposition plainly, as a neutral third party would. Resolve pronouns and references so the claim stands entirely on its own, because each claim is fact-checked in isolation with NONE of the surrounding text, so it must carry all the context it needs (who, what, when, where).
+
+A claim can rest on an image, for example data in a chart, a figure in a screenshot or what a photo depicts, which you read from the image block's Description and Visible text. For such a claim, add a key that is exactly the "Image: <url>" line of its block, with the type "${STATEMENT_TYPE}" and its "claims". An image with nothing to check gets no key.`;
 }
 
 /** Copies the claim of a passage onto an ExtractedClaim and attaches the anchor

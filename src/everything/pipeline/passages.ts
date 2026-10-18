@@ -24,8 +24,8 @@ export type PassageType = (typeof PASSAGE_TYPES)[number];
 export const MIN_COVERAGE = 0.97;
 
 /** The most characters at the end of a chunk that the model may leave out because
- *  its last point is unfinished. The code gives them to the next chunk. A
- *  longer gap is a mistake of the model, not a point cut in two. */
+ *  its last statement is unfinished. The code gives them to the next chunk. A
+ *  longer gap is a mistake of the model, not a statement cut in two. */
 export const MAX_CARRY_CHARS = 500;
 
 const IMAGE_KEY_PREFIX = "Image: ";
@@ -160,15 +160,15 @@ function extendOverPunctuation(body: string, floor: number, start: number, end: 
 }
 
 function readPassage(key: string, value: unknown, allowedTypes: readonly string[]): Passage {
-  if (!value || typeof value !== "object" || Array.isArray(value)) throw new PassageFormatError(`The value of the point "${key.slice(0, 60)}" must be an object.`);
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new PassageFormatError(`The value of the passage "${key.slice(0, 60)}" must be an object.`);
   const { type, claims, ...extra } = value as Record<string, unknown>;
   if (typeof type !== "string" || !allowedTypes.includes(type)) {
-    throw new PassageFormatError(`The point "${key.slice(0, 60)}" has the type ${JSON.stringify(type)}. The type must be one of: ${allowedTypes.map((t) => `"${t}"`).join(", ")}.`);
+    throw new PassageFormatError(`The passage "${key.slice(0, 60)}" has the type ${JSON.stringify(type)}. The type must be one of: ${allowedTypes.map((t) => `"${t}"`).join(", ")}.`);
   }
   let listed: string[] = [];
   if (type === STATEMENT_TYPE) {
     const valid = Array.isArray(claims) && claims.length > 0 && claims.every((c) => typeof c === "string" && c.trim() !== "");
-    if (!valid) throw new PassageFormatError(`The point "${key.slice(0, 60)}" has the type "${type}", so it needs "claims": a list of one or more claims as strings.`);
+    if (!valid) throw new PassageFormatError(`The passage "${key.slice(0, 60)}" has the type "${type}", so it needs "claims": a list of one or more claims as strings.`);
     listed = claims as string[];
   }
   const isImage = key.startsWith(IMAGE_KEY_PREFIX);
@@ -195,7 +195,7 @@ export function parsePassages(raw: string, body: string, options: ParseOptions =
     throw new PassageFormatError("The answer is not valid JSON.");
   }
   if (!object || typeof object !== "object" || Array.isArray(object) || Object.keys(object).length === 0) {
-    throw new PassageFormatError("The answer must be one JSON object with a key for every point.");
+    throw new PassageFormatError("The answer must be one JSON object with a key for every passage.");
   }
   const values = object as Record<string, unknown>;
   const images = imageSpans(body);
@@ -245,10 +245,10 @@ export function parsePassages(raw: string, body: string, options: ParseOptions =
 /** What to tell the model when its passages do not add up to the text. */
 export function describeProblems(parse: PassageParse): string {
   const quote = (text: string) => JSON.stringify(text.length > MAX_QUOTED_GAP_CHARS ? text.slice(0, MAX_QUOTED_GAP_CHARS) + "..." : text);
-  const lines = ["Your points do not add up to the text."];
-  if (parse.uncovered.length) lines.push(`These stretches of the text are in no point: ${parse.uncovered.slice(0, MAX_REPORTED_PROBLEMS).map((g) => quote(g.text)).join("; ")}.`);
+  const lines = ["Your passages do not add up to the text."];
+  if (parse.uncovered.length) lines.push(`These stretches of the text are in no passage: ${parse.uncovered.slice(0, MAX_REPORTED_PROBLEMS).map((g) => quote(g.text)).join("; ")}.`);
   if (parse.unmatched.length) lines.push(`These keys are not in the text word for word, in this order: ${parse.unmatched.slice(0, MAX_REPORTED_PROBLEMS).map(quote).join("; ")}.`);
-  lines.push("Answer again with the whole JSON object. Copy every point word for word, in the order of the text, and leave nothing out.");
+  lines.push("Answer again with the whole JSON object. Copy every passage word for word, in the order of the text, and leave nothing out.");
   return lines.join(" ");
 }
 
