@@ -448,7 +448,7 @@ function checkerRows(points) {
       const toggle = c.asReceived && c.asReceived.prompt
         ? `<button class="toggle" data-as="${d.id}">${showAs ? "Show the built post" : "Show the full prompt as received"}</button>`
         : `<span class="small">No saved prompt for this claim. It was never checked in production, or the log was not kept.</span>`;
-      const text = showAs ? c.asReceived.prompt : c.post.text + (c.post.media.length ? "\n\nImages: " + c.post.media.map((m) => m.url).join("\n") : "");
+      const text = showAs ? withoutTweetLines(c.asReceived.prompt) : c.post.text + (c.post.media.length ? "\n\nImages: " + c.post.media.map((m) => m.url).join("\n") : "");
       return row + `<tr class="detail"><td colspan="6"><div class="detail-grid">
         <div><h4>What you wrote</h4><div class="words">${esc(d.jimsWords)}</div>
           <h4>Expected</h4><p>${expectedText(d)}</p><h4>Reference notes</h4>${referenceCell(d, 0)}
@@ -457,7 +457,7 @@ function checkerRows(points) {
         <div><h4>Full input: what the checker is handed ${copyButton(d.id, "Copy")}</h4>
           ${toggle}
           <div class="input-box" data-box="${d.id}">${esc(text)}</div>
-          <p class="meta">${showAs ? "From the " + esc(c.asReceived.from) + ". It adds the date lines and a comments section." : "Built with the pipeline's own buildClaimPost function." + (c.claim.paragraphTakenFromText ? " The paragraph was taken from the post's text, because a reader's highlight has none stored." : "")}</p>
+          <p class="meta">${showAs ? "From the " + esc(c.asReceived.from) + "." : "Built with the pipeline's own buildClaimPost function." + (c.claim.paragraphTakenFromText ? " The paragraph was taken from the post's text, because a reader's highlight has none stored." : "")}</p>
           <p class="small">The checker's system prompts are the pipeline's current research, writer and source verifier prompts.</p></div>
       </div></td></tr>`;
     })
@@ -718,7 +718,9 @@ function stepCard(number, title, chip, body, { open = true } = {}) {
   if (open) details.setAttribute("open", "");
   return details;
 }
-const proseBox = (text, mono = false) => node("div", { class: "prosebox" + (mono ? " mono" : "") }, linkified(text));
+/** The checker's message starts with date and tweet lines that the X pipeline adds to every post. They say nothing about the claim, so the page leaves them out. */
+const withoutTweetLines = (text) => text.replace(/^(Current date|Current time|Tweet posted|Post age):.*\n/gm, "");
+const proseBox = (text, mono = false) => node("div", { class: "prosebox" + (mono ? " mono" : "") }, linkified(withoutTweetLines(text)));
 
 function mountCheckerDetails(run) {
   for (const key of state.ropen) {
@@ -755,7 +757,7 @@ function mountCheckerDetail(host, result) {
     steps.push(stepCard(n++, "Research", "Muse, native search", s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." })));
     if (s.draftNote) {
       const body = node("div", {}, proseBox(s.draftNote));
-      if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, s.prompts.writer)));
+      if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, withoutTweetLines(s.prompts.writer))));
       steps.push(stepCard(n++, "The note the writer drafted", "Muse", body));
     }
     if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", "Muse", proseBox(s.sourceVerdict)));
