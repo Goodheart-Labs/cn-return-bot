@@ -2,6 +2,7 @@ import { execSync } from "child_process";
 import { fetchYoutubeCaptions, type SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 import type { FetchedContent } from "../types";
 import { fetchVideo, type YoutubeVideo } from "../../pipeline/media/youtubeDataApi";
+import type { UnreadableVideoReason } from "../../everything-core/requestProgress";
 
 /** yt-dlp is needed for exactly one thing here: the captions. Everything else
  *  about a video or a channel comes from the Data API (youtubeDataApi.ts). */
@@ -24,11 +25,12 @@ const CAPTIONS_GRACE_HOURS = 24;
 /** YouTube answered, and what it said means we cannot read the video. The
  *  item is then not a failure. The worker records it as done with `reason` as
  *  its skip reason, except that a video young enough to still get captions is
- *  tried again first. */
+ *  tried again first. The extension's progress card reads the reason to tell
+ *  a reader who requested the video why nothing was checked. */
 export class UnreadableVideoError extends Error {
   constructor(
     url: string,
-    readonly reason: "no captions" | "age-restricted",
+    readonly reason: UnreadableVideoReason,
     readonly captionsMayStillCome: boolean,
   ) {
     super(`${url}: ${reason}${captionsMayStillCome ? ", but the video is young enough to still get captions" : ""}`);

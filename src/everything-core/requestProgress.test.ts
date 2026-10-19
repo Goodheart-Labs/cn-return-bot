@@ -112,6 +112,17 @@ describe("deriveRequestProgress", () => {
     expect(progress).toEqual({ kind: "done", notes: 1 });
   });
 
+  test("a done video we could not read is unreadable, with its reason", () => {
+    const progress = deriveRequestProgress(item({ status: "done", skip_reason: "no captions" }), [], null);
+    expect(progress).toEqual({ kind: "unreadable", reason: "no captions" });
+    expect(progressIsTerminal(progress)).toBe(true);
+    expect(progressLines(progress)).toEqual(["failed, no captions available"]);
+  });
+
+  test("any other skip reason on a done item still reads as done", () => {
+    expect(deriveRequestProgress(item({ status: "done", skip_reason: "a personal update" }), [], null)).toEqual({ kind: "done", notes: 0 });
+  });
+
   test("an errored item is failed", () => {
     expect(deriveRequestProgress(item({ status: "error" }), [], null)).toEqual({ kind: "failed" });
   });
@@ -180,6 +191,8 @@ describe("progressLines", () => {
       { kind: "checking", done: 1, total: 2, notes: 1 },
       { kind: "done", notes: 1 },
       { kind: "failed" },
+      { kind: "unreadable", reason: "no captions" },
+      { kind: "unreadable", reason: "age-restricted" },
       { kind: "unavailable" },
     ] as const;
     for (const state of states) {
