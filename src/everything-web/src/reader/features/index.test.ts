@@ -9,11 +9,11 @@ const api = { scope: "main", features: new Set(ALL_FEATURES), noteRequests: [], 
 
 test("the toolbar on selected words", () => {
   const actions = READER_MODULES.flatMap((module) => module.selectionActions?.(api, block, "close the bridge for repairs") ?? []);
-  expect(actions.map((action) => action.label)).toEqual(["Write note", "Request note", "Forecast", "Key point", "Ask Opus"]);
+  expect(actions.map((action) => action.label)).toEqual(["Write note", "Check this", "Forecast", "Key point", "Ask Opus"]);
   expect(actions.map((action) => action.feature)).toEqual(["highlight.note", "highlight.request", "highlight.forecast", "highlight.keyPoint", "highlight.askOpus"]);
 });
 
-test("Request note waits until the article itself has been checked", () => {
+test("Check this waits until the article itself has been checked", () => {
   const unchecked = { ...api, item: { status: "done", checked_scope: null } } as unknown as ReaderApi;
   const labels = READER_MODULES.flatMap((module) => module.selectionActions?.(unchecked, block, "close the bridge for repairs") ?? []).map((action) => action.label);
   expect(labels).toEqual(["Write note", "Forecast", "Key point", "Ask Opus"]);

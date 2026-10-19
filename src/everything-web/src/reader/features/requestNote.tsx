@@ -93,8 +93,8 @@ export const requestNoteModule: ReaderModule = {
   selectionActions: (api, block, quote) => (isWholePageChecked(api.item) ? [{
     feature: "highlight.request",
     key: "request",
-    label: "Request note",
-    accessibleName: "Request note on these words",
+    label: "Check this",
+    accessibleName: "Check this passage",
     onSelect: () => {
       const request = api.requestNote(block.id, quote);
       const cardId = requestCardId(api.scope, request.id);
