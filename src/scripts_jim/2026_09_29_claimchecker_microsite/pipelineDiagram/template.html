@@ -145,11 +145,12 @@ const KIND = {
   gemini: { color: "--other", soft: "--other-soft", tag: "GEMINI" },
   deepseek: { color: "--other", soft: "--other-soft", tag: "DEEPSEEK" },
   grok: { color: "--other", soft: "--other-soft", tag: "GROK" },
+  claude: { color: "--other", soft: "--other-soft", tag: "SONNET 5.5" },
   code: { color: "--code", soft: "--code-soft", tag: "CODE" },
   result: { color: "--accent", soft: "--accent-soft", tag: "RESULT" },
   end: { color: "--warn", soft: "--warn-soft", tag: "NO NOTE" },
 };
-const chipClass = (kind) => ({ muse: "k-muse", gemini: "k-other", deepseek: "k-other", grok: "k-other", code: "k-code", result: "k-result", end: "k-end" })[kind];
+const chipClass = (kind) => ({ muse: "k-muse", gemini: "k-other", deepseek: "k-other", grok: "k-other", claude: "k-other", code: "k-code", result: "k-result", end: "k-end" })[kind];
 
 const STEPS = {
   fetch: {
@@ -284,7 +285,7 @@ const STEPS = {
     goesIn: "The probability.", comesOut: "A route: writer, stronger research or no note.", tested: "Eval 2 can run with either path, chosen with --search-cascade.",
   },
   research: {
-    kind: "muse", title: "Full research", sub: "stronger model, yes or no", runs: "Once per claim (precheck path), or when the quick step is unsure", model: "Common Notes: Sonnet 5.5 on the cascading path, GPT-6 Luna on the precheck path. Medium reasoning, native search.",
+    kind: "claude", title: "Full research", sub: "stronger model, yes or no", runs: "Once per claim (precheck path), or when the quick step is unsure", model: "Common Notes: Sonnet 5.5 on the cascading path, GPT-6 Luna on the precheck path. Medium reasoning, native search.",
     summary: "Researches the claim and says whether it contains a clear factual error.",
     decides: "Whether a correction is needed.",
     what: "One call with the model provider's native search researches the highlighted claim and writes a dense summary of its findings with the full source links. It also sets correction_needed, which is true only for a clear factual error backed by direct contradicting evidence. Opinions, predictions and subjective characterizations are not corrected. When correction_needed is false, the check ends here as no correction needed. On the precheck path every claim goes through this step. On the cascading path only the unsure ones do. For an X post the stronger model is the search model that the run was configured with.",
@@ -375,7 +376,7 @@ const EDGES = [
   { d: "M575,496 V546", label: "blocked", lx: 582, ly: 526 },
   { d: "M975,496 V522 H805 V546", label: "under 0.3", lx: 812, ly: 516 },
   { d: "M1055,496 V546", label: "0.3 to 0.9", lx: 1062, ly: 526 },
-  { d: "M1150,468 H1168 V688 H1154", label: "0.9 or more", lx: 1088, ly: 540, dash: true },
+  { d: "M1150,468 H1168 V688 H1154", label: "0.9 or more", lx: 1090, ly: 524, dash: true },
   { d: "M1055,606 V656" },
   { d: "M1055,716 V766" },
   { d: "M960,802 H930 V578 H904", label: "empty", lx: 934, ly: 700 },
