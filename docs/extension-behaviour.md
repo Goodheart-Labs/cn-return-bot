@@ -115,6 +115,17 @@ A request for a whole page is not sent when it is not needed. If the page has al
 
 Writing works on any website. On a page we do not cover, the click gives the extension temporary access to that tab (Chrome's **activeTab** permission), which lets it start the note editor there. The page's item is created only when you post. Once you post, the page becomes covered and your note appears straight away. (`utils/mountWriteAnywhere.tsx`, `ensureWebItem` in `src/everything-core/items.ts`)
 
+## Three-dot menus
+
+YouTube and Substack each have a three-dot menu on every video or post. The extension adds up to two rows at the top of these menus, above a divider:
+
+- **Check this video** or **Check this post** asks us to check that video or post, like the popup's button. It is left out when we have read the page in full, when you already asked for it, or when its creator's priority window is open.
+- **Check this youtuber's new videos** or **Check this author's new posts** gives the creator a 7-day priority window, like the popup's creator button. It is left out while the window is open, and when the card does not link its creator.
+
+The menus that get the rows are the menu on a video card in any YouTube listing, including search results and the cards beside a playing video, the menu under the playing video, the menu on a post in Substack's feed, and the menu in an open post's action bar. Substack Notes, YouTube Shorts, playlists and comments get no rows, because we do not check them. After a click the menu closes and a small card confirms the request, for example "Checking this video now." A row in the menu of the page you have open runs exactly the right-click menu's "Check this page with Common Notes", so the progress card follows the check. A row on a card in a listing sends only the page's address, because the extension cannot read a page that is not open. The rows take the site's own colours, fonts and icon alignment, and the arrow keys move through them together with the site's own rows. The approach is copied from Tidy Web, another Happy Squid extension, which adds its "Block channel" rows to the same menus. (`utils/menuRows.ts`, `utils/youtubeMenuRows.ts`, `utils/substackMenuRows.ts`)
+
+Substack newsletters on their own domain show the post menu only where the extension already runs, which is on sites that have notes.
+
 ## Privacy
 
 **Whether a page has notes is decided on your device.** The background keeps a local copy of every covered page address. A content script checks the page against that copy before it makes any request to our server. Ordinary browsing on a page without notes therefore never contacts our server. Only on a fresh install, before the first sync has finished, does the extension ask the server directly. (`utils/coveredPages.ts`, `utils/mountInlineNotes.tsx`)
@@ -174,5 +185,6 @@ Each entry says what we chose, why, and when. Please do not undo one of these wi
 - **You can vote and write without signing up**, through anonymous accounts (GOO-64). A browser that has signed in before must sign in again rather than get a second, anonymous account. (2026-08-31)
 - **Safari offers email sign-in only, and its access prompt has no button.** Safari cannot run the X login, and it ignores an extension's own request for site access. (2026-09-30)
 - **A YouTube pin opens its note without moving the video.** Before, a click on a pin moved the video to the claim, which lost the reader's place in the video when they only wanted to read the note. The card offers a button to move there instead, and a double click on the pin moves there at once. (Anton's feedback, GOO-447, 2026-10-19)
+- **The three-dot menus offer the same two requests as the popup**, with the popup's rules for when to leave them out. Anton suggested copying Tidy Web's menu rows, because a reader looks for actions on a video or post in its own menu. (GOO-447, 2026-10-19)
 - **The request button says "Check", not "Request".** "Request notes" sounded like we might get to it in a week, while a requested page is checked within minutes. (Anton's feedback, GOO-447, 2026-10-19)
 - **Development builds reload themselves.** A dev build checks every 30 seconds whether a newer build has landed on disk and reloads if so. This replaced a check that opened a probe tab in Jim's browser and pulled his laptop's focus to Chrome, which he asked to be rid of. (2026-08-25)

@@ -399,6 +399,12 @@ export default defineBackground(() => {
       sendToTabWithInjection(tabId, { type: "cn-request-live", pageUrl, token }).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
+    if ((message as { type?: string })?.type === "cn-check-open-page" && sender.tab) {
+      // A three-dot menu row asks for the page its tab has open. That is the
+      // same request as the right-click menu's, so it takes the same path.
+      requestNoteOnSelection(sender.tab, "").then(() => sendResponse({ ok: true }));
+      return true; // Keep the message channel open for the async reply.
+    }
     if ((message as { type?: string })?.type === VISIT_MESSAGE_TYPE) {
       // A content script has decided this page counts and has read the creator
       // off it. The row is written here, where the reader secret lives.
