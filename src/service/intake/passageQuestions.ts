@@ -1,34 +1,36 @@
-import type OpenAI from "openai";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ALL_FEATURES, enabledFeatures, type FeatureId } from "../../everything-core/minisiteFeatures";
 import { MAX_READER_NOTE_LENGTH, parseOpusDraft, QUESTION_BUDGET_ERROR, type OpusDraft, type PassageQuestion } from "../../everything-core/passageHighlights";
 import { requestBudgetExhausted } from "../../everything/spendCap";
-import { llm, withLlmAbortSignal } from "../../pipeline/llm/llm";
+import { createAnthropicMessage, withLlmAbortSignal, type AnthropicContentBlock, type AnthropicMessage, type AnthropicMessageParams } from "../../pipeline/llm/llm";
 import { OPENROUTER_PRICING } from "../../pipeline/cost-tracking/pricing";
-import { MAX_PAGE_TEXT_CHARS, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
+import { CLAUDE_RESEARCH_FETCH_TOOL, MAX_PAGE_TEXT_CHARS, WEB_SEARCH_TOOL } from "../../pipeline/tool-calling/tools";
 import { checked } from "../../api/supabaseResult";
 
 const MODEL = "anthropic/claude-opus-5.5";
+
+/** A tool Opus calls and we carry out, in Anthropic's format. */
+interface DraftToolDefinition { name: string; description: string; input_schema: object }
 const NO_COMMENTARY = "No commentary or reasoning, and nothing about the article or its authors (never \"this tests…\"); reasoning goes in your reply.";
-const DRAFT_FORECAST_TOOL: OpenAI.ChatCompletionTool = { type: "function", function: { name: "draft_forecast", description: "Draft a forecast. The reader sees a card reading 'This is a forecast of a {probability}% chance of \"{statement}\"' and can post it or edit it. Give your reasoning as text in the same reply, in one or two sentences.", parameters: { type: "object", properties: {
+const DRAFT_FORECAST_TOOL: DraftToolDefinition = { name: "draft_forecast", description: "Draft a forecast. The reader sees a card reading 'This is a forecast of a {probability}% chance of \"{statement}\"' and can post it or edit it. Give your reasoning as text in the same reply, in one or two sentences.", input_schema: { type: "object", properties: {
   probability: { type: "integer", minimum: 0, maximum: 100, description: "The chance, from 0 to 100, that the event happens." },
   statement: { type: "string", maxLength: 2000, description: `Only the event, worded to complete "N% chance of …", e.g. "US electricity demand growing more than 50% by 2035". Make it resolvable where you can: what happens, by when, measured how. ${NO_COMMENTARY}` },
-}, required: ["probability", "statement"], additionalProperties: false } } };
-const DRAFT_KEY_POINT_TOOL: OpenAI.ChatCompletionTool = { type: "function", function: { name: "draft_key_point", description: "Draft a key point. The reader sees a card reading 'A key point in this article is \"{point}\"' and can post it or edit it. Give your reasoning as text in the same reply, in one or two sentences.", parameters: { type: "object", properties: {
+}, required: ["probability", "statement"], additionalProperties: false } };
+const DRAFT_KEY_POINT_TOOL: DraftToolDefinition = { name: "draft_key_point", description: "Draft a key point. The reader sees a card reading 'A key point in this article is \"{point}\"' and can post it or edit it. Give your reasoning as text in the same reply, in one or two sentences.", input_schema: { type: "object", properties: {
   point: { type: "string", maxLength: 2000, description: `Only the point, in one sentence, worded to complete "A key point in this article is …". ${NO_COMMENTARY}` },
-}, required: ["point"], additionalProperties: false } } };
+}, required: ["point"], additionalProperties: false } };
 
-const DRAFT_NOTE_TOOL: OpenAI.ChatCompletionTool = { type: "function", function: { name: "draft_note", description: "Draft a note on the passage. The reader sees it in an editable box under the chat and can post it as their own note, change it first, or discard it. Give your reasoning as text in the same reply, in one or two sentences.", parameters: { type: "object", properties: {
+const DRAFT_NOTE_TOOL: DraftToolDefinition = { name: "draft_note", description: "Draft a note on the passage. The reader sees it in an editable box under the chat and can post it as their own note, change it first, or discard it. Give your reasoning as text in the same reply, in one or two sentences.", input_schema: { type: "object", properties: {
   text: { type: "string", maxLength: MAX_READER_NOTE_LENGTH, description: `The note, written for every reader of the article: a few short, neutral sentences that correct the passage or add the context it is missing, followed by the URLs of the sources it rests on. ${NO_COMMENTARY}` },
-}, required: ["text"], additionalProperties: false } } };
+}, required: ["text"], additionalProperties: false } };
 
 /** Each draft tool is offered only where readers can post what it drafts. */
 const DRAFT_TOOLS = [
   { feature: "highlight.note", name: "draft_note", drafts: "note drafts", tool: DRAFT_NOTE_TOOL },
   { feature: "highlight.forecast", name: "draft_forecast", drafts: "forecast drafts", tool: DRAFT_FORECAST_TOOL },
   { feature: "highlight.keyPoint", name: "draft_key_point", drafts: "key point drafts", tool: DRAFT_KEY_POINT_TOOL },
-] as const satisfies readonly { feature: FeatureId; name: string; drafts: string; tool: OpenAI.ChatCompletionTool }[];
+] as const satisfies readonly { feature: FeatureId; name: string; drafts: string; tool: DraftToolDefinition }[];
 
 type DraftTool = (typeof DRAFT_TOOLS)[number];
 
@@ -44,7 +46,7 @@ const PROMPT = {
   onlyAskedActions: "Only request actions the reader asks for.",
 };
 
-type AskOpusTool = OpenAI.ChatCompletionTool | typeof OPENROUTER_NATIVE_WEB_SEARCH_TOOL;
+type AskOpusTool = DraftToolDefinition | typeof WEB_SEARCH_TOOL | typeof CLAUDE_RESEARCH_FETCH_TOOL;
 
 function draftSentence(drafts: readonly DraftTool[]): string {
   const target = drafts.length > 1 ? "those drafts" : drafts[0]!.drafts;
@@ -77,7 +79,7 @@ export function askOpusSetup(features: ReadonlySet<FeatureId>): { system: string
   ].join(" ");
   const tools = [
     ...drafts.map((draft) => draft.tool),
-    ...(search ? [OPENROUTER_NATIVE_WEB_SEARCH_TOOL] : []),
+    ...(search ? [WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL] : []),
   ];
   return { system, tools };
 }
@@ -98,11 +100,21 @@ function draftFromCall(name: string, args: Record<string, unknown>): OpusDraft |
   }
 }
 
-const functionName = (tool: AskOpusTool) => (tool.type === "function" ? tool.function.name : null);
+
+/** The text the reader sees: only the text blocks after the last block a
+ *  server tool returned. Claude often writes a line between two searches or
+ *  fetches, such as "Only got the abstract, fetch the HTML". That line is
+ *  meant for itself, not for the reader. */
+function finalText(content: AnthropicContentBlock[]): string {
+  const lastToolResult = content.findLastIndex((block) => block.type.endsWith("_tool_result"));
+  return content.slice(lastToolResult + 1)
+    .flatMap((block) => (block.type === "text" ? [block.text] : []))
+    .join("").trim();
+}
 
 export async function answerPassageQuestion(question: PassageQuestion, deps = {
   db: getSupabaseClient(),
-  complete: async (params: OpenAI.ChatCompletionCreateParamsNonStreaming) => llm.create(params),
+  complete: (params: AnthropicMessageParams): Promise<AnthropicMessage> => createAnthropicMessage(params),
   budgetExhausted: requestBudgetExhausted,
 }): Promise<void> {
   const { db } = deps;
@@ -117,36 +129,36 @@ export async function answerPassageQuestion(question: PassageQuestion, deps = {
       .eq("item_id", question.item_id).eq("author_id", question.author_id).eq("passage", question.passage)
       .eq("status", "done").lt("created_at", question.created_at).order("created_at", { ascending: false }).limit(10));
     const { system, tools } = askOpusSetup(await questionFeatures(db, question.item_id));
-    const offered = new Set(tools.map(functionName));
-    const messages: OpenAI.ChatCompletionMessageParam[] = [
-      { role: "system", content: `${system} Today is ${new Date().toISOString().slice(0, 10)}.` },
-      { role: "user", content: [
-        // The article comes first and is marked for Anthropic's prompt cache,
-        // which OpenRouter passes through. Every question on the same article
-        // within a few minutes then reads it at a tenth of the price.
-        { type: "text", text: JSON.stringify({ title: item.title, url: item.url, article: item.full_text?.slice(0, MAX_PAGE_TEXT_CHARS) }), cache_control: { type: "ephemeral" } } as OpenAI.ChatCompletionContentPartText,
+    const offered = new Set(tools.map((tool) => tool.name));
+    // One request answers the question. Web searches and page fetches run
+    // inside it, on Anthropic's side. A draft tool call ends the answer too:
+    // Opus writes its reasoning in the same reply, so there is no second
+    // request to wait for while the reader already sees the draft.
+    const reply = await withLlmAbortSignal(signal, () => deps.complete({
+      model: MODEL,
+      max_tokens: 2000,
+      system: `${system} Today is ${new Date().toISOString().slice(0, 10)}.`,
+      messages: [{ role: "user", content: [
+        // The article comes first and is marked for Anthropic's prompt cache.
+        // Every question on the same article within a few minutes then reads
+        // it at a tenth of the price.
+        { type: "text", text: JSON.stringify({ title: item.title, url: item.url, article: item.full_text?.slice(0, MAX_PAGE_TEXT_CHARS) }), cache_control: { type: "ephemeral" } },
         { type: "text", text: JSON.stringify({ passage: question.passage, earlier: (history ?? []).reverse(), question: question.question }) },
-      ] },
-    ];
-    // One request answers the question. Web searches run inside it on
-    // OpenRouter's side. A draft tool call ends the answer too: Opus writes
-    // its reasoning in the same reply, so there is no second request to wait
-    // for while the reader already sees the draft.
-    const reply = await withLlmAbortSignal(signal, () => deps.complete({ model: MODEL, messages, max_tokens: 2000, ...(tools.length ? { tools: tools as OpenAI.ChatCompletionTool[] } : {}) }));
-    const usage = reply.usage as (OpenAI.CompletionUsage & { cost?: number }) | undefined;
+      ] }],
+      ...(tools.length ? { tools } : {}),
+    }));
     const price = OPENROUTER_PRICING[MODEL]!;
-    cost += usage?.cost ?? ((usage?.prompt_tokens ?? 0) * price.in + (usage?.completion_tokens ?? 0) * price.out) / 1_000_000;
+    cost += reply.usage?.cost ?? ((reply.usage?.input_tokens ?? 0) * price.in + (reply.usage?.output_tokens ?? 0) * price.out) / 1_000_000;
     await save({ cost_usd: cost, model: MODEL });
-    const message = reply.choices[0]?.message;
-    if (!message) throw new Error("The model returned no answer");
-    for (const call of message.tool_calls ?? []) {
-      if (call.type !== "function" || !offered.has(call.function.name)) throw new Error("Unsupported tool call");
-      const draft = draftFromCall(call.function.name, JSON.parse(call.function.arguments));
+    const calls = reply.content.filter((block) => block.type === "tool_use");
+    for (const call of calls) {
+      if (!offered.has(call.name)) throw new Error("Unsupported tool call");
+      const draft = draftFromCall(call.name, call.input);
       if (!draft) throw new Error("Invalid draft");
       await save({ draft });
     }
-    const answer = stripBrowserLineCitations(message.content ?? "").trim();
-    if (!answer && !message.tool_calls?.length) throw new Error("The model returned an empty answer");
+    const answer = finalText(reply.content);
+    if (!answer && !calls.length) throw new Error("The model returned an empty answer");
     await save({ status: "done", answer: answer || null, answered_at: new Date().toISOString() });
   } catch (err) {
     console.error(`[intake] passage question ${question.id}:`, err);
