@@ -9,9 +9,10 @@
  * Sonnet 5.5, on two real inputs, and keeps every raw answer.
  *
  * Variants:
- *   prompted   web search tool, JSON asked for in the prompt (what production does)
- *   schema     web search tool, strict json_schema response_format
- *   notool     no tool, JSON asked for in the prompt (control)
+ *   prompted     web search and web fetch tools, JSON asked for in the prompt (what production does since the Claude fetch tool was added)
+ *   searchonly   web search tool only, JSON asked for in the prompt (production before that)
+ *   schema       web search and web fetch tools, strict json_schema response_format
+ *   notool       no tool, JSON asked for in the prompt (control)
  *
  *   bun run src/scripts_jim/2026_10_19_sonnet_json_failures/run.ts [samples]
  */
@@ -21,12 +22,12 @@ import { join } from "path";
 import PQueue from "p-queue";
 import { llm } from "../../pipeline/llm/llm";
 import { SEARCH_PROMPTED_JSON_INSTRUCTION, SEARCH_RESPONSE_FORMAT, SEARCH_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_CLAIM } from "../../pipeline/prompts/simple-bot/searchAgent";
-import { WEB_SEARCH_TOOL } from "../../pipeline/tool-calling/tools";
+import { CLAUDE_RESEARCH_FETCH_TOOL, WEB_SEARCH_TOOL } from "../../pipeline/tool-calling/tools";
 import { extractJsonObject } from "../../pipeline/utils/jsonOutput";
 
 const DIR = new URL(".", import.meta.url).pathname;
 const MODELS = ["anthropic/claude-sonnet-5", "anthropic/claude-sonnet-5.5"];
-const VARIANTS = ["prompted", "schema", "notool"] as const;
+const VARIANTS = ["prompted", "searchonly", "schema", "notool"] as const;
 const INPUTS: Record<string, { system: string; user: string }> = (() => {
   const inputs = JSON.parse(readFileSync(join(DIR, "inputs.json"), "utf8"));
   return { "x-steam": { system: SEARCH_SYSTEM_PROMPT, user: inputs["x-steam"] }, "cn-berkeley": { system: SEARCH_SYSTEM_PROMPT_CLAIM, user: inputs["cn-berkeley"] } };
@@ -55,7 +56,7 @@ async function one(model: string, input: string, variant: (typeof VARIANTS)[numb
     const response: any = await llm.create({
       model,
       reasoning_effort: REASONING_EFFORT,
-      ...(variant === "notool" ? {} : { tools: [WEB_SEARCH_TOOL] }),
+      ...(variant === "notool" ? {} : { tools: variant === "searchonly" ? [WEB_SEARCH_TOOL] : [WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL] }),
       ...(variant === "schema" ? { response_format: SEARCH_RESPONSE_FORMAT } : {}),
       messages: [
         { role: "system", content: systemPrompt },
@@ -72,6 +73,8 @@ async function one(model: string, input: string, variant: (typeof VARIANTS)[numb
       outputTokens: response.usage?.completion_tokens ?? null,
       citations,
       searches: response.usage?.server_tool_use?.web_search_requests ?? null,
+      fetches: response.usage?.server_tool_use?.web_fetch_requests ?? null,
+      usageKeys: Object.keys(response.usage ?? {}).join(","),
       seconds: Math.round((Date.now() - started) / 100) / 10,
       tail: content.slice(-160),
       head: content.slice(0, 160),
@@ -79,7 +82,7 @@ async function one(model: string, input: string, variant: (typeof VARIANTS)[numb
     appendFileSync(join(DIR, "results.jsonl"), JSON.stringify({ ...row, content }) + "\n");
     return row;
   } catch (err: any) {
-    const row = { model, input, variant, sample, verdict: "error" as Verdict, detail: String(err?.message ?? err).slice(0, 160), finishReason: null, outputTokens: null, citations: 0, searches: null, seconds: Math.round((Date.now() - started) / 100) / 10, tail: "", head: "" };
+    const row = { model, input, variant, sample, verdict: "error" as Verdict, detail: String(err?.message ?? err).slice(0, 160), finishReason: null, outputTokens: null, citations: 0, searches: null, fetches: null, usageKeys: "", seconds: Math.round((Date.now() - started) / 100) / 10, tail: "", head: "" };
     appendFileSync(join(DIR, "results.jsonl"), JSON.stringify(row) + "\n");
     return row;
   }
@@ -95,7 +98,7 @@ async function main() {
   console.log("model | input | variant | valid / total | modes");
   for (const m of MODELS) for (const i of Object.keys(INPUTS)) for (const v of VARIANTS) {
     const cell = rows.filter((r) => r.model === m && r.input === i && r.variant === v);
-    const modes = cell.filter((r) => r.verdict !== "valid").map((r) => `${r.verdict}(${r.finishReason},${r.outputTokens}tok,${r.citations}cit)`).join(" ");
+    const modes = cell.filter((r) => r.verdict !== "valid").map((r) => `${r.verdict}(${r.finishReason},${r.outputTokens}tok,${r.citations}cit,${r.searches ?? "?"}s/${r.fetches ?? "?"}f)`).join(" ");
     console.log(`${m.replace("anthropic/", "")} | ${i} | ${v} | ${cell.filter((r) => r.verdict === "valid").length}/${cell.length} | ${modes}`);
   }
 }

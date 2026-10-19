@@ -753,6 +753,14 @@ function cascadeSummary(c) {
   const n = (d) => samples.filter((s) => s.cascade.decision === d).length;
   return `<p class="small">Cascading search, on ${samples.length} checks: ${n("note")} went straight to the writer, ${n("no_note")} ended with no note, ${n("escalate") + n("audit")} went to the stronger model. The percentage in front of each check is the quick research's probability that the claim is misleading.</p>`;
 }
+const SECOND_ROUND_TEXT = { note: "accepted", verification_failed: "rejected again", research_withdrew: "research withdrew", writer_empty: "writer wrote nothing", unfetchable_sources: "sources not fetched" };
+const secondRoundLine = (s) => (s ? `<span class="small">second round: ${SECOND_ROUND_TEXT[s.result] ?? esc(s.result)}</span><br>` : "");
+function secondRoundSummary(c) {
+  const samples = c.rows.flatMap((r) => r.samples).filter((s) => s.secondRound);
+  if (!samples.length) return "";
+  const n = (r) => samples.filter((s) => s.secondRound.result === r).length;
+  return `<p class="small">Second round, on ${samples.length} checks that the source verifier rejected: ${n("note")} accepted, ${n("verification_failed")} rejected again, ${n("research_withdrew")} where the research withdrew, ${n("writer_empty")} where the writer wrote nothing, ${n("unfetchable_sources")} where the revised sources could not be fetched.</p>`;
+}
 const outcomeLine = (o) => (o.type === "note" ? `<b>Note:</b> ${esc(truncate(o.note, 110))}` : o.type === "no_note" ? `<b>No note:</b> <span class="small">${esc(o.reason)}</span>` : `<b>Error:</b> <span class="small">${esc(o.error)}</span>`);
 function checkerRowsResult(run) {
   const c = run.checker;
@@ -761,7 +769,7 @@ function checkerRowsResult(run) {
     const judged = r.samples.filter((s) => s.quality);
     const quality = judged.length ? `${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes` : '<span class="small">not judged</span>';
     const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
-      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${cascadeLine(s.cascade)}${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
+      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${cascadeLine(s.cascade)}${secondRoundLine(s.secondRound)}${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
     if (!open) return row;
     return row + `<tr class="detail"><td colspan="6"><div class="cdetail" id="cd-${r.id}"></div></td></tr>`;
   }).join("");
@@ -869,6 +877,14 @@ function mountCheckerDetail(host, result) {
       steps.push(stepCard(n++, "The note the writer drafted", modelName(s.models?.writer) || "model not recorded", body));
     }
     if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", modelName(s.models?.verifier) || "model not recorded", proseBox(s.sourceVerdict)));
+    if (s.secondRound) {
+      const r = s.secondRound;
+      steps.push(stepCard(n++, "Second round", SECOND_ROUND_TEXT[r.result] ?? r.result,
+        node("div", {}, node("p", { class: "small", text: "The source verifier rejected the first note. The research was told what the verifier said and wrote revised findings, and the writer and the verifier ran again. The search and writer cards above show the last round. The first round was:" }),
+          node("h4", { text: "The first note" }), proseBox(r.first.note),
+          node("h4", { text: "What the verifier said about it" }), proseBox(r.first.reasoning),
+          node("h4", { text: "The revised findings" }), r.revisedFindings ? proseBox(r.revisedFindings) : node("p", { class: "small", text: "none" })), { open: false }));
+    }
     const end = node("div", {});
     if (o.type === "note") {
       end.append(node("div", { class: "notebox" }, o.note, ...(o.sources.length ? [node("ul", { class: "small" }, ...o.sources.map((x) => node("li", {}, node("a", { href: x.url, target: "_blank", rel: "noreferrer", text: x.url }), x.quote ? node("div", { text: "“" + truncate(x.quote, 240) + "”" }) : null)))] : [])));
@@ -956,7 +972,7 @@ function renderResults() {
   const body = state.rs === "extractor"
     ? `${run.extractor.rows.length ? extractorSummary(run) + compareTable("extractor", run) : ""}${unlabelledSection(run)}${run.extractor.rows.length ? `<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:170px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference statement</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>` : ""}`
     : state.rs === "probability" ? probabilityTable(run)
-    : `${checkerSummary(run)}${cascadeSummary(run.checker)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
+    : `${checkerSummary(run)}${cascadeSummary(run.checker)}${secondRoundSummary(run.checker)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
   box.innerHTML = `<h2>Results</h2>
     ${runsTable(run)}
     <h3 class="runtitle">${esc(run.label)}</h3>

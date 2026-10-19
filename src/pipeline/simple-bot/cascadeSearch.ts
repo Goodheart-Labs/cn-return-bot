@@ -45,7 +45,7 @@ export function cascadeDecisionOf(probability: number, audit: boolean): CascadeD
   return audit ? "audit" : "no_note";
 }
 
-interface WeakSearchResult {
+export interface WeakSearchResult {
   probability: number;
   findings: string;
   model: string;
@@ -81,19 +81,19 @@ async function askWeakModel(userMessage: string, model: string, systemPrompt: st
   return { probability: output.misleading_probability, findings, model };
 }
 
-/** The cheap step: Muse first, and GPT-6 Luna when Muse fails. */
-async function runWeakSearch(userMessage: string): Promise<WeakSearchResult> {
+/** The cheap step: Muse first, and GPT-6 Luna when Muse fails. The log key says where the messages are kept, so that a second round does not overwrite the first. */
+export async function runQuickSearch(userMessage: string, logKey: string = STEP.weakSearch): Promise<WeakSearchResult> {
   const log = getTweetLog();
   const systemPrompt = getBotConfig().commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY : SEARCH_SYSTEM_PROMPT_PROBABILITY;
-  log?.set(`${STEP.weakSearch}.messages.0`, { systemPrompt, userMessage });
+  log?.set(`${logKey}.messages.0`, { systemPrompt, userMessage });
   let result: WeakSearchResult;
   try {
     result = await askWeakModel(userMessage, CASCADE_WEAK_MODEL, systemPrompt);
   } catch (err: any) {
-    log?.set(`${STEP.weakSearch}.fallback_reason`, err?.message ?? String(err));
+    log?.set(`${logKey}.fallback_reason`, err?.message ?? String(err));
     result = await askWeakModel(userMessage, CASCADE_WEAK_FALLBACK_MODEL, systemPrompt);
   }
-  log?.set(`${STEP.weakSearch}.messages.1`, { content: { findings: result.findings, misleading_probability: result.probability }, model: result.model });
+  log?.set(`${logKey}.messages.1`, { content: { findings: result.findings, misleading_probability: result.probability }, model: result.model });
   return result;
 }
 
@@ -104,11 +104,16 @@ function strongSearchConfig() {
   return config.commonnotes_pipeline ? { ...base, search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native" as const } : base;
 }
 
+/** The stronger search of the cascade: the regular search step, run on the stronger model. */
+export function runStrongSearch(userMessage: string): Promise<SearchResult> {
+  return withBotConfig(strongSearchConfig(), () => runSearch(userMessage));
+}
+
 export async function runCascadingSearch(userMessage: string): Promise<SearchResult> {
-  const weak = await runWeakSearch(userMessage);
+  const weak = await runQuickSearch(userMessage);
   const decision = cascadeDecisionOf(weak.probability, !!getBotConfig().cascade_audit);
   getTweetLog()?.set("cascade", { probability: weak.probability, answered_by: weak.model, decision });
-  if (decision === "note") return { findings: weak.findings, correctionNeeded: true };
-  if (decision === "no_note") return { findings: weak.findings, correctionNeeded: false };
-  return withBotConfig(strongSearchConfig(), () => runSearch(userMessage));
+  if (decision === "note") return { findings: weak.findings, correctionNeeded: true, researchedBy: "quick" };
+  if (decision === "no_note") return { findings: weak.findings, correctionNeeded: false, researchedBy: "quick" };
+  return { ...(await runStrongSearch(userMessage)), researchedBy: "full" };
 }

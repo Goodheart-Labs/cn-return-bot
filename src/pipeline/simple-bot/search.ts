@@ -14,6 +14,8 @@ import { dispatchSearch } from "./searchDispatch";
 export interface SearchResult {
   findings: string;
   correctionNeeded: boolean;
+  /** Which research produced the findings: the cascade's quick research or a full one. Missing when the run has no cascade, which means a full one. */
+  researchedBy?: "quick" | "full";
 }
 
 export async function runSearch(userMessage: string): Promise<SearchResult> {

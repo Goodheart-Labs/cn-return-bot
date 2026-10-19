@@ -19,7 +19,7 @@ import { CASCADE_COMMONNOTES_STRONG_MODEL } from "../../../pipeline/simple-bot/c
 import { AB_TESTS } from "../../../pipeline/ab-testing/abTestsData";
 import { LOGS_DIR } from "../runStore";
 import { checkTraceOf } from "../labRun";
-import type { CascadeTrace, CheckableRow, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
+import type { CascadeTrace, CheckableRow, SecondRoundTrace, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
 import { judgeNoteQuality } from "./judges";
 
 const SAMPLES_PER_ROW = 3;
@@ -71,6 +71,13 @@ function referenceNotesOf(row: CheckableRow): string[] {
 function pickedModel(picks: Record<string, string> | null, testName: string, field: "search_model" | "writer_model" | "verifier_model"): string | null {
   const variant = AB_TESTS.find((test) => test.name === testName)?.variants.find((v) => v.variant.name === picks?.[testName]);
   return (variant?.variant.overrides as Record<string, string | undefined> | undefined)?.[field] ?? null;
+}
+
+/** What the second research round did, from the log of a check. It is null when there was none. */
+export function secondRoundOf(logs: any): SecondRoundTrace | null {
+  const second = logs?.second_round;
+  if (!second?.first) return null;
+  return { result: second.result ?? "unknown", first: second.first, revisedFindings: second.revised_findings ?? "" };
 }
 
 /** The models of a check, from its picks. The full research does not run when the quick research decided alone. A claim that is escalated goes to the cascade's own strong model. */
@@ -127,7 +134,7 @@ async function checkSample(row: CheckableRow, referenceNotes: string[], runId: s
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };

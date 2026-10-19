@@ -42,6 +42,10 @@ export type WriterStageResult =
       /** The entries of the snippetsByUrl map, serialized. The verifier uses
        *  them when it cannot fetch a source. */
       snippets: [string, Snippet][];
+      /** Which research produced the findings. The second research round needs it. */
+      researchedBy?: "quick" | "full";
+      /** The timing block the writer was given, so the second round gives it again. */
+      timingContext?: string;
     };
 
 function cacheDir(): string | null {

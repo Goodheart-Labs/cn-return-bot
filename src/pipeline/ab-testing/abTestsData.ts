@@ -204,6 +204,17 @@ const CASCADE_AUDIT_TEST: ABTest = {
   ],
 };
 
+// One more research turn after the source verifier rejected a note. Off until the evals say it pays for itself.
+// The arm is live only by force. Turning it on for traffic is a change of weights.
+const SECOND_ROUND_TEST: ABTest = {
+  name: "second_round",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { second_round: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { second_round: true  } }, weight: 0 },
+  ],
+};
+
 // Closed on deepseek (2026-08-06). Common Notes and discard audits still need off.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
@@ -363,6 +374,7 @@ export const AB_TESTS: ABTest[] = [
   VERIFIER_CLAIM_BASED_TEST,
   VERIFIER_CITATIONS_TEST,
   JINA_FETCH_TEST,
+  SECOND_ROUND_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,

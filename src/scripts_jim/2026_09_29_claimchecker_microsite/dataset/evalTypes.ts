@@ -159,6 +159,14 @@ export interface CascadeTrace {
   userMessage: string | null;
 }
 
+/** What the second research round did, when a run on the second_round arm had its note rejected by the source verifier. */
+export interface SecondRoundTrace {
+  /** The outcome of the second round: note, verification_failed, research_withdrew, writer_empty or unfetchable_sources. */
+  result: string;
+  first: { findings: string; note: string; reasoning: string };
+  revisedFindings: string;
+}
+
 /** One run of the whole claim check on one row. */
 export interface CheckerSample {
   outcome: CheckerOutcome;
@@ -170,6 +178,8 @@ export interface CheckerSample {
   research: string | null;
   /** The models that ran the full research, the writer and the source verifier. The research is null when the check never reached it. Missing in a run made before they were kept. */
   models?: { search: string | null; writer: string | null; verifier: string | null };
+  /** Missing in a run made before the second round, and null when the verifier did not reject the first note. */
+  secondRound?: SecondRoundTrace | null;
   /** What the cascade's quick research said. Missing in a run made before the cascade, and null on the precheck path. */
   cascade?: CascadeTrace | null;
   draftNote: string | null;

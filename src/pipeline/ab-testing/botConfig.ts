@@ -94,6 +94,15 @@ export interface BotConfig {
    */
   jina_fetch?: boolean;
   /**
+   * When this is true and the source verifier rejects the note, the research
+   * step gets one more turn. It is told what the verifier said, writes revised
+   * findings, and the writer and the verifier run again on them. The same
+   * research model does it as the first time: the quick model stays the quick
+   * model and the stronger model stays the stronger model. SECOND_ROUND_TEST
+   * sets it and it defaults to false.
+   */
+  second_round?: boolean;
+  /**
    * When this is true, a blocked-topic gate runs before everything else,
    * including the note-needed prefilter. One deepseek-v4-flash call checks the
    * post against BLOCKED_TOPICS. On a hit the run is skipped and recorded as
