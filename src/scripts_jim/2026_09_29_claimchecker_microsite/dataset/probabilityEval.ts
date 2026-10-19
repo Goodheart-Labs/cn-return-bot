@@ -64,7 +64,7 @@ async function askOnce(userMessage: string): Promise<ProbabilitySample> {
   addTokenCost(cost, extractOpenRouterCost(response));
   const output = JSON.parse(extractJsonObject(response.choices?.[0]?.message?.content ?? "")) as ProbabilityOutput;
   if (typeof output.misleading_probability !== "number") throw new Error("The answer has no misleading_probability");
-  return { probability: output.misleading_probability, findings: output.findings, costUsd: cost.cost ?? 0 };
+  return { probability: output.misleading_probability, userMessage, findings: output.findings, costUsd: cost.cost ?? 0 };
 }
 
 async function sampleRow(row: CheckableRow, runId: string, index: number, sample: number): Promise<ProbabilitySample> {

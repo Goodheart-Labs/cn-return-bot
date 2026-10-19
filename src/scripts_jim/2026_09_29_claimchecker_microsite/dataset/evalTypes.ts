@@ -169,6 +169,8 @@ export interface CheckerEvalResult {
 export interface ProbabilitySample {
   /** Null when the call failed. */
   probability: number | null;
+  /** The user message of the research step. Missing in a run made before it was kept. */
+  userMessage?: string;
   findings: string | null;
   costUsd: number;
   error?: string;

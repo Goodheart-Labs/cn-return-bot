@@ -725,6 +725,41 @@ function stepCard(number, title, chip, body, { open = true } = {}) {
 const withoutTweetLines = (text) => text.replace(/^(Current date|Current time|Tweet posted|Post age):.*\n/gm, "");
 const proseBox = (text, mono = false) => node("div", { class: "prosebox" + (mono ? " mono" : "") }, linkified(withoutTweetLines(text)));
 
+function mountProbabilityDetails(run) {
+  for (const key of state.ropen) {
+    if (!key.startsWith("rp-") || !run.probability) continue;
+    const result = run.probability.rows.find((r) => r.id === key.slice(3));
+    const host = document.getElementById("pd-" + key.slice(3));
+    if (host && result) mountProbabilityDetail(host, result);
+  }
+}
+
+function mountProbabilityDetail(host, result) {
+  const point = POINTS.find((p) => p.id === result.id);
+  let sample = 0;
+  const trace = node("div", { class: "trace" });
+  const tabs = node("div", { class: "xtabs", role: "tablist" });
+  const left = node("div", { class: "cleft" },
+    node("h4", { text: "Expected" }), node("p", { text: result.expected.decision === "note" ? "Note" : "No note" }),
+    node("h4", { text: "The claim as it was handed to the checker" }), proseBox(point.checker.post.text, true));
+  function renderSample() {
+    const s = result.samples[sample];
+    tabs.replaceChildren(...result.samples.map((x, i) => {
+      const b = node("button", { type: "button", role: "tab", class: "xtab", "aria-selected": String(i === sample) }, node("b", { text: `Sample ${i + 1}` }), node("span", { class: "small", text: percent(x.probability) }));
+      b.addEventListener("click", () => { sample = i; renderSample(); });
+      return b;
+    }));
+    trace.replaceChildren(
+      stepCard(1, "What the research step was given", "user message",
+        s.userMessage ? proseBox(s.userMessage, true) : node("div", {}, node("p", { class: "small", text: "The message that was sent was not saved for this run. This is the claim as it was handed over." }), proseBox(point.checker.post.text, true))),
+      stepCard(2, "Research", "native search", s.findings ? proseBox(s.findings) : node("p", { class: "small", text: s.error ?? "No findings were saved." })),
+      stepCard(3, "Probability that the claim is misleading", `cost ${money(s.costUsd)}`, node("p", {}, node("b", { text: percent(s.probability) }))),
+    );
+  }
+  host.replaceChildren(node("div", { class: "cgrid" }, left, node("div", { class: "cright" }, tabs, trace)));
+  renderSample();
+}
+
 function mountCheckerDetails(run) {
   for (const key of state.ropen) {
     if (!key.startsWith("rc-")) continue;
@@ -829,8 +864,10 @@ function probabilityTable(run) {
   const rows = p.rows.map((r) => {
     const values = r.samples.map((s) => s.probability).filter((x) => x != null);
     const mean = values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
-    return `<tr><td class="num">${POINTS.findIndex((x) => x.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
+    const open = state.ropen.has("rp-" + r.id);
+    const row = `<tr class="row" tabindex="0" data-id="rp-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((x) => x.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
       ${r.samples.map((s) => `<td class="n" title="${esc(s.error ?? "")}">${percent(s.probability)}</td>`).join("")}<td class="n"><b>${percent(mean)}</b></td></tr>`;
+    return open ? row + `<tr class="detail"><td colspan="${4 + p.samples}"><div class="cdetail" id="pd-${r.id}"></div></td></tr>` : row;
   }).join("");
   return `<p>Only the research step runs. Its answer asks for "your subjective probability that the claim is misleading in any way" instead of the yes or no field. Each row is asked ${p.samples} times.</p>
     <div class="tablewrap"><table class="resulttable"><thead><tr><th>#</th><th>Group</th><th>Expected</th>${Array.from({ length: p.samples }, (_, i) => `<th>Run ${i + 1}</th>`).join("")}<th>Mean</th></tr></thead><tbody>${rows}</tbody></table></div>
@@ -856,6 +893,7 @@ function renderResults() {
     ${subtabs}${body}`;
   mountExtractorDetails(run);
   mountCheckerDetails(run);
+  mountProbabilityDetails(run);
 }
 
 /* ---- Evaluation plan ---- */
