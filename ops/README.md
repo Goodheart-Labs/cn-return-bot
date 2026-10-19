@@ -59,6 +59,11 @@ GEMINI_API_KEY_FREE=
 GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
+# Jina Reader: a paid last resort for a page that every free fetch step failed
+# on. Only runs of the jina_fetch A/B arm use it, in the services that run a
+# claim check. With the arm off nothing reads this key. With the arm on, a
+# missing key throws on the first page that fails every free step.
+JINA_API_KEY=
 
 # The scoring step inside a claim check calls X's evaluate-note API
 # (read by src/api/getOAuthToken.ts)

@@ -71,6 +71,13 @@ export interface BotConfig {
    */
   note_prefilter?: boolean;
   /**
+   * When this is true, a page that every free step of the fetch ladder failed
+   * on is read through Jina Reader, a paid service, as a last resort. It applies
+   * to the source verifier and the research loops of this run. JINA_FETCH_TEST
+   * sets it and it defaults to false.
+   */
+  jina_fetch?: boolean;
+  /**
    * When this is true, a blocked-topic gate runs before everything else,
    * including the note-needed prefilter. One deepseek-v4-flash call checks the
    * post against BLOCKED_TOPICS. On a hit the run is skipped and recorded as

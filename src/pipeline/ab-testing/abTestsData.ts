@@ -221,6 +221,17 @@ const VERIFIER_CITATIONS_TEST: ABTest = {
   ],
 };
 
+// Jina Reader reads the pages that every free fetch step failed on. It costs money, so it is off.
+// The arm is live only by force, for example in the claim checker evals. Turning it on for traffic is a change of weights.
+const JINA_FETCH_TEST: ABTest = {
+  name: "jina_fetch",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { jina_fetch: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { jina_fetch: true  } }, weight: 0 },
+  ],
+};
+
 // Provenance, not an experiment: processPosts forces the fetched feed tier.
 // Missing historical picks mean small, the original feed.
 const FEED_SIZE_TEST: ABTest = {
@@ -326,6 +337,7 @@ export const AB_TESTS: ABTest[] = [
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
   VERIFIER_CITATIONS_TEST,
+  JINA_FETCH_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,
