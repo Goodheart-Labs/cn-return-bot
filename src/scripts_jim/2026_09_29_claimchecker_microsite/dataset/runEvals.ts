@@ -16,9 +16,9 @@ import { join } from "path";
 import { closeBrowser } from "../../../pipeline/utils/browserManager";
 import { extractionModels } from "../../../everything/pipeline/model";
 import { LAB_DIR } from "../runStore";
-import { GROUP_TITLE, type Group } from "./datapoints";
+import { GROUP_TITLE } from "./datapoints";
 import { runCheckerEval } from "./checkerEval";
-import { isCheckable, isExtractable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
+import { hasChecker, isCheckable, isExtractable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
 import { buildEvalSetsPage } from "./buildArtifact";
 import { runProbabilityEval } from "./probabilityEval";
 import { runExtractorEval } from "./extractorEval";
@@ -32,11 +32,12 @@ function arg(name: string): string | undefined {
 
 function selectedRows(all: DatasetRow[]): DatasetRow[] {
   const only = arg("only")?.split(",");
-  const group = arg("group");
-  if (group && !(group in GROUP_TITLE)) throw new Error(`Unknown group "${group}". Groups are ${Object.keys(GROUP_TITLE).join(", ")}`);
+  const groups = arg("group")?.split(",");
+  const unknownGroup = (groups ?? []).find((g) => !(g in GROUP_TITLE));
+  if (unknownGroup) throw new Error(`Unknown group "${unknownGroup}". Groups are ${Object.keys(GROUP_TITLE).join(", ")}`);
   const unknown = (only ?? []).filter((id) => !all.some((r) => r.id === id));
   if (unknown.length) throw new Error(`Unknown row ids: ${unknown.join(", ")}`);
-  return all.filter((r) => (!only || only.includes(r.id)) && (!group || r.group === (group as Group)));
+  return all.filter((r) => (!only || only.includes(r.id)) && (!groups || groups.includes(r.group)));
 }
 
 function currentCommit(): string {
@@ -60,7 +61,7 @@ async function main() {
   const [extractor, checker, probability] = await Promise.all([
     evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable)) : null,
     evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId) : null,
-    evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
+    evals.includes("probability") ? runProbabilityEval(rows.filter(hasChecker), runId) : null,
   ]);
 
   const run: EvalRun = {

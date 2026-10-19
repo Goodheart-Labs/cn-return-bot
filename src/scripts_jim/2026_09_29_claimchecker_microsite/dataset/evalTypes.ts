@@ -15,6 +15,8 @@ export interface DatasetRow {
   extractorOnly: boolean;
   /** True for a datapoint that only the checker eval uses. It has no extractor input. */
   checkerOnly?: boolean;
+  /** True for a tweet on which our X notewriter wrote a helpful note. The probability eval runs it with the X prompts, and the claim checker eval skips it. */
+  xPost?: boolean;
   expected: { decision: "note" | "no_note"; noteTolerated?: boolean; referenceNote?: string } | null;
   item: { id: string; title: string };
   extractor: { chunkIndex: number; chunkCount: number; chunkChars: number; highlight: { start: number; end: number } | null; userMessage: string } | null;
@@ -31,7 +33,10 @@ export const isExtractable = (row: DatasetRow): row is ExtractableRow => !row.ch
 
 /** A row that the claim checker eval can run: it has a checker input and an expected decision. */
 export type CheckableRow = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]>; production: NonNullable<DatasetRow["production"]> };
-export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly;
+export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly && !row.xPost;
+/** A row that has a checker input: the probability eval runs these, tweets with the X prompts and claims with the claim prompt. */
+export type RowWithChecker = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]> };
+export const hasChecker = (row: DatasetRow): row is RowWithChecker => !row.extractorOnly;
 
 export type EvalName = "extractor" | "checker" | "probability";
 
@@ -187,6 +192,8 @@ export interface ProbabilityEvalResult {
   samples: number;
   /** The research system prompt that was used. */
   prompt: string;
+  /** The research prompt used for the tweets of the X notewriter group. Missing in a run made before they existed. */
+  xPrompt?: string;
   rows: ProbabilityRowResult[];
   costUsd: number;
 }

@@ -13,7 +13,7 @@
 import { REALISTIC_DATAPOINTS } from "./realisticDatapoints";
 
 /** Jim's four groups: should a note be written, and how hard is the call. */
-export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity" | "realistic";
+export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity" | "realistic" | "x-notes";
 
 export const GROUP_TITLE: Record<Group, string> = {
   "note-easy": "Note should be written (easy)",
@@ -22,6 +22,7 @@ export const GROUP_TITLE: Record<Group, string> = {
   "no-note-difficult": "No note should be written (difficult)",
   atomicity: "Several statements in one sentence (extractor only)",
   realistic: "Note/No-Note realistic (claim checker only)",
+  "x-notes": "Helpful X notewriter notes (probability eval only)",
 };
 
 /** Where the claim that the checker is given comes from. */

@@ -75,6 +75,7 @@ button { font: inherit; color: inherit; }
 .group { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.76rem; font-weight: 600; white-space: nowrap; border: 1.5px solid; }
 .g-note-easy { background: var(--note-soft); border-color: var(--note-soft); color: var(--note); }
 .g-note-difficult { background: transparent; border-color: var(--note); color: var(--note); }
+.g-x-notes { background: transparent; border-color: var(--line, currentColor); color: var(--muted); }
 .g-realistic { background: var(--surface-2, transparent); border-color: var(--line, currentColor); color: var(--muted); }
 .g-no-note-easy { background: var(--nonote-soft); border-color: var(--nonote-soft); color: var(--nonote); }
 .g-no-note-difficult { background: transparent; border-color: var(--nonote); color: var(--nonote); }
@@ -293,6 +294,7 @@ const GROUPS = [
   { id: "no-note-difficult", label: "No note, difficult" },
   { id: "atomicity", label: "Several statements, extractor only" },
   { id: "realistic", label: "Note/No-Note realistic, checker only" },
+  { id: "x-notes", label: "X notewriter helpful notes, probability only" },
 ];
 /** The datapoints of the table that is shown: the extractor table has those with an extractor input, the checker table those with a checker input. */
 const tablePoints = () => POINTS.filter((p) => (state.ds === "extractor" ? p.extractor : p.checker));
@@ -871,7 +873,8 @@ function probabilityTable(run) {
   }).join("");
   return `<p>Only the research step runs. Its answer asks for "your subjective probability that the claim is misleading in any way" instead of the yes or no field. Each row is asked ${p.samples} times.</p>
     <div class="tablewrap"><table class="resulttable"><thead><tr><th>#</th><th>Group</th><th>Expected</th>${Array.from({ length: p.samples }, (_, i) => `<th>Run ${i + 1}</th>`).join("")}<th>Mean</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <details class="block"><summary><span>The research prompt used</span></summary>${proseBox(p.prompt, true).outerHTML}</details>`;
+    <details class="block"><summary><span>The research prompt used for claims</span></summary>${proseBox(p.prompt, true).outerHTML}</details>
+    ${p.xPrompt ? `<details class="block"><summary><span>The research prompt used for the X notewriter tweets</span></summary>${proseBox(p.xPrompt, true).outerHTML}</details>` : ""}`;
 }
 
 function renderResults() {

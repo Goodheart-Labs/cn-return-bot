@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T03:05:17.407Z",
+ "generatedAt": "2026-10-19T04:48:10.658Z",
  "datapoints": [
   {
    "id": "berkeley-as",
@@ -2487,6 +2487,793 @@
      "draftNote": null,
      "sourceVerdict": null
     }
+   }
+  },
+  {
+   "id": "x-01",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. The 9.5% is a peak, about 33 million watching at once. The 26.1% for Bulls-Jazz is about 72 million people who watched any part of Game 6, not a peak (the average was about 35.9 million). Two different measures, so the gap looks far bigger than it was.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2067011034313900135",
+    "title": "Darren Rovell: At its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. To ",
+    "url": "https://x.com/i/status/2067011034313900135",
+    "source": "x",
+    "publishedAt": "2026-06-16T22:26:48+00:00",
+    "textChars": 184
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2067011034313900135",
+     "restatement": "At its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+     "contextQuote": "At its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2067011034313900135",
+     "author_id": "24277551",
+     "created_at": "2026-06-16T22:26:48+00:00",
+     "text": "At its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 42475,
+      "like_count": 361,
+      "retweet_count": 41,
+      "reply_count": 23,
+      "quote_count": 8,
+      "bookmark_count": 32
+     },
+     "author_followers": 1852132,
+     "author_name": "Darren Rovell",
+     "author_description": "Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.",
+     "author_tweet_count": 216206
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2067011034313900135",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "The 1998 Bulls-Jazz Game 6 averaged 35.89 million viewers, which represented approximately 13.3% of the U.S. population at the time, not 26.1%. A 26.1% share would require roughly 70 million viewers, nearly double the actual record for any NBA game. https://www.sportsmediawatch.com/nba-finals-ratings-viewership-history/ https://runrepeat.com/nba-viewership-statistics https://www.spokesman.com/stories/1998/jan/04/us-population-nears-270-million-with-growth-flat/",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://www.sportsmediawatch.com/nba-finals-ratings-viewership-history/ https://runrepeat.com/nba-viewership-statistics https://www.spokesman.com/stories/1998/jan/04/us-population-nears-270-million-with-growth-flat/",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-02",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. The show never says or hints that Penny was a prostitute. She is a struggling waitress and actress who often fell behind on rent. A joke fan theory presented as something the show implied.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2047477163247723007",
+    "title": "Robot Head 🤖: She was a prostitute. I thought everyone knew that. It was implied in the show. ",
+    "url": "https://x.com/i/status/2047477163247723007",
+    "source": "x",
+    "publishedAt": "2026-04-24T00:46:10+00:00",
+    "textChars": 231
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2047477163247723007",
+     "restatement": "She was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S",
+     "contextQuote": "She was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2047477163247723007",
+     "author_id": "991133969746837504",
+     "created_at": "2026-04-24T00:46:10+00:00",
+     "text": "She was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S",
+     "media": [],
+     "referenced_tweets": [
+      {
+       "id": "2047396798814117912",
+       "type": "quoted"
+      }
+     ],
+     "referenced_tweet_data": {
+      "text": "Nobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ",
+      "media": []
+     },
+     "public_metrics": {
+      "impression_count": 917067,
+      "like_count": 5101,
+      "retweet_count": 92,
+      "reply_count": 115,
+      "quote_count": 20,
+      "bookmark_count": 818
+     },
+     "author_followers": 17655,
+     "author_name": "Robot Head 🤖",
+     "author_description": "Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd",
+     "author_tweet_count": 23049
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2047477163247723007",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "The Big Bang Theory never implied Penny was a prostitute. The show depicts her as a waitress at The Cheesecake Factory who struggles financially, borrowing money and food from her neighbors. She later becomes a pharmaceutical sales rep in Season 8. https://bigbangtheory.fandom.com/wiki/Penny https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory)",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": []
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-03",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. No report that Israel shot down a B-52. The only B-52 loss around that date was a crash on a test flight near Edwards Air Force Base, which officials did not attribute to any attack.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2066629840602550490",
+    "title": "Trucker Fren: HOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+    "url": "https://x.com/i/status/2066629840602550490",
+    "source": "x",
+    "publishedAt": "2026-06-15T21:12:04+00:00",
+    "textChars": 48
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2066629840602550490",
+     "restatement": "HOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+     "contextQuote": "HOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2066629840602550490",
+     "author_id": "1605405291142586368",
+     "created_at": "2026-06-15T21:12:04+00:00",
+     "text": "HOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 29029,
+      "like_count": 801,
+      "retweet_count": 46,
+      "reply_count": 50,
+      "quote_count": 7,
+      "bookmark_count": 26
+     },
+     "author_followers": 20123,
+     "author_name": "Trucker Fren",
+     "author_description": "i ♥️ pidser n big trucks!™️ ✝️ • semi truck pilot • PNW & sweden enjoyer 🌲 • common sense haver • autonomous vehicle expert • developer 🇺🇸 ↔ 🇨🇦 🇸🇪 🇩🇰",
+     "author_tweet_count": 106649
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2066629840602550490",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "The U.S. Air Force B-52H Stratofortress crashed during a routine test mission shortly after takeoff from Edwards Air Force Base in California. There is no evidence of Israeli involvement; the incident occurred domestically in the Mojave Desert and is under investigation. https://abcnews.com/US/air-force-52-bomber-crashes-shortly-after-takeoff/story?id=133899844 https://www.nbclosangeles.com/news/local/b-52-stratofortress-crashes-edwards-air-force-base/3904464/",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://abcnews.com/US/air-force-52-bomber-crashes-shortly-after-takeoff/story?id=133899844 https://www.nbclosangeles.com/news/local/b-52-stratofortress-crashes-edwards-air-force-base/3904464/",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-04",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. A prayer-chain message that has circulated since August 2010. Fact-checkers found no news report of such an accident, and names and places change between versions.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2036515738991870263",
+    "title": "Unknown author: URGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist Church in AZ) 22-month-",
+    "url": "https://x.com/i/status/2036515738991870263",
+    "source": "x",
+    "publishedAt": "2026-03-24T18:49:23.465Z",
+    "textChars": 272
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2036515738991870263",
+     "restatement": "URGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist  Church in AZ)  22-month-old son accidentally shot himself in the chest with a  brad nailer (nail gun). It went off in his heart ~ He is  now in critical condition and not doing well. Please repost. @stiletoprincess",
+     "contextQuote": "URGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist  Church in AZ)  22-month-old son accidentally shot himself in the chest with a  brad nailer (nail gun). It went off in his heart ~ He is  now in critical condition and not doing well. Please repost. @stiletoprincess",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2036515738991870263",
+     "author_id": "1540756343648227328",
+     "created_at": "2026-03-24T18:49:23.465Z",
+     "text": "URGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist  Church in AZ)  22-month-old son accidentally shot himself in the chest with a  brad nailer (nail gun). It went off in his heart ~ He is  now in critical condition and not doing well. Please repost. @stiletoprincess",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 5862,
+      "like_count": 475,
+      "retweet_count": 190,
+      "reply_count": 131,
+      "quote_count": 25,
+      "bookmark_count": 4
+     },
+     "author_followers": 35447
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2036515738991870263",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "This is a known hoax chain letter circulating since at least 2010. Multiple fact-checkers have confirmed this exact story—22-month-old, brad nailer, \"went in his heart\"—is a deceptive viral post with no verifiable details or news reports confirming the incident. https://grahamcluley.com/son-shot-himself-in-the-chest-with-a-nail-gun-its-another-facebook-chain-letter/",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": []
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-05",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. Steam's DRM wrapper is optional, and many Steam games run without the Steam client. Offline Mode has no fixed 30-day re-login rule, so 'all your games break in 30 days' is overstated.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2072388645794054458",
+    "title": "not_cyotee: Actually, Steam enforces their own DRM. You have to login every 30 days to reaut",
+    "url": "https://x.com/i/status/2072388645794054458",
+    "source": "x",
+    "publishedAt": "2026-07-01T18:35:30+00:00",
+    "textChars": 271
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2072388645794054458",
+     "restatement": "Actually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar",
+     "contextQuote": "Actually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2072388645794054458",
+     "author_id": "1139902523832061952",
+     "created_at": "2026-07-01T18:35:30+00:00",
+     "text": "Actually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar",
+     "media": [],
+     "referenced_tweets": [
+      {
+       "id": "2072378323750002763",
+       "type": "quoted"
+      }
+     ],
+     "referenced_tweet_data": {
+      "id": "2072378323750002763",
+      "text": "Folks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+      "media": [],
+      "author_id": "941153998140297216",
+      "created_at": "2026-07-01T17:54:29.000Z"
+     },
+     "public_metrics": {
+      "impression_count": 89456,
+      "like_count": 416,
+      "retweet_count": 22,
+      "reply_count": 102,
+      "quote_count": 6,
+      "bookmark_count": 101
+     },
+     "author_followers": 5722,
+     "author_name": "not_cyotee",
+     "author_description": "Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks",
+     "author_tweet_count": 16491
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2072388645794054458",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "Steam does not mandate DRM; it is an optional feature for developers. Additionally, Valve has confirmed that Steam's Offline Mode is designed to be indefinite. The \"30-day\" reauthentication requirement is often tied to third-party DRM (like Denuvo) rather than Steam itself. https://partner.steamgames.com/doc/features/drm https://www.pcgamer.com/steam-client-should-allow-you-to-run-in-offline-mode-for-as-long-as-you-like-say-valve/ https://www.pcgamesn.com/steam-offline-mode-designed-be-indefinite-valve-are-working-make-it-more-robust",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://partner.steamgames.com/doc/features/drm https://www.pcgamer.com/steam-client-should-allow-you-to-run-in-offline-mode-for-as-long-as-you-like-say-valve/ https://www.pcgamesn.com/steam-offline-mode-designed-be-indefinite-valve-are-working-make-it-more-robust",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-06",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. No country automatically cancels a person's debts when they enter a mental institution. Debts can be contested in some cases, for example when a contract was signed without mental capacity, but they are not wiped out.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2072991064722464981",
+    "title": "uBHEBHE🇿🇦: I just found out that if you end up in a mental institution, all your debts get ",
+    "url": "https://x.com/i/status/2072991064722464981",
+    "source": "x",
+    "publishedAt": "2026-07-03T10:29:18+00:00",
+    "textChars": 92
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2072991064722464981",
+     "restatement": "I just found out that if you end up in a mental institution, all your debts get cancelled 😭",
+     "contextQuote": "I just found out that if you end up in a mental institution, all your debts get cancelled 😭",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2072991064722464981",
+     "author_id": "1641028375706836992",
+     "created_at": "2026-07-03T10:29:18+00:00",
+     "text": "I just found out that if you end up in a mental institution, all your debts get cancelled 😭",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 636225,
+      "like_count": 9641,
+      "retweet_count": 718,
+      "reply_count": 367,
+      "quote_count": 376,
+      "bookmark_count": 922
+     },
+     "author_followers": 16453,
+     "author_name": "uBHEBHE🇿🇦",
+     "author_description": "IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛",
+     "author_tweet_count": 63210
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2072991064722464981",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "Debts are NOT cancelled by admission to a mental institution in South Africa. Under the Prescription Act, mental incapacity only pauses (delays) the running of prescription periods. Debts remain fully owed. The Mental Health Care Act contains no debt-cancellation provision. https://www.legalwise.co.za/help-yourself/quicklaw-guides/prescription https://www.gov.za/sites/default/files/gcis_document/201409/a17-02.pdf",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://www.legalwise.co.za/help-yourself/quicklaw-guides/prescription https://www.gov.za/sites/default/files/gcis_document/201409/a17-02.pdf",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-07",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. Presented as a real event, but it comes from an unverified 'Oreogate' group chat posted by an Instagram creator who set it to AI-generated songs. ABC notes none of the messages are verified, and the coverage does not support the lunchbox search.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2108643548992270741",
+    "title": "Daily Wire: She asked the chat to ban Oreos from other kids' lunches. The school said no. Sh",
+    "url": "https://x.com/i/status/2108643548992270741",
+    "source": "x",
+    "publishedAt": "2026-10-09T19:39:33+00:00",
+    "textChars": 216
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2108643548992270741",
+     "restatement": "She asked the chat to ban Oreos from other kids' lunches. The school said no. She emailed the teacher. The teacher said no. So she searched another child's lunchbox. The parents' group chat chose chaos with Oreo Day.",
+     "contextQuote": "She asked the chat to ban Oreos from other kids' lunches. The school said no. She emailed the teacher. The teacher said no. So she searched another child's lunchbox. The parents' group chat chose chaos with Oreo Day.",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2108643548992270741",
+     "author_id": "4081106480",
+     "created_at": "2026-10-09T19:39:33+00:00",
+     "text": "She asked the chat to ban Oreos from other kids' lunches. The school said no. She emailed the teacher. The teacher said no. So she searched another child's lunchbox. The parents' group chat chose chaos with Oreo Day.",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 431802,
+      "like_count": 547,
+      "retweet_count": 77,
+      "reply_count": 54,
+      "quote_count": 7,
+      "bookmark_count": 68
+     },
+     "author_followers": 2551397,
+     "author_name": "Daily Wire",
+     "author_description": "Official X account of The Daily Wire.",
+     "author_tweet_count": 202202
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2108643548992270741",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "\"Oreogate\" originates from a paid Instagram marketing campaign for the AI music app Suno (#sunopartner), run by an account only a few weeks old. The creator has not confirmed the messages, parents, or events depicted were real, and Oreo denies involvement. https://www.yahoo.com/entertainment/articles/oreogate-instagram-went-viral-fake-173312243.html https://www.dexerto.com/food/viral-oreogate-mom-drama-was-a-paid-ai-ad-and-its-creator-wont-say-if-it-was-real-3403588/ https://abc7.com/story/what-is-oreogate-viral-parenting-debate-instagram-strikes-nerve-boundaries-stepping/19776862/",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://www.yahoo.com/entertainment/articles/oreogate-instagram-went-viral-fake-173312243.html https://www.dexerto.com/food/viral-oreogate-mom-drama-was-a-paid-ai-ad-and-its-creator-wont-say-if-it-was-real-3403588/ https://abc7.com/story/what-is-oreogate-viral-parenting-debate-instagram-strikes-nerve-boundaries-stepping/19776862/",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-08",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. On 29 January 2026 the Senate Foreign Relations Committee voted on the bill, but the full Senate held no vote that day. No floor vote is recorded.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2016908705392955775",
+    "title": "Unknown author: JUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+    "url": "https://x.com/i/status/2016908705392955775",
+    "source": "x",
+    "publishedAt": "2026-01-29T16:18:02.374Z",
+    "textChars": 67
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2016908705392955775",
+     "restatement": "JUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+     "contextQuote": "JUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2016908705392955775",
+     "author_id": "1261335549215989760",
+     "created_at": "2026-01-29T16:18:02.374Z",
+     "text": "JUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+     "media": [],
+     "public_metrics": {}
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2016908705392955775",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "The Senate Foreign Relations Committee is holding a business meeting to consider H.R. 260, the \"No Tax Dollars for Terrorists Act\" - not a full Senate floor vote. The bill requires a strategy opposing Taliban support, not direct defunding. https://www.senate.gov/committees/hearings_meetings.htm",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 64,
+       "somewhatHelpful": 0,
+       "notHelpful": 9
+      },
+      "sources": [
+       {
+        "url": "https://t.co/RcdFiml1w8",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-09",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. Presents folklore as fact. The escape-route maps come mainly from Colombian oral tradition with no documentary evidence, and the stories of hiding rice or seeds in braids are Maroon oral legends.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2054691828826259922",
+    "title": "B e a r m a x x e r: Did you know cornrows were used by runaway slaves to map escape routes, as well ",
+    "url": "https://x.com/i/status/2054691828826259922",
+    "source": "x",
+    "publishedAt": "2026-05-13T22:34:40+00:00",
+    "textChars": 111
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2054691828826259922",
+     "restatement": "Did you know cornrows were used by runaway slaves to map escape routes, as well as store food for their journey",
+     "contextQuote": "Did you know cornrows were used by runaway slaves to map escape routes, as well as store food for their journey",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2054691828826259922",
+     "author_id": "1824139331352616960",
+     "created_at": "2026-05-13T22:34:40+00:00",
+     "text": "Did you know cornrows were used by runaway slaves to map escape routes, as well as store food for their journey",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 121590,
+      "like_count": 894,
+      "retweet_count": 21,
+      "reply_count": 69,
+      "quote_count": 4,
+      "bookmark_count": 24
+     },
+     "author_followers": 18393,
+     "author_name": "B e a r m a x x e r",
+     "author_description": "The artist formerly known as Will Stancil’s Zippy 2011 Honda Fit\n\n@spencerpratt for LA Mayor",
+     "author_tweet_count": 17003
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2054691828826259922",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "Historians and fact-checkers have found no verified evidence supporting this claim. Snopes (2022) concluded the story is an unconfirmed legend, and UCLA folklorist Patricia Turner described such tales as \"urban legends\" — not documented history. https://www.snopes.com/news/2022/03/12/maps-cornrows-black-slaves-escape/ https://caro.news/how-cornrows-may-have-helped-free-slaves-navigate/",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://www.snopes.com/news/2022/03/12/maps-cornrows-black-slaves-escape/ https://caro.news/how-cornrows-may-have-helped-free-slaves-navigate/",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
+   }
+  },
+  {
+   "id": "x-10",
+   "group": "x-notes",
+   "groupTitle": "Helpful X notewriter notes (probability eval only)",
+   "jimsWords": "Not from the ticket. One of 10 tweets drawn uniformly at random from the 170 tweets without media on which our X notewriter wrote a note that raters judged helpful. Drawn on 19 October 2026. An Opus subagent judged the tweet without seeing our note: misleading. The quote is real, but Zuckerberg said it on the Lex Fridman podcast in June 2023, not in August 2026. Labelling a three-year-old clip 'JUST IN' presents old remarks as new.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "2089055206885519680",
+    "title": "Kalshi Finance: JUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter le",
+    "url": "https://x.com/i/status/2089055206885519680",
+    "source": "x",
+    "publishedAt": "2026-08-16T18:22:28+00:00",
+    "textChars": 114
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "xPost": true,
+   "expected": {
+    "decision": "note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "2089055206885519680",
+     "restatement": "JUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter leaner and cutting management layers",
+     "contextQuote": "JUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter leaner and cutting management layers",
+     "contextParagraph": null,
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "2089055206885519680",
+     "author_id": "2027429188400254976",
+     "created_at": "2026-08-16T18:22:28+00:00",
+     "text": "JUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter leaner and cutting management layers",
+     "media": [],
+     "public_metrics": {
+      "impression_count": 499940,
+      "like_count": 7760,
+      "retweet_count": 189,
+      "reply_count": 79,
+      "quote_count": 31,
+      "bookmark_count": 324
+     },
+     "author_followers": 83685,
+     "author_name": "Kalshi Finance",
+     "author_description": "Trade on financials, commodities, tech and everything else finance. \n\nPowered by @Kalshi",
+     "author_tweet_count": 1826
+    },
+    "asReceived": null
+   },
+   "production": {
+    "claimId": "2089055206885519680",
+    "status": "note",
+    "reason": null,
+    "judgement": null,
+    "notes": [
+     {
+      "text": "Zuckerberg made this comment on the Lex Fridman Podcast on June 8, 2023 — over three years ago. This is not new or breaking news. https://lexfridman.com/mark-zuckerberg-3/",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://lexfridman.com/mark-zuckerberg-3/",
+        "quote": null,
+        "explanation": null
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": null,
+    "trace": null
    }
   }
  ]

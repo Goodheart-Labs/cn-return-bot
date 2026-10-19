@@ -23,9 +23,12 @@ import type { ExtractedClaim, ItemSource } from "../../../everything/types";
 import { checkTraceOf, type LabRun } from "../labRun";
 import { LAB_DIR, RUNS_DIR } from "../runStore";
 import { DATAPOINTS, GROUP_TITLE, type CheckedDatapoint, type Datapoint, type ExtractorOnlyDatapoint } from "./datapoints";
+import { tweetRowToPost, type QueuedTweetRow } from "../../../pipeline/orchestration/noteQueue";
 import { loadFrozenDescriptions } from "./freezeImages";
 import { loadItemTexts } from "./itemTexts";
 import { locate, paragraphsAround } from "./text";
+import sample from "./xSample.json";
+import { X_POST_DATAPOINTS, type XPostDatapoint } from "./xPostDatapoints";
 
 const DATASET_PATH = join(LAB_DIR, "dataset", "dataset.json");
 const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
@@ -206,6 +209,49 @@ async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType
   };
 }
 
+const X_EPOCH_MS = 1288834974657;
+const SNOWFLAKE_TIMESTAMP_SHIFT = 22n;
+/** A tweet's post time is part of its id. This fills it in for the few stored tweets that lack it. */
+const postedAtOfId = (tweetId: string) => new Date(Number((BigInt(tweetId) >> SNOWFLAKE_TIMESTAMP_SHIFT) + BigInt(X_EPOCH_MS))).toISOString();
+
+/** A tweet on which our X notewriter wrote a helpful note. It has no item, no extractor input and no claim: the tweet is the input of the checker. */
+function buildXPostRecord(datapoint: XPostDatapoint) {
+  const { tweet, note } = sample.posts.find((p) => p.tweet.tweet_id === datapoint.tweetId)!;
+  const post = tweetRowToPost({ ...tweet, posted_at: tweet.posted_at ?? postedAtOfId(datapoint.tweetId) } as unknown as QueuedTweetRow);
+  const text = post.text;
+  return {
+    id: datapoint.id,
+    group: datapoint.group,
+    groupTitle: GROUP_TITLE[datapoint.group],
+    jimsWords: datapoint.jimsWords,
+    writtenOn: datapoint.writtenOn,
+    referenceClaims: [],
+    item: { id: datapoint.tweetId, title: `${post.author_name ?? "Unknown author"}: ${text.replace(/\s+/g, " ").slice(0, 80)}`, url: `https://x.com/i/status/${datapoint.tweetId}`, source: "x", publishedAt: post.created_at, textChars: text.length },
+    extractorOnly: false,
+    checkerOnly: true,
+    xPost: true,
+    expected: datapoint.expected,
+    extractor: null,
+    checker: { claim: { id: datapoint.tweetId, restatement: text, contextQuote: text, contextParagraph: null, imageUrls: [], paragraphTakenFromText: false }, post, asReceived: null },
+    production: {
+      claimId: datapoint.tweetId,
+      status: "note",
+      reason: null,
+      judgement: null,
+      notes: [
+        {
+          text: note.note_text,
+          writtenBy: "the pipeline",
+          votes: { helpful: note.helpful_count ?? 0, somewhatHelpful: note.somewhat_helpful_count ?? 0, notHelpful: note.not_helpful_count ?? 0 },
+          sources: note.source_url ? [{ url: note.source_url, quote: null, explanation: null }] : [],
+        },
+      ],
+      checkCostUsd: null,
+      trace: null,
+    },
+  };
+}
+
 const descriptions = loadFrozenDescriptions();
 const records = [];
 for (const datapoint of DATAPOINTS) {
@@ -216,6 +262,10 @@ for (const datapoint of DATAPOINTS) {
     record.extractor ? `chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars) highlight ${record.extractor.highlight ? "found" : "MISSING"}` : "checker only",
     record.checker ? `| paragraph ${record.checker.claim.paragraphTakenFromText ? "from text" : record.checker.claim.contextParagraph ? "stored" : "NONE"} | as received ${record.checker.asReceived?.prompt ? "yes" : "no"}` : "| extractor only",
   );
+}
+for (const datapoint of X_POST_DATAPOINTS) {
+  records.push(buildXPostRecord(datapoint) as unknown as (typeof records)[number]);
+  console.log(`${datapoint.id.padEnd(30)}X post ${datapoint.tweetId}`);
 }
 writeFileSync(DATASET_PATH, JSON.stringify({ generatedAt: new Date().toISOString(), datapoints: records }, null, 1));
 console.log(`Wrote ${records.length} datapoints to ${DATASET_PATH}`);
