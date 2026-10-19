@@ -61,12 +61,12 @@ export function promptsOf(logs: any): CheckerPrompts {
   };
 }
 
-async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number): Promise<CheckerSample> {
+async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>): Promise<CheckerSample> {
   const base = { quality: null, research: null, draftNote: null, sourceVerdict: null, checkCostUsd: 0, judgeCostUsd: 0 };
   try {
     // The id has a hyphen, so it can never be mistaken for a tweet id, and it is new for every sample.
     const post = { ...row.checker.post, id: `eval-${runId}-${index}-${sample}` } as Parameters<typeof runClaimCheck>[0];
-    const { check, run } = await runClaimCheck(post);
+    const { check, run } = await runClaimCheck(post, picks);
     mkdirSync(join(LOGS_DIR, `eval-${runId}`), { recursive: true });
     writeFileSync(join(LOGS_DIR, `eval-${runId}`, `${row.id}.${sample}.json`), JSON.stringify(run, null, 1));
     const trace = checkTraceOf(run.logs);
@@ -86,14 +86,14 @@ async function checkSample(row: CheckableRow, referenceNotes: string[], runId: s
   }
 }
 
-export async function runCheckerEval(rows: CheckableRow[], runId: string): Promise<CheckerEvalResult> {
+export async function runCheckerEval(rows: CheckableRow[], runId: string, picks: Record<string, string>): Promise<CheckerEvalResult> {
   console.log(`Checker eval: ${rows.length} rows, ${SAMPLES_PER_ROW} samples each`);
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   const results: CheckerRowResult[] = await Promise.all(
     rows.map(async (row, index) => {
       const referenceNotes = referenceNotesOf(row);
       const samples = await Promise.all(
-        Array.from({ length: SAMPLES_PER_ROW }, (_, sample) => queue.add(() => checkSample(row, referenceNotes, runId, index, sample)) as Promise<CheckerSample>),
+        Array.from({ length: SAMPLES_PER_ROW }, (_, sample) => queue.add(() => checkSample(row, referenceNotes, runId, index, sample, picks)) as Promise<CheckerSample>),
       );
       const { passedIn, verdict } = rowVerdictOf(samples.map((s) => s.verdict));
       console.log(`  ${row.id}: ${verdict}, ${passedIn} of ${SAMPLES_PER_ROW} (${samples.map((s) => s.outcome.type).join(", ")})`);

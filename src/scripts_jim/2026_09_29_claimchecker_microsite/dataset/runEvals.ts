@@ -5,7 +5,7 @@
  * to the production database.
  *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/runEvals.ts --label "baseline"
- *       [--eval extractor|checker|probability|both] [--only id,id,...] [--group note-easy|...]
+ *       [--eval extractor|checker|probability|both] [--search-cascade precheck|cascading] [--only id,id,...] [--group note-easy|...]
  *
  * The image descriptions must have been frozen first, with freezeImages.ts.
  */
@@ -49,6 +49,8 @@ function currentCommit(): string {
 async function main() {
   // The local OPENROUTER_API_KEY is dead. The testing key works.
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
+  // The cascade is live on 60% of traffic, so an eval must choose its arm. The default is the search step as it was before.
+  const searchCascade = arg("search-cascade") ?? "precheck";
   const label = arg("label");
   if (!label) throw new Error('Give the run a label: --label "what changed"');
   const evals: EvalName[] = (arg("eval") ?? "both") === "both" ? ["extractor", "checker"] : [arg("eval") as EvalName];
@@ -60,7 +62,7 @@ async function main() {
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker, probability] = await Promise.all([
     evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable)) : null,
-    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId) : null,
+    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade }) : null,
     evals.includes("probability") ? runProbabilityEval(rows.filter(hasChecker), runId) : null,
   ]);
 
@@ -71,7 +73,7 @@ async function main() {
     commit: currentCommit(),
     settings: {
       extractorModel: extractionModels().model,
-      checkerModels: "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
+      checkerModels: `the pipeline's forced picks, search step: ${searchCascade}`,
       commentsFetched: !!process.env.XAI_API_KEY,
       samples: { extractor: extractor?.samples ?? 0, checker: checker?.samples ?? 0 },
     },

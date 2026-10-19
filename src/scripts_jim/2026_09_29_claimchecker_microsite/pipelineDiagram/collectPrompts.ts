@@ -7,12 +7,13 @@
  *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/pipelineDiagram/collectPrompts.ts
  */
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, readdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import { GATE_SPLIT_SYSTEM_PROMPT } from "../../../everything/pipeline/gateAndSplit";
 import { extractionSystemPrompt } from "../../../everything/pipeline/extractClaims";
 import { RATING_SYSTEM_PROMPT } from "../../../everything/pipeline/rateClaims";
 import { IMAGE_PROMPT } from "../../../pipeline/prompts/media/mediaAnalysis";
+import { SEARCH_SYSTEM_PROMPT_CLAIM, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY } from "../../../pipeline/prompts/simple-bot/searchAgent";
 import { MATERIALITY_JUDGE_SYSTEM_PROMPT } from "../../../pipeline/prompts/simple-bot/materialityJudge";
 import { TIMING_EXTRACTOR_SYSTEM_PROMPT } from "../../../pipeline/prompts/simple-bot/timingJudge";
 import { LAB_DIR } from "../runStore";
@@ -25,6 +26,17 @@ const CLAIM_ENDED_AT_RESEARCH = 175;
 
 const readLog = (index: number) => JSON.parse(readFileSync(join(LAB_DIR, "logs", LOG_RUN, `${index}.json`), "utf8")).logs;
 const first = (messages: Record<string, any>) => messages["0"] as { systemPrompt: string; userMessage: string };
+
+/** The research message of a real quick-research call, the Red Bull claim, as the newest probability run saved it. */
+function probabilityUserMessage(): string {
+  const runsDir = join(LAB_DIR, "dataset", "evalRuns");
+  for (const file of readdirSync(runsDir).filter((f) => f.endsWith(".json")).sort().reverse()) {
+    const row = JSON.parse(readFileSync(join(runsDir, file), "utf8")).probability?.rows.find((r: { id: string }) => r.id === "realistic-19");
+    const message = row?.samples[0]?.userMessage;
+    if (message) return message;
+  }
+  throw new Error("No probability run has saved the message of realistic-19");
+}
 
 const full = readLog(CLAIM_WITH_NOTE_STEPS);
 const short = readLog(CLAIM_ENDED_AT_RESEARCH);
@@ -41,13 +53,15 @@ writeFileSync(
         extraction: extractionSystemPrompt(),
         rating: RATING_SYSTEM_PROMPT,
         topic: first(short.topic_filter.messages).systemPrompt,
-        research: first(short.note_writer_steps.search.messages).systemPrompt,
+        quick: SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY,
+        research: SEARCH_SYSTEM_PROMPT_CLAIM,
         timing: TIMING_EXTRACTOR_SYSTEM_PROMPT,
         writer: writerMessages.find((m) => m.role === "system")!.content,
         verifier: first(full.note_writer_steps.source_verifier.turn["1"].messages).systemPrompt,
         materiality: MATERIALITY_JUDGE_SYSTEM_PROMPT,
       },
       user: {
+        quick: probabilityUserMessage(),
         research: first(short.note_writer_steps.search.messages).userMessage,
         writer: writerMessages.find((m) => m.role === "user")!.content,
         verifier: first(full.note_writer_steps.source_verifier.turn["1"].messages).userMessage,

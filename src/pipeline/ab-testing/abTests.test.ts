@@ -100,7 +100,7 @@ describe("forced picks", () => {
 
   test("Common Notes can still force its fixed and zero-weight arms", () => {
     const forced = {
-      bot: "simple-bot", note_prefilter: "off", commonnotes_pipeline: "on",
+      bot: "simple-bot", search_cascade: "precheck", note_prefilter: "off", commonnotes_pipeline: "on",
       simple_bot_search: "sonnet5-native", simple_bot_writer: "sonnet5",
       simple_bot_verifier: "gemini-flash", verifier_citations: "on", verifier_claim_based: "classic",
     };
@@ -110,6 +110,19 @@ describe("forced picks", () => {
       note_prefilter: false, commonnotes_pipeline: true,
       verifier_citations: true, verifier_claim_based: false,
     });
+  });
+
+  test("the cascade arm skips the note-needed prefilter and the precheck arm keeps it", () => {
+    const cascading = withForcedPicks({ search_cascade: "cascading" }, () => runABTests(AB_TESTS));
+    expect(cascading.config).toMatchObject({ search_cascade: true, note_prefilter: false });
+    expect(cascading.picks.note_prefilter).toBeUndefined();
+    const precheck = withForcedPicks({ search_cascade: "precheck" }, () => runABTests(AB_TESTS));
+    expect(precheck.config).toMatchObject({ search_cascade: false, note_prefilter: true });
+  });
+
+  test("the cascade is live on 60% of traffic and the precheck on 40%", () => {
+    const test = AB_TESTS.find((t) => t.name === "search_cascade")!;
+    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["cascading", 60], ["precheck", 40]]);
   });
 
   test("a valid topic-only override does not fire on ordinary posts", () => {

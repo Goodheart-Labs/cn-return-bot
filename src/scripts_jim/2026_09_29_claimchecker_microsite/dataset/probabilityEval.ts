@@ -10,7 +10,7 @@
 import PQueue from "p-queue";
 import { llm } from "../../../pipeline/llm/llm";
 import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL } from "../../../pipeline/tool-calling/tools";
-import { SEARCH_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_CLAIM } from "../../../pipeline/prompts/simple-bot/searchAgent";
+import { SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY as PROBABILITY_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_PROBABILITY as X_PROBABILITY_SYSTEM_PROMPT } from "../../../pipeline/prompts/simple-bot/searchAgent";
 import { extractJsonObject } from "../../../pipeline/utils/jsonOutput";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost } from "../../../pipeline/cost-tracking/pricing";
 import { createBotInput } from "../../../pipeline/input/createBotInput";
@@ -35,27 +35,6 @@ const FORCED_PICKS: Record<string, string> = {
 
 /** The same picks, without the Common Notes pipeline, so that a tweet is read as the X bot reads it. */
 const { commonnotes_pipeline: _commonNotesOnly, ...X_FORCED_PICKS } = FORCED_PICKS;
-
-const PROBABILITY_FIELD = `- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.`;
-
-function replaceOnce(text: string, pattern: RegExp, replacement: string): string {
-  if (!pattern.test(text)) throw new Error(`The research prompt no longer contains ${pattern}`);
-  return text.replace(pattern, replacement);
-}
-
-/** The pipeline's research prompt for a claim, with the correction_needed field swapped for the probability. */
-const AUTOMATIC_EXTRACTION_HINT = "The claim was automatically extracted and so it should be interpreted in the context. Avoid being pedantic.";
-
-export const PROBABILITY_SYSTEM_PROMPT = [
-  replaceOnce(replaceOnce(SEARCH_SYSTEM_PROMPT_CLAIM, /- correction_needed:.*\n/, `${PROBABILITY_FIELD}\n`), /If no correction is needed/, "If the claim is not misleading"),
-  `Respond with strict JSON only matching: { findings: string, misleading_probability: number }`,
-].join("\n\n").replace("Judge whether the claim is factually correct.", `${AUTOMATIC_EXTRACTION_HINT}\nJudge whether the claim is misleading in some way.`).replace(/\n## When NOT to set correction_needed = true[\s\S]*?(?=\n## Sourcing rules)/, "");
-
-/** The X bot's research prompt, with the correction_needed field swapped for the probability. */
-export const X_PROBABILITY_SYSTEM_PROMPT = [
-  replaceOnce(SEARCH_SYSTEM_PROMPT, /- correction_needed:.*\n/, `${PROBABILITY_FIELD}\n`),
-  `Respond with strict JSON only matching: { findings: string, misleading_probability: number }`,
-].join("\n\n").replace(/\n## When NOT to set correction_needed = true[\s\S]*?(?=\n## Sourcing rules)/, "");
 
 interface ProbabilityOutput {
   findings: string;

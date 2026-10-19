@@ -71,6 +71,15 @@ export interface BotConfig {
    */
   note_prefilter?: boolean;
   /**
+   * When this is true, the search step is a cascade. A cheap model researches
+   * first and gives its probability that the claim is misleading. At 0.9 or
+   * above the writer gets its findings straight away. Below 0.3 the run ends
+   * with no note. In between, a stronger model repeats the research, as the
+   * regular search step does. A run on this arm also skips the note-needed
+   * prefilter, which the cheap first step replaces. SEARCH_CASCADE_TEST sets it.
+   */
+  search_cascade?: boolean;
+  /**
    * When this is true, a blocked-topic gate runs before everything else,
    * including the note-needed prefilter. One deepseek-v4-flash call checks the
    * post against BLOCKED_TOPICS. On a hit the run is skipped and recorded as

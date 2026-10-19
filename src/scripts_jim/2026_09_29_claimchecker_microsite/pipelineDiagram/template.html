@@ -110,7 +110,7 @@ table.glance { width: 100%; border-collapse: collapse; background: var(--surface
 
 <div class="page">
   <h1>Common Notes pipeline</h1>
-  <p class="prose lede">What happens to one post, from its text to a note. The first half runs once per post and finds the claims. The second half runs once for every claim that is worth checking. Click any box for what it does, the prompt it is given and a real example.</p>
+  <p class="prose lede">What happens to one post, from its text to a note. The first half runs once per post and finds the claims. The second half runs once for every claim that is worth checking. Its research step is an A/B test: 60% of checks use a cascade, where a cheap model gives a probability and a stronger model is asked only when that is unsure, and 40% use the full research on every claim. Click any box for what it does, the prompt it is given and a real example.</p>
   <div class="legend">
     <span><i style="background:var(--muse)"></i>Muse Spark 1.3 (the main model)</span>
     <span><i style="background:var(--other)"></i>another model</span>
@@ -119,14 +119,14 @@ table.glance { width: 100%; border-collapse: collapse; background: var(--surface
     <span><i style="background:var(--warn)"></i>ends without a note</span>
   </div>
 
-  <div class="flow-wrap"><svg id="flow-svg" viewBox="0 0 1180 960" role="img" aria-label="Flow diagram of the Common Notes pipeline"></svg></div>
+  <div class="flow-wrap"><svg id="flow-svg" viewBox="0 0 1180 1220" role="img" aria-label="Flow diagram of the Common Notes pipeline"></svg></div>
   <p class="flow-hint">On a phone, scroll the diagram sideways. Every box is also reachable with the Tab key and Enter.</p>
 
   <h2>The steps at a glance</h2>
   <div class="table-wrap"><table class="glance"><thead><tr><th>Step</th><th>Runs</th><th>Model</th><th>What it decides</th></tr></thead><tbody id="glance"></tbody></table></div>
 
   <h2>The two evals</h2>
-  <p class="prose">The dashed frames in the diagram show which part each eval tests. Eval 1 gives the extractor one chunk of a post and asks whether the right claim comes out. Eval 2 gives the whole claim check one claim and asks whether it ends in the right decision, a note or no note. The gate, the image descriptions and the rating are not tested by either.</p>
+  <p class="prose">The dashed frames in the diagram show which part each eval tests. Eval 1 gives the extractor one chunk of a post and asks whether the right claim comes out. Eval 2 gives the whole claim check one claim and asks whether it ends in the right decision, a note or no note. Eval 3 runs only the quick research and shows its probabilities, on the realistic claims and on tweets with a helpful X note. The gate, the image descriptions and the rating are not tested by any of them.</p>
 </div>
 
 <div id="tip" class="tip" hidden></div>
@@ -265,13 +265,31 @@ const STEPS = {
     facts: [["Cost", "$0.0001 per check"]],
     prompts: [["System prompt", () => P.system.topic]],
   },
+  quick: {
+    kind: "muse", title: "Quick research", sub: "gives a probability", runs: "Once per claim, on the cascading arm", model: "Muse Spark 1.3 (GPT-6 Luna if Muse fails), medium reasoning, native search",
+    summary: "A cheap model researches the claim and says how likely it is to be misleading.",
+    decides: "How likely the claim is to be misleading, as a number from 0 to 1.",
+    what: "An A/B test (search_cascade) sends 60% of claim checks down the cascading path and 40% down the precheck path, which is the full research below with no quick step before it. On the cascading path a cheap model researches first. It reads the claim and the paragraph around it, searches, and writes its findings with the source links, plus its subjective probability that the claim is misleading in any way. The prompt tells it that the claim was extracted automatically, so it should be read in its context and not judged pedantically. If Muse fails, for example when Meta blocks our access, the same call is made again on GPT-6 Luna. The cascading path also skips the note-needed prefilter that X posts get, because this step replaces it.",
+    goesIn: "The synthetic post.", comesOut: "Findings with sources, and a probability.",
+    tested: "Eval 3 runs this step alone, three times on each row, and shows the probabilities. The realistic claims get mostly low numbers and the tweets with a helpful X note get mostly high ones.",
+    facts: [["Cost", "about $0.01 to $0.04 per claim in a first live check of four claims"]],
+    prompts: [["System prompt", () => P.system.quick], ["User message of a real check (the Red Bull claim)", () => P.user.quick]],
+    example: () => EX.quick,
+  },
+  decide: {
+    kind: "code", title: "Cascade decision", sub: "by the probability", runs: "Once per claim, on the cascading path", model: "none",
+    summary: "At 0.9 or more the findings go to the writer, under 0.3 the check ends, in between a stronger model repeats the research.",
+    decides: "Whether to trust the quick research or ask a stronger model.",
+    what: "At 0.9 or more the quick findings go to the writer right away, and the stronger research is skipped. Under 0.3 the check ends as no note needed. From 0.3 up to just under 0.9, the stronger model repeats the research. One in ten of the claims under 0.3 is also sent to the stronger model, even though the quick step wanted to drop them. This is on purpose: those checks show how often the quick step is wrong when it says no, which we would otherwise never see. The decision, the probability and the model that answered are saved in the run log under cascade.",
+    goesIn: "The probability.", comesOut: "A route: writer, stronger research or no note.", tested: "Eval 2 can run with either path, chosen with --search-cascade.",
+  },
   research: {
-    kind: "muse", title: "Research", sub: "search, findings", runs: "Once per claim", model: "Muse Spark 1.3, native search",
+    kind: "muse", title: "Full research", sub: "stronger model, yes or no", runs: "Once per claim (precheck path), or when the quick step is unsure", model: "Common Notes: Sonnet 5.5 on the cascading path, GPT-6 Luna on the precheck path. Medium reasoning, native search.",
     summary: "Researches the claim and says whether it contains a clear factual error.",
-    decides: "Whether a correction is needed. Most checks end here.",
-    what: "One call with Meta's native search researches the highlighted claim and writes a dense summary of its findings with the full source links. It also sets correction_needed, which is true only for a clear factual error backed by direct contradicting evidence. Opinions, predictions and subjective characterizations are not corrected. When correction_needed is false, the check ends here as no correction needed. In the first baseline run, 172 of the 180 checked claims without a note ended at this step.",
+    decides: "Whether a correction is needed.",
+    what: "One call with the model provider's native search researches the highlighted claim and writes a dense summary of its findings with the full source links. It also sets correction_needed, which is true only for a clear factual error backed by direct contradicting evidence. Opinions, predictions and subjective characterizations are not corrected. When correction_needed is false, the check ends here as no correction needed. On the precheck path every claim goes through this step. On the cascading path only the unsure ones do. For an X post the stronger model is the search model that the run was configured with.",
     goesIn: "The synthetic post.", comesOut: "Findings with sources, and correction_needed.",
-    tested: "Part of every Eval 2 check. In the baseline, four of the six difficult note rows ended here as no correction needed, in all three samples.",
+    tested: "Part of every Eval 2 check on the precheck path. In the baseline, four of the six difficult note rows ended here as no correction needed, in all three samples.",
     facts: [["Cost", "$0.014 for the search in the Berkeley check"]],
     prompts: [["System prompt", () => P.system.research], ["User message of a real check", () => P.user.research]],
     example: () => EX.research,
@@ -338,11 +356,13 @@ const NODES = [
   ["fetch", 0, 70], ["gate", 1, 70], ["images", 2, 70], ["chunks", 3, 70], ["extract", 4, 70],
   ["nocheck", 1, 170],
   ["dedupe", 0, 290], ["rate", 1, 290], ["worth", 2, 290], ["skipped", 3, 290],
-  ["build", 0, 440], ["read", 1, 440], ["topic", 2, 440], ["research", 3, 440], ["timing", 4, 440],
-  ["noBlocked", 2, 550], ["noCorrection", 3, 550], ["writer", 4, 550],
-  ["noSources", 3, 660], ["verifier", 4, 660],
-  ["noMaterial", 3, 770], ["materiality", 4, 770],
-  ["note", 4, 880],
+  ["build", 0, 440], ["read", 1, 440], ["topic", 2, 440], ["quick", 3, 440], ["decide", 4, 440],
+  ["noBlocked", 2, 550], ["noCorrection", 3, 550], ["research", 4, 550],
+  ["timing", 4, 660],
+  ["writer", 4, 770],
+  ["noSources", 3, 880], ["verifier", 4, 880],
+  ["noMaterial", 3, 990], ["materiality", 4, 990],
+  ["note", 4, 1100],
 ];
 const EDGES = [
   { d: "M210,98 H246" }, { d: "M440,98 H476" }, { d: "M670,98 H706" }, { d: "M900,98 H956" },
@@ -353,14 +373,17 @@ const EDGES = [
   { d: "M575,346 V366 H115 V436", label: "uncertain or worse", lx: 150, ly: 382 },
   { d: "M210,468 H246" }, { d: "M440,468 H476" }, { d: "M670,468 H706" }, { d: "M900,468 H956" },
   { d: "M575,496 V546", label: "blocked", lx: 582, ly: 526 },
-  { d: "M805,496 V546", label: "no error found", lx: 812, ly: 526 },
-  { d: "M1055,496 V546" },
-  { d: "M960,578 H904", label: "empty", lx: 914, ly: 569 },
+  { d: "M975,496 V522 H805 V546", label: "under 0.3", lx: 812, ly: 516 },
+  { d: "M1055,496 V546", label: "0.3 to 0.9", lx: 1062, ly: 526 },
+  { d: "M1150,468 H1168 V688 H1154", label: "0.9 or more", lx: 1088, ly: 540, dash: true },
   { d: "M1055,606 V656" },
-  { d: "M960,688 H904", label: "rejected", lx: 906, ly: 679 },
   { d: "M1055,716 V766" },
-  { d: "M960,798 H904", label: "under 0.5", lx: 904, ly: 789 },
-  { d: "M1055,826 V876", label: "accepted", lx: 1062, ly: 856 },
+  { d: "M960,802 H930 V578 H904", label: "empty", lx: 934, ly: 700 },
+  { d: "M1055,826 V876" },
+  { d: "M960,908 H904", label: "rejected", lx: 906, ly: 899 },
+  { d: "M1055,936 V986" },
+  { d: "M960,1018 H904", label: "under 0.5", lx: 904, ly: 1009 },
+  { d: "M1055,1046 V1096", label: "accepted", lx: 1062, ly: 1076 },
 ];
 function el(tag, attrs, text) {
   const node = document.createElementNS(SVG_NS, tag);
@@ -383,8 +406,8 @@ function drawFlow() {
   svg.append(el("text", { x: 140, y: 414, class: "phase" }, "Once for every claim worth checking, in the claim-check service"));
   svg.append(el("rect", { x: 950, y: 54, width: 210, height: 90, rx: 14, class: "region" }));
   svg.append(el("text", { x: 962, y: 136, class: "region-label" }, "Eval 1 tests this step"));
-  svg.append(el("rect", { x: 10, y: 424, width: 1160, height: 508, rx: 14, class: "region" }));
-  svg.append(el("text", { x: 20, y: 922, class: "region-label" }, "Eval 2 tests everything inside this frame, one claim at a time"));
+  svg.append(el("rect", { x: 10, y: 424, width: 1160, height: 790, rx: 14, class: "region" }));
+  svg.append(el("text", { x: 20, y: 1202, class: "region-label" }, "Eval 2 tests everything inside this frame, one claim at a time"));
   for (const edge of EDGES) {
     svg.append(el("path", { d: edge.d, class: "edge" + (edge.dash ? " dash" : ""), "marker-end": "url(#arrow)" }));
     if (edge.label) svg.append(el("text", { x: edge.lx, y: edge.ly, class: "edge-label" }, edge.label));

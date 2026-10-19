@@ -19,6 +19,8 @@ import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { verifySources } from "../verify/sourceVerifier";
 import { withWriterCache, type WriterStageResult } from "../replay/writerCache";
+import { getBotConfig } from "../ab-testing/botConfig";
+import { runCascadingSearch } from "./cascadeSearch";
 import { runSearch } from "./search";
 import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
@@ -45,7 +47,7 @@ export async function runSimpleBotPipeline(
 async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterStageResult> {
   const userMessage = buildUserMessageFromInput(post, input);
 
-  const search = await runSearch(userMessage);
+  const search = getBotConfig().search_cascade ? await runCascadingSearch(userMessage) : await runSearch(userMessage);
   if (!search.correctionNeeded) {
     return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
   }

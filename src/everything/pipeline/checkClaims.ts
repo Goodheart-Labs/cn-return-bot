@@ -77,9 +77,10 @@ export function buildClaimPost(params: ClaimPostParams): Post {
 /** Runs one already-wrapped post through the note pipeline and reports both the
  *  outcome and everything needed to record the run. It touches no database, so
  *  the claim-check service can serve it and hand the record back to whoever
- *  called, and an in-process caller can store it directly. */
-export async function runClaimCheck(post: Post): Promise<{ check: ClaimCheck; run: ClaimRunRecord }> {
-  const { config, picks } = withForcedPicks(FORCED_PICKS, () => runABTests(AB_TESTS));
+ *  called, and an in-process caller can store it directly. `extraPicks` forces
+ *  more A/B arms, for the evals that must not take the live random pick. */
+export async function runClaimCheck(post: Post, extraPicks: Record<string, string> = {}): Promise<{ check: ClaimCheck; run: ClaimRunRecord }> {
+  const { config, picks } = withForcedPicks({ ...FORCED_PICKS, ...extraPicks }, () => runABTests(AB_TESTS));
   const bot = getBotById(config.botId);
   if (!bot) throw new Error(`No bot registered for id "${config.botId}"`);
 

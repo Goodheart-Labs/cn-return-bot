@@ -34,10 +34,14 @@ function extractionExample(): Example | null {
   ];
 }
 
+const probabilityRun = runFiles.map((f) => JSON.parse(readFileSync(join(runsDir, f), "utf8")) as EvalRun).reverse().find((r) => r.probability?.rows.some((x) => x.id === "realistic-19"));
+const quickSample = probabilityRun?.probability?.rows.find((r) => r.id === "realistic-19")?.samples[0];
+
 const checked = run?.checker?.rows.find((r) => r.id === EXAMPLE_ROW)?.samples[0];
 const example = {
   extraction: extractionExample(),
   post: [["The post built for the Berkeley claim", row.checker!.post.text] as [string, string]],
+  quick: quickSample?.findings ? ([[`The answer of the quick research for the Red Bull claim: probability ${Math.round((quickSample.probability ?? 0) * 100)}%`, quickSample.findings]] as Example) : null,
   research: checked?.research ? ([["The findings of the Berkeley check", checked.research]] as Example) : null,
   writer: checked?.draftNote ? ([["The note the writer drafted for the Berkeley claim", checked.draftNote]] as Example) : null,
   verifier: checked

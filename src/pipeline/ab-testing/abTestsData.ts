@@ -180,9 +180,22 @@ const TOPIC_FILTER_TEST: ABTest = {
   ],
 };
 
+// The cascade replaces the note-needed prefilter, so it has to run before it.
+// The "precheck" arm is the search step as it was before the cascade existed,
+// with the prefilter where one is configured.
+const SEARCH_CASCADE_TEST: ABTest = {
+  name: "search_cascade",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 60 },
+    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 40 },
+  ],
+};
+
 // Closed on deepseek (2026-08-06). Common Notes and discard audits still need off.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
+  prerequisites: { search_cascade: false },
   defaultVariant: "off",
   variants: [
     { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 0 },
@@ -320,6 +333,7 @@ export const AB_TESTS: ABTest[] = [
   MATERIALITY_TREATMENT_TEST,
   COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
+  SEARCH_CASCADE_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,

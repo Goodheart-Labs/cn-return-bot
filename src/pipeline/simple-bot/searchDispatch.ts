@@ -42,7 +42,7 @@ const linkify = new LinkifyIt();
  * The header is "# Citations" when the findings text held no URL at all. It is
  * "# Additional Citations" when the text held some of the URLs but not all.
  */
-function appendUrlCitations(findings: string, annotations: any[] | undefined): string {
+export function appendUrlCitations(findings: string, annotations: any[] | undefined): string {
   const annotationUrls = (annotations ?? [])
     .filter((a) => a?.type === "url_citation" && typeof a?.url_citation?.url === "string")
     .map((a) => a.url_citation.url as string);
