@@ -25,6 +25,7 @@ export {
   RiUpload2Fill as ShareIcon,
   RiDeleteBinFill as TrashIcon,
   RiCloseLargeFill as CloseIcon,
+  RiPlayFill as PlayIcon,
 } from "@remixicon/react";
 
 /** Two notes lying on top of each other, the front one with two lines of
