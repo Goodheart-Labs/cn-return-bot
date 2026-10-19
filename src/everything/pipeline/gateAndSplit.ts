@@ -3,13 +3,13 @@
  * whole text and answers two questions: does the text try to shape the reader's
  * beliefs at all, and if so, does it fall into parts about different topics.
  *
- * An announcement, a personal update or entertainment is not checkable, and the
- * item is finished right there without extraction or rating. A checkable text
- * is cut into parts so that the rating step can research one topic at a time,
- * where one good source settles many claims. The model marks a part by copying
- * its first sentence or two. We locate that excerpt in the text and cut there.
- * A part runs to the next part's start, and whatever comes before the first
- * part is the introduction, so no text can fall in a gap.
+ * An announcement, a personal update, a personal memoir or entertainment is not
+ * checkable, and the item is finished right there without extraction or rating.
+ * A checkable text is cut into parts so that the rating step can research one
+ * topic at a time, where one good source settles many claims. The model marks a
+ * part by copying its first sentence or two. We locate that excerpt in the text
+ * and cut there. A part runs to the next part's start, and whatever comes
+ * before the first part is the introduction, so no text can fall in a gap.
  */
 
 import { trackLlmCall, trackedLlmCreate } from "../../pipeline/cost-tracking/costTracker";
@@ -21,7 +21,7 @@ import { extractionModels } from "./model";
 
 const GATE_SPLIT_SYSTEM_PROMPT = `You read a text (an article or a podcast transcript) and answer two questions.
 
-1. Does the text try to shape the reader's beliefs about the world: argue a point, explain how something is, report what happened, give advice? Answer "checkable": true. If it is an announcement, a personal update, an event notice, a list of links, entertainment, or anything else that makes no claims worth checking, answer "checkable": false and say why in "reason".
+1. Does the text try to shape the reader's beliefs about the world: argue a point, explain how something is, report what happened, give advice? Answer "checkable": true. If it is an announcement, a personal update, a personal memoir, an event notice, a list of links, entertainment, or anything else that makes no claims worth checking, answer "checkable": false and say why in "reason".
 
 2. If it is checkable, decide whether it falls into parts that each deal with a different topic or question. It is fine not to split: a text about one topic, or a short text, gets an empty "parts" list. Only split when the parts really are about different things, so that research on one part would not help the others. For each part give a short "title" and copy the first one or two sentences of the part verbatim into "start_excerpt". Parts follow the reading order. Everything before the first part's start is the introduction, so do not make the introduction a part.`;
 
