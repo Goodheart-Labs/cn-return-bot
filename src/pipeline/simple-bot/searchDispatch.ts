@@ -10,7 +10,7 @@ import LinkifyIt from "linkify-it";
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
-import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
+import { WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
 import { runToolLoop } from "../tool-calling/toolLoop";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
@@ -206,7 +206,10 @@ async function searchWithAnthropicNative(
     ],
     createOptions: {
       model,
-      tools: [WEB_SEARCH_TOOL],
+      // Claude searches and opens pages on Anthropic's side, inside this one
+      // request. Fetch lets it read a whole page instead of only the excerpt a
+      // search returns.
+      tools: [WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL],
       ...(config.search_reasoning_effort ? { reasoning_effort: config.search_reasoning_effort } : {}),
     },
     extractJson: extractJsonObject,

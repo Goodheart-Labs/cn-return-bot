@@ -83,6 +83,20 @@ export function webFetchNativeTool(limits: { maxUses: number; maxContentTokens: 
   };
 }
 
+/** The page budget of one Claude research call. Anthropic sets no limit of its
+ *  own on either number, so an uncapped page is read in full. With these
+ *  limits a call reads at most 60,000 extra input tokens, which is at most
+ *  $0.30 on Opus 5. */
+const CLAUDE_RESEARCH_MAX_FETCHES = 3;
+const CLAUDE_RESEARCH_MAX_TOKENS_PER_PAGE = 20_000;
+
+/** The fetch tool every Claude research call gets next to its search tool, so
+ *  Claude can read a whole page, such as the study an article links to. */
+export const CLAUDE_RESEARCH_FETCH_TOOL = webFetchNativeTool({
+  maxUses: CLAUDE_RESEARCH_MAX_FETCHES,
+  maxContentTokens: CLAUDE_RESEARCH_MAX_TOKENS_PER_PAGE,
+});
+
 // OpenRouter's web_search server tool on the model provider's own engine. For a
 // Muse request that is Meta's search, which also opens pages. OpenRouter runs it
 // inside the request and bills the searches in usage.cost.
