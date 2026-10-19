@@ -246,6 +246,7 @@ hides it in logs. The names below were checked against the live repository on
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
 | YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine. |
 | Substack relay | `SUBSTACK_PROXY_URL`, `SUBSTACK_PROXY_KEY` | Everything Priority Feeds. |
+| Outage email | `RESEND_API_KEY` | Everything Priority Feeds, which emails Nathan through Resend when every item is failing or the machine is unwell ([src/everything/outageAlert.ts](../src/everything/outageAlert.ts)). A send-only key is enough. Not yet set on 2026-10-19; until it is, the run only logs the outage. |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key

@@ -43,6 +43,12 @@ export const dbState = {
     sampleHours: 48,
     lastFeedStartedAt: null as Date | null,
   },
+  /** What fetchLastFinishedItems answers, newest first. */
+  finishedItems: [] as { status: "done" | "error"; error: string | null; processed_at: string }[],
+  /** What fetchErroredItemsSince answers. */
+  erroredItems: [] as { error: string | null; processed_at: string }[],
+  /** pipeline_state, which fetchPipelineState reads and savePipelineState writes. */
+  pipelineState: {} as Record<string, string>,
   /** Every recorded call, keyed by function name. */
   calls: {} as Record<string, unknown[][]>,
 };
@@ -61,6 +67,9 @@ export const resetDbState = () => {
     sampleHours: 48,
     lastFeedStartedAt: null,
   };
+  dbState.finishedItems = [];
+  dbState.erroredItems = [];
+  dbState.pipelineState = {};
   dbState.calls = {};
 };
 
@@ -112,4 +121,11 @@ export const dbMock = () => ({
   resolveProjectId: record("resolveProjectId"),
   insertFollowedFeed: record("insertFollowedFeed"),
   resolveFollowRequest: record("resolveFollowRequest"),
+  fetchLastFinishedItems: (limit: number) => Promise.resolve(dbState.finishedItems.slice(0, limit)),
+  fetchErroredItemsSince: () => Promise.resolve(dbState.erroredItems),
+  fetchPipelineState: (key: string) => Promise.resolve(dbState.pipelineState[key] ?? null),
+  savePipelineState: (key: string, value: string) => {
+    dbState.pipelineState[key] = value;
+    return Promise.resolve();
+  },
 });
