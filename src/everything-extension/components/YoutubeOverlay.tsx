@@ -59,6 +59,14 @@ function seek(video: HTMLVideoElement, seconds: number) {
   video.currentTime = seconds;
 }
 
+/** Whether a claim's card appears by itself while playback is inside its part
+ *  of the video. On a video, Open and Collapsed both pop up, because a video
+ *  has no text beside it where a collapsed card could wait. Dot only leaves
+ *  just the pin on the scrub bar, which is the default for unhelpful notes. */
+function popsUpDuringPlayback(group: TimedGroup): boolean {
+  return group.display === "open" || group.display === "collapse";
+}
+
 /** Whether playback at `seconds` is inside the claim's part of the video. */
 function playheadInClaim(group: TimedGroup, seconds: number): boolean {
   return seconds >= group.startSeconds && seconds <= group.endSeconds + TRAILING_GRACE_SECONDS;
@@ -149,10 +157,10 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // claim's window: leave the passage and come back, and the note shows
   // again. Nothing removes a note for the rest of the video.
   const hushed = useRef<string | null>(null);
-  // Only an open claim's card pops up on its own during playback. Any other
-  // claim's card shows while playback is inside its window only after the
-  // reader asked for it, and that request lasts while playback stays inside
-  // the claim's window.
+  // Only an open or collapsed claim's card pops up on its own during playback.
+  // A claim set to dot only shows its card while playback is inside its window
+  // only after the reader asked for it, and that request lasts while playback
+  // stays inside the claim's window.
   const summoned = useRef<string | null>(null);
   // The claim the reader opened while playback was somewhere else, with its
   // pin, the note count or the popup. Its card stays up wherever playback
@@ -222,7 +230,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
       const hit =
         groups.find((g) => g.claimId === pinned.current) ??
         groups.find((g) => g.claimId === summoned.current) ??
-        groups.find((g) => inClaimWindow(g) && g.display === "open");
+        groups.find((g) => inClaimWindow(g) && popsUpDuringPlayback(g));
       cardWanted.current = !!hit;
       setPlayheadAtClaim(!!hit && inClaimWindow(hit));
       // A claim hushed by an outside click stays hidden while playback is
