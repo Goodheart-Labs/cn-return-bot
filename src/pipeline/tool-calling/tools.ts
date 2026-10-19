@@ -83,6 +83,20 @@ export function webFetchNativeTool(limits: { maxUses: number; maxContentTokens: 
   };
 }
 
+/** The page budget of one Claude research call. Anthropic sets no limit of its
+ *  own on either number, so an uncapped page is read in full. With these
+ *  limits a call reads at most 60,000 extra input tokens, which is at most
+ *  $0.30 on Opus 5. */
+const CLAUDE_RESEARCH_MAX_FETCHES = 3;
+const CLAUDE_RESEARCH_MAX_TOKENS_PER_PAGE = 20_000;
+
+/** The fetch tool every Claude research call gets next to its search tool, so
+ *  Claude can read a whole page, such as the study an article links to. */
+export const CLAUDE_RESEARCH_FETCH_TOOL = webFetchNativeTool({
+  maxUses: CLAUDE_RESEARCH_MAX_FETCHES,
+  maxContentTokens: CLAUDE_RESEARCH_MAX_TOKENS_PER_PAGE,
+});
+
 // OpenRouter's web_search server tool on the model provider's own engine. For a
 // Muse request that is Meta's search, which also opens pages. OpenRouter runs it
 // inside the request and bills the searches in usage.cost.
@@ -90,6 +104,15 @@ export const OPENROUTER_NATIVE_WEB_SEARCH_TOOL = {
   type: "openrouter:web_search" as const,
   parameters: { engine: "native" as const },
 };
+
+/** With the fetch tool attached, OpenRouter returns Claude's citations as
+ *  inline tags such as <cite index="8-7:8-11">quoted words</cite>, where it
+ *  otherwise turns them into url_citation annotations. The index points into
+ *  Anthropic's search results and means nothing to us. The tags are removed and
+ *  the quoted words are kept. */
+export function stripCiteTags(text: string): string {
+  return text.replace(/<cite index="[^"]*">|<\/cite>/g, "");
+}
 
 /** Meta's search tool cites the lines of the pages it opened with markers such
  *  as 【1586541899417117766†L16-L18】, which point into its own page cache and mean
