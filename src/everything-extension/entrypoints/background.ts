@@ -120,7 +120,7 @@ async function createMenus() {
   });
   browser.contextMenus.create({
     id: REQUEST_MENU_ID,
-    title: "Request Common Notes on this",
+    title: "Check these words with Common Notes",
     contexts: ["selection"],
   });
   // The page-context item is the always-available request path, now that the
@@ -129,7 +129,7 @@ async function createMenus() {
   // request entries never appear together.
   browser.contextMenus.create({
     id: REQUEST_PAGE_MENU_ID,
-    title: "Request Common Notes on this page",
+    title: "Check this page with Common Notes",
     contexts: ["page"],
   });
 }
@@ -243,7 +243,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
       const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-request-live", pageUrl, token }));
       if (!delivered) flashBadge(tab.id, "✓");
     } else {
-      await showRequestInfo(tab, "Requested. We'll check this page when it comes up in our queue.");
+      await showRequestInfo(tab, "Checking this page now.");
     }
   } catch (err) {
     console.warn("[common-notes] note request failed:", err);

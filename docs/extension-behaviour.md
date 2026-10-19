@@ -92,7 +92,7 @@ The popup is the window that opens from the extension's toolbar button. It start
 
 Below the sentence, the popup can show two buttons.
 
-- **The request button** asks us to check this page. It shows only on content pages that we have not read in full. On YouTube, Substack and LessWrong it shows only on a video or a post, never on a channel page, inbox or profile. It never shows on search engines. On a page with no item it says "Request notes on this page". On a page that has an item only because a reader wrote a note or one paragraph was checked, it says "Check this page". If the page's creator is in their priority window, the button is replaced by a sentence such as "We're checking this author's new posts this week." (`utils/pageShape.ts`, `entrypoints/popup/App.tsx`)
+- **The request button**, "Check this page", asks us to check this page. It shows only on content pages that we have not read in full. On YouTube, Substack and LessWrong it shows only on a video or a post, never on a channel page, inbox or profile. It never shows on search engines. If the page's creator is in their priority window, the button is replaced by a sentence such as "We're checking this author's new posts this week." (`utils/pageShape.ts`, `entrypoints/popup/App.tsx`)
 - **The creator button**, for example "Check this author's new posts", gives the page's creator a 7-day priority window. It shows on any page that belongs to a creator whose window is closed, whether the page has notes or not. Creators are recognised on Substack publications including custom domains, Substack profiles, YouTube channels and watch pages, and LessWrong and Alignment Forum authors. (`utils/authorFeed.ts`, `utils/creatorTarget.ts`, `utils/prioritizedCreators.ts`)
 
 After you request a page, a small progress card appears in the page and follows the check until its notes are written. New notes appear on the page as they arrive, without a reload. The card comes back if you navigate away and return, for up to a day. The popup shows the same progress in text. (`utils/requestLive.ts`, `components/RequestProgressCard.tsx`, `utils/liveRequests.ts`)
@@ -105,8 +105,8 @@ The popup's footer links to the settings page and unfolds the feedback links.
 
 The right-click menu (browsers call it the context menu) has three Common Notes entries, on every page:
 
-- **Request Common Notes on this**, over a selection. It asks us to check only the selected text.
-- **Request Common Notes on this page**, on a plain right-click.
+- **Check these words with Common Notes**, over a selection. It asks us to check only the selected text.
+- **Check this page with Common Notes**, on a plain right-click.
 - **Write a Common Note on this**, over a selection. It opens the note editor on the selected text.
 
 A request for a whole page is not sent when it is not needed. If the page has already been read in full, a small card in the page says "This page has already been checked." If the page's creator is in their priority window, the card says we are already checking their new posts this week. A page that has an item only because of a reader's note or a checked paragraph still accepts the request. A request on selected words is always sent, because a whole-page check can find no claim in a passage, or rate it true and skip it. On a page already read in full, the selected words are checked on their own, and the progress card follows that one check. A sent request starts the progress card described above. On a page that cannot show a card, such as a browser settings page, the toolbar icon flashes a tick, or an exclamation mark when the request failed. (`entrypoints/background.ts` `requestNoteOnSelection`, `utils/requestInfo.ts`, `components/StatusOverlay.tsx`)
