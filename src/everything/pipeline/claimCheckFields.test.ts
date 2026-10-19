@@ -31,6 +31,14 @@ describe("claimCheckFields", () => {
   });
 });
 
+test("a reader's request carries the whole page after the claim and its paragraph", () => {
+  expect(claimCheckFields({ ...base, page: "Title\n\nAs everyone knows, the bridge opened in '32, to great fanfare." }, "web")).toEqual({
+    "Highlighted claim from Article": "the bridge opened in '32",
+    "Surrounding context": "As everyone knows, the bridge opened in '32, to great fanfare.",
+    "Full Article": "Title\n\nAs everyone knows, the bridge opened in '32, to great fanfare.",
+  });
+});
+
 test("reader steer reaches the labelled search input without changing unsteered claims", () => {
   const post = buildClaimPost({ claim: { ...base, steer: "the bridge's opening date" }, source: "web", itemId: "article-1", index: 0 });
   expect(post.text).toContain("A reader asked for a note about: the bridge's opening date");

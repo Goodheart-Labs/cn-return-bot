@@ -180,6 +180,19 @@ Things that are easy to get wrong:
 
 `bun run review` (prod) or `bun run review-local` serves it on port 8001 and frees the port first.
 
+## Minisite finder
+
+A standing Claude session on the devbox, `cn-return-bot--sandbox-minisite-article-finder`, researches every day at 6am California time which articles, posts and videos are making the rounds in Nathan Young's crowd, and posts the ones that would make good minisites to Slack's #minisite-suggestion (GOO-442). Jim and Nathan steer it in that channel. Its brief, cron entry and Slack bridge live in the devbox repository (`minisite-finder/BRIEF.md`). Its tools are in `src/minisite-finder/`:
+
+```bash
+bun run trending-on-x [--days N] [--topic "<topic>"]... [--ask "<question>"]  # Grok's X search for viral posts about an article, per topic of the crowd
+bun run hot-links [--days N]                         # top Hacker News links and LessWrong posts
+bun run noted-items [--days N] [--notes] [--json]    # items our pipeline wrote notes on, and whether they have a minisite
+bun run read-page <url>                              # read a page through the pipeline's fetch ladder
+```
+
+`trending-on-x` replaced the daily `Trending Posts` workflow, which posted Grok's finds straight to #trending-posts. The investigation behind its prompt is in `src/scripts_jim/2026_10_01_article_traction/` (GOO-289).
+
 ## Postable notes
 
 A standing Claude session on the devbox, `cn-return-bot--sandbox-daily-good-notes-to-slack`, looks every day at 6am California time for Common Notes worth posting on X, fact-checks them, and posts the good ones to Slack's #notes-we-can-post (GOO-452). Jim and Nathan steer it in that channel. Its brief, cron entry and Slack bridge live in the devbox repository (`postable-notes/BRIEF.md`). Its tool:
