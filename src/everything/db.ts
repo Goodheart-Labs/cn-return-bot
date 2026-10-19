@@ -41,9 +41,11 @@ export interface EverythingItem {
    *  item has been ingested this column also holds the text that the public
    *  write-note flow searches. */
   full_text: string | null;
+  /** How many repeat attempts the retry sweep has given this item. */
+  retries: number;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -346,19 +348,24 @@ export interface RetryableErrorItem {
   priority: number;
 }
 
-/** Returns the errored items that have been requeued fewer than `maxRetries`
- *  times and whose last failure is at least `cooldownHours` old. The cool-down
- *  spaces the attempts out. Without it a failure whose cause lasts a while,
- *  say a broken proxy or an exhausted API key, would burn every retry within
- *  minutes and the item would be dead again before the cause clears. */
-export async function fetchRetryableErrorItems(maxRetries: number, cooldownHours: number): Promise<RetryableErrorItem[]> {
+/** Returns the errored items that are due another attempt. `waitHours[n]` is
+ *  how long an item that has been retried n times waits after its last
+ *  failure, so an item retried as often as the list is long is never
+ *  returned. The wait spaces the attempts out. Without it a failure whose
+ *  cause lasts a while, say a broken proxy or an exhausted API key, would burn
+ *  every retry within minutes and the item would be dead again before the
+ *  cause clears. */
+export async function fetchRetryableErrorItems(waitHours: readonly number[]): Promise<RetryableErrorItem[]> {
+  const due = waitHours.map((hours, retries) => {
+    const failedBefore = new Date(Date.now() - hours * 3600_000).toISOString();
+    return `and(retries.eq.${retries},processed_at.lt."${failedBefore}")`;
+  });
   return throwOnError(
     await getSupabaseClient()
       .from("everything_items")
       .select("id, url, retries, priority")
       .eq("status", "error")
-      .lt("retries", maxRetries)
-      .lt("processed_at", new Date(Date.now() - cooldownHours * 3600_000).toISOString()),
+      .or(due.join(",")),
   ) as RetryableErrorItem[];
 }
 
@@ -445,9 +452,11 @@ export async function updateItemMeta(
   throwOnError(await getSupabaseClient().from("everything_items").update(meta).eq("id", id));
 }
 
-/** `skipReason` is why the intent gate declined the item, or null when it was
- *  processed. It is always written, so an item the gate once declined and a
- *  reader later promoted to a whole-page check loses its stale reason. */
+/** `skipReason` is why the item was finished without being checked, or null
+ *  when it was checked. Either the intent gate declined it, or it is a video
+ *  we cannot read ("no captions", "age-restricted"). It is always written, so
+ *  an item the gate once declined and a reader later promoted to a whole-page
+ *  check loses its stale reason. */
 export async function markItemDone(id: string, skipReason: string | null): Promise<void> {
   throwOnError(
     await getSupabaseClient()

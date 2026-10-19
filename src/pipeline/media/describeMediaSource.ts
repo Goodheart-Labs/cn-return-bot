@@ -79,14 +79,15 @@ async function describeYoutubeVideo(url: string, costName: string, strategy: Vid
   return { details, ...(await downloadAndDescribe(url, costName, strategy, { download: "pictures_only", durationMs, transcript })) };
 }
 
-/** The captions as plain text, or null when the video has none. When YouTube
- *  could not be reached, the video is still described from its details and
- *  frames, and the run carries a warning. A verifier that sees the title and
- *  the pictures can judge more than one that falls back to YouTube's page. */
+/** The captions as plain text, or null when the video has none we can read.
+ *  When YouTube could not be reached, the video is still described from its
+ *  details and frames, and the run carries a warning. A verifier that sees the
+ *  title and the pictures can judge more than one that falls back to YouTube's
+ *  page. */
 async function fetchCaptionText(video: YoutubeVideo): Promise<string | null> {
   try {
-    const cues = await fetchYoutubeCaptions(video);
-    return cues ? captionsToText(cues) : null;
+    const captions = await fetchYoutubeCaptions(video);
+    return captions.kind === "captions" ? captionsToText(captions.cues) : null;
   } catch (err) {
     if (!(err instanceof YoutubeUnreachableError)) throw err;
     addWarning(`YouTube captions could not be fetched, described without a transcript (${video.url}): ${err.message.slice(0, MAX_WARNING_REASON_LENGTH)}`);

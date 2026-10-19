@@ -129,7 +129,7 @@ async function main() {
     // Whatever the item did, the next run must be scheduled, or the pipeline
     // would sleep until the backstop. The alarm is measured from the item's
     // start, so it needs to know whether an item was started.
-    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error");
+    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error" || ended === "no_captions_yet");
   }
   // Creator pictures for the website cost no LLM money, so they refresh even
   // on a capped day. They run last, after the alarm is set, so a slow source
@@ -149,8 +149,10 @@ async function main() {
   // A failed item is recorded on its row, and the run used to end green. On
   // 1 October 2026 every item failed for 16 hours while every run stayed
   // green, and nobody noticed until someone read the logs. So a failed item
-  // fails the run too, after the alarm is set. Every error counts, including
-  // a video without a transcript.
+  // fails the run too, after the alarm is set. A young video that has no
+  // captions yet is the one expected error, and it ends as "no_captions_yet"
+  // instead. On 10 October 2026 such videos made 30 of 31 red runs and buried
+  // the failures that mattered (GOO-422).
   if (ended === "error") {
     throw new Error("This run's item failed. The reason is in the log above and in everything_items.error. Failing the run so this is seen.");
   }
