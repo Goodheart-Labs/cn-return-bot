@@ -66,6 +66,8 @@ export type RawTweet = Record<string, unknown> & {
 };
 
 const API_URL = "https://api.x.com/2/notes/search/posts_eligible_for_notes";
+/** The most posts X returns in one page of the eligibility endpoint. */
+const MAX_POSTS_PER_PAGE = 100;
 
 // We request every field the endpoint exposes, so that tweets.raw_tweet holds
 // the complete object. A few fields are left out on purpose. On the tweet and
@@ -128,12 +130,11 @@ async function fetchPage(
 
 export async function fetchEligiblePosts(
   maxResults: number = 10,
-  skipPostIds: Set<string> = new Set(),
   maxPages: number = 3,
   postSelection?: string
 ): Promise<Post[]> {
   const allEligiblePosts: Post[] = [];
-  const seenPostIds = new Set<string>(skipPostIds);
+  const seenPostIds = new Set<string>();
   let nextToken: string | undefined;
   let pageCount = 0;
   let totalDuplicatesSkipped = 0;
@@ -141,11 +142,7 @@ export async function fetchEligiblePosts(
   while (pageCount < maxPages && allEligiblePosts.length < maxResults) {
     pageCount++;
 
-    // Ask X for more posts than we need, because some of them will be skipped.
-    const fetchMultiplier = skipPostIds.size > 0 ? 3 : 1;
-    const fetchLimit = Math.min(maxResults * fetchMultiplier, 100);
-
-    const response = await fetchPage(fetchLimit, postSelection, nextToken);
+    const response = await fetchPage(Math.min(maxResults, MAX_POSTS_PER_PAGE), postSelection, nextToken);
 
     const allPosts = parsePostsResponse(response.data);
 
