@@ -21,6 +21,12 @@ import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmis
 // value 2.
 const MISS_LIMIT = 2;
 
+// How long a rejected tweet waits before the pipeline may try it again. See
+// getCooldownTweetIds.
+const FIRST_REJECTION_COOLDOWN_HOURS = 1;
+const SECOND_REJECTION_COOLDOWN_HOURS = 24;
+const REJECTIONS_UNTIL_SKIPPED_FOR_GOOD = 3;
+
 // Database types
 export interface Notewriter {
   id: string;
@@ -973,86 +979,90 @@ export class SupabaseLogger {
   }
 
   /**
-   * Returns the tweet ids the pipeline should skip. A tweet we already wrote a
-   * note for is always skipped. A tweet that was rejected before is skipped for
-   * a cooldown period that grows with the number of rejections. One rejection
-   * means one hour. Two rejections mean 24 hours. Three or more rejections mean
-   * the tweet is skipped for good.
+   * Returns which of the given tweets are cooling down. A tweet we already wrote a
+   * note for is always cooling down. A tweet that was rejected before cools down
+   * for a period that grows with the number of rejections. One rejection means
+   * one hour. Two rejections mean 24 hours. Three or more rejections mean the
+   * tweet is skipped for good.
+   *
+   * Only the given ids are looked up, so the cost depends on how many posts the
+   * feed returned and not on how large the notes and pipeline_runs tables are.
    */
-  async getSkipTweetIds(): Promise<Set<string>> {
-    const tweetIds = new Set<string>();
+  async getCooldownTweetIds(tweetIds: string[]): Promise<Set<string>> {
+    const [notes, rejectedRuns] = await Promise.all([
+      fetchInBatches<{ note_id: string; tweet_id: string }>(
+        (chunk) => this.client.from("notes").select("note_id, tweet_id").in("tweet_id", chunk),
+        tweetIds,
+        "note_id",
+        { label: "getCooldownTweetIds.notes" },
+      ),
+      fetchInBatches<{ id: string; tweet_id: string; created_at: string }>(
+        (chunk) => this.client.from("pipeline_runs").select("id, tweet_id, created_at").eq("outcome", "rejected").in("tweet_id", chunk),
+        tweetIds,
+        "id",
+        { label: "getCooldownTweetIds.rejected" },
+      ),
+    ]);
+    const cooling = new Set(notes.map((row) => row.tweet_id));
 
-    const notesData = await this.fetchAllRows<{ note_id: string; tweet_id: string }>(
-      (client) => client.from("notes").select("note_id, tweet_id"),
-      "note_id",
-      "getSkipTweetIds.notes",
-    );
-    notesData.forEach((row) => {
-      if (row.tweet_id) tweetIds.add(row.tweet_id);
-    });
-
-    const pipelineData = await this.fetchAllRows<{ id: string; tweet_id: string; created_at: string }>(
-      (client) => client.from("pipeline_runs").select("id, tweet_id, created_at")
-        .eq("outcome", "rejected"),
-      "id",
-      "getSkipTweetIds.rejected",
-    );
-    const rejectionInfo = new Map<string, { count: number; latestAt: Date }>();
-    for (const row of pipelineData) {
-      if (!row.tweet_id) continue;
-      const ts = new Date(row.created_at);
+    const rejectionInfo = new Map<string, { count: number; latestAt: number }>();
+    for (const row of rejectedRuns) {
+      const at = Date.parse(row.created_at);
       const existing = rejectionInfo.get(row.tweet_id);
       if (!existing) {
-        rejectionInfo.set(row.tweet_id, { count: 1, latestAt: ts });
+        rejectionInfo.set(row.tweet_id, { count: 1, latestAt: at });
       } else {
         existing.count++;
-        if (ts > existing.latestAt) existing.latestAt = ts;
+        existing.latestAt = Math.max(existing.latestAt, at);
       }
     }
 
-    const now = new Date();
-    for (const [tweetId, info] of rejectionInfo) {
-      if (info.count >= 3) {
-        tweetIds.add(tweetId);
-      } else {
-        const hoursSinceLatest = (now.getTime() - info.latestAt.getTime()) / (1000 * 60 * 60);
-        const cooldownHours = info.count === 1 ? 1 : 24;
-        if (hoursSinceLatest < cooldownHours) {
-          tweetIds.add(tweetId);
-        }
+    const now = Date.now();
+    for (const [tweetId, { count, latestAt }] of rejectionInfo) {
+      if (count >= REJECTIONS_UNTIL_SKIPPED_FOR_GOOD) {
+        cooling.add(tweetId);
+        continue;
       }
+      const cooldownHours = count === 1 ? FIRST_REJECTION_COOLDOWN_HOURS : SECOND_REJECTION_COOLDOWN_HOURS;
+      if (now - latestAt < cooldownHours * 3_600_000) cooling.add(tweetId);
     }
 
-    return tweetIds;
+    return cooling;
   }
 
   /**
-   * Returns every tweet id that is already in the tweets table, minus the ones
-   * that earned a retry (see retryableFailures.ts). The caller uses the set to
-   * skip tweets it has seen, so each fetched tweet is processed at most once,
+   * Returns which of the given tweets are already in the tweets table, minus the
+   * ones that earned a retry (see retryableFailures.ts). The caller uses the set
+   * to skip tweets it has seen, so each fetched tweet is processed at most once,
    * or twice when the first attempt died of a transient error.
+   *
+   * Only the given ids are looked up. Until October 2026 this read every row of
+   * the tweets table on every run, about 230,000 rows, only to check the few
+   * thousand posts the feed returned.
    */
-  async getKnownTweetIds(): Promise<Set<string>> {
-    // We page by tweet_id. The tweets table holds more than 40,000 rows and
-    // keeps growing roughly in step with the number of pipeline runs. tweet_id
-    // is the primary key, so it is unique and indexed and makes a natural
-    // paging key.
-    const rows = await this.fetchAllRows<{ tweet_id: string }>(
-      (client) => client.from("tweets").select("tweet_id"),
-      "tweet_id",
-      "getKnownTweetIds",
-    );
-    const known = new Set(rows.map((r) => r.tweet_id).filter(Boolean));
+  async getKnownTweetIds(tweetIds: string[]): Promise<Set<string>> {
     // A tweet whose only attempt failed because a model returned output we
     // could not use gets one more pass. Without this, every such tweet was
-    // skipped for good the moment it entered the table. A failed read here
-    // throws and ends the run, like a failed read of the tweets table above.
+    // skipped for good the moment it entered the table. A failed read throws and
+    // ends the run.
     const since = new Date(Date.now() - RETRY_WINDOW_HOURS * 3_600_000).toISOString();
-    const recentRuns = await this.fetchAllRows<RunRow & { id: string }>(
-      (client) => client.from("pipeline_runs").select("id, tweet_id, outcome, outcome_reason, created_at").gte("created_at", since),
-      "id",
-      "getKnownTweetIds.recentRuns",
-    );
+    const [rows, recentRuns] = await Promise.all([
+      fetchInBatches<{ tweet_id: string }>(
+        (chunk) => this.client.from("tweets").select("tweet_id").in("tweet_id", chunk),
+        tweetIds,
+        "tweet_id",
+        { label: "getKnownTweetIds.tweets" },
+      ),
+      fetchInBatches<RunRow & { id: string }>(
+        (chunk) => this.client.from("pipeline_runs").select("id, tweet_id, outcome, outcome_reason, created_at")
+          .gte("created_at", since)
+          .in("tweet_id", chunk),
+        tweetIds,
+        "id",
+        { label: "getKnownTweetIds.recentRuns" },
+      ),
+    ]);
+    const known = new Set(rows.map((r) => r.tweet_id));
     const retry = retryEligibleTweetIds(recentRuns);
     for (const tweetId of retry) known.delete(tweetId);
     if (retry.size) console.log(`[SupabaseLogger] ${retry.size} tweet(s) failed once for a transient reason and get another pass`);

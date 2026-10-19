@@ -61,21 +61,16 @@ type PangramSighting = {
 };
 
 export interface PangramCandidatesOptions {
-  /** The same set generateCandidates uses, so we do not crawl tweets we have
-   *  already noted or that are still cooling down. It is not what keeps us from
-   *  classifying a post twice. The pangram_monitoring_sightings ledger does
-   *  that. */
-  skipPostIds: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
 }
 
 /** Tries each feed size in turn and moves on to the next one after any error. It
  *  returns null when every size fails, so a temporary problem with the feed never
  *  breaks the run. */
-async function crawlFeed(skipPostIds: Set<string>): Promise<{ feedSize: FeedSize; posts: Post[] } | null> {
+async function crawlFeed(): Promise<{ feedSize: FeedSize; posts: Post[] } | null> {
   for (const size of PANGRAM_FEED_SIZES) {
     try {
-      const posts = await fetchEligiblePosts(PANGRAM_MAX_RESULTS, skipPostIds, PANGRAM_MAX_PAGES, buildPostSelection(size));
+      const posts = await fetchEligiblePosts(PANGRAM_MAX_RESULTS, PANGRAM_MAX_PAGES, buildPostSelection(size));
       console.log(`[pangram] Crawled ${posts.length} posts from ${size} feed`);
       return { feedSize: size, posts };
     } catch (err) {
@@ -197,7 +192,7 @@ async function processPost(logger: SupabaseLogger, post: Post, feedSize: FeedSiz
 
 export async function generatePangramCandidates(
   logger: SupabaseLogger | null,
-  { skipPostIds, onTweetProcessed }: PangramCandidatesOptions,
+  { onTweetProcessed }: PangramCandidatesOptions,
 ): Promise<Candidate[]> {
   if (!logger) {
     console.log("[pangram] No Supabase logger; skipping Pangram pre-pass");
@@ -205,10 +200,14 @@ export async function generatePangramCandidates(
   }
 
   const checkedIds = await logger.getPangramCheckedTweetIds();
-  const crawl = await crawlFeed(skipPostIds);
+  const crawl = await crawlFeed();
   if (!crawl) return [];
 
-  const top = selectTopLongForm(crawl.posts, checkedIds);
+  // Leave out tweets we have already noted or that are cooling down, as the
+  // regular pass does. This is not what keeps us from classifying a post twice.
+  // The pangram_monitoring_sightings ledger does that.
+  const cooldown = await logger.getCooldownTweetIds(crawl.posts.map((p) => p.id));
+  const top = selectTopLongForm(crawl.posts.filter((p) => !cooldown.has(p.id)), checkedIds);
   if (!top.length) return [];
 
   // The tweets table needs a row for every pipeline run we may create below.

@@ -271,25 +271,12 @@ async function main() {
       if (localOutput) writePipelineRowToCsv(localOutput, event);
     };
 
-    // Fetch the skip set and the known-tweet set once here. Otherwise the notes,
-    // pipeline_runs and tweets tables get scanned twice in a single run. A
-    // failed read ends the run. Carrying on with empty sets would process
-    // tweets we already wrote notes for.
-    let skipPostIds: Set<string> | undefined;
-    let knownTweetIds: Set<string> | undefined;
-    if (supabaseLogger) {
-      [skipPostIds, knownTweetIds] = await Promise.all([
-        supabaseLogger.getSkipTweetIds(),
-        supabaseLogger.getKnownTweetIds(),
-      ]);
-    }
-
-    // Track every tweet a pre-pass processes. The known-tweet set above was
-    // snapshotted before the pre-passes ran, so without this the regular pass
-    // could process the same tweet a second time within one run. knownTweetIds
-    // is undefined only when there is no database logger at all.
+    // Track every tweet a pre-pass processes, so the regular pass skips it.
+    // The pre-passes write their tweets to the tweets table, but a failed write
+    // is only logged, so the database alone cannot be trusted with this.
+    const processedThisRun = new Set<string>();
     const trackPrePassProcessed = (event: TweetProcessedEvent) => {
-      knownTweetIds?.add(event.post.id);
+      processedThisRun.add(event.post.id);
       return onTweetProcessed?.(event);
     };
 
@@ -302,7 +289,6 @@ async function main() {
     if (PANGRAM_PIPELINE_ENABLED) {
       try {
         pangramCandidates = await generatePangramCandidates(supabaseLogger, {
-          skipPostIds: skipPostIds ?? new Set<string>(),
           onTweetProcessed: trackPrePassProcessed,
         });
       } catch (err) {
@@ -321,7 +307,6 @@ async function main() {
       try {
         misinfoCandidates = await generateMisinfoCandidates(supabaseLogger, {
           deadlineMs: Math.min(SOFT_DEADLINE_AT_MS, RUN_STARTED_AT_MS + MISINFO_PROCESSING_BUDGET_MS),
-          skipPostIds: skipPostIds ?? new Set<string>(),
           onTweetProcessed: trackPrePassProcessed,
           topicIds: MISINFO_ACTIVE_TOPIC_IDS,
         });
@@ -377,8 +362,7 @@ async function main() {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
       scorer,
-      skipPostIds,
-      knownTweetIds,
+      processedThisRun,
       onTweetProcessed,
       // Curated-topic matching also runs on the regular pool. A post confirmed
       // to be on topic gets the monitoring treatment and a bounded share of
