@@ -31,7 +31,7 @@ function ProgressGlyph({ progress }: { progress: RequestProgress }) {
   if (progress.kind === "done") {
     return <span className="text-base font-semibold text-positive">✓</span>;
   }
-  if (progress.kind === "failed") {
+  if (progress.kind === "failed" || progress.kind === "unreadable") {
     return <span className="text-base font-semibold text-negative">!</span>;
   }
   if (progress.kind === "unavailable") {

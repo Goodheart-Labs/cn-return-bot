@@ -217,12 +217,16 @@ export async function triageOrphanedItems(tier: "requested" | "feed"): Promise<v
   }
 }
 
+/** How long an errored item rests after its last failure before each repeat
+ *  attempt. The first retry comes 3 hours after the first attempt and the
+ *  second 12 hours after it. A video tried within an hour of its upload often
+ *  has no captions yet. Of 14 such videos that got captions later, 9 had them
+ *  by the first retry and 5 only by the second (GOO-422). */
+const RETRY_WAIT_HOURS = [3, 9] as const;
+
 /** How many repeat attempts an errored item gets before it stays an error a
  *  human has to look at. */
-const MAX_ITEM_RETRIES = 2;
-
-/** How long an errored item rests before its next attempt. */
-const RETRY_COOLDOWN_HOURS = 6;
+export const MAX_ITEM_RETRIES = RETRY_WAIT_HOURS.length;
 
 /** Puts errored items back in the queue for a bounded number of repeat
  *  attempts. Most of our item errors have been transient: a flagged proxy IP
@@ -234,7 +238,7 @@ const RETRY_COOLDOWN_HOURS = 6;
  *  retry at once. An item that still fails after its retries stays in error,
  *  and the row's error text says why. */
 async function retryErroredItems(): Promise<void> {
-  for (const item of await fetchRetryableErrorItems(MAX_ITEM_RETRIES, RETRY_COOLDOWN_HOURS)) {
+  for (const item of await fetchRetryableErrorItems(RETRY_WAIT_HOURS)) {
     await requeueErroredItem(item);
     console.log(`Errored item requeued for attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
   }

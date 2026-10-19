@@ -17,7 +17,7 @@ export async function fetchRequestStatus(token: string): Promise<RequestStatusRo
 export async function fetchProgressItemRow(itemId: string): Promise<ProgressItemRow | null> {
   const { data, error } = await supabase
     .from("everything_items")
-    .select("id, status, checked_scope, progress")
+    .select("id, status, checked_scope, progress, skip_reason")
     .eq("id", itemId)
     .maybeSingle();
   if (error) throw error;
