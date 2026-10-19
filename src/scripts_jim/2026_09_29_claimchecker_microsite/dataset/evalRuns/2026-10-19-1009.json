@@ -1,0 +1,747 @@
+{
+ "id": "2026-10-19-1009",
+ "label": "Cascading search with Jina Reader on: the rows that had source-not-fetched failures",
+ "createdAt": "2026-10-19T10:14:09.792Z",
+ "commit": "557eaeb2",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks, search step: cascading",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 0,
+   "checker": 3
+  }
+ },
+ "rowIds": [
+  "cfar-ftx",
+  "melanie-mitchell",
+  "x-01",
+  "x-02",
+  "x-05",
+  "x-06"
+ ],
+ "extractor": null,
+ "checker": {
+  "samples": 3,
+  "passAt": 2,
+  "rows": [
+   {
+    "id": "cfar-ftx",
+    "group": "note-easy",
+    "expected": {
+     "decision": "note"
+    },
+    "referenceNotes": [
+     "Oliver Habryka, LIghtcone CEO, Claims that no money came to them from FTX.\n\nhttps://www.sfgate.com/tech/article/sbf-berkeley-rose-garden-inn-19520351.php"
+    ],
+    "samples": [
+     {
+      "quality": {
+       "samePoint": false,
+       "reason": "The reference correction says Lightcone received no money from FTX. The pipeline note instead says the purchase deposits were wired from FTX, and only corrects when the wires occurred, so it contradicts the reference correction."
+      },
+      "research": "The claim is overstated and partly contradicted by the record. It is not clearly false, because the FTX estate's complaint alleges some FTX money was involved.\n\nWhat the FTX estate alleges: Its complaint says the Rose Garden Inn (now Lighthaven) was bought by Lightcone RG in fall 2022 \"in part using funds received from FTX Foundation\" (https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf). It also says two $500,000 wires, on July 13 and August 18, 2022, went to a title company as an initial deposit. The sale closed around November 4, 2022. The complaint calls the $1M a loan that was never repaid, and says only \"upon information and belief\" that a material portion of other CFAR transfers went to the acquisition and renovation (https://forum.effectivealtruism.org/posts/YSuqwrXFtuXuSzGDc/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties). SFGate reports the same allegations (https://www.sfgate.com/tech/article/sbf-berkeley-rose-garden-inn-19520351.php).\n\nWhy the claim is inaccurate:\n- **Timing:** The deposit wires were in July and August 2022. FTX did not fail until November 2022, so these were not sent \"as it was collapsing.\"\n- **Source of funds:** One summary says the balance of the roughly $20M price came via Slimrock Investments (https://davidzmorris.substack.com/p/the-ai-timelines-scam-expanded-free). Another source says Lightcone bought the property with a 5% loan (https://manifold.markets/nikki/will-lighthaven-be-capable-of-hosti). So FTX money was at most a small part of the purchase price.\n- **Disputed by Lightcone:** Lightcone's Oliver Habryka says no FTX funds were used in the purchase. Vox's Kelsey Piper called a similar Guardian claim a serious error (https://forum.effectivealtruism.org/posts/YSuqwrXFtuXuSzGDc/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties). A Community Note on this exact sentence cites Habryka's denial (https://commonnotes.net/).\n- **Unproven:** These are unproven allegations in a bankruptcy complaint, not adjudicated findings.\n\nOverall, the claim states as fact that the purchase was funded by FTX wires sent during the collapse. The record shows a $1M deposit months earlier and a mostly loan-financed purchase, with FTX's role still contested.",
+      "draftNote": "The FTX estate complaint dates two $500,000 purchase-deposit wires to July 13 and August 18, 2022—months before FTX collapsed in November.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.07862315800000001,
+      "judgeCostUsd": 0.0001185,
+      "outcome": {
+       "type": "note",
+       "note": "The FTX estate complaint dates two $500,000 purchase-deposit wires to July 13 and August 18, 2022—months before FTX collapsed in November.",
+       "sources": [
+        {
+         "url": "https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf",
+         "quote": "On July 13, 2022, and August 18, 2022, FTX Foundation caused payments of $500,000 each to be wired from an account held by North Dimension to a title company as an initial deposit for Lightcone RG’s acquisition of the Rose Garden Inn.",
+         "explanation": "The complaint gives both dates and amounts and identifies the wires as an initial deposit for the property purchase."
+        },
+        {
+         "url": "https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf",
+         "quote": "FTX Foundation ceased operations when FTX collapsed in November 2022.",
+         "explanation": "This supports the note’s reference to FTX collapsing in November, months after the July and August wires."
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\n\n## Research findings\n\nThe claim is overstated and partly contradicted by the record. It is not clearly false, because the FTX estate's complaint alleges some FTX money was involved.\n\nWhat the FTX estate alleges: Its complaint says the Rose Garden Inn (now Lighthaven) was bought by Lightcone RG in fall 2022 \"in part using funds received from FTX Foundation\" (https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf). It also says two $500,000 wires, on July 13 and August 18, 2022, went to a title company as an initial deposit. The sale closed around November 4, 2022. The complaint calls the $1M a loan that was never repaid, and says only \"upon information and belief\" that a material portion of other CFAR transfers went to the acquisition and renovation (https://forum.effectivealtruism.org/posts/YSuqwrXFtuXuSzGDc/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties). SFGate reports the same allegations (https://www.sfgate.com/tech/article/sbf-berkeley-rose-garden-inn-19520351.php).\n\nWhy the claim is inaccurate:\n- **Timing:** The deposit wires were in July and August 2022. FTX did not fail until November 2022, so these were not sent \"as it was collapsing.\"\n- **Source of funds:** One summary says the balance of the roughly $20M price came via Slimrock Investments (https://davidzmorris.substack.com/p/the-ai-timelines-scam-expanded-free). Another source says Lightcone bought the property with a 5% loan (https://manifold.markets/nikki/will-lighthaven-be-capable-of-hosti). So FTX money was at most a small part of the purchase price.\n- **Disputed by Lightcone:** Lightcone's Oliver Habryka says no FTX funds were used in the purchase. Vox's Kelsey Piper called a similar Guardian claim a serious error (https://forum.effectivealtruism.org/posts/YSuqwrXFtuXuSzGDc/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties). A Community Note on this exact sentence cites Habryka's denial (https://commonnotes.net/).\n- **Unproven:** These are unproven allegations in a bankruptcy complaint, not adjudicated findings.\n\nOverall, the claim states as fact that the purchase was funded by FTX wires sent during the collapse. The record shows a $1M deposit months earlier and a mostly loan-financed purchase, with FTX's role still contested."
+      },
+      "cascade": {
+       "probability": 0.85,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "The hotel at issue is the Rose Garden Inn in Berkeley, bought by CFAR-affiliated Lightcone RG. The FTX adversary complaint alleges: On March 2, 2022 CFAR requested $2,000,000 for its Lightcone Infrastructure Team and FTX Foundation caused $2,000,000 to be wired to CFAR from an FTX bank account https://lawprofessors.typepad.com/files/ftx.pdf; Between March 2022 and October 2022 FTX, Alameda and FTX Foundation made 14 additional transfers to CFAR totaling $2,904,999.61, itemized as March 3 2022 $2M from FTX Trading Ltd., July 8 2022 $370,000, July 13 2022 $500,000, Aug 18 2022 $500,000, Sept 20 2022 $34,999.61, plus ten transfers on Oct 3 2022 totaling ~$1.5M https://lawprofessors.typepad.com/files/ftx.pdf; Throughout 2022 FTX Foundation and CFAR discussed purchase as EA retreat center, FTX Foundation declined, CFAR began investigating acquiring itself in/about Feb 2022 https://lawprofessors.typepad.com/files/ftx.pdf; On July 13 and Aug 18 2022 FTX Foundation caused $500,000 each to be wired from North Dimension account to title company as initial deposit, Lightcone RG closed on/about Nov 4 2022, intended as loan never repaid per debtors records https://lawprofessors.typepad.com/files/ftx.pdf; Property total price was $16.5MM with $20MM loan (including $3.5MM repairs) from Slimrock Investments Pte Ltd owned by Jaan Tallinn https://lawprofessors.typepad.com/files/ftx.pdf; Oct 3 2022 $1.5M grant for General Support for Lightcone, material portion allegedly used for acquisition/renovation https://lawprofessors.typepad.com/files/ftx.pdf. FTX collapse/bankruptcy began November 2022: CoinDesk published Alameda balance-sheet article Nov 2 2022 triggering withdrawals, FTX/Alameda/100+ affiliates filed bankruptcy Nov 11 2022 https://en.wikipedia.org/wiki/Bankruptcy_of_FTX. Therefore 'as it was collapsing' misdates wires that were mostly March-August 2022, 3-8 months before collapse, and 'purchased with money wired to CFAR' overstates FTX share ($1M deposit toward $16.5M price, rest Tallinn loan). Fraud finding is real - complaint alleges from 2019-2022 insiders looted commingled Alameda/FTX customer funds via special privileges https://lawprofessors.typepad.com/files/ftx.pdf and SBF convicted Nov 2 2023 on 7 fraud counts https://lawprofessors.typepad.com/files/ftx.pdf - but timing implies last-minute dying-company looting rather than long-running scheme.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing."
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      }
+     },
+     {
+      "quality": null,
+      "research": "The claim is wrong on timing. The article says the property (the Rose Garden Inn) was bought with money wired from FTX 'as it was collapsing'. Court filings show the money arrived months before the November 2022 collapse. David Z. Morris's account of the FTX estate's suit says FTX's payments to CFAR began in March 2022 with a $2M tranche (https://davidzmorris.substack.com/p/a-lever-long-enough-draft-excerpt). It says two $500,000 FTX Foundation payments, on July 13 and August 18, went from North Dimension accounts to a title company as a deposit on the Rose Garden Inn. A CFAR subsidiary, Lightcone RG, bought the property. Another summary of the filings says FTX sent a $2M grant in March, then 14 more wires totaling $2.9M through October. It adds that a further $1M was sent as a deposit on the Rose Garden Inn (https://www.longtermwiki.com/wiki/E696). The Kroll filing says CFAR received at least $4.4M between March and October 2022 (https://restructuring.ra.kroll.com/FTX/ExternalCall-DownloadPDF?id1=MjU4MDg0OQ%3D%3D&id2=0). The funds therefore came in March–October 2022, with the purchase deposits in July and August. FTX filed for bankruptcy in November 2022, so these were not wired 'as it was collapsing'. The core point that the purchase was originally funded with FTX-linked money is supported. The 'as it was collapsing' framing is not, although the FTX estate alleges the money was customer funds, so it was fraudulently sourced. Some of the money came from Alameda or the FTX Foundation rather than FTX itself.",
+      "draftNote": "The Rose Garden Inn deposit payments were made on July 13 and August 18, 2022. CFAR’s FTX payments began in March and continued through October, rather than first arriving as FTX was collapsing.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.12540014900000002,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "low_materiality_score"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\n\n## Research findings\n\nThe claim is wrong on timing. The article says the property (the Rose Garden Inn) was bought with money wired from FTX 'as it was collapsing'. Court filings show the money arrived months before the November 2022 collapse. David Z. Morris's account of the FTX estate's suit says FTX's payments to CFAR began in March 2022 with a $2M tranche (https://davidzmorris.substack.com/p/a-lever-long-enough-draft-excerpt). It says two $500,000 FTX Foundation payments, on July 13 and August 18, went from North Dimension accounts to a title company as a deposit on the Rose Garden Inn. A CFAR subsidiary, Lightcone RG, bought the property. Another summary of the filings says FTX sent a $2M grant in March, then 14 more wires totaling $2.9M through October. It adds that a further $1M was sent as a deposit on the Rose Garden Inn (https://www.longtermwiki.com/wiki/E696). The Kroll filing says CFAR received at least $4.4M between March and October 2022 (https://restructuring.ra.kroll.com/FTX/ExternalCall-DownloadPDF?id1=MjU4MDg0OQ%3D%3D&id2=0). The funds therefore came in March–October 2022, with the purchase deposits in July and August. FTX filed for bankruptcy in November 2022, so these were not wired 'as it was collapsing'. The core point that the purchase was originally funded with FTX-linked money is supported. The 'as it was collapsing' framing is not, although the FTX estate alleges the money was customer funds, so it was fraudulently sourced. Some of the money came from Alameda or the FTX Foundation rather than FTX itself."
+      },
+      "cascade": {
+       "probability": 0.68,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "The \"it\" is the Rose Garden Inn at 2740 Telegraph Ave, Berkeley, described as \"a hotel purchased by Lightcone RG in the fall of 2022, in part using funds received from FTX Foundation\" https://lawprofessors.typepad.com/nonprofit/2024/07/ftx-seeks-clawback-of-charitable-transfers.html . The FTX complaint alleges Lightcone RG \"closed on the purchase of the hotel on or about November 4, 2022\" https://dn710009.ca.archive.org/0/items/cfar-complaint-filing-version-w-0075724-docx/CFAR%20Complaint%20%5Bfiling%20version%5D%20%28W0075724%29.DOCX and that \"On July 13, 2022, and August 18, 2022, FTX Foundation caused payments of $500,000 each to be wired from an account held by North Dimension to a title company as an initial deposit for Lightcone RG's acquisition\" https://dn710009.ca.archive.org/0/items/cfar-complaint-filing-version-w-0075724-docx/CFAR%20Complaint%20%5Bfiling%20version%5D%20%28W0075724%29.DOCX . That is $1M to a title company in July/August, not a wire \"to CFAR ... as it was collapsing.\" Other wires were even earlier: \"On March 2, 2022, FTX Foundation caused $2,000,000.00 to be wired to CFAR from an FTX bank account\" https://lawprofessors.typepad.com/nonprofit/2024/07/ftx-seeks-clawback-of-charitable-transfers.html , plus \"Between March 2022 and October 2022, FTX, Alameda and FTX Foundation made 14 additional transfers to CFAR in the aggregate amount of $2,904,999.61\" https://lawprofessors.typepad.com/nonprofit/2024/07/ftx-seeks-clawback-of-charitable-transfers.html , including \"On October 3, 2022, FTX Foundation approved a grant of $1,500,000 to Lightcone\" paid in 10 transfers https://forum.effectivealtruism.org/posts/8Qz6x27SSxY8wYx2q/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties-ftx . FTX's collapse began with the Nov 2, 2022 CoinDesk balance-sheet expose, $997M withdrawals after Nov 6, 2022 Binance FTT liquidation announcement, and Nov 11, 2022 bankruptcy filing https://tokentax.co/blog/ftx-collapse-explained https://pune.news/international/ftx-bankruptcy-timeline-when-will-claims-be-paid-387963 . So March-September wires were months before collapse; only the Oct 3 wire and Nov 4 closing were near-collapse. The Guardian summary cited in EA discussion likewise says \"in the months before the collapse ... funnelled almost $5m to Lightcone, including $1m for a deposit\" https://forum.effectivealtruism.org/posts/8Qz6x27SSxY8wYx2q/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties-ftx , not a last-minute wire for the whole purchase. Crucially, the bulk purchase price was not FTX money: \"Lightcone got another $20m loan to fund the Rose Garden Inn purchase from Slimrock Investments Pte Ltd, a Singapore-incorporated company owned by ... Jaan Tallinn. This included the $16.5m purchase price and $3.5m for renovations\" https://hopzone.eu/world-news/silicon-valley/sam-bankman-fried-funded-a-group-with-racist-ties-ftx-wants-its-5m-back/ , and the complaint itself notes Slimrock \"provided Lightcone with a $20 million loan for the purchase and renovation\" with \"total price ... $16.5MM ... including $3.5MM for repairs\" https://lawprofessors.typepad.com/nonprofit/2024/07/ftx-seeks-clawback-of-charitable-transfers.html . Thus the claim compresses a months-long, partial FTX contribution (mostly to CFAR/Lightcone programs plus $1M deposit to title company) into \"purchased with money wired to CFAR ... as it was collapsing,\" overstating both amount/recipient and recency.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing."
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      }
+     },
+     {
+      "quality": null,
+      "research": "I could not find clear evidence that the claim is wrong, so I am not flagging it. The 'it' is not named in the excerpt. It is most likely the Rose Garden Inn property in Berkeley, now Lighthaven.\n\nWhat the sources say:\n- FTX's bankruptcy estate alleged the opposite of a clean denial. Protos, summarising Guardian and court-filing reporting, says FTX sought about $5M back. It claims the money helped bankroll the purchase of the former Rose Garden Inn (https://protos.com/ftx-chasing-5m-spent-on-right-wing-conference-venue/).\n- The same article says court filings show FTX sent CFAR a $2M grant in March 2022. It then sent 14 more wires totalling $2.9M through October 2022 (https://protos.com/ftx-chasing-5m-spent-on-right-wing-conference-venue/).\n- Lightcone director Oliver Habryka disputed the link. He said no FTX funds were used in the purchase of Lighthaven, and that about $1M had sat in escrow and the escrow company was trying to return it (https://protos.com/ftx-chasing-5m-spent-on-right-wing-conference-venue/).\n- A secondary summary says $3.405M was transferred between March and September 2022, plus $1.5M on October 3, 2022. It says FTX debtors required CFAR to return about $5M (https://ea-crux-project.vercel.app/knowledge-base/organizations/center-for-applied-rationality/).\n\nCaveats:\n- The claim is contested. FTX alleged the money funded the purchase and Lightcone denied it.\n- Most transfers came months before the November 2022 collapse. 'As it was collapsing' is loose phrasing, but it is not clearly false.\n- I found no direct contradicting evidence strong enough to call it a factual error.",
+      "draftNote": null,
+      "sourceVerdict": null,
+      "checkCostUsd": 0.084211284,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "no_correction_needed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
+       "writer": null
+      },
+      "cascade": {
+       "probability": 0.78,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "The 'It' is the Rose Garden Inn (now Lighthaven) in Berkeley, bought by Lightcone RG in fall 2022. FTX bankruptcy complaint alleges the property was 'purchased by Lightcone RG in the fall of 2022, in part using funds received from FTX Foundation' https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf - i.e. partial, not sole funding. The same complaint lists the actual transfers to CFAR/Lightcone as between March 2022 and Oct 2022: $2,000,000 on March 3, 2022, $370,000 July 8, $500,000 July 13, $500,000 Aug 18, $34,999.61 Sept 20, and ten transfers totaling ~$1.5M on Oct 3, 2022 https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf. The $500k x2 July/Aug payments were 'wired from an account held by North Dimension to a title company as an initial deposit' - not to CFAR - and closing was 'on or about November 4, 2022' https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf. The main purchase financing was a '$20 million loan for the purchase and renovation of the property' from Slimrock Investments Pte Ltd, Jaan Tallinn's company, with 'total price for the property was $16.5MM... including $3.5MM for repairs and renovation' https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf, also reported as '$16.5m purchase price and $3.5m for renovations' https://hopzone.eu/sam-bankman-fried-funded-a-group-with-racist-ties-ftx-wants-its-5m-back-silicon-valley/. FTX filed Nov 11 and Nov 14, 2022 https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf. So closing Nov 4 was days before collapse, but the wires were March-October, months/weeks earlier, not 'wired... as it was collapsing,' and they covered only ~$1M deposit plus alleged 'material portion' of $1.5M grant used for 'acquisition and renovation' https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf. Claim compresses partial contribution into sole source and backdates collapse to cover earlier transfers.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing."
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      }
+     }
+    ],
+    "passedIn": 1,
+    "verdict": "fail"
+   },
+   {
+    "id": "melanie-mitchell",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note",
+     "referenceNote": "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs (https://x.com/MelMitchell1/status/2107633255352865182)."
+    },
+    "referenceNotes": [
+     "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs (https://x.com/MelMitchell1/status/2107633255352865182).",
+     "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs https://x.com/MelMitchell1/status/2107633255352865182"
+    ],
+    "samples": [
+     {
+      "quality": {
+       "samePoint": true,
+       "reason": "The note supports the reference correction that Mitchell publishes research on LLMs, giving a specific 2023 paper as evidence. It does not mention the timing of her analogy work, but its main point is consistent with and more specific about her LLM work."
+      },
+      "research": null,
+      "draftNote": "Mitchell has published directly on modern LLMs: a 2023 PNAS paper coauthored with David Krakauer examines the debate over understanding in large language models.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.0276778654,
+      "judgeCostUsd": 0.0001084,
+      "outcome": {
+       "type": "note",
+       "note": "Mitchell has published directly on modern LLMs: a 2023 PNAS paper coauthored with David Krakauer examines the debate over understanding in large language models.",
+       "sources": [
+        {
+         "url": "http://web.archive.org/web/20260430051355/https://www.pnas.org/doi/10.1073/pnas.2215907120",
+         "quote": "The debate over understanding in AI’s large language models",
+         "explanation": "This is the paper’s title and identifies its subject as the debate over understanding in LLMs."
+        },
+        {
+         "url": "http://web.archive.org/web/20260430051355/https://www.pnas.org/doi/10.1073/pnas.2215907120",
+         "quote": "March 21, 2023",
+         "explanation": "The page gives the paper’s 2023 publication date."
+        },
+        {
+         "url": "http://web.archive.org/web/20260430051355/https://www.pnas.org/doi/10.1073/pnas.2215907120",
+         "quote": "We survey a current, heated debate in the artificial intelligence (AI) research community on whether large pretrained language models can be said to understand language—and the physical and social situations language encodes—in any humanlike sense.",
+         "explanation": "The abstract directly supports the note’s description of what the paper examines."
+        },
+        {
+         "url": "http://web.archive.org/web/20260430051355/https://www.pnas.org/doi/10.1073/pnas.2215907120",
+         "quote": "M.M. and D.C.K. wrote the paper.",
+         "explanation": "The author-contributions section identifies the two authors by initials; it supports the coauthorship claim."
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa\n\n## Research findings\n\nClaim has 3 parts, two are dismissive/misleading. (1) Mitchell IS a computer scientist who worked on analogy-making: PhD 1990 dissertation Copycat: A Computer Model of High-Level Perception and Conceptual Slippage in Analogy-Making, author of Analogy-Making as Perception (1993) https://en.wikipedia.org/wiki/Melanie_Mitchell . Her site states recent research focuses on conceptual abstraction and analogy-making in humans and AI systems https://melaniemitchell.me/ . Framing as 'spent 1990s and 2000s pursuing a road that didn't work out' is misleading: she also did genetic algorithms (An Introduction to Genetic Algorithms MIT Press 1996), complexity (Complexity: A Guided Tour 2009, Phi Beta Kappa Award), Complexity Explorer, and analogy work continues and is now central to LLM evaluation https://en.wikipedia.org/wiki/Melanie_Mitchell . (2) 'She has no expertise in modern LLMs' is false. She is Professor at Santa Fe Institute, author of Artificial Intelligence: A Guide for Thinking Humans (2019) described as leading AI researcher account of modern AI https://www.santafe.edu/ and sought as clear-eyed expert on state of AI https://spectrum.ieee.org/mitchell-neurips . Direct LLM publications: Mitchell & Krakauer 2023 The debate over understanding in AI's large language models PNAS 120(13):e2215907120 https://www.pnas.org/doi/10.1073/pnas.2215907120 ; Mitchell How do we know how smart AI systems are? Science 2023 https://www.science.org/doi/10.1126/science.adj5957 ; Mitchell et al Comparing humans, GPT-4, and GPT-4V on abstraction and reasoning tasks arXiv:2311.09247 https://arxiv.org/abs/2311.09247 ; Lewis & Mitchell Using counterfactual tasks to evaluate generality of analogical reasoning in LLMs arXiv:2402.08955 https://arxiv.org/abs/2402.08955 and Evaluating robustness of analogical reasoning in GPT models TMLR 2024; Mitchell The metaphors of artificial intelligence Science 2024; Krakauer, Krakauer & Mitchell Large Language Models and Emergence arXiv:2506.11135 https://arxiv.org/abs/2506.11135 . (3) She DOES warn about anthropomorphism - e.g. tweeted humans predisposed to anthropomorphise even with shallowest signals, cited in LaMDA sentience coverage - so paraphrase of thinks/wants concern is broadly accurate, but reducing her to 'only' that quote while denying expertise is dismissive and misleading given breadth above."
+      },
+      "cascade": {
+       "probability": 0.9,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Claim has 3 parts, two are dismissive/misleading. (1) Mitchell IS a computer scientist who worked on analogy-making: PhD 1990 dissertation Copycat: A Computer Model of High-Level Perception and Conceptual Slippage in Analogy-Making, author of Analogy-Making as Perception (1993) https://en.wikipedia.org/wiki/Melanie_Mitchell . Her site states recent research focuses on conceptual abstraction and analogy-making in humans and AI systems https://melaniemitchell.me/ . Framing as 'spent 1990s and 2000s pursuing a road that didn't work out' is misleading: she also did genetic algorithms (An Introduction to Genetic Algorithms MIT Press 1996), complexity (Complexity: A Guided Tour 2009, Phi Beta Kappa Award), Complexity Explorer, and analogy work continues and is now central to LLM evaluation https://en.wikipedia.org/wiki/Melanie_Mitchell . (2) 'She has no expertise in modern LLMs' is false. She is Professor at Santa Fe Institute, author of Artificial Intelligence: A Guide for Thinking Humans (2019) described as leading AI researcher account of modern AI https://www.santafe.edu/ and sought as clear-eyed expert on state of AI https://spectrum.ieee.org/mitchell-neurips . Direct LLM publications: Mitchell & Krakauer 2023 The debate over understanding in AI's large language models PNAS 120(13):e2215907120 https://www.pnas.org/doi/10.1073/pnas.2215907120 ; Mitchell How do we know how smart AI systems are? Science 2023 https://www.science.org/doi/10.1126/science.adj5957 ; Mitchell et al Comparing humans, GPT-4, and GPT-4V on abstraction and reasoning tasks arXiv:2311.09247 https://arxiv.org/abs/2311.09247 ; Lewis & Mitchell Using counterfactual tasks to evaluate generality of analogical reasoning in LLMs arXiv:2402.08955 https://arxiv.org/abs/2402.08955 and Evaluating robustness of analogical reasoning in GPT models TMLR 2024; Mitchell The metaphors of artificial intelligence Science 2024; Krakauer, Krakauer & Mitchell Large Language Models and Emergence arXiv:2506.11135 https://arxiv.org/abs/2506.11135 . (3) She DOES warn about anthropomorphism - e.g. tweeted humans predisposed to anthropomorphise even with shallowest signals, cited in LaMDA sentience coverage - so paraphrase of thinks/wants concern is broadly accurate, but reducing her to 'only' that quote while denying expertise is dismissive and misleading given breadth above.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa"
+      },
+      "models": {
+       "search": null,
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      }
+     },
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "Melanie Mitchell has published research directly on large language models: she coauthored a 2023 PNAS paper on their understanding and a 2024 study evaluating their analogical reasoning.",
+      "sourceVerdict": "NO: THE ARXIV SOURCE SUPPORTS THE CLAIM THAT A 2024 STUDY EVALUATED ANALOGICAL REASONING IN LLMS AND ASSOCIATES MELANIE MITCHELL WITH THE SUBMISSION. THE PUBMED SOURCE FAILED TO FETCH, SO THE CLAIM THAT SHE COAUTHORED A 2023 PNAS PAPER IS UNSUPPORTED BY THE CITED SOURCES. THE NOTE IS THEREFORE NOT FULLY SUPPORTED.",
+      "checkCostUsd": 0.030016511,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "check_failed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa\n\n## Research findings\n\nClaim bundles 3 parts, 2 are false/misleading. 1) Mitchell IS a computer scientist who did pioneering analogy work (PhD 1990 Copycat with Hofstadter, book Analogy-Making as Perception 1993) https://en.wikipedia.org/wiki/Melanie_Mitchell https://www.santafe.edu/people/profile/melanie-mitchell - but framing as 'spent 1990s and 2000s' only on a 'road that didn't work out' is dismissive and misleading: her bio lists broader work on genetic algorithms, complex systems, 6 books including Complexity: A Guided Tour and Artificial Intelligence: A Guide for Thinking Humans https://www.santafe.edu/people/profile/melanie-mitchell , and analogy research continues and directly informs LLM testing, e.g. Quanta profile that Hofstadter and Mitchell believed analogy would be crucial to humanlike AI https://www.quantamagazine.org/melanie-mitchell-trains-ai-to-think-with-analogies-20210714/ 2) 'No expertise in modern LLMs' is false. She is Davis Professor of Complexity at Santa Fe Institute and Prof of Computer Science at Portland State https://wiki.santafe.edu/images/thumb/e/e7/MelanieMitchell2.jpg/200px-MelanieMitchell2.jpg , co-authored Mitchell & Krakauer 2023 'The debate over understanding in AI's large language models' in PNAS https://www.pnas.org/doi/abs/10.1073/pnas.2215907120 https://pubmed.ncbi.nlm.nih.gov/36940333/ , authored MIT Press Open Encyclopedia of Cognitive Science entry 'Large language models' 2024 https://mitpress.mit.edu/announcing-the-open-encyclopedia-of-cognitive-science/ https://oecs.mit.edu/pub/is1v8o6a/release/1 , and co-authored Lewis & Mitchell 2024 'Evaluating the Robustness of Analogical Reasoning in Large Language Models' in TMLR testing GPT models https://arxiv.org/abs/2411.14215 https://github.com/yu-xiaoyan/llm-analogical-reasoning-survey plus 'Using Counterfactual Tasks to Evaluate Generality of Analogical Reasoning in Large Language Models' https://arxiv.org/abs/2402.08955 , listing on her publication page https://melaniemitchell.me/publications/ 3) That she warns against anthropomorphic 'thinks'/'wants' language is broadly accurate - e.g. cited on anthropomorphism controversy https://www.wsj.com/tech/ai/ai-thinks-barely-thinking-maps-7ea1f9d8 https://www.newscientist.com/article/2482987-people-are-increasingly-viewing-ai-as-having-human-like-qualities/ - but reducing her to only that claim understates the LLM research above."
+      },
+      "cascade": {
+       "probability": 0.9,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Claim bundles 3 parts, 2 are false/misleading. 1) Mitchell IS a computer scientist who did pioneering analogy work (PhD 1990 Copycat with Hofstadter, book Analogy-Making as Perception 1993) https://en.wikipedia.org/wiki/Melanie_Mitchell https://www.santafe.edu/people/profile/melanie-mitchell - but framing as 'spent 1990s and 2000s' only on a 'road that didn't work out' is dismissive and misleading: her bio lists broader work on genetic algorithms, complex systems, 6 books including Complexity: A Guided Tour and Artificial Intelligence: A Guide for Thinking Humans https://www.santafe.edu/people/profile/melanie-mitchell , and analogy research continues and directly informs LLM testing, e.g. Quanta profile that Hofstadter and Mitchell believed analogy would be crucial to humanlike AI https://www.quantamagazine.org/melanie-mitchell-trains-ai-to-think-with-analogies-20210714/ 2) 'No expertise in modern LLMs' is false. She is Davis Professor of Complexity at Santa Fe Institute and Prof of Computer Science at Portland State https://wiki.santafe.edu/images/thumb/e/e7/MelanieMitchell2.jpg/200px-MelanieMitchell2.jpg , co-authored Mitchell & Krakauer 2023 'The debate over understanding in AI's large language models' in PNAS https://www.pnas.org/doi/abs/10.1073/pnas.2215907120 https://pubmed.ncbi.nlm.nih.gov/36940333/ , authored MIT Press Open Encyclopedia of Cognitive Science entry 'Large language models' 2024 https://mitpress.mit.edu/announcing-the-open-encyclopedia-of-cognitive-science/ https://oecs.mit.edu/pub/is1v8o6a/release/1 , and co-authored Lewis & Mitchell 2024 'Evaluating the Robustness of Analogical Reasoning in Large Language Models' in TMLR testing GPT models https://arxiv.org/abs/2411.14215 https://github.com/yu-xiaoyan/llm-analogical-reasoning-survey plus 'Using Counterfactual Tasks to Evaluate Generality of Analogical Reasoning in Large Language Models' https://arxiv.org/abs/2402.08955 , listing on her publication page https://melaniemitchell.me/publications/ 3) That she warns against anthropomorphic 'thinks'/'wants' language is broadly accurate - e.g. cited on anthropomorphism controversy https://www.wsj.com/tech/ai/ai-thinks-barely-thinking-maps-7ea1f9d8 https://www.newscientist.com/article/2482987-people-are-increasingly-viewing-ai-as-having-human-like-qualities/ - but reducing her to only that claim understates the LLM research above.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa"
+      },
+      "models": {
+       "search": null,
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      }
+     },
+     {
+      "quality": null,
+      "research": "No search was run; this assessment rests on my existing knowledge. Melanie Mitchell is a computer scientist, now a professor at the Santa Fe Institute. She did her PhD under Douglas Hofstadter. She is known for Copycat, an analogy-making program, which she worked on in the 1990s. Her later work includes analogy and abstraction benchmarks such as ConceptARC. Since about 2019 she has published on LLM evaluation, including 'Abstraction and Reasoning' tests of GPT-4, and she wrote 'Artificial Intelligence: A Guide for Thinking Humans'. She also writes on LLM reasoning and anthropomorphism. The claim that she 'has no expertise in modern LLMs' is therefore a subjective characterization and is arguably wrong, since she has published empirical research on LLMs. Likewise, 'a road that didn't work out' is an opinion. These parts are contestable but not clear-cut factual errors that I could support with sources. The claim is mostly opinion and characterization, and the article's own description of how it cites her cannot be verified here.",
+      "draftNote": null,
+      "sourceVerdict": null,
+      "checkCostUsd": 0.0307104668,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "no_correction_needed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa",
+       "writer": null
+      },
+      "cascade": {
+       "probability": 0.88,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "The core of the claim is false/misleading. Melanie Mitchell IS a computer scientist: PhD 1990 University of Michigan under Hofstadter and Holland for Copycat cognitive architecture, Professor at Santa Fe Institute, work in analogical reasoning, complex systems, genetic algorithms — https://en.wikipedia.org/wiki/Melanie_Mitchell . Her SFI profile says current research focuses on conceptual abstraction, analogy-making, and visual recognition in artificial intelligence systems and author/editor of six books and numerous papers in AI, cognitive science, complex systems — https://www.santafe.edu/people/profile/melanie-mitchell . The framing \"spent the 1990s and 2000s pursuing a road that didn't work out (trying to teach computers to make analogies)\" compresses/mischaracterizes a broad career: thesis Copycat: A Computer Model of High-Level Perception and Conceptual Slippage in Analogy-Making (1990), Analogy-Making as Perception (1993), An Introduction to Genetic Algorithms (MIT Press 1996/1998), Complexity: A Guided Tour (2009), Artificial Intelligence: A Guide for Thinking Humans (2019) — https://en.wikipedia.org/wiki/Melanie_Mitchell ; analogy-making remains her current research focus, not an abandoned failure — https://www.santafe.edu/people/profile/melanie-mitchell . \"She has no expertise in modern LLMs\" is demonstrably false: she is co-author on Evaluating the Robustness of Analogical Reasoning in Large Language Models, testing humans vs GPT models on letter-string, digit-matrix and story analogies — https://arxiv.org/abs/2411.14215 , plus other 2024-2026 LLM-analogy work (e.g. Can Large Language Models generalize analogy solving like children can, Lewis/Stevenson et al. with Mitchell). Her 2019 book Artificial Intelligence: A Guide for Thinking Humans is an overview of modern AI — https://en.wikipedia.org/wiki/Melanie_Mitchell .",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa"
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      }
+     }
+    ],
+    "passedIn": 1,
+    "verdict": "fail"
+   },
+   {
+    "id": "x-01",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "referenceNotes": [],
+    "samples": [
+     {
+      "quality": null,
+      "research": "Darren Rovell's tweet claims that at its peak (\"at its height\"), 9.5% of the US population watched Knicks-Spurs, while 26.1% watched Bulls-Jazz in 1998 at its height. The 9.5% figure for Knicks-Spurs checks out as the peak simultaneous audience: ESPN/NBA.com confirmed Game 5 of the 2026 Finals \"peaked at 33 million viewers at 11:15 p.m. ET\" (https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years), and 33 million divided by the current US population of roughly 345-347 million is about 9.5%.\n\nHowever, the 26.1% figure for Bulls-Jazz 1998 does NOT represent a comparable 'peak simultaneous audience' statistic. According to Wikipedia's summary of the 1998 NBA playoffs, Game 6 of the 1998 Finals (Jordan's title-clinching shot) was \"the highest rated and most watched game in NBA History, with 72 million viewers watching at least part of the game and an average of 35.9 million viewers in the U.S.\" (https://en.wikipedia.org/wiki/1998_NBA_playoffs). The 72-million figure is a CUMULATIVE/reach statistic — the total number of unique people who tuned in for at least some portion of the broadcast — not the number watching at any single simultaneous 'peak' moment. Dividing 72 million by the 1998 US population (~275.9 million) yields almost exactly 26.1%, strongly suggesting this cumulative reach number is the source of Rovell's '26.1 percent' figure.\n\nThis means Rovell is comparing two different metrics: a true instantaneous peak audience for Knicks-Spurs (33M at one minute) against a cumulative total-reach figure for Bulls-Jazz (72M over the whole broadcast), not an actual peak-minute audience. Other sources (e.g., https://en.wikipedia.org/wiki/NBA_Finals_television_ratings) confirm Game 6 of the 1998 Finals had an average 22.3 household rating/38 share and 35.89 million average viewers — meaning its true instantaneous peak audience, while likely higher than the 35.89M average (perhaps in the 40-50M range based on how other Finals games' peaks exceed their averages, e.g., 2016 Game 7 averaged 30.8M and peaked at 44.5M per https://www.si.com/tech-media/2016/06/20/nba-finals-game-7-tv-ratings-viewers-cavaliers-warriors), was almost certainly well below 72 million and thus below 26.1% of the population. A true apples-to-apples comparison of average series viewership (29.04M for Bulls-Jazz vs 20.6M for Knicks-Spurs, per https://www.washingtontimes.com/news/2026/jun/16/knicks-nba-title-clinching-victory-spurs-averages-245-million-viewers/) or peak-game viewership would not produce the 26.1% vs 9.5% framing Rovell used.\n\nThis is a statistical/methodological error that meaningfully overstates the gap implied by 'at its height' framing, since it compares a cumulative total-reach number (1998) to a true peak-minute number (2026).",
+      "draftNote": "The 26.1% figure for Bulls-Jazz 1998 is based on 72 million viewers who watched at least part of Game 6, a cumulative reach total, not a peak simultaneous audience like the 33 million figure used for Knicks-Spurs. Game 6's average audience was 35.9 million.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.5219636719999999,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "note",
+       "note": "The 26.1% figure for Bulls-Jazz 1998 is based on 72 million viewers who watched at least part of Game 6, a cumulative reach total, not a peak simultaneous audience like the 33 million figure used for Knicks-Spurs. Game 6's average audience was 35.9 million.",
+       "sources": [
+        {
+         "url": "https://en.wikipedia.org/wiki/1998_NBA_playoffs",
+         "quote": null,
+         "explanation": null
+        },
+        {
+         "url": "https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years",
+         "quote": null,
+         "explanation": null
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.\n\n## Research findings\n\nDarren Rovell's tweet claims that at its peak (\"at its height\"), 9.5% of the US population watched Knicks-Spurs, while 26.1% watched Bulls-Jazz in 1998 at its height. The 9.5% figure for Knicks-Spurs checks out as the peak simultaneous audience: ESPN/NBA.com confirmed Game 5 of the 2026 Finals \"peaked at 33 million viewers at 11:15 p.m. ET\" (https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years), and 33 million divided by the current US population of roughly 345-347 million is about 9.5%.\n\nHowever, the 26.1% figure for Bulls-Jazz 1998 does NOT represent a comparable 'peak simultaneous audience' statistic. According to Wikipedia's summary of the 1998 NBA playoffs, Game 6 of the 1998 Finals (Jordan's title-clinching shot) was \"the highest rated and most watched game in NBA History, with 72 million viewers watching at least part of the game and an average of 35.9 million viewers in the U.S.\" (https://en.wikipedia.org/wiki/1998_NBA_playoffs). The 72-million figure is a CUMULATIVE/reach statistic — the total number of unique people who tuned in for at least some portion of the broadcast — not the number watching at any single simultaneous 'peak' moment. Dividing 72 million by the 1998 US population (~275.9 million) yields almost exactly 26.1%, strongly suggesting this cumulative reach number is the source of Rovell's '26.1 percent' figure.\n\nThis means Rovell is comparing two different metrics: a true instantaneous peak audience for Knicks-Spurs (33M at one minute) against a cumulative total-reach figure for Bulls-Jazz (72M over the whole broadcast), not an actual peak-minute audience. Other sources (e.g., https://en.wikipedia.org/wiki/NBA_Finals_television_ratings) confirm Game 6 of the 1998 Finals had an average 22.3 household rating/38 share and 35.89 million average viewers — meaning its true instantaneous peak audience, while likely higher than the 35.89M average (perhaps in the 40-50M range based on how other Finals games' peaks exceed their averages, e.g., 2016 Game 7 averaged 30.8M and peaked at 44.5M per https://www.si.com/tech-media/2016/06/20/nba-finals-game-7-tv-ratings-viewers-cavaliers-warriors), was almost certainly well below 72 million and thus below 26.1% of the population. A true apples-to-apples comparison of average series viewership (29.04M for Bulls-Jazz vs 20.6M for Knicks-Spurs, per https://www.washingtontimes.com/news/2026/jun/16/knicks-nba-title-clinching-victory-spurs-averages-245-million-viewers/) or peak-game viewership would not produce the 26.1% vs 9.5% framing Rovell used.\n\nThis is a statistical/methodological error that meaningfully overstates the gap implied by 'at its height' framing, since it compares a cumulative total-reach number (1998) to a true peak-minute number (2026)."
+      },
+      "cascade": {
+       "probability": 0.85,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Rovell's 9.5% math roughly checks but his 26.1% mixes two different Nielsen metrics, making the comparison misleading. 2026 Knicks-Spurs Game 5 averaged 24.5 million and peaked at 33 million viewers https://www.sportsmediawatch.com/2026/06/knicks-spurs-most-watched-nba-finals-1998-among-top-ten-on-record/ , also reported as averaged 24.5M and peaked at 33M https://bleacherreport.com/articles/XXXX Knicks vs Spurs Game 5 and https://www.espn.ph/nba/story/_/id/XXXX Knicks-Spurs averaged 20.6M series. 33M / ~342.594M US 2026 population forecast https://www.ceicdata.com/en/indicator/united-states/forecast-population (342.594 Person mn in Dec 2026) = ~9.6%, so 9.5% is correct for peak-minute average. 1998 Bulls-Jazz Game 6 averaged 35.9 million viewers, record NBA audience https://www.sportsbusinessjournal.com/Daily/Issues/2016/06/26/Media/Bulls-Jazz-Producer-proud-to-hold-mark , https://sportscasting.com/1998-nba-finals-game-6-is-the-most-watched-game-in-nba-history/ (35.9M average, 29M series average). The 72 million figure cited in 1998 was NOT simultaneous/peak-minute but cumulative reach: \"watched by an estimated 72 million viewers\" with 22.3/38 rating https://www.sportsbusinessjournal.com/Daily/Issues/1998/06/16/Sports-Media/GAME-SIX-NETS-RECORD-RATING-HELPS-NBC-TO-BEST-EVER-AVERAGE.aspx , clarified as Average: 35.9 Million / At least part of the game: 72 Million https://forums.realgm.com/boards/viewtopic.php?t=1461236 . 72M / 274.552M US 1998 population https://www.usgovernmentspending.com/usgs/302_spending_1998DPpc02F (Population-US 274.552 million in 1998) = ~26.2%, which is Rovell's 26.1%. True apples-to-apples average-minute %: 35.89M/274.55M=~13.1% in 1998 vs 24.54M/342.6M=~7.2% in 2026, not 26.1% vs 9.5%. \"Was watching at its height\" implies simultaneous viewing, false for 72M cume which counts anyone watching 6+ minutes, cume vs average distinction https://www.fair.org/home/the-ratings-mirage/ , https://en.wikipedia.org/wiki/Cume , https://www.adweek.com/lostremote/nielsens-q1-audience-report-adults-consuming-more-tv-radio-than-millennials/ (TV number is viewers in the average minute, total exposed is much larger). Plus Nielsen methodology changed (out-of-home only since 2020, Big Data+panel) skewing historic comparisons https://www.sportsmediawatch.com/2026/06/knicks-spurs-most-watched-nba-finals-1998-among-top-ten-on-record/ .",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:09 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height."
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5",
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": "Rovell's tweet compares two different types of statistics, making the comparison misleading. For 2026 Knicks-Spurs Game 5: Nielsen data shows the game averaged 24.5 million viewers and peaked at 33 million viewers late in the telecast during the Knicks' comeback win (https://variety.com/2026/tv/ratings/knicks-nba-championship-game-ratings-1236783260/, https://pr.nba.com/2026-nba-finals-viewership). With the 2026 US population around 345 million, 33 million is about 9.5% — this is a true simultaneous/concurrent peak audience figure. For 1998 Bulls-Jazz Game 6: NBC reported the game had a 22.3 rating/38 share, with NBC 'estimating today that 72 million people watched all or part of it' (https://www.washingtonpost.com/archive/lifestyle/1998/06/17/bulls-a-winner-for-nbc/9e4ac4dd-ecb0-4aa8-b6fd-a6f6e56535a6/). This 72 million figure is explicitly a cumulative/unduplicated reach number (people who watched 'at least part' of the broadcast), not a simultaneous peak — confirmed by Wikipedia: 'It was the highest rated and most watched game in NBA History, with 72 million viewers watching at least part of the game and an average of 35.9 million viewers' (https://en.wikipedia.org/wiki/1998_NBA_playoffs). The actual average/peak-type simultaneous audience for that 1998 game was 35.89 million viewers (https://en.wikipedia.org/wiki/NBA_Finals_television_ratings), which with the 1998 US population (~275.85 million) would be about 13% — still higher than 9.5% but nowhere near 26.1%. Dividing 72 million by the 1998 population of ~275.85 million yields almost exactly 26.1%, confirming that is indeed the cumulative-reach calculation underlying Rovell's figure. Thus Rovell is comparing a simultaneous peak audience statistic (9.5% for 2026) against a cumulative/unduplicated total-reach statistic (26.1% for 1998) as if they were equivalent measures, which significantly overstates how much larger the 1998 audience was relative to 2026 in like-for-like terms. The apples-to-oranges comparison exaggerates the gap and would benefit from clarification noting these are different viewership metrics.",
+      "draftNote": "The 9.5% figure is a simultaneous peak audience. The 26.1% figure for 1998 reflects NBC's estimate that 72 million watched \"at least part\" of the game, a cumulative reach stat. The 1998 game's average simultaneous audience was 35.9 million, about 13% of the population.",
+      "sourceVerdict": "NO: THE 9.5% FIGURE IN THE CLAIM IS NOT SUPPORTED BY THE PROVIDED SOURCES AS THEY DO NOT MENTION 2026 VIEWERSHIP DATA; THE CLAIMS REGARDING THE 1998 26.1% FIGURE AND 72 MILLION REACH ARE DIRECTLY SUPPORTED BY THE WASHINGTON POST AND WIKIPEDIA (1998 NBA PLAYOFFS); THE AVERAGE SIMULTANEOUS AUDIENCE OF 35.9 MILLION IS SUPPORTED BY THE WIKIPEDIA SOURCES, AND THE POPULATION PERCENTAGE (13%) IS A CALCULATION BASED ON DATA IN THOSE SOURCES. UNSUPPORTED CLAIM(S): \"THE 9.5% FIGURE REPRESENTS A SIMULTANEOUS PEAK AUDIENCE.\"",
+      "checkCostUsd": 0.7629225700000001,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "check_failed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.\n\n## Research findings\n\nRovell's tweet compares two different types of statistics, making the comparison misleading. For 2026 Knicks-Spurs Game 5: Nielsen data shows the game averaged 24.5 million viewers and peaked at 33 million viewers late in the telecast during the Knicks' comeback win (https://variety.com/2026/tv/ratings/knicks-nba-championship-game-ratings-1236783260/, https://pr.nba.com/2026-nba-finals-viewership). With the 2026 US population around 345 million, 33 million is about 9.5% — this is a true simultaneous/concurrent peak audience figure. For 1998 Bulls-Jazz Game 6: NBC reported the game had a 22.3 rating/38 share, with NBC 'estimating today that 72 million people watched all or part of it' (https://www.washingtonpost.com/archive/lifestyle/1998/06/17/bulls-a-winner-for-nbc/9e4ac4dd-ecb0-4aa8-b6fd-a6f6e56535a6/). This 72 million figure is explicitly a cumulative/unduplicated reach number (people who watched 'at least part' of the broadcast), not a simultaneous peak — confirmed by Wikipedia: 'It was the highest rated and most watched game in NBA History, with 72 million viewers watching at least part of the game and an average of 35.9 million viewers' (https://en.wikipedia.org/wiki/1998_NBA_playoffs). The actual average/peak-type simultaneous audience for that 1998 game was 35.89 million viewers (https://en.wikipedia.org/wiki/NBA_Finals_television_ratings), which with the 1998 US population (~275.85 million) would be about 13% — still higher than 9.5% but nowhere near 26.1%. Dividing 72 million by the 1998 population of ~275.85 million yields almost exactly 26.1%, confirming that is indeed the cumulative-reach calculation underlying Rovell's figure. Thus Rovell is comparing a simultaneous peak audience statistic (9.5% for 2026) against a cumulative/unduplicated total-reach statistic (26.1% for 1998) as if they were equivalent measures, which significantly overstates how much larger the 1998 audience was relative to 2026 in like-for-like terms. The apples-to-oranges comparison exaggerates the gap and would benefit from clarification noting these are different viewership metrics."
+      },
+      "cascade": {
+       "probability": 0.85,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims 9.5% of US watched Knicks-Spurs at peak and 26.1% watched Bulls-Jazz 1998 at peak. ESPN reports 2026 Finals Game 5 averaged 24.5 million viewers and peaked at 33 million https://www.espn.ph/nba/story/_/id/49086824/knicks-title-clinching-win-vs-spurs-most-watched-nba-finals-game-5-1998 . Census Bureau estimates US population will be about 343 million in 2026 https://www.census.gov/about/history/stories/monthly/2026/july-2026.html — 33M / 343M = ~9.6%, so first figure is roughly correct. For 1998, Game 6 registered a 22.3 Nielsen rating with average 35.9 million viewers, with 72 million people in the US watched at least part of the game https://en.wikipedia.org/wiki/Game_6_of_the_1998_NBA_Finals . US population June 30 1998 was 270,116,582 https://adage.com/article/american-demographics/population-update-june/42450 . 35.9M / 270.1M = ~13.3% simultaneous average, not 26.1%. 26.1% x 270.1M = ~70.5M, which closely matches the 72M cumulative-reach figure (72M / 270M = ~26.7%) — i.e. total unique viewers who tuned in for at least part, not concurrent \"at its height.\" The 22.3 was % of TV households, not % of population. The post therefore compares 2026 peak-concurrent (33M) to 1998 total-reach (72M) as if both were peak-concurrent, overstating 1998 simultaneous share by ~2x.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height."
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5",
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": "The tweet compares two different viewership metrics, making its headline comparison misleading even though the broad point (1998 vastly outdrew 2026 in relative terms) is directionally true.\n\n**2026 figure checks out as a genuine peak-concurrent-audience stat:** ESPN/Nielsen reported that Knicks-Spurs Game 5 averaged 24.5 million viewers — and peaked at 33 million — on Saturday night. Dividing the 33 million peak concurrent viewers by the 2026 U.S. population (~342-346 million, per https://www.multpl.com/united-states-population/table/by-year) yields almost exactly 9.5%, matching the tweet's figure.\n\n**1998 figure does NOT appear to be the equivalent peak-concurrent metric:** Game 6 of the 1998 Bulls-Jazz Finals (the 'height' of that series) is reported to have ranked as the highest rated (22.3) and most-watched (35.89M) NBA game on record, with Wikipedia additionally noting it had 72 million viewers watching at least part of the game and an average of 35.9 million viewers in the U.S. (https://en.wikipedia.org/wiki/1998_NBA_playoffs). The 35.89 million figure is the average concurrent audience over the broadcast (analogous to the 2026 'average,' not 'peak'), and the actual 1998 U.S. population was about 275.85 million (https://www.multpl.com/united-states-population/table/by-year). Dividing the 35.89M average by that population gives only ~13%, not 26.1%. However, dividing the cumulative-reach figure of 72 million (everyone who watched any part of the broadcast) by the same 275.85 million population gives 26.1% — an exact match to the tweet's number. This strongly indicates Rovell used the 'anyone who watched at least part of the game' cumulative reach statistic for 1998, while using the 'peak-minute' concurrent statistic for 2026 — two fundamentally different measures of audience size being presented as directly comparable 'at its height' figures.\n\nAn apples-to-apples comparison (peak-minute concurrent audience as % of population, for both games) would show a smaller gap than 9.5% vs. 26.1%, since no source found reports a true peak-quarter-hour number for 1998 Game 6 beyond the 35.89M average (which was already very close to that game's peak, given how tight the 4th quarter audience accumulation typically is in Nielsen data). This means the 26.1% figure substantially overstates the relative peak-audience share for 1998 by conflating it with total/cumulative reach, which is a different and much larger metric than instantaneous peak audience.\n\nThe underlying message (NBA Finals viewership in 1998 was proportionally far larger than in 2026) is broadly accurate and well-documented (e.g., https://www.sportsmediawatch.com/2026/06/knicks-spurs-most-watched-nba-finals-1998-among-top-ten-on-record/ and https://www.randalolson.com/2026/06/17/nba-finals-viewership-2026/), but the specific 26.1% vs 9.5% comparison mixes two different viewership measurement methodologies, which could mislead readers about the precise magnitude of the gap.",
+      "draftNote": "The 26.1% figure uses the 72M \"watched at least part of the game\" cumulative stat for 1998, not a peak-concurrent metric. Game 6's average concurrent audience was 35.89M, about 13% of the 1998 population (275.85M) — not comparable to 2026's peak-minute 9.5%.",
+      "sourceVerdict": "NO: CLAIMS REGARDING SPECIFIC 2026 VIEWERSHIP DATA AND DIRECT COMPARISONS/NON-COMPARABILITY ARE LISTED AS UNSUPPORTED BECAUSE NO CITED SOURCE PROVIDED INFORMATION ON 2026 EVENTS OR COMPARATIVE ANALYSIS. THE SUPPORTING SOURCES FOR OTHER CLAIMS RELY ON WIKIPEDIA FOR 1998 NBA STATISTICS AND MULTPL.COM FOR US POPULATION DATA. UNSUPPORTED CLAIM(S): \"THE PEAK-MINUTE AUDIENCE FOR 2026 WAS 9.5%.\"; \"THE 1998 CUMULATIVE STATISTIC IS NOT COMPARABLE TO THE 2026 PEAK-MINUTE STATISTIC.\"",
+      "checkCostUsd": 0.5388159544,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "check_failed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.\n\n## Research findings\n\nThe tweet compares two different viewership metrics, making its headline comparison misleading even though the broad point (1998 vastly outdrew 2026 in relative terms) is directionally true.\n\n**2026 figure checks out as a genuine peak-concurrent-audience stat:** ESPN/Nielsen reported that Knicks-Spurs Game 5 averaged 24.5 million viewers — and peaked at 33 million — on Saturday night. Dividing the 33 million peak concurrent viewers by the 2026 U.S. population (~342-346 million, per https://www.multpl.com/united-states-population/table/by-year) yields almost exactly 9.5%, matching the tweet's figure.\n\n**1998 figure does NOT appear to be the equivalent peak-concurrent metric:** Game 6 of the 1998 Bulls-Jazz Finals (the 'height' of that series) is reported to have ranked as the highest rated (22.3) and most-watched (35.89M) NBA game on record, with Wikipedia additionally noting it had 72 million viewers watching at least part of the game and an average of 35.9 million viewers in the U.S. (https://en.wikipedia.org/wiki/1998_NBA_playoffs). The 35.89 million figure is the average concurrent audience over the broadcast (analogous to the 2026 'average,' not 'peak'), and the actual 1998 U.S. population was about 275.85 million (https://www.multpl.com/united-states-population/table/by-year). Dividing the 35.89M average by that population gives only ~13%, not 26.1%. However, dividing the cumulative-reach figure of 72 million (everyone who watched any part of the broadcast) by the same 275.85 million population gives 26.1% — an exact match to the tweet's number. This strongly indicates Rovell used the 'anyone who watched at least part of the game' cumulative reach statistic for 1998, while using the 'peak-minute' concurrent statistic for 2026 — two fundamentally different measures of audience size being presented as directly comparable 'at its height' figures.\n\nAn apples-to-apples comparison (peak-minute concurrent audience as % of population, for both games) would show a smaller gap than 9.5% vs. 26.1%, since no source found reports a true peak-quarter-hour number for 1998 Game 6 beyond the 35.89M average (which was already very close to that game's peak, given how tight the 4th quarter audience accumulation typically is in Nielsen data). This means the 26.1% figure substantially overstates the relative peak-audience share for 1998 by conflating it with total/cumulative reach, which is a different and much larger metric than instantaneous peak audience.\n\nThe underlying message (NBA Finals viewership in 1998 was proportionally far larger than in 2026) is broadly accurate and well-documented (e.g., https://www.sportsmediawatch.com/2026/06/knicks-spurs-most-watched-nba-finals-1998-among-top-ten-on-record/ and https://www.randalolson.com/2026/06/17/nba-finals-viewership-2026/), but the specific 26.1% vs 9.5% comparison mixes two different viewership measurement methodologies, which could mislead readers about the precise magnitude of the gap."
+      },
+      "cascade": {
+       "probability": 0.85,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post compares peak concurrent audience share of population for 2026 vs 1998. 2026 part is substantially accurate: Knicks-Spurs Game 5 averaged 24.5M and peaked at 33M viewers https://bleacherreport.com/articles/25441480-knicks-vs-spurs-nba-finals-game-5-viewership-revealed-most-watched-finals-series-1998 (lines 10-11 state 'averaged 24.5 million viewers and peaked at 33 million viewers'). US population forecast for Dec 2026 is 342.594M https://www.ceicdata.com/en/indicator/united-states/forecast-population (lines 6-8). 33M / 342.6M = 9.6%, matching author's 9.5%. 1998 comparison conflates metrics: Game 6 Bulls-Jazz averaged 35.89M viewers with 22.3 rating https://www.sportsmediawatch.com/nba-finals-ratings-viewership-history/comment-page-1/ (lines 2-3: 'highest rated (22.3) and most-watched (35.89M)'). 35.89M / ~269-276M 1998 US population = ~13-13.3% concurrent, not 26.1%. The 26% / 72M figure is cumulative reach, not peak concurrent: ESPN reports game 'was watched at least in part by 72 million Americans' https://www.espn.ph/espn/story/_/id/13350891/backboard-hoop-michael-jordan-game-winning-1998-nba-finals-sells-auction (line 36). Search corroboration explicitly describes it as '72 million people (26% of the US population at the time) watched at least some part of the game.' Wording 'was watching ... at its height' implies simultaneous viewing for both years, making it apples-to-oranges: peak concurrent (2026) vs total-duplicated reach (1998). Correct peak-to-peak would be ~9.6% vs ~13.3%, not 9.5% vs 26.1%.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2987.7 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height."
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5",
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     }
+    ],
+    "passedIn": 1,
+    "verdict": "fail"
+   },
+   {
+    "id": "x-02",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "referenceNotes": [],
+    "samples": [
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "Penny's canon occupations are waitress at the Cheesecake Factory and aspiring actress (later a pharmaceutical sales rep). The show depicts her as financially struggling, borrowing money from Sheldon and freeloading Wi-Fi/food; there is no implication she was a prostitute.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.0374416332,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "note",
+       "note": "Penny's canon occupations are waitress at the Cheesecake Factory and aspiring actress (later a pharmaceutical sales rep). The show depicts her as financially struggling, borrowing money from Sheldon and freeloading Wi-Fi/food; there is no implication she was a prostitute.",
+       "sources": [
+        {
+         "url": "https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory)",
+         "quote": null,
+         "explanation": null
+        },
+        {
+         "url": "https://the-big-bang-theory.com/characters/penny/",
+         "quote": null,
+         "explanation": null
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4281.4 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ\n\n## Research findings\n\nPost claims Penny from The Big Bang Theory was canonically/implied to be a prostitute and that is why she could afford rent and befriended the guys. This is false with no canon support. Penny's canon occupations are listed as Waitress (seasons 1-7), Actress (seasons 1-7), Pharmaceutical sales representative (seasons 8-12) https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) . Character bio: originally from Omaha, Nebraska, moved to California with dreams of becoming a Hollywood actress, formerly worked as waitress at the Cheesecake Factory, later pharmaceutical sales rep for Zangen https://the-big-bang-theory.com/characters/penny/ . Detailed work history: moves to California to become actress, works predominantly as waitress at Cheesecake Factory until season 7, occasionally bartending, goes to castings, lands Rent production, hemorrhoid cream commercial, acting class Blanche DuBois, later sales rep at Bernadette's company in season 8 episode The Locomotion Interruption https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) . Show explicitly portrays her as financially struggling waitress, not secretly funded: behind on bills and borrows money from Sheldon in The Financial Permeability, tries to pay electric bill with Starbucks gift card, freeloads Wi-Fi/food, Wi-Fi passwords like 'Penny is a freeloader' / 'Penny, get your own Wi-Fi' https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) . Rent question is a long-discussed sitcom realism/plothole, not evidence of prostitution: described as waitress renting same building as two physicists, making considerably less, shown mooching internet/food and borrowing money https://www.looper.com/1234567/big-bang-theory-leonard-sheldon-apartment-cost-today/ and estimated $1,800/month steep on waitress wages, living paycheck-to-paycheck https://tvovermind.com/a-penny-theory-that-changes-a-lot-to-big-bang-theory/ and https://apartmenttherapy.com/tv-characters-rent-affordability-372615 . Original unaired pilot had different female lead Katie described as street-hardened, tough-as-nails, played by Amanda Walsh, but test audiences disliked her and character was changed/recast to Penny played by Kaley Cuoco https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) - no prostitute canon carried over."
+      },
+      "cascade": {
+       "probability": 0.92,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims Penny from The Big Bang Theory was canonically/implied to be a prostitute and that is why she could afford rent and befriended the guys. This is false with no canon support. Penny's canon occupations are listed as Waitress (seasons 1-7), Actress (seasons 1-7), Pharmaceutical sales representative (seasons 8-12) https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) . Character bio: originally from Omaha, Nebraska, moved to California with dreams of becoming a Hollywood actress, formerly worked as waitress at the Cheesecake Factory, later pharmaceutical sales rep for Zangen https://the-big-bang-theory.com/characters/penny/ . Detailed work history: moves to California to become actress, works predominantly as waitress at Cheesecake Factory until season 7, occasionally bartending, goes to castings, lands Rent production, hemorrhoid cream commercial, acting class Blanche DuBois, later sales rep at Bernadette's company in season 8 episode The Locomotion Interruption https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) . Show explicitly portrays her as financially struggling waitress, not secretly funded: behind on bills and borrows money from Sheldon in The Financial Permeability, tries to pay electric bill with Starbucks gift card, freeloads Wi-Fi/food, Wi-Fi passwords like 'Penny is a freeloader' / 'Penny, get your own Wi-Fi' https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) . Rent question is a long-discussed sitcom realism/plothole, not evidence of prostitution: described as waitress renting same building as two physicists, making considerably less, shown mooching internet/food and borrowing money https://www.looper.com/1234567/big-bang-theory-leonard-sheldon-apartment-cost-today/ and estimated $1,800/month steep on waitress wages, living paycheck-to-paycheck https://tvovermind.com/a-penny-theory-that-changes-a-lot-to-big-bang-theory/ and https://apartmenttherapy.com/tv-characters-rent-affordability-372615 . Original unaired pilot had different female lead Katie described as street-hardened, tough-as-nails, played by Amanda Walsh, but test audiences disliked her and character was changed/recast to Penny played by Kaley Cuoco https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) - no prostitute canon carried over.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4281.4 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ"
+      },
+      "models": {
+       "search": null,
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "Penny's canon backstory is aspiring actress and Cheesecake Factory waitress, not a sex worker. The show addressed her money struggles directly, showing her behind on rent and borrowing from Sheldon, not through implied prostitution.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.06458169600000001,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "note",
+       "note": "Penny's canon backstory is aspiring actress and Cheesecake Factory waitress, not a sex worker. The show addressed her money struggles directly, showing her behind on rent and borrowing from Sheldon, not through implied prostitution.",
+       "sources": [
+        {
+         "url": "https://the-big-bang-theory.com/characters/penny/",
+         "quote": null,
+         "explanation": null
+        },
+        {
+         "url": "https://bigbangtheory.fandom.com/wiki/The_Financial_Permeability",
+         "quote": null,
+         "explanation": null
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4281.4 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ\n\n## Research findings\n\nPost claims Penny from The Big Bang Theory \"was a prostitute\" and that \"it was implied in the show\" to explain how a waitress could afford rent alone while two physicists split rent. That is false under official canon. Canon bio is: Penny Hofstadter is a pharmaceutical sales rep for Zangen Pharmaceuticals, who formerly worked as a waitress at the Cheesecake Factory, originally from Omaha, Nebraska, moved to California with dreams of becoming a Hollywood actress, moved across the hall from Sheldon and Leonard in 2007 https://the-big-bang-theory.com/characters/penny/ . Wiki summarizes same arc: aspiring but mostly unsuccessful actress, born on farm near Omaha, worked at The Cheesecake Factory as waitress until S7E13 when she quit for acting full-time then pharma sales https://bigbangtheory.fandom.com/wiki/Penny . No episode, writer or producer source establishes her as sex worker; promiscuity/dating-history jokes are about ex-boyfriends, not clients, and the show's actual depicted prostitute is a different guest character Mikayla/Esther Rosenblatt in S2 Vegas episode. The rent \"plot hole\" the quoted post raises is a long-discussed fan question, but the show itself addressed it by showing Penny as financially precarious: hiding from building manager behind on rent after car bills and cut hours in S2E14 \"The Financial Permeability,\" borrowing money from Sheldon, mooching internet/food, having electricity shut off https://bigbangtheory.fandom.com/wiki/The_Financial_Permeability . Looper coverage of fan theories notes the same inconsistencies — no last name until marriage, waitress salary vs expensive building, spending time with guys with nothing in common — but documents the viral fan theory as Penny being a *spy* sent to monitor Leonard/Sheldon after the Joyce Kim/North Korean spy + rocket-fuel project, not a prostitute https://www.looper.com/385432/the-penny-theory-that-changes-everything-on-the-big-bang-theory/ . There is no \"everyone knew\" implication; it is the author's invention/sexualized reinterpretation presented as fact."
+      },
+      "cascade": {
+       "probability": 0.92,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims Penny from The Big Bang Theory \"was a prostitute\" and that \"it was implied in the show\" to explain how a waitress could afford rent alone while two physicists split rent. That is false under official canon. Canon bio is: Penny Hofstadter is a pharmaceutical sales rep for Zangen Pharmaceuticals, who formerly worked as a waitress at the Cheesecake Factory, originally from Omaha, Nebraska, moved to California with dreams of becoming a Hollywood actress, moved across the hall from Sheldon and Leonard in 2007 https://the-big-bang-theory.com/characters/penny/ . Wiki summarizes same arc: aspiring but mostly unsuccessful actress, born on farm near Omaha, worked at The Cheesecake Factory as waitress until S7E13 when she quit for acting full-time then pharma sales https://bigbangtheory.fandom.com/wiki/Penny . No episode, writer or producer source establishes her as sex worker; promiscuity/dating-history jokes are about ex-boyfriends, not clients, and the show's actual depicted prostitute is a different guest character Mikayla/Esther Rosenblatt in S2 Vegas episode. The rent \"plot hole\" the quoted post raises is a long-discussed fan question, but the show itself addressed it by showing Penny as financially precarious: hiding from building manager behind on rent after car bills and cut hours in S2E14 \"The Financial Permeability,\" borrowing money from Sheldon, mooching internet/food, having electricity shut off https://bigbangtheory.fandom.com/wiki/The_Financial_Permeability . Looper coverage of fan theories notes the same inconsistencies — no last name until marriage, waitress salary vs expensive building, spending time with guys with nothing in common — but documents the viral fan theory as Penny being a *spy* sent to monitor Leonard/Sheldon after the Joyce Kim/North Korean spy + rocket-fuel project, not a prostitute https://www.looper.com/385432/the-penny-theory-that-changes-everything-on-the-big-bang-theory/ . There is no \"everyone knew\" implication; it is the author's invention/sexualized reinterpretation presented as fact.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:10 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4281.4 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ"
+      },
+      "models": {
+       "search": null,
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "Penny's canon jobs were waitress, aspiring actress, then pharmaceutical sales rep—sex work is only a fan theory, never shown in the show. The referenced joke is Penny calling herself a \"Chinese food prostitute\" after charming free food, not an admission.",
+      "sourceVerdict": "NO: CLAIMS REGARDING PENNY'S CANON JOBS, THE SPECIFIC 'CHINESE FOOD PROSTITUTE' QUOTE AND ITS CONTEXT, AND THE LACK OF DEPICTED SEX WORK WERE DIRECTLY SUPPORTED BY THE FETCHED CONTENT OF THE WIKIPEDIA AND QUOTE DATABASE LINKS. THE CLAIM THAT SEX WORK IS A FAN THEORY LACKED DIRECT SUPPORT BECAUSE THE SPECIFIC SOURCE CITING IT AS SUCH (RANKER) FAILED TO FETCH. UNSUPPORTED CLAIM(S): \"SEX WORK IS A FAN THEORY REGARDING THE CHARACTER PENNY.\"",
+      "checkCostUsd": 0.051998758000000006,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "check_failed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:11 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4281.4 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ\n\n## Research findings\n\nThe post claims Penny from The Big Bang Theory was canonically a prostitute and that this was “implied in the show.” That is false – it is a fan theory, not canon. Canon sources list Penny’s occupations as Waitress (seasons 1-7), Actress (seasons 1-7), Pharmaceutical sales representative (seasons 8-12) https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) , described as “An aspiring, but mostly unsuccessful actress... worked at The Cheesecake Factory as a waitress until she quit in 'The Occupation Recalibration' (S7E13) to take up acting full-time” then worked at same company as Bernadette https://bigbangtheory.fandom.com/wiki/Penny , and summarized as “aspiring actress who moved to California from Nebraska... worked as a waitress at The Cheesecake Factory” before becoming “a successful pharmaceutical sales representative” https://www.screenrant.com/big-bang-theory-penny-bartender-season-4-kaley-cuoco/ . The sex-worker idea is explicitly categorized as fan speculation: “Penny is often the subject of wild speculation... implying she might have been involved in sex work to pay her California rent” https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis , and “Penny is a waitress for most of the show, and fans have theorized that this job alone would never cover the cost of living in Pasadena... It is one of the more controversial takes” https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis . No episode establishes it; the one “prostitute” joke is Penny herself joking “That I'm some sort of Chinese food prostitute?” when accused of using her body to get dinner https://the-big-bang-theory.com/quotes/quote/941/ . The rent question is a known plot-hole / sitcom trope, not proof: Looper notes “As a waitress at The Cheesecake Factory, she was making considerably less than her neighbors... 'The Big Bang Theory' at least was realistic about her relative financial precarity, showing her mooching off of her neighbors' internet and food, as well as borrowing money.” https://www.looper.com/1392648/the-big-bang-theory-how-much-leonard-sheldon-apartment-rent-today/ . Competing fan theories explain the same gaps differently (e.g. Penny as secret spy sent to monitor Leonard and Sheldon, explaining “why she spends so much time with two guys who don't share her interests, why she lacks any friends of her own, how she can afford an apartment without a roommate” https://www.looper.com/385432/the-penny-theory-that-changes-everything-on-the-big-bang-theory/ ), showing there was no single “everyone knew” implied meaning. Show canon explains friendship via Leonard’s immediate attraction, central romance, and group dynamic, not avoidance of clients."
+      },
+      "cascade": {
+       "probability": 0.92,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "The post claims Penny from The Big Bang Theory was canonically a prostitute and that this was “implied in the show.” That is false – it is a fan theory, not canon. Canon sources list Penny’s occupations as Waitress (seasons 1-7), Actress (seasons 1-7), Pharmaceutical sales representative (seasons 8-12) https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory) , described as “An aspiring, but mostly unsuccessful actress... worked at The Cheesecake Factory as a waitress until she quit in 'The Occupation Recalibration' (S7E13) to take up acting full-time” then worked at same company as Bernadette https://bigbangtheory.fandom.com/wiki/Penny , and summarized as “aspiring actress who moved to California from Nebraska... worked as a waitress at The Cheesecake Factory” before becoming “a successful pharmaceutical sales representative” https://www.screenrant.com/big-bang-theory-penny-bartender-season-4-kaley-cuoco/ . The sex-worker idea is explicitly categorized as fan speculation: “Penny is often the subject of wild speculation... implying she might have been involved in sex work to pay her California rent” https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis , and “Penny is a waitress for most of the show, and fans have theorized that this job alone would never cover the cost of living in Pasadena... It is one of the more controversial takes” https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis . No episode establishes it; the one “prostitute” joke is Penny herself joking “That I'm some sort of Chinese food prostitute?” when accused of using her body to get dinner https://the-big-bang-theory.com/quotes/quote/941/ . The rent question is a known plot-hole / sitcom trope, not proof: Looper notes “As a waitress at The Cheesecake Factory, she was making considerably less than her neighbors... 'The Big Bang Theory' at least was realistic about her relative financial precarity, showing her mooching off of her neighbors' internet and food, as well as borrowing money.” https://www.looper.com/1392648/the-big-bang-theory-how-much-leonard-sheldon-apartment-rent-today/ . Competing fan theories explain the same gaps differently (e.g. Penny as secret spy sent to monitor Leonard and Sheldon, explaining “why she spends so much time with two guys who don't share her interests, why she lacks any friends of her own, how she can afford an apartment without a roommate” https://www.looper.com/385432/the-penny-theory-that-changes-everything-on-the-big-bang-theory/ ), showing there was no single “everyone knew” implied meaning. Show canon explains friendship via Leonard’s immediate attraction, central romance, and group dynamic, not avoidance of clients.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:11 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4281.4 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ"
+      },
+      "models": {
+       "search": null,
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     }
+    ],
+    "passedIn": 2,
+    "verdict": "pass"
+   },
+   {
+    "id": "x-05",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "referenceNotes": [],
+    "samples": [
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": null,
+      "sourceVerdict": null,
+      "checkCostUsd": 0.0235504256,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "model_output_invalid"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:11 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2631.6 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+       "writer": null
+      },
+      "cascade": {
+       "probability": 0.88,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "The reply claims Steam enforces its own DRM on all games, requires login every 30 days to reauthenticate, and that games will break in 30 days if Steam goes down. That is misleading. Steamworks DRM is called Custom Executable Generation (CEG) and like every part of Steamworks, it's optional for the developers - https://www.pcgamingwiki.com/wiki/DRM-free_Steam_games . DRM-free on Steam is defined as games which do not require the Steam client or any third-party DRM in order to launch, and DRM-free games can be moved outside of the Steam folder and used freely - https://www.pcgamingwiki.com/wiki/DRM-free_Steam_games . A long community-tested list documents games available on Steam that do not use the Steamworks CEG component, making them effectively DRM-free once installed, meaning you can copy the game folder anywhere and launch the .exe directly without being online or having Steam running - https://www.gog.com/forum/general/list_of_drmfree_games_on_steam/post1 . Valve states Offline Mode is designed to be indefinite, not 30 days: 'Offline Mode is designed to be indefinite... the client should allow you to run in Offline Mode for as long as you like' - https://www.eurogamer.net/valve-working-to-make-offline-mode-indefinite . The same report notes the prior 2-week online check was a bug Valve was fixing, not a designed license reauthentication limit - https://www.eurogamer.net/valve-working-to-make-offline-mode-indefinite . Therefore the quoted post that Steam does not require DRM and DRM is a developer/publisher decision is correct, while the 30-day universal Steam DRM claim is false; Steam client is only required as DRM when a specific game opts into Steam DRM/CEG.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:11 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2631.6 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD"
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5",
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": null,
+      "sourceVerdict": null,
+      "checkCostUsd": 0.0225676896,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "model_output_invalid"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:11 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2631.6 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+       "writer": null
+      },
+      "cascade": {
+       "probability": 0.88,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims Steam enforces its own DRM requiring login every 30 days to reauthenticate, so games break 30 days after Steam goes down, vs GOG working forever. This conflates optional Steamworks DRM with Steam itself and invents a 30-day limit.\n\n- Steamworks DRM (Custom Executable Generation/CEG) is optional for developers: \"Steamworks DRM is called Custom Executable Generation (CEG) and like the every part of Steamworks, it's optional for the developers. There are many games which use Steamworks and are DRM-free\" https://vintageisthenewold.com/do-all-steam-games-have-steam-drm . Simply releasing on Steam or using Steamworks features does not mean DRM, that is \"a specific Steamworks DRM feature that has to be specifically and separately chosen\" https://steamcommunity.com/app/971720/discussions/0/4362379922140871918 .\n\n- Many Steam games are effectively DRM-free and run without Steam: \"This is a list of games available on Steam that do not use the Steamworks CEG component, making them effectively DRM-free once installed. This means that you can copy the game folder anywhere you want and launch the .exe directly without being online or having Steam running\" https://www.gog.com/forum/general/list_of_drmfree_games_on_steam . PCGamingWiki maintains \"The big list of DRM-free games on Steam\" https://www.pcgamingwiki.com/wiki/The_big_list_of_DRM-free_games_on_Steam .\n\n- Steam Offline Mode has no 30-day limit, it is designed to be indefinite: \"There is no time limit to how long you can keep Steam in Offline Mode, as long as Steam is set up to save your login details\" https://gameslearningsociety.org/can-you-play-steam-offline-forever ; \"There is no limit to how long you can keep Steam in Offline Mode and you can leave it like that indefinitely\" https://gameslearningsociety.org/can-you-play-steam-offline-forever .\n\n- Valve programmer Henry Goffin: \"[it's] designed to be indefinite,\" \"but the client should allow you to run in Offline Mode for as long as you like\" https://www.pcgamesn.com/steam-offline-mode-indefinite-robust-valve . Guide confirms \"There is no practical time limit on Steam offline mode\" proven by setting clock forward 10 years https://steamcommunity.com/sharedfiles/filedetails/?id= آنچه .\n\n- The 25-45 day / ~30 day phone-home applies to some third-party DRM / dev choices, not Steam itself: \"some games will require a login to steam servers about every 25 - 45 days or so to verify legal license ownership\" https://steamcommunity.com/discussions/ https://steamcommunity.com ; \"All depends on whether game devs enabled offline play. If you have games with Denuvo or other DRM, or launchers, they will ask to phone home every period (like 30 days)\" https://steamcommunity.com/discussions/ https://steamcommunity.com .\n\nTherefore quoted post that DRM is developer/publisher optional is correct https://news.ycombinator.com/ https://www.gog.com/forum/general_archive/square_enix_drm_boosts_profits_and_its_here_to_stay , and reply claiming universal Steam-enforced 30-day breakage is false.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:11 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2631.6 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD"
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5",
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": "This is a nuanced technical dispute where both the original quoted tweet and the reply have partial truth. The quoted tweet (https://x.com/JasozzGames/status/2072378323750002763) stated Steam games don't require DRM and it's a developer/publisher decision — this is accurate and widely corroborated: DRM via Steamworks is optional, and many games on Steam are fully DRM-free and launch without the Steam client at all (confirmed by multiple Steam Community threads and PCGamingWiki's maintained list of DRM-free Steam games).\n\nThe reply post in question (not_cyotee) argues 'Steam enforces their own DRM' via required reauthentication every ~30 days, and that games 'will break in 30 days once Steam goes down.' This drew pushback in the replies: one user (https://x.com/Shadow_ofaDoubt/status/2072535736398573816) called it 'a straight up lie' arguing 'All steam games have Steam itself as DRM' — but X's own Community Notes-style reader context on that reply countered that 'Steam does not mandate DRM for all games' and that 'Many games on the platform are DRM-free and can be launched directly from their executable files without the Steam client running.'\n\nRegarding the specific 30-day reauthentication claim: this is a real but contested phenomenon. Multiple sources (Steam Community forums, gaming guides) describe a roughly 14-30 day window where Steam's offline mode requires re-authentication of cached credentials (https://steamcommunity.com/discussions/forum/0/587308261888419215/, https://gamewiki.blog/what-happens-if-i-play-steam-games-offline). However, Valve itself has officially stated the opposite in an official Steam Community response: 'This is not actually true - Offline Mode is designed to be indefinite... the client should allow you to run in Offline Mode for as long as you like' (https://steamcommunity.com/discussions/forum/1/864969953572102601), though acknowledging bugs exist. Other sources note the exact timing is unofficial and varies by account, 14-21 days per some reports, with 'Valve hasn't published official numbers' (https://www.eneba.com/hub/games/game-guides/can-you-play-steam-offline/). So the '30 days' figure is not an officially confirmed, fixed enforcement mechanism — it's an approximate, disputed figure based on user reports, not a hard DRM rule from Valve.\n\nThe GOG claim is accurate: GOG sells DRM-free offline installers that work permanently without any online check-in, confirmed by GOG Galaxy's own FAQ and multiple reviews (https://www.windowscentral.com/gaming/pc-gaming/gog-full-drm-free-games-keep-them-forever, https://www.techspot.com/downloads/6928-gog-galaxy.html).\n\nOverall, the reply's core framing — that Steam's offline/license-check mechanism constitutes a platform-level DRM-like gate distinct from per-game DRM — is a defensible characterization shared by many Steam users and even acknowledged in Steam community discussions. It does not directly contradict the quoted tweet's narrower claim that per-game DRM is optional; the two tweets are talking about different things (publisher-chosen game DRM vs. platform licensing checks). The '30 days' and 'games will break' framing is an approximation/overstatement of a genuinely disputed technical detail (ranging 14-30+ days, with Valve's official position being that offline mode is designed to be indefinite), but it is not a clear-cut factual fabrication warranting correction — it reflects a real, documented user experience and ongoing community debate rather than an easily falsifiable claim.",
+      "draftNote": null,
+      "sourceVerdict": null,
+      "checkCostUsd": 0.21166303,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "no_correction_needed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-19\nCurrent time: 10:12 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2631.6 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+       "writer": null
+      },
+      "cascade": {
+       "probability": 0.88,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims Steam itself enforces DRM on all games, requires login every 30 days to reauthenticate, and games break 30 days after Steam goes down. This is misleading vs quoted post that Steam DRM is optional/developer choice.\n\n- Valve's Steamworks documentation describes the Steam DRM wrapper as a tool developers can apply to their exe (manual upload/wrap or automated drm_wrap in SteamPipe) to verify ownership/launch Steam, not as mandatory for all games https://partner.steamgames.com/doc/features/drm . SDK docs note everything else besides uploading content is optional, and docs explicitly say \"Alternatively, you can skip Steam DRM and just call SteamAPI_RestartAppIfNecessary\" https://partner.steamgames.com/doc/features/demos\n\n- Steam's primary DRM (Custom Executable Generation / CEG, part of Steamworks SDK) is described as optional: \"like every part of Steamworks, it's optional for the developers. There are many games which use Steamworks and are DRM-free\" https://pcgamingwiki.com/wiki/The_big_list_of_DRM-free_games_on_Steam and \"Steam's primary DRM solution is called Custom Executable Generation (CEG)... The crucial point to remember is that CEG is optional\" https://cyberpost.co/does-every-steam-game-have-drm/\n\n- Many Steam games are effectively DRM-free once installed and \"can copy the game folder anywhere you want and launch the .exe directly without being online or having Steam running\" https://www.gog.com/forum/general/list_of_drmfree_games_on_steam and community list of \"DRM-free games (launch without Steam)\" confirmed to launch directly with \"no Steam client running\" https://github.com/largemodgames/steamie/blob/main/crates/steamie-core/DRM-FREE-GAMES.md , also covered as \"Not All Steam Games Have DRM\" https://www.howtogeek.com/psa-not-all-steam-games-have-drm-heres-how-to-tell/\n\n- No 30-day re-auth rule found. Valve position is Offline Mode is \"designed to be indefinite\": \"Offline Mode is designed to be indefinite... the client should allow you to run in Offline Mode for as long as you like\" https://www.eurogamer.net/valve-working-to-make-offline-mode-indefinite , https://www.pcgamesn.com/steam-offline-mode-indefinite-robust-valve , https://www.cinemablend.com/games/Steam-Offline-Mode-Designed-Indefinite-Says-Valve-68983.html . Requirement is only saved login details/updated games, not 30-day check-in.\n\n- GOG comparison (GOG installers/backups work forever offline) is broadly true for GOG's DRM-free model, but does not support the false universal 30-day Steam DRM claim.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:12 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2631.6 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD"
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5",
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     }
+    ],
+    "passedIn": 0,
+    "verdict": "fail"
+   },
+   {
+    "id": "x-06",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "referenceNotes": [],
+    "samples": [
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "No law automatically cancels debts from being admitted to a mental institution. In the US and UK there is no program that writes off debts simply due to psychiatric hospitalization; bills continue accruing during treatment.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.05224856220000001,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "note",
+       "note": "No law automatically cancels debts from being admitted to a mental institution. In the US and UK there is no program that writes off debts simply due to psychiatric hospitalization; bills continue accruing during treatment.",
+       "sources": [
+        {
+         "url": "https://moneynerd.co.uk/bailiffs-mental-health/",
+         "quote": null,
+         "explanation": null
+        },
+        {
+         "url": "https://lacocinadegisele.com/knowledgebase/can-debts-be-written-off-due-to-mental-illness-united-states",
+         "quote": null,
+         "explanation": null
+        },
+        {
+         "url": "https://neurolaunch.com/mental-illness-debt-forgiveness/",
+         "quote": null,
+         "explanation": null
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:12 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2591.7 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭\n\n## Research findings\n\nPost claims ending up in a mental institution causes all debts to be cancelled. No law supports automatic cancellation. In the US, \"there is no program for you to get your debts written off due to mental illness\" https://lacocinadegisele.com/knowledgebase/can-debts-be-written-off-due-to-mental-illness-united-states and \"There is no single universal 'mental illness debt forgiveness' program\" https://neurolaunch.com/mental-illness-debt-forgiveness/ ; \"Credit card debt and personal loans have no specific forgiveness programs tied to mental illness\" https://neurolaunch.com/mental-illness-debt-forgiveness/ ; \"Debt doesn't pause during a psychiatric hospitalization. Bills keep arriving\" https://neurolaunch.com/mental-illness-debt-forgiveness/. In UK, \"There are no laws to say a company or creditors must write off your personal debt if you have a long-term mental health problem\" https://moneynerd.co.uk/bailiffs-mental-health/ ; \"A creditor may agree to write off a debt at its discretion... Mental health problems do not guarantee a write-off\" https://moneynerd.co.uk/bailiffs-mental-health/ ; \"A diagnosis or membership of a particular group does not automatically cancel the debt\" https://moneynerd.co.uk/bailiffs-mental-health/. What exists is temporary protection, not cancellation: standard Breathing Space \"pauses interest, fees, and enforcement action on debts for 60 days\" and Mental Health Crisis version \"runs for the length of that treatment plus 30 days\" https://www.knowyourdosh.com/blog/financial-stress-mental-health-uk/ . Limited exceptions like US federal student loan Total and Permanent Disability discharge require 60+ month inability to engage in substantial gainful activity with SSA/physician certification and 3-year monitoring, not mere admission https://neurolaunch.com/mental-illness-debt-forgiveness/."
+      },
+      "cascade": {
+       "probability": 0.96,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims ending up in a mental institution causes all debts to be cancelled. No law supports automatic cancellation. In the US, \"there is no program for you to get your debts written off due to mental illness\" https://lacocinadegisele.com/knowledgebase/can-debts-be-written-off-due-to-mental-illness-united-states and \"There is no single universal 'mental illness debt forgiveness' program\" https://neurolaunch.com/mental-illness-debt-forgiveness/ ; \"Credit card debt and personal loans have no specific forgiveness programs tied to mental illness\" https://neurolaunch.com/mental-illness-debt-forgiveness/ ; \"Debt doesn't pause during a psychiatric hospitalization. Bills keep arriving\" https://neurolaunch.com/mental-illness-debt-forgiveness/. In UK, \"There are no laws to say a company or creditors must write off your personal debt if you have a long-term mental health problem\" https://moneynerd.co.uk/bailiffs-mental-health/ ; \"A creditor may agree to write off a debt at its discretion... Mental health problems do not guarantee a write-off\" https://moneynerd.co.uk/bailiffs-mental-health/ ; \"A diagnosis or membership of a particular group does not automatically cancel the debt\" https://moneynerd.co.uk/bailiffs-mental-health/. What exists is temporary protection, not cancellation: standard Breathing Space \"pauses interest, fees, and enforcement action on debts for 60 days\" and Mental Health Crisis version \"runs for the length of that treatment plus 30 days\" https://www.knowyourdosh.com/blog/financial-stress-mental-health-uk/ . Limited exceptions like US federal student loan Total and Permanent Disability discharge require 60+ month inability to engage in substantial gainful activity with SSA/physician certification and 3-year monitoring, not mere admission https://neurolaunch.com/mental-illness-debt-forgiveness/.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:12 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2591.7 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭"
+      },
+      "models": {
+       "search": null,
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "Mental institution admission does not cancel debts. South African debt relief requires a High Court sequestration process under the Insolvency Act, and applicants must be mentally capable of making financial decisions—incapacity would hinder, not trigger, this.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.034245397999999996,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "note",
+       "note": "Mental institution admission does not cancel debts. South African debt relief requires a High Court sequestration process under the Insolvency Act, and applicants must be mentally capable of making financial decisions—incapacity would hinder, not trigger, this.",
+       "sources": [
+        {
+         "url": "https://www.debtbusters.co.za/faqs/what-is-sequestration/",
+         "quote": null,
+         "explanation": null
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:13 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2591.7 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭\n\n## Research findings\n\nPost claims admission to a mental institution causes all your debts to be cancelled. This is false in South Africa (author's location) and generally. In South Africa debt relief requires a formal High Court sequestration/insolvency process under the Insolvency Act 24 of 1936, not hospital admission — the process requires you to be at least 18 and mentally capable of making financial decisions, be unable to pay debts, prove benefit to creditors, and hand assets to a court-appointed trustee https://www.debtbusters.co.za/faqs/what-is-sequestration/ . Being declared mentally incapable would therefore hinder, not trigger, sequestration. Where mental-health protections exist they are a temporary pause, not cancellation: Scotland's Bankruptcy and Diligence (Scotland) Bill creates a mental-health moratorium pausing recovery action until six months after treatment finishes for people receiving crisis care https://www.scottishlegal.com/articles/pause-on-debt-recovery-for-people-with-mental-ill-health . In US/UK contract law, mental illness/medication makes a contract voidable, not void — law does not erase it on its own, you must affirmatively challenge it with medical evidence tied to signing date, until then debt is fully enforceable https://getoutofdebt.org/269757/signed-debt-while-medicated-pressured-do-i-still-owe-it . No source supports automatic cancellation of all debts upon psychiatric admission."
+      },
+      "cascade": {
+       "probability": 0.95,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims admission to a mental institution causes all your debts to be cancelled. This is false in South Africa (author's location) and generally. In South Africa debt relief requires a formal High Court sequestration/insolvency process under the Insolvency Act 24 of 1936, not hospital admission — the process requires you to be at least 18 and mentally capable of making financial decisions, be unable to pay debts, prove benefit to creditors, and hand assets to a court-appointed trustee https://www.debtbusters.co.za/faqs/what-is-sequestration/ . Being declared mentally incapable would therefore hinder, not trigger, sequestration. Where mental-health protections exist they are a temporary pause, not cancellation: Scotland's Bankruptcy and Diligence (Scotland) Bill creates a mental-health moratorium pausing recovery action until six months after treatment finishes for people receiving crisis care https://www.scottishlegal.com/articles/pause-on-debt-recovery-for-people-with-mental-ill-health . In US/UK contract law, mental illness/medication makes a contract voidable, not void — law does not erase it on its own, you must affirmatively challenge it with medical evidence tied to signing date, until then debt is fully enforceable https://getoutofdebt.org/269757/signed-debt-while-medicated-pressured-do-i-still-owe-it . No source supports automatic cancellation of all debts upon psychiatric admission.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:13 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2591.7 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭"
+      },
+      "models": {
+       "search": null,
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     },
+     {
+      "quality": null,
+      "research": null,
+      "draftNote": "There is no law that cancels debts upon admission to a mental institution. Debts remain legally enforceable; creditors may at their discretion offer hardship plans or partial write-offs, but this requires a separate process, not automatic cancellation.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.026432404600000004,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "note",
+       "note": "There is no law that cancels debts upon admission to a mental institution. Debts remain legally enforceable; creditors may at their discretion offer hardship plans or partial write-offs, but this requires a separate process, not automatic cancellation.",
+       "sources": [
+        {
+         "url": "https://www.stepchange.org/debt-info/debt-and-mental-health-evidence-form.aspx",
+         "quote": null,
+         "explanation": null
+        },
+        {
+         "url": "https://getoutofdebt.org/mental-health-crisis-debt",
+         "quote": null,
+         "explanation": null
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": null,
+       "writer": "Current date: 2026-10-19\nCurrent time: 10:13 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2591.7 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭\n\n## Research findings\n\nPost claims admission to a mental institution automatically cancels all debts. No such automatic cancellation exists. Debts remain legally enforceable after psychiatric admission/commitment; mental illness alone is not a defense for not paying debts. Even in the UK, which has a formal Debt and Mental Health Evidence Form (DMHEF) process, StepChange states \"It is rare that creditors write off debt just because of a DMHEF. But they may write off part of it\" https://www.stepchange.org/debt-info/debt-and-mental-health-evidence-form.aspx and that creditors \"might write off a debt if they do not think you can ever pay it\" because of a long-term condition with proof from doctor/social worker https://www.stepchange.org/debt-info/debt-and-mental-health-evidence-form.aspx — i.e. discretionary, case-by-case, not automatic on institutionalization. US debt advice for mental-health crisis is to ask hospital billing for financial assistance, hardship programs and interest-free payment plans, not cancellation https://getoutofdebt.org/mental-health-crisis-debt. In South Africa, cancellation/write-off requires insolvency/sequestration court process, not hospitalization. Claim risks encouraging self-institutionalization for debt relief."
+      },
+      "cascade": {
+       "probability": 0.95,
+       "decision": "note",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Post claims admission to a mental institution automatically cancels all debts. No such automatic cancellation exists. Debts remain legally enforceable after psychiatric admission/commitment; mental illness alone is not a defense for not paying debts. Even in the UK, which has a formal Debt and Mental Health Evidence Form (DMHEF) process, StepChange states \"It is rare that creditors write off debt just because of a DMHEF. But they may write off part of it\" https://www.stepchange.org/debt-info/debt-and-mental-health-evidence-form.aspx and that creditors \"might write off a debt if they do not think you can ever pay it\" because of a long-term condition with proof from doctor/social worker https://www.stepchange.org/debt-info/debt-and-mental-health-evidence-form.aspx — i.e. discretionary, case-by-case, not automatic on institutionalization. US debt advice for mental-health crisis is to ask hospital billing for financial assistance, hardship programs and interest-free payment plans, not cancellation https://getoutofdebt.org/mental-health-crisis-debt. In South Africa, cancellation/write-off requires insolvency/sequestration court process, not hospitalization. Claim risks encouraging self-institutionalization for debt relief.",
+       "userMessage": "Current date: 2026-10-19\nCurrent time: 10:13 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2591.7 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭"
+      },
+      "models": {
+       "search": null,
+       "writer": "anthropic/claude-sonnet-5",
+       "verifier": "google/gemini-3-flash-preview"
+      }
+     }
+    ],
+    "passedIn": 3,
+    "verdict": "pass"
+   }
+  ],
+  "costUsd": {
+   "checks": 2.7250712277999996,
+   "judge": 0.00022689999999999999
+  }
+ },
+ "probability": null
+}

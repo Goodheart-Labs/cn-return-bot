@@ -5,7 +5,7 @@
  * to the production database.
  *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/runEvals.ts --label "baseline"
- *       [--eval extractor|checker|probability|both] [--search-cascade precheck|cascading] [--only id,id,...] [--group note-easy|...]
+ *       [--eval extractor|checker|probability|both] [--search-cascade precheck|cascading] [--jina-fetch on|off] [--only id,id,...] [--group note-easy|...]
  *
  * The image descriptions must have been frozen first, with freezeImages.ts.
  */
@@ -62,7 +62,7 @@ async function main() {
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker, probability] = await Promise.all([
     evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable)) : null,
-    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade, cascade_audit: "none" }) : null,
+    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade, cascade_audit: "none", ...(arg("jina-fetch") ? { jina_fetch: arg("jina-fetch")! } : {}) }) : null,
     evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
   ]);
 
