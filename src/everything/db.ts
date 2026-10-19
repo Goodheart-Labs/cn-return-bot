@@ -544,15 +544,24 @@ const ITEM_RUN_ROW = {
  *  Extraction and rating each write one such row per item, and so does the
  *  cleanup of a reader request's captured text. Until these rows existed the
  *  cap silently undercounted by exactly that spend. */
-export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number, spendFor: SpendFor): Promise<void> {
+export async function insertItemRun(
+  itemId: string,
+  stage: keyof typeof ITEM_RUN_ROW,
+  costUsd: number | null,
+  spendFor: SpendFor,
+  logs: Record<string, unknown> | null = null,
+): Promise<void> {
   throwOnError(
-    await getSupabaseClient().from("everything_pipeline_runs").insert({
-      ...ITEM_RUN_ROW[stage],
-      item_id: itemId,
-      claim_id: null,
-      cost: costUsd,
-      work_priority: spendFor,
-    }),
+    await getSupabaseClient().from("everything_pipeline_runs").insert(
+      stripNullChars({
+        ...ITEM_RUN_ROW[stage],
+        item_id: itemId,
+        claim_id: null,
+        cost: costUsd,
+        work_priority: spendFor,
+        logs,
+      }),
+    ),
   );
 }
 

@@ -148,11 +148,14 @@ export interface RateClaimsRequest {
 export interface RateClaimsResponse {
   /** The same claims back, each carrying its judgement. */
   claims: RatedClaim[];
-  /** What the model found, with its source URLs. The caller logs it; it is
-   *  stored nowhere else. */
+  /** What the model found, with its source URLs. The caller logs it. */
   research: string;
   webSearches: number;
   costUsd: number | null;
+  /** Every reply the model gave, which the caller stores on the rating row. */
+  answers: string[];
+  /** How many claims the first answer left out and the follow-up asked about. */
+  leftOutByFirstAnswer: number;
 }
 
 // ---------------------------------------------------------------------------

@@ -75,7 +75,7 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
     }
     const rating = await rateClaims({ text: body.text, introduction: body.introduction ?? null, claims: body.claims, source: body.source });
     console.log(
-      `[extraction] ${body.priority} rated ${rating.claims.length} claims ` +
+      `[extraction] ${body.priority} rated ${rating.claims.length} claims, ${rating.leftOutByFirstAnswer} asked again ` +
         `(${rating.webSearches} searches, $${rating.cost.cost.toFixed(2)})`,
     );
     return {
@@ -83,6 +83,8 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
       research: rating.research,
       webSearches: rating.webSearches,
       costUsd: rating.cost.cost,
+      answers: rating.answers,
+      leftOutByFirstAnswer: rating.leftOutByFirstAnswer,
     };
   },
 };
