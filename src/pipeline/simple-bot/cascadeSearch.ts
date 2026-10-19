@@ -26,8 +26,6 @@ import { runSearch, type SearchResult } from "./search";
 export const CASCADE_NOTE_AT_OR_ABOVE = 0.9;
 /** Below this probability the claim needs no note and the run ends. */
 export const CASCADE_NO_NOTE_BELOW = 0.3;
-/** Of the claims below that line, this share is escalated anyway. Those runs show how often the cheap step is wrong when it says no, which would otherwise stay invisible. */
-export const CASCADE_AUDIT_SHARE = 0.1;
 
 export const CASCADE_WEAK_MODEL = "meta/muse-spark-1.3-contributor";
 /** The cheap step is retried on this model when the first one fails, for example when Meta blocks our access. */
@@ -38,13 +36,13 @@ const CASCADE_REASONING_EFFORT = "medium";
 
 const SCHEMA_HINT = `{ "findings": string, "misleading_probability": number }`;
 
-/** "audit" is an escalation of a claim the cheap step wanted to drop. It runs the same stronger search as "escalate". */
+/** "audit" is an escalation of a claim the cheap step wanted to drop, in a run on the audit arm of CASCADE_AUDIT_TEST. It runs the same stronger search as "escalate". */
 export type CascadeDecision = "note" | "no_note" | "escalate" | "audit";
 
-export function cascadeDecisionOf(probability: number, random: () => number = Math.random): CascadeDecision {
+export function cascadeDecisionOf(probability: number, audit: boolean): CascadeDecision {
   if (probability >= CASCADE_NOTE_AT_OR_ABOVE) return "note";
   if (probability >= CASCADE_NO_NOTE_BELOW) return "escalate";
-  return random() < CASCADE_AUDIT_SHARE ? "audit" : "no_note";
+  return audit ? "audit" : "no_note";
 }
 
 interface WeakSearchResult {
@@ -108,7 +106,7 @@ function strongSearchConfig() {
 
 export async function runCascadingSearch(userMessage: string): Promise<SearchResult> {
   const weak = await runWeakSearch(userMessage);
-  const decision = cascadeDecisionOf(weak.probability);
+  const decision = cascadeDecisionOf(weak.probability, !!getBotConfig().cascade_audit);
   getTweetLog()?.set("cascade", { probability: weak.probability, answered_by: weak.model, decision });
   if (decision === "note") return { findings: weak.findings, correctionNeeded: true };
   if (decision === "no_note") return { findings: weak.findings, correctionNeeded: false };

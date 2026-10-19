@@ -16,18 +16,18 @@ const xConfig: BotConfig = { ...DEFAULT_CONFIG, botId: "simple-bot", search_mode
 
 describe("cascadeDecisionOf", () => {
   test("0.9 and above goes to the writer", () => {
-    expect(cascadeDecisionOf(0.9)).toBe("note");
-    expect(cascadeDecisionOf(1)).toBe("note");
+    expect(cascadeDecisionOf(0.9, false)).toBe("note");
+    expect(cascadeDecisionOf(1, false)).toBe("note");
   });
-  test("below 0.3 ends with no note, except for one in ten that is escalated to look for false negatives", () => {
-    expect(cascadeDecisionOf(0.2999, () => 0.1)).toBe("no_note");
-    expect(cascadeDecisionOf(0, () => 0.99)).toBe("no_note");
-    expect(cascadeDecisionOf(0.2999, () => 0.0999)).toBe("audit");
-    expect(cascadeDecisionOf(0, () => 0)).toBe("audit");
+  test("below 0.3 ends with no note, unless the run is on the audit arm", () => {
+    expect(cascadeDecisionOf(0.2999, false)).toBe("no_note");
+    expect(cascadeDecisionOf(0, false)).toBe("no_note");
+    expect(cascadeDecisionOf(0.2999, true)).toBe("audit");
+    expect(cascadeDecisionOf(0, true)).toBe("audit");
   });
   test("from 0.3 up to just below 0.9 escalates", () => {
-    expect(cascadeDecisionOf(0.3)).toBe("escalate");
-    expect(cascadeDecisionOf(0.8999)).toBe("escalate");
+    expect(cascadeDecisionOf(0.3, false)).toBe("escalate");
+    expect(cascadeDecisionOf(0.8999, false)).toBe("escalate");
   });
 });
 
@@ -65,18 +65,16 @@ describe("runCascadingSearch", () => {
   });
 
   test("a probability below 0.3 means no note and no strong search", async () => {
-    spies.push(spyOn(Math, "random").mockReturnValue(0.5));
     weakAnswers({ misleading_probability: 0.1 });
     const { run: strong } = strongSearch();
     expect(await run(claimConfig)).toEqual({ findings: "The weak findings", correctionNeeded: false });
     expect(strong).not.toHaveBeenCalled();
   });
 
-  test("one in ten claims below 0.3 is escalated anyway, and the stronger search decides", async () => {
-    spies.push(spyOn(Math, "random").mockReturnValue(0.05));
+  test("on the audit arm a claim below 0.3 is escalated anyway, and the stronger search decides", async () => {
     weakAnswers({ misleading_probability: 0.1 });
     const { run: strong, seen } = strongSearch();
-    expect(await run(claimConfig)).toEqual({ findings: "The strong findings", correctionNeeded: true });
+    expect(await run({ ...claimConfig, cascade_audit: true })).toEqual({ findings: "The strong findings", correctionNeeded: true });
     expect(strong).toHaveBeenCalledTimes(1);
     expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL });
   });

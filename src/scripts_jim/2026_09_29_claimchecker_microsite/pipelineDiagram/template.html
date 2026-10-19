@@ -126,7 +126,7 @@ table.glance { width: 100%; border-collapse: collapse; background: var(--surface
   <div class="table-wrap"><table class="glance"><thead><tr><th>Step</th><th>Runs</th><th>Model</th><th>What it decides</th></tr></thead><tbody id="glance"></tbody></table></div>
 
   <h2>The two evals</h2>
-  <p class="prose">The dashed frames in the diagram show which part each eval tests. Eval 1 gives the extractor one chunk of a post and asks whether the right claim comes out. Eval 2 gives the whole claim check one claim and asks whether it ends in the right decision, a note or no note. Eval 3 runs only the quick research and shows its probabilities, on the realistic claims and on tweets with a helpful X note. The gate, the image descriptions and the rating are not tested by any of them.</p>
+  <p class="prose">The dashed frames in the diagram show which part each eval tests. Eval 1 gives the extractor one chunk of a post and asks whether the right claim comes out. Eval 2 gives the whole claim check one claim and asks whether it ends in the right decision, a note or no note. Eval 3 runs only the quick research and shows its probabilities, on the realistic claims and on tweets with a helpful X note. Eval 2 also runs those tweets, through the X bot's pipeline, and shows the probability of every check. The gate, the image descriptions and the rating are not tested by any of them.</p>
 </div>
 
 <div id="tip" class="tip" hidden></div>
@@ -281,7 +281,7 @@ const STEPS = {
     kind: "code", title: "Cascade decision", sub: "by the probability", runs: "Once per claim, on the cascading path", model: "none",
     summary: "At 0.9 or more the findings go to the writer, under 0.3 the check ends, in between a stronger model repeats the research.",
     decides: "Whether to trust the quick research or ask a stronger model.",
-    what: "At 0.9 or more the quick findings go to the writer right away, and the stronger research is skipped. Under 0.3 the check ends as no note needed. From 0.3 up to just under 0.9, the stronger model repeats the research. One in ten of the claims under 0.3 is also sent to the stronger model, even though the quick step wanted to drop them. This is on purpose: those checks show how often the quick step is wrong when it says no, which we would otherwise never see. The decision, the probability and the model that answered are saved in the run log under cascade.",
+    what: "At 0.9 or more the quick findings go to the writer right away, and the stronger research is skipped. Under 0.3 the check ends as no note needed. From 0.3 up to just under 0.9, the stronger model repeats the research. A second A/B test, cascade_audit, is live on 10% of the cascading runs. In those runs every claim under 0.3 is also sent to the stronger model, even though the quick step wanted to drop it. This is on purpose: those checks show how often the quick step is wrong when it says no, which we would otherwise never see. The evals never use this arm. The decision, the probability and the model that answered are saved in the run log under cascade.",
     goesIn: "The probability.", comesOut: "A route: writer, stronger research or no note.", tested: "Eval 2 can run with either path, chosen with --search-cascade.",
   },
   research: {

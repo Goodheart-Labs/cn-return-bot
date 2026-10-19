@@ -22,7 +22,7 @@ export const GROUP_TITLE: Record<Group, string> = {
   "no-note-difficult": "No note should be written (difficult)",
   atomicity: "Several statements in one sentence (extractor only)",
   realistic: "Note/No-Note realistic (claim checker only)",
-  "x-notes": "Helpful X notewriter notes (probability eval only)",
+  "x-notes": "Helpful X notewriter notes (X prompts)",
 };
 
 /** Where the claim that the checker is given comes from. */

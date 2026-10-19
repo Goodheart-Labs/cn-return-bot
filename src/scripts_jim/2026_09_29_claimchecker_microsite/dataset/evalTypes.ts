@@ -15,7 +15,7 @@ export interface DatasetRow {
   extractorOnly: boolean;
   /** True for a datapoint that only the checker eval uses. It has no extractor input. */
   checkerOnly?: boolean;
-  /** True for a tweet on which our X notewriter wrote a helpful note. The probability eval runs it with the X prompts, and the claim checker eval skips it. */
+  /** True for a tweet on which our X notewriter wrote a helpful note. Both evals run it with the X prompts, and the claim checker eval runs it through the X bot's pipeline. */
   xPost?: boolean;
   expected: { decision: "note" | "no_note"; noteTolerated?: boolean; referenceNote?: string } | null;
   item: { id: string; title: string };
@@ -33,10 +33,7 @@ export const isExtractable = (row: DatasetRow): row is ExtractableRow => !row.ch
 
 /** A row that the claim checker eval can run: it has a checker input and an expected decision. */
 export type CheckableRow = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]>; production: NonNullable<DatasetRow["production"]> };
-export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly && !row.xPost;
-/** A row that has a checker input: the probability eval runs these, tweets with the X prompts and claims with the claim prompt. */
-export type RowWithChecker = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]> };
-export const hasChecker = (row: DatasetRow): row is RowWithChecker => !row.extractorOnly;
+export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly;
 
 export type EvalName = "extractor" | "checker" | "probability";
 
@@ -135,6 +132,16 @@ export interface CheckerPrompts {
   writer: string | null;
 }
 
+/** The first step of the cascading search: the cheap model's probability, what the cascade did with it, and the findings. */
+export interface CascadeTrace {
+  probability: number;
+  /** note: straight to the writer. no_note: the check ended. escalate: the stronger model researched. audit: escalated although the probability was low. */
+  decision: "note" | "no_note" | "escalate" | "audit";
+  answeredBy: string;
+  findings: string | null;
+  userMessage: string | null;
+}
+
 /** One run of the whole claim check on one row. */
 export interface CheckerSample {
   outcome: CheckerOutcome;
@@ -144,6 +151,8 @@ export interface CheckerSample {
   /** Only for a note where reference notes exist. */
   quality: QualityAnswer | null;
   research: string | null;
+  /** What the cascade's quick research said. Missing in a run made before the cascade, and null on the precheck path. */
+  cascade?: CascadeTrace | null;
   draftNote: string | null;
   sourceVerdict: string | null;
   checkCostUsd: number;

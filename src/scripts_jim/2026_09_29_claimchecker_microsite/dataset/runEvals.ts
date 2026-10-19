@@ -18,7 +18,7 @@ import { extractionModels } from "../../../everything/pipeline/model";
 import { LAB_DIR } from "../runStore";
 import { GROUP_TITLE } from "./datapoints";
 import { runCheckerEval } from "./checkerEval";
-import { hasChecker, isCheckable, isExtractable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
+import { isCheckable, isExtractable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
 import { buildEvalSetsPage } from "./buildArtifact";
 import { runProbabilityEval } from "./probabilityEval";
 import { runExtractorEval } from "./extractorEval";
@@ -49,7 +49,7 @@ function currentCommit(): string {
 async function main() {
   // The local OPENROUTER_API_KEY is dead. The testing key works.
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
-  // The cascade is live on 60% of traffic, so an eval must choose its arm. The default is the search step as it was before.
+  // The cascade is live on 60% of traffic, so an eval must choose its arm. The default is the search step as it was before. The audit arm, which sends claims the cheap step wants to drop to the stronger model anyway, is never part of an eval.
   const searchCascade = arg("search-cascade") ?? "precheck";
   const label = arg("label");
   if (!label) throw new Error('Give the run a label: --label "what changed"');
@@ -62,8 +62,8 @@ async function main() {
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker, probability] = await Promise.all([
     evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable)) : null,
-    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade }) : null,
-    evals.includes("probability") ? runProbabilityEval(rows.filter(hasChecker), runId) : null,
+    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade, cascade_audit: "none" }) : null,
+    evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
   ]);
 
   const run: EvalRun = {

@@ -192,6 +192,16 @@ const SEARCH_CASCADE_TEST: ABTest = {
   ],
 };
 
+// Finds the cascade's false negatives: in the audit arm, claims that the cheap step wants to drop go to the stronger model anyway.
+const CASCADE_AUDIT_TEST: ABTest = {
+  name: "cascade_audit",
+  prerequisites: { search_cascade: true },
+  variants: [
+    { variant: { name: "none",  overrides: { cascade_audit: false } }, weight: 90 },
+    { variant: { name: "audit", overrides: { cascade_audit: true  } }, weight: 10 },
+  ],
+};
+
 // Closed on deepseek (2026-08-06). Common Notes and discard audits still need off.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
@@ -334,6 +344,7 @@ export const AB_TESTS: ABTest[] = [
   COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
   SEARCH_CASCADE_TEST,
+  CASCADE_AUDIT_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,

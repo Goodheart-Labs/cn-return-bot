@@ -1,9 +1,9 @@
 /**
  * The "X notewriter" datapoints: tweets without media on which our X notewriter
  * wrote a note that raters judged helpful, drawn uniformly at random
- * (sampleXNotes.ts). A note is expected on all of them. They are for the
- * probability eval only, which runs them with the X bot's prompts. The claim
- * checker eval, which runs the Common Notes pipeline, skips them. Each tweet was
+ * (sampleXNotes.ts). A note is expected on all of them. Both evals run them
+ * with the X bot's prompts: the probability eval runs the quick research alone,
+ * and the claim checker eval runs the X bot's pipeline on the tweet. Each tweet was
  * also judged by its own Opus subagent on 2026-10-19, without seeing our note.
  */
 import sample from "./xSample.json";

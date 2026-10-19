@@ -80,6 +80,13 @@ export interface BotConfig {
    */
   search_cascade?: boolean;
   /**
+   * When this is true, the cascade also escalates every claim that the cheap
+   * step would have dropped for a probability under 0.3. Those runs show how
+   * often the cheap step is wrong when it says no. It only means anything
+   * alongside search_cascade. CASCADE_AUDIT_TEST sets it.
+   */
+  cascade_audit?: boolean;
+  /**
    * When this is true, a blocked-topic gate runs before everything else,
    * including the note-needed prefilter. One deepseek-v4-flash call checks the
    * post against BLOCKED_TOPICS. On a hit the run is skipped and recorded as

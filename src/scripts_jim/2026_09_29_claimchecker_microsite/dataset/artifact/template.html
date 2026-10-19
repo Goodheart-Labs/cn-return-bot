@@ -75,6 +75,7 @@ button { font: inherit; color: inherit; }
 .group { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.76rem; font-weight: 600; white-space: nowrap; border: 1.5px solid; }
 .g-note-easy { background: var(--note-soft); border-color: var(--note-soft); color: var(--note); }
 .g-note-difficult { background: transparent; border-color: var(--note); color: var(--note); }
+.pill-p { display: inline-block; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 0.8rem; padding: 0 6px; border-radius: 8px; background: var(--muse-soft, transparent); color: var(--muse, inherit); border: 1px solid var(--muse, currentColor); }
 .g-x-notes { background: transparent; border-color: var(--line, currentColor); color: var(--muted); }
 .g-realistic { background: var(--surface-2, transparent); border-color: var(--line, currentColor); color: var(--muted); }
 .g-no-note-easy { background: var(--nonote-soft); border-color: var(--nonote-soft); color: var(--nonote); }
@@ -294,7 +295,7 @@ const GROUPS = [
   { id: "no-note-difficult", label: "No note, difficult" },
   { id: "atomicity", label: "Several statements, extractor only" },
   { id: "realistic", label: "Note/No-Note realistic, checker only" },
-  { id: "x-notes", label: "X notewriter helpful notes, probability only" },
+  { id: "x-notes", label: "X notewriter helpful notes" },
 ];
 /** The datapoints of the table that is shown: the extractor table has those with an extractor input, the checker table those with a checker input. */
 const tablePoints = () => POINTS.filter((p) => (state.ds === "extractor" ? p.extractor : p.checker));
@@ -695,6 +696,15 @@ function checkerSummary(run) {
     <tr><td><b>All</b></td><td class="n">${c.rows.length}</td><td class="n"><b>${n("pass")}</b></td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td><td class="n">${c.rows.reduce((s, r) => s + r.passedIn, 0)} of ${c.rows.length * c.samples}</td></tr></tbody></table>
     <p class="small">Where a note was expected and written, a second judge asked whether it makes the reference point: ${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes do.</p>`;
 }
+const DECISION_TEXT = { note: "straight to the writer", no_note: "no note", escalate: "stronger model", audit: "stronger model (audit)" };
+/** What the cascade's quick research said about this check. It is empty for a check on the precheck path. */
+const cascadeLine = (c) => (c ? `<span class="pill-p">${percent(c.probability)}</span> <span class="small">${DECISION_TEXT[c.decision]}</span><br>` : "");
+function cascadeSummary(c) {
+  const samples = c.rows.flatMap((r) => r.samples).filter((s) => s.cascade);
+  if (!samples.length) return "";
+  const n = (d) => samples.filter((s) => s.cascade.decision === d).length;
+  return `<p class="small">Cascading search, on ${samples.length} checks: ${n("note")} went straight to the writer, ${n("no_note")} ended with no note, ${n("escalate") + n("audit")} went to the stronger model. The percentage in front of each check is the quick research's probability that the claim is misleading.</p>`;
+}
 const outcomeLine = (o) => (o.type === "note" ? `<b>Note:</b> ${esc(truncate(o.note, 110))}` : o.type === "no_note" ? `<b>No note:</b> <span class="small">${esc(o.reason)}</span>` : `<b>Error:</b> <span class="small">${esc(o.error)}</span>`);
 function checkerRowsResult(run) {
   const c = run.checker;
@@ -703,7 +713,7 @@ function checkerRowsResult(run) {
     const judged = r.samples.filter((s) => s.quality);
     const quality = judged.length ? `${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes` : '<span class="small">not judged</span>';
     const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
-      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
+      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${cascadeLine(s.cascade)}${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
     if (!open) return row;
     return row + `<tr class="detail"><td colspan="6"><div class="cdetail" id="cd-${r.id}"></div></td></tr>`;
   }).join("");
@@ -794,6 +804,13 @@ function mountCheckerDetail(host, result) {
     let n = 1;
     steps.push(stepCard(n++, "What the checker was given", "user message of the research step",
       s.prompts?.research ? proseBox(s.prompts.research, true) : node("div", {}, node("p", { class: "small", text: "The message that was sent was not saved for this run. This is the claim as it was handed over." }), proseBox(point.checker.post.text, true))));
+    if (s.cascade) {
+      const c = s.cascade;
+      steps.push(stepCard(n++, "Quick research", `${c.answeredBy}, probability ${percent(c.probability)}, ${DECISION_TEXT[c.decision]}`,
+        node("div", {}, node("p", {}, node("b", { text: percent(c.probability) }), " that the claim is misleading. " + { note: "At 0.9 or more the writer got these findings right away.", no_note: "Under 0.3 the check ended here.", escalate: "Between 0.3 and 0.9, so the stronger model repeated the research.", audit: "Under 0.3, but this run was on the audit arm, so the stronger model repeated the research anyway." }[c.decision]),
+          c.findings ? proseBox(c.findings) : node("p", { class: "small", text: "No findings were saved." }),
+          ...(c.userMessage ? [node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the quick research was given" })), proseBox(c.userMessage, true))] : []))));
+    }
     steps.push(stepCard(n++, "Research", "Muse, native search", s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." })));
     if (s.draftNote) {
       const body = node("div", {}, proseBox(s.draftNote));
@@ -888,7 +905,7 @@ function renderResults() {
   const body = state.rs === "extractor"
     ? `${extractorSummary(run)}${compareTable("extractor", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:170px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference statement</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
     : state.rs === "probability" ? probabilityTable(run)
-    : `${checkerSummary(run)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
+    : `${checkerSummary(run)}${cascadeSummary(run.checker)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
   box.innerHTML = `<h2>Results</h2>
     ${runsTable(run)}
     <h3 class="runtitle">${esc(run.label)}</h3>

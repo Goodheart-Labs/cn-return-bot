@@ -120,6 +120,15 @@ describe("forced picks", () => {
     expect(precheck.config).toMatchObject({ search_cascade: false, note_prefilter: true });
   });
 
+  test("the audit arm is live on 10% of the cascading traffic only", () => {
+    const test = AB_TESTS.find((t) => t.name === "cascade_audit")!;
+    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["none", 90], ["audit", 10]]);
+    const cascading = withForcedPicks({ search_cascade: "cascading", cascade_audit: "audit" }, () => runABTests(AB_TESTS));
+    expect(cascading.config.cascade_audit).toBe(true);
+    const precheck = withForcedPicks({ search_cascade: "precheck", cascade_audit: "audit" }, () => runABTests(AB_TESTS));
+    expect(precheck.picks.cascade_audit).toBeUndefined();
+  });
+
   test("the cascade is live on 60% of traffic and the precheck on 40%", () => {
     const test = AB_TESTS.find((t) => t.name === "search_cascade")!;
     expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["cascading", 60], ["precheck", 40]]);

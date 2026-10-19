@@ -20,7 +20,7 @@ import { withCostTracker } from "../../../pipeline/cost-tracking/costTracker";
 import { runABTests, withForcedPicks } from "../../../pipeline/ab-testing/abTests";
 import { AB_TESTS } from "../../../pipeline/ab-testing/abTestsData";
 import { createTweetLog, withTweetLog } from "../../../pipeline/utils/tweetLog";
-import type { ProbabilityEvalResult, RowWithChecker, ProbabilityRowResult, ProbabilitySample } from "./evalTypes";
+import type { CheckableRow, ProbabilityEvalResult, ProbabilityRowResult, ProbabilitySample } from "./evalTypes";
 
 const SAMPLES_PER_ROW = 3;
 const CHECK_CONCURRENCY = 6;
@@ -57,7 +57,7 @@ async function askOnce(systemPrompt: string, userMessage: string): Promise<Proba
   return { probability: output.misleading_probability, userMessage, findings: output.findings, costUsd: cost.cost ?? 0 };
 }
 
-async function sampleRow(row: RowWithChecker, runId: string, index: number, sample: number): Promise<ProbabilitySample> {
+async function sampleRow(row: CheckableRow, runId: string, index: number, sample: number): Promise<ProbabilitySample> {
   try {
     const id = `eval-${runId}-p${index}-${sample}`;
     const { config } = withForcedPicks(row.xPost ? X_FORCED_PICKS : FORCED_PICKS, () => runABTests(AB_TESTS));
@@ -77,7 +77,7 @@ async function sampleRow(row: RowWithChecker, runId: string, index: number, samp
   }
 }
 
-export async function runProbabilityEval(rows: RowWithChecker[], runId: string): Promise<ProbabilityEvalResult> {
+export async function runProbabilityEval(rows: CheckableRow[], runId: string): Promise<ProbabilityEvalResult> {
   console.log(`Probability eval: ${rows.length} rows, ${SAMPLES_PER_ROW} samples each`);
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   const results: ProbabilityRowResult[] = await Promise.all(
