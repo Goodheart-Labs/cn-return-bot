@@ -198,7 +198,7 @@ function createDefaults(overrides: Partial<BotConfig>): DraftingDependencies {
     // Use the established OpenRouter native-search route with its existing key.
     return withBotConfig({
       ...DEFAULT_CONFIG, botId: "simple-bot", author_history: false,
-      web_search: "native", search_model: "anthropic/claude-sonnet-5.5", ...overrides,
+      web_search: "native", search_model: "anthropic/claude-sonnet-4.6", ...overrides,
     },
       () => withCostTracker(fn));
   }
