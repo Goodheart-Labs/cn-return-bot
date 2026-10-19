@@ -49,7 +49,7 @@ describe("Signal draft adapter", () => {
       await createDraftingAdapter().draft({ post, history: [] });
       await createDraftingAdapter({}, { web_search: "native_grok", search_model: "x-ai/grok-4.3" }).draft({ post, history: [] });
       expect(observed).toEqual([
-        { web_search: "native", search_model: "anthropic/claude-sonnet-4.6" },
+        { web_search: "native", search_model: "anthropic/claude-sonnet-5.5" },
         { web_search: "native_grok", search_model: "x-ai/grok-4.3" },
       ]);
       expect(config.DEFAULT_CONFIG).toEqual(sharedBefore);
