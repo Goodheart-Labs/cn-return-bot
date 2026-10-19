@@ -44,7 +44,7 @@ export const SEARCH_SYSTEM_PROMPT_CLAIM = `You are a research agent that fact-ch
 A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
   Text from Transcript: <excerpt>   (or "Text from Article:")
   Claim: <the claim>
-Judge whether the claim is factually correct.
+A claim a reader picked out by hand also comes with a "Full Article:" (or "Full Transcript:") line holding the whole page, so you can tell what the excerpt refers to. Check only the claim. Judge whether the claim is factually correct.
 
 ## Output format
 Return JSON with two fields:
@@ -69,6 +69,7 @@ export const SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY = `You are a research agent 
 A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
   Text from Transcript: <excerpt>   (or "Text from Article:")
   Claim: <the claim>
+A claim a reader picked out by hand also comes with a "Full Article:" (or "Full Transcript:") line holding the whole page, so you can tell what the excerpt refers to. Check only the claim.
 The claim was automatically extracted and so it should be interpreted in the context. Avoid being pedantic.
 Judge whether the claim is misleading in some way.
 

@@ -20,6 +20,8 @@ import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 import { track } from "@cn/core/analytics";
 import { createOverlayUi } from "../utils/overlayUi";
+import { installMenuRows } from "../utils/menuRows";
+import { youtubeMenuSite } from "../utils/youtubeMenuRows";
 
 // YouTube's DOM changes often. Every selector we depend on lives here.
 const PLAYER_SELECTOR = "#movie_player";
@@ -150,6 +152,7 @@ export default defineContentScript({
     // checked video, with an explanation card through this listener.
     listenForRequestInfo(ctx);
     listenForLiveRequests(ctx);
+    installMenuRows(ctx, youtubeMenuSite);
     // Listing badges mark noted videos on channel pages and in other video
     // lists. They live independently of the watch-page overlay below.
     const stopBadges = await mountCoverageBadges(ctx);

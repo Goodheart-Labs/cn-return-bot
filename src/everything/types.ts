@@ -50,6 +50,10 @@ export interface ExtractedClaim {
   /** Article images the claim is grounded in. Only Substack articles supply
    *  these. A claim can rest on text, on images, or on both. */
   imageUrls: string[];
+  /** The whole page the claim comes from. Only a reader's request on selected
+   *  words carries it, so the checker can tell what the words refer to. Claims
+   *  from a whole-page check leave it out. */
+  page?: string | null;
   anchor: ClaimAnchor;
 }
 
