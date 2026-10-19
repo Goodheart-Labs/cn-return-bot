@@ -13,6 +13,9 @@ import type { ExtractedClaim, ItemSource } from "../types";
 // that case the restatement is the only thing that says which claim to check, so
 // it goes back in. The images themselves reach the model through the pipeline's
 // media analysis.
+// A reader's request on selected words also carries the whole page. The
+// selection alone can be a few words such as "They do not have innate
+// preferences", and only the page says who "they" are.
 // The fact-check reads these fields as labelled lines of a synthetic post. The
 // rating step reads them as a JSON object. Both steps judge the same words.
 export function claimCheckFields(claim: ExtractedClaim, source: ItemSource): Record<string, string> {
@@ -24,6 +27,7 @@ export function claimCheckFields(claim: ExtractedClaim, source: ItemSource): Rec
   else fields["Claim"] = claim.claim;
   if (paragraph) fields["Surrounding context"] = paragraph;
   if (claim.steer) fields["A reader asked for a note about"] = claim.steer.replace(/\s+/g, " ").trim();
+  if (claim.page) fields[`Full ${origin}`] = claim.page.trim();
   return fields;
 }
 

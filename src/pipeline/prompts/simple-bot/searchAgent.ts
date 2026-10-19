@@ -44,7 +44,7 @@ export const SEARCH_SYSTEM_PROMPT_CLAIM = `You are a research agent that fact-ch
 A verbatim excerpt highlighted from a podcast, interview, or article — the specific claim to check — plus the surrounding passage for context. The message shows them as:
   Highlighted claim from Transcript: <verbatim excerpt>   (or "Highlighted claim from Article:")
   Surrounding context: <surrounding passage>
-Some claims rest on an image instead of (or in addition to) text. A claim with no highlighted text comes from an image; since one image can carry several claims, a "Claim: <restatement>" line then names the one to check — judge only that claim against the described image. Judge whether the claim is factually correct.
+Some claims rest on an image instead of (or in addition to) text. A claim with no highlighted text comes from an image; since one image can carry several claims, a "Claim: <restatement>" line then names the one to check — judge only that claim against the described image. A claim a reader picked out by hand also comes with a "Full Article:" (or "Full Transcript:") line holding the whole page, so you can tell what the excerpt refers to. Check only the highlighted claim. Judge whether the claim is factually correct.
 
 ## Output format
 Return JSON with two fields:
