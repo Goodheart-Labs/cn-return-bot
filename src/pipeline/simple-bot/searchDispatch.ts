@@ -10,7 +10,7 @@ import LinkifyIt from "linkify-it";
 import { llm } from "../llm/llm";
 import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
-import { WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
+import { WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations, stripCiteTags } from "../tool-calling/tools";
 import { runToolLoop } from "../tool-calling/toolLoop";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
@@ -188,7 +188,7 @@ async function searchWithAnthropicNative(
   const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
-  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+  const result = await dispatchPromptedJsonSearch({
     source: "searchWithAnthropicNative",
     messages: [
       // This marks the system prompt as an Anthropic prefix-cache breakpoint,
@@ -214,9 +214,10 @@ async function searchWithAnthropicNative(
     },
     extractJson: extractJsonObject,
   });
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });
+  const findings = stripCiteTags(result.findings);
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: result.correctionNeeded } });
 
-  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, correctionNeeded: result.correctionNeeded, costEntry: { name: costName, ...result.cost, tools: [] } };
 }
 
 export async function searchWithGeminiNative(

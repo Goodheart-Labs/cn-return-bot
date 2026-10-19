@@ -105,6 +105,15 @@ export const OPENROUTER_NATIVE_WEB_SEARCH_TOOL = {
   parameters: { engine: "native" as const },
 };
 
+/** With the fetch tool attached, OpenRouter returns Claude's citations as
+ *  inline tags such as <cite index="8-7:8-11">quoted words</cite>, where it
+ *  otherwise turns them into url_citation annotations. The index points into
+ *  Anthropic's search results and means nothing to us. The tags are removed and
+ *  the quoted words are kept. */
+export function stripCiteTags(text: string): string {
+  return text.replace(/<cite index="[^"]*">|<\/cite>/g, "");
+}
+
 /** Meta's search tool cites the lines of the pages it opened with markers such
  *  as 【1586541899417117766†L16-L18】, which point into its own page cache and mean
  *  nothing to us. They are removed so they cannot leak into a note. */

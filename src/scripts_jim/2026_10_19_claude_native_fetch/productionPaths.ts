@@ -8,29 +8,59 @@
  * search excerpt. A jump in prompt tokens shows that a page was read.
  * Run from the repo root:
  *   bun run src/scripts_jim/2026_10_19_claude_native_fetch/productionPaths.ts [xbot|ask]
+ * With NO_FETCH=1 the fetch tool is removed from every request, which gives
+ * the search-only baseline the code had before.
  */
 import "dotenv/config";
 
 process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
 const ONLY = process.argv[2];
 
-const { llm } = await import("../../pipeline/llm/llm");
+const { createAnthropicMessage } = await import("../../pipeline/llm/llm");
 const { DEFAULT_CONFIG, withBotConfig } = await import("../../pipeline/ab-testing/botConfig");
 const { dispatchSearch } = await import("../../pipeline/simple-bot/searchDispatch");
 const { answerPassageQuestion } = await import("../../service/intake/passageQuestions");
 
-const originalCreate = llm.create.bind(llm);
-(llm as any).create = async (params: any) => {
+// `llm` is a Proxy, so its methods cannot be replaced. The OpenAI SDK sends
+// every request through the global fetch, so we log the replies there.
+const originalFetch = globalThis.fetch;
+globalThis.fetch = (async (input: any, init?: any) => {
   const started = Date.now();
-  const response: any = await originalCreate(params);
-  console.log(`  request: model=${params.model} tools=${JSON.stringify(params.tools)}`);
-  console.log(`  reply after ${((Date.now() - started) / 1000).toFixed(1)}s: provider=${response.provider} usage=${JSON.stringify({
-    prompt: response.usage?.prompt_tokens, completion: response.usage?.completion_tokens, cost: response.usage?.cost, tools: response.usage?.server_tool_use_details,
-  })}`);
+  if (process.env.NO_FETCH && init?.body) {
+    const sent = JSON.parse(init.body);
+    sent.tools = sent.tools?.filter((tool: any) => tool.type !== "web_fetch_20250910");
+    init = { ...init, body: JSON.stringify(sent) };
+  }
+  const response = await originalFetch(input, init);
+  const url = String(input?.url ?? input);
+  if (url.endsWith("/messages")) {
+    const body: any = await response.clone().json();
+    const sent = JSON.parse(init?.body ?? "{}");
+    console.log(`  request: model=${sent.model} tools=${JSON.stringify(sent.tools?.map((tool: any) => tool.type ?? tool.name))}`);
+    console.log(`  reply after ${((Date.now() - started) / 1000).toFixed(1)}s: provider=${body.provider} usage=${JSON.stringify({
+      input: body.usage?.input_tokens, output: body.usage?.output_tokens, cost: body.usage?.cost, tools: body.usage?.server_tool_use,
+    })}`);
+    for (const block of body.content ?? []) {
+      const detail = block.type === "text" ? block.text : block.type === "server_tool_use" || block.type === "tool_use" ? JSON.stringify(block.input) : "";
+      console.log(`    [${block.type}] ${String(detail).replace(/\s+/g, " ").slice(0, 200)}`);
+    }
+  }
+  if (url.includes("/chat/completions")) {
+    const body: any = await response.clone().json();
+    const sent = JSON.parse(init?.body ?? "{}");
+    const message = body.choices?.[0]?.message ?? {};
+    console.log(`  request: model=${sent.model} tools=${JSON.stringify(sent.tools?.map((tool: any) => tool.type))}`);
+    console.log(`  reply after ${((Date.now() - started) / 1000).toFixed(1)}s: provider=${body.provider} usage=${JSON.stringify({
+      prompt: body.usage?.prompt_tokens, completion: body.usage?.completion_tokens, cost: body.usage?.cost, tools: body.usage?.server_tool_use_details,
+    })}`);
+    console.log(`  reasoning: ${String(message.reasoning ?? "").replace(/\s+/g, " ").slice(0, 400)}`);
+    console.log(`  content: ${String(message.content ?? "").replace(/\s+/g, " ").slice(0, 300)}`);
+    console.log(`  message fields: ${Object.keys(message).join(", ")}; reasoning detail types: ${JSON.stringify((message.reasoning_details ?? []).map((d: any) => d.type))}`);
+  }
   return response;
-};
+}) as typeof fetch;
 
-const TWEET = `Post by @mlhistory: "Fun fact: the original Transformer paper trained its big model for only 12 hours on 8 P100 GPUs. Modern labs could learn a thing or two." Check this against the paper's own training section.`;
+const TWEET = process.env.TWEET ?? `Post by @mlhistory: "Fun fact: the original Transformer paper trained its big model for only 12 hours on 8 P100 GPUs. Modern labs could learn a thing or two." Check this against the paper's own training section.`;
 
 async function xBotSearch(label: string, searchModel: string) {
   console.log(`\n=== X bot search step, ${label}`);
@@ -62,7 +92,7 @@ async function askOpus() {
     question: "Is that right? Check the paper's training section itself, not a summary.",
     status: "answering", answer: null, draft: null, error: null, model: null, cost_usd: 0, created_at: new Date().toISOString(), started_at: null, answered_at: null,
     draft_outcome: null, draft_posted_id: null,
-  } as any, { db: db as never, complete: (params) => llm.create(params), budgetExhausted: async () => false });
+  } as any, { db: db as never, complete: createAnthropicMessage, budgetExhausted: async () => false });
   console.log(`  final write: ${JSON.stringify(writes.at(-1)).slice(0, 2000)}`);
   console.log(`  draft: ${JSON.stringify(writes.find((w) => w.draft)?.draft ?? null)}`);
 }
