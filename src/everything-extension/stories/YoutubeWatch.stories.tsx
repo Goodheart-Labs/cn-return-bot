@@ -6,8 +6,9 @@ import { PAGE_ITEM, PAGE_SEEDS } from "../../everything-storybook/fixtures";
 /* A mock YouTube watch page with the extension's overlay on it. The notes are
  * the fixtures, pinned to 0:10 and 0:40 of a two-minute video. Drag the
  * "seconds" control to move playback: the note card appears while playback is
- * inside a claim's span and fades after it. The pins on the progress bar seek
- * there too. */
+ * inside a claim's span and fades after it. A click on a pin on the progress
+ * bar opens its card without moving playback, and a double click moves
+ * playback there. */
 
 const VIDEO_SECONDS = 120;
 /** A playing video reports its position about four times a second. */

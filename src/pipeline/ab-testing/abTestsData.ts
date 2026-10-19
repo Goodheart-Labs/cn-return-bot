@@ -32,6 +32,8 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
+// 2026-10-19: every Claude arm (web_search "native") can also open pages with Claude's
+// native fetch (GOO-454). Its numbers from before and after that day measure different setups.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },

@@ -116,7 +116,7 @@ The website ships the anon key, so the anon role is locked out of every table ex
 
 ### Minisites
 
-The reader (`src/everything-web/src/reader/`) is a shell plus one module per feature (`reader/features/`). Each module fills named slots: buttons on selected words, buttons under a passage, entries in the margin, a rail, dialogs. A feature added later starts off on existing minisites. The old `/read?url=` page is gone; its two articles are the minisites `big-tent-or-small-tent` and `white-house-accord`. Creating a minisite: the website writes a `read_page` job, the intake service reads the page through `cn-fetch` without fact-checking it, and `everything_create_minisite` makes the minisite. The fact-check is a separate admin button (`everything_start_minisite_check`), which queues the article at the reader-request tier and keeps its text. On a minisite, Ask Opus gets only the tools its features allow and never `request_note`.
+The reader (`src/everything-web/src/reader/`) is a shell plus one module per feature (`reader/features/`). Each module fills named slots: buttons on selected words, buttons under a passage, entries in the margin, a rail, dialogs. A feature added later starts off on existing minisites. The old `/read?url=` page is gone; its two articles are the minisites `big-tent-or-small-tent` and `white-house-accord`. Creating a minisite: the website writes a `read_page` job, the intake service reads the page through `cn-fetch` without fact-checking it, and `everything_create_minisite` makes the minisite. The fact-check is a separate admin button (`everything_start_minisite_check`), which queues the article at the reader-request tier and keeps its text. On a minisite, Ask Opus gets only the tools its features allow and never `request_note`. Ask Opus researches with Claude's own web search and web fetch inside one request. It calls OpenRouter's Anthropic-format endpoint (`createAnthropicMessage` in `src/pipeline/llm/llm.ts`), not chat completions, because chat completions joins every text block into one string, and Claude writes notes to itself between two fetches that would then reach the reader.
 
 ### Website, voting and donations
 
@@ -179,6 +179,19 @@ Things that are easy to get wrong:
 ## Review dashboard
 
 `bun run review` (prod) or `bun run review-local` serves it on port 8001 and frees the port first.
+
+## Minisite finder
+
+A standing Claude session on the devbox, `cn-return-bot--sandbox-minisite-article-finder`, researches every day at 6am California time which articles, posts and videos are making the rounds in Nathan Young's crowd, and posts the ones that would make good minisites to Slack's #minisite-suggestion (GOO-442). Jim and Nathan steer it in that channel. Its brief, cron entry and Slack bridge live in the devbox repository (`minisite-finder/BRIEF.md`). Its tools are in `src/minisite-finder/`:
+
+```bash
+bun run trending-on-x [--days N] [--topic "<topic>"]... [--ask "<question>"]  # Grok's X search for viral posts about an article, per topic of the crowd
+bun run hot-links [--days N]                         # top Hacker News links and LessWrong posts
+bun run noted-items [--days N] [--notes] [--json]    # items our pipeline wrote notes on, and whether they have a minisite
+bun run read-page <url>                              # read a page through the pipeline's fetch ladder
+```
+
+`trending-on-x` replaced the daily `Trending Posts` workflow, which posted Grok's finds straight to #trending-posts. The investigation behind its prompt is in `src/scripts_jim/2026_10_01_article_traction/` (GOO-289).
 
 ## Postable notes
 

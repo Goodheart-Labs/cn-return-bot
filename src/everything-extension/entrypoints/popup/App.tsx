@@ -133,15 +133,10 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
   }
 }
 
-/** The request button, shown on content pages we have not read in full. On a
- *  page with no item it reads "Request notes on this page"; on a page that
- *  already has an item, because a reader wrote a note or one paragraph was
- *  checked, it reads "Check this page" so the two meanings stay apart.
- *  Requested pages are remembered in storage rather than in component state,
+/** The "Check this page" button, shown on content pages we have not read in
+ *  full. Requested pages are remembered in storage rather than in component state,
  *  so closing and reopening the popup cannot submit the same page twice. */
-function RequestNoteButton({ label, doneLabel, creatorFeedUrl, onLive }: {
-  label: string;
-  doneLabel: string;
+function RequestNoteButton({ creatorFeedUrl, onLive }: {
   /** The page's creator, so the pipeline files the page under their project. */
   creatorFeedUrl: string | null;
   onLive: (entry: LiveRequest) => void;
@@ -188,14 +183,14 @@ function RequestNoteButton({ label, doneLabel, creatorFeedUrl, onLive }: {
   };
 
   if (phase === "done") {
-    return <Button disabled className="w-full">{doneLabel}</Button>;
+    return <Button disabled className="w-full">You asked us to check this page</Button>;
   }
   return (
     <>
       <Button className="w-full" onClick={request} disabled={phase !== "idle"}>
-        {label}
+        Check this page
       </Button>
-      {phase === "error" && <p className="text-sm text-negative">Could not save the request (try again)</p>}
+      {phase === "error" && <p className="text-sm text-negative">Could not start the check. Please try again.</p>}
     </>
   );
 }
@@ -337,7 +332,7 @@ function PrimaryAction({ state, counts, jumped, access }: {
 
   // Only a page the pipeline has read in full stops offering the request. An
   // item that exists because a reader wrote a note, or because one paragraph
-  // was checked, still gets the offer, under its own wording. On the
+  // was checked, still gets the offer. On the
   // platforms whose URL shapes we know, only an actual post or video gets
   // it: a Substack inbox or a YouTube channel page is not checkable. A
   // custom-domain Substack is recognized through its author feed, so its
@@ -373,10 +368,8 @@ function PrimaryAction({ state, counts, jumped, access }: {
           // Every new post gets checked on its own, so the button would only
           // submit noise.
           <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>
-        ) : state.kind === "item" ? (
-          <RequestNoteButton label="Check this page" doneLabel="You asked us to check this page" creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
         ) : (
-          <RequestNoteButton label="Request notes on this page" doneLabel="You requested notes on this page" creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
+          <RequestNoteButton creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
         ))}
       {/* The popup offers the press on covered pages too. */}
       {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
