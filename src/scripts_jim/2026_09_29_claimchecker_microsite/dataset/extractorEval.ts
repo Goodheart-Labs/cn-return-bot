@@ -12,7 +12,7 @@
 import PQueue from "p-queue";
 import { bodyOfChunkMessage, runPassageExtraction } from "../../../everything/pipeline/extractClaims";
 import { claimsOfPassages } from "../../../everything/pipeline/passages";
-import type { ChunkRun, ChunkSample, DatasetRow, ExtractorEvalResult, ExtractorRowResult, JudgeAnswer } from "./evalTypes";
+import type { ChunkRun, ChunkSample, DatasetRow, ExtractableRow, ExtractorEvalResult, ExtractorRowResult, JudgeAnswer } from "./evalTypes";
 import { judgeExtraction, withCost } from "./judges";
 
 const SAMPLES_PER_CHUNK = 3;
@@ -32,7 +32,7 @@ interface EvalCase {
   passage: string;
 }
 
-function casesOf(rows: DatasetRow[]): EvalCase[] {
+function casesOf(rows: ExtractableRow[]): EvalCase[] {
   return rows.flatMap((row) => {
     const { highlight, userMessage } = row.extractor;
     const passage = highlight ? userMessage.slice(highlight.start, highlight.end) : "";
@@ -63,7 +63,7 @@ async function sampleChunk(userMessage: string): Promise<ChunkSample> {
   }
 }
 
-export async function runExtractorEval(rows: DatasetRow[]): Promise<ExtractorEvalResult> {
+export async function runExtractorEval(rows: ExtractableRow[]): Promise<ExtractorEvalResult> {
   const cases = casesOf(rows);
   const chunks = new Map(rows.map((row) => [`${row.item.id}#${row.extractor.chunkIndex}`, { row, message: row.extractor.userMessage }]));
   console.log(`Extractor eval: ${cases.length} statements of ${rows.length} datapoints in ${chunks.size} chunks, ${SAMPLES_PER_CHUNK} samples each`);

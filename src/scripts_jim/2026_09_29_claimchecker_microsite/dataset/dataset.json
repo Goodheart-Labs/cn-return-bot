@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-18T15:15:08.909Z",
+ "generatedAt": "2026-10-19T03:05:17.407Z",
  "datapoints": [
   {
    "id": "berkeley-as",
@@ -19,6 +19,7 @@
     "textChars": 52499
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note"
    },
@@ -107,6 +108,7 @@
     "textChars": 47950
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note"
    },
@@ -226,6 +228,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note"
    },
@@ -297,6 +300,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note",
     "referenceNote": "EA organisations have come to regret pushing earning to give, and they do not see it as a less impactful career path than others."
@@ -358,6 +362,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note"
    },
@@ -429,6 +434,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note"
    },
@@ -500,6 +506,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note",
     "referenceNote": "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him."
@@ -573,6 +580,7 @@
     "textChars": 64190
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note",
     "referenceNote": "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs (https://x.com/MelMitchell1/status/2107633255352865182)."
@@ -645,6 +653,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note",
     "referenceNote": "Yudkowsky and Nate Soares disagree with much of the AI safety community. They think that agent foundations work is important, but that most other work, such as prosaic alignment, interpretability and control, will not scale to superintelligence and so does not really matter."
@@ -709,6 +718,7 @@
     "textChars": 48826
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "no_note"
    },
@@ -807,6 +817,7 @@
     "textChars": 49959
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "no_note"
    },
@@ -914,6 +925,7 @@
     "textChars": 49959
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "no_note"
    },
@@ -1004,6 +1016,7 @@
     "textChars": 72012
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "no_note"
    },
@@ -1093,6 +1106,7 @@
     "textChars": 87655
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "no_note",
     "noteTolerated": true
@@ -1258,6 +1272,7 @@
     "textChars": 89640
    },
    "extractorOnly": false,
+   "checkerOnly": false,
    "expected": {
     "decision": "note"
    },
@@ -1330,6 +1345,1148 @@
     ],
     "checkCostUsd": null,
     "trace": null
+   }
+  },
+  {
+   "id": "realistic-01",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Almost certainly true. The author, Matthew Adelstein, announced a philosophy Ph.D. at Princeton in 2025.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "c1b1f77f-5cde-4ac2-a0b3-918123b273c7",
+    "title": "Data Republican’s Slop Site ",
+    "url": "https://benthams.substack.com/p/data-republicans-slop-site",
+    "source": "substack",
+    "publishedAt": "2026-09-23",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "161b6866-b7fc-418b-81f1-64145af32c8c",
+     "restatement": "The author of the article is a philosophy Ph.D. student.",
+     "contextQuote": "I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.",
+     "contextParagraph": "I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "c1b1f77f-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-23",
+     "text": "Text from Article: I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.\nClaim: The author of the article is a philosophy Ph.D. student.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-23\nCurrent time: 16:11 UTC\nTweet posted: 2026-09-23\nPost age: 16.2 hours\n\n## Post\n\nHighlighted claim from Article: I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.\nSurrounding context: I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post ID (invalid/non-numeric)."
+    }
+   },
+   "production": {
+    "claimId": "161b6866-b7fc-418b-81f1-64145af32c8c",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.011953563212000001,
+    "trace": {
+     "research": "No factual error found. The post consists of (1) unverifiable self-identification as \"a philosophy Ph.D. student\" with no author ID provided to check against, and searches for the exact phrase returned no results, so no direct contradicting evidence exists; and (2) subjective characterization that \"Saying controversial things about ethics is kind of our job\" which is opinion, not a falsifiable factual claim. It is directionally consistent with descriptions of philosophy as dealing with controversial fundamental questions - e.g., Rice University states \"Philosophy's central questions are always controversial and always timely\" https://philosophy.rice.edu/whystudyphilosophy , and moral philosophy is described as contemplating what is right and wrong https://ethicsunwrapped.utexas.edu/glossary/moral-philosophy . Per guidelines, opinions and unverifiable claims without strong contradicting evidence do not warrant correction.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-02",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Accurate paraphrase of the passage. A sanction that lets City fight to stay up would be fine, a 100-point deduction would make the matches pointless.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "addddca6-7de5-400b-8b65-0a433772ff45",
+    "title": "¿EL MEJOR LAMINE YAMAL? ¿ESPAÑA IMPARABLE? DEBUTS DE XAVI Y KLOPP, RAÚL GARCÍA Y MÁS | DESPEJADOS",
+    "url": "https://www.youtube.com/watch?v=hAoP1zVVkOE",
+    "source": "youtube",
+    "publishedAt": "2026-09-28",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "18b95631-24e3-48ae-a2b7-894e101c1c0f",
+     "restatement": "The speaker said that he would prefer a points deduction that still allowed Manchester City to compete to avoid relegation, rather than a deduction so large that the remaining matches became meaningless.",
+     "contextQuote": "De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.",
+     "contextParagraph": "De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "addddca6-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-28",
+     "text": "Text from Transcript: De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.\nClaim: The speaker said that he would prefer a points deduction that still allowed Manchester City to compete to avoid relegation, rather than a deduction so large that the remaining matches became meaningless.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-02\nCurrent time: 05:49 UTC\nTweet posted: 2026-09-28\nPost age: 101.8 hours\n\n## Post\n\nHighlighted claim from Transcript: De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.\nSurrounding context: De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.\n\n## Comments and replies\n\n- No replies or quote tweets found for this post ID."
+    }
+   },
+   "production": {
+    "claimId": "18b95631-24e3-48ae-a2b7-894e101c1c0f",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.025190915260000002,
+    "trace": {
+     "research": "La frase expresa una preferencia personal («me parecería») y una valoración hipotética sobre el efecto de una quita de 100 puntos en partidos futuros. Si esos partidos seguirían teniendo utilidad competitiva dependería de la liga, la tabla y las consecuencias deportivas; el fragmento no identifica esos datos ni afirma que se haya impuesto tal sanción. No hay base para tratarlo como un error factual claro.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-03",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. True. The latest models beat most humans on some narrow, checkable tasks such as competition maths and coding. 'Some of these tasks' is a fair hedge.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "0516bc6b-41c8-420c-bd55-1ffe5f4dd1c7",
+    "title": "Everything Is Everything Now",
+    "url": "https://www.youtube.com/watch?v=jp7hM1vKRpY",
+    "source": "youtube",
+    "publishedAt": "2026-10-06",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "19d8be72-e466-4857-86c5-72a8710d9658",
+     "restatement": "The latest AI models are significantly better than humans at some tedious, verifiable tasks.",
+     "contextQuote": "And at this point, they are they are in some levels significantly better than humans at some of these tasks.",
+     "contextParagraph": "And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "0516bc6b-0",
+     "author_id": "unknown",
+     "created_at": "2026-10-06",
+     "text": "Text from Transcript: And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.\nClaim: The latest AI models are significantly better than humans at some tedious, verifiable tasks.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-07\nCurrent time: 09:46 UTC\nTweet posted: 2026-10-06\nPost age: 33.8 hours\n\n## Post\n\nHighlighted claim from Transcript: And at this point, they are they are in some levels significantly better than humans at some of these tasks.\nSurrounding context: And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.\n\n## Comments and replies\n\n[]"
+    }
+   },
+   "production": {
+    "claimId": "19d8be72-e466-4857-86c5-72a8710d9658",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.016164289999999998,
+    "trace": {
+     "research": "Claim that latest AI models are \"significantly better than humans at some of these tasks\" is directionally correct and supported by multiple benchmarks. Stanford 2026 AI Index reporting notes \"frontier models now exceed human performance on PhD-level science questions and in competitive mathematics\" https://www.searchenginejournal.com/ai-adoption-outpaced-the-pc-internet-dive-into-the-stanford-report-data/572305/ , with coding benchmarks \"now nearly solved\" https://www.searchenginejournal.com/ai-adoption-outpaced-the-pc-internet-dive-into-the-stanford-report-data/572305/ . Peer-reviewed study of 6 LLMs vs 320 humans on 555 everyday-norm estimation scenarios found \"Two of the proprietary LLMs outperform even the best human participant (MAEs = 0.78 and 0.85 vs. 0.92)\" and \"All six LLMs significantly outperformed the average human\" https://www.nature.com/articles/s44488-026-00018-8 , concluding \"LLMs achieve remarkably high accuracy, substantially outperforming most individual humans\" https://www.nature.com/articles/s44488-026-00018-8 . No direct contradicting evidence; statement is general/qualitative about \"some\" tedious tasks, consistent with jagged-frontier pattern where models ace some tasks while lagging others.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-04",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. The author's second-hand account of a private conversation, so it cannot be checked. It repeats what the author says the woman told her.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "df818e5c-639b-42d9-bda6-20b1c7ccbad0",
+    "title": "Reflecting On a Few Very, Very Strange Years In Silicon Valley's Rape Culture",
+    "url": "https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange",
+    "source": "substack",
+    "publishedAt": "2026-01-14",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "22e31d7f-449a-4510-b9ca-7ffa0aa626a3",
+     "restatement": "That woman at Vibecamp 2 decompression said that although she had been raped elsewhere, she felt all the men in the Vibecamp space were ‘big brothers’.",
+     "contextQuote": "She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.",
+     "contextParagraph": "A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "df818e5c-0",
+     "author_id": "unknown",
+     "created_at": "2026-01-14",
+     "text": "Text from Article: A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.\nClaim: That woman at Vibecamp 2 decompression said that although she had been raped elsewhere, she felt all the men in the Vibecamp space were ‘big brothers’.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-27\nCurrent time: 15:03 UTC\nTweet posted: 2026-01-14\nPost age: 6159.1 hours\n\n## Post\n\nHighlighted claim from Article: She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.\nSurrounding context: A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post ID."
+    }
+   },
+   "production": {
+    "claimId": "22e31d7f-449a-4510-b9ca-7ffa0aa626a3",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.016641046,
+    "trace": {
+     "research": "The highlighted claim is verbatim from the author's own essay: search returns only that essay as source for the exact wording \"A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were 'big brothers'\" https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange . Later posts by the same author repeat a similar characterization in paraphrase: \"A woman who had been at decompression suggested I was being deceptive, and used her own experience of being raped to downplay what had happened to me\" https://theasterisk.substack.com/p/the-effective-altruism-kids-arent . No independent transcript, tweet, or third-party account of the Vibecamp 2 decompression exchange was found to confirm or contradict the author's description of the woman's words/motive. The surrounding account acknowledges varying recollections of decompression (\"There are varying accounts of the discussion that took place, my recollection is...\" https://theasterisk.substack.com/p/the-effective-altruism-kids-arent ) and \"Trauma shapes memory, and two people can experience the same events differently\" https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange . Without direct contradicting evidence, the subjective characterization (\"to excuse men\", \"maliciously misrepresented\") is opinion/interpretation, not a clear factual error warranting correction.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-05",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Personal story, cannot be checked, but plausibly true. The claim restates the passage accurately.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "ee382555-920f-4bd7-822d-6fb0e688d0d8",
+    "title": "Reading Reddit While Red (r/AmITheAsshole)",
+    "url": "https://www.youtube.com/watch?v=UImmYCEZWe8",
+    "source": "youtube",
+    "publishedAt": "2026-08-20",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "38747951-2f29-4a0f-b96b-ed31d5665e2c",
+     "restatement": "The company's annual team trip includes work sessions.",
+     "contextQuote": "Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything.",
+     "contextParagraph": "My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "ee382555-0",
+     "author_id": "unknown",
+     "created_at": "2026-08-20",
+     "text": "Text from Transcript: My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.\nClaim: The company's annual team trip includes work sessions.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-17\nCurrent time: 19:45 UTC\nTweet posted: 2026-08-20\nPost age: 691.8 hours\n\n## Post\n\nHighlighted claim from Transcript: Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything.\nSurrounding context: My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.\n\n## Comments and replies\n\n- @user1: \"Sounds amazing! Wish my company did that.\" (1.2K likes, 45 replies)\n- @user2: \"Team bonding is overrated, just pay us more.\" (856 likes, 120 replies)\n- @user3: \"This is why people stay at good companies.\" (723 likes, 32 replies)\n- @user4: \"Three days? That's basically a vacation on company dime.\" (654 likes, 89 replies)\n- @user5: \"Jealous! Mine is just Zoom calls.\" (512 likes, 67 replies)"
+    }
+   },
+   "production": {
+    "claimId": "38747951-2f29-4a0f-b96b-ed31d5665e2c",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.011835748,
+    "trace": {
+     "research": "The highlighted claim is a personal anecdote about the author's own company organizing a 3-day annual trip with work sessions and team bonding fully paid (hotel, meals, activities). Personal workplace experiences are not externally verifiable and contain no general factual assertion that can be disproven. No contradicting evidence was found. Company-paid team retreats covering lodging/meals/activities are a common and documented practice, e.g. corporate retreat planning guides describe structured group meals and experiential team-building activities https://www.placemakr.com/blog/team-building-retreat and 20 retreat ideas for team bonding https://www.naboo.app/en-us/blog/20-game-changing-team-retreat-ideas, and average business trip spend data includes lodging/meals/transportation https://ravensretreathockinghills.com/feeds/blog/company-team-building-trips. Therefore no clear factual error worth correcting.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-06",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. True and well documented. AFL craft unions controlled apprenticeships, limited membership and fought over trade boundaries.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "fa0bbd63-cadc-4334-a7e2-777ac32d4730",
+    "title": "Against the Luddites",
+    "url": "https://www.verysane.ai/p/against-the-luddites",
+    "source": "substack",
+    "publishedAt": "2026-03-29",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "3bef2db6-ce8b-48e7-b6ae-5383f3e05b5e",
+     "restatement": "AFL craft unions maintained apprenticeship requirements, restricted entry, and jealous guarding of trade boundaries.",
+     "contextQuote": "The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11",
+     "contextParagraph": "Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "fa0bbd63-0",
+     "author_id": "unknown",
+     "created_at": "2026-03-29",
+     "text": "Text from Article: Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.\nClaim: AFL craft unions maintained apprenticeship requirements, restricted entry, and jealous guarding of trade boundaries.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-19\nCurrent time: 23:11 UTC\nTweet posted: 2026-03-29\nPost age: 4199.2 hours\n\n## Post\n\nHighlighted claim from Article: The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11\nSurrounding context: Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.\n\n## Comments and replies\n\nNo comments available for this post."
+    }
+   },
+   "production": {
+    "claimId": "3bef2db6-ce8b-48e7-b6ae-5383f3e05b5e",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "somewhat likely false",
+    "notes": [],
+    "checkCostUsd": 0.013949175000000001,
+    "trace": {
+     "research": "Claim that AFL craft unions embodied guild-like exclusivity (apprenticeship, restricted entry, trade boundaries) that Luddites fought to preserve is directionally correct, not a clear factual error. Luddites were skilled textile workers who wanted machines limited to high-quality work run by apprenticed workers paid decent wages: Smithsonian reports 'They just wanted machines that made high-quality goods... and they wanted these machines to be run by workers who had gone through an apprenticeship and got paid decent wages' https://www.smithsonianmag.com/history/what-the-luddites-really-fought-against-264412/ . That they used lethal violence is documented in same source: 'Luddites there retaliated by killing a mill owner' with three hanged for murder https://www.smithsonianmag.com/history/what-the-luddites-really-fought-against-264412/ . AFL championed craft unionism with ~100 autonomous unions each granted 'exclusive jurisdiction' over a craft https://www.britannica.com/topic/American-Federation-of-Labor . Britannica defines craft unions as deriving 'power from their control over the supply of skilled labor—a control that is maintained through licensing and apprenticeship' https://www.britannica.com/topic/craft-union , and overview notes 'To control the labor supply, [craft] unions also limited apprenticeship training, prevented employers from hiring nonunion members for craft jobs' https://www.sciencedirect.com/topics/social-sciences/craft-union . Labor-history glossary notes 'American guilds in the late 18th century were descendants of the medieval guilds' https://lawcha.org/teaching-labors-story/glossary-of-terms/ , supporting the guild-to-craft-union continuity as accepted interpretation. 'Direct organizational descendants' is interpretive lineage language, not a falsifiable direct-descent claim warranting correction, and IWW's 1905 founding as industrial alternative organizing by industry regardless of craft/skill/race/sex is well documented.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-07",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Almost certainly true. Anthropic publishes a system card with every major Claude release, and the author says he covered this one the day before.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "a2576b2b-5b08-4684-a6f6-c9055e0a5ade",
+    "title": "AI #187: Coming Into Play",
+    "url": "https://thezvi.substack.com/p/ai-187-coming-into-play",
+    "source": "substack",
+    "publishedAt": "2026-09-24",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "4a95481a-b485-4687-81a0-0046191ffb9b",
+     "restatement": "Opus 5.5 has a system card.",
+     "contextQuote": "I covered the system card yesterday, and will cover its capabilities soon.",
+     "contextParagraph": "Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "a2576b2b-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-24",
+     "text": "Text from Article: Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.\nClaim: Opus 5.5 has a system card.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-24\nCurrent time: 15:09 UTC\nTweet posted: 2026-09-24\nPost age: 15.2 hours\n\n## Post\n\nHighlighted claim from Article: I covered the system card yesterday, and will cover its capabilities soon.\nSurrounding context: Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post ID (invalid/non-numeric)."
+    }
+   },
+   "production": {
+    "claimId": "4a95481a-b485-4687-81a0-0046191ffb9b",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.012122193600000001,
+    "trace": {
+     "research": "Highlighted claim about covering the Opus 5.5 system card 'yesterday' (i.e. Sept 23 given Sept 24 post date) is timeline-consistent and shows no factual error. Opus 5.5 was released September 22, 2026 https://www.anthropic.com/claude-opus-5-5 alongside its System Card dated September 22, 2026 https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf and listed as 'Claude Opus 5.5 September 2026' https://www.anthropic.com/system-cards . Multiple outlets date the launch to Tuesday Sept 22: 'Anthropic on Tuesday launched Claude Opus 5.5' https://www.reuters.com/business/anthropic-unveils-claude-opus-55-2026-09-22/ and 'September 22, 2026' https://techcrunch.com/2026/09/22/anthropic-releases-opus-5-5-with-lower-prices-and-fable-level-performance/ , also listed as '22 Sep 2026' https://endoflife.date/claude and 'September 22, 2026 (2 days ago)' https://en.wikipedia.org/wiki/Claude_(AI) . The surrounding context 'Opus 5.5 was released on Tuesday' is therefore correct, and covering its system card on Sept 23 is plausible. The forward-looking promise to cover capabilities soon is not fact-checkable opinion/intent, not a factual error.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-08",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. True. The clip shows the Colts beating the Commanders 30-13 in London on 4 October 2026.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "09873ff4-91a8-4268-ac14-4adf02d479f8",
+    "title": "Colts get a takeaway to start the half!",
+    "url": "https://www.youtube.com/watch?v=tKuDnDuFGZA",
+    "source": "youtube",
+    "publishedAt": "2026-10-04",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "583f0af4-3748-4b3b-bac6-f8287f57d849",
+     "restatement": "The game being described is between Washington/the Commanders and the Colts.",
+     "contextQuote": "First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers,",
+     "contextParagraph": "Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "09873ff4-0",
+     "author_id": "unknown",
+     "created_at": "2026-10-04",
+     "text": "Text from Transcript: Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p\nClaim: The game being described is between Washington/the Commanders and the Colts.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-04\nCurrent time: 15:50 UTC\nTweet posted: 2026-10-04\nPost age: 15.8 hours\n\n## Post\n\nHighlighted claim from Transcript: First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers,\nSurrounding context: Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p\n\n## Comments and replies\n\nNo comments found for this invalid post ID."
+    }
+   },
+   "production": {
+    "claimId": "583f0af4-3748-4b3b-bac6-f8287f57d849",
+    "status": "note",
+    "reason": null,
+    "judgement": "certainly false",
+    "notes": [
+     {
+      "text": "Colts QB Jones had already thrown interceptions in each of the Colts' first three games, including one interception against Houston in Week 3.",
+      "writtenBy": "the pipeline",
+      "votes": {
+       "helpful": 0,
+       "somewhatHelpful": 0,
+       "notHelpful": 0
+      },
+      "sources": [
+       {
+        "url": "https://www.TSN.ca/nfl/article/colts-qb-jones-looking-to-clean-up-mistakes-ahead-of-commanders-clash-in-london-on-tsn-premium/",
+        "quote": "Jones has interceptions in each of the Colts’ first three games",
+        "explanation": "Directly states Jones threw interceptions in all of the first three games."
+       },
+       {
+        "url": "https://www.TSN.ca/nfl/article/colts-qb-jones-looking-to-clean-up-mistakes-ahead-of-commanders-clash-in-london-on-tsn-premium/",
+        "quote": "The Colts overcame three turnovers from Jones, two fumbles and one interception, to snap a nine-game losing streak by beating AFC South rival Houston 19-17 last weekend.",
+        "explanation": "Confirms one of those turnovers was an interception in the win over Houston last weekend (Week 3, before the Week 4 London game)."
+       }
+      ]
+     }
+    ],
+    "checkCostUsd": 0.039504384000000003,
+    "trace": {
+     "research": "The play is Jaylon Carlies (\"Karlis\") intercepting Washington QB Athan Kaliakmanis on 3rd down – Colts official Game Center lists \"HIGHLIGHTS | Jaylon Carlies skies and intercepts Kaliakmanis' third-down pass\" and \"Indianapolis Colts linebacker Jaylon Carlies intercepts Washington Commanders quarterback Athan Kaliakmanis\" https://www.colts.com/game-day/2026/reg-week4/colts-at-commanders/ . The claim \"First interception of the season by any quarterback\" is clearly false for an Oct. 4 Week 4 game. AP preview of this London game on Oct. 4, 2026 reports: \"Jones has interceptions in each of the Colts' first three games\" and \"only two NFL players have more giveaways than Jones — New England quarterback Drake Maye has seven, New Orleans quarterback Tyler Shough has six and Jones, Atlanta quarterback Cooper Rush and Tampa Bay quarterback Baker Mayfield are tied at five\" and that Colts overcame \"three turnovers from Jones, two fumbles and one interception\" vs Houston in Week 3 https://www.TSN.ca/nfl/article/colts-qb-jones-looking-to-clean-up-mistakes-ahead-of-commanders-clash-in-london-on-tsn-premium/ . Dozens of interceptions had already been thrown league-wide before this play.",
+     "draftNote": "Colts QB Jones had already thrown interceptions in each of the Colts' first three games, including one interception against Houston in Week 3.",
+     "sourceVerdict": "YES"
+    }
+   }
+  },
+  {
+   "id": "realistic-09",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Blunder did win a Smogon Tour. That Gen 5 Skarmory was the reason is a playful personal opinion, but plausible.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "47e35c7d-7153-48f4-946d-0f30bdacc90e",
+    "title": "Blunder Ranks the MOST ICONIC Pokemon in Competitive Singles History",
+    "url": "https://www.youtube.com/watch?v=GctYSBsrPLk",
+    "source": "youtube",
+    "publishedAt": "2026-10-06",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "58c85183-d818-4689-8bcf-8086fdf0e6df",
+     "restatement": "The speaker won a Smogon Tour using Generation 5 Skarmory.",
+     "contextQuote": "Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour.",
+     "contextParagraph": "Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "47e35c7d-0",
+     "author_id": "unknown",
+     "created_at": "2026-10-06",
+     "text": "Text from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-06\nCurrent time: 16:34 UTC\nTweet posted: 2026-10-06\nPost age: 16.6 hours\n\n## Post\n\nHighlighted claim from Transcript: Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour.\nSurrounding context: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\n\n## Comments and replies\n\n- No comments available (invalid post ID)"
+    }
+   },
+   "production": {
+    "claimId": "58c85183-d818-4689-8bcf-8086fdf0e6df",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.04009262,
+    "trace": {
+     "research": "The garbled terms map to Pokemon competitive play: \"Smoke on Tour\" is almost certainly auto-transcription of Smogon Tour, an official long-running Smogon tournament with listed seasons e.g. Smogon Tour Season 10, Season 9, Season 8 etc https://www.smogon.com/forums/threads/tournament-archives.67058/ . \"Gen Five Scarm\" is almost certainly Skarmory (commonly shortened to \"Skarm\"/\"Skarmory\") or Choice Scarf, not a vape/firearm product. Smogon analysis describes Gen 5 Skarmory as \"one of the biggest defensive staples in the tier\" able to check Excadrill, Mamoswine, Garchomp, Landorus-T, Scizor, Breloom etc https://www.smogon.com/forums/threads/skarmory-gp-2-2.3697069/ . A user named \"skarm\" is also prominent in early Smogon history, e.g. listed as host of (Official) Smogon Tournament 2 - skarm / chaos - Noobster https://www.smogon.com/forums/threads/tournament-archives.67058/ . No speaker identity or specific Tour win is given in the post to verify, and \"is the reason I won\" is subjective causal attribution/opinion about team choice, not an objectively falsifiable factual claim. No direct contradicting evidence found that a Gen-5 Skarmory/Scarf team could not have won a Smogon Tour week/playoff.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-10",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. The reviewer's own first-hand impression, so it cannot be checked exactly, but plausible. The reviewer adds the Xiaomi crease is 'not terrible'.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "a32efec7-88d0-4563-8f3d-5abd246585b6",
+    "title": "Xiaomi 18 Fold: How Does This Happen?",
+    "url": "https://www.youtube.com/watch?v=3iRUwVzRDZQ",
+    "source": "youtube",
+    "publishedAt": "2026-10-02",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "5e605d13-71ea-4933-9603-a39c0e3bb63c",
+     "restatement": "The Xiaomi Fold has a more visible display crease than the iPhone Duo.",
+     "contextQuote": "Now the Xiaomi does have a bit more crease... here.",
+     "contextParagraph": "Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "a32efec7-0",
+     "author_id": "unknown",
+     "created_at": "2026-10-02",
+     "text": "Text from Transcript: Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.\nClaim: The Xiaomi Fold has a more visible display crease than the iPhone Duo.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-12\nCurrent time: 13:50 UTC\nTweet posted: 2026-10-02\nPost age: 253.8 hours\n\n## Post\n\nHighlighted claim from Transcript: Now the Xiaomi does have a bit more crease... here.\nSurrounding context: Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.\n\n## Comments and replies\n\n**No comments found (invalid/non-numeric post ID)**"
+    }
+   },
+   "production": {
+    "claimId": "5e605d13-71ea-4933-9603-a39c0e3bb63c",
+    "status": "no_note",
+    "reason": "bot_error",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.0035966063,
+    "trace": {
+     "research": null,
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-11",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Personal statement about what the speaker did that morning. It cannot be checked, but is plausibly true.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "fe3ab847-38ed-4daa-b662-6e165be5f6e4",
+    "title": "Joe Rogan Experience #1555 - Alex Jones & Tim Dillon",
+    "url": "https://www.youtube.com/watch?v=jdVso9FSkmE",
+    "source": "youtube",
+    "publishedAt": "2020-10-27",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "65762d35-5a8b-4dab-8ba5-096e66cc3c06",
+     "restatement": "The speaker read the cited articles again on the morning before appearing on the show.",
+     "contextQuote": "from when i read these again this morning before i came here what i remember",
+     "contextParagraph": "when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "fe3ab847-0",
+     "author_id": "unknown",
+     "created_at": "2020-10-27",
+     "text": "Text from Transcript: when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady\nClaim: The speaker read the cited articles again on the morning before appearing on the show.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-18\nCurrent time: 03:17 UTC\nTweet posted: 2020-10-27\nPost age: 51651.3 hours\n\n## Post\n\nHighlighted claim from Transcript: from when i read these again this morning before i came here what i remember\nSurrounding context: when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady\n\n## Comments and replies\n\n- @user1: This transcript is wild, can't believe the context around that quote. (1.2K likes, 345 reposts, 89 replies)\n- @user2: David Don Durie? Sounds like a mix-up with someone else entirely lol (856 likes, 210 reposts, 42 replies)\n- @user3: The Chinese lady mention is out of nowhere, what even is this hearing? (2.1K likes, 567 reposts, 134 replies)\n- @user4: Reading the transcript again this morning hits different with the full context. (743 likes, 198 reposts, 31 replies)\n- @user5: Top comment energy here, this claim needs more scrutiny for sure. (1.5K likes, 402 reposts, 76 replies)\n- @user6: Quote tweeting this because the surrounding dialogue is hilarious. (934 likes, 289 reposts, 55 replies)\n- @user7: Durley or Durie? Typo or intentional mispronunciation? (621 likes, 167 reposts, 28 replies)\n- @user8: This is why full transcripts matter, the highlighted part is misleading alone. (1.8K likes, 512 reposts, 97 replies)"
+    }
+   },
+   "production": {
+    "claimId": "65762d35-5a8b-4dab-8ba5-096e66cc3c06",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.01517449,
+    "trace": {
+     "research": "Highlighted text is a verbatim fragment from Joe Rogan Experience #1555 with Alex Jones & Tim Dillon, released Oct 27, 2020 https://open.spotify.com/episode/0Ts4ONY3v7HvDw1s3bPpzm and https://podcasts.apple.com/us/podcast/1555-alex-jones-tim-dillon/id360084272?i=1000644539301 , matching tweet date 2020-10-27. Multiple independent transcripts record Alex Jones saying \"I'm quoting from when I read these again this morning before I came here\" https://podcasts.happyscribe.com/the-joe-rogan-experience/1555-alex-jones-tim-dillon , \"ALEX JONES: I'm quoting from when I read these again this morning before I came here. What I remember, David, Don Durie, Durley.\" https://singjupost.com/transcript-alex-jones-tim-dillon-on-joe-rogan-podcast-1555/ , \"I'm quoting from when I read these again this morning before I came here. What I remember, David Don Dury, Durley.\" https://ogjre.com/episode/1555-alex-jones-tim-dillon , \"I'm quoting from when I read these again this morning before I came here. What I remember, David Dry durley...\" https://podscripts.co/podcasts/the-joe-rogan-experience/1555-alex-jones-tim-dillon , and \"What I remember David Don Durie derly. Oh that guy and and this this Chinese lady\" https://podclips.com/ct/9putpw . The highlighted claim itself makes no verifiable factual assertion about the world — it is a self-referential statement about when the speaker read material and what he remembers — so there is no direct contradicting evidence to warrant a factual correction.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-12",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Personal anecdote that cannot be checked, but plausibly true. Emigrants faced limits on valuables and currency, but nothing suggests condoms were restricted.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "32a8ea67-9c7f-4451-888c-f8002c378d9b",
+    "title": "Joe Rogan Experience #2557 - Yakov Smirnoff",
+    "url": "https://www.youtube.com/watch?v=w6r1O5Udn0c",
+    "source": "youtube",
+    "publishedAt": "2026-09-23",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "6bc35c5a-193d-4089-b10e-8ee13bff0f6e",
+     "restatement": "There was no restriction on how many condoms a person could take out of the Soviet Union.",
+     "contextQuote": "and so my quest was like when I learned that and there was no restriction how many you can take with you.",
+     "contextParagraph": "and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "32a8ea67-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-23",
+     "text": "Text from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-24\nCurrent time: 08:08 UTC\nTweet posted: 2026-09-23\nPost age: 32.1 hours\n\n## Post\n\nHighlighted claim from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you.\nSurrounding context: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post."
+    }
+   },
+   "production": {
+    "claimId": "6bc35c5a-193d-4089-b10e-8ee13bff0f6e",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.01590195227,
+    "trace": {
+     "research": "The claim is part of Yakov Smirnoff's personal anecdote on Joe Rogan Experience #2557 about emigrating from USSR via Italy in 1977 and filling half a suitcase with condoms to sell to pay for rent/food. Transcript hosting confirms the quoted lines about going to each pharmacy and half suitcase in mother's suitcase https://podscripts.co/podcasts/the-joe-rogan-experience/2557-yakov-smirnoff . Episode summary retells same loophole as Smirnoff's account: condoms were cheap in USSR (about a penny) and sold for ~$1 on Italian open market, with no restriction on quantity https://finance.biggo.com/podcast/b07983cbe09679a6 . Smirnoff has told this condoms-to-feed-family story before titled Feed Your Family! Sell...Condoms?! https://www.youtube.com/watch?v=NKd9R_DZ-Ow and referenced as smuggling condoms to Italy to make money to eat https://www.reddit.com/r/MSsEcReTPoDcAsT/comments/1w72hew/mssp_634_department_of_jokes_w_yakov_smirnoff/ . Background facts consistent: he began career in Soviet Union then immigrated to US in 1977 https://en.wikipedia.org/wiki/Yakov_Smirnoff , In 1977 embarked leaving communist Soviet Union https://yakov.com/bio/ , arrived with less than $100 https://www.govinfo.gov/content/pkg/CRECB-2001-pt9/html/CRECB-2001-pt9-Pg12634-2.htm . The assertion of 'no restriction how many you can take' is presented as his recollection/understanding of what Soviet/Italian exit/transit checks enforced at the time, not a cited statute. No direct contradicting evidence on Soviet 1977 customs limits for condoms was found, and personal-memory / subjective-quantitative claims do not meet the clear-factual-error threshold.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-13",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. True. In Week 1 the Chiefs scored on the trick play 'Heisman', which Reid took from film of 1936.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "e01d8acf-e01b-426e-a1fa-ca2ead755152",
+    "title": "GAME OF THE WEEK! Indianapolis Colts vs. Kansas City Chiefs FULL GAME | NFL 2026 Season Week 2",
+    "url": "https://www.youtube.com/watch?v=0D1NGiCC5oc",
+    "source": "youtube",
+    "publishedAt": "2026-09-22",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "6d558e12-315a-40df-aeee-0580daf7daf5",
+     "restatement": "The previous week, Chiefs coach Andy Reid used a goal-line play dating back to the 1930s.",
+     "contextQuote": "OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s",
+     "contextParagraph": "OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "e01d8acf-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-22",
+     "text": "Text from Transcript: OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.\nClaim: The previous week, Chiefs coach Andy Reid used a goal-line play dating back to the 1930s.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-22\nCurrent time: 22:31 UTC\nTweet posted: 2026-09-22\nPost age: 22.5 hours\n\n## Post\n\nHighlighted claim from Transcript: OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s\nSurrounding context: OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post ID."
+    }
+   },
+   "production": {
+    "claimId": "6d558e12-315a-40df-aeee-0580daf7daf5",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.012910717,
+    "trace": {
+     "research": "The claim that Andy Reid/Andy leaned on a play from the 1930s last week is correct. Kansas City Chiefs head coach Andy Reid called the \"Heisman\" play — a 2-yard shovel-pass TD from Patrick Mahomes to Kenneth Walker III with Justin Fields also in the backfield near the goal line — in the Chiefs' 31-10 Week 1 win over the Denver Broncos on Monday night Sept. 14, 2026, i.e. \"last week\" relative to the Sept. 22 tweet https://www.kmbc.com/article/chiefs-1936-heisman-play-mahomes-fields-kenneth-walker-touchdown/73735677 Reid said after the game: \"Chris Berman sent me that play... So that's a 1936-er right there.\" https://www.kmbc.com/article/chiefs-1936-heisman-play-mahomes-fields-kenneth-walker-touchdown/73735677 Mahomes said the team knew it as \"Heisman\" and \"The tape was in black and white. It was very scratchy.\" https://www.kmbc.com/article/chiefs-1936-heisman-play-mahomes-fields-kenneth-walker-touchdown/73735677 Yahoo Sports headline confirms: \"Andy Reid says ESPN's Chris Berman sent him the 90-year-old play that cemented Chiefs' Week 1 blowout of Broncos\" https://sports.yahoo.com/nfl/article/andy-reid-says-espns-chris-berman-sent-him-the-90-year-old-play-that-cemented-chiefs-week-1-blowout-of-broncos-204348746.html Additional coverage describes it as inspired by 1936 film clip sent by Berman / a 1936 play called \"Heisman\" https://sports.yahoo.com/articles/chiefs-news-nfl-digs-video-050923871.html and https://www.facebook.com/KCTV5/videos/two-quarterbacks-on-the-field-and-a-play-drawn-up-in-1936andy-reid-went-nearly-1/1485204420178879/ Bleacher Report also notes Reid said ESPN legend Chris Berman sent the 1936 design used for Walker's TD https://bleacherreport.com/articles/25499704-andy-reid-says-espn-icon-chris-berman-sent-him-1936-play-design-used-kenneth-walkers-mnf-td No contradiction found.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-14",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Plausibly true. Analysts and U.S. officials have long disagreed about how much Iran controls the Houthis, and the claim restates the expert fairly.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "63df5946-4f40-4a9b-a7f9-4593f54a0ae2",
+    "title": "Trump weighs joining Saudi fight against Houthis: Military experts react",
+    "url": "https://www.youtube.com/watch?v=AX0x_k-KlOg",
+    "source": "youtube",
+    "publishedAt": "2026-10-12",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "7624a269-e200-41bc-afb1-a34280af9dfd",
+     "restatement": "Parts of the U.S. intelligence community view the Houthis as relatively independent from Iran, while others view them as more aligned with Iran.",
+     "contextQuote": "So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.",
+     "contextParagraph": "How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "63df5946-0",
+     "author_id": "unknown",
+     "created_at": "2026-10-12",
+     "text": "Text from Transcript: How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.\nClaim: Parts of the U.S. intelligence community view the Houthis as relatively independent from Iran, while others view them as more aligned with Iran.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-12\nCurrent time: 21:38 UTC\nTweet posted: 2026-10-12\nPost age: 21.6 hours\n\n## Post\n\nHighlighted claim from Transcript: So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.\nSurrounding context: How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.\n\n## Comments and replies\n\n**No valid tweet found (invalid post ID).**"
+    }
+   },
+   "production": {
+    "claimId": "7624a269-e200-41bc-afb1-a34280af9dfd",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.0214963038,
+    "trace": {
+     "research": "The claim describes an internal intelligence-community debate over Houthi independence vs alignment with Iran. Public U.S. assessments show exactly that nuance/range: The White House-released declassified intelligence in Dec 2023-Jan 2024 said Iran was \"deeply involved in planning the operations against commercial vessels in the Red Sea\" but that \"Iran has often deferred operational decision-making authority to the Houthis\" https://lemmy.world/comment/6203008 . Earlier U.S. intelligence/NSC assessments similarly said \"It is wrong to think of the Houthis as a proxy force for Iran\" and \"Iran does not exert command and control over the Houthis in Yemen\" while still documenting Iranian weapons/support, and noted Iran advised against taking Sanaa in 2014 but Houthis pressed on. Reporting on U.S. officials in Jan 2024 described Houthis as \"among the groups most operationally independent from Iranian proxy groups\" even while receiving \"significant weapons and other support from Iran\" https://www.townoflaronge.ca/the-recent-houthi-missile-attack-shows-the-limited-scope-of-us-led-airstrikes-in-yemen/ . Intelligence-gap reporting also notes \"The exact degree of direct Iranian operational control versus advisory support is not fully understood\" https://www.geointel-monitor.com/sample-reports/sample-iran-country-report.pdf . This record is directionally consistent with a contention between \"relatively independent\" vs \"more aligned\" views, and the phrasing is subjective characterization of debate, not a verifiable false fact.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-15",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. A dating-advice rule of thumb, not an empirical finding. Plausibly true, though real returns will taper at some point.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "44485bea-65b4-4341-81d7-e4b6cd43f91f",
+    "title": "The Asking People Out Manifesto",
+    "url": "https://thingofthings.substack.com/p/the-asking-people-out-manifesto",
+    "source": "substack",
+    "publishedAt": "2025-01-20",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "ad84363b-8c14-412d-8932-cb7eb702127d",
+     "restatement": "Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+     "contextQuote": "#3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in.",
+     "contextParagraph": "#3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "44485bea-0",
+     "author_id": "unknown",
+     "created_at": "2025-01-20",
+     "text": "Text from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-04\nCurrent time: 10:37 UTC\nTweet posted: 2025-01-20\nPost age: 14938.6 hours\n\n## Post\n\nHighlighted claim from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in.\nSurrounding context: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\n\n## Comments and replies\n\n- No replies or quote tweets found for this invalid/non-numeric post ID."
+    }
+   },
+   "production": {
+    "claimId": "ad84363b-8c14-412d-8932-cb7eb702127d",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "somewhat likely false",
+    "notes": [],
+    "checkCostUsd": 0.017785782,
+    "trace": {
+     "research": "The claim is dating-strategy advice/opinion, explicitly hedged as 'approximately linear,' not a precise mathematical finding — it asserts #3 (drop standards) and #4 (meet more people / ask more out) scale with effort. Directionally supported: a 2,006-user SoulMatcher study found 'the people who like a larger share of profiles end up with more matches and more conversations per profile they see, not fewer' and 'It does not support the popular advice that being more selective is a route to more matches. In this sample the more selective groups had fewer matches per 100 profiles viewed, not more' — e.g., men liking 40-60% got 2.46 matches per 100 seen vs 0.42 for under 10% https://soulmatcher.app/blog/does-being-less-selective-get-more-matches-study/ . More attempts with non-zero success probability mechanically increases expected dates, with same study noting only flattening/diminishing returns at the highest (>60%) like rates, not reversal. No direct contradicting evidence of a clear factual error was found.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-16",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. The author's own account of what coworkers said, so it cannot be checked. Plausible and an accurate restatement of the passage.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "df818e5c-639b-42d9-bda6-20b1c7ccbad0",
+    "title": "Reflecting On a Few Very, Very Strange Years In Silicon Valley's Rape Culture",
+    "url": "https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange",
+    "source": "substack",
+    "publishedAt": "2026-01-14",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "b95570cc-c563-423d-a55f-69976ba3809c",
+     "restatement": "Male employees at a Canadian telecom where the author worked said women obviously slept their way to promotions or were obviously diversity hires when they thought no woman was listening.",
+     "contextQuote": "The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.",
+     "contextParagraph": "The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "df818e5c-0",
+     "author_id": "unknown",
+     "created_at": "2026-01-14",
+     "text": "Text from Article: The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.\nClaim: Male employees at a Canadian telecom where the author worked said women obviously slept their way to promotions or were obviously diversity hires when they thought no woman was listening.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-27\nCurrent time: 14:55 UTC\nTweet posted: 2026-01-14\nPost age: 6158.9 hours\n\n## Post\n\nHighlighted claim from Article: The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.\nSurrounding context: The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.\n\n## Comments and replies\n\n- @user1: This is so true, men really say the quiet part out loud when they think no one is around. (1.2k likes, 234 retweets, 56 replies)\n- @user2: Diversity hires are real though, stats don't lie. (890 likes, 145 retweets, 120 replies)\n- @user3: Sleeping your way up is a stereotype but happens more than we admit. (756 likes, 98 retweets, 45 replies)\n- @user4: As a woman in tech, I've heard all of this. Exhausting. (2.3k likes, 312 retweets, 89 replies)\n- @user5: Men say this about other men too when competing. Not gender specific. (567 likes, 67 retweets, 34 replies)\n- @user6: The article sounds like it was written by someone bitter. (412 likes, 55 retweets, 28 replies)\n- @user7: Promote based on merit only, end of story. (1.1k likes, 189 retweets, 67 replies)\n- @user8: This highlights exactly why we need more women in leadership. (945 likes, 134 retweets, 51 replies)"
+    }
+   },
+   "production": {
+    "claimId": "b95570cc-c563-423d-a55f-69976ba3809c",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.02302562952,
+    "trace": {
+     "research": "The highlighted line is an anecdotal generalization / subjective characterization about what men say in private, not a verifiable factual proposition that can be proven true or false for all men. No clear factual error warranting correction was found. Research and legal commentary show the quoted phrases are widely documented as common sexist tropes: e.g., false rumors that a successful woman 'slept her way to the top' have been held to create a hostile work environment https://www.constangy.com/employment-labor-insider/she-slept-her-way-to-the-top and described as a sex-based stereotype https://onlabor.org/sleeping-to-the-top-recognizing-a-sex-based-stereotype/ ; workplace advice columns note 'we know how she got the promotion' is understood to imply sleeping way into promotion https://www.askamanager.org/2022/09/i-accidentally-started-a-rumor-about-a-coworker.html ; research reviews note women experience verbal gender harassment including sexist comments when applying for promotions https://pmc.ncbi.nlm.nih.gov/articles/PMC4584998/ ; and 'diversity hire' assumptions / stigma are documented in diversity-hiring literature https://toggl.com/blog/diversity-hiring https://scholarworks.lib.csusb.edu/cgi/viewcontent.cgi?article=3444&context=etd https://www.growthspace.com/glossary/diversity-hiring . As opinion/anecdote, the claim does not meet threshold for factual correction.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-17",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. A personal technical detail about the speaker's own build. Cannot be checked from outside, but plausible.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "22c84632-4f95-46a2-a550-c5063940b099",
+    "title": "How We Revolutionized Redstone Graphics",
+    "url": "https://www.youtube.com/watch?v=QdUkZBvfczA",
+    "source": "youtube",
+    "publishedAt": "2026-09-29",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "c566e983-25e1-490f-ab76-0d5b4e7a633c",
+     "restatement": "The speaker's Minecraft screen accepts horizontal runs directly but does not accept vertical runs.",
+     "contextQuote": "Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts.",
+     "contextParagraph": "The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "22c84632-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-29",
+     "text": "Text from Transcript: The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.\nClaim: The speaker's Minecraft screen accepts horizontal runs directly but does not accept vertical runs.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-06\nCurrent time: 19:41 UTC\nTweet posted: 2026-09-29\nPost age: 187.7 hours\n\n## Post\n\nHighlighted claim from Transcript: Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts.\nSurrounding context: The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post."
+    }
+   },
+   "production": {
+    "claimId": "c566e983-25e1-490f-ab76-0d5b4e7a633c",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.015845254,
+    "trace": {
+     "research": "Claim is a project-specific implementation description, not a verifiable falsehood, and is directionally consistent with how displays and line-rasterization work. Displays are raster-based and read from the frame buffer row-by-row, from left-to-right, top-to-bottom (raster-scan) https://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html — so contiguous horizontal pixel runs map naturally to contiguous framebuffer writes / scanline segments, while vertical runs do not. Bresenham-type algorithms handle shallow slopes (|slope|<1) by stepping x and steep slopes by swapping x/y and stepping y https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm , and the run-length-slice variant explicitly describes the output as a series of horizontal or vertical runs/rows/columns of pixels depending on slope. No strong contradicting evidence found; at most this is subjective phrasing about what the author's screen code path accepted.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-18",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Plausibly true and harmless. FU is a real low tier on Pokemon Showdown with fan analysis content, and the remark is a light aside.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "297bf8c6-1112-4dde-9602-91ae99fc8632",
+    "title": "an unnecessarily detailed analysis of furret in competitive pokemon",
+    "url": "https://www.youtube.com/watch?v=Dzq-Jga82DY",
+    "source": "youtube",
+    "publishedAt": "2026-09-23",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "c7ab3525-eb69-4221-a697-971b683ed6f2",
+     "restatement": "People made analysis videos about the FU format.",
+     "contextQuote": "People have made analysis videos about it, and it's very popular.",
+     "contextParagraph": "And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "297bf8c6-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-23",
+     "text": "Text from Transcript: And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.\nClaim: People made analysis videos about the FU format.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-09-25\nCurrent time: 14:34 UTC\nTweet posted: 2026-09-23\nPost age: 62.6 hours\n\n## Post\n\nHighlighted claim from Transcript: People have made analysis videos about it, and it's very popular.\nSurrounding context: And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.\n\n## Comments and replies\n\n- No replies or quote tweets found for this post ID."
+    }
+   },
+   "production": {
+    "claimId": "c7ab3525-eb69-4221-a697-971b683ed6f2",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "uncertain",
+    "notes": [],
+    "checkCostUsd": 0.012814550000000001,
+    "trace": {
+     "research": "Claim is vague/subjective (\"very popular\") and directionally supported - multiple Furret analysis videos exist and Furret content has large view counts. Examples of analysis videos: \"an unnecessarily detailed analysis of furret in competitive pokemon\" https://www.youtube.com/watch?v=Dzq-Jga82DY (listed as 69K-207K views 1-2 days after posting, matching 2026-09-23 tweet timing), \"FURRET | COMPETITIVE ANALYSIS AND POKEMON STRATEGIES\" with 101K views https://www.youtube.com/watch?v=1cToPrEcSlA, \"History of Furret in Competitive Pokemon (Gens 2-7)\" https://www.youtube.com/watch?v=vDaQZvNg09U, and TikTok analytic review \"Pokémon 162 Furret Review: Is It the Best Normal Type?\" https://www.tiktok.com/@redbeardguy_/video/7432522280778976542. Popularity supported by Furret Walk meme data on Know Your Meme https://knowyourmeme.com/memes/furret-walk: original Narpy video \"gained over 1 million views in seven months\" and Twitter post \"gained over 32,000 retweets and 80,000 likes\", one-hour edit \"gained over 676,000 views\", 10-hour video \"accumulated over 520,000 views\", plus 1-hour loop \"furret walk - full song (1 hour)\" listed with 6.9M views https://www.youtube.com/watch?v=ih9zBLDr_ro. No direct contradicting evidence; \"very popular\" is subjective characterization not warranting correction.",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
+   }
+  },
+  {
+   "id": "realistic-19",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. A loose paraphrase of a third person's point. Red Bull does spend heavily on big extreme-sports productions, so plausibly true.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "3bddabef-4f9a-4fbd-bcf0-b0192164da50",
+    "title": "This Is An Invasion",
+    "url": "https://www.youtube.com/watch?v=8Hi0XP8P9ww",
+    "source": "youtube",
+    "publishedAt": "2026-10-14",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "f831e842-6edc-47b3-a970-aaeeb8f11fbc",
+     "restatement": "A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+     "contextQuote": "This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip.",
+     "contextParagraph": "anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "3bddabef-0",
+     "author_id": "unknown",
+     "created_at": "2026-10-14",
+     "text": "Text from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-15\nCurrent time: 07:20 UTC\nTweet posted: 2026-10-14\nPost age: 31.3 hours\n\n## Post\n\nHighlighted claim from Transcript: This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip.\nSurrounding context: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\n\n## Comments and replies\n\n- @user1: This is wild, AI is gonna change everything in sports media. (1.2K likes, 150 RTs)\n- @user2: Red Bull's budget vs AI speed - the future is here. (890 likes, 95 RTs)\n- @user3: Deranged but accurate take on content creation costs. (654 likes, 72 RTs)\n- @user4: Can't wait for AI-generated extreme sports clips! (512 likes, 60 RTs)\n- @user5: Volume wins, but quality? AI might still need work. (478 likes, 55 RTs)\n- @user6: Stadium shutdowns for clips sound insane, AI is cheaper. (321 likes, 40 RTs)\n- @user7: Laughter in the transcript shows how absurd this is. (289 likes, 35 RTs)\n- @user8: Next wave in sports definitely AI-generated content. (245 likes, 28 RTs)"
+    }
+   },
+   "production": {
+    "claimId": "f831e842-6edc-47b3-a970-aaeeb8f11fbc",
+    "status": "no_note",
+    "reason": "low_materiality_score",
+    "judgement": "somewhat likely false",
+    "notes": [],
+    "checkCostUsd": 0.027506108,
+    "trace": {
+     "research": "The claim is not substantiated as stated. If it refers to Red Bull’s well-known Tyler Fernengel BMX video at Pontiac’s Silverdome, contemporaneous reporting describes the venue as abandoned and the former Lions stadium as having no permanent tenant; it was not a functioning stadium Red Bull had to shut down for filming (https://www.cbsnews.com/sacramento/news/watch-bmx-rider-cycles-in-abandoned-silverdome/). The videographer said the crew filmed there for four days, but the available behind-the-scenes account does not say the shoot cost millions (https://www.newsshooter.com/2016/01/29/a-red-a-slider-an-abandoned-stadium-behind-the-scenes-of-red-bulls-most-popular-video-of-2015/). The post does not identify which clip it means, so the specific cost claim cannot be independently confirmed.",
+     "draftNote": "Red Bull’s Tyler Fernengel BMX video at Pontiac’s Silverdome was filmed in an abandoned stadium, not a functioning venue shut down for filming.",
+     "sourceVerdict": "YES"
+    }
+   }
+  },
+  {
+   "id": "realistic-20",
+   "group": "realistic",
+   "groupTitle": "Note/No-Note realistic (claim checker only)",
+   "jimsWords": "Not from the ticket. One of 20 claims drawn uniformly at random from the 24063 claims that production fact-checked after the claim rater went live (9 September 2026), image claims left out. An Opus subagent judged it on 19 October 2026: not misleading. Definitely true. Flávio Bolsonaro edged Lula in the 4 October 2026 first round, 47.0% to 45.2%, and they meet in a runoff on 25 October.",
+   "writtenOn": "2026-10-19",
+   "referenceClaims": [],
+   "item": {
+    "id": "652b021c-677e-4841-bfec-5eba6711d640",
+    "title": "Brazil Elections 2026: Last Week Tonight with John Oliver (HBO)",
+    "url": "https://www.youtube.com/watch?v=MIYCek92ICQ",
+    "source": "youtube",
+    "publishedAt": "2026-09-28",
+    "textChars": 0
+   },
+   "extractorOnly": false,
+   "checkerOnly": true,
+   "expected": {
+    "decision": "no_note"
+   },
+   "extractor": null,
+   "checker": {
+    "claim": {
+     "id": "fc4abfc7-961c-4cf9-9028-d2da4d4b3398",
+     "restatement": "Flávio Bolsonaro is mounting a significant electoral challenge to Luiz Inácio Lula da Silva.",
+     "contextQuote": "he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age,",
+     "contextParagraph": "And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.",
+     "imageUrls": [],
+     "paragraphTakenFromText": false
+    },
+    "post": {
+     "id": "652b021c-0",
+     "author_id": "unknown",
+     "created_at": "2026-09-28",
+     "text": "Text from Transcript: And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.\nClaim: Flávio Bolsonaro is mounting a significant electoral challenge to Luiz Inácio Lula da Silva.",
+     "media": []
+    },
+    "asReceived": {
+     "from": "production check log",
+     "prompt": "Current date: 2026-10-09\nCurrent time: 23:54 UTC\nTweet posted: 2026-09-28\nPost age: 287.9 hours\n\n## Post\n\nHighlighted claim from Transcript: he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age,\nSurrounding context: And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.\n\n## Comments and replies\n\n- No comments found (invalid/non-existent post ID)"
+    }
+   },
+   "production": {
+    "claimId": "fc4abfc7-961c-4cf9-9028-d2da4d4b3398",
+    "status": "no_note",
+    "reason": "no_correction_needed",
+    "judgement": "somewhat likely false",
+    "notes": [],
+    "checkCostUsd": 0.03272636,
+    "trace": {
+     "research": "The \"he\" is President Luiz Inácio Lula da Silva facing Flávio Bolsonaro in the 2026 election. Lula was born 27 October 1945 (https://en.wikipedia.org/wiki/Luiz_In%C3%A1cio_Lula_da_Silva), so age 80 at tweet date 2026-09-28 (81 the next month). Flávio Nantes Bolsonaro was born 30 April 1981 (https://simple.wikipedia.org/wiki/Fl%C3%A1vio_Bolsonaro), so age 45. Half of 80 = 40, vs actual 45 (56% of Lula's age). \"Half his age\" is therefore a colloquial rounding/approximation, not a clear factual error. The \"significant challenge\" part is accurate: Flávio announced candidacy for president in Dec 2025 with father's support, then \"Brazilian Senator Flavio Bolsonaro will face President Luiz Inacio Lula da Silva in the runoff\" after taking ~47% in first round, and was polling slightly ahead 49% to 45% for Oct 25 runoff (https://www.livemint.com/news/world/brazil-elections-2026-who-is-flavio-bolsonaro-jailed-ex-president-s-more-moderate-son-challenging-lula-11759655859123.html reporting same).",
+     "draftNote": null,
+     "sourceVerdict": null
+    }
    }
   }
  ]

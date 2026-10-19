@@ -8,7 +8,7 @@ import type { Datapoint } from "./datapoints";
  *  Substack post its datapoint names, and if it names none this throws. */
 export async function loadItemTexts(datapoints: Datapoint[]): Promise<Map<string, string>> {
   const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
-  const { data, error } = await db.from("everything_items").select("id, full_text").in("id", [...new Set(datapoints.map((d) => d.itemId))]);
+  const { data, error } = await db.from("everything_items").select("id, full_text").in("id", [...new Set(datapoints.filter((d) => !("checkerOnly" in d)).map((d) => d.itemId))]);
   if (error) throw error;
   const texts = new Map<string, string>();
   for (const item of data) {

@@ -13,15 +13,21 @@ export interface DatasetRow {
   referenceClaims: string[];
   /** True for a datapoint that only the extractor eval uses. It has no expected decision, checker input or production result. */
   extractorOnly: boolean;
+  /** True for a datapoint that only the checker eval uses. It has no extractor input. */
+  checkerOnly?: boolean;
   expected: { decision: "note" | "no_note"; noteTolerated?: boolean; referenceNote?: string } | null;
   item: { id: string; title: string };
-  extractor: { chunkIndex: number; chunkCount: number; chunkChars: number; highlight: { start: number; end: number } | null; userMessage: string };
+  extractor: { chunkIndex: number; chunkCount: number; chunkChars: number; highlight: { start: number; end: number } | null; userMessage: string } | null;
   checker: {
     claim: { restatement: string; contextQuote: string | null; imageUrls: string[] };
     post: { id: string; author_id: string; created_at: string; text: string; media: { type: string; url: string }[] };
   } | null;
   production: { notes: { text: string; writtenBy: string; votes: { helpful: number; somewhatHelpful: number; notHelpful: number } }[] } | null;
 }
+
+/** A row that the extractor eval can run: it has an extractor input. */
+export type ExtractableRow = DatasetRow & { extractor: NonNullable<DatasetRow["extractor"]> };
+export const isExtractable = (row: DatasetRow): row is ExtractableRow => !row.checkerOnly;
 
 /** A row that the claim checker eval can run: it has a checker input and an expected decision. */
 export type CheckableRow = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]>; production: NonNullable<DatasetRow["production"]> };

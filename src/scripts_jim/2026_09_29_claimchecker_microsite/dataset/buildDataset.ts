@@ -133,6 +133,8 @@ function labPromptAsReceived(runId: string, claimId: string): string | null {
 
 const itemColumns = "id, title, url, source, published_at, created_at";
 const itemTexts = await loadItemTexts(DATAPOINTS);
+/** A checker-only datapoint needs no item text, because the extractor never reads it. */
+const textOf = (datapoint: CheckedDatapoint, itemId: string) => (datapoint.checkerOnly ? "" : itemTexts.get(itemId)!);
 
 /** An episode that the old podcast importer stored under its YouTube address is a YouTube video to the pipeline. */
 const sourceOf = (item: { source: string; url: string | null }) => (item.url?.includes("youtube.com/watch") ? "youtube" : item.source);
@@ -165,7 +167,7 @@ async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType
   const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
   if (error) throw error;
   const claim = await claimOf(datapoint);
-  const text = itemTexts.get(item.id)!;
+  const text = textOf(datapoint, item.id);
 
   // A passage a reader highlighted has no surrounding paragraph in the
   // database, so it is taken from the text, which is what the extractor would
@@ -192,8 +194,9 @@ async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType
   return {
     ...recordBase(datapoint, item, text),
     extractorOnly: false,
+    checkerOnly: !!datapoint.checkerOnly,
     expected: datapoint.expected,
-    extractor: extractorInput(text, claim, descriptions, labelOf(item)),
+    extractor: datapoint.checkerOnly ? null : extractorInput(text, claim, descriptions, labelOf(item)),
     checker: {
       claim: { ...claim, paragraphTakenFromText: !storedParagraph && !!paragraph },
       post,
@@ -209,8 +212,8 @@ for (const datapoint of DATAPOINTS) {
   const record = "extractorOnly" in datapoint ? await buildExtractorOnlyRecord(datapoint, descriptions) : await buildRecord(datapoint, descriptions);
   records.push(record);
   console.log(
-    `${datapoint.id.padEnd(30)} chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars)`,
-    `highlight ${record.extractor.highlight ? "found" : "MISSING"}`,
+    `${datapoint.id.padEnd(30)}`,
+    record.extractor ? `chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars) highlight ${record.extractor.highlight ? "found" : "MISSING"}` : "checker only",
     record.checker ? `| paragraph ${record.checker.claim.paragraphTakenFromText ? "from text" : record.checker.claim.contextParagraph ? "stored" : "NONE"} | as received ${record.checker.asReceived?.prompt ? "yes" : "no"}` : "| extractor only",
   );
 }

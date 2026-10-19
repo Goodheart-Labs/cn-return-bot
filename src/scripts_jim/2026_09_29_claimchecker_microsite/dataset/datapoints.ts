@@ -10,8 +10,10 @@
  * words and are meant to be corrected by him.
  */
 
+import { REALISTIC_DATAPOINTS } from "./realisticDatapoints";
+
 /** Jim's four groups: should a note be written, and how hard is the call. */
-export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity";
+export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity" | "realistic";
 
 export const GROUP_TITLE: Record<Group, string> = {
   "note-easy": "Note should be written (easy)",
@@ -19,6 +21,7 @@ export const GROUP_TITLE: Record<Group, string> = {
   "no-note-easy": "No note should be written (easy)",
   "no-note-difficult": "No note should be written (difficult)",
   atomicity: "Several statements in one sentence (extractor only)",
+  realistic: "Note/No-Note realistic (claim checker only)",
 };
 
 /** Where the claim that the checker is given comes from. */
@@ -50,6 +53,8 @@ interface DatapointBase {
 
 /** A datapoint for both evals: the extractor eval and the claim checker eval. */
 export interface CheckedDatapoint extends DatapointBase {
+  /** True for a datapoint that only the claim checker eval uses: it has no reference statements and the extractor eval skips it. */
+  checkerOnly?: true;
   claimSource: ClaimSource;
   expected: {
     decision: "note" | "no_note";
@@ -81,7 +86,7 @@ const SEX_CULT_POST = "b5e5ff9c-8862-4b98-90bc-1e9ad0933f81";
 const HUNGARY_VIDEO = "8bc6a469-5c64-4859-b8a8-09cc97ca5379";
 const DWARKESH_ADAM_BROWN = "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd";
 
-export const DATAPOINTS: Datapoint[] = [
+const HAND_LABELLED: Datapoint[] = [
   {
     id: "berkeley-as",
     group: "note-easy",
@@ -329,3 +334,5 @@ export const DATAPOINTS: Datapoint[] = [
     ],
   },
 ];
+
+export const DATAPOINTS: Datapoint[] = [...HAND_LABELLED, ...REALISTIC_DATAPOINTS];

@@ -75,6 +75,7 @@ button { font: inherit; color: inherit; }
 .group { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 0.76rem; font-weight: 600; white-space: nowrap; border: 1.5px solid; }
 .g-note-easy { background: var(--note-soft); border-color: var(--note-soft); color: var(--note); }
 .g-note-difficult { background: transparent; border-color: var(--note); color: var(--note); }
+.g-realistic { background: var(--surface-2, transparent); border-color: var(--line, currentColor); color: var(--muted); }
 .g-no-note-easy { background: var(--nonote-soft); border-color: var(--nonote-soft); color: var(--nonote); }
 .g-no-note-difficult { background: transparent; border-color: var(--nonote); color: var(--nonote); }
 
@@ -291,9 +292,10 @@ const GROUPS = [
   { id: "no-note-easy", label: "No note, easy" },
   { id: "no-note-difficult", label: "No note, difficult" },
   { id: "atomicity", label: "Several statements, extractor only" },
+  { id: "realistic", label: "Note/No-Note realistic, checker only" },
 ];
-/** The datapoints of the table that is shown: the extractor table has all of them, the checker table only those with a checker input. */
-const tablePoints = () => (state.ds === "extractor" ? POINTS : POINTS.filter((p) => p.checker));
+/** The datapoints of the table that is shown: the extractor table has those with an extractor input, the checker table those with a checker input. */
+const tablePoints = () => POINTS.filter((p) => (state.ds === "extractor" ? p.extractor : p.checker));
 const state = { view: "datasets", ds: "extractor", group: null, open: new Set(), run: RUNS[0]?.id ?? null, rs: "extractor", ropen: new Set() };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);

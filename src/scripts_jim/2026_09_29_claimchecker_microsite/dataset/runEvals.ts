@@ -18,7 +18,7 @@ import { extractionModels } from "../../../everything/pipeline/model";
 import { LAB_DIR } from "../runStore";
 import { GROUP_TITLE, type Group } from "./datapoints";
 import { runCheckerEval } from "./checkerEval";
-import { isCheckable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
+import { isCheckable, isExtractable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
 import { buildEvalSetsPage } from "./buildArtifact";
 import { runProbabilityEval } from "./probabilityEval";
 import { runExtractorEval } from "./extractorEval";
@@ -58,7 +58,7 @@ async function main() {
 
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker, probability] = await Promise.all([
-    evals.includes("extractor") ? runExtractorEval(rows) : null,
+    evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable)) : null,
     evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId) : null,
     evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
   ]);
