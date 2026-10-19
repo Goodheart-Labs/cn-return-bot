@@ -1,0 +1,595 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7AE1A4B2306D23C90055B5D7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE1A4B1306D23C90055B5D7 /* AppDelegate.swift */; };
+		7AE1A4B6306D23C90055B5D7 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 7AE1A4B4306D23C90055B5D7 /* Main.html */; };
+		7AE1A4B8306D23C90055B5D7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AE1A4B7306D23C90055B5D7 /* Icon.png */; };
+		7AE1A4BA306D23C90055B5D7 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 7AE1A4B9306D23C90055B5D7 /* Style.css */; };
+		7AE1A4BC306D23C90055B5D7 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 7AE1A4BB306D23C90055B5D7 /* Script.js */; };
+		7AE1A4BE306D23C90055B5D7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE1A4BD306D23C90055B5D7 /* ViewController.swift */; };
+		7AE1A4C1306D23C90055B5D7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7AE1A4BF306D23C90055B5D7 /* Main.storyboard */; };
+		7AE1A4C3306D23CA0055B5D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7AE1A4C2306D23CA0055B5D7 /* Assets.xcassets */; };
+		7AE1A4E2306D23CA0055B5D7 /* Common Notes Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7AE1A4E1306D23CA0055B5D7 /* Common Notes Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7AE1A4E7306D23CA0055B5D7 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE1A4E6306D23CA0055B5D7 /* SafariWebExtensionHandler.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7AE1A4E3306D23CA0055B5D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AE1A4A6306D23C90055B5D7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7AE1A4E0306D23CA0055B5D7;
+			remoteInfo = "Common Notes Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7AE1A4EF306D23CA0055B5D7 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7AE1A4E2306D23CA0055B5D7 /* Common Notes Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		7AE1A4AE306D23C90055B5D7 /* Common Notes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Common Notes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AE1A4B1306D23C90055B5D7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7AE1A4B5306D23C90055B5D7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		7AE1A4B7306D23C90055B5D7 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		7AE1A4B9306D23C90055B5D7 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		7AE1A4BB306D23C90055B5D7 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		7AE1A4BD306D23C90055B5D7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7AE1A4C0306D23C90055B5D7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7AE1A4C2306D23CA0055B5D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7AE1A4C4306D23CA0055B5D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7AE1A4C6306D23CA0055B5D7 /* Common Notes.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Common Notes.entitlements"; sourceTree = "<group>"; };
+		7AE1A4E1306D23CA0055B5D7 /* Common Notes Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Common Notes Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AE1A4E6306D23CA0055B5D7 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		7AE1A4E8306D23CA0055B5D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7AE1A4E9306D23CA0055B5D7 /* Common_Notes_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Common_Notes_Extension.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7AE1A4AB306D23C90055B5D7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7AE1A4DE306D23CA0055B5D7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7AE1A4A5306D23C90055B5D7 = {
+			isa = PBXGroup;
+			children = (
+				7AE1A4B0306D23C90055B5D7 /* Common Notes */,
+				7AE1A4E5306D23CA0055B5D7 /* Common Notes Extension */,
+				7AE1A4AF306D23C90055B5D7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7AE1A4AF306D23C90055B5D7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7AE1A4AE306D23C90055B5D7 /* Common Notes.app */,
+				7AE1A4E1306D23CA0055B5D7 /* Common Notes Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7AE1A4B0306D23C90055B5D7 /* Common Notes */ = {
+			isa = PBXGroup;
+			children = (
+				7AE1A4B1306D23C90055B5D7 /* AppDelegate.swift */,
+				7AE1A4BD306D23C90055B5D7 /* ViewController.swift */,
+				7AE1A4BF306D23C90055B5D7 /* Main.storyboard */,
+				7AE1A4C2306D23CA0055B5D7 /* Assets.xcassets */,
+				7AE1A4C4306D23CA0055B5D7 /* Info.plist */,
+				7AE1A4C6306D23CA0055B5D7 /* Common Notes.entitlements */,
+				7AE1A4B3306D23C90055B5D7 /* Resources */,
+			);
+			path = "Common Notes";
+			sourceTree = "<group>";
+		};
+		7AE1A4B3306D23C90055B5D7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7AE1A4B4306D23C90055B5D7 /* Main.html */,
+				7AE1A4B7306D23C90055B5D7 /* Icon.png */,
+				7AE1A4B9306D23C90055B5D7 /* Style.css */,
+				7AE1A4BB306D23C90055B5D7 /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		7AE1A4E5306D23CA0055B5D7 /* Common Notes Extension */ = {
+			isa = PBXGroup;
+			children = (
+				7AE1A4E6306D23CA0055B5D7 /* SafariWebExtensionHandler.swift */,
+				7AE1A4E8306D23CA0055B5D7 /* Info.plist */,
+				7AE1A4E9306D23CA0055B5D7 /* Common_Notes_Extension.entitlements */,
+			);
+			path = "Common Notes Extension";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7AE1A4AD306D23C90055B5D7 /* Common Notes */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7AE1A4F0306D23CA0055B5D7 /* Build configuration list for PBXNativeTarget "Common Notes" */;
+			buildPhases = (
+				7AE1A4AA306D23C90055B5D7 /* Sources */,
+				7AE1A4AB306D23C90055B5D7 /* Frameworks */,
+				7AE1A4AC306D23C90055B5D7 /* Resources */,
+				7AE1A4EF306D23CA0055B5D7 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7AE1A4E4306D23CA0055B5D7 /* PBXTargetDependency */,
+			);
+			name = "Common Notes";
+			packageProductDependencies = (
+			);
+			productName = "Common Notes";
+			productReference = 7AE1A4AE306D23C90055B5D7 /* Common Notes.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7AE1A4E0306D23CA0055B5D7 /* Common Notes Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7AE1A4EC306D23CA0055B5D7 /* Build configuration list for PBXNativeTarget "Common Notes Extension" */;
+			buildPhases = (
+				7AE1A4DD306D23CA0055B5D7 /* Sources */,
+				7AE1A4DE306D23CA0055B5D7 /* Frameworks */,
+				7AE1A4DF306D23CA0055B5D7 /* Resources */,
+				7AE1A50E306D23CA0055B5D7 /* Copy Web Extension Build */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Common Notes Extension";
+			packageProductDependencies = (
+			);
+			productName = "Common Notes Extension";
+			productReference = 7AE1A4E1306D23CA0055B5D7 /* Common Notes Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7AE1A4A6306D23C90055B5D7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					7AE1A4AD306D23C90055B5D7 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					7AE1A4E0306D23CA0055B5D7 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+				};
+			};
+			buildConfigurationList = 7AE1A4A9306D23C90055B5D7 /* Build configuration list for PBXProject "Common Notes" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7AE1A4A5306D23C90055B5D7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7AE1A4AF306D23C90055B5D7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7AE1A4AD306D23C90055B5D7 /* Common Notes */,
+				7AE1A4E0306D23CA0055B5D7 /* Common Notes Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7AE1A4AC306D23C90055B5D7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7AE1A4B8306D23C90055B5D7 /* Icon.png in Resources */,
+				7AE1A4C1306D23C90055B5D7 /* Main.storyboard in Resources */,
+				7AE1A4BC306D23C90055B5D7 /* Script.js in Resources */,
+				7AE1A4B6306D23C90055B5D7 /* Main.html in Resources */,
+				7AE1A4C3306D23CA0055B5D7 /* Assets.xcassets in Resources */,
+				7AE1A4BA306D23C90055B5D7 /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7AE1A4DF306D23CA0055B5D7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7AE1A50E306D23CA0055B5D7 /* Copy Web Extension Build */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Web Extension Build";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -euo pipefail\n# Copies the Safari build of the web extension into the app extension.\n# The build comes from `bun run build-ext` or `bun run build-ext-safari-dev`.\nWEB_BUILD=\"${SRCROOT}/../.output/safari-mv3-prod-backend\"\nif [ ! -f \"${WEB_BUILD}/manifest.json\" ]; then\n  echo \"error: No Safari build at ${WEB_BUILD}. Run bun run build-ext first.\"\n  exit 1\nfi\nRESOURCES=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nmkdir -p \"${RESOURCES}\"\nrsync -a --delete \"${WEB_BUILD}/\" \"${RESOURCES}/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7AE1A4AA306D23C90055B5D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7AE1A4BE306D23C90055B5D7 /* ViewController.swift in Sources */,
+				7AE1A4B2306D23C90055B5D7 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7AE1A4DD306D23CA0055B5D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7AE1A4E7306D23CA0055B5D7 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7AE1A4E4306D23CA0055B5D7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7AE1A4E0306D23CA0055B5D7 /* Common Notes Extension */;
+			targetProxy = 7AE1A4E3306D23CA0055B5D7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		7AE1A4B4306D23C90055B5D7 /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7AE1A4B5306D23C90055B5D7 /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		7AE1A4BF306D23C90055B5D7 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7AE1A4C0306D23C90055B5D7 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		7AE1A4EA306D23CA0055B5D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7AE1A4EB306D23CA0055B5D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		7AE1A4ED306D23CA0055B5D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Common Notes Extension/Common_Notes_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Common Notes Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Common Notes Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "net.commonnotes.CommonNotes.Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7AE1A4EE306D23CA0055B5D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Common Notes Extension/Common_Notes_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Common Notes Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Common Notes Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "net.commonnotes.CommonNotes.Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		7AE1A4F1306D23CA0055B5D7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Common Notes/Common Notes.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Common Notes/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Common Notes";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "net.commonnotes.CommonNotes";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7AE1A4F2306D23CA0055B5D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Common Notes/Common Notes.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Common Notes/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Common Notes";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "net.commonnotes.CommonNotes";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7AE1A4A9306D23C90055B5D7 /* Build configuration list for PBXProject "Common Notes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7AE1A4EA306D23CA0055B5D7 /* Debug */,
+				7AE1A4EB306D23CA0055B5D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7AE1A4EC306D23CA0055B5D7 /* Build configuration list for PBXNativeTarget "Common Notes Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7AE1A4ED306D23CA0055B5D7 /* Debug */,
+				7AE1A4EE306D23CA0055B5D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7AE1A4F0306D23CA0055B5D7 /* Build configuration list for PBXNativeTarget "Common Notes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7AE1A4F1306D23CA0055B5D7 /* Debug */,
+				7AE1A4F2306D23CA0055B5D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7AE1A4A6306D23C90055B5D7 /* Project object */;
+}

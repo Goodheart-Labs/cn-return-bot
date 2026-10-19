@@ -1,0 +1,141 @@
+import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ensureSession, ensureUser } from "@cn/core/auth";
+import type { PageItem } from "@cn/core/items";
+import { highlightSentence, isWaiting, type DraftOutcome, type HighlightDraft, type PassageQuestion } from "@cn/core/passageHighlights";
+import { askPassageQuestion, fetchPassageQuestions, postPassageHighlight, setDraftOutcome } from "@cn/core/passages";
+import { useSession } from "@cn/features/auth/useSession";
+import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
+import { Button } from "@cn/ui/Button";
+import { LoginModal } from "../../components/LoginModal";
+import type { ReaderAnchor } from "../context";
+
+/** How often an unanswered question is checked, in case the realtime update
+ *  is missed. */
+export const ANSWER_POLL_MS = 5000;
+
+/** The trigger in migration 108 refuses a reader's 21st question of the UTC
+ *  day with this message. */
+const DAILY_QUESTION_LIMIT = /Daily question limit reached/;
+
+/** The reader's questions to Opus about one passage, and asking a new one.
+ *  `onAnswered` runs once for each question this hook sent, when it is answered. */
+export function usePassageQuestions(item: PageItem, passage: string, onAnswered?: (question: PassageQuestion) => void) {
+  const { session } = useSession();
+  const client = useQueryClient();
+  const [login, setLogin] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const waitingFor = useRef<string | null>(null);
+  const questions = useQuery({
+    queryKey: ["passageQuestions", item.id, passage, session?.user.id],
+    queryFn: () => fetchPassageQuestions(item.id, passage, session!.user.id),
+    enabled: !!session,
+    refetchInterval: (query) => (waitingFor.current || query.state.data?.some(isWaiting) ? ANSWER_POLL_MS : false),
+  });
+  useEffect(() => {
+    const question = questions.data?.find((q) => q.id === waitingFor.current);
+    if (!question || isWaiting(question)) return;
+    waitingFor.current = null;
+    onAnswered?.(question);
+  }, [questions.data, onAnswered]);
+
+  async function ask(text: string): Promise<boolean> {
+    setSending(true);
+    setError("");
+    try {
+      const user = await ensureUser();
+      if (!user) { setLogin(true); return false; }
+      waitingFor.current = await askPassageQuestion(item.id, passage, text, user.id);
+      await client.invalidateQueries({ queryKey: ["passageQuestions", item.id] });
+      return true;
+    } catch (err) {
+      setError(err instanceof Error && DAILY_QUESTION_LIMIT.test(err.message)
+        ? "You have asked 20 questions today, the daily limit. You can ask again after midnight UTC."
+        : "Your question did not send. Please try again.");
+      return false;
+    } finally {
+      setSending(false);
+    }
+  }
+  const waiting = sending || !!questions.data?.some(isWaiting);
+  return { questions, ask, waiting, error, login: <LoginModal open={login} onClose={() => setLogin(false)} /> };
+}
+
+/** Posting a key point or a forecast. */
+export function useHighlightPost(item: PageItem) {
+  const [posting, setPosting] = useState(false);
+  const [error, setError] = useState("");
+  const [login, setLogin] = useState(false);
+  /** Returns the posted highlight's id, or null when it did not post. */
+  async function post(anchor: Pick<ReaderAnchor, "text" | "paragraph">, highlight: HighlightDraft, authorName: string | null = null): Promise<string | null> {
+    setPosting(true);
+    setError("");
+    try {
+      const user = await ensureUser();
+      if (!user) { setLogin(true); return null; }
+      return await postPassageHighlight({
+        item_id: item.id, kind: highlight.kind, quote: anchor.text, context_paragraph: anchor.paragraph,
+        statement: highlight.statement.trim(), probability: highlight.kind === "forecast" ? highlight.probability : null,
+        author_id: user.id, author_name: authorName,
+      });
+    } catch {
+      setError(`Your ${highlight.kind === "forecast" ? "forecast" : "key point"} did not post. Please try again.`);
+      return null;
+    } finally {
+      setPosting(false);
+    }
+  }
+  return { post, posting, error, login: <LoginModal open={login} onClose={() => setLogin(false)} /> };
+}
+
+/** Posting a reader's note on selected words. The invisible account is made
+ *  when the reader posts, not when the dialog opens, so opening and cancelling
+ *  leaves nothing behind. `posting` is already true while that account is
+ *  being made, so a second Enter or click cannot send the note twice. */
+export function useNotePost(item: PageItem) {
+  const [posting, setPosting] = useState(false);
+  const [error, setError] = useState("");
+  const [login, setLogin] = useState(false);
+  const postClaimWithNote = usePostClaimWithNote();
+  async function post(anchor: Pick<ReaderAnchor, "text" | "paragraph">, note: string, signed: boolean) {
+    setPosting(true);
+    setError("");
+    try {
+      const session = await ensureSession();
+      if (!session) { setLogin(true); return null; }
+      return await postClaimWithNote.mutateAsync({
+        item, page: { url: item.url, title: item.title ?? "" }, anchorText: anchor.text, contextParagraph: anchor.paragraph,
+        note, session, signed: signed && !session.user.is_anonymous,
+      });
+    } catch {
+      setError("That didn't post. Check your connection and try again.");
+      return null;
+    } finally {
+      setPosting(false);
+    }
+  }
+  return { post, posting, error, login: <LoginModal open={login} onClose={() => setLogin(false)} /> };
+}
+
+/** Stores what the reader did with a draft, and waits until the reader's
+ *  questions show it, so the draft cannot be posted again in between. */
+export function useRecordDraftOutcome(itemId: string) {
+  const client = useQueryClient();
+  return async (questionId: string, outcome: DraftOutcome | null) => {
+    await setDraftOutcome(questionId, outcome);
+    await client.invalidateQueries({ queryKey: ["passageQuestions", itemId] });
+  };
+}
+
+/** A draft Opus wrote, as a card the reader can post as it is or edit. */
+export function DraftSuggestion({ draft, posting, onUse, onEdit }: { draft: HighlightDraft; posting: boolean; onUse: () => void; onEdit: () => void }) {
+  return <div className="reader-draft-card">
+    <p className="reader-entry-kind">Suggested {draft.kind === "forecast" ? "forecast" : "key point"}</p>
+    <p>{highlightSentence(draft)}</p>
+    <div className="reader-draft-actions">
+      <Button variant="secondary" onClick={onEdit}>Edit</Button>
+      <Button disabled={posting} onClick={onUse}>Use this draft</Button>
+    </div>
+  </div>;
+}

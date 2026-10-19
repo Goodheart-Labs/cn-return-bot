@@ -1,0 +1,34 @@
+{
+  "item_id": "0c8eedd2-1e78-4d1c-a08a-8ec7e66f92bd",
+  "reviewer": "opus",
+  "source_read": "fetched:https://www.dwarkesh.com/p/adam-brown-gr",
+  "notes": [
+    {
+      "note_id": "06806a9f-aaea-4725-905c-fbba9b68b7a4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The sentence is Adam Brown's, not Dwarkesh's, and he states it plainly as fact while explaining why we are confident black holes exist, so it is fair to check it. He really is wrong: the current catalogue, GWTC-5.0, released on 26 May 2026, lists 390 events in total, which is hundreds, not thousands. But the note's own second sentence is out of date and wrong in the other direction. It says the published catalogues list about 90 detections 'with O4 adding dozens more', when O4 alone added roughly 300, and it cites only the old GWTC-3 page while ignoring GWTC-4.0 and GWTC-5.0, both of which were published before this episode came out. A physicist would accept 'hundreds, not thousands' but would immediately spot that the note undercounts by a factor of three, and that would cost us credibility. Do not send it as written. If the second sentence is replaced with the GWTC-5.0 figure of 390 events and that source, the note becomes good."
+    },
+    {
+      "note_id": "4e829be1-0b78-4172-94ff-6214e05d8329",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "yes",
+      "author_would_accept": "unlikely",
+      "reason": "The note is simply false and it fact-checks the wrong problem. Adam Brown is talking about the Erdos unit distance problem, which asks how many pairs among n points in the plane can be exactly one apart, and Dwarkesh's own transcript links the phrase 'unit distance conjecture' to the MathWorld page for that problem and links the disproof to OpenAI's announcement of 20 May 2026 that one of its reasoning models disproved it, plus the companion paper by outside mathematicians titled 'Remarks on the disproof of the unit distance conjecture'. The note instead answers about the Hadwiger-Nelson problem, the chromatic number of the plane, which is a different question, and then asserts 'No disproof exists from any source', which is flatly contradicted by the very result the episode is discussing. This is exactly the failure Andy Masley complained about, an authoritative-sounding correction aimed at something the speaker never said. The two not-helpful votes it already has agree. It must not be sent."
+    },
+    {
+      "note_id": "25053799-047c-43e3-93bf-cab327d0376a",
+      "verdict": "good",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Again the speaker is the guest, Adam Brown, but he asserts it directly as part of a worked calculation, so it is fair game. He says 'the sun is a few million times the mass of the Earth', and the real ratio is about 333,000, so he is out by roughly a factor of ten. This is not a simplification for a lay audience, it is a slip that breaks his own arithmetic: he reaches the famous solar surface redshift of 2x10^-6 by dividing the mass ratio by the sun's radius ratio of about 109, and 333,000 divided by 109 gives about 3,000, which is what produces 2x10^-6, whereas 'a few million' divided by 109 would give about 2x10^-5. A listener trying to follow the numbers would be unable to reproduce the answer he states one sentence later. The number is standard and easy to check, the quote is verbatim, and a physicist would accept this without any argument. The note already has two helpful votes."
+    }
+  ]
+}

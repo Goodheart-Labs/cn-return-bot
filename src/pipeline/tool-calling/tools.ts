@@ -8,15 +8,24 @@ import { generateText } from "ai";
 import { parseHTML } from "linkedom";
 import { extractText, getDocumentProxy } from "unpdf";
 import TurndownService from "turndown";
-import { xai } from "../llm/xai";
+import { grokCallCost, xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
-import { getBotConfig } from "../ab-testing/botConfig";
+import { getBotConfig, getBotConfigIfActive } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
+import { isWebUrl } from "../utils/webUrl";
+import { callFetchService } from "../../service/client";
+import {
+  FETCH_PAGE_PATH,
+  FETCH_SERVICE_SOCKET_VARIABLE,
+  type FetchedJson,
+  type FetchedPageHtml,
+  type FetchPageRequest,
+} from "../../service/contract";
 import {
   GEMINI_MODEL,
   GROK_MODEL, PERPLEXITY_MODEL,
-  calculateGrokCost, extractOpenRouterCost,
+  addTokenCost, extractOpenRouterCost, serperSearchCost,
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
@@ -63,6 +72,56 @@ export const WEB_FETCH_TOOL = {
 // native-search dispatch of simple-bot uses it.
 export const WEB_SEARCH_TOOL = { type: "web_search_20260209" as const, name: "web_search" };
 
+// Claude's built-in web fetch tool, also passed through by OpenRouter. Claude
+// reads the page inside the call, so the page never round-trips through us.
+// The fetched text is billed as input tokens, hence the per-page token cap.
+export function webFetchNativeTool(limits: { maxUses: number; maxContentTokens: number }) {
+  return {
+    type: "web_fetch_20250910" as const,
+    name: "web_fetch",
+    max_uses: limits.maxUses,
+    max_content_tokens: limits.maxContentTokens,
+  };
+}
+
+/** The page budget of one Claude research call. Anthropic sets no limit of its
+ *  own on either number, so an uncapped page is read in full. With these
+ *  limits a call reads at most 60,000 extra input tokens, which is at most
+ *  $0.30 on Opus 5. */
+const CLAUDE_RESEARCH_MAX_FETCHES = 3;
+const CLAUDE_RESEARCH_MAX_TOKENS_PER_PAGE = 20_000;
+
+/** The fetch tool every Claude research call gets next to its search tool, so
+ *  Claude can read a whole page, such as the study an article links to. */
+export const CLAUDE_RESEARCH_FETCH_TOOL = webFetchNativeTool({
+  maxUses: CLAUDE_RESEARCH_MAX_FETCHES,
+  maxContentTokens: CLAUDE_RESEARCH_MAX_TOKENS_PER_PAGE,
+});
+
+// OpenRouter's web_search server tool on the model provider's own engine. For a
+// Muse request that is Meta's search, which also opens pages. OpenRouter runs it
+// inside the request and bills the searches in usage.cost.
+export const OPENROUTER_NATIVE_WEB_SEARCH_TOOL = {
+  type: "openrouter:web_search" as const,
+  parameters: { engine: "native" as const },
+};
+
+/** With the fetch tool attached, OpenRouter returns Claude's citations as
+ *  inline tags such as <cite index="8-7:8-11">quoted words</cite>, where it
+ *  otherwise turns them into url_citation annotations. The index points into
+ *  Anthropic's search results and means nothing to us. The tags are removed and
+ *  the quoted words are kept. */
+export function stripCiteTags(text: string): string {
+  return text.replace(/<cite index="[^"]*">|<\/cite>/g, "");
+}
+
+/** Meta's search tool cites the lines of the pages it opened with markers such
+ *  as 【1586541899417117766†L16-L18】, which point into its own page cache and mean
+ *  nothing to us. They are removed so they cannot leak into a note. */
+export function stripBrowserLineCitations(text: string): string {
+  return text.replace(/\s*【[^】]*†[^】]*】/g, "");
+}
+
 // --- Tool handlers ---
 
 export interface ToolResult {
@@ -100,23 +159,15 @@ export async function handleGrokSearch(query: string): Promise<ToolResult> {
     return { output: { error: "XAI_API_KEY not set" }, isTerminal: false };
   }
 
-  const { text, usage, steps } = await generateText({
+  const result = await generateText({
     model: xai.responses(GROK_MODEL) as any,
     prompt: query,
     tools: {
       x_search: xai.tools.xSearch({ enableImageUnderstanding: true }) as any,
     },
   });
-
-  const searchCalls = steps?.reduce(
-    (n, s) => n + (s.toolCalls?.filter((tc) => tc.toolName === "x_search").length ?? 0),
-    0,
-  ) ?? 0;
-  const cost = calculateGrokCost(
-    usage?.inputTokens ?? 0,
-    usage?.outputTokens ?? 0,
-    searchCalls,
-  );
+  const { text } = result;
+  const cost = grokCallCost(result, GROK_MODEL);
 
   return { output: { results: text }, isTerminal: false, cost };
 }
@@ -138,7 +189,7 @@ export async function handlePerplexitySearch(prompt: string): Promise<ToolResult
 export async function handleGoogleSearchRaw(query: string): Promise<ToolResult> {
   try {
     const results = await fetchSearchResults(query);
-    return { output: { results: formatSearchResults(results) }, isTerminal: false };
+    return { output: { results: formatSearchResults(results) }, isTerminal: false, cost: serperSearchCost() };
   } catch (err: any) {
     return { output: { error: `Google search failed: ${err?.message}` }, isTerminal: false };
   }
@@ -159,7 +210,8 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
     messages: [{ role: "user" as const, content: prompt }],
   });
   const summary = response.choices?.[0]?.message?.content ?? "";
-  const cost = extractOpenRouterCost(response);
+  const cost = serperSearchCost();
+  addTokenCost(cost, extractOpenRouterCost(response));
 
   return { output: { results: summary }, isTerminal: false, cost };
 }
@@ -187,12 +239,6 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
  *      JavaScript, and sites that answer 403 to a plain HTTP request but render
  *      fine for a real browser. It costs about 3 seconds, so it only runs when
  *      steps 1 to 5 have all failed.
- *   7. As a last resort, ask Jina Reader, a paid service that fetches the page
- *      from its own addresses with its own browsers. Our requests come from
- *      datacenter addresses and our HTTP client's handshake is on the deny
- *      lists of many bot defences, so Jina gets through where every step above
- *      was refused. It costs about $0.0004 per page, so it only runs when
- *      steps 1 to 6 have all failed. See jinaReader.ts.
  *
  * The HTML each step produces goes through `classifyContent`. That function
  * counts a 200 OK whose body is a login wall as a failure, so we never accept a
@@ -229,9 +275,14 @@ const FETCH_UAS = {
 } as const;
 
 const MIN_GOOD_CONTENT_CHARS = 300;
+/** The most text of one page that any step reads: a fetched source, an
+ *  article the Common Notes worker ingests, and the article Ask Opus gets as
+ *  context. It matches the limit on note_requests.page_text. Until 2026-10-15
+ *  a fetched source was cut at 20,000 characters, so the source verifier never
+ *  saw quotes further down a long report. */
+export const MAX_PAGE_TEXT_CHARS = 500_000;
 const FETCH_TIMEOUT_MS = 15_000;
 const BROWSER_RENDER_TIMEOUT_MS = 20_000;
-const MAX_RETURN_CHARS = 20_000;
 
 // Patterns that mark a login wall or an anti-bot interstitial page. A body that
 // came back 200 OK and matches two or more of them counts as a wall. That is
@@ -444,11 +495,78 @@ export interface WebFetchResult {
   ok: boolean;
 }
 
-/** `maxChars` overrides the default return cap. The default is sized for a
- *  verifier's context window; the everything pipeline passes a much larger cap
- *  because it ingests the whole article. */
-export async function fetchWebPage(url: string, opts?: { maxChars?: number }): Promise<WebFetchResult> {
-  const maxChars = opts?.maxChars ?? MAX_RETURN_CHARS;
+/** Fetches an outside page. On the services machine the sandboxed fetcher does
+ *  the fetching (src/service/fetch/main.ts), so that a hostile page never runs
+ *  inside a process that holds our keys. Everywhere else, such as GitHub
+ *  Actions and local runs, this process fetches the page itself. */
+export async function fetchWebPage(url: string): Promise<WebFetchResult> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  const result = socket
+    ? await callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url } satisfies FetchPageRequest)
+    : await fetchWebPageInProcess(url);
+  return withJinaFallback(url, result);
+}
+
+/** When the run is on the `jina_fetch` arm and the free ladder failed, this asks
+ *  Jina Reader for the page. Jina is a paid service that fetches the page from
+ *  its own addresses with its own browsers, so it gets through many bot
+ *  defences that refuse ours. It runs here and not inside the fetcher, because
+ *  the fetcher holds no keys. It costs about $0.0004 per page and only runs for
+ *  pages that every free step failed on. Jina fetches the live page, so the
+ *  note cites the original URL. A run outside any bot config, such as the
+ *  Common Notes page reads, never uses it. */
+export async function withJinaFallback(url: string, failed: WebFetchResult): Promise<WebFetchResult> {
+  if (failed.ok || !getBotConfigIfActive()?.jina_fetch) return failed;
+  const jina = await fetchWithJinaReader(url);
+  if (jina.type !== "page" || classifyMarkdown(jina.markdown) !== "good") return failed;
+  return { content: `[fetched via Jina Reader]\n\n${jina.markdown.slice(0, MAX_PAGE_TEXT_CHARS)}`, fetchedUrl: url, ok: true };
+}
+
+const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";
+
+/** The fetch ladder itself. Only the fetcher and processes without one call
+ *  this directly. */
+export async function fetchWebPageInProcess(url: string): Promise<WebFetchResult> {
+  if (!isWebUrl(url)) return { content: `Fetch refused: ${REFUSED_NON_WEB_URL}`, fetchedUrl: url, ok: false };
+  const outcome = await runFetchLadder(url);
+  if (!outcome.ok) return { content: outcome.diagnostic, fetchedUrl: url, ok: false };
+  const { markdown, fetchedUrl, via } = outcome.page;
+  const text = markdown.slice(0, MAX_PAGE_TEXT_CHARS);
+  const content = via ? `[fetched via ${via}]\n\n${text}` : text;
+  return { content, fetchedUrl, ok: true };
+}
+
+export async function fetchWebPageHtmlInProcess(url: string): Promise<FetchedPageHtml> {
+  if (!isWebUrl(url)) return { ok: false, reason: REFUSED_NON_WEB_URL };
+  const outcome = await runFetchLadder(url);
+  if (!outcome.ok) return { ok: false, reason: outcome.diagnostic };
+  return { ok: true, html: outcome.page.html, fetchedUrl: outcome.page.fetchedUrl };
+}
+
+export async function fetchJsonInProcess(url: string): Promise<FetchedJson> {
+  if (!isWebUrl(url)) return { ok: false, reason: REFUSED_NON_WEB_URL };
+  const answer = await rawFetch(url, FETCH_UAS.desktop);
+  if (!answer.ok || !answer.body) return { ok: false, reason: answer.status ? `HTTP ${answer.status}` : answer.error ?? "empty answer" };
+  if (!answer.contentType?.includes("json")) return { ok: false, reason: `not JSON but ${answer.contentType}` };
+  try {
+    return { ok: true, json: JSON.parse(answer.body) };
+  } catch {
+    return { ok: false, reason: "the answer is not valid JSON" };
+  }
+}
+
+/** A page the ladder accepted. `via` names the fallback that produced it, or
+ *  is null when a plain HTTP request did. */
+interface LadderPage {
+  html: string;
+  markdown: string;
+  fetchedUrl: string;
+  via: string | null;
+}
+
+type LadderOutcome = { ok: true; page: LadderPage } | { ok: false; diagnostic: string };
+
+async function runFetchLadder(url: string): Promise<LadderOutcome> {
   const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; markdown: string; sourceLabel?: string }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as
@@ -463,7 +581,7 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
       attempts.push({ label, cls, status: r.status, chars: markdown.length, markdown });
-      if (cls === "good") return { content: markdown.slice(0, maxChars), fetchedUrl: url, ok: true };
+      if (cls === "good") return { ok: true, page: { html: r.body, markdown, fetchedUrl: url, via: null } };
     } else {
       attempts.push({ label, cls: "fail", status: r.status, chars: 0, markdown: "" });
     }
@@ -481,11 +599,7 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
       if (cls === "good") {
         // The requested URL is dead or blocked. We read the snapshot instead, so
         // the snapshot is the URL a note may cite, not the original.
-        return {
-          content: `[fetched via ${archiveLabel} snapshot]\n\n${markdown.slice(0, maxChars)}`,
-          fetchedUrl: r.finalUrl ?? url,
-          ok: true,
-        };
+        return { ok: true, page: { html: r.body, markdown, fetchedUrl: r.finalUrl ?? url, via: `${archiveLabel} snapshot` } };
       }
     } else {
       attempts.push({ label: archiveLabel, cls: "fail", status: r.status, chars: 0, markdown: "" });
@@ -499,53 +613,24 @@ export async function fetchWebPage(url: string, opts?: { maxChars?: number }): P
   if (browser.ok && browser.body) {
     const { cls, markdown } = classifyContent(browser.body);
     attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length, markdown });
-    if (cls === "good") {
-      return {
-        content: `[fetched via headless browser]\n\n${markdown.slice(0, maxChars)}`,
-        fetchedUrl: url,
-        ok: true,
-      };
-    }
+    if (cls === "good") return { ok: true, page: { html: browser.body, markdown, fetchedUrl: url, via: "headless browser" } };
   } else {
     attempts.push({ label: "browser", cls: "fail", status: browser.status, chars: 0, markdown: "" });
   }
 
-  // Step 7 asks Jina Reader, which costs money, so it runs only after every
-  // free step has failed. Jina fetches the live page, so the note cites the
-  // original URL, as it does after the browser step.
-  const jina = await fetchWithJinaReader(url);
-  switch (jina.type) {
-    case "page": {
-      const cls = classifyMarkdown(jina.markdown);
-      attempts.push({ label: "jina", cls, status: 200, chars: jina.markdown.length, markdown: jina.markdown });
-      if (cls === "good") {
-        return { content: `[fetched via Jina Reader]\n\n${jina.markdown.slice(0, maxChars)}`, fetchedUrl: url, ok: true };
-      }
-      break;
-    }
-    case "challenge":
-      attempts.push({ label: "jina", cls: "wall", chars: 0, markdown: "" });
-      break;
-    case "target_error":
-    case "failed":
-      attempts.push({ label: "jina", cls: "fail", status: jina.status, chars: 0, markdown: "" });
-      break;
-  }
-
   // Nothing produced good content. We return the most informative diagnostic we
-  // have. When Jina reports the site's own status, such as a 404, the final
-  // "HTTP <status> (last attempt: jina)" line carries it. A wall or a thin result says more than a ladder of plain failures, so
+  // have. A wall or a thin result says more than a ladder of plain failures, so
   // we prefer it. The verifier uses this to decide whether to reject the source.
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
     const tag = best.cls === "wall" ? "login wall / anti-bot block" : "thin content";
-    return { content: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)`, fetchedUrl: url, ok: false };
+    return { ok: false, diagnostic: `Fetch failed: ${tag} (${best.label}, ${best.chars} chars)` };
   }
   const last = attempts[attempts.length - 1];
   const failure = last?.status
     ? `Fetch failed: HTTP ${last.status} (last attempt: ${last.label})`
     : `Fetch error: all ${attempts.length} attempts failed`;
-  return { content: failure, fetchedUrl: url, ok: false };
+  return { ok: false, diagnostic: failure };
 }
 
 export function handleProposeNotes(

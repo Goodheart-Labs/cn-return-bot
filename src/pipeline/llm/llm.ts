@@ -50,6 +50,15 @@ const MODEL_ROUTING: Record<string, ModelRouting> = {
   },
 };
 
+type ReasoningEffort = "low" | "medium" | "high";
+
+// The reasoning effort a model runs at when the call does not set its own.
+// GPT-6 Luna is weak with reasoning off, and published effort curves show medium
+// is where its gains level off, so it always reasons at medium (GOO-303).
+const DEFAULT_REASONING_EFFORT: Record<string, ReasoningEffort> = {
+  "openai/gpt-6-luna": "medium",
+};
+
 /** Raised when an attempt runs past its deadline. It is retryable, because the
  *  next attempt is routed afresh and usually lands on a healthy provider. */
 export class AttemptDeadlineError extends Error {
@@ -181,72 +190,144 @@ function hasEmptyContent(result: OpenAI.Chat.Completions.ChatCompletion): boolea
   return typeof content === "string" && content.trim().length === 0;
 }
 
+/** Adds the usage of an attempt we threw away to the usage of the reply we keep.
+ *  OpenRouter bills an empty reply like any other, reasoning tokens included, and
+ *  every caller reads the cost from the reply it gets back. So the discarded
+ *  attempts are only counted if their usage travels with that reply. */
+function carryDiscardedUsage(
+  result: OpenAI.Chat.Completions.ChatCompletion,
+  discarded: OpenAI.Chat.Completions.ChatCompletion[],
+): OpenAI.Chat.Completions.ChatCompletion {
+  if (discarded.length === 0) return result;
+  const usage: any = { ...result.usage };
+  for (const attempt of discarded) {
+    const extra: any = attempt.usage ?? {};
+    usage.prompt_tokens = (usage.prompt_tokens ?? 0) + (extra.prompt_tokens ?? 0);
+    usage.completion_tokens = (usage.completion_tokens ?? 0) + (extra.completion_tokens ?? 0);
+    usage.cost = (usage.cost ?? 0) + (extra.cost ?? 0);
+  }
+  return { ...result, usage };
+}
+
 /**
- * Wraps an LLM create call with retries and exponential backoff.
+ * Sends one attempt after another, with exponential backoff between them.
  * It retries the OpenRouter "400 Provider returned error", the 429, 500, 502, 503
  * and 504 statuses, network errors, an attempt that ran past its deadline, and a
- * 200 OK that comes back with empty content.
+ * 200 OK that `isEmpty` calls empty. The empty replies it threw away come back
+ * too, because OpenRouter billed them.
  */
-async function callWithRetry(
-  params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
-): Promise<OpenAI.Chat.Completions.ChatCompletion> {
-  // Tell OpenRouter to route only to providers that honour every parameter we
-  // send. The ones that matter are response_format=json_schema and tools. Without
-  // this, OpenRouter can pick a provider that quietly ignores the strict schema.
-  // The model then wraps its JSON in ```json fences and we cannot parse it.
-  const routing = MODEL_ROUTING[params.model];
-  const routedParams = {
-    ...params,
-    provider: {
-      require_parameters: true,
-      ...(routing ? { only: routing.providers } : {}),
-      ...(params as any).provider,
-    },
-  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
-  const deadlineMs = routing?.attemptDeadlineMs ?? DEFAULT_ATTEMPT_DEADLINE_MS;
+async function sendWithRetry<T>(
+  model: string,
+  isEmpty: (result: T) => boolean,
+  send: (signal: AbortSignal, sdkOptions: { maxRetries?: number }) => Promise<T>,
+): Promise<{ result: T; emptyAttempts: T[] }> {
+  const deadlineMs = MODEL_ROUTING[model]?.attemptDeadlineMs ?? DEFAULT_ATTEMPT_DEADLINE_MS;
   const scopeSignal = getLlmAbortSignal();
 
   let lastError: any;
+  const emptyAttempts: T[] = [];
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     scopeSignal?.throwIfAborted();
     try {
       const result = await withDeadline(
         deadlineMs,
-        () => new AttemptDeadlineError(params.model, deadlineMs),
+        () => new AttemptDeadlineError(model, deadlineMs),
         // SDK retry sleeps cannot be aborted; use our loop within a shared budget.
-        (signal) => getClient().chat.completions.create(routedParams, {
-          signal,
-          ...(scopeSignal ? { maxRetries: 0 } : {}),
-        }),
+        (signal) => send(signal, scopeSignal ? { maxRetries: 0 } : {}),
       );
       scopeSignal?.throwIfAborted();
-      if (hasEmptyContent(result) && attempt < MAX_RETRIES) {
+      if (isEmpty(result) && attempt < MAX_RETRIES) {
+        emptyAttempts.push(result);
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
-          `[llm] Empty content (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}). Retrying in ${backoff}ms...`
+          `[llm] Empty content (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${model}). Retrying in ${backoff}ms...`
         );
         await sleep(backoff, scopeSignal);
         continue;
       }
-      return result;
+      return { result, emptyAttempts };
     } catch (err: any) {
       scopeSignal?.throwIfAborted();
       lastError = err;
       if (attempt < MAX_RETRIES && isRetryableError(err)) {
         const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
         console.warn(
-          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${params.model}): ${formatErrorDetail(err)}. Retrying in ${backoff}ms...`
+          `[llm] Retryable error (attempt ${attempt + 1}/${MAX_RETRIES + 1}, model: ${model}): ${formatErrorDetail(err)}. Retrying in ${backoff}ms...`
         );
         await sleep(backoff, scopeSignal);
         continue;
       }
       if (err instanceof Error) {
-        err.message = `[model: ${params.model}] ${formatErrorDetail(err)}`;
+        err.message = `[model: ${model}] ${formatErrorDetail(err)}`;
       }
       throw err;
     }
   }
   throw lastError;
+}
+
+/** Tells OpenRouter to route only to providers that honour every parameter we
+ *  send. The ones that matter are response_format=json_schema and tools.
+ *  Without this, OpenRouter can pick a provider that quietly ignores the strict
+ *  schema. The model then wraps its JSON in ```json fences and we cannot parse
+ *  it. */
+function providerRouting(model: string, requested: object | undefined) {
+  const routing = MODEL_ROUTING[model];
+  return { require_parameters: true, ...(routing ? { only: routing.providers } : {}), ...requested };
+}
+
+/** A chat completion through OpenRouter, with retries. */
+async function callWithRetry(
+  params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
+): Promise<OpenAI.Chat.Completions.ChatCompletion> {
+  const defaultEffort = DEFAULT_REASONING_EFFORT[params.model];
+  const routedParams = {
+    ...(defaultEffort ? { reasoning_effort: defaultEffort } : {}),
+    ...params,
+    provider: providerRouting(params.model, (params as any).provider),
+  } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming;
+  const { result, emptyAttempts } = await sendWithRetry(params.model, hasEmptyContent,
+    (signal, sdkOptions) => getClient().chat.completions.create(routedParams, { signal, ...sdkOptions }));
+  return carryDiscardedUsage(result, emptyAttempts);
+}
+
+/** One content block of a reply from Anthropic's Messages format. Server tools,
+ *  such as web search and web fetch, add blocks of their own types. */
+export type AnthropicContentBlock =
+  | { type: "text"; text: string }
+  | { type: "tool_use"; id: string; name: string; input: Record<string, unknown> }
+  | { type: "thinking" | "server_tool_use" | "web_search_tool_result" | "web_fetch_tool_result" };
+
+export interface AnthropicMessage {
+  content: AnthropicContentBlock[];
+  usage?: { input_tokens: number; output_tokens: number; cost?: number };
+}
+
+export interface AnthropicMessageParams {
+  model: string;
+  max_tokens: number;
+  system?: string;
+  messages: { role: "user" | "assistant"; content: unknown }[];
+  tools?: object[];
+}
+
+/**
+ * A request in Anthropic's Messages format, sent to OpenRouter's endpoint for
+ * it, with the same retries as a chat completion. Use it when Claude's content
+ * blocks must stay apart. The chat completions endpoint joins every text block
+ * of a reply into one string, so text Claude writes between two tool calls
+ * runs straight into its answer. A reply without content blocks counts as
+ * empty and is retried, and the billed cost of those attempts is added to the
+ * reply that is kept.
+ */
+export async function createAnthropicMessage(params: AnthropicMessageParams): Promise<AnthropicMessage> {
+  const body = { ...params, provider: providerRouting(params.model, undefined) };
+  const { result, emptyAttempts } = await sendWithRetry<AnthropicMessage>(params.model,
+    (reply) => !reply.content?.length,
+    (signal, sdkOptions) => getClient().post("/messages", { body, signal, ...sdkOptions }));
+  if (!emptyAttempts.length) return result;
+  const discardedCost = emptyAttempts.reduce((sum, attempt) => sum + (attempt.usage?.cost ?? 0), 0);
+  return { ...result, usage: result.usage && { ...result.usage, cost: (result.usage.cost ?? 0) + discardedCost } };
 }
 
 export function extractCitations(

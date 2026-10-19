@@ -7,7 +7,16 @@ import { dbMock, dbState, resetDbState } from "./dbMock";
 
 mock.module("./db", dbMock);
 mock.module("./pipeline/cleanCapturedText", () => ({
-  cleanCapturedPageText: (text: string) => Promise.resolve(`cleaned:${text}`),
+  cleanCapturedPageText: (text: string) => Promise.resolve({ text: `cleaned:${text}`, costUsd: 0.004 }),
+}));
+let readerBudgetSpent = false;
+mock.module("./spendCap", () => ({ requestBudgetExhausted: () => Promise.resolve(readerBudgetSpent) }));
+let directedCalls: unknown[][] = [];
+mock.module("./directedNoteRequest", () => ({
+  consumeDirectedNoteRequest: (...args: unknown[]) => {
+    directedCalls.push(args);
+    return Promise.resolve({ kind: "queued", detail: "checked requested passage" });
+  },
 }));
 
 const { consumeNoteRequest } = await import("./consumeRequests");
@@ -21,7 +30,11 @@ const request = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-beforeEach(resetDbState);
+beforeEach(() => {
+  resetDbState();
+  readerBudgetSpent = false;
+  directedCalls = [];
+});
 
 describe("consumeNoteRequest", () => {
   test("a finished whole-page check refuses the request", async () => {
@@ -30,6 +43,16 @@ describe("consumeNoteRequest", () => {
     expect(outcome.kind).toBe("already_checked");
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "done", "page was already checked", "item-1"]);
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
+    expect(directedCalls).toEqual([]);
+  });
+
+  test("a selected passage on a finished whole-page check is checked on its own", async () => {
+    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page" };
+    const outcome = await consumeNoteRequest(request({ selection: "a passage the page check skipped" }) as never);
+    expect(outcome.kind).toBe("queued");
+    expect(directedCalls).toHaveLength(1);
+    expect(directedCalls[0]?.[1]).toEqual(dbState.existingItem);
+    expect(dbState.calls.resolveNoteRequest).toBeUndefined();
   });
 
   test("an item a worker is holding leaves the request pending", async () => {
@@ -45,6 +68,7 @@ describe("consumeNoteRequest", () => {
     expect(outcome.kind).toBe("queued");
     expect(outcome.detail).toContain("promoted");
     expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", "cleaned:body", 2]);
+    expect(dbState.calls.insertItemRun?.[0]).toEqual(["item-1", "capture_cleanup", 0.004, "reader"]);
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", null, "item-1"]);
   });
 
@@ -83,6 +107,15 @@ describe("consumeNoteRequest", () => {
     const row = dbState.calls.insertQueuedItem?.[0]?.[0] as Record<string, unknown>;
     expect(row.checked_scope).toBe("page");
     expect(row.full_text).toBe("cleaned:body");
+    expect(dbState.calls.insertItemRun?.[0]).toEqual(["new-item-id", "capture_cleanup", 0.004, "reader"]);
+  });
+
+  test("once the reader budget is spent, the raw capture is queued without a cleanup call", async () => {
+    readerBudgetSpent = true;
+    await consumeNoteRequest(request({ page_text: "body" }) as never);
+    const row = dbState.calls.insertQueuedItem?.[0]?.[0] as Record<string, unknown>;
+    expect(row.full_text).toBe("body");
+    expect(dbState.calls.insertItemRun).toBeUndefined();
   });
 
   test("a fresh paragraph request inserts a paragraph-scope item whose text is the selection", async () => {
@@ -90,5 +123,46 @@ describe("consumeNoteRequest", () => {
     const row = dbState.calls.insertQueuedItem?.[0]?.[0] as Record<string, unknown>;
     expect(row.checked_scope).toBe("paragraph");
     expect(row.full_text).toBe("just this bit");
+    expect(dbState.calls.insertItemRun).toBeUndefined();
+  });
+});
+
+test("a new steered request preserves the steer beside the queued passage", async () => {
+  await consumeNoteRequest(request({ selection: "A bridge opened in 1932.", steer: "the opening date" }) as never);
+  expect(dbState.calls.insertQueuedItem?.[0]?.[0]).toMatchObject({ request_steer: "the opening date", full_text: "A bridge opened in 1932.", checked_scope: "paragraph" });
+});
+
+/* A newly requested page goes under its creator's project, or under "Around
+ * the web" when it has no creator we follow (GOO-290). */
+describe("the project a new requested page goes under", () => {
+  const projectLookup = () => dbState.calls.resolveProjectId?.[0]?.[0];
+
+  test("a custom-domain Substack post goes to the publication the extension named", async () => {
+    await consumeNoteRequest(
+      request({ page_url: "https://www.verysane.ai/p/is-metr-a-meaningful-check-on-anthropic", feed_url: "https://verysane.substack.com" }) as never,
+    );
+    expect(projectLookup()).toEqual({ slug: "verysane", feedUrl: "https://verysane.substack.com" });
+  });
+
+  test("a YouTube video goes to the channel the extension named", async () => {
+    await consumeNoteRequest(
+      request({ page_url: "https://www.youtube.com/watch?v=abcdefghijk", feed_url: "https://www.youtube.com/@DwarkeshPatel" }) as never,
+    );
+    expect(projectLookup()).toEqual({ slug: "dwarkeshpatel", feedUrl: "https://www.youtube.com/@DwarkeshPatel" });
+  });
+
+  test("a request that names no creator still finds a *.substack.com publication from the address", async () => {
+    await consumeNoteRequest(request({ page_url: "https://thezvi.substack.com/p/ai-120" }) as never);
+    expect(projectLookup()).toEqual({ slug: "thezvi", feedUrl: "https://thezvi.substack.com" });
+  });
+
+  test("a creator value that is not a feed we know is ignored", async () => {
+    await consumeNoteRequest(request({ feed_url: "https://example.com/" }) as never);
+    expect(projectLookup()).toEqual({ slug: "web" });
+  });
+
+  test("a page with no creator goes to Around the web", async () => {
+    await consumeNoteRequest(request() as never);
+    expect(projectLookup()).toEqual({ slug: "web" });
   });
 });

@@ -1,0 +1,29 @@
+{
+  "item_id": "9bfa2601-4363-4dfd-a0a1-a1d47619db99",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "a54c5c28-65f0-4fe5-854c-ccdbcde847e4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Cut the clause \"well after a 2024 Supreme Court stay disrupted the pricier Group 3 market this range was based on\": the note cannot know which market his range came from. Send it as: \"CSAPR NOx allowance prices are far below this range today. Argus assessed Group 2 allowances at $875/ton and expanded Group 2 at $850/ton in December 2025; the Group 3 market that traded in the thousands was stayed by the Supreme Court in June 2024.\" It may help to add that this makes his DERA price look more, not less, reasonable.",
+      "reason": "Masley writes the sentence himself as a cross-check on his DERA price: \"For a sanity check, power plants buy and sell NOx allowances under EPA's Cross-State Air Pollution Rule, and those mostly trade between $3,000 and $6,500 per ton.\" The facts in the note hold. Argus's 22 December 2025 piece says it \"has assessed Group 2 allowances at $875/short ton since 1 December and expanded Group 2 allowances at $850/st since 24 October\", its December 2024 piece has Group 2 at $775 and Group 3 at a record low of $1,250, and EPA's page confirms the Supreme Court stayed the Good Neighbor Plan on 27 June 2024, after which the Group 3 states were folded into Group 2 and an expanded Group 2 market. Group 3 did trade in the thousands (about $6,500 in early 2022, and far higher that summer), which is very likely where his range comes from, but the note only guesses that, and nothing in the post says so. Substantively the post's present-tense market price is four to seven times too high, which a reader would take away as a fact about the NOx market, so it is a real error rather than a rounding quibble. What holds me back from good is that the sentence is an aside that cuts in his favour: he goes on to say \"Even if we assume a pessimistic $10,000 per ton, we're at $30 million a year\", so the correction makes his argument cheaper and stronger, and he could fairly reply that he chose a deliberately conservative number. He is also likely to just update it if the note is worded without the speculation about his source."
+    },
+    {
+      "note_id": "6c44692f-12d4-405e-a2c4-8f6ae4018138",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Footnote 8 is Masley's own arithmetic: \"Against the regional inventory, 4% is about 3,000 tons a year\", which requires a Northern Virginia NOx inventory of about 75,000 tons. I read the JLARC report (Rpt598) he links, not just the news stories the note cites. It says that under a worst case where every data center hits its permitted maximum, \"data centers would emit over 9,000 tons of nitrogen oxides in the region. That is equal to about half of what has typically been emitted annually in Northern Virginia by all sources\", which puts the inventory near 18,000 tons and 4 percent at roughly 700-800 tons, exactly as the note says. The report's own numbers cross-check: it says 2023 actual emissions were \"only 7 percent of what permits allowed\", so about 650 tons, and it calls that \"less than 4 percent of regional nitrogen oxides emissions\" based on National Emissions Inventory data, which only works with a denominator near 18,000, not 75,000 (against 75,000 it would be under 1 percent). Note also that the report's \"less than 4 percent\" is the actual figure, not the permitted one as the footnote says, so the post reads the report backwards, though the note does not need that point. The correction is substantive: the size of the data center NOx footprint is a headline number in this debate and he overstates it fourfold; it does not hurt his argument, since a smaller externality is even cheaper to offset, and a numerate author who footnotes this carefully would fix it. I searched for a competing regional inventory: a 2026 VCU study puts permitted generator emissions at 33 percent of the region's total, which implies a larger inventory than JLARC's but still nowhere near 75,000 tons, so no plausible definition rescues 3,000 tons for 4 percent."
+    }
+  ]
+}

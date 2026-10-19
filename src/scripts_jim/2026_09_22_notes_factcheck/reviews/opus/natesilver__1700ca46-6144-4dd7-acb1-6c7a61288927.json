@@ -1,0 +1,43 @@
+{
+  "item_id": "1700ca46-6144-4dd7-acb1-6c7a61288927",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "8b6232d2-bf16-4fcd-8ce7-1d5919998d00",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Nate does not assert this. He asks it as a guess: \"what did Harris get, 42 percent of the vote?\" More importantly, he already corrects himself in the published post. Footnote 12, attached to that exact sentence, reads \"Actually, Trump got 42 percent of the vote in Dearborn and Harris got just 37 percent.\" The note's facts are right, but every reader of the post already sees the correction right there, so the note adds nothing. This is exactly the Andy Masley problem of fact-checking a claim the author is also fact-checking, and sending it would look like we did not read the piece."
+    },
+    {
+      "note_id": "d06269ca-87fe-4c60-bc82-a3a3a0bfbd06",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Again a hedged guess in conversation, not an assertion: \"And he's young — I guess he's 35, right?\" Eli's reply, \"Yeah, he must be at least 35\", is a joke about the constitutional minimum age for president, and it is true of a 41-year-old. Footnote 14 in the post says flatly \"El-Sayed is 41 years old.\" The note is factually correct and its Wikipedia and Bridge Michigan sources hold up, but it repeats a correction the author already printed in the same piece."
+    },
+    {
+      "note_id": "2c600cae-222d-4c26-9970-0a9c912feaba",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Nate says \"But Michigan voted for Bernie in what was it, 2020?\", explicitly unsure of the year. Footnote 15 answers it: \"Nope. Sanders beat Hillary Clinton there in 2016, but Joe Biden won Michigan in 2020.\" The note says the same thing as that footnote, down to the 2016 Sanders win and the 2020 Biden win, and adds only the 52.9 to 36.4 margin. The sources are sound, but the correction is already in the post, so the note is redundant rather than useful."
+    },
+    {
+      "note_id": "44584512-72d1-46b0-bd09-304346b69f49",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is the only one of the four that Nate states flatly as his own and does not footnote: \"you have to be born in the United States to be eligible to be president.\" As stated that is wrong. The Constitution requires a natural born citizen, and the settled scholarly view, backed by the Harvard Law Review forum piece on Ted Cruz and by state court rulings, is that a person who is a citizen at birth abroad qualifies, which is why John McCain's birth in the Panama Canal Zone and Ted Cruz's birth in Canada were not disqualifying. The note is fair to Nate in that it agrees with his conclusion and explains that Mamdani is ineligible because he naturalized in 2018, not because he was born in Uganda. What gives me pause is that the error changes nothing about his point, that it is an offhand aside in a spoken chat, and that Nate went through this transcript carefully enough to footnote three other slips and left this one, which suggests he may see it as acceptable shorthand and the note as pedantic. The underlying legal question has also never been decided by the Supreme Court, so the note states as settled something that is only a strong consensus."
+    }
+  ]
+}

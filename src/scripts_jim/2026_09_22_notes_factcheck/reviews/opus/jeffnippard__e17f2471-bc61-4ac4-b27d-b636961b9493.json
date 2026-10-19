@@ -1,0 +1,16 @@
+{
+  "item_id": "e17f2471-bc61-4ac4-b27d-b636961b9493",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "30ab3fd2-17af-47ce-a14c-ded7d79a990c",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Jeff says it in his own voice while an on-screen graphic shows the molecules: \"Tren is testosterone with this carbon atom removed. Nandrlone is the same thing but with a few less double bonds.\" The chemistry in the note is right. Wikipedia's trenbolone article says trenbolone \"is a synthetic estrane steroid and a derivative of nandrolone (19-nortestosterone)\" and \"is specifically nandrolone with two additional double bonds in the steroid nucleus\", so testosterone minus the C19 carbon is nandrolone, and trenbolone is that molecule plus two double bonds. Jeff has the two drugs the wrong way round, and his follow-up sentence makes it worse rather than better, because it has nandrolone carrying fewer double bonds than testosterone when in fact it carries the same number. What gives me pause is how little this matters. It is a three-second chemistry aside in a video whose argument is about how big a person can get without steroids, and nothing later in the video rests on it. Sending this note publicly would be defensible but would read as a small nitpick, so Nathan should decide whether that trade is worth it."
+    }
+  ]
+}

@@ -1,45 +1,44 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { FLOATING_CARD } from "../../everything-shared/ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { browser } from "#imports";
 import { createPortal } from "react-dom";
-import type { Session } from "@supabase/supabase-js";
-import type { NnnApi } from "../../everything-web/src/components/NoteNotNeeded";
-import type { Vote } from "../../everything-shared/votes";
-import type { NnnRow, NoteRow } from "../../everything-shared/types";
-import type { PageItem } from "../../everything-shared/notesQuery";
+import type { PageItem } from "@cn/core/items";
+import { MarginDot, MARKER_FOCUS, pointHandlers } from "@cn/features/margin/MarginDot";
+import { statusColorClass, statusLabel } from "@cn/features/notes/NoteBox";
+import { cardVariants } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
+import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
-import { ABSORB_KEYS, ClaimNoteStack, GroupIcon, NOTE_POPOVER_WIDTH, OverlayLogin } from "./ClaimNoteStack";
-import { NoteWithActions } from "./NoteWithActions";
-import { useNoteVoting, replaceNoteInGroup } from "./useNoteVoting";
+import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
+import { IconButton } from "@cn/ui/IconButton";
+import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
+import { rememberClosedClaim } from "../utils/closedNotes";
+import { CARD_BESIDE_OFFSET, flowMarginColumn, MARKER_SIZE, type ColumnMode, type MarginOptions } from "@cn/core/marginCards";
+import { mostSpecific } from "../utils/overlaps";
+import { applyFocusHighlight } from "../utils/passageHighlights";
+import { NextNoteButton, type NoteNavigation } from "@cn/features/notes/NextNoteButton";
+import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
+import { OverlayLoginGate } from "./OverlayLoginGate";
+import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
 
-/** One claim anchored to the page. It carries the claim's notes with the
- *  original first, its note-not-needed entries, and the stretch of page text it
- *  sits on. */
-export interface AnchoredGroup {
-  claimId: string;
-  primary: NoteRow;
-  alternatives: NoteRow[];
-  nnn: NnnRow[];
-  range: Range;
-}
+/** One claim anchored to the page: the claim's notes with the original first,
+ *  its note-not-needed entries, and the stretch of page text it sits on. */
+export type AnchoredGroup = ClaimGroup & { range: Range };
 
-const BADGE_SIZE = 20;
 const BADGE_GAP = 4; // Pixels between the end of the passage and the badge.
 const POPOVER_GAP = 8; // Pixels between the passage and the opened popover.
 const VIEWPORT_MARGIN = 8; // The popover stays this many pixels from the edges.
 
 // The margin note style: the marker sits this far into the whitespace right of
-// the article column, and the opened card grows from the same edge. The card
-// is narrower than the classic popover because real margins rarely fit 560px.
+// the article column, and an open card takes the marker's place, starting at
+// the same edge. The card is narrower than the classic popover because real
+// margins rarely fit 560px.
 const MARGIN_MARKER_GAP = 24;
 const MARGIN_CARD_WIDTH = 380;
 // Below this much usable margin the style falls back to the classic popover:
 // a cramped margin card is worse than the old overlay.
 const MARGIN_CARD_MIN_WIDTH = 300;
-// Two markers whose passages start on the same line would overlap; later ones
-// are nudged down by one marker height plus breathing room.
-const MARGIN_MARKER_STEP = BADGE_SIZE + 6;
 
 /** The element (the container itself or an ancestor) that would clip content
  *  drawn this far right of the viewport's left edge, or null when nothing
@@ -97,88 +96,183 @@ function relRect(range: Range, origin: DOMRect) {
 }
 
 
-/** The small badge at the end of an anchored passage. It draws the blue
- *  community glyph on a surface that follows the host page's light or dark
- *  theme. This is the classic style's marker. */
-function Badge({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
+/** What a marker is called for a screen reader and in its tooltip: how many
+ *  notes the passage has and the status its colour shows. */
+function markerLabel(group: ClaimGroup): string {
+  const count = group.notes.length === 1 ? "Common Note" : `${group.notes.length} Common Notes`;
+  return `${count} on this passage, ${statusLabel(group.status).toLowerCase()}`;
+}
+
+/** The words of the quote a card's screen-reader name starts from. */
+const CARD_LABEL_QUOTE_WORDS = 8;
+
+/** What a note card is called for a screen reader: the marker's name plus the
+ *  start of the quoted passage, so several open cards can be told apart. */
+function cardLabel(group: ClaimGroup): string {
+  const words = (group.claim.context_quote ?? group.claim.claim).split(/\s+/);
+  const quote = words.slice(0, CARD_LABEL_QUOTE_WORDS).join(" ") + (words.length > CARD_LABEL_QUOTE_WORDS ? "…" : "");
+  return `${markerLabel(group)}: “${quote}”`;
+}
+
+
+/** How a claim enters the margin column. A card the reader opened or closed
+ *  stays that way. A card the reader has not touched opens by itself only
+ *  when its display setting is open, which by default means a helpful note. */
+function columnMode(choice: boolean | undefined, display: ClaimGroup["display"]): ColumnMode {
+  if (choice !== undefined) return choice ? "opened" : "closed";
+  return display === "open" ? "auto" : "closed";
+}
+
+/** What both marker styles are drawn from. */
+interface MarkerProps {
+  group: ClaimGroup;
+  open: boolean;
+  onClick: () => void;
+  /** Called with true when the pointer or the keyboard focus reaches the
+   *  marker, and with false when it leaves. The claim's exact words are drawn
+   *  more strongly meanwhile. */
+  onPoint: (pointing: boolean) => void;
+  style: React.CSSProperties;
+  label: string;
+  ref: React.Ref<HTMLButtonElement>;
+}
+
+
+/** The small badge at the end of an anchored passage. It draws the community
+ *  glyph in the colour of the claim's status on a surface that follows the
+ *  host page's light or dark theme. This is the classic style's marker. */
+function Badge({ group, open, onClick, onPoint, style, label, ref }: MarkerProps) {
   return (
     <button
+      ref={ref}
+      type="button"
       onClick={onClick}
-      title="Community note on this passage"
+      {...pointHandlers(onPoint)}
+      title={label}
+      aria-label={label}
       aria-expanded={open}
       style={style}
-      className={`absolute flex items-center justify-center rounded-full border shadow transition-transform hover:scale-110 bg-white border-gray-300 text-blue-600 dark:bg-gray-900 dark:border-gray-600 dark:text-blue-400 ${open ? "ring-2 ring-blue-500" : ""}`}
+      className={cn(
+        "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface shadow-raised transition hover:scale-110",
+        statusColorClass(group.status),
+        MARKER_FOCUS,
+        open && "ring-2 ring-focus",
+      )}
     >
-      <GroupIcon />
+      <NoteStackIcon />
     </button>
   );
 }
 
-/** The margin style's marker: a quiet gray dot that turns blue with a soft
- *  halo when the pointer is near (Jim picked this over the circled glyph,
- *  2026-08-31). While the note is open the dot sits under the card and stays
- *  plain gray: an open-state blue faded back to gray on close and read as a
- *  flicker. The button box stays badge-sized so the positioning and collision
- *  math is shared; the dot is drawn smaller inside it. */
-function MarginDot({ open, onClick, style }: { open: boolean; onClick: () => void; style: React.CSSProperties }) {
-  return (
-    <button
-      onClick={onClick}
-      title="Community note on this passage"
-      aria-expanded={open}
-      style={style}
-      className="absolute flex items-center justify-center group"
-    >
-      <span
-        className={`h-2.5 w-2.5 rounded-full bg-gray-400 dark:bg-gray-500 ${
-          open
-            ? ""
-            : "transition-colors group-hover:bg-blue-600 group-hover:ring-4 group-hover:ring-blue-500/20 dark:group-hover:bg-blue-400 dark:group-hover:ring-blue-400/25"
-        }`}
-      />
-    </button>
-  );
-}
 
-function NotePopover({ group, projectSlug, session, myVotes, onVote, onNeedLogin, onAuthored, onNnnAuthored, onDeleted, nnnApi, style, loginOpen, onCloseLogin }: {
+function NotePopover({ group, projectSlug, navigation, style, label, openedByReader, takeFocus, onHeight, onPoint, onClose }: {
   group: AnchoredGroup;
   projectSlug: string | null;
-  session: Session | null;
-  myVotes: Map<string, Vote>;
-  onVote: NoteWithActionsVote;
-  onNeedLogin: () => void;
-  onAuthored: (noteId: string) => void;
-  onNnnAuthored: (entryId: string) => void;
-  onDeleted: () => void;
-  nnnApi: NnnApi;
+  navigation: NoteNavigation;
   style: React.CSSProperties;
-  loginOpen: boolean;
-  onCloseLogin: () => void;
+  label: string;
+  /** A card the reader opened is a dialog they asked for. A card that opened
+   *  by itself is a side note beside the text, so screen readers do not find
+   *  a page full of dialogs nobody opened. */
+  openedByReader: boolean;
+  /** Moves the keyboard focus into the card. True for a card the reader just
+   *  opened, false for one that is open by default, which must never pull the
+   *  focus away from the page. */
+  takeFocus: boolean;
+  /** Reports the card's height whenever it changes, so open margin cards can
+   *  be stacked without overlapping. */
+  onHeight: (height: number) => void;
+  /** Reports the pointer entering and leaving the card. */
+  onPoint: (pointing: boolean) => void;
+  /** Closes the note and returns the focus to its marker. */
+  onClose: () => void;
 }) {
+  const [loginOpen, setLoginOpen] = useState(false);
+  // An opened note takes the keyboard focus, so a keyboard reader lands in it
+  // instead of having to find it. preventScroll keeps the page where it is.
+  const card = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (takeFocus) card.current?.focus({ preventScroll: true });
+  }, [takeFocus]);
+  useEffect(() => {
+    const el = card.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => onHeight(el.offsetHeight));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onHeight]);
+  // Escape is handled on the card itself, because the event shield around the
+  // overlay keeps key presses inside it from ever reaching the page.
+  useEffect(() => {
+    const el = card.current;
+    if (!el) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    el.addEventListener("keydown", onKey);
+    return () => el.removeEventListener("keydown", onKey);
+  }, [onClose]);
   return (
     // The popover has a maximum height and scrolls inside itself. One claim can
     // stack several notes and an open composer, which gets taller than the
     // viewport. The overscroll-contain class stops that inner scroll from
     // carrying on into the host page.
-    <div style={style} className={`absolute ${FLOATING_CARD} p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain`}>
-      {loginOpen && !session && <OverlayLogin onDismiss={onCloseLogin} />}
-      <ClaimNoteStack
-        group={group}
-        projectSlug={projectSlug}
-        session={session}
-        myVotes={myVotes}
-        onVote={onVote}
-        onNeedLogin={onNeedLogin}
-        onAuthored={onAuthored}
-        onNnnAuthored={onNnnAuthored}
-        onDeleted={onDeleted}
-        nnnApi={nnnApi}
-      />
+    <div
+      ref={card}
+      role={openedByReader ? "dialog" : "complementary"}
+      aria-label={label}
+      tabIndex={-1}
+      style={style}
+      onMouseEnter={() => onPoint(true)}
+      onMouseLeave={() => onPoint(false)}
+      className={cn(cardVariants({ elevation: "floating" }), "absolute p-4 text-left max-h-[70vh] overflow-y-auto overscroll-contain focus:outline-none")}
+    >
+      <div className="-mt-1 mb-3 flex items-center justify-between">
+        <NextNoteButton {...navigation} />
+        <IconButton label="Close note" className="-mr-1.5 ml-auto" onClick={onClose}>
+          <CloseIcon size={14} aria-hidden />
+        </IconButton>
+      </div>
+      <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
+        <ClaimNoteStack group={group} projectSlug={projectSlug} />
+      </OverlayLoginGate>
     </div>
   );
 }
 
-type NoteWithActionsVote = React.ComponentProps<typeof NoteWithActions>["onVote"];
+/** The reader's own open and close choices on this page's cards, with the
+ *  rules in utils/cardChoices.ts. A close through the close button is
+ *  remembered across visits (utils/closedNotes.ts), so a card that opens by
+ *  itself does so only until the reader closes it once. `focused` is the card
+ *  the reader opened last; Escape closes it. */
+function useCardChoices(initiallyClosed: ReadonlySet<string>) {
+  const [choices, setChoices] = useState<CardChoices>(
+    () => new Map([...initiallyClosed].map((claimId) => [claimId, false])),
+  );
+  const [focused, setFocused] = useState<string | null>(null);
+  const open = useCallback((claimId: string) => {
+    setChoices((prev) => openCard(prev, claimId));
+    setFocused(claimId);
+  }, []);
+  const close = useCallback((claimId: string) => {
+    setChoices((prev) => new Map(prev).set(claimId, false));
+    setFocused((prev) => (prev === claimId ? null : prev));
+    void rememberClosedClaim(claimId);
+  }, []);
+  /** Cards that made room for the card the reader opened close for good on
+   *  this page, as on a minisite, so they stay dots after the reader closes
+   *  theirs. Unlike the close button, this is not remembered across visits. */
+  const giveWay = useCallback((claimIds: string[]) => {
+    setChoices((prev) => new Map([...prev, ...claimIds.map((claimId) => [claimId, false] as const)]));
+  }, []);
+  /** A press on empty page surface closes every card the reader opened.
+   *  Cards that opened by themselves stay. */
+  const closeOpenedByReader = useCallback(() => {
+    setChoices(closeCardsOpenedByReader);
+    setFocused(null);
+  }, []);
+  return { choices, open, close, giveWay, closeOpenedByReader, focused };
+}
 
 /** Every badge and popover for one page. They are rendered through a portal into
  *  the in-content annotation layer and positioned absolutely inside it, so
@@ -186,10 +280,9 @@ type NoteWithActionsVote = React.ComponentProps<typeof NoteWithActions>["onVote"
  *  The two pieces that are fixed to the viewport, the sign-in hint and the write
  *  modal, stay in the host element at body level. There a transform on an
  *  ancestor of the article cannot break position:fixed. */
-export function InlineNotesApp({ groups: initialGroups, item, onPosted, container, inlineContainer, noteStyle }: {
+export function InlineNotesApp({ groups, item, container, inlineContainer, noteStyle, marginOptions, initiallyClosed }: {
   groups: AnchoredGroup[];
   item: PageItem;
-  onPosted: () => void;
   /** The article container the ranges live in. It is looked up again on every
    *  render. */
   container: Element;
@@ -200,43 +293,18 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
    *  the article; "classic" is the old badge-and-popover style. Margin falls
    *  back to classic on its own when there is no usable margin. */
   noteStyle: "margin" | "classic";
+  /** Whether dots make room for an open card, and which side of the dots a
+   *  card takes, in the margin style. */
+  marginOptions: MarginOptions;
+  /** The claims whose card the reader closed on an earlier visit. */
+  initiallyClosed: ReadonlySet<string>;
 }) {
   const projectSlug = item.projectSlug;
-  const [groups, setGroups] = useState(initialGroups);
-  const [openClaim, setOpenClaim] = useState<string | null>(null);
   const [writeSelection, setWriteSelection] = useState<string | null>(null);
-  const { session, myVotes, myNnnVotes, refreshVotes, handleVote, handleNnnVote, recordAuthored, recordNnnAuthored, onNeedLogin, loginOpen, closeLogin } = useNoteVoting(
-    (updated) => setGroups((prev) => prev.map((g) => replaceNoteInGroup(g, updated))),
-    (updatedEntry) => setGroups((prev) => prev.map((g) => ({
-      ...g,
-      nnn: g.nnn.map((e) => (e.id === updatedEntry.id ? updatedEntry : e)),
-    }))),
-  );
-  // An improvement or a note-not-needed entry has just been posted. We light up
-  // the author's own vote on it and refetch the item's notes, so the new one
-  // shows up in its claim group.
-  const handleAuthored = (noteId: string) => {
-    recordAuthored(noteId);
-    onPosted();
-  };
-  const handleNnnAuthored = (entryId: string) => {
-    recordNnnAuthored(entryId);
-    onPosted();
-  };
-  // The extension gets no realtime updates, so a delete refreshes the item's
-  // groups by hand.
-  const nnnApi: NnnApi = { myVotes: myNnnVotes, onVote: handleNnnVote, onAuthored: recordNnnAuthored, onDeleted: () => onPosted() };
+  const markers = useRef(new Map<string, HTMLButtonElement>());
   // This counter is bumped on a resize, so the positions derived from the ranges
   // are computed again.
   const [layoutTick, setLayoutTick] = useState(0);
-
-  useEffect(() => {
-    setGroups(initialGroups);
-    // A refresh can carry votes this hook never saw cast, such as the
-    // automatic helpful vote on a note the reader just wrote.
-    refreshVotes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialGroups]);
 
   useEffect(() => {
     let raf = 0;
@@ -268,85 +336,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     };
   }, [container]);
 
-  // The passage tint is a CSS highlight rather than an element, so it cannot
-  // receive events. We test every host-page click against each claim's range
-  // instead. Clicking a tinted passage then toggles its note, just as clicking
-  // the badge does. The listener that closes the popover on an outside press
-  // lives here too, and it skips tinted passages. Closing on mousedown and
-  // reopening from the click's hit test made a click on a highlight flash the
-  // popover shut and open it again straight away.
-  useEffect(() => {
-    const claimAt = (x: number, y: number): string | null => {
-      for (const group of groups) {
-        for (const rect of group.range.getClientRects()) {
-          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return group.claimId;
-        }
-      }
-      return null;
-    };
-    const onDown = (e: MouseEvent) => {
-      // Clicks inside our own overlay bubble out of the shadow root as well. The
-      // popover overlaps the page text, so without this guard a click on a vote
-      // pill would also hit-test the passage underneath and open that passage's
-      // note.
-      if (insideCommonNotesUi(e) || claimAt(e.clientX, e.clientY)) return;
-      // Only a press on empty surface closes the note. A click that does
-      // something, such as one on a link or a like button, should not dismiss
-      // the note as well.
-      if (!isInertClick(e)) return;
-      setOpenClaim(null);
-    };
-    const onClick = (e: MouseEvent) => {
-      if (insideCommonNotesUi(e)) return;
-      // Dragging out a selection, for example to write a note on some text, ends
-      // in a click as well. We leave that click alone.
-      if (!window.getSelection()?.isCollapsed) return;
-      const claimId = claimAt(e.clientX, e.clientY);
-      if (claimId) setOpenClaim((previous) => (previous === claimId ? null : claimId));
-    };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("click", onClick);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("click", onClick);
-    };
-  }, [groups]);
-
-  // Handles the two requests that arrive from elsewhere in the extension. The
-  // popup asks to jump through the notes in document order, wrapping around at
-  // the end. The background's context menu asks to write a note on the current
-  // selection. The jump cursor lives here so that "next" keeps its place when
-  // the popup is closed and opened again. It resets when the page does.
-  const jumpCursor = useRef(-1);
-  useEffect(() => {
-    const ordered = [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range));
-    const jumpNext = () => {
-      if (!ordered.length) return;
-      jumpCursor.current = (jumpCursor.current + 1) % ordered.length;
-      const target = ordered[jumpCursor.current]!;
-      target.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-      setOpenClaim(target.claimId);
-    };
-    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
-      const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
-      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
-      if (type === "cn-jump-note" && ordered.length) {
-        jumpNext();
-        sendResponse({ jumped: true });
-      }
-      if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
-    };
-    const runtime = (globalThis as any).browser?.runtime ?? (globalThis as any).chrome?.runtime;
-    runtime?.onMessage.addListener(listener);
-    // The note-count card jumps through the same cursor, see utils/jumpBus.ts.
-    setJumpHandler(jumpNext);
-    return () => {
-      runtime?.onMessage.removeListener(listener);
-      setJumpHandler(null);
-    };
-  }, [groups]);
-
-  const positioned = useMemo(() => {
+  const layout = useMemo(() => {
     // Read the layer's origin and every range rectangle in the same layout pass.
     // Never cache the origin across renders. The two would then come from
     // different scroll positions, and the result would no longer hold as the
@@ -366,7 +356,7 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       : containerRect.right;
     const marginLeft = columnRight + MARGIN_MARKER_GAP;
     const availableMargin = window.innerWidth - marginLeft - VIEWPORT_MARGIN;
-    const clipper = marginClipper(container, marginLeft + BADGE_SIZE);
+    const clipper = marginClipper(container, marginLeft + MARKER_SIZE);
     const fallbackReason =
       noteStyle !== "margin"
         ? null // Classic was chosen in the settings; nothing to explain.
@@ -378,34 +368,18 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
     logMarginFallback(fallbackReason);
     const useMargin = noteStyle === "margin" && fallbackReason === null;
 
-    // Markers of passages that start on the same lines would land on top of
-    // each other; walking them from top to bottom and pushing each below the
-    // previous keeps every one clickable. The nudged tops are computed per
-    // group first, because `groups` arrives in fetch order, not page order.
-    const rects = groups.map((group) => relRect(group.range, origin));
-    const marginTops = new Map<AnchoredGroup, number>();
-    if (useMargin) {
-      let previousBottom = -Infinity;
-      for (const index of [...groups.keys()].sort((a, b) => rects[a]!.top - rects[b]!.top)) {
-        const top = Math.max(rects[index]!.top, previousBottom + MARGIN_MARKER_STEP - BADGE_SIZE);
-        previousBottom = top + BADGE_SIZE;
-        marginTops.set(groups[index]!, top);
-      }
-    }
-
-    return groups.map((group, index) => {
-      const rect = rects[index]!;
+    const placed = groups.map((group) => {
+      const rect = relRect(group.range, origin);
       if (useMargin) {
-        const left = marginLeft - origin.left;
+        // The tops of the marker and the card come from the margin column,
+        // which also depends on which cards are open.
         return {
           group,
-          margin: true,
-          badgeStyle: { top: marginTops.get(group)!, left, width: BADGE_SIZE, height: BADGE_SIZE } satisfies React.CSSProperties,
+          passageTop: rect.top,
+          badgeStyle: { left: marginLeft - origin.left, width: MARKER_SIZE, height: MARKER_SIZE } satisfies React.CSSProperties,
           popoverStyle: {
-            top: rect.top,
-            left,
+            left: marginLeft - origin.left,
             width: Math.min(MARGIN_CARD_WIDTH, availableMargin),
-            zIndex: 2,
           } satisfies React.CSSProperties,
         };
       }
@@ -418,83 +392,296 @@ export function InlineNotesApp({ groups: initialGroups, item, onPosted, containe
       );
       return {
         group,
-        margin: false,
+        passageTop: rect.top,
         badgeStyle: {
-          top: rect.top - BADGE_SIZE / 2,
+          top: rect.top - MARKER_SIZE / 2,
           left: rect.right + BADGE_GAP,
-          width: BADGE_SIZE,
-          height: BADGE_SIZE,
+          width: MARKER_SIZE,
+          height: MARKER_SIZE,
         } satisfies React.CSSProperties,
         popoverStyle: {
           top: rect.bottom + POPOVER_GAP,
           left: popLeft,
           width: Math.min(NOTE_POPOVER_WIDTH, window.innerWidth - VIEWPORT_MARGIN * 2),
-          zIndex: 2,
         } satisfies React.CSSProperties,
       };
     });
+    return { useMargin, placed, availableMargin };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groups, layoutTick, inlineContainer, container, noteStyle]);
 
+  const cards = useCardChoices(initiallyClosed);
+  const [cardHeights, setCardHeights] = useState<ReadonlyMap<string, number>>(new Map());
+  const reportHeight = useCallback((claimId: string, height: number) => {
+    setCardHeights((prev) => (prev.get(claimId) === height ? prev : new Map(prev).set(claimId, height)));
+  }, []);
+  // Where each claim sits in the margin style, as a card or a dot, laid out
+  // by the same rules as a minisite's margin. It is null in the classic
+  // style, where only the cards the reader opened are shown. Every layout
+  // pass computes it afresh from the positions on screen, so passages that
+  // the host page adds or moves later simply take their place.
+  const { choices } = cards;
+  const column = useMemo(() => {
+    if (!layout.useMargin) return null;
+    const readingOrder = [...layout.placed].sort((a, b) =>
+      a.passageTop - b.passageTop || a.group.range.compareBoundaryPoints(Range.START_TO_START, b.group.range));
+    return flowMarginColumn(readingOrder.map(({ group, passageTop }) => ({
+      key: group.claimId,
+      anchor: passageTop,
+      height: cardHeights.get(group.claimId),
+      mode: columnMode(choices.get(group.claimId), group.display),
+    })), marginOptions);
+  }, [layout, choices, cardHeights, marginOptions]);
+  const { giveWay } = cards;
+  useEffect(() => {
+    const displaced = column ? [...column].filter(([, { displaced }]) => displaced).map(([claimId]) => claimId) : [];
+    if (displaced.length) giveWay(displaced);
+  }, [column, giveWay]);
+  const isOpen = useCallback(
+    (group: ClaimGroup) => (column ? column.get(group.claimId)?.card != null : choices.get(group.claimId) === true),
+    [column, choices],
+  );
+
+  // Closing a note hands the focus back to its marker, the way any dialog
+  // returns focus to what opened it. In the margin style an open card takes
+  // its marker's place, so the marker only exists again after the next
+  // render, and the focus moves once it does.
+  const { close, open, closeOpenedByReader } = cards;
+  const returnFocusTo = useRef<string | null>(null);
+  const closeNote = useCallback((claimId: string) => {
+    close(claimId);
+    returnFocusTo.current = claimId;
+  }, [close]);
+  useEffect(() => {
+    if (!returnFocusTo.current) return;
+    markers.current.get(returnFocusTo.current)?.focus({ preventScroll: true });
+    returnFocusTo.current = null;
+  });
+  // A click on the marker or the passage opens a closed card and closes one
+  // the reader opened. A card that opened by itself ignores it, because only
+  // its close button closes it.
+  const toggle = useCallback(
+    (group: ClaimGroup) => {
+      if (!isOpen(group)) open(group.claimId);
+      else if (choices.get(group.claimId) === true) closeNote(group.claimId);
+    },
+    [isOpen, choices, closeNote, open],
+  );
+  // The tinted claim under a point on the screen. The tint is a CSS highlight
+  // rather than an element, so it cannot receive events, and every pointer
+  // event is tested against each tinted claim's range instead. Where several
+  // tinted quotes cover the words, the shortest one wins, because it is the
+  // most specific.
+  const groupAt = useCallback((x: number, y: number): ClaimGroup | null => {
+    const covers = (group: AnchoredGroup) =>
+      [...group.range.getClientRects()].some((rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+    return mostSpecific(groups.filter((group) => group.display !== "dot" && covers(group)), (group) => group.range.toString().length);
+  }, [groups]);
+  // The claim whose exact words are drawn more strongly: the one whose marker
+  // or card the reader points at, else the one whose tinted words the pointer
+  // is over, else the card the reader opened last.
+  const [pointed, setPointed] = useState<string | null>(null);
+  const point = useCallback((claimId: string, pointing: boolean) => {
+    setPointed((prev) => (pointing ? claimId : prev === claimId ? null : prev));
+  }, []);
+  const [pointedText, setPointedText] = useState<string | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    let latest = { x: 0, y: 0, overText: false };
+    const onMove = (e: MouseEvent) => {
+      // Our own overlay sits over the page text, so pointing at a card must
+      // not count as pointing at the words under it.
+      latest = { x: e.clientX, y: e.clientY, overText: !insideCommonNotesUi(e) };
+      if (frame) return;
+      // At most one test per frame, however fast the mouse moves, and always
+      // at the newest position.
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        setPointedText(latest.overText ? groupAt(latest.x, latest.y)?.claimId ?? null : null);
+      });
+    };
+    document.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, [groupAt]);
+  const emphasized = pointed ?? pointedText ?? cards.focused;
+  useEffect(() => {
+    applyFocusHighlight(groups.find((group) => group.claimId === emphasized)?.range ?? null);
+  }, [groups, emphasized]);
+  useEffect(() => () => applyFocusHighlight(null), []);
+
+  // Escape pressed inside the note is handled by the note itself. This covers
+  // an Escape pressed anywhere else on the page while a note is focused.
+  const focused = cards.focused;
+  useEffect(() => {
+    if (!focused) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeNote(focused);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [focused, closeNote]);
+
+  // Clicking a tinted passage toggles its note, just as clicking the badge
+  // does. A claim set to dot only has no tint, so its text stays plain page
+  // text and only its marker opens it. The listener that closes the reader's
+  // opened cards on an outside press lives here too, and it skips tinted
+  // passages. Closing on mousedown and reopening from the click's hit test
+  // made a click on a highlight flash the popover shut and open it again
+  // straight away.
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      // Clicks inside our own overlay bubble out of the shadow root as well. The
+      // popover overlaps the page text, so without this guard a click on a vote
+      // pill would also hit-test the passage underneath and open that passage's
+      // note.
+      if (insideCommonNotesUi(e) || groupAt(e.clientX, e.clientY)) return;
+      // Only a press on empty surface closes the note. A click that does
+      // something, such as one on a link or a like button, should not dismiss
+      // the note as well.
+      if (!isInertClick(e)) return;
+      closeOpenedByReader();
+    };
+    const onClick = (e: MouseEvent) => {
+      if (insideCommonNotesUi(e)) return;
+      // Dragging out a selection, for example to write a note on some text, ends
+      // in a click as well. We leave that click alone.
+      if (!window.getSelection()?.isCollapsed) return;
+      const group = groupAt(e.clientX, e.clientY);
+      if (group) toggle(group);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("click", onClick);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("click", onClick);
+    };
+  }, [groupAt, toggle, closeOpenedByReader]);
+
+  // The claims in document order. The popup's jump button, the request
+  // progress card and the note count in every card all step through them,
+  // wrapping around at the end.
+  const ordered = useMemo(
+    () => [...groups].sort((a, b) => a.range.compareBoundaryPoints(Range.START_TO_START, b.range)),
+    [groups],
+  );
+  const orderIndex = useMemo(() => new Map(ordered.map((g, index) => [g.claimId, index])), [ordered]);
+  const indexOf = (claimId: string | null) => (claimId ? (orderIndex.get(claimId) ?? -1) : -1);
+  // A jump goes to the claim after the one given, which is the card whose
+  // count was clicked, or else the card the reader opened last. With neither,
+  // it goes to the claim after the last one a jump reached. That cursor lives
+  // here so that "next" keeps its place when the popup is closed and opened
+  // again. It resets when the page does.
+  const jumpCursor = useRef(-1);
+  const [jumpCount, setJumpCount] = useState(0);
+  const jumpAfter = useCallback((from: number) => {
+    if (!ordered.length) return;
+    jumpCursor.current = (from + 1) % ordered.length;
+    open(ordered[jumpCursor.current]!.claimId);
+    setJumpCount((count) => count + 1);
+  }, [ordered, open]);
+  const focusedIndex = indexOf(focused);
+  const jumpNext = useCallback(
+    () => jumpAfter(focusedIndex >= 0 ? focusedIndex : jumpCursor.current),
+    [jumpAfter, focusedIndex],
+  );
+  // The scroll to a jumped-to passage runs after React has put its note on
+  // screen. React restores the page's scroll positions while it updates the
+  // page, and that cancels a smooth scroll started before the update.
+  useEffect(() => {
+    if (jumpCount === 0) return;
+    ordered[jumpCursor.current]?.range.startContainer.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpCount]);
+
+  // Handles the two requests that arrive from elsewhere in the extension. The
+  // popup asks to jump to the next note. The background's context menu asks to
+  // write a note on the current selection.
+  useEffect(() => {
+    const listener = (message: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => {
+      const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
+      if (type === "cn-jump-state") sendResponse({ jumped: jumpCursor.current >= 0 });
+      if (type === "cn-jump-note" && ordered.length) {
+        jumpNext();
+        sendResponse({ jumped: true });
+      }
+      if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
+    };
+    browser.runtime.onMessage.addListener(listener);
+    // The request progress card jumps through the same cursor, see utils/jumpBus.ts.
+    setJumpHandler(jumpNext);
+    return () => {
+      browser.runtime.onMessage.removeListener(listener);
+      setJumpHandler(null);
+    };
+  }, [ordered, jumpNext]);
+
   return (
-    // Absorb both mouse and keyboard events here. A mousedown would otherwise
-    // close the popover through the document listener above. A click would leak
-    // to the host page and to our own passage hit test. Keys typed in a composer
-    // would trigger the host page's own hotkeys. See ABSORB_KEYS.
-    <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+    <EventShield>
       {writeSelection && (
-        <WriteNoteOverlay
-          item={item}
-          selection={writeSelection}
-          session={session}
-          onClose={() => setWriteSelection(null)}
-          onPosted={onPosted}
-        />
+        <WriteNoteOverlay item={item} selection={writeSelection} onClose={() => setWriteSelection(null)} />
       )}
       {/* The badges and popovers are portalled into the in-content annotation
-          layer, so they scroll with the text. The wrapper absorbs events again
-          on that side. React attaches its listeners to the portal container, so
-          stopPropagation halts the native event before it reaches the
-          document-level listeners. */}
+          layer, so they scroll with the text. A second shield absorbs events on
+          that side. */}
       {createPortal(
-        <div {...ABSORB_KEYS} onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-          {positioned.map(({ group, badgeStyle, popoverStyle, margin }) => (
-            <div key={group.claimId}>
-              {margin ? (
-                <MarginDot
-                  open={openClaim === group.claimId}
-                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-                  style={badgeStyle}
-                />
-              ) : (
-                <Badge
-                  open={openClaim === group.claimId}
-                  onClick={() => setOpenClaim((cur) => (cur === group.claimId ? null : group.claimId))}
-                  style={badgeStyle}
-                />
-              )}
-              {openClaim === group.claimId && (
-                <NotePopover
-                  group={group}
-                  projectSlug={projectSlug}
-                  session={session}
-                  myVotes={myVotes}
-                  onVote={handleVote}
-                  onNeedLogin={onNeedLogin}
-                  onAuthored={handleAuthored}
-                  onNnnAuthored={handleNnnAuthored}
-                  onDeleted={onPosted}
-                  nnnApi={nnnApi}
-                  style={popoverStyle}
-                  loginOpen={loginOpen}
-                  onCloseLogin={closeLogin}
-                />
-              )}
-            </div>
-          ))}
-        </div>,
+        <EventShield>
+          {/* Rendered in reading order, so Tab walks the markers down the page. */}
+          {[...layout.placed].sort((a, b) => indexOf(a.group.claimId) - indexOf(b.group.claimId)).map(({ group, badgeStyle, popoverStyle }) => {
+            const cardOpen = isOpen(group);
+            const placed = column?.get(group.claimId);
+            const card = placed?.card;
+            const marker = {
+              group,
+              ref: (el: HTMLButtonElement | null) => {
+                if (el) markers.current.set(group.claimId, el);
+                else markers.current.delete(group.claimId);
+              },
+              label: markerLabel(group),
+              open: cardOpen,
+              onClick: () => toggle(group),
+              onPoint: (pointing: boolean) => point(group.claimId, pointing),
+              style: { ...badgeStyle, top: placed?.dotTop ?? badgeStyle.top },
+            };
+            const index = indexOf(group.claimId);
+            return (
+              <div key={group.claimId}>
+                {/* In the margin a dot beside its open card closes the card,
+                    whoever opened it. */}
+                {layout.useMargin
+                  ? placed?.dotShown && <MarginDot {...marker} onClick={() => (cardOpen ? closeNote(group.claimId) : open(group.claimId))} colorClass={statusColorClass(group.status)} />
+                  : <Badge {...marker} />}
+                {cardOpen && (
+                  <NotePopover
+                    group={group}
+                    projectSlug={projectSlug}
+                    navigation={{ position: index + 1, total: ordered.length, onNext: () => jumpAfter(index) }}
+                    style={{
+                      ...popoverStyle,
+                      ...(card && { top: card.top }),
+                      ...(card?.side === "beside" && {
+                        left: popoverStyle.left + CARD_BESIDE_OFFSET,
+                        width: Math.min(MARGIN_CARD_WIDTH, layout.availableMargin - CARD_BESIDE_OFFSET),
+                      }),
+                      // The card the reader opened last sits above the others.
+                      zIndex: focused === group.claimId ? 3 : 2,
+                    }}
+                    label={cardLabel(group)}
+                    openedByReader={choices.get(group.claimId) === true}
+                    takeFocus={focused === group.claimId}
+                    onHeight={(height) => reportHeight(group.claimId, height)}
+                    onPoint={(pointing) => point(group.claimId, pointing)}
+                    onClose={() => closeNote(group.claimId)}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </EventShield>,
         inlineContainer,
       )}
-    </div>
+    </EventShield>
   );
 }

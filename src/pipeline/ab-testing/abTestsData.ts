@@ -32,6 +32,8 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
+// 2026-10-19: every Claude arm (web_search "native") can also open pages with Claude's
+// native fetch (GOO-454). Its numbers from before and after that day measure different setups.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
@@ -64,6 +66,8 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 7 },
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
+    { variant: { name: "musespark13c-native",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "openrouter_native" }}, weight: 0 },
+    { variant: { name: "gpt6luna-native",         overrides: { search_model: "openai/gpt-6-luna",                 web_search: "openrouter_native" }}, weight: 0 },
     { variant: { name: "deepseek-v32exp-searxng", overrides: { search_model: "deepseek/deepseek-v3.2-exp",        web_search: "serper" }},       weight: 0 },
     { variant: { name: "qwen3max-searxng",        overrides: { search_model: "qwen/qwen3-max",                    web_search: "serper" }},       weight: 0 },
     { variant: { name: "gpt5_4mini-native",       overrides: { search_model: "openai/gpt-5.4-mini",               web_search: "native_openai" }}, weight: 0 },
@@ -90,18 +94,25 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
+    // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
+    // (GOO-303) and gave it back once the block was lifted (GOO-322). Meta blocked us again on 2026-10-13,
+    // so Luna holds the share again.
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 13 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
 
 // Text verifier model only. Cited media is described by the media_description arm.
+// 2026-09-25: Gemini Flash alone again, as before 14 Sep. Muse killed more notes that should
+// have posted (numbers in the PR).
 const SIMPLE_BOT_VERIFIER_TEST: ABTest = {
   name: "simple_bot_verifier",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "gemini-flash",     overrides: { verifier_model: "google/gemini-3-flash-preview"   }}, weight: 100 },
+    { variant: { name: "musespark13c",     overrides: { verifier_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { verifier_model: "openai/gpt-6-luna"               }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { verifier_model: "deepseek/deepseek-v4-flash"      }}, weight: 0  },
   ],
 };
@@ -114,7 +125,8 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "gemini3flash", overrides: { media_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
+    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 50 },
   ],
 };
 
@@ -206,6 +218,17 @@ const VERIFIER_CITATIONS_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { verifier_citations: false } }, weight: 100 },
     { variant: { name: "on",  overrides: { verifier_citations: true  } }, weight: 0 },
+  ],
+};
+
+// Jina Reader reads the pages that every free fetch step failed on. It costs money, so it is off.
+// The arm is live only by force, for example in the claim checker evals. Turning it on for traffic is a change of weights.
+const JINA_FETCH_TEST: ABTest = {
+  name: "jina_fetch",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { jina_fetch: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { jina_fetch: true  } }, weight: 0 },
   ],
 };
 
@@ -314,6 +337,7 @@ export const AB_TESTS: ABTest[] = [
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
   VERIFIER_CITATIONS_TEST,
+  JINA_FETCH_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,

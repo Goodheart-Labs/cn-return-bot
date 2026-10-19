@@ -1,0 +1,29 @@
+{
+  "item_id": "7c81795c-e520-48a0-a4e8-920603c3306a",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "dbea5c31-d75e-483c-8670-4286acdaf1fc",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Replace \"The tweet understates real water use by about 3.7x.\" with \"The post understates the energy sector's water use by about 3.7x, which if anything strengthens its point about ChatGPT's share.\"",
+      "reason": "Andy states the number twice as his own fact: \"Each year, America 'uses' 60,000,000,000,000 (60 trillion) liters of water to generate electricity. That's about 3 times as much water as the Great Salt Lake\" and later \"60 trillion liters of water each year, enough for 25 million Olympic swimming pools.\" The first mention links to a 2018 USC Viterbi article on the Grubert and Sanders study, and that page says \"the U.S. energy system requires an estimated 58 trillion gallons of water withdrawals each year, enough to fill 88 million Olympic size swimming pools.\" So he read gallons as litres, and the litre figure, the Great Salt Lake comparison and the 25 million pools are all about 3.7 times too small; the note's arithmetic (about 220 trillion litres, 88 million pools) is right. This is a clean unit error in a cited statistic, exactly the kind of correction he asks for in the post, and it strengthens rather than weakens his argument that ChatGPT's water is a tiny share of the energy sector's, so he should take it well. It stays at uncertain only because the note calls the post \"the tweet\", which is wrong and would look careless to a blogger, and because a reader could point out that the mistake runs in his own disfavour and changes nothing about his conclusion."
+    },
+    {
+      "note_id": "49f7707b-6b16-48fb-ac8d-ebcecf73fc33",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Replace \"making the combined total closer to 9.1 L/kWh, not 1.8\" with \"making the combined total about 9.4 L/kWh, not 1.8\" (1.8 plus 7.6 is 9.4, and the linked page's 2 gallons plus 0.48 gallons is also 9.4 litres).",
+      "reason": "The sentence is Andy's own and he leans on it: \"data centers typically use about 1.8 liters of water per kWh of energy consumed. This number includes both the water used by the data center itself and the water used in generating the electricity used.\" His link for the 1.8 figure is watercalculator.org's data-centre page, and that page says the opposite: \"it takes an average 2 gallons of water to generate 1 kWh of energy in the United States, while an average data center uses 0.48 gallons of water for cooling for every kWh it consumes,\" both attributed to Lawrence Berkeley National Laboratory. 0.48 gallons is 1.8 litres, so the 1.8 is cooling water only and the roughly 7.6 litres for generating the electricity comes on top. The note's other sources (Data Center Knowledge and David Mytton, both citing Shehabi et al. 2016) say the same split. This matters to the post: the whole water section is about whether generation water is being counted, he introduces the 1.8 figure precisely to put ChatGPT alongside other online activities on the same footing as the original LLM study, and a reader takes away that 1.8 already covers generation when it does not. He explicitly invites corrections to his statistics, so he is likely to accept it. The one flaw is in the note itself: it gives the combined total as 9.1 L/kWh when 1.8 plus 7.6 is 9.4, and that slip should be fixed before sending."
+    }
+  ]
+}

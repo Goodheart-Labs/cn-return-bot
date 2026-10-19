@@ -1,0 +1,29 @@
+{
+  "item_id": "90e87cb6-cd7a-4d84-8350-b7a022210bed",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6f113775-712a-417a-81f8-7eb8c6726ba4",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": "Do not send. If a note on this passage is wanted at all, it would have to be rewritten from scratch to say that the talkie-coder author compared his 4.5% with the 4% retrieval baseline Opus posted at its March 2024 release, that Opus scores 16% to 22% with an agent scaffold, and that the author himself adds that Opus is clearly the better model. It would still be a note on a guest's aside.",
+      "reason": "The words are John Schulman's, not Dwarkesh's: \"I saw something about how someone fine-tuned the Talkie model ... It did better than Claude 3 Opus on SWE-bench.\" Dwarkesh does not respond to it or build on it; Charlie O'Neill moves straight to a counterexample. Schulman is also repeating the talkie-coder author's own framing. Ricardo Olmedo's tweet of May 2026 reads: \"Claude 3 Opus scored 4% on SWE-bench at release. Shockingly, a Pythia-scale model trained only on pre-1931 data, with a bit of fine-tuning, outperforms the April 2024 SOTA. Clearly, Opus is the better model.\" That 4% is the retrieval-only baseline the SWE-bench leaderboard listed for Opus in April 2024 (about 3.8% on the full set and 4.3% on Lite), so there is a published setting in which 4.5% beats Opus. The note's 22% comes from Anthropic's later agent scaffold, and its phrase \"with the same agent scaffold\" is misleading: talkie-coder was scored with mini-swe-agent on a 446-instance subset, not with Anthropic's harness, so the two numbers were never measured the same way. The disagreement is about which Opus number to compare against, which is a framing difference, not a factual error in the post. On top of that the note is attached to the claim \"Before fine-tuning, the Talkie model had no knowledge of code\", which is true and which the note does not dispute. Sending this would be fact-checking a guest's hedged aside, with a comparison that is itself not apples to apples."
+    },
+    {
+      "note_id": "5eb42f60-e9d5-436a-b930-069b5d8fcd86",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "Dwarkesh says this in his own voice while framing a question: \"AlphaGo coming up with move 37, the super creative move. Because it was never initialized on human data, it can think in ways that humans are not even thinking.\" He then asks about \"de novo initialization of intelligence\", so the premise carries the question, and nobody on the panel corrects it; Beren only remarks that AlphaGo used MCTS. The premise is wrong. Move 37 was played in game two against Lee Sedol in March 2016, and DeepMind's AlphaGo page says of that system: \"Initially, we introduced AlphaGo to thousands of expert games of Go so the system could learn how humans play the game,\" with self-play reinforcement learning only afterwards. The Wikipedia article on the match confirms the supervised start from a KGS database of about 30 million moves from 160,000 human games; both accepted quotes are on the pages as given, and the Nature 2016 paper describes the same pipeline. The system trained with no human games is AlphaGo Zero, from 2017, which never played Lee Sedol. That distinction matters for his argument: the most famous example of machine creativity came from a system that started from human play, so it does not show what he uses it to show. The note states the fact plainly without scolding, and a careful interviewer would most likely accept it as a version mix-up; naming AlphaGo Zero as the human-free version would make the note friendlier but is not required."
+    }
+  ]
+}

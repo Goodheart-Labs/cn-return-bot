@@ -1,0 +1,43 @@
+{
+  "item_id": "0c4de744-0934-4e06-b434-a18a15cd4315",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "63a44539-46fe-4979-bbf4-e4f60beb3683",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The line is the speaker's own assertion in her own voice: \"The Mongols start out east of Lake Baikal and then they spread in concentric rings more or less over the Eurasian plain in another time of climate change when their herds they just had to move south or everyone's going to freeze to death.\" Nobody is being quoted or fact-checked by her here. The note's sources hold up. I read the ScienceDaily write-up of Pederson et al. 2014 and it says word for word that the empire rose when the steppe saw \"their mildest, wettest weather in more than 1,000 years\" and that \"Some researchers have postulated that the Mongols expanded because they were fleeing harsh weather at home -- but Pederson and colleagues found the opposite.\" The PNAS paper itself was behind a block for me, but the archived quotes match the published abstract and the secondary coverage, and the 1211-1225 wet and warm window is not in dispute. The one thing that keeps this from being airtight is that the same paper does credit climate with a role, because a severe drought in the 1180s preceded the unification, so she could answer that she only said it was \"a time of climate change\". The note is worded narrowly enough to survive that answer, since it rebuts the specific mechanism she gave, herds pushed south to escape the cold. Note for Nathan: this is a Sarah Paine lecture published on Dwarkesh's channel, so every note on this item corrects the guest, not the host."
+    },
+    {
+      "note_id": "340ac1fb-86a7-4f96-b522-c649795576c8",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "She states it flatly as part of her own argument that the United States preferred checkbook diplomacy and reached for armies only when the check was refused: \"the United States did the standard massed armies approach in the Mexican-American War, and that's how the United States gets Texas.\" That is a real error and it is the load-bearing example in that passage. I checked the Texas State Library annexation timeline the note cites and it reads \"MARCH 1 President Tyler signs annexation resolution\" and \"DECEMBER 29 President Polk signs the Joint Resolution. Texas officially the 28th state on this date\", both in 1845, while Congress declared war on 13 May 1846. So Texas was already a state before the first shot, and what the war produced was the Mexican Cession of 1848, exactly as the note says. The only pushback she could make is that Mexico only accepted the annexation and the Rio Grande boundary in the 1848 treaty, so the war secured Texas even though it did not acquire it, and the note does not mention that. It is still a fair and well-known correction, and she gets the very next sentence right about the Gadsden Purchase and Tucson, which makes the slip look like a genuine misstatement rather than a considered position."
+    },
+    {
+      "note_id": "08ac781f-2f53-44d4-a102-28e02a59dcf2",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The figure is hers, read off her own casualty slide: \"you've got over 7 million dead Germans, over 25 and 1/2 dead Russians, almost 7 million dead Poles, 11 million dead Chinese, nearly a million dead Frenchmen.\" The correction is right in substance. Wikipedia's World War II casualties table gives France 600,000 total, 210,000 military and 390,000 civilian, and no standard source I can find reaches anything near a million, so \"nearly a million\" is roughly sixty percent too high. It also matters to her point, which is that continental powers lose millions while maritime powers lose hundreds of thousands, and at 600,000 France sits with the maritime powers rather than with them. Three things give me pause. The note's main source is secondworldwarhistory.com, a hobbyist reference site rather than anything Paine would respect, and its fourth source is a Wikipedia line about French losses in the 1940 campaign alone, which says nothing about the wartime total. The closing sentence, \"That figure is closer to French WWI losses\", is itself loose, because French First World War deaths were about 1.3 to 1.4 million, so her number is not especially close to that either. And the other numbers in the same breath are loose in both directions, with Poland nearer 5.9 million than 7 and China well above 11 million, so picking out France alone can read as selective even though France is the one that bears on her argument. I would want the note resourced to Wikipedia's casualty table or a standard reference work and the WWI sentence dropped before sending it."
+    },
+    {
+      "note_id": "c48caaa8-9942-4c98-a360-2c0ecc877c0f",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is her own statement and the length of the closure is the whole point of the passage: \"But then the Suez Canal is is closed down from 1967 to 19 uh 72-ish. And so that's a long time in world trade.\" The correction is solid. The Wikipedia article on the closure opens \"On 6 June 1967, after the start of the Six-Day War, Egypt closed the Suez Canal, which it owned and operated, and kept it closed until 5 June 1975\", and the Suez Canal Authority's own history dates the stoppage to the fighting that began on 5 June 1967 and the reopening to 5 June 1975, after the 1974 clearance operation. So it was eight years, not about five, and the \"-ish\" hedge does not stretch to cover a three-year gap. The note's \"June 5, 1967\" differs by one day from its own Wikipedia source, which says 6 June, but the Canal Authority uses 5 June, so the date is defensible. The correction also strengthens rather than undercuts her argument about shipping adapting to the closure, which makes it an easy one for a naval historian to accept."
+    }
+  ]
+}

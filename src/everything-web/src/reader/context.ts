@@ -1,0 +1,136 @@
+import { createContext, useContext, type ComponentType } from "react";
+import type { PageItem } from "@cn/core/items";
+import type { NoteNavigation } from "@cn/features/notes/NextNoteButton";
+import type { FeatureId } from "@cn/core/minisiteFeatures";
+import type { HighlightDraft, PassageHighlight } from "@cn/core/passageHighlights";
+import type { ReaderBlock } from "@cn/core/readerText";
+import type { RequestProgress } from "@cn/core/requestProgress";
+import type { NnnRow, NoteRow } from "@cn/core/types";
+
+/** The words a note, key point or question is about, and the paragraph they
+ *  come from. `partial` says whether the reader selected words or took the
+ *  whole passage. */
+export interface ReaderAnchor {
+  blockId: string;
+  text: string;
+  paragraph: string;
+  partial: boolean;
+}
+
+/** The dialog the reader has open. Each kind belongs to one feature module. */
+export type ReaderDialog =
+  | { kind: "note"; anchor: ReaderAnchor }
+  | { kind: "highlight"; anchor: ReaderAnchor; highlightKind: HighlightDraft["kind"]; draft?: HighlightDraft };
+
+/** The passage the reader is asking Opus about, and the words `quote` in it,
+ *  or null for the whole passage. */
+export interface AskTarget {
+  blockId: string;
+  quote: string | null;
+}
+
+/** The reader's questions about one passage. */
+export interface AskedPassage {
+  count: number;
+  /** Opus is still answering one of them. */
+  waiting: boolean;
+}
+
+export interface ReaderNoteRequest {
+  id: string;
+  blockId: string;
+  quote: string;
+  progress: RequestProgress;
+}
+
+/** The id of the margin group that holds entries we could not place beside a
+ *  passage. */
+export const UNANCHORED = "unanchored";
+
+/** Everything the shell shares with the feature modules. */
+export interface ReaderApi {
+  item: PageItem;
+  scope: string;
+  blocks: readonly ReaderBlock[];
+  features: ReadonlySet<FeatureId>;
+  /** Wide screens show entries in the margin. Narrow ones show them inline,
+   *  under the passage the reader opened. */
+  wide: boolean;
+  notesByBlock: ReadonlyMap<string, NoteRow[]>;
+  /** Readers' arguments that a claim needs no note, shown under that note. */
+  nnnEntries: readonly NnnRow[];
+  highlightsByBlock: ReadonlyMap<string, PassageHighlight[]>;
+  refetchHighlights: () => void;
+  noteRequests: readonly ReaderNoteRequest[];
+  /** The reader's questions to Opus, by block id. */
+  askedQuestions: ReadonlyMap<string, AskedPassage>;
+  /** Returns the existing request when the same words were already requested this visit. */
+  requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;
+  dialog: ReaderDialog | null;
+  /** The conversation with Opus the reader opened last. On a wide screen it
+   *  is a panel in the margin beside its passage, on a narrow one a sheet. */
+  asking: AskTarget | null;
+  /** Opens the conversation about a passage, or about the words `quote` in it. */
+  ask: (blockId: string, quote: string | null) => void;
+  /** Closes the conversation about a passage. */
+  stopAsking: (blockId: string) => void;
+  openDialog: (dialog: ReaderDialog) => void;
+  closeDialog: () => void;
+  /** Shows a short message at the bottom of the screen. */
+  notify: (message: string) => void;
+  /** Scrolls to an entry's card once it has rendered, and outlines it. On a
+   *  narrow screen it first opens the passage the card sits under. */
+  reveal: (elementId: string, blockId?: string) => void;
+  /** A card's place among all margin cards in reading order, and the move to
+   *  the next one. Null when the card is the only one. */
+  entryNavigation: (elementId: string) => NoteNavigation | null;
+  /** How the margin entry `slotKey` shows. A closed entry is a dot on wide
+   *  screens and one line on narrow ones. An opened entry is always a card. An
+   *  entry the reader has not touched is a card when it fits near its words,
+   *  and a dot otherwise. */
+  slotMode: (slotKey: string) => SlotMode;
+  /** For an opened entry, when the reader opened it: higher is more recent. */
+  openedRank: (slotKey: string) => number | undefined;
+  openEntry: (slotKey: string) => void;
+  closeEntry: (slotKey: string) => void;
+}
+
+export type SlotMode = "closed" | "opened" | "auto";
+
+export const ReaderContext = createContext<ReaderApi | null>(null);
+
+export function useReader(): ReaderApi {
+  const api = useContext(ReaderContext);
+  if (!api) throw new Error("useReader is only available inside the reader");
+  return api;
+}
+
+/** A button the shell shows on selected words or under a passage. It only
+ *  appears while its feature is on. */
+export interface ReaderAction {
+  feature: FeatureId;
+  key: string;
+  label: string;
+  accessibleName: string;
+  onSelect: () => void;
+}
+
+/** One feature module. Each slot is optional. The shell fills the slots of
+ *  every module and drops actions whose feature is off. A module's components
+ *  check their own features and render nothing when off. */
+export interface ReaderModule {
+  name: string;
+  /** Buttons in the toolbar above selected words. `quote` is the selection
+   *  widened to whole words. */
+  selectionActions?: (api: ReaderApi, block: ReaderBlock, quote: string) => ReaderAction[];
+  /** Buttons that appear when the reader points at or taps a passage. */
+  passageActions?: (api: ReaderApi, block: ReaderBlock) => ReaderAction[];
+  /** How many entries this module shows beside a passage. */
+  marginCount?: (api: ReaderApi, blockId: string) => number;
+  /** The entries beside one passage, or beside the unanchored section. */
+  MarginEntries?: ComponentType<{ blockId: string }>;
+  /** A rail to the left of the article on wide screens. */
+  Rail?: ComponentType;
+  /** Dialogs the module opens. */
+  Dialogs?: ComponentType;
+}

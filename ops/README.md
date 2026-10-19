@@ -1,12 +1,16 @@
 # The services machine
 
-One always-on Linux server runs three systemd services:
+One always-on Linux server runs six systemd services. It is the Hetzner Cloud
+server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
+`ssh root@95.217.155.79` (see `docs/prod-config.md`).
 
 | Unit | What it does | Port |
 |---|---|---|
 | `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
 | `cn-extraction` | text in, the claims in it out | 8788 |
 | `cn-intake` | watches reader requests and drives them through the other two | none |
+| `cn-fetch` | fetches outside pages and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
+| `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake is a caller: it holds the service key and writes the rows. The Actions
@@ -15,6 +19,19 @@ pipelines are the monitor; nothing on this machine phones home.
 Intake is outside the feed pacing. It processes reader-requested pages at once
 and spends from the full daily cap. Its spend still counts in the day's total,
 so a big reader page makes the paced feed run go quiet for the rest of the day.
+
+## The sandboxed fetcher
+
+Pages and images from addresses a stranger or a model chose are fetched only
+by `cn-fetch`. The other services send it the address over a Unix socket and
+get the page text back. Its unit file builds a sandbox around it: a throwaway
+user, no environment file and so no keys, no view of `/home`, the secret files
+or other processes, and a kernel rule that lets it reach public internet
+addresses only. So a hostile page that tricks the fetch code into reading
+something on this machine finds nothing worth taking. The other services refuse
+to start without `FETCH_SERVICE_SOCKET`, which their unit files set, so they
+never fall back to fetching next to the keys. The services start `cn-fetch`
+themselves, because their units want it, and autodeploy restarts it with them.
 
 ## First-time setup
 
@@ -42,10 +59,10 @@ GEMINI_API_KEY_FREE=
 GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
-# Jina Reader: the last step of the web-fetch ladder, after the headless
-# browser. Every service fetches pages (the verifier, the search and rating
-# loops, and requested pages), and a page that fails every free step throws
-# without this key.
+# Jina Reader: a paid last resort for a page that every free fetch step failed
+# on. Only runs of the jina_fetch A/B arm use it, in the services that run a
+# claim check. With the arm off nothing reads this key. With the arm on, a
+# missing key throws on the first page that fails every free step.
 JINA_API_KEY=
 
 # The scoring step inside a claim check calls X's evaluate-note API
@@ -124,20 +141,51 @@ when it drains; a service that does not answer health counts as idle, because
 the new commit may be the fix. So a merge to main is live within about five
 minutes of the machine going quiet.
 
-The checkout tracks whichever branch it is on: the feature branch before the
-cutover PR merges, `main` after (switch once by hand with
-`sudo -u cnbot git -C /opt/cn-return-bot checkout main`).
+The checkout tracks whichever branch it is on, which is `main`.
 
-## Rollback
+## Moving to a new machine
 
-```bash
-systemctl stop cn-claim-check cn-extraction cn-intake
-```
+Only two things find this machine: the repository secrets `CLAIM_CHECK_URL` and
+`EXTRACTION_URL`, which the X note writer and the Common Notes feed run read when
+they start. Everything else on the machine either waits to be called, or, like
+`cn-intake`, looks for work in the database by itself. Two copies of intake
+would both take the same reader request. So the two machines must never run it
+at the same time.
 
-Then re-enable the old in-process path by reverting the cutover commit on main,
-or by dispatching the workflows manually while investigating. The Actions runs
-fail loudly while the machine is down, which is the intended signal, not a
-side effect.
+The move on 2026-10-08 (GOO-244) went like this, with about 15 minutes of
+downtime:
+
+1. Build the new machine with "First-time setup" above, but start only
+   `cn-claim-check` and `cn-extraction`. `setup-vm.sh` enables intake, so run
+   `systemctl disable cn-intake` right after it.
+2. Pause both pipeline workflows:
+   `gh workflow disable everything-priority-feeds.yml` and
+   `gh workflow disable create-notes-routine-dynamic.yml`. pg_cron's dispatches
+   fail while they are off, which is harmless.
+3. Wait until no run is in progress and both services on the old machine show
+   `inFlight` 0 and `waiting` 0 on `/health`, and intake is not working on a page.
+4. On the old machine, switch everything off. `disable` keeps a reboot from
+   bringing it back:
+   `systemctl disable --now cn-autodeploy.timer cn-intake cn-claim-check cn-extraction cn-fetch cn-pot-provider`.
+5. Copy the environment file machine to machine without printing it, and
+   compare the hashes:
+   ```bash
+   ssh root@<old> 'cat /etc/cn-return-bot/service.env' | ssh root@<new> 'umask 077; cat > /etc/cn-return-bot/service.env'
+   for ip in <old> <new>; do ssh root@$ip 'sha256sum /etc/cn-return-bot/service.env | cut -c1-16'; done
+   ```
+6. On the new machine, restart the two called services so they read the file,
+   and switch on the other two:
+   `systemctl restart cn-claim-check cn-extraction && systemctl enable --now cn-intake cn-fetch`.
+7. Point `CLAIM_CHECK_URL` and `EXTRACTION_URL` at the new address with
+   `gh secret set`, then `gh workflow enable` both workflows and watch one run
+   of each finish green.
+8. Once the new machine has served a few runs, delete the old one in the
+   Hetzner console. Powering it off does not stop the bill. Check first that
+   Hetzner holds no snapshots of it, because those are billed separately and
+   survive the deletion.
+
+Rollback is the same steps in the other direction. With no machine at all, the
+Actions runs fail loudly at their health check, which is the intended signal.
 
 ## Looking at it
 

@@ -1,0 +1,34 @@
+{
+  "item_id": "1cef031b-0b7b-4dde-934d-904db7b8e52f",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "675f083d-c85e-4484-a90c-df21f79aec61",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "reason": "Scott writes in his own voice that Pritchard argues about \"the ancestors of the Hadza people on the Kenyan savannah 10,000 years ago\", so the geography is his slip and not something he is quoting from her. The note is plainly right: the Hadza live in northern Tanzania around Lake Eyasi, on the edge of the Serengeti near Ngorongoro Crater and Olduvai Gorge, and the Survival International page the note cites says exactly that. The problem is that the country does not matter to anything he is arguing. His point is that the happiness collapse came from hunter-gatherers moving to subsistence agriculture, and that argument reads identically whether the Hadza are Tanzanian or Kenyan. So this is a clean, undeniable correction that Scott would probably just accept with a shrug, but it is also a throwaway geographic detail in a single aside, which makes it close to pedantic. Nathan should decide whether a note that corrects a real error but changes nothing in the argument is worth sending."
+    },
+    {
+      "note_id": "8b35459e-c7d8-47f9-8bdf-a238fee422b1",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Scott never says anything about which years the World Happiness Report 2025 covers, so the note's headline correction rebuts a claim he did not make. What he actually wrote is a hedged guess about Pritchard's own figures: \"Pritchard seems to be looking at some other dataset that mixes numbers from between 2019 and 2024\", and that guess is basically accurate, because the passage of hers he is answering cites the UAE in 2024, Kuwait in 2023, Belize in 2022 and Oman in 2019. The note then turns this into the strawman that he claimed \"only mixed datasets show illiberal countries beating the US\", which is not in the text. It is also fact-checking something he concedes in the very next sentence, \"I don't think the exact dataset matters too much; I agree with her that this might be within a margin of error\", and concedes again a paragraph later with \"Suppose that we go with her dataset, and admit that the UAE, Kuwait, and Oman all beat the United States.\" Sending this would repeat the Andy Masley failure, correcting a point the author has already granted while misquoting what he said."
+    },
+    {
+      "note_id": "1ff38adf-1006-4694-8cea-b7cbb4e3c56d",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is Scott's, but it sits in footnote 8 where he has already told the reader he cannot check it: \"I'm sorry I can't double-check this and give you a definitive confirmation that I didn't get something wrong.\" The note also does not match the data he is talking about. He says he is reading Our World In Data, which had just switched to the 2025 figures; in that 2025 row the UAE scores 6.821, Saudi Arabia 6.817 and the United States 6.816, so the illiberal countries are ahead by five thousandths and one thousandth of a point on a ten-point scale. That is precisely what the word \"tie\" describes, and calling it an error is a quibble about rounding. The note instead quotes the World Happiness Report 2025 ranking, UAE 21st against the US 24th, which is the 2024 figures rather than the 2025 ones and makes a gap of 0.035 points sound like a three-place gulf. On top of that, Scott concedes the substance in the main text, writing \"Suppose that we go with her dataset, and admit that the UAE, Kuwait, and Oman all beat the United States. What does that tell us about liberalism?\", so the note corrects nothing he is actually defending."
+    }
+  ]
+}

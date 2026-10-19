@@ -1,8 +1,8 @@
 /**
  * The client for Jina Reader (r.jina.ai), a hosted service that fetches a page
  * with its own browsers from its own addresses and returns the text as markdown.
- * The fetch ladder in tools.ts asks it only after every one of its own steps
- * has failed.
+ * fetchWebPage in tools.ts asks it only for a run on the jina_fetch arm, and only
+ * after every step of the free fetch ladder has failed.
  *
  * In the GOO-167 investigation it recovered 230 of the 385 pages our ladder had
  * failed on in two weeks, including about half of the pages behind Cloudflare

@@ -1,0 +1,43 @@
+{
+  "item_id": "448e4404-be91-47c4-8997-d9a2f54df5c4",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "dee2679c-d326-4e4c-9b73-420241d5a830",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence about the inventor pushing a button is not Yudkowsky's own claim. It sits inside a long block quote of an email that Carl Feynman wrote in 1997 and recently reposted, and Yudkowsky ends the quote with the line 'Epistemic status: Childhood recollections, untainted by fact-checking. Originally an email from 1997.' He is reproducing someone else's story and already telling the reader it has not been checked. On top of that the note does not address the claim it is attached to. The claim is about what the inventor did just before the explosion, while the note talks about the lawsuit and the settlement, which is the subject of the other note on this post. Richard Feynman's own account does contradict the claim, because he writes that he handed the plug back and Papp 'plugged it back into the wall' before the explosion, but the note never says that. Sending this would repeat the Andy Masley problem of fact-checking a passage the author himself flagged as unverified hearsay."
+    },
+    {
+      "note_id": "912335e1-c157-48e3-9f8a-a6e3339cc2b4",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note explains that a closed system of internal rotating masses cannot produce net thrust because that would violate conservation of momentum. That is the thesis of the entire essay. Yudkowsky writes the passage as a description of Mr. L's mistaken design and then spends the next several sections showing exactly why it fails, including 'Conservation of Momentum is not a surface generalization over a whole system' and 'we immediately know that his spreadsheet contains some bookkeeping error.' The note argues for the author's own position as if it were a correction of him. The extracted claim is also only that Mr. L showed the mailing list an animated GIF, a personal recollection from 1996 that the note does not touch at all. This is precisely the 'fact-checking a claim I'm also fact checking' complaint we already received."
+    },
+    {
+      "note_id": "b3ad22de-b597-416e-869e-90ab923d72c8",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The correction itself checks out. Richard Feynman's own published account of the Papp engine demonstration says 'Mr. Papp sued me for ruining his engine' and 'The case was settled out of court, and Mr. Papp was paid something,' which does sit oddly beside Carl Feynman's memory that 'The trial ended up with my father not having to pay.' But the sentence is not Yudkowsky's. It is inside the block quote of Carl Feynman's 1997 email, which Yudkowsky closes with 'Epistemic status: Childhood recollections, untainted by fact-checking.' He has already told the reader this is unchecked family memory. The detail is also completely tangential, since the essay uses the anecdote only to illustrate people hiding the impossible step of a perpetual motion machine, and nothing in the argument depends on who paid whom. Carl Feynman's wording may even be defensible, because Caltech and its insurer settled rather than Richard Feynman personally. Correcting a disclaimed aside in a quoted email is the kind of note that reads as pedantic and would annoy the author."
+    },
+    {
+      "note_id": "569af0a6-3396-4501-875e-acde3b976514",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note does not correct anything. It simply describes what AI Safety via Debate is, quoting OpenAI's page about two agents arguing while a human judges. The claim it is attached to is Yudkowsky's own summary of a common plan, 'First we will build more capable AIs ... and then we will use those AIs to align AI,' which is an accurate description of proposals such as OpenAI's plan to automate alignment research, and the note offers no evidence against it. Debate is a different proposal from bootstrapped alignment, so the note is not even on topic, and Yudkowsky discusses debate at length elsewhere in the same essay through his exchange with Geoffrey Irving. A reader would learn nothing that changes their belief about the passage, and the author would read it as a bot that did not understand what he wrote."
+    }
+  ]
+}

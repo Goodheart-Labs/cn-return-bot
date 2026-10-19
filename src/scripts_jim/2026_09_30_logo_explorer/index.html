@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Common Notes logo explorer</title>
+    <link rel="stylesheet" href="explorer.css" />
+    <!-- Paper.js computes the outlines: unions, overlaps and cuts of curved shapes. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.18/paper-core.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <!-- The brand colours, offered as swatches in every colour picker. -->
+    <datalist id="brand-colors">
+      <option value="#2563eb"></option>
+      <option value="#1d4ed8"></option>
+      <option value="#60a5fa"></option>
+      <option value="#aecdf3"></option>
+      <option value="#16a34a"></option>
+      <option value="#22c55e"></option>
+      <option value="#f5b301"></option>
+      <option value="#f59e0b"></option>
+      <option value="#d97706"></option>
+      <option value="#dc2626"></option>
+      <option value="#ef4444"></option>
+      <option value="#111827"></option>
+      <option value="#1f2937"></option>
+      <option value="#ffffff"></option>
+    </datalist>
+
+    <header class="topbar">
+      <h1>Logo explorer</h1>
+      <div id="tabs"></div>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <div class="topbar-actions">
+        <button type="button" data-action="copy-svg">Copy SVG</button>
+        <button type="button" data-action="download-svg">Download SVG</button>
+        <button type="button" data-action="download-pngs">Download PNGs</button>
+        <button type="button" data-action="copy-settings">Copy settings</button>
+        <button type="button" data-action="paste-settings">Paste settings</button>
+        <button type="button" class="primary" data-action="save-snapshot">Save snapshot</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="rail">
+        <h2>Candidates</h2>
+        <div id="gallery" class="gallery"></div>
+        <h2>Saved snapshots</h2>
+        <div id="snapshots" class="snapshots"></div>
+      </aside>
+
+      <main id="view" class="view"></main>
+
+      <aside class="panel">
+        <div class="panel-head">
+          <h2 id="candidate-name"></h2>
+          <p id="candidate-summary" class="hint"></p>
+          <div id="presets-block">
+            <h3>Starting points</h3>
+            <div id="presets" class="chips"></div>
+          </div>
+          <div id="palettes-block">
+            <h3>Colour sets</h3>
+            <div id="palettes" class="chips"></div>
+          </div>
+          <div class="chips">
+            <button type="button" class="chip" data-action="fit" title="Centre the mark and make it fill the canvas">Fit to canvas</button>
+            <button type="button" class="chip" data-action="reset-all" title="Put every slider of this logo back to its default">Reset this logo</button>
+          </div>
+        </div>
+        <div id="controls" class="controls"></div>
+      </aside>
+    </div>
+
+    <dialog id="paste-dialog">
+      <form method="dialog">
+        <h2>Paste settings</h2>
+        <p class="hint">Paste what "Copy settings" gave you. The logo it names is selected and its sliders take these values.</p>
+        <textarea id="paste-text" rows="12" spellcheck="false"></textarea>
+        <div class="dialog-actions">
+          <button value="cancel">Cancel</button>
+          <button value="apply" class="primary">Apply</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="save-dialog">
+      <form method="dialog">
+        <h2>Save a snapshot</h2>
+        <p class="hint">The selected logo and all its slider values are written into the snapshots folder of the repo, as an SVG file and a settings file.</p>
+        <input id="save-name" type="text" placeholder="A name, for example: bubbles, tighter overlap" />
+        <div class="dialog-actions">
+          <button value="cancel">Cancel</button>
+          <button value="save" class="primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

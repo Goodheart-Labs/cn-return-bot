@@ -1,0 +1,29 @@
+{
+  "item_id": "cccee2fb-8e49-459f-a765-9c88355917eb",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "b1cbe704-b276-4f39-a6ce-5d32d7fd6109",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Do not send it as written, because it presents a live dispute as settled and leaves out the evidence the author himself trusts. Replace the second sentence with something like: \"Whether AI wrote it is unresolved: Pangram flagged the text as 100% AI-generated, but after reviewing drafts and time-stamped documents the Commonwealth Foundation said it was satisfied AI was not used, and Nazir denies it.\" Also mention that the pipeline attached this to the 'everyone hated the story' sentence, which the note does not address.",
+      "reason": "The author states in his own voice that AI 'found time to win the Commonwealth Prize for a short story (published by Granta)' and later says he is 'infinitely more interested in the fact that it won the Commonwealth Prize' than in how, so he really does assert AI authorship as fact. The note's facts hold: the Guardian article contains every quoted sentence, the story is credited to Jamir Nazir, and the Commonwealth Foundation's 22 June statement says it examined 'working drafts, time-stamped documents and notes' and is 'satisfied that AI was not used to write the winning stories'. But the question is genuinely open, not closed the way the note implies. Pangram flagged the story as 100% AI-generated, the Foundation says outright that it did not use detection tools and relied on the writers' testimony and drafts, and the Atlantic's July interview with Nazir found him evasive, unable to name a work by the poet he cites as his main influence, and bullish on AI writing. The author trusts Pangram, since he writes a few paragraphs later that 'Pangram will tell you as much', so a note that only relays the Foundation's clearance would get the reply that the Foundation asked the accused and believed him. A reworded note that says authorship is disputed and gives both the detector result and the Foundation finding would still be worth sending, because the post tells readers as settled fact that an AI won a major literary prize when the official finding is the opposite. The extracted claim, that everyone hated the story except the judges, is a different sentence and the note does not touch it; that sentence is loose but roughly fair, since the Guardian records negative reactions and the judging chair's praise."
+    },
+    {
+      "note_id": "41568881-acbc-48f7-9c64-05dfa0421327",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Keep the sentence but add what the plan does about it, so it answers 'focuses' rather than 'frames': \"Its opening names 'extinction or irreversible concentration of power' as the two outcomes to avoid, warns that even aligned AI would leave 'a tiny group of people, or possibly just a single individual' in control of the only army of superintelligences, and its two main mechanisms, total research transparency and letting dozens of companies in many countries reach the frontier together, are aimed at that.\" You could concede that the plan says nothing about the loss of worker power, which is the oligarchy the post cares about.",
+      "reason": "The claim is the author's own: 'The problem is that AI 2040 is politically naive, and it focuses only on extinction risk', and he builds the rest of the section on it. The note is correct. The ai-2040.com page opens with 'we predicted that this would result in either extinction or irreversible concentration of power' and Plan A is presented as the alternative; a later passage says that even if the companies align their AIs 'the result will be an unprecedented concentration of power' with 'a tiny group of people, or possibly just a single individual' controlling the only army of superintelligences, and the plan's remedy is 'total research transparency' plus 'multiple companies across multiple countries scaling slowly and safely together' instead of racing in secret. So 'focuses only on extinction risk' is wrong, and a reader would wrongly conclude the plan ignores power concentration. Two things keep this at uncertain. First, the note as written only says the plan 'frames' the risk that way and cites the one framing sentence, which lets the author reply that a sentence in the introduction is not a focus; the diffusion and transparency mechanisms are the real answer and belong in the note. Second, the author has a partial defence: AI 2040's concentration of power is about who controls superintelligence, while his oligarchy scenario is about workers losing all economic and military leverage, and the plan really does say nothing about that. He even concedes in the next paragraph that the plan 'perhaps lowers the chance of the oligarchical scenario if the oligarchs are private', so he knows it touches the issue and will likely accept that 'only' overreaches, but he may say the note misses his point."
+    }
+  ]
+}

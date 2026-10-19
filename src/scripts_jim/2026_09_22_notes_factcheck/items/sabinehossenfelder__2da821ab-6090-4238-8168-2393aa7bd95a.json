@@ -1,0 +1,124 @@
+{
+  "item_id": "2da821ab-6090-4238-8168-2393aa7bd95a",
+  "project_slug": "sabinehossenfelder",
+  "creator": "Sabine Hossenfelder",
+  "source": "youtube",
+  "url": "https://www.youtube.com/watch?v=DX_oIQ-tA6M",
+  "title": "Quantum Computing Failure Now Obvious",
+  "published_at": "2026-08-25",
+  "full_text": "Quantum computing has been one of the\nmost, if not the most, anticipated new\ntechnology on the horizon.\nBut things haven't been going as many in\nthe industry thought they would.\nNevertheless, they're more optimistic\ntoday than ever. What explains this\nweird mismatch? Today, [snorts] I have\nan explanation for this and also\nclarification on my opinion about\nquantum computing. Just last week, we\nsaw another claim of quantum advantage,\nthis time from IBM and researchers at\nthe University of Chicago. Quantum\nadvantage means that a quantum computer\ndid a calculation that would have taken\nunfeasibly long on a conventional\ncomputer. It doesn't necessarily mean\nthat the calculation had any particular\nuse. Indeed, in this new example, as\nwell as in many previous ones, the\ncalculation is to produce a random\ndistribution of values. It's got no\nknown use. There have been other\nprevious claims that quantum advantage\nhas been achieved, but as the\nphilosopher Aram Harrow just nicely\nsummarized in a new paper, within 18\nmonths of any of these demonstrations,\nthey've all been reproduced on a\nconventional computer or at least been\nshown to be reproducible. The one\nexception he names was one of those\nrandom sampling cases. Harrow is blunt\nwith his judgement. He writes, \"A\ndemonstration that a hardware can run a\ncircuit and that the circuit produces an\nobservable matching a known answer is a\ndemonstration of competent diagnostic\nengineering. The press cycle of the past\nseveral years has conflated such results\nwith computational advantage, and the\nconflation has been productive of\nfunding without being productive of the\nmatter fact under investigation.\" What\nHarrow is referring to is that 5 years\nago, many thought that quantum computers\nwould already have a commercial use even\nwhen they're small and noisy. This has\nbeen referred to as noisy intermediate\nscale quantum computing NISQ for short.\nFor example, in 2017,\nresearchers from Google claimed that we\ncontend that short-term returns are\npossible with the small devices that\nwill emerge within the next 5 years.\nDidn't happen. In 2018, researchers from\nIBM said that in the near term NISQ\ncomputers have the best potential to\ndeliver business advantage. One of them\nalso said that IBM sees the next few\nyears as the dawn of the commercial\nquantum era. Didn't happen. The quantum\ncomputing firm IonQ said in its 2021\nannual report, \"During the NISQ\ncomputing era, we expect quantum machine\nlearning to be the first solution to\ntransition into broadly available\napplications.\" Didn't happen. Enrique\nSolana, one of the founders of the\nGerman startup Keepler Quantum, said\nthat we work to reach a NISQ advantage\nfor use cases within 18 to 36 months.\nThat was on August 11th, 2023, almost\nexactly 36 months ago. Didn't happen.\nThese claims from researchers then\nspilled over into marketing analysis.\nThe Boston Consulting Group, for\nexample, predicted in 2019 that we\nanticipate value for end users in these\nsectors to reach a relatively modest 2\nto 5 billion by 2024. The value to end\nusers turned out to be even more modest,\nnamely nil. Today, the only profitable\nquantum application has been forecasting\nprofitable quantum applications. In my\nmind, the idea that NISQ computers would\nhave any commercial uses was obviously\nand I mean 11 out of 10 on the\nmeter. If you need evidence of\nthis other than my word, I'll pretend to\nbe deeply insulted but refer you to John\nPreskill, one of the world's experts on\nquantum computing, who for all I know\ntermed the phrase NISQ and who famously\ndid not claim these devices would have\nany commercial use. Yes, sometimes the\nrelevant bit is what they don't say. So,\nwhat I think happened is that academia\nleaked into industry and\nconsulting firms and no one was there to\nclean up the mess. No one except\npossibly Scott Aaronson, who's been\nsaying all along that quantum computers\nare super interesting from a research\nperspective, but commercial advantage,\nwell, let's not talk about it. Let me be\nclear, I'm not saying that quantum\ncomputers will never have a commercial\nuse. I just think it'll take a long time\nto get there, certainly not in this\ndecade and the uses will be extremely\nniche and limited, not a billion-dollar\nmarket. I've noticed that people call me\npessimistic when it comes to quantum\ncomputers. I think I'm not. It's just\nthat even my most optimistic self thinks\nit's idiotic that quantum computers will\nbring a new industrial revolution as\nsome headlines put it. At least\nconfidence has reached fault tolerance.\nI also want to remind you that Demis\nHassabis, who I've put down as one of\nthe most intelligent people on the\nplanet, has argued that whatever quantum\nprocesses happen in nature will likely\nhave so many regularities you can model\nthem with AI on a conventional computer.\nI think scientists aren't taking him\nseriously enough. If my day had any more\nhours, I'd try to formalize this into a\nformal conjecture, but the way things\nare going, AI will probably beat me to\nit. The last time I wrote code, it was\nFortran.\nThis is why I decided I need to urgently\nupgrade my coding skills. If you're in a\nsimilar situation, I have a\nrecommendation for you. boot.dev, who've\nbeen sponsoring this video. boot.dev is\nfocused on backend development, so\nPython, SQL, Go, the kind of stuff that\nactually runs the world behind the\nscenes. And you don't just watch\nlessons, you build real projects. You\nwrite code directly in the browser, you\nsolve challenges, and you level up like\nit's a slightly nerdy role-playing game.\nThey also have what they call the\ntraining grounds, that's basically\ninfinite practice problem. I've been\nmeaning for a while to set up a website\nfor all my content, but I want to know\nwhat's going on with the data and what\nvulnerabilities to watch out for, and\nboot.dev has been really eye-opening.\nYou can create an account for free, read\nand watch all the content, and try a\ndemo of the interactive features. If you\ndecide to go for the full experience,\nuse my code Sabina to get 25% off your\nfirst year. So, go and check this out.\nThanks for watching. See you tomorrow.",
+  "notes": [
+    {
+      "note_id": "4aebdc46-9868-4cca-a015-db794e9febdf",
+      "commonnotes_url": "https://commonnotes.net/?project=sabinehossenfelder&note=4aebdc46-9868-4cca-a015-db794e9febdf",
+      "note": "The paper described (\"The NISQ Trap\") was written by philosopher Amit Hagar, not Aram Harrow. Harrow is an MIT physicist and quantum information scientist, not a philosopher, and is not the paper's author.",
+      "votes": {
+        "helpful": 1,
+        "not_helpful": 0
+      },
+      "claim": "Aram Harrow is a philosopher who summarized in a new paper that within 18 months of any quantum advantage demonstrations, they have all been reproduced on a conventional computer or shown to be reproducible.",
+      "extractor_judgement": "somewhat likely false",
+      "context_quote": "as the philosopher Aram Harrow just nicely summarized in a new paper, within 18 months of any of these demonstrations, they've all been reproduced on a conventional computer or at least been shown to be reproducible.",
+      "updated_quote": null,
+      "context_paragraph": "There have been other previous claims that quantum advantage has been achieved, but as the philosopher Aram Harrow just nicely summarized in a new paper, within 18 months of any of these demonstrations, they've all been reproduced on a conventional computer or at least been shown to be reproducible.",
+      "context_url": "https://www.youtube.com/watch?v=DX_oIQ-tA6M&t=60s",
+      "start_seconds": 60,
+      "end_seconds": 78,
+      "sources": [
+        {
+          "url": "https://arxiv.org/abs/2607.07530",
+          "quote": "The NISQ Trap: Eight Years of Demonstrations the Hardware Was Built to Lose",
+          "explanation": "This confirms the title of the paper referenced in the note."
+        },
+        {
+          "url": "https://arxiv.org/abs/2607.07530",
+          "quote": "From: Amit Hagar",
+          "explanation": "The submission history shows Amit Hagar is the author of this paper."
+        },
+        {
+          "url": "https://scottaaronson.blog/?p=9949",
+          "quote": "a philosopher named Amit Hagar put out a preprint entitled The NISQ Trap",
+          "explanation": "Confirms Amit Hagar's profession as a philosopher and his authorship of the cited paper."
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Aram_Harrow",
+          "quote": "Aram Wettroth Harrow (born 1980) is an American quantum information scientist. He has been a professor at the Massachusetts Institute of Technology since 2013.",
+          "explanation": "Confirms Aram Harrow is a physicist/scientist at MIT, not a philosopher."
+        }
+      ]
+    },
+    {
+      "note_id": "84d324aa-ce77-4820-8186-b02c50e6f54d",
+      "commonnotes_url": "https://commonnotes.net/?project=sabinehossenfelder&note=84d324aa-ce77-4820-8186-b02c50e6f54d",
+      "note": "The founder's name is Enrique Solano, and his company is Kipu Quantum (based in Berlin/Karlsruhe, Germany) — not 'Solana' or 'Keepler Quantum.'",
+      "votes": {
+        "helpful": 0,
+        "not_helpful": 0
+      },
+      "claim": "Enrique Solana is one of the founders of the German startup Keepler Quantum.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "Enrique Solana, one of the founders of the German startup Keepler Quantum, said that we work to reach a NISQ advantage for use cases within 18 to 36 months.",
+      "updated_quote": null,
+      "context_paragraph": "Enrique Solana, one of the founders of the German startup Keepler Quantum, said that we work to reach a NISQ advantage for use cases within 18 to 36 months. That was on August 11th, 2023, almost exactly 36 months ago. Didn't happen.",
+      "context_url": "https://www.youtube.com/watch?v=DX_oIQ-tA6M&t=166s",
+      "start_seconds": 166,
+      "end_seconds": 181,
+      "sources": [
+        {
+          "url": "https://www.quera.com/podcasts/daniel-volz-and-enrique-solano-co-founders-of-kipu-quantum",
+          "quote": "Daniel Volz and Enrique Solano, Co-founders of Kipu Quantum",
+          "explanation": "Corrects the founder's name to Enrique Solano and the company name to Kipu Quantum."
+        },
+        {
+          "url": "https://www.quera.com/podcasts/daniel-volz-and-enrique-solano-co-founders-of-kipu-quantum",
+          "quote": "The team at Kipu Quantum consists of around two dozen professionals, mainly PhDs in physics, based in Berlin and Karlsruhe, Germany.",
+          "explanation": "Confirms the company is based in Berlin and Karlsruhe, Germany."
+        }
+      ]
+    },
+    {
+      "note_id": "4772a431-847c-4296-b1c5-04ea5d29f38f",
+      "commonnotes_url": "https://commonnotes.net/?project=sabinehossenfelder&note=4772a431-847c-4296-b1c5-04ea5d29f38f",
+      "note": "The exception cited is not a random-sampling case. Amit Hagar's stated exception is Google's Quantum Echoes/OTOC experiment, designed to differ from random circuit sampling by producing verifiable expectation values, not unverifiable random bitstrings.",
+      "votes": {
+        "helpful": 1,
+        "not_helpful": 0
+      },
+      "claim": "The one exception Aram Harrow named to quantum advantage claims being reproduced on conventional computers was one of the random sampling cases.",
+      "extractor_judgement": "uncertain",
+      "context_quote": "The one exception he names was one of those random sampling cases.",
+      "updated_quote": null,
+      "context_paragraph": "within 18 months of any of these demonstrations, they've all been reproduced on a conventional computer or at least been shown to be reproducible. The one exception he names was one of those random sampling cases.",
+      "context_url": "https://www.youtube.com/watch?v=DX_oIQ-tA6M&t=74s",
+      "start_seconds": 74,
+      "end_seconds": 83,
+      "sources": [
+        {
+          "url": "https://arxiv.org/abs/2607.07530",
+          "quote": "With a single clear exception, every NISQ-era flagship demonstration of 'quantum advantage' has... been classically reproduced",
+          "explanation": "Confirms the existence of exactly one exception in Hagar's paper."
+        },
+        {
+          "url": "https://scottaaronson.blog/?p=9949",
+          "quote": "As of this past year, however, we have some strong candidates for verifiable quantum advantage. One is the Google OTOC experiment, as even Hagar himself acknowledges (that’s his “single clear exception”).",
+          "explanation": "Explicitly identifies that Hagar's 'single clear exception' is the Google OTOC experiment, not a random sampling case."
+        },
+        {
+          "url": "https://research.google/blog/a-verifiable-quantum-advantage/",
+          "quote": "The heart of the algorithm is measuring the expectation value of a quantum observable, called the out-of-time-order correlator (OTOC).",
+          "explanation": "Confirms the exception is based on expectation values."
+        },
+        {
+          "url": "https://research.google/blog/a-verifiable-quantum-advantage/",
+          "quote": "However, this random circuit sampling approach has limited practical utility since the same bitstring never appears twice in a large quantum system, restricting its ability to reveal useful information.",
+          "explanation": "Distinguishes the OTOC experiment from the previous 'random circuit sampling' approach."
+        },
+        {
+          "url": "https://research.google/blog/a-verifiable-quantum-advantage/",
+          "quote": "Unlike bitstrings, quantum expectation values, e.g., current, velocity, magnetization and density, are verifiable computational outcomes",
+          "explanation": "Supports the claim that the experiment produces verifiable values rather than random bitstrings."
+        }
+      ]
+    }
+  ]
+}

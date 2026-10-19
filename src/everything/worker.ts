@@ -22,12 +22,8 @@ import { processFetchedContent, resumeItemClaims } from "./pipeline/processConte
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
-import { describeSpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
+import { describeTodaySpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
-
-/** The everything path ingests whole articles, so its fetch cap matches the
- *  page_text column limit rather than a verifier's context window. */
-const WEB_FETCH_MAX_CHARS = 500_000;
 
 /** How many queued items the log lists before summarising the rest. */
 const QUEUE_LINES = 8;
@@ -68,7 +64,7 @@ function markdownToPlainText(markdown: string): string {
  *  from the body either way. The stored published date is preserved, because a
  *  web fetch has none and processing would otherwise wipe it. */
 async function fetchWebContent(item: EverythingItem): Promise<FetchedContent> {
-  const result = await fetchWebPage(item.url, { maxChars: WEB_FETCH_MAX_CHARS });
+  const result = await fetchWebPage(item.url);
   if (!result.ok) throw new Error(result.content);
   const markdown = result.content.replace(FETCHED_VIA_PREFIX, "");
   const heading = markdown.match(/^# (.+)\n+/);
@@ -159,11 +155,17 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
   return queue;
 }
 
-/** Whether any feed-tier item is waiting. The feed run walks for new posts
- *  only when this is false, so a resumed or retried item is finished before
- *  fresh content is pulled in front of it. */
-export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
-  queue.some((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested);
+/** Whether a fresh feed item is waiting: one at the prioritized or backlog
+ *  tier, which includes an item a killed run left half done. The feed run walks
+ *  for new posts only when this is false, so such an item is finished before
+ *  another post is pulled in. Items waiting for a retry do not count. They run
+ *  only once the walk finds every creator caught up. Before 2026-10-14 they did
+ *  count. After Muse's outage on 2026-10-13 the feed run spent about 40 hours on
+ *  147 retried items and picked up a single new post, so even Zvi's posts waited. */
+export const freshFeedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
+  queue.some(
+    (item) => item.status === "queued" && item.priority >= QUEUE_PRIORITY.backlog && item.priority < QUEUE_PRIORITY.requested,
+  );
 
 /** Runs one claimed item through fetch, extraction and checking, and records
  *  where it ended: done, put back because a budget ran out part way, or
@@ -236,7 +238,7 @@ export async function drainQueue(): Promise<number> {
   await logQueue();
   while (true) {
     if (await feedBudgetExhausted()) {
-      console.log(`\nFeed budget reached (${describeSpend(await todaySpendUsd())}) — stopping for today`);
+      console.log(`\nFeed budget reached (${await describeTodaySpend()}) — stopping for today`);
       break;
     }
     const ended = await processNextFeedItem();

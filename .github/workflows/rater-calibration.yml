@@ -1,0 +1,23 @@
+name: Rater Calibration
+# Weekly. Refits the note rater's probability adjustment on matured notes and
+# stores it in pipeline_state, where the note writer reads it at the start of
+# each run. See src/scripts/refitRaterCalibration.ts.
+on:
+  schedule:
+    - cron: "31 7 * * 0"
+  workflow_dispatch:
+jobs:
+  refit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install
+      - name: Refit
+        run: bun run src/scripts/refitRaterCalibration.ts

@@ -13,7 +13,12 @@ set -euo pipefail
 REPO_DIR="/opt/cn-return-bot"
 ENV_FILE="/etc/cn-return-bot/service.env"
 SERVICE_USER="cnbot"
-UNITS=(cn-claim-check cn-extraction cn-intake)
+# A deploy runs the copy of this script that was checked out before it, since
+# bash reads all of main() before the reset below. So a unit added to this list
+# is first installed by the deploy after the one that adds it. A new unit must
+# be installed by hand once (cp, daemon-reload, enable --now), as cn-fetch was
+# on 2026-09-28.
+UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch)
 
 main() {
   # Deploy whatever branch the checkout is on. Before the cutover PR merges
@@ -52,10 +57,15 @@ main() {
   sudo -u "$SERVICE_USER" git -C "$REPO_DIR" reset --hard "origin/$branch"
   sudo -u "$SERVICE_USER" bash -c "cd $REPO_DIR && ~/.bun/bin/bun install --frozen-lockfile"
 
-  # The units and this script's own timer may have changed with the code.
+  # The units and this script's own timer may have changed with the code. A
+  # deploy runs the previous copy of this script, so its list can name a unit
+  # whose file the new code removed. Such a unit is skipped, so that removing a
+  # service never stops a deploy halfway.
   local unit
   for unit in "${UNITS[@]}" cn-autodeploy; do
-    cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
+    if [ -f "$REPO_DIR/ops/$unit.service" ]; then
+      cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
+    fi
   done
   cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
   systemctl daemon-reload

@@ -1,0 +1,97 @@
+{
+  "item_id": "ff63aa8e-2a92-43fb-b424-4a1a1293523d",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "5cc98d5e-b58d-4b1d-bb50-e649f15395f0",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "The guest, Sarah Paine, asks in her own voice \"How do you wind up with eight or nine million Polish deaths in World War II?\", so the figure is her own assertion and not something she is quoting or disputing. The standard figure for Polish citizens killed is about 6 million, roughly a fifth of the pre-war population, and Poland's own Institute of National Remembrance puts it at 5.6 to 5.8 million. I checked the Wikipedia pages the note cites and they carry exactly the sentences quoted, and the Polish government's 1947 report gives 6,028,000, so no mainstream count comes near eight or nine million. That is an overstatement of roughly 40 to 50 percent on one of the best known casualty numbers of the war. Her wider point, that the deaths came from massacre, survives the correction, but the number itself is what a listener will carry away, and a professional historian would very likely accept a clean correction of it."
+    },
+    {
+      "note_id": "90b887dd-c277-47e5-96e8-74401dad9584",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Paine says \"If you fast forward to now I think Russia's entire economy now is less than Mexico\" and uses it to argue that Russians wrongly believe their economy is huge, so the claim is hers and it carries her point. I pulled the World Bank series myself rather than trusting the note: in 2022 Russia was 2.29 trillion dollars against Mexico's 1.47 trillion, and in 2023 Russia was 2.05 trillion against Mexico's 1.79 trillion, so Russia was larger in every recent year, and on a purchasing-power basis it is larger still. The note's numbers match the source exactly. The correction matters, because \"smaller than Mexico\" is the memorable line a listener takes away, even though her broader point about Russia falling behind the West is sound. The one weakness is the citation: the sources are raw World Bank API URLs, which a reader who clicks through will find hard to read, so it would be worth pointing at the ordinary World Bank country page instead."
+    },
+    {
+      "note_id": "fb495d80-4f0e-4b5a-a9fb-def0ad542b20",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Paine does state flatly that George Bernard Shaw said this, so the attribution is her own claim. The correction is right: Quote Investigator traces the earliest close match to an 1872 letter by Anselme Batbie, who credited Burke, finds no evidence Shaw said it, and shows that Shaw's documented 1933 remark was about revolutionists rather than socialists. My hesitation is that the quote is only decoration. She uses it to make the point that socialism appealed to the idealism of the young, and that point is untouched whoever coined the line. So it is a fair and easily checked correction that changes nothing a listener believes about the argument, which makes it a candidate for being read as a nitpick."
+    },
+    {
+      "note_id": "ff6f7371-6b15-4365-a62f-9574075c9a11",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is Dwarkesh retelling an anecdote from Joe Studwell's How Asia Works, and the point of the retelling is the floor manager's speech about the Japanese reparations being blood money, not the length of the working day. \"They're working six, seven hour days\" is almost certainly a slip or a transcription artifact for something like sixteen or seventeen hour days, because the entire anecdote is about being told to work hard. I checked the transcript published on dwarkesh.com and it carries the same wording, so the note is at least quoting accurately, but it treats an obvious misstatement as a claim about Korean industrial history. The sources also never check what Studwell actually wrote; they describe women factory workers in 1989, decades after the export take-off the anecdote is about. Sending this would look like we did not understand what he was saying."
+    },
+    {
+      "note_id": "090963e9-e5da-41ae-83bc-4158b1a41366",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Paine prefaces this with \"I'm no expert on these parts of the world, but my understanding is\", and she is making a general point about why rebuilding Germany and Japan worked while building institutions from scratch in Iraq and Afghanistan did not. Her claim is about a pattern, that whichever group holds power crushes the others, not a dated claim that a particular war was still being fought in 2023. The note answers something she did not say: it gives the end date of the campaign against Islamic State and the end of the 2001 to 2021 war. Neither fact contradicts her, and the Taliban's treatment of women, Hazaras and former government officials after August 2021 is arguably an instance of the very dynamic she is describing. This is a disagreement about framing presented as a fact-check, and she would reject it."
+    },
+    {
+      "note_id": "a9c980bc-b49d-4f79-a837-cd775d3b4da9",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "In this passage Paine is voicing how the rest of the world came to see China after the cover-up: \"instead of just being unlucky that COVID started there, it's all of a sudden, No, you're complicit.\" The note answers only a narrow version of that, namely that no commercial flights left Wuhan itself after 23 January 2020. That leaves untouched the two things her sentence is actually about: the millions who left Wuhan in the weeks before the lockdown while China had not disclosed human-to-human transmission, and the international flights that kept leaving other Chinese cities for weeks afterwards, which is exactly what critics such as Niall Ferguson complained about. So the note does not refute the claim it is attached to. It also says nothing about what officials knew, which is the part of her sentence that carries the accusation."
+    },
+    {
+      "note_id": "6dd87983-b2b1-4633-aedb-17c0cd40c88d",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "Paine does assert this, although as a conversational aside hedged with \"probably\" right after Dwarkesh answers \"Lots\". The correction is right and I checked it against the source: on the Worldometers list Somalia at 20.3 million is the 66th entry and Chile at 19.9 million is the first one below the line, so only about a third of the world's roughly 195 countries have more than 20 million people. What gives me pause is that the mistake does not hurt her argument. She is arguing that Taiwan is a normal-sized country and not something you can simply level, and the true figure supports that even better, since Taiwan is larger than two thirds of all countries. So the note corrects a real error in an offhand remark rather than something the argument rests on."
+    },
+    {
+      "note_id": "134cfafc-aee2-47cb-8a89-baf62b32c9b4",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Her sentence is an interpretation of why Imperial Russia collapsed, and she makes it to set up her real point, that in the Second World War the Allies did supply Russia properly through Lend-Lease. The note answers a causal argument with a snapshot, that the 1914 to 1915 rifle shortage had been made good by 1916. The shortage she describes was real, and historians still argue about how much supply failure, transport collapse and food shortages each contributed to the fall of the monarchy, so this is a difference of emphasis rather than an error of fact. The note then offers its own single cause, protests in Petrograd over food, which is just as much a simplification as hers. A professional military historian would read this as us arguing with her reading of the First World War, and would not accept it."
+    },
+    {
+      "note_id": "b3273f44-edce-4f8d-9471-3039dc0889dd",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "maybe",
+      "reason": "She says \"they've just been redoing their maps. They say what is Uttar Pradesh is ours\", and the note is right that China's 2023 standard map claimed Arunachal Pradesh and Aksai Chin, not Uttar Pradesh, which sits in north-central India far from the disputed border. The sources check out and the published transcript carries the same wording, so she is not being misquoted. My hesitation is that this is plainly a slip of the tongue for Arunachal Pradesh, and the substance of what she said, that China has been redrawing maps to claim Indian territory, is correct and the note confirms it. For a listener who does not know Indian geography the correction genuinely helps, because it names the right state. For Dwarkesh and Paine it may look like we are correcting a stumble rather than a belief."
+    },
+    {
+      "note_id": "a56f012d-91c4-4564-aa84-4930804891b4",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Paine's own claim, made to argue that the PLA would perform badly and that the Vietnamese and Indians know it. She says \"killed\" twice, and no serious estimate of Chinese dead in the 1979 war comes near the 58,220 American dead in Vietnam: Western estimates are about 26,000 killed, and China's own figures are around 7,000 to 8,500. The note is careful and fair, because it grants the half of her comparison that is true, the 2,459 American deaths in Afghanistan, and corrects only the Vietnam half. One caveat to expect in a reply: Vietnamese sources claim about 62,500 Chinese casualties in total, so if she had said casualties rather than killed her sentence would be arguable. Even allowing for that, the figure she actually gave is wrong by more than a factor of two, and it is the kind of clean, checkable number correction a historian accepts."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "item_id": "ea02d14a-09ab-4b50-857c-2bca131c9290",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "79cf96e2-e3b7-415e-a864-3236956b30c3",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The passage the note is attached to is a line from the post's table of contents: \"Introducing. New AI auditing firm, and The DeepMind Institute.\" That is a chapter heading, not an assertion. The extracted claim is \"A new AI auditing firm was launched\", and in the body Zvi backs it up correctly: \"The Artificial Intelligence Underwriting Company has raised $55 million to audit and insure frontier AI models and is hiring in San Francisco.\" The note says nothing at all about that firm. It instead describes what the DeepMind Institute is, which Zvi already covers by quoting Demis Hassabis and adding \"I am happy to see this and wish them and their research great success.\" The note's facts are right and its two sources really do say what is quoted, but it corrects nothing, so it would read to Zvi as a bot restating his own post back at him."
+    },
+    {
+      "note_id": "c5e8b16b-54d2-4990-9308-308dfed84e52",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi's sentence is a rhetorical aside inside an argument about rogue agents: \"what else could your agents do if asked a hard question? Say, if you tasked 10,000 advanced agents with proving P=NP? Which OpenAI is reportedly doing.\" He hedges it with \"reportedly\", and the number carries none of his argument. I checked the OpenAI post the note cites and both quoted sentences are genuine, but they do not show Zvi is wrong: OpenAI says it put separate agent groups on all the open Millennium Prize Problems, which includes P vs NP, and that group sizes varied, with about 10,000 agents on the Navier-Stokes group. So the only inaccuracy is that Zvi carries the 10,000 figure over to a different Millennium Problem, and OpenAI never published the size of the P vs NP group, so we cannot even say that number is wrong. The note also never states a correction; it just recites two facts and leaves the reader to guess what it is disputing."
+    },
+    {
+      "note_id": "cfc72044-2145-4729-8a7e-0e5b013a2895",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is the Andy Masley failure mode exactly. The sentence \"Amodei, Altman and Musk were all publicly warning about AI risk long before they had AI companies to promote\" is not Zvi's, it is inside a long block quote from Alex Tabarrok's Marginal Revolution post, which Zvi introduces with \"He goes on to explain other ways we know the concerns are sincere\" and then quotes at length. Sending Zvi a note on a sentence Tabarrok wrote would be wrong on its face. The note is also weak on the merits: Tabarrok's phrase \"AI companies to promote\" plainly means their own companies, and Dario Amodei co-founded Anthropic in 2021, long after he was warning about AI risk, so pointing out that he was an employed research scientist at OpenAI in 2017 does not contradict the sentence. The note addresses only Amodei and says nothing about Altman or Musk, and the second source, a marketing blog at kitrum.com, is not the kind of source we should be citing to a writer like Zvi."
+    },
+    {
+      "note_id": "12c8372c-4871-4384-9ef9-cac16c6546b3",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim the pipeline extracted is \"Anyone to whom a person gives an interview has the right to edit the person's statements into an advertisement without consent\", and the highlighted span is Zvi's warning \"Be aware that they (and by they I mean anyone you talk to) have the right to do that.\" The note never touches that point; it recounts Tao's own account of the episode instead, so claim and note do not match. I found Tao's comment on his own blog and both quoted sentences are real, but they support Zvi rather than correct him. Tao says he accepted an interview expecting the whole thing to be posted, \"As it turned out, they only used a few snippets of that interview for that infamous advertisement instead\", and calls the edit \"their decision\", which is what Zvi means by \"without his consent\". At most the note adds the nuance that Tao decided after the fact not to fight it, which is a matter of reading rather than an error, and nothing a reader of Zvi's one-sentence item would come away wrong about."
+    }
+  ]
+}

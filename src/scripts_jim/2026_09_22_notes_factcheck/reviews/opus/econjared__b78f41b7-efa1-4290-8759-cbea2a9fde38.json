@@ -1,0 +1,16 @@
+{
+  "item_id": "b78f41b7-efa1-4290-8759-cbea2a9fde38",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "aaf8fb82-2adb-457f-ac8c-e6f327dea912",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim the pipeline picked is that Powell used to say we know the neutral rate \"by its works\", and the extractor marked it \"likely false\". It is true. Powell said in public remarks that \"no one actually knows what the neutral rate is. We know it by its works\", so Bernstein quoted him correctly and there is nothing to correct. The note itself never addresses the Powell quote at all. It only restates what r* means, which is exactly what Bernstein had already written two paragraphs earlier: \"r*, of course, aka the 'neutral interest rate' aka the rate of interest that neither stimulates nor slows the economy.\" Telling a former Chair of the Council of Economic Advisers the textbook definition of r* in a post he wrote about r*, on a sentence that is accurate, would read as noise at best and as condescension at worst."
+    }
+  ]
+}

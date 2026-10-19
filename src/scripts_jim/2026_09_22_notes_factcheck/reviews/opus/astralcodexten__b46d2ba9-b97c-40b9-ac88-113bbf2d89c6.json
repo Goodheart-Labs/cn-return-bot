@@ -1,0 +1,16 @@
+{
+  "item_id": "b46d2ba9-b97c-40b9-ac88-113bbf2d89c6",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "4fe3ba98-3ec6-4b62-98bb-1874dbbc1779",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The line sits in a run of joke paragraphs about absurd emails, each one ending \"I am humbled by their support\", and the author hedges it himself with \"as I remember it\" and the comic use of \"literally\". So he is not asserting a checked historical fact about which United Nations organ acted; he is making a throwaway gag about GamerGate being a public relations disaster. The note's factual point is narrowly right: I checked the Broadband Commission page and the UN Dispatch article and there was no General Assembly condemnation, only the Broadband Commission working group report \"Cyber Violence against Women and Girls: A world-wide wake-up call\". But the note leaves out the part that makes the author's memory understandable, namely that the report was launched at United Nations Headquarters in New York in the General Assembly's opening week in September 2015, with Zoe Quinn and Anita Sarkeesian speaking there about the harassment they received. Nothing in the author's actual point changes if the body is the Broadband Commission rather than the General Assembly, so a reader ends up with the belief the author wanted them to have either way. Sending a five-year-old comic aside back to Scott Alexander as a correction of the wrong UN organ is exactly the pedantic kind of note that would annoy him and embarrass us."
+    }
+  ]
+}

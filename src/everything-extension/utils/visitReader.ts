@@ -1,5 +1,5 @@
 import { browser } from "#imports";
-import { readerHash } from "../../everything-shared/readers";
+import { readerHash } from "@cn/core/readers";
 
 /** The reader secret: one random value per installation, kept here and sent
  *  nowhere (GOO-135).

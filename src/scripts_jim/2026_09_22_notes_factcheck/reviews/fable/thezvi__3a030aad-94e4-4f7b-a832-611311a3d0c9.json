@@ -1,0 +1,18 @@
+{
+  "item_id": "3a030aad-94e4-4f7b-a832-611311a3d0c9",
+  "reviewer": "fable",
+  "source_read": "fetched:https://thezvi.substack.com/p/ai-176-part-1-doing-it-live",
+  "notes": [
+    {
+      "note_id": "4a86a1b7-7f38-45b9-88c1-4672c5db31e7",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The live page shows the sentence in Zvi's own voice, between two block quotes from Manuel G. Pascual about the Brown cheating case: 'The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.' The words 'the number of As is up by 30%' link to the Wall Street Journal story of 13 May 2026, and that story says the paper came 'from the University of California, Berkeley' but studied 'more than half a million grades from 2018 to 2025 at a large public university in Texas', with the 30% rise confined to AI-exposed classes. So Zvi turned the home of the researcher into the place where grades rose, and his own source says otherwise. The note's other claims check out: Igor Chirikov's CSHE working paper reports 'the share of A grades rose by 13 percentage points, or about 30% relative to the 2022 baseline' at 'a large research university', and the Daily Californian of 2 July 2026 names the Texas university and reports that 'Between 2019 and spring 2026, A's at UC Berkeley consistently stayed between 30% and 35%'. The correction is substantive because Zvi offers Berkeley as concrete evidence that grades have become meaningless, and at Berkeley the A share did not move. It is a clean misreading of a source, the kind of thing Zvi corrects readily."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "item_id": "1700ca46-6144-4dd7-acb1-6c7a61288927",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "44584512-72d1-46b0-bd09-304346b69f49",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Replace \"Citizens who acquire citizenship at birth abroad (e.g. to U.S. citizen parents, like McCain or Cruz) are eligible.\" with \"Citizens at birth born abroad to U.S. citizen parents, like McCain or Cruz, are generally held to qualify, though the Supreme Court has never ruled on it.\" The rest can stay.",
+      "reason": "The words are Nate's own. The post is a lightly edited transcript that Nate reviewed closely enough to footnote three slips in the same stretch, including the very next sentence about El-Sayed's age, so the sentence \"you have to be born in the United States to be eligible to be president\" stands as his own statement and is not a caption artefact. As a statement of the rule it is wrong: the archived Constitution Annotated page really says \"No Person except a natural born Citizen ... shall be eligible\" and \"Whatever the term natural born means, it no doubt does not include a person who is naturalized\", and it quotes the 1790 Act that treated children \"born beyond the sea\" to citizens as natural born. Wikipedia confirms Mamdani was born in Kampala and \"naturalized, since 2018\", so the note's reason for his ineligibility is right, and it agrees with Nate's conclusion about both Mamdani and El-Sayed. My reservation is the one Opus raised, and I think it is real but not disqualifying: the note says people born abroad to citizen parents \"are eligible\" as if settled, while the same Justia page says only that \"there is reason to believe\" the phrase includes them and that whether the Supreme Court would ever decide it \"can only be speculated about\"; Wikipedia calls it a consensus \"emerging as of 2016\". The Wikipedia quote the note relies on is also spliced from two sentences. The correction does not change Nate's point, so it is close to the pedantic line, but it corrects a genuinely false statement of a constitutional rule that many readers believe, and Nate himself footnotes slips of exactly this size, so I would send it once the overreaching sentence is softened."
+    }
+  ]
+}

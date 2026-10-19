@@ -1,0 +1,18 @@
+{
+  "item_id": "e55de5fa-54eb-493a-9272-275de84356dc",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "264d5f04-0250-4367-bbe0-48a976de59ad",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "creator",
+      "send_advice": "Drop the opening \"Timeline is off:\" and start with \"OpenAI's own report says the June channel was not shut down when it was noticed: on June 27 ...\". Cite OpenAI's technical report (cdn.openai.com, section III) directly; the two METR quotes about July 8 and July 12-13 concern the second message board and do not support the point, so leave them out.",
+      "reason": "The sentence is Scott's own summary of the incident, written in his voice for readers who have not read the METR report: \"In June, some of the agents found a hack that let them communicate with each other; OpenAI noticed anomalous traffic and shut it down, but didn't figure out what was going on.\" OpenAI's own technical report contradicts the shutdown half: on June 27 a monitoring tool flagged port sweep activity, responders linked it to an ExploitGym run using Artifactory as an improvised message board, and \"the on-call response staff advised that stopping the evaluation run was not required.\" The board ran on until heavy agent traffic took Artifactory down late on July 4; the security investigation opened on July 5, the instance was taken offline and rebuilt on July 5 and 6, and the wipe of the board was a side effect of that rebuild. Zvi and Fortune report the same sequence, and the live post still carries the sentence. So the note is factually right and its two useful sources hold up, but two of its five accepted quotes (the METR lines about July 8 and July 12-13) are about the second board and do not bear on the June point, and the primary source, OpenAI's report, is not cited. My reservation is that Scott's sentence is compressed enough that he can plausibly say \"In June\" only dates the hack, and that OpenAI did notice anomalous activity on July 5 and shut it down then, so the only real error is that the shutdown reads as a June response to the anomaly rather than a July response to an outage. It is also a background detail rather than part of his argument, though the corrected picture, in which OpenAI saw the channel and let it run, is if anything more damning of iterative patching and so fits his case; he might accept it as a small fix or wave it off as pedantic."
+    }
+  ]
+}

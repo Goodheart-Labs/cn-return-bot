@@ -1,0 +1,18 @@
+{
+  "item_id": "fb7ef4ed-8a56-4b67-9cc4-f83b1590d05e",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "cf940e50-bc03-4ecf-8c44-9fd11cef38ac",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The author asserts this in his own voice as his one concrete piece of evidence that insects behave as if in pain: 'When flies' food is laced with capsaicin, making it spicy, they react violently and shake when fed it, eventually starving themselves to death. However, this is counteracted by a painkiller.' I fetched the study behind it, Jang et al. 2023 in PLoS One, and every part of the note checks out: the paper states that in Drosophila 'capsaicin does not elicit nociception', that hungry control flies 'continued eating the capsaicin-containing food without exhibiting nocifensive behaviors', and that the running away, mouthpart rubbing, starvation and the rescue by gabapentin, NSAIDs and morphine were all in md-TRPV1(3) flies carrying the human capsaicin receptor in their nociceptors. Flies really lack a TRPV1 ortholog (Flores-Iga et al. 2026 confirm it), and the article the author most likely drew on, Bob Fischer's Asterisk piece on insect consciousness, itself says fruit flies lack the receptor and 'can eat jalapeños without consequence' before describing the transgenic flies, so the author dropped a qualifier his own source made. The correction matters because the sentence reads as if spicy food naturally torments flies, which is far stronger evidence for insect pain than a response to a human receptor inserted by researchers. One caveat for Nathan's own awareness, not a reason to change the note: Li et al. 2020 reported mild egg-laying, positional and feeding aversion to capsaicin in normal flies at very high concentrations via painless neurons, so 'without pain behaviors' is the mainstream finding rather than a settled fact, but nothing in that literature resembles violent reactions or self-starvation. The author cares about the empirical case for insect sentience and can keep his argument by adding one clause, so he is likely to accept this, though he may fairly reply that painkiller-sensitive self-starvation in an engineered fly still shows the fly nervous system producing pain-like states."
+    }
+  ]
+}

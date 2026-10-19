@@ -1,0 +1,34 @@
+{
+  "item_id": "f82ffc6e-d261-4533-82ae-726b82e1575a",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "084ae54b-93a3-4170-ae78-cbf77dbcc63d",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim really is Dwarkesh's own. He is doing a back-of-the-envelope calculation out loud: '$6 billion of fab CapEx produces a gigawatt every single year. A gigawatt produces right now $100 billion of revenue.' He uses the same number again later ('if you're going to be able to generate $100 billion per gigawatt'). But the note contradicts itself. It first says the $100 billion figure is the cost of building a gigawatt factory, then quotes Jensen Huang saying such a factory costs about $50 billion and produces $300-400 billion of intelligence a year. If Huang's number is right, Dwarkesh understated the revenue by three or four times, so the note gives no reason to think he made an error at all. The note also invents a mistake he did not make: he never cited anyone's construction-cost figure, he built his own revenue estimate. Dylan Patel in the same conversation says Anthropic is 'making $60-plus billion per gigawatt' and that the labs are 'on the path to generating $100 million per megawatt', which is exactly $100 billion per gigawatt, so the guest never disputed the number either. The sources are also weak, a news-aggregator page and a marketing blog rather than a primary report."
+    },
+    {
+      "note_id": "ba2c99ae-210b-4d27-b1aa-2ce3cb2a5ee9",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence is spoken by the guest, Dylan Patel, and it is about Anthropic, not about OpenAI. The passage reads: 'You would agree that every month, Anthropic has added more compute than the prior month... So in January, they added less compute than December, and yet their revenue adds skyrocketed. Then they've sort of plateaued. They're not adding $25 billion of ARR every month now.' Every source in the note is about OpenAI, so the note answers a claim nobody made. Even taken as a claim about OpenAI it does not work: a run rate of just over $40 billion growing by 20 percent in a month adds roughly $8 billion of annualized revenue, nowhere near the $25 billion a month the note is supposedly refuting. The note therefore both misattributes the statement and fails to contradict it. This is exactly the 'you are fact-checking something I did not say' complaint that Andy Masley already made."
+    },
+    {
+      "note_id": "c7a696bc-9eb7-4b32-82a2-9ba04dc28d63",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The claim is the guest's, not the host's: Dylan Patel says 'the Chinese semiconductor industry has significantly more subsidies than the rest of the world's semiconductor industries combined', and he leans on it for his own argument that Chinese finance backs a chosen industry much harder, so it is fair game, but Nathan should know he would be sending Dwarkesh a note on his guest's words. The first half of the note is solid: the CSIS figures the sources report ($142 billion for China from 2014 to 2023 against roughly $175 billion for the US, South Korea, the EU, Japan and Taiwan together) do contradict the 'more than everyone else combined' framing. Two things give me pause. That window ends in 2023 and therefore leaves out the third phase of China's Big Fund, about $47.5 billion committed in 2024, which would come close to closing the gap. And the second sentence is a poor fit: The Register's own article says the OECD counted tax breaks, grants and subsidised borrowing but explicitly excluded government equity, which is the main channel China uses, and the same OECD data are reported elsewhere as showing Chinese chipmakers receiving the highest support relative to revenue. Dylan Patel knows this literature well and would take that sentence apart in one reply. If the note is sent, I would cut the OECD sentence and keep only the subsidy totals."
+    }
+  ]
+}

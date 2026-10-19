@@ -22,7 +22,15 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+
+    // The Common Notes layers. src/cnAliases.ts holds the same mapping for
+    // the bundlers.
+    "paths": {
+      "@cn/core/*": ["./src/everything-core/*"],
+      "@cn/ui/*": ["./src/everything-ui/*"],
+      "@cn/features/*": ["./src/everything-features/*"]
+    }
   },
   "exclude": ["src/review-dashboard/**/*", "src/everything-extension/**/*", "src/scripts_jim/**/*", "src/scripts_nathan/**/*", "node_modules"]
 }

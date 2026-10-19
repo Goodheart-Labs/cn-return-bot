@@ -1,0 +1,18 @@
+{
+  "item_id": "9e4b2dad-fee6-4c1a-b791-51e9dc544756",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "d9045d3e-0ab9-42d9-92e3-bea2b24b0445",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "The sentence is Grant Sanderson's, not Dwarkesh's. The official transcript on dwarkesh.com/p/grant-sanderson-2 attributes it to Grant and reads \"Do you have integer solutions for this when n is bigger than three?\", so it is a real spoken slip, not a caption artefact. Dwarkesh does not repeat or build on it. The note's mathematics is right, Fermat's Last Theorem covers every exponent above 2 and Euler settled the cubes, but what Grant actually said is not false: there are indeed no solutions when n is bigger than three, he just stated a narrower version of the theorem in passing. His point is that the problem is simple to state while the proof needs mountains of machinery around elliptic curves and modular forms, and that point is untouched by whether the threshold is 2 or 3. Sending a well-actually about an off-by-one in a famous theorem to a mathematics educator who obviously knows the correct statement is the kind of pedantic note that costs goodwill, and Dwarkesh would have no reason to accept a correction of his guest's phrasing."
+    }
+  ]
+}

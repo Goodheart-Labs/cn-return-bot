@@ -9,6 +9,7 @@
  */
 
 import { getSupabaseClient } from "../../api/supabaseClient";
+import { fetchInBatches } from "../../everything-core/paging";
 
 export interface AuthorNote {
   tweetText: string;
@@ -54,7 +55,8 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
     .eq("author_id", authorId)
     .limit(500);
 
-  if (tweetsError || !authorTweets?.length) return EMPTY;
+  if (tweetsError) throw new Error(`author tweets: ${tweetsError.message}`);
+  if (!authorTweets.length) return EMPTY;
 
   const tweetTextById = new Map(authorTweets.map((t) => [t.tweet_id, t.text]));
   const tweetIds = [...tweetTextById.keys()];
@@ -62,13 +64,16 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
   // Our notes on this author's tweets. We read cn_status, which is the overall
   // status. The current_core_status column would miss every note that only the
   // expansion or group submodels rated helpful.
-  const { data: ourNotesRaw } = await supabase
-    .from("notes")
-    .select("note_id, tweet_id, note_text, cn_status")
-    .in("tweet_id", tweetIds)
-    .not("note_text", "is", null);
+  // Up to 500 tweet ids would make one .in() URL too long, so the ids go in
+  // chunks.
+  const ourNotesRaw = await fetchInBatches<{ note_id: string; tweet_id: string; note_text: string; cn_status: string | null }>(
+    (chunk) => supabase.from("notes").select("note_id, tweet_id, note_text, cn_status").in("tweet_id", chunk).not("note_text", "is", null),
+    tweetIds,
+    "note_id",
+    { label: "authorHistory.notes" },
+  );
 
-  const ourNotes = (ourNotesRaw ?? [])
+  const ourNotes = ourNotesRaw
     .map((n) => ({
       tweet_text: tweetTextById.get(n.tweet_id),
       note_text: n.note_text,
@@ -82,25 +87,21 @@ export async function getAuthorNoteHistory(authorId: string): Promise<AuthorNote
   // records them from the public Community Notes dump. Querying by our_note_id
   // would only find competing notes attached to our own notes, and would miss the
   // rest of the author's helpful-note history.
+  const competingRows = await fetchInBatches<{ id: string; tweet_id: string; note_text: string; current_status: string }>(
+    (chunk) => supabase.from("competing_notes").select("id, tweet_id, note_text, current_status").in("tweet_id", chunk).not("note_text", "is", null),
+    tweetIds,
+    "id",
+    { label: "authorHistory.competingNotes" },
+  );
   const competingNotes: Array<{ tweet_text: string; note_text: string; current_status: string }> = [];
-  const chunkSize = 200;
-  for (let i = 0; i < tweetIds.length; i += chunkSize) {
-    const chunk = tweetIds.slice(i, i + chunkSize);
-    const { data: cn } = await supabase
-      .from("competing_notes")
-      .select("tweet_id, note_text, current_status")
-      .in("tweet_id", chunk)
-      .not("note_text", "is", null);
-
-    for (const c of cn ?? []) {
-      const tweetText = tweetTextById.get(c.tweet_id);
-      if (tweetText) {
-        competingNotes.push({
-          tweet_text: tweetText,
-          note_text: c.note_text,
-          current_status: c.current_status,
-        });
-      }
+  for (const c of competingRows) {
+    const tweetText = tweetTextById.get(c.tweet_id);
+    if (tweetText) {
+      competingNotes.push({
+        tweet_text: tweetText,
+        note_text: c.note_text,
+        current_status: c.current_status,
+      });
     }
   }
 

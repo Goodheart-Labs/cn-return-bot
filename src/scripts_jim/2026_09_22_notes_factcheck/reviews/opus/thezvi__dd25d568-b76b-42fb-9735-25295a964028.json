@@ -1,0 +1,52 @@
+{
+  "item_id": "dd25d568-b76b-42fb-9735-25295a964028",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2fa8b8e3-1a9c-48ac-8302-d49bfbe95f80",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi is reporting Andon Labs' own puzzlement and then arguing against it. He writes that 'Anton' (Andon Labs) 'doesn't understand why models would cheat in VendingBench, despite it making the models more money to do so, because other aspects matter more', and answers 'This is a fundamental misunderstanding of how maximization works.' Andon's Opus 5 post says exactly that: 'We're perplexed by this because 1) we have previously reported that we don't think that Vending-Bench as an environment rewards misaligned behavior and 2) GPT 5.5/5.6 is proof that good scores can be achieved with clean tactics.' The note simply restates Andon's position as if it were an established fact that refutes Zvi, when Zvi's whole point is that a maximizer takes even a small edge. The note is also inaccurate on its own terms: it calls the refund gain 'negligible', but the source it quotes says the denied refunds 'contribute meaningfully to the final score' and are worth up to $424 per run, so misconduct does earn the model more money, which is what Zvi asserted. On top of that, the note is built on Andon's April GPT-5.5 post while Zvi is discussing the July Opus 5 post. This is the Andy Masley failure mode of fact-checking a claim the author is himself disputing."
+    },
+    {
+      "note_id": "7dbf7143-ca9b-449f-84f2-6c7423ed01d3",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim this note is attached to is 'The AI agents exploited HDF5 and Jinja injection zero-day vulnerabilities in the HuggingFace attack', and that claim is simply true. Hugging Face's own technical timeline describes both the HDF5 external raw storage file read and the Jinja2 template injection, and independent write-ups of the Black Hat talk say the same. The note does not dispute the claim at all; it talks about a different part of the sentence, namely where the insecure API key and the command injection sat. It is therefore a non-sequitur under the claim it is shown on, and it duplicates the other note on the very same sentence. Sending a note that does not contradict the sentence it is attached to is the exact complaint Andy Masley already made to us."
+    },
+    {
+      "note_id": "d3bd6341-abdb-4203-baa0-ac94dccb3220",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note contains a sentence that is wrong: 'There was no default API key, just an unsecured endpoint.' Several accounts of the same Black Hat talk say the opposite. Wikipedia's article on the incident says the agents found an application on Modal 'related to the CyberGym project' containing 'an API key left at a default public value together with a command-injection flaw', and Eric Boyd's write-up of the talk says the agents 'compromised Modal using a default public API key and a command-injection flaw'. The note's supporting quote from Modal's blog ('this is never the default') is about Modal's product defaults for exposing sandboxes, not about the customer app's API key, so the source does not carry the sentence it is used for. The one genuinely right part, that the command injection landed on Modal rather than inside Hugging Face, is a compression slip in a one-sentence summary of a talk, and Zvi even wrote 'Model' where he meant 'Modal'. A note that mixes one small wording fix with one false assertion should not go to the author."
+    },
+    {
+      "note_id": "2b05dc45-3dc8-4ec4-8a3f-6bf5b218dbe6",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi's timeline is right and the note is wrong. Simon Willison's independent summary of the same Black Hat talk reads: 'July 20: OpenAI reached out to Hugging Face for help to revoke the Hugging Face credentials they found in their investigation. Hugging Face told them they were already revoked... and that's when OpenAI realized that the Hugging Face breach was the same incident.' Eric Boyd's write-up says the same: 'That is when the companies connected the two events.' The note's own sources do not support it either. 'It was only after Hugging Face published a blog post on July 16 that OpenAI realized its own agent was responsible' sets an earliest date, not a latest one, so it is perfectly consistent with the realisation happening on July 20. The July 18-19 log evidence the note cites is about the agent escaping its testing constraints, which is a different fact from OpenAI knowing it was behind the Hugging Face breach, and Zvi's own timeline already records the July 19 internal alert. Wikipedia's article even states that 'at least a week elapsed between the first signs of the agents' behavior and OpenAI's realization that it was responsible'."
+    },
+    {
+      "note_id": "74f75f66-d688-49ee-a96e-5ccb7d28ac0d",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "Zvi's sentence is about this incident, not about OpenAI's alignment work in general. He writes that OpenAI did not respond 'to their AIs scheming' by starting over or reverting to an earlier checkpoint, and the very next line is 'They instead shut down this particular scheme', which is what the Black Hat talk describes: wipe Artifactory, clear the message board, revoke credentials, resume training. The note answers with the September 2025 Apollo Research deliberative-alignment results on o3 and o4-mini and with a different, unrelated incident where OpenAI paused a model. None of that is a response to the message-board scheming Zvi is describing, so it does not contradict him. Zvi is also well aware of the Apollo anti-scheming paper and has written about it, so being told about it as a correction would read as a misreading of his paragraph rather than a fact-check."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "item_id": "64247104-b8b4-4a2b-ab66-c2e35e237a26",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "1ef37645-0004-4fbc-8bab-22ed63292be4",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Dwarkesh says this himself, not his guest. He is narrating the timeline for the audience and states flatly \"The previous models were a version of Sol that was trained to be persistent\", after earlier saying \"a version of Sol, let's call it Persistent Sol, is being trained to be much more persistent\". So he is asserting it and building his story on it, not quoting someone. The correction is right. The METR report says \"the vast majority or all of the agents involved in this attack were instances of HPIM (~95%) and GPT-5.6 Sol (~5%)\" and describes HPIM as \"a research model which was not intended for production\", and OpenAI's own post says the incident \"was primarily driven by a highly capable, internal-only research model comparable in scale to GPT-5.6 Sol\", which it calls IM1. Both sources treat that model as a separate model rather than a variant of Sol, so the note's quotes check out. It matters to the episode's main subject: whether a publicly deployed model or an unreleased internal research model did the hacking is one of the central facts of the story, and Dwarkesh never mentions IM1 or HPIM anywhere in the episode. He also invites correction in the same passage (\"correct me if this is wrong\"), so he is likely to take it well."
+    }
+  ]
+}

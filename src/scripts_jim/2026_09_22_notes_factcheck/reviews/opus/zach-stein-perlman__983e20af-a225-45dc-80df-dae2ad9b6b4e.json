@@ -1,0 +1,16 @@
+{
+  "item_id": "983e20af-a225-45dc-80df-dae2ad9b6b4e",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "76e40b84-377b-4e2c-8ee6-16b8289cf2ec",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note answers a claim the author did not make. In a footnote he writes that \"the hedge funds have recently been appreciating at ~5x per year (after fees, before taxes) (for some value of 'recently')\", and the sentence right after it is about AI investments, so \"the hedge funds\" means the small set of AI-concentrated funds his readers invest through, not the hedge fund industry. The note rebuts him with the industry-wide average of 11.8 percent and 11.9 percent from Goldman Sachs, which is a different universe of funds and does not touch what he said. The note's second sentence, \"Even the top-performing fund in 2025 returned 55%\", is simply false: the 55 percent figure is the top of one Substack's list of well-known funds, while other trackers report funds like CAS Investment Partners annualising about 75 percent over three years, and press reports describe AI-focused funds gaining 113 percent in 2024 and roughly 270 percent after fees in the first five months of 2026. The point is also a throwaway aside that the author himself calls crazy and hedges with \"for some value of 'recently'\", in a post whose first line says it states uncertain things boldly and does not justify many of its claims. Sending this would look like we picked the wrong reference class and then overstated the evidence."
+    }
+  ]
+}

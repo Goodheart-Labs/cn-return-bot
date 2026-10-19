@@ -1,0 +1,43 @@
+{
+  "item_id": "75f68b85-de35-4eb9-84fd-446789db73ee",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "660ea15b-2ba7-450a-9e1e-a388afe71b08",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "no",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note says the author dated the emergence of writing to 2500 BC instead of 3200 BC, but that is not what the author wrote. Elsewhere in the same essay he says writing 'was first invented in Uruk, between 3500 and 2500 BC', his timeline reads '3500-2500 BC: Cuneiform writing invented in Uruk', and he explains at length that the early system was 'for spreadsheets, with word-transcription tacked on later as an afterthought'. His 2500 BC date is the point where the system became a complete writing system: 'By 2500 BC, cuneiform could finally express the same meaning as spoken language.' That is the standard scholarly picture, since proto-cuneiform of around 3200 BC is usually classed as proto-writing that did not record language, and full phonetic cuneiform matured over the Early Dynastic period. The note's own sources even put the first development of cuneiform at 3600/3500 BCE, which matches the author's timeline rather than contradicting it."
+    },
+    {
+      "note_id": "4ffaa507-0f71-4778-a150-bb43a1294d0f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The linguistics in the note is right. Akkadian is East Semitic and extinct, Hebrew and Arabic are West Semitic, and neither descends from Akkadian; the Biblical Archaeology source really does say 'while Hebrew and Aramaic belong to the northwest branch of the Semitic language family, Akkadian belongs to its eastern branch.' The doubt is about what the author meant. His full phrase is a one-clause aside for lay readers, 'Akkadian - a predecessor of modern Arabic and Hebrew - the prestige language', and 'predecessor' can be read loosely as 'the earliest attested member of the family that also contains Arabic and Hebrew', which is true, rather than as 'ancestor', which is false. The note takes the strong reading without acknowledging the weak one. It is also a throwaway parenthetical that carries none of the essay's argument, so the author may read a public correction of it as nitpicking even though he would probably concede the point."
+    },
+    {
+      "note_id": "2d6e880f-76f6-4c94-8368-5f04c583b6ff",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "This is a dispute about a loose characterisation, not a factual error. The author's sentence is 'by the time the Iliad and Odyssey were composed, knowledge of Akkadian literature was already confined to isolated scribal traditions', and his point is that cuneiform literature was locked inside a professional scribal class and so had little reach into later world literature. Ashurbanipal's library does not refute that, because a royal collection assembled and copied by court scholars is itself a scribal tradition; cuneiform literacy in the Neo-Assyrian period was restricted to a trained elite while alphabetic Aramaic was spreading as the everyday written language. The dates also do not line up cleanly: the Iliad is usually put at around 750 to 700 BC, before Ashurbanipal's reign of 668 to 627 BC. The pipeline's own extractor only rated the claim 'uncertain', and a note that answers an interpretation with one selectively chosen institution is exactly the kind of note an author would push back on."
+    },
+    {
+      "note_id": "c2dbbdd2-9534-44d6-9623-162aa8c90306",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The factual core is solid. Standard Yoruba orthography marks tone with an acute accent for high, a grave accent for low and no mark for mid, so using Yoruba as the example of a tonal language that does not write its tones is a poor choice; Hausa or Somali would have been right. Two things hold me back. First, the note overstates by saying Yoruba 'doesn't rely on context alone', because in everyday practice a great deal of Yoruba text drops the diacritics and readers do recover tone from context. That is why there is a whole research literature on Yoruba diacritic restoration, including the two arXiv papers the note cites. Second, the claim sits in footnote 15, an aside that opens with 'OK, it's a bit more complicated' and illustrates a general point about writing systems; nothing in the essay's argument depends on it. Nathan should decide whether a correct but footnote-level language correction is worth sending publicly."
+    }
+  ]
+}

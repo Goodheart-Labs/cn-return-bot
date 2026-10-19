@@ -1,0 +1,25 @@
+{
+  "item_id": "c75269ee-cee5-4cc9-9cba-4a6a8094ee61",
+  "reviewer": "opus",
+  "source_read": "full_text (WebSearch budget was exhausted for this session, so facts were checked with WebFetch and curl against Wikipedia, the notes' own sources, and the Doom Debates Substack archive API)",
+  "notes": [
+    {
+      "note_id": "a2102fec-247b-42d0-9e43-222d933eaa57",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "unsure",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "This is a solo monologue episode and Liron himself says it: \"Look at the who's who of people who have come on our show. Nobel Prize winners, Turing Award winners, scientists, executives, people in media, across the board.\" It is not a one-off slip either, because the show's own blurb on another episode says \"I've debated AI doom with winners of the Nobel prize and the Turing Award.\" I pulled all 179 posts from the Doom Debates Substack archive and no Turing Award laureate appears as a guest: the Nobel part is true (Michael Levitt, Stanford, chemistry 2013), and the only Turing laureates that show up at all are Yoshua Bengio, Geoffrey Hinton, Yann LeCun and Richard Sutton in reaction episodes where Liron comments on them from the outside rather than hosting them. So the core correction looks right. What gives me pause is the note's second sentence: it calls Moshe Vardi the show's \"only cited Turing laureate guest\", but nowhere in this post, and nowhere in the whole archive, does Liron call Vardi a Turing Award winner. That is the pipeline's own guess about who Liron meant, presented as something the show said, and Liron can shoot it down with one line the way Andy Masley did. I would also only bet on the guest list from episode titles and descriptions, not from having watched every Q&A. Rewrite it without the Vardi sentence before sending."
+    },
+    {
+      "note_id": "9164ea50-d86e-4408-880e-ec5df2b8e579",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "Liron says this in his own voice and insists on it: \"The average American, if you ask them, 'Hey, do you think that our species is doomed in a decade or so?' - they're going to say yes. The average American is literally going to say yes.\" He then builds on it with \"Regular people think we're doomed, and Sam Altman goes on this podcast and he doesn't even dignify the question\", so it is a load-bearing premise, not a throwaway. The polling goes the other way and the sources check out. Pew's page says word for word \"In the United States, 39% of adults say they believe 'we are living in the end times,' while 58% say they do not believe we are living in the end times.\" The Rethink Priorities page carries both quoted lines: 9% of the population think AI-caused extinction moderately likely or more in the next 10 years, 22% within 50 years, and a median estimate of 15% for this century. I could not open the Audacy page (it answers 403 from here), but it is the least important of the four sources and the other two settle the question on their own. The one risk is that Liron replies that he was speaking loosely about public anxiety rather than making a polling claim; his own word \"literally\" is the best answer to that."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "item_id": "eae4010e-c276-4918-bf6e-f8804eb6aba8",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "8f4ff2dd-163d-4250-b10c-5723334140d8",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim this note is attached to is that Opus 5 costs $5 per million input tokens and $25 per million output tokens, the same as previous Opus models. That claim is correct: Anthropic's launch post says Opus 5 is 'priced at $5 per million input tokens and $25 per million output tokens (the same as Opus 4.8)'. The note then corrects a different number in the same sentence, Zvi's '$10/$25' for Fable, and says so in its own first words. So the note tells the author he got something wrong in a sentence where the checked claim was right, and it duplicates the other note in this batch, which attaches the same correction to the Fable claim. Send that one instead."
+    },
+    {
+      "note_id": "4000b5b7-4710-45d2-b1bf-1a12abc77c63",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "Zvi writes in his own voice, not in a quote, 'Fable stays at $10/$25, and Opus 5 is the same as previous Opus models at $5/$25.' Fable 5 is $10 per million input tokens and $50 per million output tokens: Anthropic's own Claude Fable page, OpenRouter, the Claude platform docs and several pricing trackers all give $10/$50, and the docs page lists the two models side by side as '$10 / input MTok $50 / output MTok' and '$5 / input MTok $25'. The error matters for the paragraph it sits in, because the whole pitch Zvi is describing is that Opus 5 is half the price of Fable, which only works against $10/$50. A reader budgeting for Fable output tokens would be off by a factor of two. It reads like a slip of the keyboard, the kind of thing Zvi corrects readily."
+    },
+    {
+      "note_id": "a75605a0-f4b0-4696-a561-3b052bb47c30",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Zvi's own summary line, 'Legal Agent Benchmark by Harvey AI has Opus 5 at 23% all-pass and 94% mean criterion-pass', not a quote from anyone. Both published versions of that benchmark put Opus 5 near 11 percent, not 23: Harvey's own launch post says 'In our early testing, Opus 5 scored 11.7% all-pass on our Legal Agent Benchmark (LAB)', and Artificial Analysis's implementation of the same benchmark lists Opus 5 at 10.8% against Kimi K3's 26.7% and Fable 5's 14.2%. A search for the figure 23% on this benchmark returns only Zvi's own post. His other numbers in the passage do check out, including the 94% mean criterion pass rate, Kimi K3 at 27% and Fable at 14%, which is why the wrong all-pass figure stands out. It changes his conclusion: with the real number Opus 5 is not 'probably a close second' to Kimi K3, it sits below Fable and in the lower half of the leaderboard."
+    },
+    {
+      "note_id": "2f743cbe-fc68-4d81-ab76-76ac286dd962",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The claim is Zvi's own opening line of the 'Wrong On The Internet' section, so the note is aimed at the right person, and the direction of the correction holds up. Artificial Analysis's hallucination rate metric on AA-Omniscience currently reads 60.8% for Opus 5 and 63.6% for Fable 5, so Fable hallucinates more, not less, and the AA article Zvi drew on says only that Opus 5 has lower factual knowledge than Fable while its own hallucination rate rose to 50%. My worry is the numbers inside the note. It says the leaderboard shows Fable at about 54.9% against Opus 5's 50%, but 54.9% was Fable's figure at launch and 50% comes from the Opus 5 article, so the note pairs two different snapshots and neither matches what the leaderboard shows today. A reader who follows the link will find 60.8% and 63.6% instead. The correction is worth sending, but only after those two figures are replaced with the current pair."
+    }
+  ]
+}

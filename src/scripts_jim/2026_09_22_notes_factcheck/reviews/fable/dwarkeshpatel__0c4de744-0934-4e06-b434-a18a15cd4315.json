@@ -1,0 +1,51 @@
+{
+  "item_id": "0c4de744-0934-4e06-b434-a18a15cd4315",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "63a44539-46fe-4979-bbf4-e4f60beb3683",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": null,
+      "reason": "This is a Sarah Paine lecture published on Dwarkesh's channel, so the words are the guest's, spoken in her own voice with nobody quoted: \"The Mongols start out east of Lake Baikal and then they spread in concentric rings more or less over the Eurasian plain in another time of climate change when their herds they just had to move south or everyone's going to freeze to death.\" The captions could not have invented that mechanism, so the wording is safe. The note is correct: I read the PNAS paper (Pederson et al. 2014, PMC3970536) and it says the climate during the conquests \"was warm and persistently wet\", that the 1211 to 1225 wet spell is \"unprecedented over the last 1,112 y\", and, word for word, that \"Although some historians have considered a deteriorating climate as a possible factor that explained the initial drive of the Mongols against their sedentary neighbors, our tree-ring evidence now shows that rapid expansion of the Mongols after their unification is correlated with favorable climate conditions\". The ScienceDaily write-up matches the note's quotes. The first reviewer's reservation, that she only said \"a time of climate change\" and the paper does record a 1180s drought, is not disqualifying, because she states the specific mechanism of cold forcing herds south, and that is exactly the theory the paper rejects; a 2025 paper (PMC13424159) that credits drought with helping the later westward push does not rescue a freezing story either. What keeps me at uncertain is substance: the Mongol climate line is a throwaway aside in a lecture about maritime versus continental powers, and nothing in her argument rests on it, so this is the least consequential of the four notes even though it is the best sourced. She would most likely accept it as an interesting correction rather than an attack, so it is safe to send if Nathan is willing to note an aside."
+    },
+    {
+      "note_id": "340ac1fb-86a7-4f96-b522-c649795576c8",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": "Change \"months before fighting began in May 1846\" to \"months before the war began in the spring of 1846\" (the first clash was on 25 April 1846, the declaration came on 13 May). Replace the last sentence with: \"The war's territorial gain was the Mexican Cession (CA, NV, UT, most of AZ/NM) in 1848; the same treaty made Mexico give up its claim to Texas and accept the Rio Grande border.\"",
+      "reason": "The line is the guest's own flat assertion and it is the example her argument turns on: the United States preferred \"checkbook diplomacy\" and only \"when the checks were not accepted, which is what happened with Mexico, the United States did the standard massed armies approach in the Mexican-American War, and that's how the United States gets Texas.\" The word Texas is confirmed in two caption-derived copies and is not a plausible mishearing. The note is right on the facts: the Texas State Library timeline reads \"MARCH 1 President Tyler signs annexation resolution\" and \"DECEMBER 29 President Polk signs the Joint Resolution. Texas officially the 28th state on this date\", both in 1845, and the first fighting came on 25 April 1846, so Texas was a state before the war, and the war's gain was the Mexican Cession. I could not open the Library of Congress page (archive.org and loc.gov both refused the fetch), but the treaty date, the 525,000 square miles and the 13 May declaration are standard facts corroborated by Wikipedia. Two things give me pause. She has a defensible reply: Mexico had never recognised Texan independence or the annexation, and the Treaty of Guadalupe Hidalgo is where Mexico \"relinquished all claims for Texas and recognized the Rio Grande as the southern boundary of Texas\" (Wikipedia's war infobox even lists Texas among the lands Mexico ceded), so a historian can say the war is how the United States secured Texas against Mexico's claim. And the note's \"fighting began in May 1846\" is itself a small slip, since the Thornton skirmish was in April. With those two wording fixes the note closes off her reply and becomes a fair correction of a slip she made in a whirlwind tour, right before she got the Gadsden Purchase right."
+    },
+    {
+      "note_id": "08ac781f-2f53-44d4-a102-28e02a59dcf2",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "whose_words": "guest",
+      "send_advice": "Drop the last sentence, \"That figure is closer to French WWI losses\": French First World War deaths were about 1.4 million, so \"nearly a million\" is not close to that either. Cite a standard reference for the 550,000 to 600,000 range (Wikipedia's World War II casualties table gives France 600,000; the National WWII Museum gives 567,600) instead of secondworldwarhistory.com, and drop the Wikipedia line about the 1940 campaign, which says nothing about the wartime total.",
+      "reason": "The figure is the guest's, read from her own casualty slide: \"you've got over 7 million dead Germans, over 25 and 1/2 dead Russians, almost 7 million dead Poles, 11 million dead Chinese, nearly a million dead Frenchmen.\" The captions are the only record of the wording, but \"nearly a million\" is not a likely mishearing, and she gives the same slide's French military figure as 340,000 a moment earlier, so the total is what she meant to say. The correction is right in substance: no standard reference approaches a million. Wikipedia's casualty table gives France 210,000 military, 390,000 civilian, 600,000 total; the National WWII Museum gives 567,600; necrometrics lists Wallechinsky at 595,000 and Messenger at 600,000 and nothing higher. It also matters to her point, which is that \"the deaths for the land powers are measured in millions, whereas the maritime powers, it's hundreds of thousands\": at about 600,000 France sits with Britain and the United States, which she half admits with \"France wasn't in the war that long\". The pause is the note's own quality. Its main source is a hobbyist statistics page that says its numbers are \"averaged from multiple sources\", its fourth source is about the 1940 campaign alone, and its closing sentence about the First World War is loose (French WWI dead were about 1.4 million, per the 1914-1918-online encyclopedia). Her other totals are also off in both directions (Poland nearer 5.6 to 6 million, China 14 to 20 million), so she could ask why France alone was picked, but France is the one figure that bears on her argument. With the WWI sentence cut and a reputable source in place, this is a fair numeric correction she would probably accept."
+    },
+    {
+      "note_id": "c48caaa8-9942-4c98-a360-2c0ecc877c0f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "guest",
+      "send_advice": "Before sending, listen to the video at 46:07 and confirm she says \"72-ish\" and not \"75-ish\"; every transcript I could find is derived from the same YouTube auto-captions, which mishear \"Baikal\" as \"Bal\" in this very lecture. If the audio says 72, send the note unchanged.",
+      "reason": "The statement is the guest's own and the length of the closure is the point of the sentence: \"But then the Suez Canal is is closed down from 1967 to 19 uh 72-ish. And so that's a long time in world trade.\" The note is correct and both its sources hold up. Wikipedia's article on the closure opens \"On 6 June 1967, after the start of the Six-Day War, Egypt closed the Suez Canal, which it owned and operated, and kept it closed until 5 June 1975\", and the Suez Canal Authority's own history says navigation stopped after the fighting \"that started on June 5th, 1967\" and that \"On June 5th, 1975, the Canal was re-opened\", after the 1974 clearance operation. So it was eight years, not about five, and the \"-ish\" does not cover a three-year gap. A reader would come away thinking the canal reopened around 1972, and a naval historian would accept the date; the longer closure only strengthens her point that shipping adapted by building ships too big for the canal. The one thing that stops me at good is that the whole correction rests on one number heard by auto-captions. It is not a likely mishearing, and her next sentence (\"by '72, you got almost 30% of the number of ships ... are these huge ships\") suggests her chart ends in 1972, which explains a slip of the tongue, but the second-pass rule is to confirm such a number, and no independent transcript of this lecture exists; Dwarkesh published no written transcript for this episode and the 2023 recording of the same lecture has none either. A ten-second listen settles it."
+    }
+  ]
+}

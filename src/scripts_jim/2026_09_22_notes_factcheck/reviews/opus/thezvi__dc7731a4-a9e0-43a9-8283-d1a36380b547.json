@@ -1,0 +1,16 @@
+{
+  "item_id": "dc7731a4-a9e0-43a9-8283-d1a36380b547",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2aae9e23-4ecb-41f3-bdc9-84281d898291",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The sentence 'Things are so crazy that Nvidia is advertising that they're going to be cooling some future data centers not with water ... and instead with helium' is Zvi's own line in the 'Chip City' section, with no quoted source behind it, so the note is aimed at his own assertion. The underlying facts back the note: the July 2026 Valar Atomics and Nvidia announcement is about a roughly 30 MW nearly waterless AI data center in Utah, Reuters reports that 'Valar says its high-temperature reactor is cooled with helium instead of water', and Nvidia's own DSX design uses a closed liquid loop of about 75% water and 25% propylene glycol for the servers. So the helium sits in the sealed loop of a high temperature gas reactor, which is a decades-old reactor design, and not in the cooling of the computers, which is what Zvi's sentence says. What gives me pause is that the press coverage he was summarising blurs the same line: Deseret News and KSL both write that 'the Ward250's helium cooling system, combined with Nvidia's new technology, will allow the data center to operate with almost no water use', and CNN called it a waterless data center. Zvi could fairly answer that he was repeating how the partnership was advertised and that his point about helium scarcity stands, and the note never engages that point. It is a real and useful correction, but there is a plausible public pushback, so Nathan should decide with that in mind."
+    }
+  ]
+}

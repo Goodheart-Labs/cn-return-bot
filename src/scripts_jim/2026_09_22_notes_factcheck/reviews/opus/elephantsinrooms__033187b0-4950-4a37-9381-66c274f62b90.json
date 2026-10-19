@@ -1,0 +1,16 @@
+{
+  "item_id": "033187b0-4950-4a37-9381-66c274f62b90",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "08c4d0b1-1ead-4fb8-8428-9d43dd6c37e2",
+      "verdict": "bad",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The note is factually right. I fetched the STAT News piece it cites and it says the company 'is nearly sold out of its first run of about 250,000 cans', so LaCorte's 'about 250,000 cases' is a slip of one word. But this is as tangential as a note can get. The sentence is a throwaway illustration inside a list of signs that nicotine products are selling well, sitting between gum sales and Philip Morris buying Zyn, and the point it supports is only that the drink sold out. Nothing in the video's argument about nicotine, cancer and tar depends on whether the run was cans or cases, and the note itself has to guess at the size of a case to explain why the difference matters. Correcting a single misspoken noun on a detail that changes no belief a viewer would care about is the definition of pedantic, and sending it would make us look like we had nothing better to say about a twenty-minute video."
+    }
+  ]
+}

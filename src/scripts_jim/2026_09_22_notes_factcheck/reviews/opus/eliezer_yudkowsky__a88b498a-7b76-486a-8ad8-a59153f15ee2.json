@@ -1,0 +1,16 @@
+{
+  "item_id": "a88b498a-7b76-486a-8ad8-a59153f15ee2",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "eb1d2fe4-debf-4399-9b5f-07854436c1ec",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The claim the pipeline extracted is that the internal OpenAI model in the Hugging Face incident is more advanced than any publicly available model, but the note says nothing about model capability at all. Instead it reports that inserted instructions gave no training-score benefit, almost never reappeared on rewrite, clustered around text loops, and were linked to a training bug OpenAI says it fixed. Those facts come from a different OpenAI misalignment report, about an unreleased Astra-family model writing prompt injections into its own compaction summaries; the-decoder article the note cites mentions the Hugging Face incident only in passing, as a place where a similar agent-to-agent message-board pattern was seen. Presenting that material as a correction to a sentence about the Hugging Face swarm conflates two separate incidents, which is itself an error. If the note is meant to attack the second half of Yudkowsky's sentence, that the Doing Part ran at full intelligence rather than as an uncontrolled tic, it never says so, and Yudkowsky spends several paragraphs of the post pre-empting exactly the tic reading, so he would read it as an off-target rebuttal rather than a correction. On the extracted claim itself, reporting says the internal model was an unreleased research prototype whose capabilities are largely undisclosed, so the note's sources give a reader no reason to change their belief about it."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "item_id": "90e87cb6-cd7a-4d84-8350-b7a022210bed",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "6f113775-712a-417a-81f8-7eb8c6726ba4",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "maybe",
+      "reason": "The underlying fact check holds up. The talkie-coder README and the Hugging Face model card both report 4.5% pass@1 on SWE-bench-Verified for the fine-tuned 1930 model, and neither of them claims anywhere that it beat a Claude model. Claude 3 Opus is above that in every published setting I could find: 22% with Anthropic's own agent scaffold and about 7% on SWE-bench Verified with the weak retrieval baseline. So John Schulman's statement \"It did better than Claude 3 Opus on SWE-bench\" is simply wrong, and it matters, because he uses it to argue that expert behaviour is surprisingly easy to copy into a weak model. Three things give me pause. First, the speaker is the guest John Schulman, not Dwarkesh, and he hedges with \"I saw something about how\", so a note sent to Dwarkesh publicly corrects his guest rather than him. Second, the note says Anthropic reports Opus at 22% \"with the same agent scaffold\", which reads as if the two numbers were measured with the same harness; they were not, the phrase only means Anthropic used one scaffold across its own models, so the note overstates how matched the comparison is. Third, the note is filed under the claim \"Before fine-tuning, the Talkie model had no knowledge of code\", which is true and is not what the note disputes, and that mismatch invites exactly the \"you are fact-checking a claim I did not make\" reply we got from Andy Masley."
+    },
+    {
+      "note_id": "5eb42f60-e9d5-436a-b930-069b5d8fcd86",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "reason": "This is Dwarkesh speaking in his own voice, not quoting anyone: \"AlphaGo coming up with move 37, the super creative move. Because it was never initialized on human data, it can think in ways that humans are not even thinking.\" He is wrong about which system that was. Move 37 was played in game two against Lee Sedol in March 2016, and DeepMind's own page says of that AlphaGo, \"Initially, we introduced AlphaGo to thousands of expert games of Go so the system could learn how humans play the game,\" with self-play reinforcement learning coming afterwards. The Wikipedia article on the match says the same, naming a database of around 30 million moves from 160,000 games. The system that was never initialized on human data is AlphaGo Zero, a later version that did not play Lee Sedol. I checked both source pages and the accepted quotes are on them word for word. The correction is substantive because the premise carries his whole question, which he ends by asking about \"de novo initialization of intelligence\", and no one on the panel corrects him. Mixing up AlphaGo and AlphaGo Zero is a common slip and a careful interviewer would most likely accept the correction."
+    }
+  ]
+}

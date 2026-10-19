@@ -1,0 +1,51 @@
+{
+  "item_id": "6af85fd3-7903-429e-83a0-6fa3749178e3",
+  "reviewer": "fable",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "2e4cf563-ddec-4781-9341-22e7fb36dcb5",
+      "verdict": "bad",
+      "claim_is_authors_own": "partly",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The reviewer states the etymology flatly, but it is lifted from the book under review: Freedland writes that the Sonderkommando asked \"Kann er da nicht was drin' haben?\" (\"Might there be something [of value] inside?\") and that \"Kann er da became Kanada\", and he gives the Canada-as-land-of-plenty story as the alternative. The note presents the wealth story as what \"historians attribute\" and says the phrase \"isn't idiomatic German\", but the Auschwitz Museum itself says the origin is unclear and only assumed, and the German-phrase explanation appears as a proposed explanation in Gideon Greif's Yale University Press volume of Sonderkommando testimonies, so the note is turning a disputed folk etymology into a settled fact. The note has a fair point that the reviewer's gloss \"German for might there be\" is a garbled shortening of the full sentence, but that is a quibble about a compressed translation. Nothing in the review's argument rests on the name, so a reader who believed the reviewer would hold a wrong belief about a piece of camp slang and nothing more. The author would most likely answer that the etymology is Freedland's, and would be right."
+    },
+    {
+      "note_id": "90f7a2b8-8759-4c69-a4de-2a21c923f80f",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Replace the last sentence's \"in late 1942\" with \"in early 1943\": Karski reached London in late 1942 but met Eden in February 1943. Or drop the last sentence entirely, since the correction stands without it.",
+      "reason": "\"Both FDR and UK Prime Minister Anthony Eden had received eyewitness testimony of Nazi mass murder by 1943\" is the reviewer's own sentence, stated as fact with no source being quoted. Eden was Foreign Secretary from December 1940 to July 1945 under Churchill and became Prime Minister only in April 1955; Wikipedia and Britannica both confirm this. The note grants the part of the sentence the argument rests on, that Eden did receive Karski's eyewitness account, so it is fair rather than a gotcha, and calling Eden Prime Minister during the war is the kind of plain slip an author fixes gladly. It is a title rather than a point of argument, so it is on the modest side of substantive, but a reader would come away believing the wrong man led Britain. The flaw is in the note's own wording: Karski met Eden in February 1943 according to the Holocaust Historical Society and Cambridge's Auschwitz and the Allies, and the USHMM article the note cites gives no date, so \"in late 1942\" is wrong. Fix that and the note is good."
+    },
+    {
+      "note_id": "ee32d559-5b46-4e65-9a03-4a49d97541b2",
+      "verdict": "uncertain",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": "Soften the last sentence to \"He did testify in person at the Frankfurt Auschwitz trial in 1964.\" The word \"first\" rests on nobody having found an earlier appearance, not on a source that says so.",
+      "reason": "\"Rudi testifies at Nuremberg and in several other high-profile Nazi trials\" is the reviewer's own sentence. I found no record of Vrba appearing as a witness at Nuremberg: the Wikipedia articles on Vrba and on the report, the Holocaust Memorial Day Trust page and the rudolfvrba.com site all agree that the report went in as document 022-L in the anonymous War Refugee Board version, and the Wikipedia biography lists a sworn deposition for the Eichmann trial in 1961, courtroom testimony against Robert Mulka at Frankfurt in November 1964 and the Zundel trial in 1985, with nothing on Nuremberg. The correction is substantive because it changes the picture from Vrba as a star witness at the most famous trial to his report being used while the prosecutors did not know who wrote it, which if anything strengthens the review's own theme that he was forgotten. The note hedges \"reportedly\" on the one claim that rests only on rudolfvrba.com, and leaves the rest of the author's sentence standing. What holds me back is the flat \"His first courtroom testimony came in 1964\": I could not confirm that he never testified in any court before then, only that no source mentions it, so that sentence should be softened before sending."
+    },
+    {
+      "note_id": "a559a536-846a-44fd-8f8c-2e9477f57a4e",
+      "verdict": "good",
+      "claim_is_authors_own": "yes",
+      "note_is_correct": "yes",
+      "substantive": "yes",
+      "author_would_accept": "likely",
+      "whose_words": "creator",
+      "send_advice": null,
+      "reason": "The footnote is the reviewer's own aside and he offers it as the clincher: \"One particularly damning detail: Kasztner served as a character witness for Eichmann even after the war, when he presumably had nothing to gain from it.\" The USHMM article and Wikipedia say Kasztner intervened after the war for Kurt Becher, Hermann Krumey, Dieter Wisliceny and Hans Juttner, seven interventions in all, three of them for Becher, whose affidavit is what kept Becher from being prosecuted; neither source records anything of the kind for Eichmann. The chronology settles it on its own: Kasztner died of his wounds in March 1957 and Eichmann was captured in May 1960 and tried in 1961, so Kasztner could not have been a witness for him. This is an accusation against a real and still fiercely disputed person, presented as the decisive fact, so a reader would carry away a false and damaging belief; the true version, that he vouched for Becher, is the charge the Kasztner trial actually turned on. An author who took care to lay out the trial's history in that footnote would want this right, and the note's sources hold up."
+    }
+  ]
+}

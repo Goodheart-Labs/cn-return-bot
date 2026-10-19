@@ -1,0 +1,16 @@
+{
+  "item_id": "01e3fd90-fe5d-4fd5-8001-c6a0f13d9696",
+  "reviewer": "opus",
+  "source_read": "full_text",
+  "notes": [
+    {
+      "note_id": "37c8856f-0279-4d50-a223-731648e75fa6",
+      "verdict": "bad",
+      "claim_is_authors_own": "no",
+      "note_is_correct": "unsure",
+      "substantive": "no",
+      "author_would_accept": "unlikely",
+      "reason": "The sentence about 600 million litres is not Andy's. It is one of six bullets he copies out of a United Nations University report, introduced with 'Here are six especially strange framings from the report', and the whole post is an argument against how that report frames its numbers. He says plainly 'I agree with all the factual claims in this UN University report ... but I think its framing of those facts is completely off the wall', so his complaint is about the Olympic pools and the 81,000 people in Sub-Saharan Africa, not about the litres. This is precisely the mistake Andy already objected to when he said a note was fact-checking a claim he was himself criticising. The note is also shaky on its own terms. It calls the figure 'unsourced', but the source is the UNU report Andy links, and the note's counter-evidence is the water used to train GPT-3, a far smaller model, so it proves nothing about GPT-4. The Fortune numbers it cites cover one Iowa cluster for one month and leave out the offsite water used to generate the electricity, which is the larger part of these estimates. Sending this to Andy would read as accusing him of exaggerating AI's water use, which is the opposite of what he spends his blog arguing."
+    }
+  ]
+}

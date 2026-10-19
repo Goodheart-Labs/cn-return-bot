@@ -1,24 +1,21 @@
+@import "../../everything-ui/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* The same system font stack that everything-web/index.html uses. TwitterChirp
- * is left out on purpose. These rules sit on the React root container, which
- * acts as the shadow tree's inner <body>, and not on :host. There are two
- * reasons for that. WXT prepends `:host{all:initial !important}` to this sheet,
- * and that beats any :host declaration of ours that is not important itself.
- * And :host cannot react to the `.dark` class, which the mount code toggles on
- * the container so the UI follows the host page's theme. Never write a literal
+/* The base font and colour sit on the React root container, which acts as
+ * the shadow tree's inner <body>, and not on :host. There are two reasons for
+ * that. WXT prepends `:host{all:initial !important}` to this sheet, and that
+ * beats any :host declaration of ours that is not important itself. And :host
+ * cannot react to the `.dark` class, which the mount code toggles on the
+ * container so the UI follows the host page's theme. Never write a literal
  * `:root` in this file, because WXT rewrites it to `:host`. */
 .cn-theme-root {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--cn-font-sans);
   font-size: 16px;
   line-height: 1.5;
-  color: #111827;
-}
-
-.cn-theme-root.dark {
-  color: #f3f4f6;
+  color: var(--cn-fg);
 }
 
 /* The geometry of each shadow host must be set here in CSS, not from

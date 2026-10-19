@@ -1,11 +1,13 @@
 /**
- * The wire contract between the callers and the two services.
+ * The wire contract between the callers and the services.
  *
  * The services are pure functions behind HTTP. One takes a claim and answers
  * whether it needs a note. The other takes some content and answers with the
  * claims in it. Neither touches our database, so everything a caller needs to
  * record afterwards has to travel back in the response. That is why a check
- * answers with the whole run record and not just the note.
+ * answers with the whole run record and not just the note. A third service,
+ * the fetcher, fetches outside pages and images for the others from inside a
+ * sandbox.
  *
  * Both sides import this file, so a change here is a change both sides see.
  */
@@ -150,8 +152,50 @@ export interface RateClaimsResponse {
    *  stored nowhere else. */
   research: string;
   webSearches: number;
-  webFetches: number;
   costUsd: number | null;
+}
+
+// ---------------------------------------------------------------------------
+// Fetching an outside page or image, through the sandboxed fetcher
+// ---------------------------------------------------------------------------
+
+export const FETCH_PAGE_PATH = "/fetch-page";
+/** Reads a whole article for a minisite (readPageForMinisite), so the page's
+ *  HTML is parsed inside the sandbox and never in a service that holds keys. */
+export const READ_PAGE_PATH = "/read-page";
+export const FETCH_IMAGE_PATH = "/fetch-image";
+
+/** The environment variable that names the fetcher's Unix socket. The fetcher
+ *  listens on it. In any other process it means: do not fetch outside pages
+ *  and images here, ask the fetcher instead. The unit files set it for every
+ *  service on the machine (ops/cn-*.service). */
+export const FETCH_SERVICE_SOCKET_VARIABLE = "FETCH_SERVICE_SOCKET";
+
+export interface FetchPageRequest {
+  url: string;
+}
+
+export interface FetchUrlRequest {
+  url: string;
+}
+
+/** A page's HTML as the fetch ladder accepted it. `fetchedUrl` has the same
+ *  meaning as in WebFetchResult: the archive snapshot when the ladder fell back
+ *  to one, and the requested address otherwise. */
+export type FetchedPageHtml =
+  | { ok: true; html: string; fetchedUrl: string }
+  | { ok: false; reason: string };
+
+/** A JSON answer from one plain request, without the ladder's fallbacks. */
+export type FetchedJson =
+  | { ok: true; json: unknown }
+  | { ok: false; reason: string };
+
+/** An image as Gemini takes it inline: its media type and its bytes in
+ *  base64. */
+export interface FetchedImage {
+  mimeType: string;
+  data: string;
 }
 
 // ---------------------------------------------------------------------------
