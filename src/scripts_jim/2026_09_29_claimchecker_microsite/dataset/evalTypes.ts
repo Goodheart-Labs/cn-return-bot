@@ -151,6 +151,8 @@ export interface CheckerSample {
   /** Only for a note where reference notes exist. */
   quality: QualityAnswer | null;
   research: string | null;
+  /** The models that ran the full research, the writer and the source verifier. The research is null when the check never reached it. Missing in a run made before they were kept. */
+  models?: { search: string | null; writer: string | null; verifier: string | null };
   /** What the cascade's quick research said. Missing in a run made before the cascade, and null on the precheck path. */
   cascade?: CascadeTrace | null;
   draftNote: string | null;

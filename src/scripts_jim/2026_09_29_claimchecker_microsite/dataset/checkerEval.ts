@@ -15,6 +15,8 @@ import PQueue from "p-queue";
 import { writeInputCacheMem } from "../../../pipeline/input/inputCache";
 import * as noteEvaluationFilter from "../../../pipeline/score/noteEvaluationFilter";
 import { runClaimCheck } from "../../../everything/pipeline/checkClaims";
+import { CASCADE_COMMONNOTES_STRONG_MODEL } from "../../../pipeline/simple-bot/cascadeSearch";
+import { AB_TESTS } from "../../../pipeline/ab-testing/abTestsData";
 import { LOGS_DIR } from "../runStore";
 import { checkTraceOf } from "../labRun";
 import type { CascadeTrace, CheckableRow, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
@@ -65,6 +67,19 @@ function referenceNotesOf(row: CheckableRow): string[] {
   return [...(row.expected.referenceNote ? [row.expected.referenceNote] : []), ...real];
 }
 
+/** The model that an A/B arm picked for one config field, for example the search model of the arm "gpt6luna-native". */
+function pickedModel(picks: Record<string, string> | null, testName: string, field: "search_model" | "writer_model" | "verifier_model"): string | null {
+  const variant = AB_TESTS.find((test) => test.name === testName)?.variants.find((v) => v.variant.name === picks?.[testName]);
+  return (variant?.variant.overrides as Record<string, string | undefined> | undefined)?.[field] ?? null;
+}
+
+/** The models of a check, from its picks. The full research does not run when the quick research decided alone. A claim that is escalated goes to the cascade's own strong model. */
+export function modelsOf(picks: Record<string, string> | null, cascade: CascadeTrace | null): NonNullable<CheckerSample["models"]> {
+  const skipsResearch = cascade?.decision === "note" || cascade?.decision === "no_note";
+  const search = skipsResearch ? null : cascade && picks?.commonnotes_pipeline === "on" ? CASCADE_COMMONNOTES_STRONG_MODEL : pickedModel(picks, "simple_bot_search", "search_model");
+  return { search, writer: pickedModel(picks, "simple_bot_writer", "writer_model"), verifier: pickedModel(picks, "simple_bot_verifier", "verifier_model") };
+}
+
 /** What the cascade's quick research did, from the log of a check. It is null when the check ran on the precheck path. */
 export function cascadeOf(logs: any): CascadeTrace | null {
   const cascade = logs?.cascade;
@@ -112,7 +127,7 @@ async function checkSample(row: CheckableRow, referenceNotes: string[], runId: s
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };

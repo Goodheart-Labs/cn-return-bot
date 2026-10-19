@@ -696,6 +696,8 @@ function checkerSummary(run) {
     <tr><td><b>All</b></td><td class="n">${c.rows.length}</td><td class="n"><b>${n("pass")}</b></td><td class="n">${n("fail")}</td><td class="n">${n("soft_fail")}</td><td class="n">${n("error")}</td><td class="n">${c.rows.reduce((s, r) => s + r.passedIn, 0)} of ${c.rows.length * c.samples}</td></tr></tbody></table>
     <p class="small">Where a note was expected and written, a second judge asked whether it makes the reference point: ${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes do.</p>`;
 }
+const MODEL_NAMES = { "meta/muse-spark-1.3-contributor": "Muse Spark 1.3", "openai/gpt-6-luna": "GPT-6 Luna", "anthropic/claude-sonnet-5.5": "Sonnet 5.5", "anthropic/claude-sonnet-5": "Sonnet 5", "google/gemini-3-flash-preview": "Gemini 3 Flash" };
+const modelName = (id) => (id ? MODEL_NAMES[id] ?? id.split("/").pop() : "");
 const DECISION_TEXT = { note: "straight to the writer", no_note: "no note", escalate: "stronger model", audit: "stronger model (audit)" };
 /** What the cascade's quick research said about this check. It is empty for a check on the precheck path. */
 const cascadeLine = (c) => (c ? `<span class="pill-p">${percent(c.probability)}</span> <span class="small">${DECISION_TEXT[c.decision]}</span><br>` : "");
@@ -806,18 +808,21 @@ function mountCheckerDetail(host, result) {
       s.prompts?.research ? proseBox(s.prompts.research, true) : node("div", {}, node("p", { class: "small", text: "The message that was sent was not saved for this run. This is the claim as it was handed over." }), proseBox(point.checker.post.text, true))));
     if (s.cascade) {
       const c = s.cascade;
-      steps.push(stepCard(n++, "Quick research", `${c.answeredBy}, probability ${percent(c.probability)}, ${DECISION_TEXT[c.decision]}`,
+      steps.push(stepCard(n++, "Quick research", `${modelName(c.answeredBy)}, native search, probability ${percent(c.probability)}, ${DECISION_TEXT[c.decision]}`,
         node("div", {}, node("p", {}, node("b", { text: percent(c.probability) }), " that the claim is misleading. " + { note: "At 0.9 or more the writer got these findings right away.", no_note: "Under 0.3 the check ended here.", escalate: "Between 0.3 and 0.9, so the stronger model repeated the research.", audit: "Under 0.3, but this run was on the audit arm, so the stronger model repeated the research anyway." }[c.decision]),
           c.findings ? proseBox(c.findings) : node("p", { class: "small", text: "No findings were saved." }),
           ...(c.userMessage ? [node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the quick research was given" })), proseBox(c.userMessage, true))] : []))));
     }
-    steps.push(stepCard(n++, "Research", "Muse, native search", s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." })));
+    const researchSkipped = s.cascade && (s.cascade.decision === "note" || s.cascade.decision === "no_note");
+    const researchChip = researchSkipped ? "skipped" : s.models?.search ? modelName(s.models.search) + ", native search" : "native search";
+    const researchBody = researchSkipped ? node("p", { class: "small", text: "Skipped. The quick research decided on its own, so the stronger model did not run." }) : s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." });
+    steps.push(stepCard(n++, researchSkipped ? "Full research" : "Research", researchChip, researchBody));
     if (s.draftNote) {
       const body = node("div", {}, proseBox(s.draftNote));
       if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, withoutTweetLines(s.prompts.writer))));
-      steps.push(stepCard(n++, "The note the writer drafted", "Muse", body));
+      steps.push(stepCard(n++, "The note the writer drafted", modelName(s.models?.writer) || "model not recorded", body));
     }
-    if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", "Muse", proseBox(s.sourceVerdict)));
+    if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", modelName(s.models?.verifier) || "model not recorded", proseBox(s.sourceVerdict)));
     const end = node("div", {});
     if (o.type === "note") {
       end.append(node("div", { class: "notebox" }, o.note, ...(o.sources.length ? [node("ul", { class: "small" }, ...o.sources.map((x) => node("li", {}, node("a", { href: x.url, target: "_blank", rel: "noreferrer", text: x.url }), x.quote ? node("div", { text: "“" + truncate(x.quote, 240) + "”" }) : null)))] : [])));
