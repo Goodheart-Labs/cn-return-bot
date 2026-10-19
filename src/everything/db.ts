@@ -1050,3 +1050,55 @@ export async function recordAvatarAttempt(projectId: string, avatarUrl: string |
   const stamp = { avatar_refreshed_at: attemptedAt.toISOString() };
   throwOnError(await getSupabaseClient().from("everything_projects").update(avatarUrl ? { ...stamp, avatar_url: avatarUrl } : stamp).eq("id", projectId));
 }
+
+/** One item a worker has finished, for the outage check in outageAlert.ts. */
+export interface FinishedItem {
+  status: "done" | "error";
+  error: string | null;
+  processed_at: string;
+}
+
+/** The last `limit` items either worker finished, newest first. The intake
+ *  service's items count with the feed run's, because both go through the
+ *  same services and a breakage fails them alike. */
+export async function fetchLastFinishedItems(limit: number): Promise<FinishedItem[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("status, error, processed_at")
+      .in("status", ["done", "error"])
+      .not("processed_at", "is", null)
+      .order("processed_at", { ascending: false })
+      .limit(limit),
+  ) as FinishedItem[];
+}
+
+/** Every item still in error whose last attempt failed after `since`. */
+export async function fetchErroredItemsSince(since: Date): Promise<{ error: string | null; processed_at: string }[]> {
+  return fetchAllRows<{ id: string; error: string | null; processed_at: string }>(
+    () => getSupabaseClient()
+      .from("everything_items")
+      .select("id, error, processed_at")
+      .eq("status", "error")
+      .gte("processed_at", since.toISOString()),
+    "id",
+    { label: "erroredItemsSince" },
+  );
+}
+
+/** A value from pipeline_state, the key-value table runs keep small state in
+ *  (migration 021), or null when the key is unset. */
+export async function fetchPipelineState(key: string): Promise<string | null> {
+  const row = throwOnError(
+    await getSupabaseClient().from("pipeline_state").select("value").eq("key", key).maybeSingle(),
+  ) as { value: string } | null;
+  return row?.value ?? null;
+}
+
+export async function savePipelineState(key: string, value: string): Promise<void> {
+  throwOnError(
+    await getSupabaseClient()
+      .from("pipeline_state")
+      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" }),
+  );
+}

@@ -36,6 +36,7 @@ import { fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from ".
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
+import { alertIfItemsAreFailing, alertOnSickMachine } from "./outageAlert";
 import { quotaRanOutThisRun } from "../pipeline/media/youtubeDataApi";
 import {
   computeNextRun,
@@ -120,8 +121,14 @@ async function main() {
   console.log(`today so far: ${await describeTodaySpend()}`);
   // A sick machine fails the run before any alarm is set. The alarm then stays
   // empty, the database's backstop starts another run 45 minutes later, and
-  // that red run every 45 minutes is how the sickness stays visible.
-  await assertMachineHealthy();
+  // that red run every 45 minutes is how the sickness stays visible. Nobody
+  // watches red runs, so a sick machine is emailed as well.
+  try {
+    await assertMachineHealthy();
+  } catch (err) {
+    await alertOnSickMachine(err);
+    throw err;
+  }
   let ended: FeedRunOutcome | undefined;
   try {
     ended = await processOneFeedItem();
@@ -131,6 +138,11 @@ async function main() {
     // start, so it needs to know whether an item was started.
     await setNextAlarm(ended === "done" || ended === "capped" || ended === "error" || ended === "no_captions_yet");
   }
+  // A red run is seen only by someone looking. From 16 to 19 October 2026 an
+  // OpenRouter key at its monthly limit failed every item for three days. So a
+  // failed item that looks like a breakage of the whole system, rather than of
+  // this one item, is also emailed (outageAlert.ts). The run still fails below.
+  if (ended === "error") await alertIfItemsAreFailing();
   // Creator pictures for the website cost no LLM money, so they refresh even
   // on a capped day. They run last, after the alarm is set, so a slow source
   // never delays the item or the schedule.
