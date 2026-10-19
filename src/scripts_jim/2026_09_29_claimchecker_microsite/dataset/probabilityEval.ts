@@ -41,10 +41,12 @@ function replaceOnce(text: string, pattern: RegExp, replacement: string): string
 }
 
 /** The pipeline's research prompt for a claim, with the correction_needed field swapped for the probability. */
+const AUTOMATIC_EXTRACTION_HINT = "The claim was automatically extracted and so it should be interpreted in the context. Avoid being pedantic.";
+
 export const PROBABILITY_SYSTEM_PROMPT = [
   replaceOnce(replaceOnce(SEARCH_SYSTEM_PROMPT_CLAIM, /- correction_needed:.*\n/, `${PROBABILITY_FIELD}\n`), /If no correction is needed/, "If the claim is not misleading"),
   `Respond with strict JSON only matching: { findings: string, misleading_probability: number }`,
-].join("\n\n").replace(/\n## When NOT to set correction_needed = true[\s\S]*?(?=\n## Sourcing rules)/, "");
+].join("\n\n").replace("Judge whether the claim is factually correct.", `Judge whether the claim is factually correct. ${AUTOMATIC_EXTRACTION_HINT}`).replace(/\n## When NOT to set correction_needed = true[\s\S]*?(?=\n## Sourcing rules)/, "");
 
 interface ProbabilityOutput {
   findings: string;
