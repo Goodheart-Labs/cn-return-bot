@@ -12,7 +12,7 @@
 import PQueue from "p-queue";
 import { bodyOfChunkMessage, runPassageExtraction } from "../../../everything/pipeline/extractClaims";
 import { claimsOfPassages } from "../../../everything/pipeline/passages";
-import type { ChunkRun, ChunkSample, DatasetRow, ExtractableRow, ExtractorEvalResult, ExtractorRowResult, JudgeAnswer } from "./evalTypes";
+import type { ChunkRun, ChunkSample, DatasetRow, ExtractableRow, ExtractorEvalResult, ExtractorRowResult, JudgeAnswer, PassageSummary, UnlabelledPostResult, UnlabelledRow } from "./evalTypes";
 import { judgeExtraction, withCost } from "./judges";
 
 const SAMPLES_PER_CHUNK = 3;
@@ -63,7 +63,32 @@ async function sampleChunk(userMessage: string): Promise<ChunkSample> {
   }
 }
 
-export async function runExtractorEval(rows: ExtractableRow[]): Promise<ExtractorEvalResult> {
+/** Runs the extractor once on every chunk of each unlabelled post. There is no judge, because there are no labels. */
+async function runUnlabelled(rows: UnlabelledRow[], queue: PQueue): Promise<UnlabelledPostResult[]> {
+  return Promise.all(
+    rows.map(async (row) => {
+      const chunks = await Promise.all(
+        row.unlabelled.chunks.map((message, index) =>
+          queue.add(async () => {
+            const sample = await sampleChunk(message);
+            return { chunkIndex: index + 1, chunkChars: message.length, passages: sample.passages ?? [], error: sample.error ?? null, costUsd: sample.costUsd };
+          }) as Promise<{ chunkIndex: number; chunkChars: number; passages: PassageSummary[]; error: string | null; costUsd: number }>,
+        ),
+      );
+      console.log(`  ${row.id}: ${chunks.length} chunks, ${chunks.filter((c) => c.error).length} failed`);
+      return {
+        id: row.id,
+        title: row.item.title,
+        url: row.item.url,
+        productionClaims: row.unlabelled.productionClaims,
+        chunks: chunks.map(({ costUsd: _cost, ...chunk }) => chunk),
+        costUsd: chunks.reduce((sum, c) => sum + c.costUsd, 0),
+      };
+    }),
+  );
+}
+
+export async function runExtractorEval(rows: ExtractableRow[], unlabelledRows: UnlabelledRow[] = []): Promise<ExtractorEvalResult> {
   const cases = casesOf(rows);
   const chunks = new Map(rows.map((row) => [`${row.item.id}#${row.extractor.chunkIndex}`, { row, message: row.extractor.userMessage }]));
   console.log(`Extractor eval: ${cases.length} statements of ${rows.length} datapoints in ${chunks.size} chunks, ${SAMPLES_PER_CHUNK} samples each`);
@@ -76,6 +101,8 @@ export async function runExtractorEval(rows: ExtractableRow[]): Promise<Extracto
       return { key, itemTitle: row.item.title, chunkIndex: row.extractor.chunkIndex, chunkCount: row.extractor.chunkCount, chunkChars: message.length, samples };
     }),
   );
+
+  const unlabelled = unlabelledRows.length ? await runUnlabelled(unlabelledRows, extractionQueue) : undefined;
 
   const judgeQueue = new PQueue({ concurrency: JUDGE_CONCURRENCY });
   let judgeCostUsd = 0;
@@ -104,6 +131,7 @@ export async function runExtractorEval(rows: ExtractableRow[]): Promise<Extracto
     passAt: PASS_AT,
     rows: rowResults,
     chunkRuns,
-    costUsd: { extraction: chunkRuns.flatMap((r) => r.samples).reduce((sum, s) => sum + s.costUsd, 0), judge: judgeCostUsd },
+    ...(unlabelled ? { unlabelled } : {}),
+    costUsd: { extraction: chunkRuns.flatMap((r) => r.samples).reduce((sum, s) => sum + s.costUsd, 0) + (unlabelled?.reduce((sum, p) => sum + p.costUsd, 0) ?? 0), judge: judgeCostUsd },
   };
 }

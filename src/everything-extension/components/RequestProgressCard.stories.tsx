@@ -14,3 +14,4 @@ type Story = StoryObj<typeof meta>;
 export const Waiting: Story = {};
 export const Checking: Story = { args: { progress: { kind: "checking", done: 5, total: 14, notes: 1 } } };
 export const Done: Story = { args: { progress: { kind: "done", notes: 2 }, onJump: () => {} } };
+export const NoCaptions: Story = { args: { progress: { kind: "unreadable", reason: "no captions" } } };

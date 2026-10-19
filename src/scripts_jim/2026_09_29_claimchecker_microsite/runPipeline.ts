@@ -116,7 +116,14 @@ async function runRating(extraction: RunStages["extraction"]): Promise<{ rated: 
   const partOf = new Map(parts.flatMap((part) => part.claims.map((c) => [c.claim, part.title] as const)));
   const rating = await rateParts(extraction.introduction, parts, async (request) => {
     const result = await rateClaims({ ...request, source: SOURCE });
-    return { claims: result.claims, research: result.research, webSearches: result.webSearches, costUsd: result.cost.cost };
+    return {
+      claims: result.claims,
+      research: result.research,
+      webSearches: result.webSearches,
+      costUsd: result.cost.cost,
+      answers: result.answers,
+      leftOutByFirstAnswer: result.leftOutByFirstAnswer,
+    };
   });
   console.log(`Rated ${rating.claims.length} claims with ${rating.webSearches} web searches`);
   return { rated: rating.claims.map((c) => ({ ...c, part: partOf.get(c.claim) ?? "" })), ratingCostUsd: rating.costUsd };

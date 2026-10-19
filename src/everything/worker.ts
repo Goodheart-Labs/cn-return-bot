@@ -21,7 +21,8 @@ import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
-import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
+import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
+import { MAX_ITEM_RETRIES } from "./autoEnqueue";
 import { describeTodaySpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
@@ -167,11 +168,33 @@ export const freshFeedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
     (item) => item.status === "queued" && item.priority >= QUEUE_PRIORITY.backlog && item.priority < QUEUE_PRIORITY.requested,
   );
 
+/** Where one item ended. "no_captions_yet" is an error that the retry sweep
+ *  picks up like any other, but it is expected, so it does not fail the feed
+ *  run. */
+type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
+
+/** A video we cannot read is not a failure (GOO-422). A young video without
+ *  captions stays in error so the retry sweep tries it again, because YouTube
+ *  may not have made its automatic captions yet. On its last allowed attempt,
+ *  and for every other unreadable video, the item ends as done with the
+ *  reason as its skip reason. We do not put the young video back in the queue
+ *  ourselves, because the feed worker would take it again at once. */
+async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoError): Promise<ItemOutcome> {
+  if (err.captionsMayStillCome && item.retries < MAX_ITEM_RETRIES) {
+    console.log(`  ${err.message} · the retry sweep tries again later`);
+    await markItemError(item.id, err.message);
+    return "no_captions_yet";
+  }
+  console.log(`  ${err.message} · finished without checking`);
+  await markItemDone(item.id, err.reason);
+  return "done";
+}
+
 /** Runs one claimed item through fetch, extraction and checking, and records
  *  where it ended: done, put back because a budget ran out part way, or
  *  errored. Both workers use this: the Actions feed run for the backlog tiers,
  *  and the intake service for reader-requested items. */
-export async function processQueuedItem(item: EverythingItem): Promise<"done" | "capped" | "error"> {
+export async function processQueuedItem(item: EverythingItem): Promise<ItemOutcome> {
   const startedAt = Date.now();
   const spentBefore = await todaySpendUsd();
   try {
@@ -212,6 +235,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
     );
     return "done";
   } catch (err: any) {
+    if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
     console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
     await markItemError(item.id, err?.message ?? "unknown");
     return "error";
@@ -222,7 +246,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
  *  waiting. The Actions feed run calls this once per run;
  *  reader-requested items are never taken here, the intake service on the
  *  machine owns that tier. */
-export async function processNextFeedItem(): Promise<"done" | "capped" | "error" | "empty"> {
+export async function processNextFeedItem(): Promise<ItemOutcome | "empty"> {
   const item = await claimNextQueuedItem("feed");
   if (!item) return "empty";
   console.log(`\nCHECKING NOW · [${item.source}] ${clip(item.title ?? item.url, 60)}`);

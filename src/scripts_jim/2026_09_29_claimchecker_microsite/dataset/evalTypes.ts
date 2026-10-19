@@ -13,6 +13,8 @@ export interface DatasetRow {
   referenceClaims: string[];
   /** True for a datapoint that only the extractor eval uses. It has no expected decision, checker input or production result. */
   extractorOnly: boolean;
+  /** Set on a whole post without labels. The extractor eval reads all its chunks and shows the passages by hand. It has no reference statements and is not part of the checker eval. */
+  unlabelled?: { chunks: string[]; productionClaims: number };
   /** True for a datapoint that only the checker eval uses. It has no extractor input. */
   checkerOnly?: boolean;
   /** True for a tweet on which our X notewriter wrote a helpful note. Both evals run it with the X prompts, and the claim checker eval runs it through the X bot's pipeline. */
@@ -29,11 +31,13 @@ export interface DatasetRow {
 
 /** A row that the extractor eval can run: it has an extractor input. */
 export type ExtractableRow = DatasetRow & { extractor: NonNullable<DatasetRow["extractor"]> };
-export const isExtractable = (row: DatasetRow): row is ExtractableRow => !row.checkerOnly;
+export const isExtractable = (row: DatasetRow): row is ExtractableRow => !row.checkerOnly && !row.unlabelled;
+export type UnlabelledRow = DatasetRow & { unlabelled: NonNullable<DatasetRow["unlabelled"]> };
+export const isUnlabelled = (row: DatasetRow): row is UnlabelledRow => !!row.unlabelled;
 
 /** A row that the claim checker eval can run: it has a checker input and an expected decision. */
 export type CheckableRow = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]>; production: NonNullable<DatasetRow["production"]> };
-export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly;
+export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly && !row.unlabelled;
 
 export type EvalName = "extractor" | "checker" | "probability";
 
@@ -103,8 +107,21 @@ export interface ExtractorRowResult {
   passed: boolean;
 }
 
+/** What the extractor made of every chunk of an unlabelled post, one sample per chunk. */
+export interface UnlabelledPostResult {
+  id: string;
+  title: string;
+  url: string | null;
+  /** How many claims production extracted and checked from the post. */
+  productionClaims: number;
+  chunks: { chunkIndex: number; chunkChars: number; passages: PassageSummary[]; error: string | null }[];
+  costUsd: number;
+}
+
 export interface ExtractorEvalResult {
   samples: number;
+  /** Missing in a run made before the unlabelled posts. */
+  unlabelled?: UnlabelledPostResult[];
   passAt: number;
   rows: ExtractorRowResult[];
   chunkRuns: ChunkRun[];

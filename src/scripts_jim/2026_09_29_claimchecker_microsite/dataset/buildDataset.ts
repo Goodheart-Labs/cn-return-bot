@@ -22,7 +22,7 @@ import { articleChunk, chunkText, renderImageDescriptions, transcriptChunk } fro
 import type { ExtractedClaim, ItemSource } from "../../../everything/types";
 import { checkTraceOf, type LabRun } from "../labRun";
 import { LAB_DIR, RUNS_DIR } from "../runStore";
-import { DATAPOINTS, GROUP_TITLE, type CheckedDatapoint, type Datapoint, type ExtractorOnlyDatapoint } from "./datapoints";
+import { DATAPOINTS, GROUP_TITLE, type CheckedDatapoint, type Datapoint, type ExtractorOnlyDatapoint, type UnlabelledDatapoint } from "./datapoints";
 import { tweetRowToPost, type QueuedTweetRow } from "../../../pipeline/orchestration/noteQueue";
 import { loadFrozenDescriptions } from "./freezeImages";
 import { loadItemTexts } from "./itemTexts";
@@ -166,6 +166,26 @@ async function buildExtractorOnlyRecord(datapoint: ExtractorOnlyDatapoint, descr
   return { ...recordBase(datapoint, item, text), extractorOnly: true, expected: null, extractor: extractorInput(text, passage, descriptions, labelOf(item)), checker: null, production: null };
 }
 
+/** A whole post without labels: every chunk of it, as the extractor is given them, and how many claims production took from it. */
+async function buildUnlabelledRecord(datapoint: UnlabelledDatapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
+  const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
+  if (error) throw error;
+  const text = itemTexts.get(item.id)!;
+  const { count, error: countError } = await db.from("everything_claims").select("id", { count: "exact", head: true }).eq("item_id", item.id);
+  if (countError) throw countError;
+  const label = labelOf(item);
+  const chunks = chunkText(renderImageDescriptions(text, descriptions)).map(label);
+  return {
+    ...recordBase(datapoint, item, text),
+    extractorOnly: true,
+    unlabelled: { chunks, productionClaims: count ?? 0 },
+    expected: null,
+    extractor: null,
+    checker: null,
+    production: null,
+  };
+}
+
 async function buildRecord(datapoint: CheckedDatapoint, descriptions: ReturnType<typeof loadFrozenDescriptions>) {
   const { data: item, error } = await db.from("everything_items").select(itemColumns).eq("id", datapoint.itemId).single();
   if (error) throw error;
@@ -255,11 +275,11 @@ function buildXPostRecord(datapoint: XPostDatapoint) {
 const descriptions = loadFrozenDescriptions();
 const records = [];
 for (const datapoint of DATAPOINTS) {
-  const record = "extractorOnly" in datapoint ? await buildExtractorOnlyRecord(datapoint, descriptions) : await buildRecord(datapoint, descriptions);
+  const record = "unlabelled" in datapoint ? await buildUnlabelledRecord(datapoint, descriptions) : "extractorOnly" in datapoint ? await buildExtractorOnlyRecord(datapoint, descriptions) : await buildRecord(datapoint, descriptions);
   records.push(record);
   console.log(
     `${datapoint.id.padEnd(30)}`,
-    record.extractor ? `chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars) highlight ${record.extractor.highlight ? "found" : "MISSING"}` : "checker only",
+    "unlabelled" in record ? `${record.unlabelled.chunks.length} chunks, unlabelled` : record.extractor ? `chunk ${record.extractor.chunkIndex}/${record.extractor.chunkCount} (${record.extractor.chunkChars} chars) highlight ${record.extractor.highlight ? "found" : "MISSING"}` : "checker only",
     record.checker ? `| paragraph ${record.checker.claim.paragraphTakenFromText ? "from text" : record.checker.claim.contextParagraph ? "stored" : "NONE"} | as received ${record.checker.asReceived?.prompt ? "yes" : "no"}` : "| extractor only",
   );
 }

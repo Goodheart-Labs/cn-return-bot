@@ -10,10 +10,11 @@
  * words and are meant to be corrected by him.
  */
 
+import { MEMOIR_DATAPOINTS } from "./memoirDatapoints";
 import { REALISTIC_DATAPOINTS } from "./realisticDatapoints";
 
 /** Jim's four groups: should a note be written, and how hard is the call. */
-export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity" | "realistic" | "x-notes";
+export type Group = "note-easy" | "note-difficult" | "no-note-easy" | "no-note-difficult" | "atomicity" | "realistic" | "x-notes" | "memoir";
 
 export const GROUP_TITLE: Record<Group, string> = {
   "note-easy": "Note should be written (easy)",
@@ -23,6 +24,7 @@ export const GROUP_TITLE: Record<Group, string> = {
   atomicity: "Several statements in one sentence (extractor only)",
   realistic: "Note/No-Note realistic (claim checker only)",
   "x-notes": "Helpful X notewriter notes (X prompts)",
+  memoir: "Personal memoirs, no labels (extractor only)",
 };
 
 /** Where the claim that the checker is given comes from. */
@@ -75,7 +77,12 @@ export interface ExtractorOnlyDatapoint extends DatapointBase {
   passage: string;
 }
 
-export type Datapoint = CheckedDatapoint | ExtractorOnlyDatapoint;
+/** A whole post without labels, for the extractor eval to run and show by hand. */
+export interface UnlabelledDatapoint extends DatapointBase {
+  unlabelled: true;
+}
+
+export type Datapoint = CheckedDatapoint | ExtractorOnlyDatapoint | UnlabelledDatapoint;
 
 const ZVI_176 = "3a030aad-94e4-4f7b-a832-611311a3d0c9";
 const ZVI_ROUNDUP_44 = "4b776e7a-5475-4cf9-8f4b-aaf42e25ae55";
@@ -336,4 +343,4 @@ const HAND_LABELLED: Datapoint[] = [
   },
 ];
 
-export const DATAPOINTS: Datapoint[] = [...HAND_LABELLED, ...REALISTIC_DATAPOINTS];
+export const DATAPOINTS: Datapoint[] = [...HAND_LABELLED, ...REALISTIC_DATAPOINTS, ...MEMOIR_DATAPOINTS];

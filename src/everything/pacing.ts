@@ -11,7 +11,8 @@
  * is due that interval after the last feed post started. An attempt that
  * ended in error, a fetch that failed for instance, spent nothing and does
  * not count as that post: the next post is due as if it had never run
- * (migration 099). Every run computes this at its end and stores the result
+ * (migration 099). Neither does an item finished before any model call, such
+ * as a video without captions (migration 125). Every run computes this at its end and stores the result
  * as an alarm, and the database starts
  * the next run when the alarm has come (everything_feed_schedule, migration
  * 097). A cheap post shortens the next interval a little and an expensive

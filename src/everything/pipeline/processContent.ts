@@ -29,7 +29,7 @@ import {
   type NewClaimRow,
   type SpendFor,
 } from "../db";
-import { shouldFactCheck } from "./rateClaims";
+import { UNRATED_JUDGEMENT, shouldFactCheck } from "./rateClaims";
 import { requestClaimCheck, requestClaimExtraction, requestClaimRating } from "../../service/client";
 import type { RateClaimsRequest, RateClaimsResponse } from "../../service/contract";
 import { group, money } from "../logFormat";
@@ -63,7 +63,7 @@ function budgetExhaustedFor(item: EverythingItem): Promise<boolean> {
 /** Where every extracted claim ended up, for one item. */
 export interface ItemTally {
   extracted: number;
-  skipped: number; // Claims the rater was confident are true. We do not fact-check them.
+  skipped: number; // Claims the rater was confident are true, or never rated. We do not fact-check them.
   notes: number; // Claims we fact-checked and wrote a note on.
   no_note: number; // Claims we fact-checked and found no note was needed.
   errors: number; // Claims whose fact-check threw.
@@ -78,9 +78,13 @@ export interface ItemTally {
 
 const EMPTY_TALLY: ItemTally = { extracted: 0, skipped: 0, notes: 0, no_note: 0, errors: 0, capped: 0, skipReason: null };
 
+function skipReasonOf(claim: RatedClaim): string {
+  if (claim.judgement === UNRATED_JUDGEMENT) return "the rater left it out twice";
+  return `judged ${claim.judgement}`;
+}
+
 function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
   const check = shouldFactCheck(claim.judgement);
-  const skipReason = `judged ${claim.judgement}`;
   const anchor = claim.anchor;
   return {
     item_id: itemId,
@@ -94,7 +98,7 @@ function buildClaimRow(itemId: string, claim: RatedClaim): NewClaimRow {
     start_seconds: anchor.kind === "youtube" && anchor.startSeconds !== undefined ? Math.floor(anchor.startSeconds) : null,
     end_seconds: anchor.kind === "youtube" && anchor.endSeconds !== undefined ? Math.ceil(anchor.endSeconds) : null,
     status: check ? "pending" : "skipped",
-    status_reason: check ? null : skipReason,
+    status_reason: check ? null : skipReasonOf(claim),
   };
 }
 
@@ -183,6 +187,17 @@ export function freshClaimsPerPart(
  *  service. The claimchecker lab in scripts_jim runs it in this process. */
 export type RatePart = (request: Pick<RateClaimsRequest, "text" | "introduction" | "claims">) => Promise<RateClaimsResponse>;
 
+/** What the rating row's log keeps about one rated part (GOO-421). Before it
+ *  existed, nobody could tell a claim the rater left out from one it rated
+ *  uncertain. */
+interface PartRatingLog {
+  part: string;
+  asked: number;
+  leftOutByFirstAnswer: number;
+  unrated: number;
+  answers: string[];
+}
+
 /** Rates every part that still has claims, a couple of parts at a time, and
  *  sums what the rating cost. A claim the extractor marked very confident is
  *  not sent to the rater; it comes back with the top judgement and is stored
@@ -192,9 +207,10 @@ export async function rateParts(
   introduction: string | null,
   parts: ContentPart[],
   ratePart: RatePart,
-): Promise<{ claims: RatedClaim[]; costUsd: number | null; webSearches: number; research: string[] }> {
+): Promise<{ claims: RatedClaim[]; costUsd: number | null; webSearches: number; research: string[]; partLogs: PartRatingLog[] }> {
   const rated: RatedClaim[][] = parts.map(() => []);
   const research: string[] = [];
+  const partLogs: PartRatingLog[] = [];
   let costUsd: number | null = null;
   let webSearches = 0;
   const queue = new PQueue({ concurrency: RATING_PART_CONCURRENCY });
@@ -210,13 +226,20 @@ export async function rateParts(
           claims: part.claims,
         });
         rated[i] = rating.claims;
+        partLogs.push({
+          part: part.title,
+          asked: part.claims.length,
+          leftOutByFirstAnswer: rating.leftOutByFirstAnswer,
+          unrated: rating.claims.filter((c) => c.judgement === UNRATED_JUDGEMENT).length,
+          answers: rating.answers,
+        });
         if (rating.costUsd !== null) costUsd = (costUsd ?? 0) + rating.costUsd;
         webSearches += rating.webSearches;
         if (rating.research) research.push(parts.length > 1 ? `[${part.title}] ${rating.research}` : rating.research);
       }),
     ),
   );
-  return { claims: rated.flat(), costUsd, webSearches, research };
+  return { claims: rated.flat(), costUsd, webSearches, research, partLogs };
 }
 
 export async function processFetchedContent(
@@ -246,14 +269,16 @@ export async function processFetchedContent(
   const rating = await rateParts(extraction.introduction, parts, (request) =>
     requestClaimRating({ priority: workPriorityOf(item), source: item.source, ...request }),
   );
-  if (rating.costUsd !== null) await insertItemRun(item.id, "rating", rating.costUsd, workPriorityOf(item));
+  if (rating.partLogs.length > 0) await insertItemRun(item.id, "rating", rating.costUsd, workPriorityOf(item), { parts: rating.partLogs });
   const claims = rating.claims;
   const claimIds = await insertClaims(claims.map((c) => buildClaimRow(item.id, c)));
   const toCheck = claims.filter((c) => shouldFactCheck(c.judgement)).length;
+  const unrated = claims.filter((c) => c.judgement === UNRATED_JUDGEMENT).length;
   await setItemProgress(item.id, { stage: "checking", total: toCheck });
   console.log(
     `  ${extracted} claims found, ` +
-      `${toCheck} of ${claims.length} worth checking after research (${money(rating.costUsd ?? 0)}, ${rating.webSearches} web searches)`,
+      `${toCheck} of ${claims.length} worth checking after research (${money(rating.costUsd ?? 0)}, ${rating.webSearches} web searches)` +
+      (unrated > 0 ? `, ${unrated} left unrated by the rater and skipped` : ""),
   );
   const researchLog = group("research", rating.research);
   if (researchLog) console.log(researchLog);
