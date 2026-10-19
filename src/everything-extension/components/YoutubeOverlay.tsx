@@ -7,6 +7,7 @@ import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGr
 import { listenForDismissingClicks } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
+import { PlayIcon } from "@cn/ui/icons";
 import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { FloatingWindow, type Box } from "./FloatingWindow";
@@ -58,6 +59,41 @@ function seek(video: HTMLVideoElement, seconds: number) {
   video.currentTime = seconds;
 }
 
+/** Whether playback at `seconds` is inside the claim's part of the video. */
+function playheadInClaim(group: TimedGroup, seconds: number): boolean {
+  return seconds >= group.startSeconds && seconds <= group.endSeconds + TRAILING_GRACE_SECONDS;
+}
+
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 3600;
+
+/** A time in the video as YouTube writes it, such as 4:05 or 1:02:03. */
+function formatVideoTime(totalSeconds: number): string {
+  const whole = Math.floor(totalSeconds);
+  const hours = Math.floor(whole / SECONDS_PER_HOUR);
+  const minutes = Math.floor((whole % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+  const seconds = String(whole % SECONDS_PER_MINUTE).padStart(2, "0");
+  return hours ? `${hours}:${String(minutes).padStart(2, "0")}:${seconds}` : `${minutes}:${seconds}`;
+}
+
+/** The top bar's button that moves the video to the claim, labelled with the
+ *  claim's start time. */
+function PlayFromButton({ seconds, onPlay }: { seconds: number; onPlay: () => void }) {
+  const time = formatVideoTime(seconds);
+  return (
+    <button
+      type="button"
+      onClick={onPlay}
+      title={`Play the video from ${time}`}
+      aria-label={`Play the video from ${time}`}
+      className="inline-flex h-6 items-center gap-0.5 rounded-control px-1.5 text-sm tabular-nums text-fg-muted hover:bg-surface-hover hover:text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      <PlayIcon size={14} aria-hidden />
+      {time}
+    </button>
+  );
+}
+
 /** The player's box in page coordinates, kept current while the player
  *  changes size, which theater mode, fullscreen and window resizing all do.
  *  A fresh card is placed relative to this box. */
@@ -80,11 +116,12 @@ function usePlayerBox(player: HTMLElement) {
  *  claim. The card is the same width as the Substack popover and starts at
  *  the player's right edge, vertically centered. From there it can be
  *  dragged anywhere on the page and resized, like a desktop window, and the
- *  next note on the same video opens where the reader left it. It only
- *  shows while playback is inside the claim's span, and it fades out as soon
- *  as playback leaves that span. It stays up while the pointer is on it and
- *  the reader is mid-interaction. Pins on the scrub bar mark every claim, and
- *  clicking one seeks into that claim's span. */
+ *  next note on the same video opens where the reader left it. A card that
+ *  popped up during playback fades out as soon as playback leaves the claim's
+ *  span. It stays up while the pointer is on it and the reader is
+ *  mid-interaction. Pins on the scrub bar mark every claim. Clicking one opens
+ *  that claim's card without moving the video, and double-clicking one moves
+ *  the video to the claim. */
 export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   itemId: string;
   projectSlug: string | null;
@@ -113,12 +150,22 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   // again. Nothing removes a note for the rest of the video.
   const hushed = useRef<string | null>(null);
   // Only an open claim's card pops up on its own during playback. Any other
-  // claim's card shows only after the reader asked for it, by
-  // clicking its pin or with the note count, and that request lasts while
-  // playback stays inside the claim's window.
+  // claim's card shows while playback is inside its window only after the
+  // reader asked for it, and that request lasts while playback stays inside
+  // the claim's window.
   const summoned = useRef<string | null>(null);
+  // The claim the reader opened while playback was somewhere else, with its
+  // pin, the note count or the popup. Its card stays up wherever playback
+  // goes, until the reader closes it. Once playback reaches the claim, it
+  // becomes a summoned claim and fades out normally when playback moves on.
+  const pinned = useRef<string | null>(null);
+  // Whether playback is inside the displayed claim's window. The top bar
+  // offers to move the video there only while it is not.
+  const [playheadAtClaim, setPlayheadAtClaim] = useState(false);
   const hovered = useRef(false);
-  const inWindow = useRef(false);
+  // Whether the card has a reason to stay up apart from the reader's engagement:
+  // playback is inside its window, or the reader opened it.
+  const cardWanted = useRef(false);
   const lastInteraction = useRef(0);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   // `shown` mirrors the displayed and hiding state for the event handlers.
@@ -135,6 +182,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     setVisible(true);
   };
   const beginHide = () => {
+    pinned.current = null;
     if (shown.current !== "visible") return;
     shown.current = "hiding";
     setVisible(false);
@@ -161,11 +209,22 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
   useEffect(() => {
     const onTime = () => {
       const t = video.currentTime;
-      const inClaimWindow = (g: TimedGroup) => t >= g.startSeconds && t <= g.endSeconds + TRAILING_GRACE_SECONDS;
+      const inClaimWindow = (g: TimedGroup) => playheadInClaim(g, t);
+      const pinnedGroup = groups.find((g) => g.claimId === pinned.current);
+      if (pinnedGroup && inClaimWindow(pinnedGroup)) {
+        summoned.current = pinned.current;
+        pinned.current = null;
+      }
       const summonedGroup = groups.find((g) => g.claimId === summoned.current);
       if (summonedGroup && !inClaimWindow(summonedGroup)) summoned.current = null;
-      const hit = groups.find((g) => inClaimWindow(g) && (g.display === "open" || g.claimId === summoned.current));
-      inWindow.current = !!hit;
+      // The claim the reader asked for wins over a claim that pops up on its
+      // own, because two claims' windows can overlap.
+      const hit =
+        groups.find((g) => g.claimId === pinned.current) ??
+        groups.find((g) => g.claimId === summoned.current) ??
+        groups.find((g) => inClaimWindow(g) && g.display === "open");
+      cardWanted.current = !!hit;
+      setPlayheadAtClaim(!!hit && inClaimWindow(hit));
       // A claim hushed by an outside click stays hidden while playback is
       // still inside its window. Once the window is left, the hush ends, so
       // seeking back into the claim shows its card again.
@@ -185,9 +244,15 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
 
   const group = groups.find((g) => g.claimId === displayed);
 
-  const dismiss = () => {
-    if (group) hushed.current = group.claimId;
+  /** Closes the claim's card. If playback is inside the claim's window, the
+   *  hush keeps the card down until playback leaves it. */
+  const hide = (claimId: string) => {
+    hushed.current = claimId;
     beginHide();
+  };
+  const dismiss = () => {
+    if (group) hide(group.claimId);
+    else beginHide();
   };
   // A click on empty surface outside the card hushes it too. A plain
   // beginHide would not be enough, because the next timeupdate inside the
@@ -202,19 +267,44 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
       beginHide();
     });
   }, [group]);
-  // Clicking a pin is explicit intent, so we undo any hiding, summon a claim
-  // that does not pop up on its own, and seek into the claim's window. The resulting
-  // timeupdate shows the card.
-  const jumpToPin = useCallback((target: TimedGroup) => {
+  // Opening a claim is explicit intent, so we undo any hiding and show its
+  // card at once, without moving the video. The card shows straight away
+  // because a paused video sends no timeupdate.
+  const openClaim = useCallback((target: TimedGroup) => {
     if (hushed.current === target.claimId) hushed.current = null;
+    const atClaim = playheadInClaim(target, video.currentTime);
+    if (atClaim) summoned.current = target.claimId;
+    else pinned.current = target.claimId;
+    cardWanted.current = true;
+    setPlayheadAtClaim(atClaim);
+    show(target.claimId);
+  }, [video]);
+  // Moves the video into the claim's window and keeps its card up. From
+  // there the card follows playback like any summoned card.
+  const playFromClaim = useCallback((target: TimedGroup) => {
+    if (hushed.current === target.claimId) hushed.current = null;
+    pinned.current = null;
     summoned.current = target.claimId;
     seek(video, target.startSeconds + 0.01);
+    cardWanted.current = true;
+    setPlayheadAtClaim(true);
+    show(target.claimId);
   }, [video]);
+  // A click on a pin opens its card, and a second click on the pin of the
+  // card on screen closes it again. The second click of a double click moves
+  // the video to the claim instead, so a double click opens the card and
+  // plays from the claim. The browser counts the clicks in a row as the click
+  // event's `detail`.
+  const onPinClick = (target: TimedGroup, clicksInARow: number) => {
+    if (clicksInARow >= 2) playFromClaim(target);
+    else if (shown.current === "visible" && displayed === target.claimId) hide(target.claimId);
+    else openClaim(target);
+  };
 
   // The popup's jump button, the request progress card and the note count on
   // the card bring the player on screen and step through the claims
-  // in time order, wrapping around at the end. This is the same as clicking
-  // their pins. A jump goes to the claim after the one on screen, or, with no
+  // in time order, wrapping around at the end. Each step opens the claim's
+  // card without moving the video, the same as clicking its pin. A jump goes to the claim after the one on screen, or, with no
   // card up, to the claim after the last one a jump reached. That cursor lives
   // here so that "next" keeps its place when the popup is closed and reopened.
   // It resets when the page reloads.
@@ -226,8 +316,8 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     const from = displayedIndex >= 0 ? displayedIndex : jumpCursor.current;
     jumpCursor.current = (from + 1) % groups.length;
     scrollToPlayer.current = true;
-    jumpToPin(groups[jumpCursor.current]!);
-  }, [groups, displayedIndex, jumpToPin]);
+    openClaim(groups[jumpCursor.current]!);
+  }, [groups, displayedIndex, openClaim]);
   // The scroll to the player runs once the jumped-to card is on screen.
   // React restores the page's scroll positions while it updates the page, and
   // that cancels a smooth scroll started before the update.
@@ -263,14 +353,19 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
 
   return (
     <div className="pointer-events-auto text-left">
-      <ScrubberPins groups={groups} video={video} player={player} onPinClick={jumpToPin} />
+      <ScrubberPins groups={groups} video={video} player={player} onPinClick={onPinClick} />
       {group && (
         <FloatingWindow
           // A new claim gets a fresh card, which opens where the reader left
           // the previous one on this video.
           key={group.claimId}
           label="Common Note on this part of the video"
-          header={<NextNoteButton position={displayedIndex + 1} total={groups.length} onNext={jumpNext} />}
+          header={
+            <>
+              <NextNoteButton position={displayedIndex + 1} total={groups.length} onNext={jumpNext} />
+              {!playheadAtClaim && <PlayFromButton seconds={group.startSeconds} onPlay={() => playFromClaim(group)} />}
+            </>
+          }
           dismissLabel="Dismiss for this video"
           onDismiss={dismiss}
           onPlaced={({ left, top, width }) => setPlacement({ left, top, width })}
@@ -289,7 +384,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
           onMouseEnter={() => { hovered.current = true; }}
           onMouseLeave={() => {
             hovered.current = false;
-            if (!inWindow.current && !engaged()) beginHide();
+            if (!cardWanted.current && !engaged()) beginHide();
           }}
           className={`transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >

@@ -94,7 +94,7 @@ export const requestNoteModule: ReaderModule = {
     feature: "highlight.request",
     key: "request",
     label: "Check this",
-    accessibleName: "Check these words",
+    accessibleName: "Check this passage",
     onSelect: () => {
       const request = api.requestNote(block.id, quote);
       const cardId = requestCardId(api.scope, request.id);

@@ -72,7 +72,9 @@ Notes refresh in place. A vote, a new note or a deletion anywhere on the page up
 
 ## YouTube
 
-On a covered video, small pins on the scrub bar mark each claim, coloured by status. A note card appears over the video while playback is inside the claim's part of the video. It fades out a little after playback leaves that part, unless you are interacting with it. Only claims set to open pop up on their own during playback. Any other claim shows its card when you click its pin or step to it with the "2 of 3" counter. (`components/YoutubeOverlay.tsx`, `components/ScrubberPins.tsx`)
+On a covered video, small pins on the scrub bar mark each claim, coloured by status. Claims set to open pop up on their own: their card appears over the video while playback is inside the claim's part of the video, and fades out a little after playback leaves that part, unless you are interacting with it.
+
+A click on a pin opens that claim's card without moving the video. A second click on the same pin closes it. The "2 of 3" counter and the popup's jump link open the next claim's card the same way. A card you opened like this stays up wherever playback goes, until you close it, click elsewhere on the page or open another one. While playback is outside the claim's part, the card's top bar shows the claim's start time as a button, such as "▶ 12:34", which moves the video there. A double click on a pin does the same at once. Once playback is inside the claim's part, the card behaves like one that popped up by itself. When two claims' parts overlap, the one you asked for wins. (`components/YoutubeOverlay.tsx`, `components/ScrubberPins.tsx`)
 
 The card can be dragged and resized like a desktop window, and the next card on the same video opens where you left the last one. Dismissing a card hides it only while playback stays in that claim's part. If you seek back into it, the card shows again. YouTube does not use the remembered closed-card list. (`components/YoutubeOverlay.tsx`, `components/FloatingWindow.tsx`)
 
@@ -171,4 +173,6 @@ Each entry says what we chose, why, and when. Please do not undo one of these wi
 - **Margin style is the default.** The note opens beside the text instead of on top of it. (GOO-66, 2026-08-31)
 - **You can vote and write without signing up**, through anonymous accounts (GOO-64). A browser that has signed in before must sign in again rather than get a second, anonymous account. (2026-08-31)
 - **Safari offers email sign-in only, and its access prompt has no button.** Safari cannot run the X login, and it ignores an extension's own request for site access. (2026-09-30)
+- **A YouTube pin opens its note without moving the video.** Before, a click on a pin moved the video to the claim, which lost the reader's place in the video when they only wanted to read the note. The card offers a button to move there instead, and a double click on the pin moves there at once. (Anton's feedback, GOO-447, 2026-10-19)
+- **The request button says "Check", not "Request".** "Request notes" sounded like we might get to it in a week, while a requested page is checked within minutes. (Anton's feedback, GOO-447, 2026-10-19)
 - **Development builds reload themselves.** A dev build checks every 30 seconds whether a newer build has landed on disk and reloads if so. This replaced a check that opened a probe tab in Jim's browser and pulled his laptop's focus to Chrome, which he asked to be rid of. (2026-08-25)
