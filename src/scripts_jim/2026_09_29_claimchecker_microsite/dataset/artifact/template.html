@@ -178,6 +178,7 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 
 /* Runs and comparison */
 .runtable td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.resulttable td.n { text-align: right; font-variant-numeric: tabular-nums; }
 .runrow { cursor: pointer; }
 .runrow:hover td { background: var(--accent-soft); }
 .runrow.current td { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
@@ -820,16 +821,31 @@ function compareTable(kind, selected) {
   return `<details class="block"><summary><span>Compare the ${runs.length} runs row by row</span></summary><div class="tablewrap"><table class="sumtable cmp"><thead><tr><th>Group</th><th>${kind === "extractor" ? "Reference statement" : "Datapoint"}</th>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
 }
 
+const percent = (p) => (p == null ? "error" : Math.round(p * 100) + "%");
+function probabilityTable(run) {
+  const p = run.probability;
+  const rows = p.rows.map((r) => {
+    const values = r.samples.map((s) => s.probability).filter((x) => x != null);
+    const mean = values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+    return `<tr><td class="num">${POINTS.findIndex((x) => x.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
+      ${r.samples.map((s) => `<td class="n" title="${esc(s.error ?? "")}">${percent(s.probability)}</td>`).join("")}<td class="n"><b>${percent(mean)}</b></td></tr>`;
+  }).join("");
+  return `<p>Only the research step runs. Its answer asks for "your subjective probability that the claim is misleading in any way" instead of the yes or no field. Each row is asked ${p.samples} times.</p>
+    <div class="tablewrap"><table class="resulttable"><thead><tr><th>#</th><th>Group</th><th>Expected</th>${Array.from({ length: p.samples }, (_, i) => `<th>Run ${i + 1}</th>`).join("")}<th>Mean</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <details class="block"><summary><span>The research prompt used</span></summary>${proseBox(p.prompt, true).outerHTML}</details>`;
+}
+
 function renderResults() {
   const box = document.getElementById("resultsbody");
   if (!RUNS.length) { box.innerHTML = '<h2>Results</h2><p class="lede">No run yet.</p>'; return; }
   const run = RUNS.find((r) => r.id === state.run) ?? RUNS[0];
-  const have = { extractor: !!run.extractor, checker: !!run.checker };
-  if (!have[state.rs]) state.rs = have.extractor ? "extractor" : "checker";
-  const cost = [run.extractor && `extractor eval ${money(run.extractor.costUsd.extraction + run.extractor.costUsd.judge)} (extraction ${money(run.extractor.costUsd.extraction)}, judge ${money(run.extractor.costUsd.judge)})`, run.checker && `checker eval ${money(run.checker.costUsd.checks + run.checker.costUsd.judge)} (checks ${money(run.checker.costUsd.checks)}, judge ${money(run.checker.costUsd.judge)})`].filter(Boolean).join(", ");
-  const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} statements found</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}</div>`;
+  const have = { extractor: !!run.extractor, checker: !!run.checker, probability: !!run.probability };
+  if (!have[state.rs]) state.rs = have.extractor ? "extractor" : have.checker ? "checker" : "probability";
+  const cost = [run.extractor && `extractor eval ${money(run.extractor.costUsd.extraction + run.extractor.costUsd.judge)} (extraction ${money(run.extractor.costUsd.extraction)}, judge ${money(run.extractor.costUsd.judge)})`, run.probability && `probability eval ${money(run.probability.costUsd)}`, run.checker && `checker eval ${money(run.checker.costUsd.checks + run.checker.costUsd.judge)} (checks ${money(run.checker.costUsd.checks)}, judge ${money(run.checker.costUsd.judge)})`].filter(Boolean).join(", ");
+  const subtabs = `<div class="subtabs" id="rsubtabs">${have.extractor ? `<button class="subtab" role="tab" data-rs="extractor" aria-selected="${state.rs === "extractor"}"><b>Eval 1: Extractor</b><span>${run.extractor.rows.filter((r) => r.passed).length} of ${run.extractor.rows.length} statements found</span></button>` : ""}${have.checker ? `<button class="subtab" role="tab" data-rs="checker" aria-selected="${state.rs === "checker"}"><b>Eval 2: Claim checker</b><span>${run.checker.rows.filter((r) => r.verdict === "pass").length} of ${run.checker.rows.length} rows passed</span></button>` : ""}${have.probability ? `<button class="subtab" role="tab" data-rs="probability" aria-selected="${state.rs === "probability"}"><b>Eval 3: Research probability</b><span>how likely the research step finds the claim misleading</span></button>` : ""}</div>`;
   const body = state.rs === "extractor"
     ? `${extractorSummary(run)}${compareTable("extractor", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col><col style="width:170px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Reference statement</th><th>Result</th></tr></thead><tbody>${extractorRowsResult(run)}</tbody></table></div>`
+    : state.rs === "probability" ? probabilityTable(run)
     : `${checkerSummary(run)}${compareTable("checker", run)}<div class="tablewrap"><table class="resulttable"><colgroup><col style="width:40px"><col style="width:150px"><col style="width:110px"><col><col style="width:120px"><col style="width:110px"></colgroup><thead><tr><th>#</th><th>Group</th><th>Expected</th><th>What the three checks ended with</th><th>Result</th><th>Reference point</th></tr></thead><tbody>${checkerRowsResult(run)}</tbody></table></div>`;
   box.innerHTML = `<h2>Results</h2>
     ${runsTable(run)}

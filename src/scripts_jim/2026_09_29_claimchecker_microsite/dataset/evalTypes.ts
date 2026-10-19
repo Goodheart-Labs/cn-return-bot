@@ -27,7 +27,7 @@ export interface DatasetRow {
 export type CheckableRow = DatasetRow & { checker: NonNullable<DatasetRow["checker"]>; expected: NonNullable<DatasetRow["expected"]>; production: NonNullable<DatasetRow["production"]> };
 export const isCheckable = (row: DatasetRow): row is CheckableRow => !row.extractorOnly;
 
-export type EvalName = "extractor" | "checker";
+export type EvalName = "extractor" | "checker" | "probability";
 
 export interface JudgeAnswer {
   found: boolean;
@@ -159,6 +159,30 @@ export interface CheckerEvalResult {
   costUsd: { checks: number; judge: number };
 }
 
+/** One ask of the research step for its probability that the claim is misleading. */
+export interface ProbabilitySample {
+  /** Null when the call failed. */
+  probability: number | null;
+  findings: string | null;
+  costUsd: number;
+  error?: string;
+}
+
+export interface ProbabilityRowResult {
+  id: string;
+  group: Group;
+  expected: DatasetRow["expected"];
+  samples: ProbabilitySample[];
+}
+
+export interface ProbabilityEvalResult {
+  samples: number;
+  /** The research system prompt that was used. */
+  prompt: string;
+  rows: ProbabilityRowResult[];
+  costUsd: number;
+}
+
 export interface EvalRun {
   id: string;
   label: string;
@@ -169,4 +193,6 @@ export interface EvalRun {
   rowIds: string[];
   extractor: ExtractorEvalResult | null;
   checker: CheckerEvalResult | null;
+  /** Missing in a run made before the probability eval. */
+  probability?: ProbabilityEvalResult | null;
 }

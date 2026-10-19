@@ -5,7 +5,7 @@
  * to the production database.
  *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/runEvals.ts --label "baseline"
- *       [--eval extractor|checker|both] [--only id,id,...] [--group note-easy|...]
+ *       [--eval extractor|checker|probability|both] [--only id,id,...] [--group note-easy|...]
  *
  * The image descriptions must have been frozen first, with freezeImages.ts.
  */
@@ -20,6 +20,7 @@ import { GROUP_TITLE, type Group } from "./datapoints";
 import { runCheckerEval } from "./checkerEval";
 import { isCheckable, type DatasetRow, type EvalName, type EvalRun } from "./evalTypes";
 import { buildEvalSetsPage } from "./buildArtifact";
+import { runProbabilityEval } from "./probabilityEval";
 import { runExtractorEval } from "./extractorEval";
 
 const RESULTS_DIR = join(LAB_DIR, "dataset", "evalRuns");
@@ -56,9 +57,10 @@ async function main() {
   console.log(`Run ${runId} "${label}": ${evals.join(" and ")} on ${rows.length} rows`);
 
   // The two evals do not depend on each other, so they run side by side.
-  const [extractor, checker] = await Promise.all([
+  const [extractor, checker, probability] = await Promise.all([
     evals.includes("extractor") ? runExtractorEval(rows) : null,
     evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId) : null,
+    evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
   ]);
 
   const run: EvalRun = {
@@ -75,10 +77,11 @@ async function main() {
     rowIds: rows.map((r) => r.id),
     extractor,
     checker,
+    probability,
   };
   mkdirSync(RESULTS_DIR, { recursive: true });
   writeFileSync(join(RESULTS_DIR, `${runId}.json`), JSON.stringify(run, null, 1));
-  const total = (extractor ? extractor.costUsd.extraction + extractor.costUsd.judge : 0) + (checker ? checker.costUsd.checks + checker.costUsd.judge : 0);
+  const total = (extractor ? extractor.costUsd.extraction + extractor.costUsd.judge : 0) + (checker ? checker.costUsd.checks + checker.costUsd.judge : 0) + (probability?.costUsd ?? 0);
   console.log(`Saved evalRuns/${runId}.json, $${total.toFixed(2)} in total`);
   console.log(buildEvalSetsPage());
 }
