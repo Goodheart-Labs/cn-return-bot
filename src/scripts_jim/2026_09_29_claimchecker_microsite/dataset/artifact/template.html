@@ -646,11 +646,16 @@ function logViewer(files) {
   return { body: holder, load: () => { if (!loaded) { loaded = true; show(files[0]); } } };
 }
 
-/** The addresses a note cited, read from the message the source verifier was given. Null when the message was not kept. */
-function citedSourcesOf(verifierInput) {
-  if (!verifierInput) return null;
-  const section = verifierInput.split("## Note's cited sources")[1]?.split("## Original post")[0] ?? "";
-  return [...section.matchAll(/^### (https?:\/\/\S+)$/gm)].map((m) => m[1]);
+/** A collapsed block whose text is loaded from the log when it is first opened, because the pages the verifier was given are large. */
+function lazyLogBlock(label, logFile, pick) {
+  const holder = node("div", {});
+  const block = node("details", { class: "block" }, node("summary", {}, node("span", { text: label })), holder);
+  block.addEventListener("toggle", () => {
+    if (!block.open || holder.childNodes.length) return;
+    holder.append(node("p", { class: "small", text: "Loading the log…" }));
+    loadLog(logFile).then((logs) => holder.replaceChildren(proseBox(pick(logs), true)), (err) => holder.replaceChildren(node("p", { class: "small", text: "The log could not be loaded: " + err.message })));
+  });
+  return block;
 }
 /** Whether each cited source could be opened, with what came back for the ones that could not. */
 const fetchList = (fetches) => node("ul", { class: "small" }, ...fetches.map((f) => node("li", {}, node("a", { href: f.url, target: "_blank", rel: "noreferrer", text: f.url }), ` ${f.fetched ? "could be opened" : "could not be opened"}${f.whatCameBack ? ": " + f.whatCameBack.replace(/^### \S+\n/, "") : ""}`)));
@@ -671,7 +676,7 @@ function sourceCheckBody(check, verdictText) {
       ...e.citations.map((c) => node("div", {}, "“" + truncate(c.quote, 240) + "”" + (c.explanation ? " " + c.explanation : "")))))));
   } else if (verdictText) body.append(proseBox(verdictText));
   if (check.fetches) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "Which sources could be opened" })), fetchList(check.fetches)));
-  if (check.input) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the verifier was given: the note and the fetched pages" })), proseBox(check.input, true)));
+  if (check.logFile) body.append(lazyLogBlock("What the verifier was given: the note and the fetched pages", check.logFile, (logs) => logs.note_writer_steps.source_verifier.turn[String(check.turn)].messages["0"].userMessage));
   if (out) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "Its answer as JSON" })), node("pre", { class: "text", text: JSON.stringify(out, null, 1) })));
   return body;
 }
@@ -1003,7 +1008,7 @@ function mountCheckerDetail(host, result) {
     const researchBody = researchSkipped ? node("p", { class: "small", text: "Skipped. The quick research decided on its own, so the stronger model did not run." }) : s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." });
     steps.push(stepCard(n++, researchSkipped ? "Full research" : "Research", researchChip, !strongAnswerText(s) ? researchBody : node("div", {}, node("p", {}, node("b", { text: strongAnswerText(s) }), s.strongProbability != null ? " that the claim is misleading. From 50% up the check went on to the writer, under it the check ended." : ". A claim that is misleading goes on to the writer, otherwise the check ends."), researchBody)));
     // In a check with a second round the writer entry of the log holds the second note, so the first note comes from the record of the second round.
-    const firstDraft = s.secondRound ? { note: s.secondRound.first.note, sources: s.secondRound.first.sources ?? citedSourcesOf(s.sourceChecks?.[0]?.input) } : { note: s.draftNote, sources: s.draftSources };
+    const firstDraft = s.secondRound ? { note: s.secondRound.first.note, sources: s.secondRound.first.sources ?? null } : { note: s.draftNote, sources: s.draftSources };
     if (firstDraft.note) {
       const body = node("div", {}, proseBox(firstDraft.note));
       if (firstDraft.sources?.length) body.append(node("ul", { class: "small" }, ...firstDraft.sources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url })))));

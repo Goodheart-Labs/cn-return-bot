@@ -111,13 +111,19 @@ export function cascadeOf(logs: any): CascadeTrace | null {
   };
 }
 
+/** The addresses a note cited, read from the message the source verifier was given. */
+export function citedSourcesOf(verifierInput: string): string[] {
+  const section = verifierInput.split("## Note's cited sources")[1]?.split("## Original post")[0] ?? "";
+  return [...section.matchAll(/^### (https?:\/\/\S+)$/gm)].map((m) => m[1]!);
+}
+
 /** Every run of the source verifier in a check, from its log. */
-export function sourceChecksOf(logs: any): SourceCheckTrace[] {
+export function sourceChecksOf(logs: any, logFile: string): SourceCheckTrace[] {
   const at = (list: any, index: number) => (Array.isArray(list) ? list[index] : list?.[String(index)]);
   return Object.entries(logs?.note_writer_steps?.source_verifier?.turn ?? {})
     .map(([turn, step]: [string, any]) => ({
       turn: Number(turn),
-      input: at(step?.messages, 0)?.userMessage ?? null,
+      logFile: at(step?.messages, 0)?.userMessage ? logFile : null,
       output: at(step?.messages, 1)?.content ?? null,
       fetches: step?.fetches ?? null,
       notRun: step?.not_run ?? null,
@@ -170,7 +176,7 @@ export async function checkSample(row: CheckableRow, referenceNotes: string[], r
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongAnswerOf(run.logs).probability, strongMisleading: strongAnswerOf(run.logs).misleading, secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, draftSources: trace.draftSources, logFiles: [`logs/eval-${runId}/${row.id}.${sample}.json`], sourceChecks: sourceChecksOf(run.logs), sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongAnswerOf(run.logs).probability, strongMisleading: strongAnswerOf(run.logs).misleading, secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, draftSources: trace.draftSources, logFiles: [`logs/eval-${runId}/${row.id}.${sample}.json`], sourceChecks: sourceChecksOf(run.logs, `logs/eval-${runId}/${row.id}.${sample}.json`), sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };

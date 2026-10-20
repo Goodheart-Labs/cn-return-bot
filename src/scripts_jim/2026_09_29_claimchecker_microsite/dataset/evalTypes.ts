@@ -162,8 +162,8 @@ export interface CascadeTrace {
 /** One run of the source verifier on a note: what it was given and what it answered. The second round has a second one. */
 export interface SourceCheckTrace {
   turn: number;
-  /** The user message of the verifier: the note and the pages that were fetched for its sources. Null when the verifier was not called. */
-  input: string | null;
+  /** The log file that holds the full run of the verifier, with the user message it was given: the note and the pages fetched for its sources. The page loads it on demand, because those pages are large. */
+  logFile: string | null;
   /** The verifier's answer as it was logged. Null when the verifier was not called. */
   output: {
     accepted: boolean;
