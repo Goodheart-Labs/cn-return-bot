@@ -209,3 +209,39 @@ export function firstNotes({ leading, unhelpful, staleSource }: FeedSections, co
 
 /** How many notes the feed holds across its bands. */
 export const feedLength = ({ leading, unhelpful, staleSource }: FeedSections) => leading.length + unhelpful.length + staleSource.length;
+
+/** The minimums a note must reach to stay in the All notes feed. `views`
+ *  belongs to the note's post: it counts the devices outside our team on which
+ *  the extension showed that post's notes. The three vote minimums count all
+ *  votes, Helpful votes and Not helpful votes. */
+export interface NoteFilters {
+  views: number;
+  votes: number;
+  helpful: number;
+  notHelpful: number;
+}
+
+/** Notes on posts that at least a few real readers saw come first by default,
+ *  because a vote on those improves what people actually read. */
+export const DEFAULT_NOTE_FILTERS: NoteFilters = { views: 5, votes: 0, helpful: 0, notHelpful: 0 };
+
+/** Each filter's value for one note. */
+export function filterValues(note: NoteRow, viewsOf: (note: NoteRow) => number, tally: RankTally): NoteFilters {
+  return {
+    views: viewsOf(note),
+    votes: totalVotes(tally),
+    helpful: tally.helpful_count,
+    notHelpful: tally.not_helpful_count,
+  };
+}
+
+/** The notes that reach every minimum, in the order given. Votes are read from
+ *  `rankTally`, the counts a note had when it first appeared, so a card does
+ *  not vanish under a reader who just took back a vote. */
+export function filterNotes(notes: NoteRow[], filters: NoteFilters, viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally): NoteRow[] {
+  const keys = Object.keys(filters) as (keyof NoteFilters)[];
+  return notes.filter((note) => {
+    const values = filterValues(note, viewsOf, rankTally(note));
+    return keys.every((key) => values[key] >= filters[key]);
+  });
+}

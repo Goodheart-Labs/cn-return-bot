@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { NoteRow } from "@cn/core/types";
-import { arrangeFeed, contentOrder, feedLength, firstNotes, mergeFeedNotes, notesByItem, rankFeed, tallyOf } from "./feed";
+import { arrangeFeed, contentOrder, DEFAULT_NOTE_FILTERS, feedLength, filterNotes, firstNotes, mergeFeedNotes, notesByItem, rankFeed, tallyOf } from "./feed";
 
 describe("mergeFeedNotes", () => {
   test("leads with three helpful notes, then alternates starting with needs-ratings", () => {
@@ -158,5 +158,38 @@ describe("firstNotes", () => {
 
   test("a count past the end returns the whole feed", () => {
     expect(firstNotes(sections, 100)).toEqual(sections);
+  });
+});
+
+describe("filterNotes", () => {
+  const seen = note("seen", {}, {}, { item_id: "popular" });
+  const unseen = note("unseen", {}, {}, { item_id: "quiet" });
+  const voted = note("voted", { h: 2, s: 1, n: 3 }, {}, { item_id: "popular" });
+  const viewsOf = (n: NoteRow) => (n.claim.item_id === "popular" ? 7 : 0);
+  const filter = (filters: Partial<typeof DEFAULT_NOTE_FILTERS>) =>
+    filterNotes([seen, unseen, voted], { ...DEFAULT_NOTE_FILTERS, ...filters }, viewsOf, tallyOf).map((n) => n.id);
+
+  test("by default keeps only notes on posts at least 5 readers saw", () => {
+    expect(filter({})).toEqual(["seen", "voted"]);
+  });
+
+  test("all minimums at zero keep every note", () => {
+    expect(filter({ views: 0 })).toEqual(["seen", "unseen", "voted"]);
+  });
+
+  test("votes count all three kinds of vote", () => {
+    expect(filter({ views: 0, votes: 6 })).toEqual(["voted"]);
+    expect(filter({ views: 0, votes: 7 })).toEqual([]);
+  });
+
+  test("helpful and not helpful minimums read their own count", () => {
+    expect(filter({ views: 0, helpful: 2, notHelpful: 3 })).toEqual(["voted"]);
+    expect(filter({ views: 0, helpful: 3 })).toEqual([]);
+  });
+
+  test("reads votes from the tally it is given, not the live counts", () => {
+    const frozen = () => ({ helpful_count: 0, somewhat_helpful_count: 0, not_helpful_count: 0 });
+    expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0 }, viewsOf, frozen)).toEqual([voted]);
+    expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0, votes: 1 }, viewsOf, frozen)).toEqual([]);
   });
 });

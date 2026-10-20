@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import { fetchProjects } from "@cn/core/creators";
-import { fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
+import { fetchItemNoteViewers, fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
 import { fetchAllNnn, fetchProjectNnn } from "@cn/core/noteNotNeeded";
 import { fetchAllNotes, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
 import { subscribeToProjectChanges } from "@cn/core/projectRealtime";
@@ -77,6 +77,10 @@ export const useAllNotesFeed = () =>
     fetchNnn: fetchAllNnn,
     enabled: true,
   });
+
+/** How many devices outside the team saw each item's notes, which the All
+ *  notes page filters by. */
+export const useItemNoteViewers = () => useQuery({ queryKey: queryKeys.itemNoteViewers, queryFn: fetchItemNoteViewers });
 
 /** Keeps only the columns the feed renders. A realtime message always carries
  *  the whole row, including the item's body text, and holding on to that
