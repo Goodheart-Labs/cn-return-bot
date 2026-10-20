@@ -65,7 +65,7 @@ function currentCommit(): string {
 async function main() {
   // The local OPENROUTER_API_KEY is dead. The testing key works.
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
-  // The cascade is live on 60% of traffic, so an eval must choose its arm. The default is the search step as it was before. The audit arm, which sends claims the cheap step wants to drop to the stronger model anyway, is never part of an eval.
+  // The cascade is live on 60% of traffic, so an eval must choose its arm. The default is the search step as it was before. The cascade threshold and the second round are live on X posts too, so an eval fixes them as well: 0.9, and no second round unless asked for.
   const searchCascade = arg("search-cascade") ?? "precheck";
   const label = arg("label");
   if (!label) throw new Error('Give the run a label: --label "what changed"');
@@ -78,7 +78,7 @@ async function main() {
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker, probability] = await Promise.all([
     evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable), rows.filter(isUnlabelled), extractionOptionsOf(arg("other-variant"))) : null,
-    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade, cascade_audit: "none", ...(arg("jina-fetch") ? { jina_fetch: arg("jina-fetch")! } : {}), ...(arg("second-round") ? { second_round: arg("second-round")! } : {}) }) : null,
+    evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade, cascade_threshold: "0.9", second_round: arg("second-round") ?? "off", ...(arg("jina-fetch") ? { jina_fetch: arg("jina-fetch")! } : {}) }) : null,
     evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
   ]);
 

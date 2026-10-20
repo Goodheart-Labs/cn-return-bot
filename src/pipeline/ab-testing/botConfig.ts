@@ -80,12 +80,11 @@ export interface BotConfig {
    */
   search_cascade?: boolean;
   /**
-   * When this is true, the cascade also escalates every claim that the cheap
-   * step would have dropped for a probability under 0.3. Those runs show how
-   * often the cheap step is wrong when it says no. It only means anything
-   * alongside search_cascade. CASCADE_AUDIT_TEST sets it.
+   * At or above this probability the cascade's cheap first step sends its
+   * findings straight to the writer. It defaults to 0.9. CASCADE_THRESHOLD_TEST
+   * sets it for X posts.
    */
-  cascade_audit?: boolean;
+  cascade_note_at_or_above?: number;
   /**
    * When this is true, a page that every free step of the fetch ladder failed
    * on is read through Jina Reader, a paid service, as a last resort. It applies

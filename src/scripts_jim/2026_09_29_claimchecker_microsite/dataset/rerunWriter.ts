@@ -66,7 +66,7 @@ async function main() {
   const datapoints: CheckableRow[] = JSON.parse(readFileSync(join(LAB_DIR, "dataset", "dataset.json"), "utf8")).datapoints.filter(isCheckable);
   const runId = new Date().toISOString().slice(0, 16).replace("T", "-").replace(":", "");
   const writer = arg("writer");
-  const picks: Record<string, string> = { search_cascade: "cascading", cascade_audit: "none", jina_fetch: "on", second_round: "on", ...(writer ? { simple_bot_writer: writer } : {}) };
+  const picks: Record<string, string> = { search_cascade: "cascading", cascade_threshold: "0.9", jina_fetch: "on", second_round: "on", ...(writer ? { simple_bot_writer: writer } : {}) };
   const findingsSource: EvalRun | undefined = arg("findings-from") ? JSON.parse(readFileSync(join(RESULTS_DIR, `${arg("findings-from")}.json`), "utf8")) : undefined;
   const acceptedWithoutCheck = process.argv.includes("--no-source-check")
     ? spyOn(sourceVerifier, "verifySources").mockImplementation(async (params) => ({ reasoning: "The source check was switched off.", good_sources: params.sources, bad_sources: [], accepted: true }))

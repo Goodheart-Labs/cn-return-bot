@@ -120,13 +120,20 @@ describe("forced picks", () => {
     expect(precheck.config).toMatchObject({ search_cascade: false, note_prefilter: true });
   });
 
-  test("the audit arm is live on 10% of the cascading traffic only", () => {
-    const test = AB_TESTS.find((t) => t.name === "cascade_audit")!;
-    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["none", 90], ["audit", 10]]);
-    const cascading = withForcedPicks({ search_cascade: "cascading", cascade_audit: "audit" }, () => runABTests(AB_TESTS));
-    expect(cascading.config.cascade_audit).toBe(true);
-    const precheck = withForcedPicks({ search_cascade: "precheck", cascade_audit: "audit" }, () => runABTests(AB_TESTS));
-    expect(precheck.picks.cascade_audit).toBeUndefined();
+  test("the threshold test splits X posts on the cascade 50/50 and leaves Common Notes at the default", () => {
+    const test = AB_TESTS.find((t) => t.name === "cascade_threshold")!;
+    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["0.8", 50], ["0.9", 50]]);
+    const post = withForcedPicks({ search_cascade: "cascading", commonnotes_pipeline: "off", cascade_threshold: "0.8" }, () => runABTests(AB_TESTS));
+    expect(post.config.cascade_note_at_or_above).toBe(0.8);
+    const claim = withForcedPicks({ search_cascade: "cascading", commonnotes_pipeline: "on" }, () => runABTests(AB_TESTS));
+    expect(claim.picks.cascade_threshold).toBeUndefined();
+  });
+
+  test("the second round is live on 20% of X posts and never on Common Notes", () => {
+    const test = AB_TESTS.find((t) => t.name === "second_round")!;
+    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["off", 80], ["on", 20]]);
+    const claim = withForcedPicks({ commonnotes_pipeline: "on" }, () => runABTests(AB_TESTS));
+    expect(claim.picks.second_round).toBeUndefined();
   });
 
   test("the cascade is live on 60% of traffic and the precheck on 40%", () => {

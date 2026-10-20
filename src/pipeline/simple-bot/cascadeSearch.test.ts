@@ -16,18 +16,20 @@ const xConfig: BotConfig = { ...DEFAULT_CONFIG, botId: "simple-bot", search_mode
 
 describe("cascadeDecisionOf", () => {
   test("0.9 and above goes to the writer", () => {
-    expect(cascadeDecisionOf(0.9, false)).toBe("note");
-    expect(cascadeDecisionOf(1, false)).toBe("note");
+    expect(cascadeDecisionOf(0.9)).toBe("note");
+    expect(cascadeDecisionOf(1)).toBe("note");
   });
-  test("below 0.3 ends with no note, unless the run is on the audit arm", () => {
-    expect(cascadeDecisionOf(0.2999, false)).toBe("no_note");
-    expect(cascadeDecisionOf(0, false)).toBe("no_note");
-    expect(cascadeDecisionOf(0.2999, true)).toBe("audit");
-    expect(cascadeDecisionOf(0, true)).toBe("audit");
+  test("below 0.3 ends with no note", () => {
+    expect(cascadeDecisionOf(0.2999)).toBe("no_note");
+    expect(cascadeDecisionOf(0)).toBe("no_note");
   });
   test("from 0.3 up to just below 0.9 escalates", () => {
-    expect(cascadeDecisionOf(0.3, false)).toBe("escalate");
-    expect(cascadeDecisionOf(0.8999, false)).toBe("escalate");
+    expect(cascadeDecisionOf(0.3)).toBe("escalate");
+    expect(cascadeDecisionOf(0.8999)).toBe("escalate");
+  });
+  test("the limit for the writer can be set to 0.8", () => {
+    expect(cascadeDecisionOf(0.8, 0.8)).toBe("note");
+    expect(cascadeDecisionOf(0.7999, 0.8)).toBe("escalate");
   });
 });
 
@@ -69,14 +71,6 @@ describe("runCascadingSearch", () => {
     const { run: strong } = strongSearch();
     expect(await run(claimConfig)).toMatchObject({ findings: "The weak findings", correctionNeeded: false, researchedBy: "quick" });
     expect(strong).not.toHaveBeenCalled();
-  });
-
-  test("on the audit arm a claim below 0.3 is escalated anyway, and the stronger search decides", async () => {
-    weakAnswers({ misleading_probability: 0.1 });
-    const { run: strong, seen } = strongSearch();
-    expect(await run({ ...claimConfig, cascade_audit: true })).toEqual({ findings: "The strong findings", correctionNeeded: true, researchedBy: "full" });
-    expect(strong).toHaveBeenCalledTimes(1);
-    expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL });
   });
 
   test("a claim in between escalates to Sonnet 5.5 at medium reasoning, answering whether the claim is misleading", async () => {

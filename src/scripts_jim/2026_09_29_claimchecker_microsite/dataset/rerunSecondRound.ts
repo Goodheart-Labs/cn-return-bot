@@ -60,7 +60,7 @@ async function main() {
   if (!source.checker) throw new Error("The run has no checker results");
   const datapoints: CheckableRow[] = JSON.parse(readFileSync(join(LAB_DIR, "dataset", "dataset.json"), "utf8")).datapoints.filter(isCheckable);
   const runId = new Date().toISOString().slice(0, 16).replace("T", "-").replace(":", "");
-  const picks = { search_cascade: "cascading", cascade_audit: "none", jina_fetch: "on", second_round: "on" };
+  const picks = { search_cascade: "cascading", cascade_threshold: "0.9", jina_fetch: "on", second_round: "on" };
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   const evaluation = spyOn(noteEvaluationFilter, "getEvaluationScore").mockResolvedValue({});
   let rerun = 0;

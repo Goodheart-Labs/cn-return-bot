@@ -176,6 +176,9 @@ async function dispatchPromptedJsonSearch(params: {
 /** The providers that send the whole conversation to the model, so that a follow-up can continue it. */
 const FOLLOW_UP_SEARCH_PROVIDERS: BotConfig["web_search"][] = ["native", "native_openai", "openrouter_native"];
 
+/** Whether the run's search provider can take a follow-up message, which the second research round needs. */
+export const canTakeFollowUp = (config: BotConfig) => FOLLOW_UP_SEARCH_PROVIDERS.includes(config.web_search);
+
 /** The turns that continue the conversation of the first research call: the researcher's answer, then the follow-up message. */
 function followUpTurns(followUp?: ResearchFollowUp) {
   return followUp ? [{ role: "assistant" as const, content: followUp.answer }, { role: "user" as const, content: followUp.message }] : [];
@@ -187,7 +190,7 @@ export async function dispatchSearch(
   followUp?: ResearchFollowUp,
 ): Promise<SearchDispatchResult> {
   const config = getBotConfig();
-  if (followUp && !FOLLOW_UP_SEARCH_PROVIDERS.includes(config.web_search)) {
+  if (followUp && !canTakeFollowUp(config)) {
     throw new Error(`The search provider "${config.web_search}" cannot take a follow-up message, which the second research round needs`);
   }
   switch (config.web_search) {

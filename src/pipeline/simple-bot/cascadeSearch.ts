@@ -22,8 +22,8 @@ import { parseJsonWithRetry } from "../utils/jsonLlmCall";
 import { appendUrlCitations } from "./searchDispatch";
 import { runSearch, type ResearchFollowUp, type SearchResult } from "./search";
 
-/** At or above this probability the cheap model's findings go straight to the writer. */
-export const CASCADE_NOTE_AT_OR_ABOVE = 0.9;
+/** At or above this probability the cheap model's findings go straight to the writer, unless the config sets another one. */
+const CASCADE_NOTE_AT_OR_ABOVE = 0.9;
 /** Below this probability the claim needs no note and the run ends. */
 export const CASCADE_NO_NOTE_BELOW = 0.3;
 
@@ -36,13 +36,11 @@ const CASCADE_REASONING_EFFORT = "medium";
 
 const SCHEMA_HINT = `{ "findings": string, "misleading_probability": number }`;
 
-/** "audit" is an escalation of a claim the cheap step wanted to drop, in a run on the audit arm of CASCADE_AUDIT_TEST. It runs the same stronger search as "escalate". */
-export type CascadeDecision = "note" | "no_note" | "escalate" | "audit";
+export type CascadeDecision = "note" | "no_note" | "escalate";
 
-export function cascadeDecisionOf(probability: number, audit: boolean): CascadeDecision {
-  if (probability >= CASCADE_NOTE_AT_OR_ABOVE) return "note";
-  if (probability >= CASCADE_NO_NOTE_BELOW) return "escalate";
-  return audit ? "audit" : "no_note";
+export function cascadeDecisionOf(probability: number, noteAtOrAbove = CASCADE_NOTE_AT_OR_ABOVE): CascadeDecision {
+  if (probability >= noteAtOrAbove) return "note";
+  return probability >= CASCADE_NO_NOTE_BELOW ? "escalate" : "no_note";
 }
 
 export interface WeakSearchResult {
@@ -119,7 +117,7 @@ export function runStrongSearch(userMessage: string, followUp?: ResearchFollowUp
 
 export async function runCascadingSearch(userMessage: string): Promise<SearchResult> {
   const weak = await runQuickSearch(userMessage);
-  const decision = cascadeDecisionOf(weak.probability, !!getBotConfig().cascade_audit);
+  const decision = cascadeDecisionOf(weak.probability, getBotConfig().cascade_note_at_or_above);
   getTweetLog()?.set("cascade", { probability: weak.probability, answered_by: weak.model, decision });
   if (decision === "note") return { findings: weak.findings, answer: weak.answer, correctionNeeded: true, researchedBy: "quick" };
   if (decision === "no_note") return { findings: weak.findings, answer: weak.answer, correctionNeeded: false, researchedBy: "quick" };

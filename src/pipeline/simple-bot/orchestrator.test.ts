@@ -61,7 +61,7 @@ describe("simple bot orchestrator", () => {
   describe("the second research round", () => {
     const rejected = { accepted: false, reasoning: "The Texas claim has no source.", good_sources: [], bad_sources: ["https://a.example"] } as any;
     const accepted = { accepted: true, reasoning: "", good_sources: ["https://b.example"], bad_sources: [] } as any;
-    const secondRoundConfig = { ...DEFAULT_CONFIG, second_round: true };
+    const secondRoundConfig = { ...DEFAULT_CONFIG, second_round: true, web_search: "native" as const };
 
     function arrangeSecondRound(verdicts: unknown[], revision = { findings: "Revised findings", withdrew: false }) {
       spies.push(spyOn(userMessage, "buildUserMessageFromInput").mockReturnValue("The post"));
@@ -92,6 +92,21 @@ describe("simple bot orchestrator", () => {
       const { revise } = arrangeSecondRound([rejected]);
       const outcome = await withBotConfig(DEFAULT_CONFIG, () => runSimpleBotPipeline(post, input));
       expect(outcome.type).toBe("verification_failed");
+      expect(revise).not.toHaveBeenCalled();
+    });
+
+    test("a post whose search provider cannot take a follow-up keeps the rejection", async () => {
+      const { revise } = arrangeSecondRound([rejected]);
+      const outcome = await withBotConfig({ ...secondRoundConfig, web_search: "serper" }, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("verification_failed");
+      expect(revise).not.toHaveBeenCalled();
+    });
+
+    test("Common Notes does not check sources, so the note goes on with every source the writer cited", async () => {
+      const { verify, revise } = arrangeSecondRound([rejected]);
+      const outcome = await withBotConfig({ ...secondRoundConfig, commonnotes_pipeline: true }, () => runSimpleBotPipeline(post, input));
+      expect(outcome).toMatchObject({ type: "note", noteText: "First note", sources: ["https://a.example"] });
+      expect(verify).not.toHaveBeenCalled();
       expect(revise).not.toHaveBeenCalled();
     });
 

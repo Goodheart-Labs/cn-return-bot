@@ -192,21 +192,22 @@ const SEARCH_CASCADE_TEST: ABTest = {
   ],
 };
 
-// Finds the cascade's false negatives: in the audit arm, claims that the cheap step wants to drop go to the stronger model anyway.
-const CASCADE_AUDIT_TEST: ABTest = {
-  name: "cascade_audit",
-  prerequisites: { search_cascade: true },
+// How sure the cheap step must be to send its findings straight to the writer, for X posts. Common Notes keeps 0.9.
+const CASCADE_THRESHOLD_TEST: ABTest = {
+  name: "cascade_threshold",
+  prerequisites: { search_cascade: true, commonnotes_pipeline: false },
   variants: [
-    { variant: { name: "none",  overrides: { cascade_audit: false } }, weight: 90 },
-    { variant: { name: "audit", overrides: { cascade_audit: true  } }, weight: 10 },
+    { variant: { name: "0.8", overrides: { cascade_note_at_or_above: 0.8 } }, weight: 50 },
+    { variant: { name: "0.9", overrides: { cascade_note_at_or_above: 0.9 } }, weight: 50 },
   ],
 };
 
-// One more research turn after the source verifier rejected a note. It is live on 20% of the Common Notes
-// checks. X posts do not get it, because some of their search providers cannot take a follow-up turn.
+// One more research turn after the source verifier rejected a note. It is live on 20% of X posts. Common Notes
+// does not check sources, so it has no rejection to answer. A post whose search model cannot take a follow-up turn
+// keeps the rejection.
 const SECOND_ROUND_TEST: ABTest = {
   name: "second_round",
-  prerequisites: { commonnotes_pipeline: true },
+  prerequisites: { commonnotes_pipeline: false },
   variants: [
     { variant: { name: "off", overrides: { second_round: false } }, weight: 80 },
     { variant: { name: "on",  overrides: { second_round: true  } }, weight: 20 },
@@ -366,7 +367,7 @@ export const AB_TESTS: ABTest[] = [
   COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
   SEARCH_CASCADE_TEST,
-  CASCADE_AUDIT_TEST,
+  CASCADE_THRESHOLD_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,

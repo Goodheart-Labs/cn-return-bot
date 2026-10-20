@@ -24,6 +24,7 @@ import { getBotConfig } from "../ab-testing/botConfig";
 import { runCascadingSearch } from "./cascadeSearch";
 import { reviseResearch } from "./secondRound";
 import { runSearch } from "./search";
+import { canTakeFollowUp } from "./searchDispatch";
 import { runTimingStage } from "./timingStage";
 import { runWriter } from "./writer";
 import { topicSourcelessRejection } from "../utils/noteLint";
@@ -149,8 +150,16 @@ async function runGates(
  *  note and the verifier's reasoning are kept in the log under second_round,
  *  because the second round writes over the search and writer entries. */
 async function runGatesWithSecondRound(stage: WriterDone): Promise<PipelineOutcome> {
+  // Common Notes does not check sources. The note goes on with every source the writer cited,
+  // and it has no quotes from the sources.
+  if (getBotConfig().commonnotes_pipeline) {
+    return { type: "note", noteText: stage.noteText, sources: stage.sources, searchResults: stage.findings };
+  }
   const first = await runGates(stage);
-  if (first.outcome.type !== "verification_failed" || !getBotConfig().second_round) return first.outcome;
+  const config = getBotConfig();
+  // The quick research answers follow-ups with its own model. The full research needs a provider that can take one.
+  const canAsk = stage.researchedBy === "quick" || canTakeFollowUp(config);
+  if (first.outcome.type !== "verification_failed" || !config.second_round || !canAsk) return first.outcome;
 
   const log = getTweetLog();
   log?.set("second_round.first", { findings: stage.findings, note: stage.noteText, sources: stage.sources, reasoning: first.verification.reasoning });
