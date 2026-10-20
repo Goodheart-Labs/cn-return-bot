@@ -127,6 +127,14 @@ export interface BotConfig {
    */
   search_reasoning_effort?: "low" | "medium" | "high";
   /**
+   * What the search step answers. By default it answers with the yes or no
+   * field correction_needed. With "probability" it uses the cascade's research
+   * prompt and answers with misleading_probability, the model's chance that the
+   * claim is misleading in any way. Only the providers that ask for JSON in the
+   * prompt support "probability". The cascade's stronger search sets it.
+   */
+  search_answer?: "correction_needed" | "probability";
+  /**
    * When this is set, it is passed through to OpenRouter as `temperature` for
    * every LLM call this bot makes. The note-needed prefilter pins it to 0, so
    * its decisions are deterministic enough to hill-climb. On the retired

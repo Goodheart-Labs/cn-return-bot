@@ -17,6 +17,8 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
+  SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY,
+  SEARCH_SYSTEM_PROMPT_PROBABILITY,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -62,6 +64,7 @@ export function appendUrlCitations(findings: string, annotations: any[] | undefi
  *  all get the same treatment. */
 export function getSearchSystemPrompt(): string {
   const config = getBotConfig();
+  if (answersWithProbability()) return config.commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY : SEARCH_SYSTEM_PROMPT_PROBABILITY;
   // A claim from the everything pipeline is an excerpt plus a claim, not an X
   // post. It gets its own claim-checking prompt and skips the X-only assembly
   // below.
@@ -72,17 +75,30 @@ export function getSearchSystemPrompt(): string {
   });
 }
 
+/** At or above this probability, the findings of a search that answers with a probability go to the writer. */
+export const PROBABILITY_NOTE_AT_OR_ABOVE = 0.5;
+
+const answersWithProbability = () => getBotConfig().search_answer === "probability";
+
+/** The probability prompts end with their own JSON instruction, so only the other prompts get one appended. */
+function promptedJsonInstruction(): string {
+  return answersWithProbability() ? "" : `\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+}
+
 // --- Public types ---
 
 export interface SearchDispatchResult {
   findings: string;
   correctionNeeded: boolean;
+  /** Set when the search answered with a probability. */
+  probability?: number;
   costEntry: LlmCallCost;
 }
 
 interface SearchOutput {
   findings: string;
-  correction_needed: boolean;
+  correction_needed?: boolean;
+  misleading_probability?: number;
 }
 
 function parseSearchJson(content: string, source: string): SearchOutput {
@@ -96,6 +112,18 @@ function parseSearchJson(content: string, source: string): SearchOutput {
 }
 
 const SEARCH_SCHEMA_HINT = `{ "findings": string, "correction_needed": boolean }`;
+const SEARCH_PROBABILITY_SCHEMA_HINT = `{ "findings": string, "misleading_probability": number }`;
+
+function validSearchOutput(output: SearchOutput): boolean {
+  if (typeof output.findings !== "string") return false;
+  if (!answersWithProbability()) return typeof output.correction_needed === "boolean";
+  return typeof output.misleading_probability === "number" && output.misleading_probability >= 0 && output.misleading_probability <= 1;
+}
+
+/** The answer fields as they are saved in the run log. */
+function answerFields(result: { correctionNeeded: boolean; probability?: number }) {
+  return result.probability === undefined ? { correction_needed: result.correctionNeeded } : { misleading_probability: result.probability };
+}
 
 /**
  * The shared driver for the search providers that ask for JSON in the prompt.
@@ -122,13 +150,13 @@ async function dispatchPromptedJsonSearch(params: {
    *  `extractJsonObject` for a model that narrates a preamble first, such as
    *  Opus. Use `stripJsonFences` for a model that emits bare JSON. */
   extractJson: (raw: string) => string;
-}): Promise<{ findings: string; correctionNeeded: boolean; message: any; cost: TokenCost }> {
+}): Promise<{ findings: string; correctionNeeded: boolean; probability?: number; message: any; cost: TokenCost }> {
   const cost = emptyTokenCost();
   let message: any;
   const parsed = await parseJsonWithRetry<SearchOutput>({
     source: params.source,
     messages: params.messages,
-    schemaHint: SEARCH_SCHEMA_HINT,
+    schemaHint: answersWithProbability() ? SEARCH_PROBABILITY_SCHEMA_HINT : SEARCH_SCHEMA_HINT,
     call: async (messages) => {
       const response = await llm.create({ ...params.createOptions, messages } as any);
       addTokenCost(cost, extractOpenRouterCost(response));
@@ -138,13 +166,14 @@ async function dispatchPromptedJsonSearch(params: {
     },
     parse: (toParse) => {
       const output = JSON.parse(toParse) as SearchOutput;
-      if (typeof output.findings !== "string" || typeof output.correction_needed !== "boolean") {
-        throw new Error("search JSON missing findings/correction_needed");
-      }
+      if (!validSearchOutput(output)) throw new Error("search JSON missing findings or its answer field");
       return output;
     },
   });
-  return { findings: parsed.findings, correctionNeeded: parsed.correction_needed, message, cost };
+  if (parsed.misleading_probability !== undefined) {
+    return { findings: parsed.findings, correctionNeeded: parsed.misleading_probability >= PROBABILITY_NOTE_AT_OR_ABOVE, probability: parsed.misleading_probability, message, cost };
+  }
+  return { findings: parsed.findings, correctionNeeded: parsed.correction_needed!, message, cost };
 }
 
 // --- Dispatcher ---
@@ -185,10 +214,10 @@ async function searchWithAnthropicNative(
   // and the Sonar path use the same workaround. Opus writes a reasoning
   // preamble before the JSON, so we extract the JSON object instead of parsing
   // the whole message.
-  const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+  const systemPrompt = `${getSearchSystemPrompt()}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
-  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+  const { findings, correctionNeeded, probability, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithAnthropicNative",
     messages: [
       // This marks the system prompt as an Anthropic prefix-cache breakpoint,
@@ -211,9 +240,9 @@ async function searchWithAnthropicNative(
     },
     extractJson: extractJsonObject,
   });
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded, probability }) } });
 
-  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, correctionNeeded, probability, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 export async function searchWithGeminiNative(
@@ -313,17 +342,17 @@ async function searchWithOpenaiNative(
   // valid JSON reliably when it is told to. If gpt-5 spends its whole budget on
   // reasoning and returns empty content, the retry loop asks again instead of
   // failing the run.
-  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+  const { findings, correctionNeeded, probability, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithOpenaiNative",
     messages: [
-      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}` },
+      { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}${promptedJsonInstruction()}` },
     ],
     createOptions: { model, tools: [{ type: "web_search_preview" }], max_tokens: OPENAI_MAX_TOKENS },
     extractJson: stripJsonFences,
   });
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: correctionNeeded } });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded, probability }) } });
 
-  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, correctionNeeded, probability, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 async function searchWithSonarBundled(
@@ -338,7 +367,7 @@ async function searchWithSonarBundled(
   // routing therefore 404s the request with "No endpoints found that can handle
   // the requested parameters". So we ask for JSON in the prompt and parse it
   // ourselves. Sonar emits valid JSON reliably when it is told to.
-  const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+  const systemPrompt = `${getSearchSystemPrompt()}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   // Sonar models ground their answer in a web search on their own, so we attach
@@ -353,11 +382,12 @@ async function searchWithSonarBundled(
     extractJson: stripJsonFences,
   });
   const findings = appendUrlCitations(result.findings, result.message?.annotations);
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: result.correctionNeeded } });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields(result) } });
 
   return {
     findings,
     correctionNeeded: result.correctionNeeded,
+    probability: result.probability,
     costEntry: { name: costName, ...result.cost, tools: [] },
   };
 }
@@ -382,7 +412,7 @@ async function searchWithOpenRouterNative(
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
-  const systemPrompt = `${getSearchSystemPrompt()}\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+  const systemPrompt = `${getSearchSystemPrompt()}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
 
   const result = await dispatchPromptedJsonSearch({
@@ -395,11 +425,12 @@ async function searchWithOpenRouterNative(
     extractJson: extractJsonObject,
   });
   const findings = appendUrlCitations(stripBrowserLineCitations(result.findings), result.message?.annotations);
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, correction_needed: result.correctionNeeded } });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields(result) } });
 
   return {
     findings,
     correctionNeeded: result.correctionNeeded,
+    probability: result.probability,
     costEntry: { name: costName, ...result.cost, tools: [] },
   };
 }
@@ -449,7 +480,7 @@ You have access to a google_search tool. Issue search queries to gather evidence
 
   return {
     findings: parsed.findings,
-    correctionNeeded: parsed.correction_needed,
+    correctionNeeded: parsed.correction_needed!,
     costEntry: { name: costName, ...result.modelCost, tools: result.toolCosts },
   };
 }
