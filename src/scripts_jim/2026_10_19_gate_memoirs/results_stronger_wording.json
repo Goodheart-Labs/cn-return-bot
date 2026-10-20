@@ -1,0 +1,417 @@
+{
+  "memoirs": [
+    {
+      "title": "Blue button pressers are more into incest?",
+      "claims": 39,
+      "checked": 6,
+      "notes": 0,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0007451949999999999
+    },
+    {
+      "title": "Rationalists Are Probably Less Kinky",
+      "claims": 238,
+      "checked": 0,
+      "notes": 0,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.002558805
+    },
+    {
+      "title": "Everything is exploding (meetups, announcements, wtf is going on)",
+      "claims": 0,
+      "checked": 0,
+      "notes": 0,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00134702
+    },
+    {
+      "title": "My Year On A Factory Floor Assembly Line",
+      "claims": 104,
+      "checked": 101,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person memoir about the author's year working on a factory assembly line and what followed, rather than a text making claims intended for fact-checking.",
+        "This is a first-person memoir about the author's experiences working on a factory assembly line, so it is a personal story rather than text making claims to check.",
+        "This is a first-person memoir about the author's year working on a factory assembly line and later experiences, so it does not present claims for fact-checking."
+      ],
+      "cost": 0.0006709
+    },
+    {
+      "title": "The Hotness Curve (how age changes a woman's appeal)",
+      "claims": 166,
+      "checked": 49,
+      "notes": 0,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0023685900000000003
+    },
+    {
+      "title": "bye, mom",
+      "claims": 0,
+      "checked": 0,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a personal memoir about the author’s mother’s final days and their relationship, not a text primarily making claims to check.",
+        "This is a first-person memoir about the author’s mother’s death and their relationship, rather than a text making claims worth checking.",
+        "This is a personal memoir about the author’s mother and her death, which the guidelines treat as non-checkable even when it includes opinions."
+      ],
+      "cost": 0.001928775
+    },
+    {
+      "title": "The Difficulty In Dating Good Men",
+      "claims": 18,
+      "checked": 3,
+      "notes": 0,
+      "declined": 2,
+      "reasons": [
+        "This is primarily a first-person account of the author's dating experiences and personal reflections, so it reads as a personal memoir rather than a text making claims to check.",
+        "This is a personal dating memoir built from the author's experiences and reflections, rather than a checkable article; its broader observations are part of that personal narrative."
+      ],
+      "cost": 0.001587525
+    },
+    {
+      "title": "The Joy Is Not Optional",
+      "claims": 122,
+      "checked": 88,
+      "notes": 0,
+      "declined": 1,
+      "reasons": [
+        "This is primarily a first-person memoir about the author’s upbringing and later life, which is not treated as checkable even when it includes opinions or broader reflections."
+      ],
+      "cost": 0.00294202
+    },
+    {
+      "title": "Is Porn Misleading Men?",
+      "claims": 271,
+      "checked": 0,
+      "notes": 0,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.003856145
+    },
+    {
+      "title": "People Are Delusional About How Hot They Are",
+      "claims": 110,
+      "checked": 8,
+      "notes": 0,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00202397
+    },
+    {
+      "title": "Exploiting My OnlyFans Girlfriend",
+      "claims": 330,
+      "checked": 305,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person personal memoir recounting the author's experiences and relationships, rather than a text making claims that need checking.",
+        "This is a first-person account of the author's own experiences, so it is a personal memoir rather than a text making claims worth checking.",
+        "This is a first-person account of the author's personal relationship and experiences, so it is a memoir rather than text making claims for readers to check."
+      ],
+      "cost": 0.00121955
+    },
+    {
+      "title": "You Look Good for 67",
+      "claims": 78,
+      "checked": 56,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person account of the author’s personal experience, so it is a memoir rather than text making claims intended for fact-checking.",
+        "This is a first-person account of the author’s own experience, so it is a personal memoir rather than a text making claims to investigate.",
+        "This is a first-person personal story about the author’s own experiences, so it is a memoir rather than a text making claims to check."
+      ],
+      "cost": 0.0006227
+    },
+    {
+      "title": "Banging an Unenthusiastic Prostitute on Christmas",
+      "claims": 90,
+      "checked": 53,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is primarily a first-person account of the author's own experiences and personal plans, so it is a personal memoir rather than a text making claims worth checking.",
+        "This is primarily a first-person account of the author’s own experiences and personal updates, which count as memoir rather than checkable claims.",
+        "This is primarily a first-person personal memoir about the author’s experience in Tokyo, with personal reflections and updates rather than claims presented for checking."
+      ],
+      "cost": 0.0007806200000000001
+    },
+    {
+      "title": "Slut Review: Katie from Hinge",
+      "claims": 63,
+      "checked": 52,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person account of the author's own sexual encounter and personal life, so it is a personal memoir rather than text making claims to check.",
+        "This is a first-person account of the author's own experiences, so it is a personal memoir rather than text making claims worth checking.",
+        "This is a first-person account of the author's own sexual encounter and personal reflections, so it is a personal memoir rather than a text making claims worth checking."
+      ],
+      "cost": 0.0007190450000000001
+    },
+    {
+      "title": "Scamming My Audience for $30,000",
+      "claims": 177,
+      "checked": 98,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person account of the author's own experiences, so it is a personal memoir rather than a text making claims to check.",
+        "This is a first-person memoir recounting the author’s own experiences, which does not count as checkable under the instructions.",
+        "This is a first-person account of the author’s own experiences, so it is a personal memoir rather than a text making claims to explain or argue about the world."
+      ],
+      "cost": 0.00220012
+    },
+    {
+      "title": "The End of Worst Boyfriend Ever",
+      "claims": 0,
+      "checked": 0,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person account of the author’s breakup, quitting their job, and living in a van, so it is a personal memoir rather than a text making claims to check.",
+        "This is a first-person account of the author's breakup, quitting their job, and beginning van life, so it is a personal update rather than a text making claims to check.",
+        "This is a first-person personal update about the author's own life, which counts as a personal memoir rather than a text making claims to check."
+      ],
+      "cost": 0.00035008
+    },
+    {
+      "title": "Dating 8 Girls at Once in New York City",
+      "claims": 686,
+      "checked": 528,
+      "notes": 0,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person account of the author’s personal dating experiences and life, so it is a memoir rather than text making claims intended for fact-checking.",
+        "This is a first-person account of the author’s own dating experiences and personal life, so it counts as a personal memoir rather than a text making claims to check.",
+        "This is a first-person account of the author’s own dating experiences and personal life, so it is a memoir rather than text making claims intended for fact-checking."
+      ],
+      "cost": 0.004974725
+    },
+    {
+      "title": "My Racist Sexist Van Life: 3 Month Update",
+      "claims": 88,
+      "checked": 59,
+      "notes": 0,
+      "declined": 2,
+      "reasons": [
+        "This is a first-person personal update about the author's own van-life experiences, rather than a text making claims intended to be checked.",
+        "This is a first-person personal update about the author's own van-life experiences, so it is a personal memoir rather than a text making claims to check."
+      ],
+      "cost": 0.0012629499999999999
+    },
+    {
+      "title": "Why I Left New York",
+      "claims": 565,
+      "checked": 501,
+      "notes": 3,
+      "declined": 2,
+      "reasons": [
+        "This is primarily a first-person personal memoir about the author’s experiences in New York, even though it includes opinions and purported dating advice.",
+        "This is primarily a first-person memoir recounting the author's experiences in New York; its opinions and advice appear within that personal narrative."
+      ],
+      "cost": 0.005917425
+    },
+    {
+      "title": "My Japanese Sugar Mama",
+      "claims": 161,
+      "checked": 135,
+      "notes": 1,
+      "declined": 3,
+      "reasons": [
+        "This is a first-person account of the author’s own experiences in Japan, so it is a personal memoir rather than a text making claims to be checked.",
+        "This is a first-person account of the author’s own experiences, so it is a personal memoir rather than a text making claims to check.",
+        "This is a first-person account of the author’s own experiences in Japan, so it is a personal memoir rather than a text making claims for readers to check."
+      ],
+      "cost": 0.001159555
+    }
+  ],
+  "controls": [
+    {
+      "title": "How to defend an exploding AI attack surface when the attackers haven't shown up (yet)",
+      "claims": 14,
+      "checked": 2,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0008442249999999999
+    },
+    {
+      "title": "Building a $60 Billion AI Company in 6 Years - Ramp CEO",
+      "claims": 241,
+      "checked": 33,
+      "notes": 2,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.004723625
+    },
+    {
+      "title": "An Establishment Plot against Reform?",
+      "claims": 20,
+      "checked": 6,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00056746
+    },
+    {
+      "title": "Joe Rogan Experience #2566 - Cody Tucker",
+      "claims": 533,
+      "checked": 147,
+      "notes": 16,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.013426165
+    },
+    {
+      "title": "Against \"solving alignment\" and \"solving interpretability\" as the major frame for AI safety and security",
+      "claims": 13,
+      "checked": 3,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00059436
+    },
+    {
+      "title": "AI #190: Scion of the Times",
+      "claims": 346,
+      "checked": 35,
+      "notes": 3,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.005897975
+    },
+    {
+      "title": "Even superintelligent AI can’t just fix all the security bugs",
+      "claims": 51,
+      "checked": 5,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0016992400000000003
+    },
+    {
+      "title": "Disentangling Perspectives On Strategy-Stealing in AI Safety",
+      "claims": 52,
+      "checked": 2,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0021881749999999997
+    },
+    {
+      "title": "Things So Rare They Almost Never Happen",
+      "claims": 76,
+      "checked": 23,
+      "notes": 6,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.002174245
+    },
+    {
+      "title": "Why does Hacker Opus wirehead?",
+      "claims": 18,
+      "checked": 3,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.000495255
+    },
+    {
+      "title": "I trained GPT-2 with full-batch gradient descent so you don't have to",
+      "claims": 117,
+      "checked": 2,
+      "notes": 2,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.001475525
+    },
+    {
+      "title": "Texas voters debate Talarico on abortion, Israel, voter ID & more",
+      "claims": 74,
+      "checked": 10,
+      "notes": 4,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.002383835
+    },
+    {
+      "title": "The Big Break Showcase 2026",
+      "claims": 229,
+      "checked": 19,
+      "notes": 2,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00575725
+    },
+    {
+      "title": "This Is An Invasion",
+      "claims": 121,
+      "checked": 43,
+      "notes": 5,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00348288
+    },
+    {
+      "title": "This Pokémon Tournament Was a Mistake",
+      "claims": 242,
+      "checked": 29,
+      "notes": 2,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0059036950000000005
+    },
+    {
+      "title": "The Dream Situation is Insane",
+      "claims": 315,
+      "checked": 53,
+      "notes": 7,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.004259495
+    },
+    {
+      "title": "Do you want Milk or a Runway?",
+      "claims": 29,
+      "checked": 16,
+      "notes": 3,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.001387145
+    },
+    {
+      "title": "The Universe in 4 Minutes",
+      "claims": 50,
+      "checked": 8,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.0014459450000000001
+    },
+    {
+      "title": "How to Be Correct About Everything All the Time",
+      "claims": 90,
+      "checked": 12,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00186016
+    },
+    {
+      "title": "AI Safety Is Not A Corporate Plot",
+      "claims": 74,
+      "checked": 12,
+      "notes": 1,
+      "declined": 0,
+      "reasons": [],
+      "cost": 0.00145908
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+
+== memoirs: declined / 3 runs, then claims, checked, notes in prod ==
+0/3	39	6	0	Blue button pressers are more into incest?
+0/3	238	0	0	Rationalists Are Probably Less Kinky
+0/3	0	0	0	Everything is exploding (meetups, announcements, wtf is going on)
+3/3	104	101	0	My Year On A Factory Floor Assembly Line
+		This is a first-person memoir about the author's experiences working on a factory assembly line and what happened afterward, not a text making claims for readers to check.
+		This is a first-person memoir about the author’s year working on a factory assembly line and what happened afterward, not a text primarily making claims to check.
+		This is a first-person memoir about the author's own experiences working in a factory, rather than a text primarily making claims to check.
+0/3	166	49	0	The Hotness Curve (how age changes a woman's appeal)
+3/3	0	0	0	bye, mom
+		This is a first-person memoir about the author’s mother’s death and their relationship, rather than a text making claims intended for research or verification.
+		This is a first-person personal memoir about the author’s mother’s death and their relationship, so it does not count as a checkable text under the instructions.
+		This is a personal memoir about the author’s mother’s illness, death, and their relationship, rather than a text making claims meant to be checked.
+0/3	18	3	0	The Difficulty In Dating Good Men
+2/3	122	88	0	The Joy Is Not Optional
+		This is primarily a personal memoir recounting the author's childhood and later life; personal stories remain memoirs even when they include opinions or claims about the parenting program.
+		This is primarily a first-person memoir about the author's childhood and personal experiences, even though it includes opinions about the parenting program and its effects.
+0/3	271	0	0	Is Porn Misleading Men?
+0/3	110	8	0	People Are Delusional About How Hot They Are
+3/3	330	305	0	Exploiting My OnlyFans Girlfriend
+		This is a first-person account of the author’s own relationships and experiences, so it is a personal memoir rather than a text making claims to check.
+		This is a first-person personal memoir about the author's relationship and experiences, rather than a text making claims intended to be checked.
+		This is a first-person account of the author's own life, so it is a personal memoir rather than text making claims intended for checking.
+3/3	78	56	0	You Look Good for 67
+		This is a first-person account of the author's own experiences, so it is a personal memoir rather than text primarily making claims to check.
+		This is a first-person personal memoir recounting an incident and dinner afterward, rather than a text making claims or offering advice for readers to check.
+		This is a first-person account of the author’s own experience, so it is a personal memoir rather than text making claims to check.
+3/3	90	53	0	Banging an Unenthusiastic Prostitute on Christmas
+		This is primarily a first-person account of the author's own experiences and personal updates, which counts as a personal memoir even though it includes some opinions and incidental claims.
+		This is a first-person account of the author’s own experiences and personal updates, which counts as memoir rather than a text making claims to check.
+		This is a first-person personal memoir and life update, which does not count as checkable even though it includes opinions and observations.
+3/3	63	52	0	Slut Review: Katie from Hinge
+		This is a first-person personal account of the author’s own sexual encounter and experiences, so it is a memoir rather than a text making claims to investigate.
+		This is a first-person account of the author's own dating and sexual experiences, so it is a personal memoir rather than a text focused on claims to check.
+		This is a first-person account of the author's own sexual encounter and personal life, so it is a personal memoir rather than text making claims for readers to check.
+3/3	177	98	0	Scamming My Audience for $30,000
+		This is a first-person personal memoir recounting the author’s own experiences, which does not count as checkable under the criteria.
+		This is a first-person account of the author's own experiences, so it is a personal memoir rather than a text making claims for readers to check.
+		This is primarily a first-person personal memoir recounting the author's experiences, not a text whose main purpose is to make claims worth checking.
+3/3	0	0	0	The End of Worst Boyfriend Ever
+		This is a first-person personal update about the author's breakup, quitting work, and living in a van, rather than a text making claims for readers to check.
+		This is a first-person personal update about the author’s breakup, quitting their job, and life in a van, rather than text making claims to check.
+		This is a first-person personal update about the author's breakup, quitting their job, and living in a van, rather than a text making claims worth checking.
+3/3	686	528	0	Dating 8 Girls at Once in New York City
+		This is a first-person account of the author’s own dating experiences and personal life, so it is a memoir rather than text making claims to be checked.
+		This is a first-person personal memoir recounting the author’s own dating experiences, which is not treated as checkable even though it includes opinions and claims.
+		This is a first-person account of the author's own dating experiences and personal life, so it is a memoir rather than a text making claims intended for fact-checking.
+3/3	88	59	0	My Racist Sexist Van Life: 3 Month Update
+		This is a first-person personal update about the author’s own van-life experiences, which counts as a personal memoir rather than a text making claims to check.
+		This is a first-person personal update about the author’s own van-life experiences, which counts as a personal memoir.
+		This is a personal update about the author's own van-life experiences, rather than a text making claims or arguments worth checking.
+2/3	565	501	3	Why I Left New York
+		This is primarily a first-person memoir recounting the author’s own experiences, so its opinions and advice are part of a personal narrative rather than claims the text sets out to establish.
+		This is a first-person personal memoir recounting the author’s experiences and personal life, rather than a text making claims intended to explain or report the world.
+3/3	161	135	1	My Japanese Sugar Mama
+		This is a first-person personal memoir about the author’s experiences in Japan, so it does not present claims for checking as an article or report.
+		This is a first-person account of the author’s own experiences in Japan, so it is a personal memoir rather than text making claims worth checking.
+		This is a first-person account of the author’s own experiences in Japan, so it is a personal memoir rather than text primarily making claims to check.
+
+== controls: declined / 3 runs, then claims, checked, notes in prod ==
+0/3	14	2	1	How to defend an exploding AI attack surface when the attackers haven't shown up (yet)
+0/3	241	33	2	Building a $60 Billion AI Company in 6 Years - Ramp CEO
+0/3	20	6	1	An Establishment Plot against Reform?
+0/3	533	147	16	Joe Rogan Experience #2566 - Cody Tucker
+0/3	13	3	1	Against "solving alignment" and "solving interpretability" as the major frame for AI safety and security
+0/3	346	35	3	AI #190: Scion of the Times
+0/3	51	5	1	Even superintelligent AI can’t just fix all the security bugs
+0/3	52	2	1	Disentangling Perspectives On Strategy-Stealing in AI Safety
+0/3	76	23	6	Things So Rare They Almost Never Happen
+0/3	18	3	1	Why does Hacker Opus wirehead?
+0/3	117	2	2	I trained GPT-2 with full-batch gradient descent so you don't have to
+0/3	74	10	4	Texas voters debate Talarico on abortion, Israel, voter ID & more
+0/3	229	19	2	The Big Break Showcase 2026
+0/3	121	43	5	This Is An Invasion
+0/3	242	29	2	This Pokémon Tournament Was a Mistake
+0/3	315	53	7	The Dream Situation is Insane
+0/3	29	16	3	Do you want Milk or a Runway?
+0/3	50	8	1	The Universe in 4 Minutes
+0/3	90	12	1	How to Be Correct About Everything All the Time
+0/3	74	12	1	AI Safety Is Not A Corporate Plot
+0/3	57	18	1	We're the Last Humans Left
+0/3	43	5	1	Sleep is Just Death Being Shy
+0/3	117	28	1	Chess is When You Microdose Infinity
+0/3	144	135	1	maybe I'm the alien
+0/3	50	8	2	If We Ever Live Forever
+0/3	52	17	4	What is neuralese and why is it bad?
+0/3	97	18	3	Current AIs out-persuade professionals in lab settings but (probably) not in the world
+0/3	315	50	3	Joe Rogan Experience #2564 - Chuck Lorre
+0/3	411	104	9	Joe Rogan Experience #2565 - Michael Douglas
+0/3	118	12	5	The Safety Culture at the Labs is Broken
+0/3	101	20	3	Jon Stewart & The News Team Recap the Endless War in Iran Pt. 1 | The Daily Show
+0/3	27	5	2	Backspin Basketball Flies Off Dam
+0/3	71	8	1	Making New York-style pizza at home
+0/3	64	12	4	Why billions of people won't eat pork (or why we don't know)
+0/3	275	36	2	They got away with this??
+0/3	51	26	2	Scams In Software Engineering
+0/3	66	4	1	"We Ran Out Of Columns" - The Worst Codebase Ever
+0/3	152	22	5	NASAs Coding Requirements Are Insane
+0/3	93	8	1	The Best Minecraft Video of 2025
+0/3	42	6	1	$500 Write like lsusr competition - Results
+0/3	208	26	2	AI is a massive problem, here's why.
+0/3	55	9	2	On “Model Organisms”
+0/3	142	3	1	Bayeswatch: a Retrospective
+0/3	202	37	3	AI forecaster Daniel Kokotajlo keeps being right about AI. What does he think we need to do?
+0/3	41	1	1	Will the AI boom continue? Forecasting the trajectory of the AI industry
+0/3	139	17	3	We already know what a world without work looks like
+0/3	150	63	8	The rise and fall of the world's best curriculum
+0/3	80	9	3	Pizza bread (with MEASUREMENTS?!)
+0/3	55	12	1	Pasta Marketing, Magic Players, and Political Movements
+0/3	127	29	4	The right (and wrong) worries to have about water
+0/3	205	1	1	How Accurate Have AI Progress Forecasts Been So Far?
+0/3	114	10	1	How Zambia approved an HIV drug in 12 days
+0/3	73	7	1	How we stop overusing antibiotics (one solution is PLANTS?)
+0/3	44	3	1	Google DeepMind AI Researcher: I'm not saying that extinction is inevitable
+0/3	129	17	3	DeepMind Researcher: AI's Makers Think It Could End Humanity
+0/3	79	6	1	So You Think You Could Be An Electrician?
+0/3	27	3	1	Some things I’ve been wondering about in empirical AI welfare
+0/3	62	9	2	A total disaster
+0/3	147	3	1	AI Experts Largely Agree on Which Policies Most Reduce Catastrophic AI Risk
+0/3	32	9	2	The 5 Meanest Things We've Named a Species
+0/3	105	16	2	The LeBron of Scrabble
+0/3	8	5	2	Introducing Claude Dashboards and Claude Motion
+0/3	82	15	1	Why beef is staying expensive (and maybe that's good?)
+0/3	74	17	1	It’s not just you
+0/3	181	14	2	Kyle MacLachlan (Full Episode) | Conan O'Brien Needs A Friend
+0/3	85	19	1	AI Just Got a Lot Scarier
+0/3	243	31	2	Game Design Creativity evals
+0/3	42	12	1	William Shatner & Brad Paisley on Meeting & Making Music and Shatner Getting into Heavy Metal at 95
+0/3	74	17	1	WTF Microsoft
+0/3	131	19	3	What will happen to Indian IT?
+0/3	175	18	2	Every Touchdown of Week 5 | 2026 NFL Season
+0/3	56	11	2	Top 15 Plays of Week 5! | 2026 NFL Season
+0/3	81	25	2	Trump Complains About Jimmy Kimmel, Throws Fit Over Not Winning Nobel Peace Prize & Guillermo-Mania!
+0/3	91	5	1	How well can large language models predict the future?
+0/3	47	10	4	The Art of Shipping Slopware
+0/3	63	26	7	The Mathematics are Mad
+0/3	99	3	1	These are the asteroids to worry about
+0/3	116	37	1	AI Labs Warn Race Makes Breach ‘Inevitable’
+0/3	136	12	1	OpenAI Fires Three Safety Researchers
+0/3	50	24	1	Minecraft's Most Realistic Redstone TV
+
+total cost $0.219
