@@ -1,31 +1,37 @@
-import { useState, type ReactNode } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 import type { NoteRow } from "@cn/core/types";
-import { tallyOf, type FeedSections, type RankTally } from "../lib/feed";
+import { firstNotes, tallyOf, type FeedSection, type RankTally } from "../lib/feed";
 
-/** A labelled band of the feed. It renders only when it holds notes, so a
- *  feed with nothing rated yet shows no dividers at all. */
-function NoteSection({ label, notes, render }: { label: string; notes: NoteRow[]; render: (note: NoteRow) => ReactNode }) {
-  if (notes.length === 0) return null;
+/** The divider above a labelled band of the feed. It names the band and says
+ *  how many notes the whole band holds. */
+function SectionDivider({ label, noteCount }: { label: string; noteCount: number }) {
   return (
-    <>
-      <div className="flex items-center gap-3 py-2 max-w-[40rem] mx-auto w-full" role="separator">
-        <span className="flex-1 border-t-2 border-dotted border-line-strong" />
-        <span className="text-xs text-fg-muted">{label}</span>
-        <span className="flex-1 border-t-2 border-dotted border-line-strong" />
-      </div>
-      {notes.map(render)}
-    </>
+    <div className="flex items-center gap-3 py-2 max-w-[40rem] mx-auto w-full" role="separator">
+      <span className="flex-1 border-t-2 border-dotted border-line-strong" />
+      <span className="text-xs text-fg-muted">{label} ({noteCount === 1 ? "1 note" : `${noteCount} notes`})</span>
+      <span className="flex-1 border-t-2 border-dotted border-line-strong" />
+    </div>
   );
 }
 
-/** The feed's cards: the leading notes, then the unhelpful notes and the notes
- *  whose source changed, each below its own divider. */
-export function NoteFeed({ sections, renderCard }: { sections: FeedSections; renderCard: (note: NoteRow) => ReactNode }) {
+/** The feed's cards, band by band. A band with a label sits below a divider
+ *  that names it. A band renders only when it holds notes, so a feed with
+ *  nothing rated yet shows no dividers at all. With a `limit`, only the
+ *  first that many cards render, and each divider still counts its whole band. */
+export function NoteFeed({ sections, renderCard, limit = Infinity }: {
+  sections: FeedSection[];
+  renderCard: (note: NoteRow) => ReactNode;
+  limit?: number;
+}) {
+  const shown = firstNotes(sections, limit);
   return (
     <div className="space-y-4">
-      {sections.leading.map(renderCard)}
-      <NoteSection label="Unhelpful notes" notes={sections.unhelpful} render={renderCard} />
-      <NoteSection label="Source has since changed" notes={sections.staleSource} render={renderCard} />
+      {shown.map(({ label, notes }, index) => notes.length > 0 && (
+        <Fragment key={label ?? ""}>
+          {label && <SectionDivider label={label} noteCount={sections[index]!.notes.length} />}
+          {notes.map(renderCard)}
+        </Fragment>
+      ))}
     </div>
   );
 }

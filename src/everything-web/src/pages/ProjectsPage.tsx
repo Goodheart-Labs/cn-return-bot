@@ -7,7 +7,7 @@ import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
 import { useProjects } from "../lib/feedQueries";
 import { ALL_NOTES, type Route } from "../lib/routing";
-import { useStoredChoice } from "../lib/useStoredChoice";
+import { useStoredChoice } from "../lib/useStoredValue";
 
 type Order = "votes" | "name";
 
