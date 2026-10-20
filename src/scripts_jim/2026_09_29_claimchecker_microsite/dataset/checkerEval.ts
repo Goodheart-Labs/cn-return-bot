@@ -115,7 +115,7 @@ export function promptsOf(logs: any): CheckerPrompts {
   };
 }
 
-async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>): Promise<CheckerSample> {
+export async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>): Promise<CheckerSample> {
   const base = { quality: null, research: null, draftNote: null, sourceVerdict: null, checkCostUsd: 0, judgeCostUsd: 0 };
   try {
     // A claim's id has a hyphen, so it can never be mistaken for a tweet id, and it is new for every sample. A tweet keeps its own id.

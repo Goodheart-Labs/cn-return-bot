@@ -10,7 +10,7 @@
  */
 
 import { llm } from "../llm/llm";
-import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
+import { CLAUDE_RESEARCH_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
 import { getBotConfig, withBotConfig } from "../ab-testing/botConfig";
 import { SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, SEARCH_SYSTEM_PROMPT_PROBABILITY } from "../prompts/simple-bot/searchAgent";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost } from "../cost-tracking/pricing";
@@ -26,6 +26,8 @@ import { runSearch, type SearchResult } from "./search";
 export const CASCADE_NOTE_AT_OR_ABOVE = 0.9;
 /** Below this probability the claim needs no note and the run ends. */
 export const CASCADE_NO_NOTE_BELOW = 0.3;
+/** The stronger model answers with the same probability. At or above this value its findings go to the writer. */
+export const CASCADE_STRONG_NOTE_AT_OR_ABOVE = 0.5;
 
 export const CASCADE_WEAK_MODEL = "meta/muse-spark-1.3-contributor";
 /** The cheap step is retried on this model when the first one fails, for example when Meta blocks our access. */
@@ -51,8 +53,9 @@ export interface WeakSearchResult {
   model: string;
 }
 
-/** One research call of the cheap step on one model, with the usual corrective re-asks when the JSON is bad. */
-async function askWeakModel(userMessage: string, model: string, systemPrompt: string): Promise<WeakSearchResult> {
+/** One research call on one model, with the usual corrective re-asks when the JSON is bad. The cheap and the strong step both use it, so both answer the same question with the same prompt. */
+async function askResearchModel(params: { userMessage: string; model: string; systemPrompt: string; tools: any[]; costName: string }): Promise<WeakSearchResult> {
+  const { userMessage, model, systemPrompt, tools, costName } = params;
   const cost = emptyTokenCost();
   let message: any;
   const output = await parseJsonWithRetry<{ findings: string; misleading_probability: number }>({
@@ -63,7 +66,7 @@ async function askWeakModel(userMessage: string, model: string, systemPrompt: st
     ],
     schemaHint: SCHEMA_HINT,
     call: async (messages) => {
-      const response = await llm.create({ model, tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL], reasoning_effort: CASCADE_REASONING_EFFORT, messages } as any);
+      const response = await llm.create({ model, tools, reasoning_effort: CASCADE_REASONING_EFFORT, messages } as any);
       addTokenCost(cost, extractOpenRouterCost(response));
       message = response.choices?.[0]?.message;
       const raw = message?.content ?? "";
@@ -76,15 +79,23 @@ async function askWeakModel(userMessage: string, model: string, systemPrompt: st
       return parsed;
     },
   });
-  trackLlmCall({ name: COST.weakSearch, ...cost, tools: [] });
+  trackLlmCall({ name: costName, ...cost, tools: [] });
   const findings = appendUrlCitations(stripBrowserLineCitations(output.findings), message?.annotations);
   return { probability: output.misleading_probability, findings, model };
+}
+
+function askWeakModel(userMessage: string, model: string, systemPrompt: string): Promise<WeakSearchResult> {
+  return askResearchModel({ userMessage, model, systemPrompt, tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL], costName: COST.weakSearch });
+}
+
+function researchPrompt(): string {
+  return getBotConfig().commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY : SEARCH_SYSTEM_PROMPT_PROBABILITY;
 }
 
 /** The cheap step: Muse first, and GPT-6 Luna when Muse fails. The log key says where the messages are kept, so that a second round does not overwrite the first. */
 export async function runQuickSearch(userMessage: string, logKey: string = STEP.weakSearch): Promise<WeakSearchResult> {
   const log = getTweetLog();
-  const systemPrompt = getBotConfig().commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY : SEARCH_SYSTEM_PROMPT_PROBABILITY;
+  const systemPrompt = researchPrompt();
   log?.set(`${logKey}.messages.0`, { systemPrompt, userMessage });
   let result: WeakSearchResult;
   try {
@@ -104,9 +115,18 @@ function strongSearchConfig() {
   return config.commonnotes_pipeline ? { ...base, search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native" as const } : base;
 }
 
-/** The stronger search of the cascade: the regular search step, run on the stronger model. */
-export function runStrongSearch(userMessage: string): Promise<SearchResult> {
-  return withBotConfig(strongSearchConfig(), () => runSearch(userMessage));
+/** The stronger search of the cascade. It asks the same question as the cheap step, with the same prompt and the same probability answer. A claim note is written from findings at CASCADE_STRONG_NOTE_AT_OR_ABOVE or more.
+ *  Only the Claude search models run this way. Another model on an X post still uses the regular search step with its own prompt, because each provider there has its own output format. */
+export async function runStrongSearch(userMessage: string): Promise<SearchResult> {
+  const config = strongSearchConfig();
+  if (config.web_search !== "native") return withBotConfig(config, () => runSearch(userMessage));
+  const log = getTweetLog();
+  const systemPrompt = researchPrompt();
+  log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
+  const model = config.search_model ?? config.model;
+  const answer = await askResearchModel({ userMessage, model, systemPrompt, tools: [WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL], costName: COST.search });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings: answer.findings, misleading_probability: answer.probability }, model });
+  return { findings: answer.findings, correctionNeeded: answer.probability >= CASCADE_STRONG_NOTE_AT_OR_ABOVE };
 }
 
 export async function runCascadingSearch(userMessage: string): Promise<SearchResult> {

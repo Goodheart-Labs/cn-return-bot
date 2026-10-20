@@ -72,25 +72,29 @@ describe("runCascadingSearch", () => {
   });
 
   test("on the audit arm a claim below 0.3 is escalated anyway, and the stronger search decides", async () => {
-    weakAnswers({ misleading_probability: 0.1 });
-    const { run: strong, seen } = strongSearch();
-    expect(await run({ ...claimConfig, cascade_audit: true })).toEqual({ findings: "The strong findings", correctionNeeded: true, researchedBy: "full" });
-    expect(strong).toHaveBeenCalledTimes(1);
-    expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL });
+    const parse = weakAnswers({ misleading_probability: 0.1 }, { misleading_probability: 0.8 });
+    expect(await run({ ...claimConfig, cascade_audit: true })).toEqual({ findings: "The weak findings", correctionNeeded: true, researchedBy: "full" });
+    expect(parse.mock.calls.map((call) => call[0].source)).toEqual([`cascadeWeakSearch(${CASCADE_WEAK_MODEL})`, `cascadeWeakSearch(${CASCADE_COMMONNOTES_STRONG_MODEL})`]);
   });
 
-  test("a claim in between escalates to Sonnet 5.5 at medium reasoning", async () => {
-    weakAnswers({ misleading_probability: 0.5 });
-    const { seen } = strongSearch();
-    expect(await run(claimConfig)).toEqual({ findings: "The strong findings", correctionNeeded: true, researchedBy: "full" });
-    expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native", search_reasoning_effort: "medium" });
+  test("a claim in between escalates to Sonnet 5.5, which gets the same prompt as the weak step", async () => {
+    const parse = weakAnswers({ misleading_probability: 0.5 }, { misleading_probability: 0.2 });
+    expect(await run(claimConfig)).toEqual({ findings: "The weak findings", correctionNeeded: false, researchedBy: "full" });
+    const [weakMessages, strongMessages] = parse.mock.calls.map((call) => call[0].messages) as [any[], any[]];
+    expect(strongMessages[0]).toEqual(weakMessages[0]);
   });
 
-  test("a post in between escalates to the search model the run was configured with", async () => {
+  test("a post in between escalates to the Claude search model the run was configured with", async () => {
+    const parse = weakAnswers({ misleading_probability: 0.5 }, { misleading_probability: 0.7 });
+    expect(await run(xConfig)).toMatchObject({ correctionNeeded: true });
+    expect(parse.mock.calls[1]?.[0].source).toBe("cascadeWeakSearch(anthropic/claude-opus-5)");
+  });
+
+  test("a post whose search model is not a Claude model escalates to the regular search step", async () => {
     weakAnswers({ misleading_probability: 0.5 });
     const { seen } = strongSearch();
-    await run(xConfig);
-    expect(seen[0]).toMatchObject({ search_model: "anthropic/claude-opus-5", web_search: "native", search_reasoning_effort: "medium" });
+    await run({ ...xConfig, search_model: "x-ai/grok-4.6", web_search: "native_grok" });
+    expect(seen[0]).toMatchObject({ search_model: "x-ai/grok-4.6", web_search: "native_grok", search_reasoning_effort: "medium" });
   });
 
   test("the weak step asks Muse first and GPT-6 Luna when Muse fails", async () => {

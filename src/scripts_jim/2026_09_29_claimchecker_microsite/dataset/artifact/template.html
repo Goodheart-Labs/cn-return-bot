@@ -194,6 +194,7 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 .cmpcell:hover { background: var(--code-bg); }
 .cmpcell:focus-visible { outline: 2px solid var(--accent); }
 .runs { margin-bottom: 6px; }
+.chunkbreak { margin: 10px 0; text-align: center; border-top: 1px dashed var(--line); padding-top: 4px; }
 .seg.pass-other { background: color-mix(in srgb, var(--muted) 16%, transparent); }
 .seg.pass-forecast { background: color-mix(in srgb, var(--accent) 18%, transparent); box-shadow: inset 0 -2px 0 var(--accent); }
 .k-other { background: color-mix(in srgb, var(--muted) 30%, transparent); }
@@ -523,7 +524,6 @@ function extractorSummary(run) {
   return `<table class="sumtable"><thead><tr><th>Group</th><th>Statements</th><th>Found (in ${e.passAt} of ${e.samples})</th><th>Found in all ${e.samples}</th>${hasAtomic ? `<th>Found and atomic</th>` : ""}</tr></thead><tbody>${rows}
     <tr><td><b>All</b></td><td class="n">${e.rows.length}</td><td class="n"><b>${e.rows.filter((r) => r.passed).length}</b></td><td class="n">${e.rows.filter((r) => r.foundIn === e.samples).length}</td>${hasAtomic ? `<td class="n">${atomicPassed(e.rows)}</td>` : ""}</tr></tbody></table>`;
 }
-const PASSAGE_SHOWN_LIMIT = 150;
 const unlabelledCounts = (post) => {
   const chars = { statement: 0, other: 0, forecast: 0 };
   const passages = { statement: 0, other: 0, forecast: 0 };
@@ -532,12 +532,6 @@ const unlabelledCounts = (post) => {
   const total = chars.statement + chars.other + chars.forecast || 1;
   return { chars, passages, claims, share: (t) => Math.round((chars[t] / total) * 100) };
 };
-function passageListBlock(post, type) {
-  const all = post.chunks.flatMap((c) => c.passages).filter((p) => p.type === type);
-  const shown = all.slice(0, PASSAGE_SHOWN_LIMIT);
-  const item = (p) => `<div class="refnote">${esc(p.text)}${type === "other" && p.why ? ` <span class="small">(${esc(p.why)})</span>` : ""}${type === "statement" && p.claims.length ? `<br><span class="small">claim: ${esc(p.claims.join(" | "))}</span>` : ""}</div>`;
-  return `<h4>${type === "statement" ? "Statements" : type === "other" ? "Other" : "Forecasts"} (${all.length}${all.length > shown.length ? `, the first ${shown.length} are shown` : ""})</h4>${shown.map(item).join("") || '<p class="small">none</p>'}`;
-}
 function unlabelledSection(run) {
   const posts = run.extractor.unlabelled;
   if (!posts?.length) return "";
@@ -547,9 +541,9 @@ function unlabelledSection(run) {
     const failed = p.chunks.filter((k) => k.error).length;
     const row = `<tr class="row" tabindex="0" data-id="ru-${p.id}" aria-expanded="${open}"><td>${esc(p.title)}</td><td class="n">${p.chunks.length}${failed ? ` <span class="small">(${failed} failed)</span>` : ""}</td><td class="n">${c.share("statement")}%</td><td class="n">${c.share("other")}%</td><td class="n">${c.share("forecast")}%</td><td class="n">${c.claims}</td><td class="n">${p.productionClaims}</td></tr>`;
     if (!open) return row;
-    return row + `<tr class="detail"><td colspan="7"><div class="detail-grid"><div>${passageListBlock(p, "other")}</div><div>${passageListBlock(p, "statement")}</div></div></td></tr>`;
+    return row + `<tr class="detail"><td colspan="7"><div class="xdetail" id="xu-${p.id}"></div></td></tr>`;
   }).join("");
-  return `<h3>Posts without labels</h3><p>The extractor read every chunk of each post once. The shares are of the post's characters. Click a post to read what went into other and into statements. A statement becomes a claim for the paid fact-check. Production's claim count is for comparison.</p>
+  return `<h3>Posts without labels</h3><p>The extractor read every chunk of each post once. The shares are of the post's characters. Click a post to read it with its passages marked: statements with a claim highlighted, other in grey, forecasts in the accent colour. Click a passage to see what the extractor made of it. A statement becomes a claim for the paid fact-check. Production's claim count is for comparison.</p>
     <div class="tablewrap"><table class="resulttable"><thead><tr><th>Post</th><th>Chunks</th><th>Statements</th><th>Other</th><th>Forecasts</th><th>Claims now</th><th>Claims in production</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function extractorRowsResult(run) {
@@ -592,6 +586,47 @@ function node(tag, attrs = {}, ...kids) {
   for (const [k, v] of Object.entries(attrs)) { if (k === "text") n.textContent = v; else if (k === "class") n.className = v; else n.setAttribute(k, v); }
   for (const kid of kids) if (kid != null) n.append(kid);
   return n;
+}
+
+
+/** The whole post as the extractor cut it, with a click on a passage showing its type and claims. */
+function mountUnlabelledDetails(run) {
+  for (const key of state.ropen) {
+    if (!key.startsWith("ru-")) continue;
+    const post = run.extractor.unlabelled.find((p) => p.id === key.slice(3));
+    const host = document.getElementById("xu-" + key.slice(3));
+    if (host && post) mountUnlabelledDetail(host, post);
+  }
+}
+
+function mountUnlabelledDetail(host, post) {
+  const textBox = node("div", { class: "xtext", tabindex: "0", "aria-label": "The post with its passages highlighted" });
+  const side = node("div", { class: "xside" });
+  const passages = [];
+  for (const chunk of post.chunks) {
+    if (chunk.chunkIndex > 0) textBox.append(node("div", { class: "small chunkbreak", text: `chunk ${chunk.chunkIndex + 1} starts here` }));
+    if (chunk.error) { textBox.append(node("div", { class: "targetnote", text: `This chunk failed: ${chunk.error}` })); continue; }
+    for (const p of chunk.passages) {
+      const claims = p.type === "statement" ? p.claims.length : 0;
+      const cls = p.type === "statement" ? `seg c${claims ? 1 : 0}` : `seg pass-${p.type}`;
+      const el = node("span", { class: cls, "data-passage": String(passages.length) }, p.text);
+      passages.push({ p, el });
+      textBox.append(el);
+    }
+  }
+  const show = (i) => {
+    const { p } = passages[i];
+    passages.forEach((x, k) => x.el.classList.toggle("focus", k === i));
+    const head = p.type === "statement" ? "Statement" : p.type === "forecast" ? "Forecast. It is not checked." : `Other${p.why ? ": " + p.why : ""}. Nothing is checked here.`;
+    side.replaceChildren(
+      node("div", { class: "targetnote" }, node("b", { text: head })),
+      node("p", { class: "quote", text: "“" + p.text + "”" }),
+      ...(p.type === "statement" ? [node("h4", { text: p.claims.length ? "Claims made from it" : "No claim was made from it" }), ...p.claims.map((c) => node("div", { class: "claimitem" }, node("span", { class: "claimno", text: "•" }), node("span", { class: "claimtext", text: c })))] : []),
+    );
+  };
+  textBox.addEventListener("click", (e) => { const seg = e.target.closest(".seg"); if (seg) show(Number(seg.dataset.passage)); });
+  side.append(node("p", { class: "small", text: "Click a passage to see its type and the claims made from it." }));
+  host.replaceChildren(node("div", { class: "xgrid" }, node("div", { class: "xmain" }, textBox), side));
 }
 
 function mountExtractorDetails(run) {
@@ -979,6 +1014,7 @@ function renderResults() {
     <p class="meta">${esc(new Date(run.createdAt).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }))}, commit ${esc(run.commit)}. ${run.rowIds.length} datapoints. Extractor model: ${esc(run.settings.extractorModel)}. Comments fetched for the checker: ${run.settings.commentsFetched ? "yes, as the pipeline does" : "no"}. Cost: ${cost}.</p>
     ${subtabs}${body}`;
   mountExtractorDetails(run);
+  mountUnlabelledDetails(run);
   mountCheckerDetails(run);
   mountProbabilityDetails(run);
 }
