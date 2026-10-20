@@ -296,11 +296,15 @@ table.matrix td, table.matrix th { padding: 6px 12px; }
 </div>
 
 <script type="application/json" id="data">/*DATA*/</script>
-<script type="application/json" id="runs">/*RUNS*/</script>
 <script>
 const DATA = JSON.parse(document.getElementById("data").textContent);
 const POINTS = DATA.datapoints;
-const RUNS = JSON.parse(document.getElementById("runs").textContent);
+/** Every saved run, newest first. They are files next to the page, because together they are too big to be part of it. */
+let RUNS = [];
+async function loadRuns() {
+  const ids = await (await fetch("logs/runs/index.json")).json();
+  RUNS = await Promise.all(ids.map(async (id) => (await fetch(`logs/runs/${id}.json`)).json()));
+}
 const GROUPS = [
   { id: "note-easy", label: "Note, easy" },
   { id: "note-difficult", label: "Note, difficult" },
@@ -313,7 +317,7 @@ const GROUPS = [
 ];
 /** The datapoints of the table that is shown: the extractor table has those with an extractor input, the checker table those with a checker input. */
 const tablePoints = () => POINTS.filter((p) => (state.ds === "extractor" ? p.extractor || p.unlabelled : p.checker));
-const state = { view: "datasets", ds: "extractor", group: null, open: new Set(), run: RUNS[0]?.id ?? null, rs: "extractor", ropen: new Set() };
+const state = { view: "datasets", ds: "extractor", group: null, open: new Set(), run: null, rs: "extractor", ropen: new Set() };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const groupChip = (id) => `<span class="group g-${id}">${esc(GROUPS.find((g) => g.id === id).label)}</span>`;
@@ -1354,7 +1358,10 @@ document.getElementById("plans").addEventListener("click", (e) => {
   const n = e.target.closest(".node");
   if (n) { planSelection[n.dataset.plan] = n.dataset.node; renderPlans(); }
 });
-renderAll();
-const start = storedHash();
-setView(["datasets", "results", "plan", "decisions"].includes(start) ? start : "datasets");
+loadRuns().then(() => {
+  state.run = RUNS[0]?.id ?? null;
+  renderAll();
+  const start = storedHash();
+  setView(["datasets", "results", "plan", "decisions"].includes(start) ? start : "datasets");
+}).catch((err) => { document.body.prepend(node("p", { class: "lede", text: "The runs did not load: " + err.message })); });
 </script>
