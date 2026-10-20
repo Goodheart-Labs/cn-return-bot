@@ -71,6 +71,8 @@ export interface LabNotNeeded {
 export interface CheckTrace {
   research: string | null;
   draftNote: string | null;
+  /** The source addresses the writer gave the drafted note. */
+  draftSources: string[];
   sourceVerdict: string | null;
 }
 
@@ -89,6 +91,7 @@ export function checkTraceOf(logs: any): CheckTrace {
   return {
     research: lastEntry(steps?.search?.messages)?.content?.findings ?? null,
     draftNote: lastEntry(steps?.note_writer?.attempts)?.response?.note_text ?? null,
+    draftSources: lastEntry(steps?.note_writer?.attempts)?.response?.sources ?? [],
     sourceVerdict: logs?.sourceCheck?.result ?? null,
   };
 }

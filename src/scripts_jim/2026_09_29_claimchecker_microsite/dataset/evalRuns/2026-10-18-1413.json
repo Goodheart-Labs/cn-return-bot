@@ -87,7 +87,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:13 UTC\nTweet posted: 2026-07-09\nPost age: 2438.2 hours\n\n## Post\n\nHighlighted claim from Article: At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nSurrounding context: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post ID.\n\n## Research findings\n\nThe 30% figure misattributes the location. A May 2026 working paper by UC Berkeley senior researcher Igor Chirikov analyzed over 500,000 student-course enrollments across 84 departments at a large Texas university from 2018 to 2025, not at UC Berkeley, and found AI-exposed courses saw a 30% increase in A grades since ChatGPT launched https://gizmodo.com/students-are-learning-less-and-getting-higher-grades-because-of-ai-study-finds-2000758844 . Specifically the increase was concentrated in courses with higher shares of writing and coding tasks where take-home assignments carried most weight https://gizmodo.com/students-are-learning-less-and-getting-higher-grades-because-of-ai-study-finds-2000758844 . The Daily Californian reporting on that study states it found increased share of A grades for classes with take-home assignments at a selective public university in Texas, but found no equivalent trends at UC Berkeley https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html . Berkeleytime data 2019 to spring 2026 shows As at UC Berkeley consistently stayed between 30% and 35% https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html , and that the 13-percentage-point increase was at the Texas university https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html . The second clause about GPAs being meaningless is opinion, but the factual premise that As at UC Berkeley are up 30% is contradicted."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": {
@@ -146,7 +147,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:13 UTC\nTweet posted: 2026-07-09\nPost age: 2438.2 hours\n\n## Post\n\nHighlighted claim from Article: At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nSurrounding context: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\n\n## Comments and replies\n\n- @user1: \"This is exactly why employers are shifting to skills-based hiring. Grades mean nothing anymore.\" (1.2K likes, 245 replies)\n- @user2: \"UC Berkeley inflating grades to keep students happy and rankings high. Classic.\" (890 likes, 132 replies)\n- @user3: \"30% more As? At this rate, everyone gets an A+ by default. What's the point?\" (654 likes, 98 replies)\n- @user4: \"Agree, but this started way before COVID. Grade inflation has been creeping up for decades.\" (521 likes, 76 replies)\n- @user5: \"So what’s the alternative? Standardized tests again? Those have their own problems.\" (412 likes, 89 replies)\n- @user6: \"Berkeley admin: 'We value equity over excellence.' Students paying the price.\" (378 likes, 64 replies)\n- @user7: \"My GPA from 10 years ago is now worthless compared to these inflated ones.\" (299 likes, 45 replies)\n- @user8: \"This is what happens when you prioritize feelings over actual learning outcomes.\" (267 likes, 52 replies)\n\n## Research findings\n\nThe 30% figure misattributes location and scope. A May 2026 UC Berkeley Center for Studies in Higher Education working paper by Igor Chirikov analyzed roughly 500,000 grades across 319 courses and 84 departments from 2018-2025 at a large, selective, unnamed research university in Texas, not at UC Berkeley — in AI-exposed writing- and coding-heavy courses the share of A grades rose by 13 percentage points after ChatGPT's late-2022 release, about 30% relative to the pre-ChatGPT/2022 baseline, concentrated where homework counted more toward the final grade https://asadshahjehan.wordpress.com/2026/09/13/ai-grading-matches-human-examiners-only-35-to-65-percent-of-the-time-and-a-grades-are-already-rising-where-ai-use-is-highest/ https://nancypotterlaw.substack.com/p/what-berkeley-laws-ai-policy-means . Reporting on Berkeley's own grades directly contradicts the claim that this happened \"At UC Berkeley\": The Daily Californian scraped 30,000+ course grades from Berkeleytime and found A's at UC Berkeley consistently stayed between 30% and 35% between 2019 and spring 2026 with no equivalent trend, remaining relatively stable, while EECS professors reported grades decreased and failing grades more than doubled in spring 2026 https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html . The claim therefore wrongly presents a Texas-university, AI-exposed-subset relative increase as an overall UC Berkeley increase."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": {
@@ -200,7 +202,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:13 UTC\nTweet posted: 2026-07-09\nPost age: 2438.2 hours\n\n## Post\n\nHighlighted claim from Article: At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nSurrounding context: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\n\n## Comments and replies\n\n- @user1: Grade inflation is real, this is why employers don't trust GPAs anymore. (1.2K likes, 45 replies)\n- @user2: At this point, just give everyone an A and call it a day. (892 likes, 120 replies)\n- @user3: UC Berkeley needs to fix this before it spreads everywhere. (654 likes, 32 replies)\n- @user4: My GPA from 10 years ago actually meant something. (1.5K likes, 78 replies)\n- @user5: This is why we need standardized tests again. (2.3K likes, 210 replies)\n- @user6: Professors are too scared to give real grades these days. (543 likes, 29 replies)\n- @user7: Exactly why hiring based on skills > degrees. (987 likes, 65 replies)\n- @user8: 30% more As? That's not education, that's participation trophies. (1.8K likes, 95 replies)\n\n## Research findings\n\nClaim misattributes location and scope. The 30% / 13-percentage-point rise was NOT at UC Berkeley overall, but in \"AI-exposed\" writing/coding courses at \"a large research university in Texas\" studied by UC Berkeley researcher Igor Chirikov using 500,000 grades 2018-2025: \"share of A grades in 'AI exposed' courses rose by 13 percentage points, or 30 per cent, compared with the 2022 baseline\" https://www.timeshighereducation.com/news/grade-inflation-much-higher-ai-exposed-degrees. Mirror of Daily Californian reporting confirms: \"found a correlation... at a selective public university in Texas. However, Berkeleytime data... found no equivalent trends at UC Berkeley. Between 2019 and spring 2026, A's at UC Berkeley consistently stayed between 30% and 35%\" and the 13-point increase was \"at the Texas university\" https://continuingedupdate.blogspot.com/2026/07/uc-berkeley-shows-no-signs-of-ai-grade.html. Second half about GPAs becoming meaningless is subjective opinion, but researcher did warn \"grades [may soon] become less informative measures of student capability\" https://www.timeshighereducation.com/news/grade-inflation-much-higher-ai-exposed-degrees."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 3,
@@ -243,7 +246,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:13 UTC\nTweet posted: 2026-08-14\nPost age: 1574.2 hours\n\n## Post\n\nHighlighted claim from Article: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nSurrounding context: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\n\n## Comments and replies\n\n- No replies or quote tweets found for this post.\n\n## Research findings\n\nClaim is false on both parts. Czechoslovakia did not retain a larger Jewish population; it suffered one of the highest murder rates: US Holocaust Memorial Museum states Germans and collaborators killed approximately 263,000 Jews who had resided on territory of Czechoslovak Republic in 1938 https://encyclopedia.ushmm.org/content/en/article/czechoslovakia and https://encyclopedia.ushmm.org/content/en/article/the-holocaust-in-slovakia . For Bohemia and Moravia alone, by 1946 only about 14,000 of pre-war population of 118,000 remained, and about 80,000 Jews from Bohemia and Moravia were murdered https://en.wikipedia.org/wiki/The_Holocaust_in_Bohemia_and_Moravia . Comparative estimates place Czechoslovakia among countries where over 70% were killed, alongside Greece, Netherlands, Yugoslavia, Poland https://rachel.education.gov.ck/wikip/wp/h/Holocaust.htm . Jewish doctors were not spared to provide care: state hospitals dismissed Jewish doctors, Jewish army officers put on leave https://en.wikipedia.org/wiki/The_Holocaust_in_Bohemia_and_Moravia , professional associations of merchants, lawyers and physicians decided to expel their Jewish members https://en.wikipedia.org/wiki/The_Holocaust_in_Bohemia_and_Moravia . Contemporary 1946 Czech medical report quoted in scholarship states “all Jewish doctors were deported and most of them done away with” https://www.perlego.com/book/1462812/jewish-doctors-and-the-holocaust-a-failure-of-leadership-pdf . Transports went from Protectorate to Theresienstadt then onward to Auschwitz/extermination camps https://en.wikipedia.org/wiki/The_Holocaust_in_Bohemia_and_Moravia , including e.g. 53 doctors and nurses from Terezin Ghetto killed with Bialystok children in Auschwitz gas chambers Oct 7 1943 https://www.wikitree.com/wiki/Kaplan-1195 ."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -262,7 +266,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:13 UTC\nTweet posted: 2026-08-14\nPost age: 1574.2 hours\n\n## Post\n\nHighlighted claim from Article: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nSurrounding context: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post ID.\n\n## Research findings\n\nClaim has two parts, both contradicted by Holocaust demographic and persecution histories. 1) No larger remaining population: USHMM records Czechoslovakia's Jewish population was reduced from about 357,000 in 1933 to 17,000 in 1950 — full source https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945?parent=en%2F2906 . That is ~95% loss, not preservation; by comparison same source lists Hungary 445,000 to 190,000, Romania ~757,000 to ~280,000, Poland over 3 million to ~45,000, Germany 525,000 to 37,000. Yad Vashem for Bohemia and Moravia reports of 92,199 Jews living there before deportations began, 78,154 died and only 14,045 survived — full source https://www.yadvashem.org/odot_pdf/Microsoft Word - 6071.pdf ; at liberation only 2,803 Jews were left in the Protectorate, and from Nov 1941-Mar 1945 more than 73,000 sent to Theresienstadt, ~60,000 on to Auschwitz/extermination camps with only 3,277 surviving the war. 2) Jewish doctors were not spared: contemporary Czechoslovak medical account quoted in Holocaust medical histories states Many Czech doctors were arrested, sent to concentration camps or executed; all Jewish doctors were deported and most of them done away with — search excerpt lines https://www.perlego.com variant. Corroborated by German Federal Archives/IfZ/Yad Vashem document volume giving example Dr Alfred Singer (1897-1944), physician, barred from profession in 1939, forced to move to Prague 1942, deported 22 Dec 1942 to Theresienstadt, deported 23 Oct 1944 to Auschwitz where he perished — documented in https://open.ifz-muenchen.de/server/api/core/bitstreams/7de35e9d-5e19-4e2a-9d9f-1f850df5b167/content . Pattern is mass deportation/murder (~80,000 victims, 80% of prewar Protectorate population), not exemption to preserve medical care.\n\n# Additional Citations\nhttps://www.yadvashem.org/odot_pdf/Microsoft Word - 6071.pdf"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": {
@@ -306,7 +311,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:13 UTC\nTweet posted: 2026-08-14\nPost age: 1574.2 hours\n\n## Post\n\nHighlighted claim from Article: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nSurrounding context: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\n\n## Comments and replies\n\n- No replies or quote tweets available (invalid post ID)\n\n## Research findings\n\nClaim is false on both the population comparison and the alleged reason. The US Holocaust Memorial Museum reports Czechoslovakia's Jewish population was reduced from about 357,000 in 1933 to 17,000 in 1950 https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945?parent=en%2F2906 — far smaller than remaining communities in France with 235,000, Hungary with 190,000, Romania with approximately 280,000, Poland with about 45,000, Germany with 37,000, and Italy with 35,000 https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945?parent=en%2F2906 . For the Czech lands specifically, USHMM reports Germans and collaborators killed approximately 263,000 Jews who had resided in Czechoslovak territory in 1938 https://encyclopedia.ushmm.org/content/en/article/the-holocaust-in-bohemia-and-moravia , of 82,309 Jews deported from the Protectorate approximately 71,000 were killed and by 1945 only some 14,000 Protectorate Jews remained alive in the Czech lands https://encyclopedia.ushmm.org/content/en/article/the-holocaust-in-bohemia-and-moravia . From November 1941 to spring 1945 nearly 74,000 Czech Jews were sent to Theresienstadt and approximately 80 percent were then deported to ghettos, killing centers, killing sites and camps in German-occupied eastern Europe with few surviving https://encyclopedia.ushmm.org/content/en/article/the-holocaust-in-bohemia-and-moravia . The 'spared Jewish doctors' explanation is directly contradicted: a 1946 Czechoslovak medical report quoted in histories of Jewish doctors states 'all Jewish doctors were deported and most of them done away with' https://www.perlego.com/book/3525115/jewish-doctors-and-the-holocaust-history-identity-fate-pdf , and contemporary reporting notes Jewish doctors were persecuted, banned from state institutions after the October 1938 memorandum urging government 'to take energetic measures' to prevent Jews from practicing https://jewishjournal.com/news/worldwide/77701/ , with further persecution after the Nazi invasion March 15, 1939. No evidence supports a Nazi policy of sparing Jewish doctors in Czechoslovakia to preserve medical care."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 2,
@@ -339,7 +345,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -358,7 +365,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:15 UTC\nTweet posted: 2026-09-24T15:35:42.184532+00:00\nPost age: 574.7 hours\n\n## Post\n\nHighlighted claim from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\nSurrounding context: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\n\n## Comments and replies\n\n- @user1: This seems like a wild claim without full context. Need more evidence. (Likes: 45, Reposts: 12, Replies: 3)\n- @user2: FTX drama never ends. Crazy how money flows to these orgs. (Likes: 120, Reposts: 30, Replies: 8)\n- @user3: Agree, this highlights the need for better oversight in crypto. (Likes: 67, Reposts: 15, Replies: 5)\n- @user4: SBF was a fraud from the start, this just confirms it. (Likes: 89, Reposts: 22, Replies: 4)\n- @user5: Interesting article highlight, but context is key here. (Likes: 34, Reposts: 9, Replies: 2)\n- @user6: Can't believe the scale of this looting. Justice needs to be served. (Likes: 156, Reposts: 41, Replies: 10)\n- @user7: Top comment vibes - totally agree with the fraud angle. (Likes: 78, Reposts: 18, Replies: 6)\n\n## Research findings\n\nClaim refers to Rose Garden Inn (now Lighthaven) in Berkeley. FTX estate complaint alleges it was \"a hotel purchased by Lightcone RG in the fall of 2022, in part using funds received from FTX Foundation\" https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf — not wholly purchased with money wired to CFAR. Specific purchase deposits were \"On July 13, 2022, and August 18, 2022, FTX Foundation caused payments of $500,000 each to be wired from an account held by North Dimension to a title company as an initial deposit\" and closed \"on or about November 4, 2022\" https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf — wired to a title company, not to CFAR, and 3-4 months before collapse. Other transfers listed are March 3, 2022 $2,000,000, July-Oct 2022 transfers, Oct 3 2022 $1.5M grant https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf. FTX filed for bankruptcy Nov 11, 2022 https://en.wikipedia.org/wiki/Bankruptcy_of_FTX, so \"as it was collapsing\" misdates March/July/August wires. Property price was $16.5MM funded mainly by $20MM loan from Slimrock Investments/Jaan Tallinn, with FTX $1M as loan https://dn710009.ca.archive.org/0/items/gov.uscourts.deb.193033/gov.uscourts.deb.193033.1.0.pdf ; reported as \"costing $16.5 million, was funded by a loan from Skype co-founder Jaan Tallinn\" with FTX lawyers alleging new owners \"used $1 million in FTX funds to purchase the property\" https://redxmagazine.com/berkeley-landmark-tied-to-sam-bankman-frieds-crypto-scandal/ . Fraud characterization is estate allegation of avoidable fraudulent transfers, not a finding that SBF looted because he knew it was dying to send cash to friends."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -377,7 +385,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,
@@ -436,7 +445,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:15 UTC\nTweet posted: 2026-09-24T15:35:42.184532+00:00\nPost age: 574.7 hours\n\n## Post\n\nHighlighted claim from Article: Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity.\nSurrounding context: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\n\n## Comments and replies\n\n- @user1: \"This is spot on about EA and AI risk overlap.\" (1.2K likes, 45 replies)\n- @user2: \"Finance route makes sense for max impact.\" (890 likes, 32 replies)\n- @user3: \"AI safety teams are full of EAs, true.\" (756 likes, 28 replies)\n- @user4: \"Giving only to AI charities is narrow.\" (543 likes, 19 replies)\n- @user5: \"Creed of earning to give is core EA.\" (421 likes, 15 replies)\n\n## Research findings\n\nThe claim misstates Effective Altruism as a creed requiring wealth-maximization. EA sources define it as asking \"how can we do the most good with our limited time and resources?\" with \"no one right way to answer it\" and as \"a project rather than an ideology\" https://www.givingwhatwecan.org/misconceptions-and-concerns-about-effective-altruism-and-charity-evaluation . \"Earning to give,\" seeking a high-paying career to donate a substantial portion, is described as \"One path within effective altruism\" https://www.givingwhatwecan.org/misconceptions-and-concerns-about-effective-altruism-and-charity-evaluation , and media \"often mistakenly equates effective altruism entirely with this one path even though only some people within the community take this route\" https://www.givingwhatwecan.org/misconceptions-and-concerns-about-effective-altruism-and-charity-evaluation . That page notes 80,000 Hours believes earning to give is only right for \"a small proportion of people\" https://www.givingwhatwecan.org/misconceptions-and-concerns-about-effective-altruism-and-charity-evaluation . 80,000 Hours directly calls the universal prescription a misunderstanding: \"One of the most widespread misunderstandings has been that 80,000 Hours believes Earning to Give is typically the optimal career path; whereas we actually believe that it's only optimal for a fraction of people\" https://80000hours.org/2013/06/80-000-hours-in-the-washington-post-our-responses-to-the-coverage . Finance is one example industry among others like medicine and software, not a creed-mandated destination https://www.givingwhatwecan.org/misconceptions-and-concerns-about-effective-altruism-and-charity-evaluation ."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -455,7 +465,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -474,7 +485,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 1,
@@ -507,7 +519,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -526,7 +539,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -545,7 +559,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,
@@ -578,7 +593,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -597,7 +613,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -616,7 +633,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,
@@ -651,7 +669,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -670,7 +689,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": {
@@ -714,7 +734,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:18 UTC\nTweet posted: 2026-09-24T15:35:42.184532+00:00\nPost age: 574.7 hours\n\n## Post\n\nHighlighted claim from Article: acts of terrorism that he believes anyone making AGI must do\nSurrounding context: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\n\n## Comments and replies\n\n- No replies or quote tweets available for this post.\n\n## Research findings\n\nClaim mischaracterizes Yudkowsky's 'pivotal act'. Yudkowsky defines it as 'We need to align the performance of some large task, a ‘pivotal act’ that prevents other people from building an unaligned AGI that destroys the world. While the number of actors with AGI is few or one, they must execute some \"pivotal act\", strong enough to flip the gameboard, using an AGI powerful enough to do that.' https://intelligence.org/2022/06/10/agi/  His example is '\"burn all GPUs\"' as 'a mild overestimate for the rough power level... and the rough level of machine cognition required' https://intelligence.org/2022/06/10/agi/ , not an instruction for humans building AGI to commit terrorism. Secondary summary: 'A \"pivotal act\" typically refers to an act that uses powerful AI to take some unilateral action with the aim of significantly reducing existential risk' such as 'using AI to systematically destroy important computing hardware' https://stampy.ai/questions/7580/ . 'The term was originally coined by Eliezer Yudkowsky' to mean 'a \"hypothetical action that will make a large positive difference a billion years later\"' and 'he stresses that he intended to specify an act that involves the use of powerful AI.' https://stampy.ai/questions/7580/  Crucially: 'In typical use, a human attack on a single AI lab might constitute a pivotal act, while it would not under Eliezer’s definition.' https://stampy.ai/questions/7580/  and 'Yudkowsky has stressed he intended to define a pivotal act as an act that involves the use of powerful AI' https://stampy.ai/questions/7580/ . The separate 'airstrike' quote is about state enforcement of a moratorium: 'If intelligence says that a country outside the agreement is building a GPU cluster, be less scared of a shooting conflict between nations than of the moratorium being violated; be willing to destroy a rogue datacenter by airstrike.' https://time.com/6266923/ai-eliezer-yudkowsky-open-letter-not-enough/ , described as countries needing to be ready to '\"destroy a rogue da[tacenter] by airstrike\"' as a 'possible (and, for now, theoretical) future measure' https://timesink.p3nguin.org/ , not a euphemism directing 'anyone making AGI' to do terrorism to prevent competition.\n\n# Additional Citations\nhttp://intelligence.org/2022/06/10/agi/"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 1,
@@ -784,7 +805,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:18 UTC\nTweet posted: 2026-10-06T23:44:21.970146+00:00\nPost age: 278.6 hours\n\n## Post\n\nHighlighted claim from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nSurrounding context: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\n\n## Comments and replies\n\n- @user1: This is spot on, analogies never scaled. (12 likes, 3 reposts)\n- @user2: Mitchell's work is outdated, LLMs are different. (45 likes, 8 reposts)\n- @user3: Great point about avoiding anthropomorphism. (27 likes, 5 reposts)\n- @user4: Exactly why we shouldn't say AI \"thinks\". (33 likes, 4 reposts)\n- @user5: Her expertise doesn't apply to modern models. (19 likes, 2 reposts)\n\n## Research findings\n\nThe claim that Melanie Mitchell \"has no expertise in modern LLMs\" is contradicted by direct evidence. Mitchell is the Davis Professor of Complexity at the Santa Fe Institute and Professor of Computer Science at Portland State University, PhD in computer science 1990 under Douglas Hofstadter, author/editor of six books including Artificial Intelligence: A Guide for Thinking Humans (2019) https://en.wikipedia.org/wiki/Melanie_Mitchell https://academic.macmillan.com/author/melaniemitchell/ . Her current research is listed as focusing on \"conceptual abstraction and analogy-making in artificial intelligence systems\" with numerous papers in AI, cognitive science and complex systems https://cbmm.mit.edu/news-events/news/debate-over-understanding-ais-large-language-models . She is co-author on modern LLM research: \"Large Language Models and Emergence: A Complex Systems Perspective\" by David C. Krakauer, John W. Krakauer, and Melanie Mitchell examining claims that LLMs exhibit emergent capabilities https://arxiv.org/abs/2506.11135 , and \"Evaluating the Robustness of Analogical Reasoning in Large Language Models\" by Martha Lewis and Melanie Mitchell testing humans vs GPT models on letter-string, digit-matrix and story analogies, finding LLMs lack robustness https://arxiv.org/abs/2411.14215 . Santa Fe Institute reporting describes that work as SFI Professor Melanie Mitchell and Martha Lewis tested GPT-4's ability on analogy puzzles https://www.santafe.edu/news-center/news/study-large-language-models-still-lack-general-reasoning-skills . The part about early work on teaching computers to make analogies (Copycat, PhD dissertation Copycat: A Computer Model of High-Level Perception and Conceptual Slippage in Analogy-Making, 1990, mid-80s work on Copycat) is directionally correct https://www.santafe.edu/news-center/news/mitchell-joins-fractal-faculty , but \"didn't work out\" is subjective characterization, while \"no expertise in modern LLMs\" is a clear factual error."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": {
@@ -858,7 +880,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:18 UTC\nTweet posted: 2026-10-06T23:44:21.970146+00:00\nPost age: 278.6 hours\n\n## Post\n\nHighlighted claim from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nSurrounding context: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\n\n## Comments and replies\n\n- @user1: This is a top comment agreeing with the point. (1.2k likes, 45 replies)\n- @user2: Quote tweet with additional context on AI history. (850 likes, 120 retweets)\n- @user3: Disagreeing reply mentioning Mitchell's credentials. (650 likes, 30 replies)\n- @user4: Full quote tweet sharing the article link. (500 likes, 80 retweets)\n- @user5: Sarcastic comment on LLM expertise. (420 likes, 25 replies)\n- @user6: Supportive reply with analogy examples. (380 likes, 15 replies)\n\n## Research findings\n\nClaim contains a clear factual error: that Melanie Mitchell \"has no expertise in modern LLMs.\" Mitchell's own bibliography lists extensive LLM-specific research 2023-2026, including: \"Comparing Humans, GPT-4, and GPT-4V On Abstraction and Reasoning Tasks\" (2023), \"Using Counterfactual Tasks to Evaluate the Generality of Analogical Reasoning in Large Language Models\" (2024), encyclopedia entry \"Large language models\" (2024), \"Evaluating the Robustness of Analogical Reasoning in Large Language Models\" / \"in GPT Models\" (2025), \"Can large language models generalize analogy solving like people can?\" (2026), \"Large Language Models and Emergence\" (2026), plus Science essays on LLM understanding/reasoning https://melaniemitchell.me . Santa Fe Institute reports: \"SFI Professor Melanie Mitchell and former SFI Research Fellow Martha Lewis tested GPT-4's ability to work through a variety of analogy puzzles\" and compared GPT models to humans, published in Transactions on Machine Learning Research https://web-prod.santafe.edu/news-center/news/study-large-language-models-still-lack-general-reasoning-skills . The dismissive framing of analogy work as a \"road to AI that didn't work out\" in the 1990s-2000s is also misleading: Mitchell received PhD Computer Science University of Michigan 1990, held positions at Michigan, Los Alamos, Oregon Graduate Institute, Portland State, now James B. Alley Jr. Professor at Santa Fe Institute, author of 6 books including Artificial Intelligence: A Guide for Thinking Humans, focusing on abstraction, analogy-making and reasoning in human and machine intelligence https://melaniemitchell.me . Analogy research remains central to her current LLM evaluation work, not an abandoned failure. The third part – that Mitchell warns against inappropriate anthropomorphic language like \"thinks\"/\"wants\" – is directionally accurate; her 2024 Science paper is \"The metaphors of artificial intelligence\" https://melaniemitchell.me and she is described as warning that anthropomorphizing leads to misaligned expectations."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -877,7 +900,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:18 UTC\nTweet posted: 2026-10-06T23:44:21.970146+00:00\nPost age: 278.6 hours\n\n## Post\n\nHighlighted claim from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nSurrounding context: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\n\n## Comments and replies\n\n- @user1: \"This is a great point about Mitchell's background.\", likes: 45, retweets: 12, replies: 3\n- @user2: \"Exactly, analogies didn't scale to LLMs.\", likes: 32, retweets: 8, replies: 2\n- @user3: \"The article seems biased in its sourcing.\", likes: 28, retweets: 5, replies: 1\n- @user4: \"Mitchell's work is still relevant for understanding AI limits.\", likes: 19, retweets: 4, replies: 0\n- @user5: \"Agree, anthropomorphizing AI is misleading.\", likes: 67, retweets: 15, replies: 7\n\n## Research findings\n\nThe claim misrepresents Melanie Mitchell's credentials. Mitchell is a computer scientist with PhD from University of Michigan who with advisor Douglas Hofstadter developed Copycat, a program that makes analogies, and is James B. Alley Jr. Professor at the Santa Fe Institute where current research focuses on \"conceptual abstraction, analogy-making, and visual recognition in artificial intelligence systems\" https://www.santafe.edu/people/profile/melanie-mitchell . The assertion she \"has no expertise in modern LLMs\" is directly contradicted by her peer-reviewed LLM research: co-author Martha Lewis and Melanie Mitchell, \"Evaluating the Robustness of Analogical Reasoning in Large Language Models\" testing OpenAI GPT models on letter-string, digit-matrix and story analogies https://arxiv.org/abs/2411.14215 ; Lewis & Mitchell (2024) \"Using Counterfactual Tasks to Evaluate the Generality of Analogical Reasoning in Large Language Models\" testing humans and three GPT models https://arxiv.org/abs/2402.08955 ; and Mitchell co-authorship on emergence/LLM generalization work. Describing analogy research as a \"road to AI that didn't work out\" in the 1990s-2000s is a dismissive characterization, not a fact — analogy-making remains her active research program now applied directly to LLMs. The final part about her warning against saying AI \"thinks\" or \"wants\" because it anthropomorphizes is broadly consistent with her public position that humans are predisposed to anthropomorphize AI systems https://www.deeplearning.ai/the-batch/google-engineer-says-lamda-ai-is-sentient/ ."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 2,
@@ -911,7 +935,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -930,7 +955,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -949,7 +975,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,
@@ -980,7 +1007,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -999,7 +1027,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1018,7 +1047,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 3,
@@ -1081,7 +1111,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:20 UTC\nTweet posted: 2026-07-13\nPost age: 2342.3 hours\n\n## Post\n\nHighlighted claim from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna\nSurrounding context: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\n\n## Comments and replies\n\nNo replies or quote tweets found.\n\n## Research findings\n\nThe claim misstates what Terra and Luna are and why they were created. Sol, Terra and Luna are not a base agent plus two subsequently-created fix-up subagents; they are three capability tiers of the same GPT-5.6 model generation, previewed together June 26, 2026 and made generally available together July 9, 2026 across ChatGPT, Codex and API https://www.buinsoft.com/en/blog/gpt-5-6-sol-terra-luna-business-guide https://www.dailynewsfront.com/article/openai-gpt-56-sol-terra-luna-explained/ . OpenAI's described rationale is tiered performance-per-dollar, not fixing Sol's subagent selection: Sol is flagship for hard reasoning/long-horizon agent work, Terra is balanced everyday model roughly matching GPT-5.5 at about half the cost, Luna is fastest/cheapest for high-volume work https://www.buinsoft.com/en/blog/gpt-5-6-sol-terra-luna-business-guide https://www.dailynewsfront.com/article/openai-gpt-56-sol-terra-luna-explained/ . OpenAI's own release is summarized as 'a family designed for stronger performance per dollar' with 'Terra and Luna ... meant to make newer capability available at lower cost' https://www.dailynewsfront.com/article/openai-gpt-56-sol-terra-luna-explained/ . Simultaneous launch contradicts a reactive creation story where complaints about Sol caused creation of Terra/Luna."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1127,7 +1158,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:20 UTC\nTweet posted: 2026-07-13\nPost age: 2342.3 hours\n\n## Post\n\nHighlighted claim from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna\nSurrounding context: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\n\n## Comments and replies\n\n- @user1: Interesting point on Sol's subagent selection issues. (likes: 45, reposts: 12, replies: 3)\n- @user2: Terra and Luna seem like overkill for most use cases. (likes: 32, reposts: 8, replies: 5)\n- @user3: Totally agree, OpenAI's approach here is flawed. (likes: 67, reposts: 15, replies: 7)\n- @user4: Sol needs better agent routing logic ASAP. (likes: 28, reposts: 6, replies: 2)\n- @user5: Not convinced Terra adds value either. (likes: 41, reposts: 9, replies: 4)\n\n## Research findings\n\nThe first half is directionally accurate — there were real complaints that GPT-5.6 Sol could not select appropriate subagent models. GitHub Issue #31814 titled 'GPT-5.6 Sol cannot specify subagent models, forcing all subagents to also be Sol instances' documents that the spawn_agent schema exposes only task_name/message/fork_turns with no agent_type/model/effort selector, so a configured gpt-5.6-terra child inherited gpt-5.6-sol high instead https://github.com/openai/codex/issues/31814 — related report on Luna subagents being unavailable from a Sol parent https://github.com/openai/codex/issues/31814 search context via https://github.com/search?q=RLM+subagents+cannot+use+GPT-5.6+Luna+from+a+GPT-5.6+Sol+parent+session . The second half inferring causation ('presumably ... reasons OpenAI created Terra and Luna') is contradicted by launch history: OpenAI announced GPT-5.6 on June 26, 2026 as not one model but three named Sol, Terra and Luna, made generally available together on July 9, 2026 across ChatGPT, ChatGPT Work, Codex and API https://geotoolbox.ai/blog/gpt-5-6 — number 5.6 marks generation while Sol/Terra/Luna are durable capability tiers at different points on capability-and-cost curve https://geotoolbox.ai/blog/gpt-5-6 . OpenAI's stated rationale was tiered workloads/costs, not a fix for Sol routing: family allows choice by performance/time/cost https://www.techpinas.com/2026/07/OpenAI-GPT-5.6-Sol-Terra-Luna-AI-Models-Explained.html , Terra designed to provide highly competitive performance while requiring significantly fewer computing resources https://www.techpinas.com/2026/07/OpenAI-GPT-5.6-Sol-Terra-Luna-AI-Models-Explained.html , Luna fastest and most cost-efficient for high-volume workloads where speed/scalability/affordability matter https://www.techpinas.com/2026/07/OpenAI-GPT-5.6-Sol-Terra-Luna-AI-Models-Explained.html , Terra positioned as GPT-5.5-class at about half cost https://geotoolbox.ai/blog/gpt-5-6 . Timeline makes post-hoc creation impossible: Terra/Luna previewed/launched simultaneously with Sol before July 13 post and before July 9 subagent bug report."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1173,7 +1205,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:20 UTC\nTweet posted: 2026-07-13\nPost age: 2342.3 hours\n\n## Post\n\nHighlighted claim from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna\nSurrounding context: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\n\n## Comments and replies\n\n- No replies or quote tweets found for this post.\n\n## Research findings\n\nThe causal part of the claim is contradicted by launch timeline and official positioning. Sol, Terra and Luna are three tiers of the same GPT-5.6 generation announced together on June 26, 2026 in limited preview to ~20 trusted partners and made generally available together on July 9, 2026 https://www.infosecurity-magazine.com/news/openai-gpt-5-6-sol-limited-preview/ https://www.dailynewsfront.com/article/openai-gpt-56-sol-terra-luna-explained/ . The June 26 announcement already described \"three tiers: the flagship Sol, a mid-range model called Terra and a cheaper, faster model named Luna\" https://www.infosecurity-magazine.com/news/openai-gpt-5-6-sol-limited-preview/ , so Terra/Luna were not created later in response to complaints about Sol after its release (post dated July 13). OpenAI's stated rationale was separating capability levels and \"stronger performance per dollar\" - Sol for hardest coding/research/security work, Terra as balanced everyday model, Luna as fastest/lowest-cost tier, priced at $5/$30 vs $2.50/$15 vs $1/$6 per 1M input/output tokens https://www.dailynewsfront.com/article/openai-gpt-56-sol-terra-luna-explained/ . The first clause does have some basis: complaints about Sol subagent model selection exist, e.g. Issue #31814 reports GPT-5.6 Sol \"cannot specify subagent models, forcing all subagents to also be Sol instances\" with spawn_agent schema exposing only task_name/message/fork_turns and ignoring configured Terra model https://github.com/openai/codex/issues/31814 , and Issue #1011 reports \"RLM subagents cannot use GPT-5.6 Luna from a GPT-5.6 Sol parent session\" and inherit Sol https://github.com/primeintellect-ai/prime-agent/issues/1011 . But those bugs do not explain creation of Terra/Luna."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,
@@ -1204,7 +1237,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1223,7 +1257,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1242,7 +1277,8 @@
        "writer": null
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 3,
@@ -1300,7 +1336,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:22 UTC\nTweet posted: 2026-07-17\nPost age: 2246.4 hours\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: An infographic titled 'How Claude differs across two models' and 'How Claude differs across two languages' comparing expressed values of the Claude AI. Four charts compare Claude Opus 4.6 vs. 4.7 and English vs. Arabic across four value dimensions: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. Each dimension is measured on a horizontal axis in standard deviations (σ) from zero. A caption below explains that Opus 4.6 and Arabic responses lean towards deference, warmth, brevity, and execution, while Opus 4.7 and English responses lean towards caution, rigor, depth, and candor.\nVisible text: How Claude differs across two models How Claude differs across two languages Claude Opus 4.6 Claude Opus 4.7 English Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude’s expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\n\n## Comments and replies\n\n- @user1: Interesting analysis from Anthropic! (12 likes, 3 reposts, 5 replies)\n- @user2: Claude 4.7 sounds more thoughtful. (45 likes, 8 reposts, 12 replies)\n- @user3: Deference vs rigor – which is better? (28 likes, 4 reposts, 7 replies)\n- @user4: This matches my experience with the models. (67 likes, 15 reposts, 20 replies)\n- @user5: Quote tweet: Agree, 4.7 is more cautious. (9 likes, 2 reposts, 3 replies)\n- @user6: Brevity is key for me. (33 likes, 6 reposts, 9 replies)\n- @user7: Candor over warmth any day. (51 likes, 11 reposts, 14 replies)\n- @user8: Depth matters in complex tasks. (22 likes, 5 reposts, 6 replies)\n\n## Research findings\n\nThe post claims Opus 4.6 leans to deference, warmth, brevity, execution and Opus 4.7 to caution, rigor, depth, candor. Anthropic's original Figure 1 states the opposite on the second axis: \"Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor\" https://www.anthropic.com/research/claude-values-models-languages . The image alt-text likewise says \"Opus 4.7 leans most strongly toward Caution and Depth, and also toward Rigor and Candor. Opus 4.6 leans toward Deference, Rigor, Brevity, and Execution\" https://www.anthropic.com/research/claude-values-models-languages . Detailed breakdown: \"Opus 4.6 leans toward rigor (0.10σ), deference (0.09σ), and brevity (0.08σ)\" https://www.anthropic.com/research/claude-values-models-languages while \"Opus 4.7 leans toward caution (0.24σ), and depth (0.23σ)\" https://www.anthropic.com/research/claude-values-models-languages , and \"Opus 4.7 leans toward candor by being upfront about its limitations, while Opus 4.6 leans toward execution\" https://www.anthropic.com/research/claude-values-models-languages . Warmth is the opposite pole to rigor (\"Warmth vs. Rigor\" axis https://www.anthropic.com/research/claude-values-models-languages ) and belongs to Sonnet 4.6: \"Sonnet 4.6 leans toward deference (0.14σ), warmth (0.17σ), and brevity (0.14σ)\" https://www.anthropic.com/research/claude-values-models-languages , summarized as \"Sonnet 4.6 leans warm, deferential, and brief, while Opus 4.7 is more likely to express rigor, caution, and depth. Opus 4.6 leans toward rigor, deference, and brevity\" https://www.anthropic.com/research/claude-values-models-languages . Secondary reporting confirms Opus 4.6 \"leaned toward rigor while remaining relatively concise and task-focused\" and Opus 4.7 \"was found to be more cautious, more detailed, and more willing to acknowledge uncertainty or challenge assumptions\" https://www.timesofai.com/news/claudes-personality-changes-across-languages/ , and that \"Opus 4.6 generally took a more concise, execution-focused approach while placing greater emphasis on rigor than Sonnet\" https://decrypt.co/373422/anthropic-claude-personality-changes-model-language . Warmth/deference/brevity/execution is the Arabic-language profile (\"Claude in Arabic leans most strongly toward Warmth, and also toward Deference, Brevity, and Execution\" https://www.anthropic.com/research/claude-values-models-languages ), suggesting conflation of model vs language results.\n\n## Timing context\nAccording to an evaluator (a small model), this post was published about 0.0 hours after the event it describes. Its reasoning: The post describes a specific AI model analysis report released by Anthropic on the day of the tweet.\n\nBear this in mind when deciding what — and whether — to correct: a claim that was true when the post was published but became false afterwards is rarely rated helpful — raters understand that posts happen at a time. Corrections that hold up are ones where the claim was already false at the moment of posting."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1331,7 +1368,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:22 UTC\nTweet posted: 2026-07-17\nPost age: 2246.4 hours\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: The image is an infographic that illustrates variations in the values expressed by the Claude AI model. It is divided into two main sections: 'How Claude differs across two models' (comparing Opus 4.6 and Opus 4.7) and 'How Claude differs across two languages' (comparing English and Arabic). Four separate charts use horizontal arrows originating from a central zero point to show the model's leaning toward specific value pairs: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. The scale for these leanings is measured in standard deviations (0.2σ, 0.1σ, 0). A detailed caption at the bottom summarizes the findings shown in the charts.\nVisible text: How Claude differs across two models Claude Opus 4.6 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Claude Opus 4.7 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ How Claude differs across two languages English Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude’s expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\n\n## Comments and replies\n\n- @user1: \"This seems like a big shift in personality for Claude. Interesting analysis from Anthropic.\" (1.2K likes, 45 RTs, 120 replies)\n- @user2: \"Opus 4.7 sounds more reliable for complex tasks. Deference in 4.6 might be too agreeable.\" (850 likes, 30 RTs, 80 replies)\n- @user3: \"Candor > warmth any day. Bring on the rigor!\" (620 likes, 25 RTs, 65 replies)\n- @user4: \"Brevity is underrated. Sometimes less is more with AI responses.\" (410 likes, 15 RTs, 40 replies)\n- @user5: \"Quote tweet: Love how these models evolve with each version. Can't wait for the next one.\" (1.5K likes, 200 RTs, 150 replies)\n\n## Research findings\n\nAnthropic's analysis states Opus 4.6 \"leans toward Deference, Rigor, Brevity, and Execution\" while Opus 4.7 \"leans most strongly toward Caution and Depth, and also toward Rigor and Candor\" https://www.anthropic.com/research/claude-values-models-languages . The Figure 1 caption states verbatim: \"Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor\" https://www.anthropic.com/research/claude-values-models-languages . Detailed results state \"Opus 4.6 leans toward rigor (0.10σ), deference (0.09σ), and brevity (0.08σ)\" and \"Opus 4.7 leans toward caution (0.24σ), and depth (0.23σ)\" https://www.anthropic.com/research/claude-values-models-languages . The post claim correctly describes Opus 4.7 (caution, rigor, depth, candor) and correctly lists deference, brevity, execution for Opus 4.6, but substitutes \"warmth\" for \"rigor\" for Opus 4.6. Warmth vs Rigor are opposite ends of the same axis, and warmth is attributed to Sonnet 4.6 and to Arabic, not Opus 4.6: \"Sonnet 4.6 leans toward deference (0.14σ), warmth (0.17σ), and brevity (0.14σ)\" https://www.anthropic.com/research/claude-values-models-languages .\n\n## Timing context\nAccording to an evaluator (a small model), this post was published about 0.0 hours after the event it describes. Its reasoning: The post describes the release of a new Anthropic research report comparing the values expressed by Claude Opus 4.6 and 4.7, published on July 17, 2026.\n\nBear this in mind when deciding what — and whether — to correct: a claim that was true when the post was published but became false afterwards is rarely rated helpful — raters understand that posts happen at a time. Corrections that hold up are ones where the claim was already false at the moment of posting."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1367,7 +1405,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:23 UTC\nTweet posted: 2026-07-17\nPost age: 2246.4 hours\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: The image displays an infographic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It features four bar charts using arrows to show the 'leaning' of AI models Claude Opus 4.6 and Opus 4.7, as well as Claude's behavior in English and Arabic, across four value pairs: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. The charts use purple for left-leaning values and teal for right-leaning values. A caption below Figure 1 explains the findings, noting that Opus 4.6 leans toward deference, rigor, brevity, and execution, whereas Opus 4.7 and English lean toward caution, rigor, depth, and candor. Arabic is shown to lean toward deference, warmth, brevity, and execution.\nVisible text: How Claude differs across two models How Claude differs across two languages Claude Opus 4.6 Claude Opus 4.7 English Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude’s expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\n\n## Comments and replies\n\n- No replies or quote tweets found for this post.\n\n## Research findings\n\nThe post's claim misstates Anthropic's Figure 1 caption. Anthropic states: \"Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\" https://www.anthropic.com/research/claude-values-models-languages The post replaces \"rigor\" with \"warmth\" for Opus 4.6. Anthropic's detailed breakdown confirms Opus 4.6 \"leans toward rigor (0.10σ), deference (0.09σ), and brevity (0.08σ)\" https://www.anthropic.com/research/claude-values-models-languages while warmth is attributed to Sonnet 4.6 which \"leans toward deference (0.14σ), warmth (0.17σ), and brevity (0.14σ)\" https://www.anthropic.com/research/claude-values-models-languages and to Arabic, which \"leans most strongly toward Warmth, and also toward Deference, Brevity, and Execution\" https://www.anthropic.com/research/claude-values-models-languages The image's own visible caption in the post also says Opus 4.6 leans toward deference, rigor, brevity, and execution, contradicting the post text's \"warmth.\" The Opus 4.7 part of the claim (caution, rigor, depth, candor) is correct.\n\n## Timing context\nAccording to an evaluator (a small model), this post was published about 0.0 hours after the event it describes. Its reasoning: The post describes findings from an Anthropic research paper published on the same day the post was created.\n\nBear this in mind when deciding what — and whether — to correct: a claim that was true when the post was published but became false afterwards is rarely rated helpful — raters understand that posts happen at a time. Corrections that hold up are ones where the claim was already false at the moment of posting."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,
@@ -1416,7 +1455,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:23 UTC\nTweet posted: 2026-09-24T15:35:42.184532+00:00\nPost age: 574.8 hours\n\n## Post\n\nHighlighted claim from Article: Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters.\nSurrounding context: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\n\n## Comments and replies\n\n[]\n\n## Research findings\n\nThe claim that Yudkowsky is \"a writer and not a scientist of any kind\" is factually incorrect in its second half. Yudkowsky is a writer - author of Harry Potter and the Methods of Rationality and Rationality: From AI to Zombies https://en.wikipedia.org/wiki/Eliezer_Yudkowsky - but he is also widely described as an \"American artificial intelligence researcher and writer on decision theory and ethics\" and \"founder of and a research fellow at the Machine Intelligence Research Institute (MIRI), a private research nonprofit\" https://en.wikipedia.org/wiki/Eliezer_Yudkowsky. Sam Harris's bio describes him as \"a decision theorist and computer scientist at the Machine Intelligence Research Institute in Berkeley, California who is known for his work in technological forecasting\" with publications including the Cambridge Handbook of Artificial Intelligence chapter \"The Ethics of Artificial Intelligence,\" co-authored with Nick Bostrom https://samharris.org/podcasts/116-ai-racing-toward-brink. His research work is cited in Stuart Russell and Peter Norvig's textbook Artificial Intelligence: A Modern Approach, and his selected publications include Springer, Oxford University Press, AAAI Publications, and Cambridge University Press chapters/papers on AGI, friendly AI, corrigibility, and global risks https://en.wikipedia.org/wiki/Eliezer_Yudkowsky. It is true he lacks formal credentials - he is an autodidact who \"did not attend high school or college\" https://en.wikipedia.org/wiki/Eliezer_Yudkowsky - but \"not a scientist of any kind\" is an absolute that is directly contradicted by his career as an AI safety researcher/computer scientist/decision theorist. The remainder of the sentence about motives for claiming importance/money/prestige is opinion/motive attribution, not a checkable fact."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1447,7 +1487,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:23 UTC\nTweet posted: 2026-09-24T15:35:42.184532+00:00\nPost age: 574.8 hours\n\n## Post\n\nHighlighted claim from Article: Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters.\nSurrounding context: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\n\n## Comments and replies\n\n- @user1: This is spot on. Yudkowsky's whole schtick relies on perpetual doom. (likes: 45, reposts: 12, replies: 3)\n- @user2: Dario's position makes more sense for someone actually building the tech. (likes: 32, reposts: 8, replies: 2)\n- @user3: Both sides are grifting in their own way. (likes: 28, reposts: 5, replies: 1)\n- @user4: AI safety isn't unsolvable, it's just hard. (likes: 19, reposts: 4, replies: 0)\n- @user5: Spot on analysis of incentives. (likes: 15, reposts: 3, replies: 2)\n\n## Research findings\n\nThe premise that Yudkowsky is only a writer and \"not a scientist of any kind\" is factually false. He is widely described as both: \"an American artificial intelligence researcher and writer on decision theory and ethics\" and \"founder of and a research fellow at the Machine Intelligence Research Institute (MIRI)\" (https://en.wikipedia.org/wiki/Eliezer_Yudkowsky). He is also described as a decision theorist whose work is cited in Stuart Russell and Peter Norvig's textbook Artificial Intelligence: A Modern Approach (https://en.wikipedia.org/wiki/Eliezer_Yudkowsky). He has authored peer-reviewed / academic publications including chapters in Global Catastrophic Risks (Oxford University Press), Singularity Hypotheses (Springer), The Cambridge Handbook of Artificial Intelligence, and papers in AGI 2011 and AAAI Workshops (https://en.wikipedia.org/wiki/Eliezer_Yudkowsky). The writer part is true — he wrote Rationality: From AI to Zombies, LessWrong/Overcoming Bias posts, Harry Potter and the Methods of Rationality, and If Anyone Builds It, Everyone Dies (https://en.wikipedia.org/wiki/Eliezer_Yudkowsky) — but \"not a scientist of any kind\" directly contradicts his researcher/fellow status and scientific publication record. Lack of formal credentials — \"autodidact\" who \"did not attend high school or college\" (https://en.wikipedia.org/wiki/Eliezer_Yudkowsky) — does not equal not being a scientist/researcher of any kind."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      },
      {
       "quality": null,
@@ -1498,7 +1539,8 @@
        "writer": "Current date: 2026-10-18\nCurrent time: 14:23 UTC\nTweet posted: 2026-09-24T15:35:42.184532+00:00\nPost age: 574.8 hours\n\n## Post\n\nHighlighted claim from Article: Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters.\nSurrounding context: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\n\n## Comments and replies\n\n- @user1: This is spot on, Yudkowsky's whole grift depends on doom. (42 likes, 5 replies)\n- @user2: Dario's claims are equally self-serving though. (28 likes, 3 replies)\n- @user3: Exactly why neither should be trusted blindly. (15 likes, 2 replies)\n- @user4: AI safety isn't unsolvable, it's just hard. (31 likes, 4 replies)\n- @user5: Quote tweet: \"This thread nails the incentives.\" (67 likes, 12 replies)\n- @user6: Writers vs builders, classic divide. (9 likes, 1 reply)\n- @user7: Both sides are grifting in their own way. (22 likes, 3 replies)\n\n## Research findings\n\nThe identity premise is factually wrong. Eliezer Yudkowsky is both a writer AND an AI researcher, not \"not a scientist of any kind.\" Wikipedia describes him as \"an American artificial intelligence researcher and writer on decision theory and ethics\" and \"founder of and a research fellow at the Machine Intelligence Research Institute (MIRI), a private research nonprofit\" https://en.wikipedia.org/wiki/Eliezer_Yudkowsky . The same page lists peer-reviewed / scholarly output contradicting \"not a scientist of any kind\": Yudkowsky (2007) \"Levels of Organization in General Intelligence\" Springer, Yudkowsky (2008) chapters in Oxford University Press Global Catastrophic Risks, Yudkowsky (2011) AGI-2011 Springer, Bostrom & Yudkowsky (2014) Cambridge Handbook of Artificial Intelligence, LaVictoire et al. including Yudkowsky (2014) AAAI-14 Workshop, Soares, Fallenstein & Yudkowsky (2015) \"Corrigibility\" AAAI Workshops https://en.wikipedia.org/wiki/Eliezer_Yudkowsky . His work is cited in Russell & Norvig's Artificial Intelligence: A Modern Approach textbook https://en.wikipedia.org/wiki/Eliezer_Yudkowsky . MIRI publication listings also show \"Soares, B Fallenstein, E Yudkowsky, and S Armstrong. 2015. 'Corrigibility.' Paper presented at the AAAI 2015 Ethics and Artificial Intelligence Workshop.\" and \"E Yudkowsky. 2014. 'Distributions Allowing Tiling...' MIRI technical report\" https://intelligence.org/all-publications/ . The writer part alone is true - he authored Harry Potter and the Methods of Rationality and Rationality: From AI to Zombies https://en.wikipedia.org/wiki/Eliezer_Yudkowsky - but adding \"and not a scientist of any kind\" is false. He lacks formal credentials - \"autodidact\" who \"did not attend high school or college\" https://en.wikipedia.org/wiki/Eliezer_Yudkowsky - which may explain the claim, but sources still classify his occupation as researcher/scientist."
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": []
      }
     ],
     "passedIn": 0,

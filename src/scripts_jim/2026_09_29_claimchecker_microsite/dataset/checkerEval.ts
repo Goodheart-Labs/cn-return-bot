@@ -147,7 +147,7 @@ export async function checkSample(row: CheckableRow, referenceNotes: string[], r
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongAnswerOf(run.logs).probability, strongMisleading: strongAnswerOf(run.logs).misleading, secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongAnswerOf(run.logs).probability, strongMisleading: strongAnswerOf(run.logs).misleading, secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, draftSources: trace.draftSources, logFiles: [`logs/eval-${runId}/${row.id}.${sample}.json`], sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };

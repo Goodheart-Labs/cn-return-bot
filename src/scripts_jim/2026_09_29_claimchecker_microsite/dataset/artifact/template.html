@@ -176,6 +176,16 @@ tr.detail td { background: var(--bg); padding: 16px 18px 20px; }
 .stepno { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 0.78rem; font-weight: 700; flex: none; }
 .chip2 { font-size: 0.74rem; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
 .stepcard > *:not(summary) { margin: 0 12px 12px; }
+.jsontree { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; line-height: 1.5; background: var(--code-bg); border-radius: 8px; padding: 10px 12px; max-height: 620px; overflow: auto; }
+.jsontree details > summary { cursor: pointer; list-style: none; }
+.jsontree details > summary::-webkit-details-marker { display: none; }
+.jsontree details > summary::before { content: "▸ "; color: var(--muted); }
+.jsontree details[open] > summary::before { content: "▾ "; }
+.jsontree .jchildren { margin-left: 16px; border-left: 1px solid var(--line); padding-left: 8px; }
+.jsontree .jkey { color: var(--accent); }
+.jsontree .jstr { white-space: pre-wrap; overflow-wrap: anywhere; }
+.jsontree .jnum { color: #a35200; }
+.jsontree .jhint { color: var(--muted); }
 .prosebox { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.9rem; line-height: 1.65; max-height: 460px; overflow: auto; border-top: 1px solid var(--line); padding-top: 10px; }
 .prosebox.mono { font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; }
 .stepcard details.block { margin-top: 10px; }
@@ -589,6 +599,52 @@ function node(tag, attrs = {}, ...kids) {
 }
 
 
+
+/** The full logs of the checks are published in one file per eval run and loaded when a log is first opened. */
+const logBundles = {};
+function loadLog(path) {
+  const [, folder, file] = path.match(/^logs\/([^/]+)\/(.+)$/);
+  logBundles[folder] ??= fetch(`logs/${folder}.json`).then((r) => { if (!r.ok) throw new Error(`logs/${folder}.json answered ${r.status}`); return r.json(); });
+  return logBundles[folder].then((bundle) => bundle[file]);
+}
+const LONG_STRING = 160;
+/** One line or one collapsible node of a JSON value. The children of a node are made when it is first opened. */
+function jsonNode(key, value, open) {
+  const label = key == null ? [] : [node("span", { class: "jkey", text: key + ": " })];
+  if (value === null || typeof value !== "object") {
+    if (typeof value === "string" && value.length > LONG_STRING) {
+      const d = node("details", {}, node("summary", {}, ...label, node("span", { class: "jhint", text: JSON.stringify(value.slice(0, 80)) + "… (" + value.length + " characters)" })), node("div", { class: "jstr", text: value }));
+      return d;
+    }
+    return node("div", {}, ...label, node("span", { class: typeof value === "string" ? "jstr" : "jnum", text: typeof value === "string" ? JSON.stringify(value) : String(value) }));
+  }
+  const entries = Object.entries(value);
+  const hint = Array.isArray(value) ? `[${entries.length}]` : `{${entries.length}}`;
+  const d = node("details", {}, node("summary", {}, ...label, node("span", { class: "jhint", text: hint })));
+  const fill = () => { if (d.querySelector(":scope > .jchildren")) return; d.append(node("div", { class: "jchildren" }, ...entries.map(([k, v]) => jsonNode(k, v, false)))); };
+  d.addEventListener("toggle", () => { if (d.open) fill(); });
+  if (open) { d.open = true; fill(); }
+  return d;
+}
+/** The log of a check as a tree. Everything starts collapsed except the first level and the steps of the note writer. */
+function logTree(logs) {
+  const root = node("div", { class: "jsontree" });
+  for (const [k, v] of Object.entries(logs)) root.append(jsonNode(k, v, k === "note_writer_steps"));
+  return root;
+}
+function logViewer(files) {
+  const box = node("div", {});
+  const show = (path) => {
+    box.replaceChildren(node("p", { class: "small", text: "Loading the log…" }));
+    loadLog(path).then((logs) => box.replaceChildren(logs ? logTree(logs) : node("p", { class: "small", text: "This log is not in the file." })), (err) => box.replaceChildren(node("p", { class: "small", text: "The log could not be loaded: " + err.message })));
+  };
+  const holder = node("div", {}, node("p", { class: "small", text: files.length > 1 ? "This check has the log of its research and the log of the rerun from the writer on." : "The raw log of the check, as the pipeline wrote it." }));
+  if (files.length > 1) holder.append(node("div", {}, ...files.map((f, i) => { const b = node("button", { type: "button", class: "xtab", text: i === 0 ? "Research log" : "Rerun log" }); b.addEventListener("click", () => show(f)); return b; })));
+  holder.append(box);
+  let loaded = false;
+  return { body: holder, load: () => { if (!loaded) { loaded = true; show(files[0]); } } };
+}
+
 /** The whole post as the extractor cut it, with a click on a passage showing its type and claims. */
 function mountUnlabelledDetails(run) {
   for (const key of state.ropen) {
@@ -910,6 +966,8 @@ function mountCheckerDetail(host, result) {
     steps.push(stepCard(n++, researchSkipped ? "Full research" : "Research", researchChip, !strongAnswerText(s) ? researchBody : node("div", {}, node("p", {}, node("b", { text: strongAnswerText(s) }), s.strongProbability != null ? " that the claim is misleading. From 50% up the check went on to the writer, under it the check ended." : ". A claim that is misleading goes on to the writer, otherwise the check ends."), researchBody)));
     if (s.draftNote) {
       const body = node("div", {}, proseBox(s.draftNote));
+      if (s.draftSources?.length) body.append(node("ul", { class: "small" }, ...s.draftSources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url })))));
+      else if (s.draftSources) body.append(node("p", { class: "small", text: "The writer gave no sources." }));
       if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, withoutTweetLines(s.prompts.writer))));
       steps.push(stepCard(n++, "The note the writer drafted", modelName(s.models?.writer) || "model not recorded", body));
     }
@@ -929,6 +987,12 @@ function mountCheckerDetail(host, result) {
     else end.append(node("p", { text: o.error }));
     if (s.quality) end.append(node("p", {}, node("b", { text: "Does it make the reference point? " }), (s.quality.samePoint ? "Yes. " : "No. ") + s.quality.reason));
     steps.push(stepCard(n++, "Result", `check ${money(s.checkCostUsd)}${s.judgeCostUsd ? `, judge ${money(s.judgeCostUsd)}` : ""}`, end));
+    if (s.logFiles?.length) {
+      const viewer = logViewer(s.logFiles);
+      const card = stepCard(n++, "Full log", "all steps, click to open", viewer.body, { open: false });
+      card.addEventListener("toggle", () => { if (card.open) viewer.load(); });
+      steps.push(card);
+    }
     trace.replaceChildren(...steps);
   }
 

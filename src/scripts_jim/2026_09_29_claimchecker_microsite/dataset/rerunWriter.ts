@@ -76,7 +76,7 @@ async function main() {
           rerun++;
           const again = (await queue.add(() => checkSample(datapoint, row.referenceNotes, runId, index, number, picks, researched))) as CheckerSample;
           // The research part of the sample stays as it was, because it did not run again.
-          return { ...sample, outcome: again.outcome, verdict: again.verdict, quality: again.quality, draftNote: again.draftNote, sourceVerdict: again.sourceVerdict, secondRound: again.secondRound, prompts: { research: sample.prompts?.research ?? null, writer: again.prompts?.writer ?? null }, models: sample.models && again.models ? { ...sample.models, writer: again.models.writer, verifier: again.models.verifier } : sample.models, checkCostUsd: sample.checkCostUsd + again.checkCostUsd, judgeCostUsd: sample.judgeCostUsd + again.judgeCostUsd };
+          return { ...sample, outcome: again.outcome, verdict: again.verdict, quality: again.quality, draftNote: again.draftNote, draftSources: again.draftSources, sourceVerdict: again.sourceVerdict, secondRound: again.secondRound, prompts: { research: sample.prompts?.research ?? null, writer: again.prompts?.writer ?? null }, models: sample.models && again.models ? { ...sample.models, writer: again.models.writer, verifier: again.models.verifier } : sample.models, logFiles: [...(sample.logFiles ?? []), ...(again.logFiles ?? [])], checkCostUsd: sample.checkCostUsd + again.checkCostUsd, judgeCostUsd: sample.judgeCostUsd + again.judgeCostUsd };
         }),
       );
       const { passedIn, verdict } = rowVerdictOf(samples.map((s) => s.verdict));

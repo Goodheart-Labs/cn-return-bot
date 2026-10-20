@@ -79,7 +79,13 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/cfar-ftx.0.json"
+      ]
      },
      {
       "quality": null,
@@ -110,7 +116,14 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://davidzmorris.substack.com/p/a-lever-long-enough-draft-excerpt",
+       "https://restructuring.ra.kroll.com/FTX/ExternalCall-DownloadPDF?id1=MjU4MDg0OQ%3D%3D&id2=0"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/cfar-ftx.1.json"
+      ]
      },
      {
       "quality": null,
@@ -141,7 +154,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/cfar-ftx.2.json"
+      ]
      }
     ],
     "passedIn": 1,
@@ -211,7 +227,13 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.pnas.org/doi/10.1073/pnas.2215907120"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/melanie-mitchell.0.json"
+      ]
      },
      {
       "quality": null,
@@ -240,7 +262,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://pubmed.ncbi.nlm.nih.gov/36940333/",
+       "https://arxiv.org/abs/2411.14215"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/melanie-mitchell.1.json"
+      ]
      },
      {
       "quality": null,
@@ -271,7 +300,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/melanie-mitchell.2.json"
+      ]
      }
     ],
     "passedIn": 1,
@@ -326,7 +358,14 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/1998_NBA_playoffs",
+       "https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-01.0.json"
+      ]
      },
      {
       "quality": null,
@@ -357,7 +396,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.washingtonpost.com/archive/lifestyle/1998/06/17/bulls-a-winner-for-nbc/9e4ac4dd-ecb0-4aa8-b6fd-a6f6e56535a6/",
+       "https://en.wikipedia.org/wiki/1998_NBA_playoffs",
+       "https://en.wikipedia.org/wiki/NBA_Finals_television_ratings"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-01.1.json"
+      ]
      },
      {
       "quality": null,
@@ -388,7 +435,14 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/1998_NBA_playoffs",
+       "https://www.multpl.com/united-states-population/table/by-year"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-01.2.json"
+      ]
      }
     ],
     "passedIn": 1,
@@ -441,7 +495,14 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory)",
+       "https://the-big-bang-theory.com/characters/penny/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-02.0.json"
+      ]
      },
      {
       "quality": null,
@@ -482,7 +543,14 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://the-big-bang-theory.com/characters/penny/",
+       "https://bigbangtheory.fandom.com/wiki/The_Financial_Permeability"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-02.1.json"
+      ]
      },
      {
       "quality": null,
@@ -511,7 +579,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory)",
+       "https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis",
+       "https://the-big-bang-theory.com/quotes/quote/941/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-02.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -552,7 +628,10 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-05.0.json"
+      ]
      },
      {
       "quality": null,
@@ -581,7 +660,10 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-05.1.json"
+      ]
      },
      {
       "quality": null,
@@ -612,7 +694,10 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": null,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-05.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -670,7 +755,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://lacocinadegisele.com/knowledgebase/can-debts-be-written-off-due-to-mental-illness-united-states",
+       "https://neurolaunch.com/mental-illness-debt-forgiveness/",
+       "https://moneynerd.co.uk/bailiffs-mental-health/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-06.0.json"
+      ]
      },
      {
       "quality": null,
@@ -706,7 +799,13 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://www.debtbusters.co.za/faqs/what-is-sequestration/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-06.1.json"
+      ]
      },
      {
       "quality": null,
@@ -747,7 +846,14 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://www.stepchange.org/debt-info/debt-and-mental-health-evidence-form.aspx",
+       "https://getoutofdebt.org/mental-health-crisis-debt"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1009/x-06.2.json"
+      ]
      }
     ],
     "passedIn": 3,

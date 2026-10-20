@@ -70,7 +70,15 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://arbital.com/p/pivotal/",
+       "https://aisafety.info/questions/7580/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.0.json",
+       "logs/eval-2026-10-20-0452/pivotal-act-terrorism.0.json"
+      ]
      },
      {
       "quality": {
@@ -140,7 +148,14 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://intelligence.org/2022/06/10/agi-ruin/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.1.json",
+       "logs/eval-2026-10-20-0452/pivotal-act-terrorism.1.json"
+      ]
      },
      {
       "quality": null,
@@ -172,7 +187,15 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.85,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://arbital.com/p/pivotal/",
+       "https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.2.json",
+       "logs/eval-2026-10-20-0452/pivotal-act-terrorism.2.json"
+      ]
      }
     ],
     "passedIn": 1,

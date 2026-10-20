@@ -187,6 +187,10 @@ export interface CheckerSample {
   /** Whether the stronger model said the claim is misleading, in a run made when it answered yes or no. Missing in an earlier run. */
   strongMisleading?: boolean | null;
   draftNote: string | null;
+  /** Where the full logs of the check are published, relative to the page. A rerun from the writer on has the log of the research and the log of the rerun. */
+  logFiles?: string[];
+  /** The source addresses of the drafted note. Missing in a run saved before they were kept. */
+  draftSources?: string[];
   sourceVerdict: string | null;
   checkCostUsd: number;
   judgeCostUsd: number;

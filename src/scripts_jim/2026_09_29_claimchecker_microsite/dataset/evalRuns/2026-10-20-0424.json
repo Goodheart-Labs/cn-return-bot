@@ -154,7 +154,15 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.timeshighereducation.com/news/grade-inflation-much-higher-ai-exposed-degrees",
+       "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/berkeley-as.0.json",
+       "logs/eval-2026-10-20-0424/berkeley-as.0.json"
+      ]
      },
      {
       "quality": {
@@ -209,7 +217,15 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.escholarship.org/uc/item/80x8d3qd.pdf",
+       "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/berkeley-as.1.json",
+       "logs/eval-2026-10-20-0424/berkeley-as.1.json"
+      ]
      },
      {
       "quality": null,
@@ -247,7 +263,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.dailycal.org/news/campus/academics/uc-berkeley-shows-no-signs-of-ai-grade-inflation-as-professors-adapt/article_6da85b38-889f-4f80-835a-88cc54a81662.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/berkeley-as.2.json",
+       "logs/eval-2026-10-20-0424/berkeley-as.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -321,7 +344,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/czechoslovakia-doctors.0.json",
+       "logs/eval-2026-10-20-0424/czechoslovakia-doctors.0.json"
+      ]
      },
      {
       "quality": {
@@ -376,7 +406,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/czechoslovakia-doctors.1.json",
+       "logs/eval-2026-10-20-0424/czechoslovakia-doctors.1.json"
+      ]
      },
      {
       "quality": {
@@ -426,7 +463,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/czechoslovakia-doctors.2.json",
+       "logs/eval-2026-10-20-0424/czechoslovakia-doctors.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -487,7 +531,15 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.62,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://davidzmorris.substack.com/p/a-lever-long-enough-draft-excerpt",
+       "https://www.aipanic.news/p/the-rationality-trap"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/cfar-ftx.0.json",
+       "logs/eval-2026-10-20-0424/cfar-ftx.0.json"
+      ]
      },
      {
       "quality": {
@@ -539,7 +591,15 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.68,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://forum.effectivealtruism.org/posts/YSuqwrXFtuXuSzGDc/linkpost-sam-bankman-fried-funded-a-group-with-racist-ties",
+       "https://www.greaterwrong.com/posts/9iDw6ugMPk7pmXuyW/lightcone-infrastructure-lesswrong-is-looking-for-funding/comment/vnYX8NPpHK4fRL5Gd"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/cfar-ftx.1.json",
+       "logs/eval-2026-10-20-0424/cfar-ftx.1.json"
+      ]
      },
      {
       "quality": null,
@@ -571,7 +631,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.4,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/cfar-ftx.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -618,7 +681,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.25,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/ea-earning-to-give.0.json"
+      ]
      },
      {
       "quality": null,
@@ -648,7 +714,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/ea-earning-to-give.1.json"
+      ]
      },
      {
       "quality": null,
@@ -680,7 +749,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.15,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/ea-earning-to-give.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -724,7 +796,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/aella-cam-girls.0.json"
+      ]
      },
      {
       "quality": null,
@@ -754,7 +829,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/aella-cam-girls.1.json"
+      ]
      },
      {
       "quality": null,
@@ -784,7 +862,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/aella-cam-girls.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -828,7 +909,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/nearly-impossible-to-prove.0.json"
+      ]
      },
      {
       "quality": null,
@@ -858,7 +942,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/nearly-impossible-to-prove.1.json"
+      ]
      },
      {
       "quality": null,
@@ -888,7 +975,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/nearly-impossible-to-prove.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -936,7 +1026,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.0.json"
+      ]
      },
      {
       "quality": null,
@@ -968,7 +1061,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.1.json"
+      ]
      },
      {
       "quality": {
@@ -1025,7 +1121,15 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.85,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://arbital.com/p/pivotal/",
+       "https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.2.json",
+       "logs/eval-2026-10-20-0424/pivotal-act-terrorism.2.json"
+      ]
      }
     ],
     "passedIn": 1,
@@ -1091,7 +1195,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://melaniemitchell.me/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/melanie-mitchell.0.json",
+       "logs/eval-2026-10-20-0424/melanie-mitchell.0.json"
+      ]
      },
      {
       "quality": {
@@ -1141,7 +1252,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://melaniemitchell.me/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/melanie-mitchell.1.json",
+       "logs/eval-2026-10-20-0424/melanie-mitchell.1.json"
+      ]
      },
      {
       "quality": {
@@ -1196,7 +1314,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://melaniemitchell.me/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/melanie-mitchell.2.json",
+       "logs/eval-2026-10-20-0424/melanie-mitchell.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -1243,7 +1368,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/ea-beholden-to-yudkowsky.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1275,7 +1403,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/ea-beholden-to-yudkowsky.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1307,7 +1438,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/ea-beholden-to-yudkowsky.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -1349,7 +1483,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/givewell-1500x.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1379,7 +1516,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/givewell-1500x.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1409,7 +1549,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/givewell-1500x.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -1470,7 +1613,14 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.72,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://openai.com/index/gpt-5-6/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/sol-subagents.0.json",
+       "logs/eval-2026-10-20-0424/sol-subagents.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1502,7 +1652,14 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.8,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://openai.com/index/gpt-5-6/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/sol-subagents.1.json",
+       "logs/eval-2026-10-20-0424/sol-subagents.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1540,7 +1697,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.deeplearning.ai/the-batch/gpt-5-6-lands-in-limbo"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sol-subagents.2.json",
+       "logs/eval-2026-10-20-0424/sol-subagents.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -1582,7 +1746,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sol-destructive-45.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1612,7 +1779,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sol-destructive-45.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1642,7 +1812,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sol-destructive-45.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -1684,7 +1857,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.anthropic.com/research/claude-values-models-languages"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/opus-values-figure.0.json",
+       "logs/eval-2026-10-20-0424/opus-values-figure.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1714,7 +1894,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.anthropic.com/research/claude-values-models-languages"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/opus-values-figure.1.json",
+       "logs/eval-2026-10-20-0424/opus-values-figure.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1744,7 +1931,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.anthropic.com/research/claude-values-models-languages"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/opus-values-figure.2.json",
+       "logs/eval-2026-10-20-0424/opus-values-figure.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -1797,7 +1991,14 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.55,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/Eliezer_Yudkowsky"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/yudkowsky-writer-not-scientist.0.json",
+       "logs/eval-2026-10-20-0424/yudkowsky-writer-not-scientist.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1829,7 +2030,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.4,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/yudkowsky-writer-not-scientist.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1861,7 +2065,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.4,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/yudkowsky-writer-not-scientist.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -1906,7 +2113,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://ntrs.nasa.gov/api/citations/20140016714/downloads/20140016714.pdf"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sun-mass-ratio.0.json",
+       "logs/eval-2026-10-20-0424/sun-mass-ratio.0.json"
+      ]
      },
      {
       "quality": null,
@@ -1936,7 +2150,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://www.skyatnightmagazine.com/space-science/how-many-earths-can-fit-sun"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sun-mass-ratio.1.json",
+       "logs/eval-2026-10-20-0424/sun-mass-ratio.1.json"
+      ]
      },
      {
       "quality": null,
@@ -1966,7 +2187,14 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/Solar_mass"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/sun-mass-ratio.2.json",
+       "logs/eval-2026-10-20-0424/sun-mass-ratio.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -2008,7 +2236,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-01.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2038,7 +2269,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-01.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2068,7 +2302,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-01.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2110,7 +2347,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-02.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2140,7 +2380,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-02.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2170,7 +2413,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-02.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2212,7 +2458,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-03.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2242,7 +2491,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-03.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2272,7 +2524,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-03.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2316,7 +2571,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.25,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/realistic-04.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2348,7 +2606,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.35,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/realistic-04.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2380,7 +2641,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.12,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/realistic-04.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2422,7 +2686,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-05.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2452,7 +2719,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-05.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2482,7 +2752,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-05.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2524,7 +2797,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-06.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2554,7 +2830,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-06.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2584,7 +2863,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-06.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2626,7 +2908,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-07.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2656,7 +2941,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-07.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2686,7 +2974,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-07.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2728,7 +3019,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-08.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2758,7 +3052,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-08.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2788,7 +3085,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-08.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2830,7 +3130,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/realistic-09.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2860,7 +3163,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-09.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2890,7 +3196,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/realistic-09.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -2932,7 +3241,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-10.0.json"
+      ]
      },
      {
       "quality": null,
@@ -2962,7 +3274,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-10.1.json"
+      ]
      },
      {
       "quality": null,
@@ -2992,7 +3307,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-10.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3034,7 +3352,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-11.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3064,7 +3385,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-11.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3094,7 +3418,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-11.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3136,7 +3463,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-12.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3166,7 +3496,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-12.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3196,7 +3529,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-12.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3238,7 +3574,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-13.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3268,7 +3607,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-13.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3298,7 +3640,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-13.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3340,7 +3685,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-14.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3370,7 +3718,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-14.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3400,7 +3751,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-14.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3442,7 +3796,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/realistic-15.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3474,7 +3831,10 @@
        "verifier": "openai/gpt-6-luna"
       },
       "strongProbability": 0.25,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/realistic-15.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3504,7 +3864,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-15.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3546,7 +3909,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-16.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3576,7 +3942,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-16.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3606,7 +3975,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-16.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3648,7 +4020,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-17.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3678,7 +4053,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-17.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3708,7 +4086,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-17.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3750,7 +4131,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-18.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3780,7 +4164,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/realistic-18.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3810,7 +4197,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/realistic-18.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3852,7 +4242,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-19.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3882,7 +4275,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-19.1.json"
+      ]
      },
      {
       "quality": null,
@@ -3912,7 +4308,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-19.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -3954,7 +4353,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-20.0.json"
+      ]
      },
      {
       "quality": null,
@@ -3984,7 +4386,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-20.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4014,7 +4419,10 @@
        "search": null,
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/realistic-20.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -4058,7 +4466,10 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.08,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-01.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4110,7 +4521,16 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.6,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.sportsmediawatch.com/2016/06/nba-finals-ratings-historical-chart-cavaliers-warriors-nba-finals-1998-bulls-jazz/",
+       "https://en.wikipedia.org/wiki/NBA_Finals_television_ratings",
+       "https://fred.stlouisfed.org/data/POPTOTUSA647NWDB"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-01.1.json",
+       "logs/eval-2026-10-20-0424/x-01.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4162,7 +4582,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.55,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years",
+       "https://www.washingtonpost.com/archive/lifestyle/1998/06/17/bulls-a-winner-for-nbc/9e4ac4dd-ecb0-4aa8-b6fd-a6f6e56535a6/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-01.2.json",
+       "logs/eval-2026-10-20-0424/x-01.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -4212,7 +4640,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://screenrant.com/big-bang-theory-every-penny-job-complete-timeline/",
+       "https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-02.0.json",
+       "logs/eval-2026-10-20-0424/x-02.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4254,7 +4690,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://warnerbros.fandom.com/wiki/Penny_Hofstadter",
+       "https://the-big-bang-theory.com/quotes/quote/941/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-02.1.json",
+       "logs/eval-2026-10-20-0424/x-02.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4299,7 +4743,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/Penny_(The_Big_Bang_Theory)",
+       "https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-02.2.json",
+       "logs/eval-2026-10-20-0424/x-02.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -4361,7 +4813,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/2026_United_States_Air_Force_Boeing_B-52_crash",
+       "https://leadstories.com/hoax-alert/2026/07/fact-check-fake-video-falsely-shows-a-u.s.-b52-being-shot-down-by-a-missile.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-03.0.json",
+       "logs/eval-2026-10-20-0424/x-03.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4403,7 +4863,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/2026_Edwards_Air_Force_Base_B-52_crash",
+       "https://breakingdefense.com/2026/06/b-52-crashes-at-edwards-crew-condition-unknown/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-03.1.json",
+       "logs/eval-2026-10-20-0424/x-03.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4445,7 +4913,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://en.wikipedia.org/wiki/2026_Edwards_Air_Force_Base_B-52_crash",
+       "https://breakingdefense.com/2026/06/b-52-crashes-at-edwards-crew-condition-unknown/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-03.2.json",
+       "logs/eval-2026-10-20-0424/x-03.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -4499,7 +4975,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://leadstories.com/hoax-alert/2022/08/fact-check-prayer-request-for-baby-shot-with-nail-gun-is-not-current-or-verified-dates-back-to-2010.html",
+       "https://www.truthorfiction.com/prayer-request-kayla-scotts-22-month-old-son-shot-self-with-brad-nailer/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-04.0.json",
+       "logs/eval-2026-10-20-0424/x-04.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4541,7 +5025,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://leadstories.com/hoax-alert/2022/08/fact-check-prayer-request-for-baby-shot-with-nail-gun-is-not-current-or-verified-dates-back-to-2010.html",
+       "https://www.truthorfiction.com/prayer-request-kayla-scotts-22-month-old-son-shot-self-with-brad-nailer/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-04.1.json",
+       "logs/eval-2026-10-20-0424/x-04.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4583,7 +5075,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://www.ricksdailytips.com/child-shot-by-nail-gun-hoax/",
+       "https://www.truthorfiction.com/prayer-request-kayla-scotts-22-month-old-son-shot-self-with-brad-nailer/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-04.2.json",
+       "logs/eval-2026-10-20-0424/x-04.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -4642,7 +5142,16 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://steamcommunity.com/discussions/forum/1/864969953572102601",
+       "https://www.bluesnews.com/cgi-bin/board.pl?action=viewthread&boardid=1&threadid=146408",
+       "https://www.notebookcheck.net/Denuvo-bolsters-DRM-in-Steam-games-even-as-hypervisor-achieves-piracy-milestone.1283939.0.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-05.0.json",
+       "logs/eval-2026-10-20-0424/x-05.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4691,7 +5200,16 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.6,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://steamcommunity.com/discussions/forum/0/2798376078346605932",
+       "https://theportablegamer.com/2026/03/25/how-to-go-offline-on-steam-complete-guide-to-invisible-mode-offline-play-in-2026/",
+       "https://www.eneba.com/hub/games/game-guides/can-you-play-steam-offline/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-05.1.json",
+       "logs/eval-2026-10-20-0424/x-05.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4730,7 +5248,14 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.7,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://steamcommunity.com/discussions/forum/0/2798376078346605932"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-05.2.json",
+       "logs/eval-2026-10-20-0424/x-05.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -4784,7 +5309,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://www.gov.uk/options-for-dealing-with-your-debts/breathing-space",
+       "https://truenorthdebt.co.za/is-there-debt-forgiveness-in-south-africa/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-06.0.json",
+       "logs/eval-2026-10-20-0424/x-06.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4822,7 +5355,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://myfloridalegal.com/",
+       "https://www.meerkat.co.za/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-06.1.json",
+       "logs/eval-2026-10-20-0424/x-06.1.json"
+      ]
      },
      {
       "quality": null,
@@ -4872,7 +5413,15 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "draftSources": [
+       "https://www.debtbusters.co.za/articles/can-go-debt-counselling-unemployed/",
+       "https://www.ivahelpline.co.uk/debt-help/debt-and-mental-health/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-06.2.json",
+       "logs/eval-2026-10-20-0424/x-06.2.json"
+      ]
      }
     ],
     "passedIn": 2,
@@ -4936,7 +5485,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.6,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.dexerto.com/food/viral-oreogate-mom-drama-was-a-paid-ai-ad-and-its-creator-wont-say-if-it-was-real-3403588/",
+       "https://www.ynetnews.com/business/article/hkcknczomx"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-07.0.json",
+       "logs/eval-2026-10-20-0424/x-07.0.json"
+      ]
      },
      {
       "quality": null,
@@ -4980,7 +5537,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.7,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.yahoo.com/lifestyle/articles/oreogate-parents-picking-sides-over-170849551.html",
+       "https://www.aol.ca/articles/mom-ridiculous-school-lunch-oreo-175024000.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-07.1.json",
+       "logs/eval-2026-10-20-0424/x-07.1.json"
+      ]
      },
      {
       "quality": null,
@@ -5024,7 +5589,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.55,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.yahoo.com/lifestyle/articles/oreogate-parents-picking-sides-over-170849551.html",
+       "https://www.aol.ca/articles/mom-ridiculous-school-lunch-oreo-175024000.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-07.2.json",
+       "logs/eval-2026-10-20-0424/x-07.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -5068,7 +5641,10 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-08.0.json"
+      ]
      },
      {
       "quality": null,
@@ -5098,7 +5674,10 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-08.1.json"
+      ]
      },
      {
       "quality": null,
@@ -5128,7 +5707,10 @@
        "search": null,
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "logFiles": [
+       "logs/eval-2026-10-19-1145/x-08.2.json"
+      ]
      }
     ],
     "passedIn": 0,
@@ -5184,7 +5766,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.7,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.snopes.com/news/2026/05/16/slaves-braided-maps-cornrows/",
+       "https://www.snopes.com/news/2022/03/12/maps-cornrows-black-slaves-escape/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-09.0.json",
+       "logs/eval-2026-10-20-0424/x-09.0.json"
+      ]
      },
      {
       "quality": null,
@@ -5228,7 +5818,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.65,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.snopes.com/news/2026/05/16/slaves-braided-maps-cornrows/",
+       "https://www.snopes.com/news/2022/03/12/maps-cornrows-black-slaves-escape/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-09.1.json",
+       "logs/eval-2026-10-20-0424/x-09.1.json"
+      ]
      },
      {
       "quality": null,
@@ -5272,7 +5870,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.65,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://www.snopes.com/news/2026/05/16/slaves-braided-maps-cornrows/",
+       "https://www.snopes.com/news/2022/03/12/maps-cornrows-black-slaves-escape/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-09.2.json",
+       "logs/eval-2026-10-20-0424/x-09.2.json"
+      ]
      }
     ],
     "passedIn": 3,
@@ -5328,7 +5934,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.55,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://fortune.com/2023/06/09/mark-zuckerberg-elon-musk-twitter-meta-layoffs-middle-managers/",
+       "https://americanbazaaronline.com/2026/07/21/viral-podcast-clip-shows-zuckerberg-praising-musks-twitter-layoffs-484932/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-10.0.json",
+       "logs/eval-2026-10-20-0424/x-10.0.json"
+      ]
      },
      {
       "quality": null,
@@ -5372,7 +5986,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.6,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://fortune.com/2023/06/09/mark-zuckerberg-elon-musk-twitter-meta-layoffs-middle-managers/amp",
+       "https://finance.yahoo.com/news/mark-zuckerberg-credits-elon-musk-175933916.html"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-10.1.json",
+       "logs/eval-2026-10-20-0424/x-10.1.json"
+      ]
      },
      {
       "quality": null,
@@ -5416,7 +6038,15 @@
        "verifier": "google/gemini-3-flash-preview"
       },
       "strongProbability": 0.75,
-      "strongMisleading": null
+      "strongMisleading": null,
+      "draftSources": [
+       "https://fortune.com/2023/06/09/mark-zuckerberg-elon-musk-twitter-meta-layoffs-middle-managers/",
+       "https://americanbazaaronline.com/2026/07/21/viral-podcast-clip-shows-zuckerberg-praising-musks-twitter-layoffs-484932/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0323/x-10.2.json",
+       "logs/eval-2026-10-20-0424/x-10.2.json"
+      ]
      }
     ],
     "passedIn": 3,
