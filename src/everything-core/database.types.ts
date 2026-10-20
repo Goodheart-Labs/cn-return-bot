@@ -2358,6 +2358,7 @@ export type Database = {
         Returns: {
           active_devices: number
           bucket: string
+          installs: number
           note_viewers: Json
           notes_seen: number
           notes_written: number
