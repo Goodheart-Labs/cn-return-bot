@@ -7,7 +7,9 @@
  * the stronger model's. When the sample had a second round, the findings from before the round are used.
  * The date block that the writer was given is read from the writer message that was saved.
  *
- *   WRITER_CACHE=<dir> bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/rerunWriter.ts --run 2026-10-20-0348 --label "..."
+ *   With --only <row ids> only those rows are run, and the saved run holds only them.
+ *
+ *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/rerunWriter.ts --run 2026-10-20-0348 --label "..."
  */
 import "dotenv/config";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "fs";
@@ -61,8 +63,10 @@ async function main() {
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   const evaluation = spyOn(noteEvaluationFilter, "getEvaluationScore").mockResolvedValue({});
   let rerun = 0;
+  const only = arg("only")?.split(",");
+  const selectedRows = source.checker.rows.filter((row) => !only || only.includes(row.id));
   const rows = await Promise.all(
-    source.checker.rows.map(async (row) => {
+    selectedRows.map(async (row) => {
       const datapoint = datapoints.find((d) => d.id === row.id)!;
       const index = datapoints.indexOf(datapoint);
       const samples = await Promise.all(
@@ -82,7 +86,7 @@ async function main() {
   );
   evaluation.mockRestore();
   const all = rows.flatMap((r) => r.samples);
-  const run: EvalRun = { ...source, id: runId, label, createdAt: new Date().toISOString(), checker: { ...source.checker, rows, costUsd: { checks: all.reduce((s, x) => s + x.checkCostUsd, 0), judge: all.reduce((s, x) => s + x.judgeCostUsd, 0) } } };
+  const run: EvalRun = { ...source, id: runId, label, createdAt: new Date().toISOString(), rowIds: rows.map((r) => r.id), checker: { ...source.checker, rows, costUsd: { checks: all.reduce((s, x) => s + x.checkCostUsd, 0), judge: all.reduce((s, x) => s + x.judgeCostUsd, 0) } } };
   mkdirSync(RESULTS_DIR, { recursive: true });
   writeFileSync(join(RESULTS_DIR, `${runId}.json`), JSON.stringify(run, null, 1));
   console.log(`Saved evalRuns/${runId}.json. ${rerun} checks were run again from the writer on.`);
