@@ -68,7 +68,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": 0.8
      },
      {
       "quality": {
@@ -136,7 +137,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": 0.8
      },
      {
       "quality": null,
@@ -166,7 +168,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": 0.85
      }
     ],
     "passedIn": 1,

@@ -779,9 +779,10 @@ function checkerSummary(run) {
 }
 const MODEL_NAMES = { "meta/muse-spark-1.3-contributor": "Muse Spark 1.3", "openai/gpt-6-luna": "GPT-6 Luna", "anthropic/claude-sonnet-5.5": "Sonnet 5.5", "anthropic/claude-sonnet-5": "Sonnet 5", "google/gemini-3-flash-preview": "Gemini 3 Flash" };
 const modelName = (id) => (id ? MODEL_NAMES[id] ?? id.split("/").pop() : "");
+const PROBABILITY_NOTE_AT_OR_ABOVE = 0.5;
 const DECISION_TEXT = { note: "straight to the writer", no_note: "no note", escalate: "stronger model", audit: "stronger model (audit)" };
 /** What the cascade's quick research said about this check. It is empty for a check on the precheck path. */
-const cascadeLine = (c) => (c ? `<span class="pill-p">${percent(c.probability)}</span> <span class="small">${DECISION_TEXT[c.decision]}</span><br>` : "");
+const cascadeLine = (c, strongProbability) => (c ? `<span class="pill-p">${percent(c.probability)}</span> <span class="small">${DECISION_TEXT[c.decision]}</span>${strongProbability == null ? "" : ` <span class="pill-p">${percent(strongProbability)}</span> <span class="small">Sonnet</span>`}<br>` : "");
 function cascadeSummary(c) {
   const samples = c.rows.flatMap((r) => r.samples).filter((s) => s.cascade);
   if (!samples.length) return "";
@@ -804,7 +805,7 @@ function checkerRowsResult(run) {
     const judged = r.samples.filter((s) => s.quality);
     const quality = judged.length ? `${judged.filter((s) => s.quality.samePoint).length} of ${judged.length} notes` : '<span class="small">not judged</span>';
     const row = `<tr class="row" tabindex="0" data-id="rc-${r.id}" aria-expanded="${open}"><td class="num">${POINTS.findIndex((p) => p.id === r.id) + 1}</td><td>${groupChip(r.group)}</td><td>${expectedText({ expected: r.expected })}</td>
-      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${cascadeLine(s.cascade)}${secondRoundLine(s.secondRound)}${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
+      <td>${r.samples.map((s, i) => `<div class="refnote">${i + 1}. ${cascadeLine(s.cascade, s.strongProbability)}${secondRoundLine(s.secondRound)}${outcomeLine(s.outcome)}</div>`).join("")}</td><td>${verdictPill(r.verdict)}<br><span class="small">right in ${r.passedIn} of ${c.samples}</span></td><td>${quality}</td></tr>`;
     if (!open) return row;
     return row + `<tr class="detail"><td colspan="6"><div class="cdetail" id="cd-${r.id}"></div></td></tr>`;
   }).join("");
@@ -903,9 +904,9 @@ function mountCheckerDetail(host, result) {
           ...(c.userMessage ? [node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the quick research was given" })), proseBox(c.userMessage, true))] : []))));
     }
     const researchSkipped = s.cascade && (s.cascade.decision === "note" || s.cascade.decision === "no_note");
-    const researchChip = researchSkipped ? "skipped" : s.models?.search ? modelName(s.models.search) + ", native search" : "native search";
+    const researchChip = researchSkipped ? "skipped" : (s.models?.search ? modelName(s.models.search) + ", native search" : "native search") + (s.strongProbability == null ? "" : `, probability ${percent(s.strongProbability)}`);
     const researchBody = researchSkipped ? node("p", { class: "small", text: "Skipped. The quick research decided on its own, so the stronger model did not run." }) : s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." });
-    steps.push(stepCard(n++, researchSkipped ? "Full research" : "Research", researchChip, researchBody));
+    steps.push(stepCard(n++, researchSkipped ? "Full research" : "Research", researchChip, s.strongProbability == null ? researchBody : node("div", {}, node("p", {}, node("b", { text: percent(s.strongProbability) }), " that the claim is misleading. From " + percent(PROBABILITY_NOTE_AT_OR_ABOVE) + " up the check goes on to the writer, under it the check ends."), researchBody)));
     if (s.draftNote) {
       const body = node("div", {}, proseBox(s.draftNote));
       if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, withoutTweetLines(s.prompts.writer))));

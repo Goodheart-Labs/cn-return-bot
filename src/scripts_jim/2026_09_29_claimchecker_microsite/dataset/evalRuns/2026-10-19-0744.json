@@ -103,7 +103,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -350,7 +351,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -379,7 +381,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -408,7 +411,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,
@@ -452,7 +456,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -510,7 +515,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,
@@ -757,7 +763,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -786,7 +793,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -815,7 +823,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,
@@ -889,7 +898,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -918,7 +928,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,
@@ -962,7 +973,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -991,7 +1003,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -1020,7 +1033,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,
@@ -1160,7 +1174,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -1189,7 +1204,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -1230,7 +1246,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 2,
@@ -1445,7 +1462,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 2,
@@ -1487,7 +1505,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -1516,7 +1535,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -1545,7 +1565,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 3,
@@ -2000,7 +2021,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -2029,7 +2051,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -2058,7 +2081,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 3,
@@ -2495,7 +2519,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -2524,7 +2549,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -2792,7 +2818,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -2850,7 +2877,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 3,
@@ -3089,7 +3117,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -3118,7 +3147,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -3147,7 +3177,8 @@
        "search": "anthropic/claude-sonnet-5.5",
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 3,
@@ -3683,7 +3714,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -3741,7 +3773,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,
@@ -4168,7 +4201,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4226,7 +4260,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 1,
@@ -4395,7 +4430,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4436,7 +4472,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4477,7 +4514,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 3,
@@ -4530,7 +4568,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": {
@@ -4569,7 +4608,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4651,7 +4691,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4692,7 +4733,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4733,7 +4775,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 3,
@@ -4774,7 +4817,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4803,7 +4847,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      },
      {
       "quality": null,
@@ -4832,7 +4877,8 @@
        "search": "anthropic/claude-sonnet-5",
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
-      }
+      },
+      "strongProbability": null
      }
     ],
     "passedIn": 0,

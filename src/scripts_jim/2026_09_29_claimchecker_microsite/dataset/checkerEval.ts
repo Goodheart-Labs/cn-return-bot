@@ -102,6 +102,13 @@ export function cascadeOf(logs: any): CascadeTrace | null {
   };
 }
 
+/** The probability that the stronger model gave, from the log of a check. It is null when the full research did not run or answered yes or no. */
+export function strongProbabilityOf(logs: any): number | null {
+  const messages = logs?.note_writer_steps?.search?.messages;
+  const answer = (Array.isArray(messages) ? messages[1] : messages?.["1"])?.content;
+  return typeof answer?.misleading_probability === "number" ? answer.misleading_probability : null;
+}
+
 /** The user messages of the research step and the writer step, from the log of
  *  a check. A log written to disk keeps its messages under string keys, one
  *  held in memory keeps them in a list, so both are read. */
@@ -137,7 +144,7 @@ export async function checkSample(row: CheckableRow, referenceNotes: string[], r
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongProbabilityOf(run.logs), secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };
