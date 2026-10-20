@@ -137,7 +137,7 @@ ${params.referenceBlock}`;
 
 const OUTPUT_FORMAT_HEADING = "## Output format";
 
-/** Added to the Claude research calls of Common Notes. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
+/** Added to every Claude research call. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
 export const CLAUDE_SOURCE_URL_INSTRUCTION =
   "When you think the claim is misleading in some way, you have to use search and include at least one correct source URL in the findings. Even if you don't need it, we need it.";
 

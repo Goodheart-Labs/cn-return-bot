@@ -224,7 +224,7 @@ async function searchWithAnthropicNative(
   // and the Sonar path use the same workaround. Opus writes a reasoning
   // preamble before the JSON, so we extract the JSON object instead of parsing
   // the whole message.
-  const systemPrompt = `${config.commonnotes_pipeline ? withSourceUrlInstruction(getSearchSystemPrompt()) : getSearchSystemPrompt()}${promptedJsonInstruction()}`;
+  const systemPrompt = `${withSourceUrlInstruction(getSearchSystemPrompt())}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
   if (followUp) log?.set(`${STEP.search}.follow_up`, followUp);
 
