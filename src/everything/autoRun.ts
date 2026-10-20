@@ -20,9 +20,10 @@
  * doing its job, and fails loudly when it is not.
  *
  * The walk for new posts runs only when the feed tiers of the queue are empty.
- * With one item per run, a fresh pick, newer and at a higher tier, would
- * otherwise be taken before a resumed or retried item every time and those
- * would never get their turn.
+ * With one item per run, a fresh pick would otherwise be taken before an item
+ * a killed run left half done, and that item would never get its turn. A
+ * failed post does not wait in the queue. The walk picks it again in rank
+ * order (see autoEnqueue.ts).
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -45,7 +46,7 @@ import {
   nextAlarm,
 } from "./pacing";
 import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
-import { freshFeedItemsQueued, logQueue, processNextFeedItem } from "./worker";
+import { feedItemsQueued, logQueue, processNextFeedItem } from "./worker";
 
 /** How long a reader request may sit unconsumed before this run fails. Intake
  *  consumes within seconds when it is alive, and its own 60-second poll is the
@@ -98,7 +99,7 @@ async function processOneFeedItem(): Promise<FeedRunOutcome> {
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
   console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
   const queue = await logQueue();
-  if (!freshFeedItemsQueued(queue)) await runAutoEnqueue();
+  if (!feedItemsQueued(queue)) await runAutoEnqueue();
   const ended = await processNextFeedItem();
   if (ended === "empty") console.log("Nothing to process · every creator we walk is caught up");
   return ended;

@@ -72,7 +72,7 @@ const record = (name: string) => (...args: unknown[]) => {
 };
 
 export const dbMock = () => ({
-  QUEUE_PRIORITY: { requested: 2, prioritized: 1, backlog: 0, retry: -1 },
+  QUEUE_PRIORITY: { requested: 2, prioritized: 1, backlog: 0 },
   fillProjectDisplayName: () => Promise.resolve(),
   fillProjectDisplayNameBySlug: () => Promise.resolve(),
   fetchItemUrlsIn: () => Promise.resolve(dbState.knownItems),

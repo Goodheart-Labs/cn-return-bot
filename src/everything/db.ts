@@ -12,9 +12,6 @@ import type { ItemSource, NoteSourceCitation } from "./types";
 /** The queue's priority tiers. The worker takes the highest tier first, and the
  *  newest published content within a tier. */
 export const QUEUE_PRIORITY = {
-  /** An errored item on a repeat attempt. It already had its turn once, so it
-   *  must never crowd out fresh content and drains last. */
-  retry: -1,
   /** A post by a creator we walk only because readers visited them. */
   backlog: 0,
   /** A post by a creator whose priority window is still open, because someone
@@ -41,7 +38,7 @@ export interface EverythingItem {
    *  item has been ingested this column also holds the text that the public
    *  write-note flow searches. */
   full_text: string | null;
-  /** How many repeat attempts the retry sweep has given this item. */
+  /** How many repeat attempts this item has been given after failing. */
   retries: number;
 }
 
@@ -340,49 +337,59 @@ export async function requeueItem(id: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
 }
 
-/** An errored item that still has repeat attempts left. */
+/** An errored item that still has repeat attempts left and has rested long
+ *  enough for the next one. `feed_url` is the feed of the item's creator, or
+ *  null when its project follows no feed. */
 export interface RetryableErrorItem {
   id: string;
   url: string;
+  title: string | null;
+  published_at: string | null;
   retries: number;
   priority: number;
+  feed_url: string | null;
 }
 
-/** Returns the errored items that are due another attempt. `waitHours[n]` is
- *  how long an item that has been retried n times waits after its last
- *  failure, so an item retried as often as the list is long is never
- *  returned. The wait spaces the attempts out. Without it a failure whose
- *  cause lasts a while, say a broken proxy or an exhausted API key, would burn
- *  every retry within minutes and the item would be dead again before the
- *  cause clears. */
-export async function fetchRetryableErrorItems(waitHours: readonly number[]): Promise<RetryableErrorItem[]> {
+/** Returns the errored items of one worker's tiers that are due another
+ *  attempt. `waitHours[n]` is how long an item that has been retried n times
+ *  waits after its last failure, so an item retried as often as the list is
+ *  long is never returned. The wait spaces the attempts out. Without it a
+ *  failure whose cause lasts a while, say a broken proxy or an exhausted API
+ *  key, would burn every retry within minutes and the item would be dead
+ *  again before the cause clears. */
+export async function fetchRetryableErrorItems(
+  waitHours: readonly number[],
+  tier: "requested" | "feed",
+): Promise<RetryableErrorItem[]> {
   const due = waitHours.map((hours, retries) => {
     const failedBefore = new Date(Date.now() - hours * 3600_000).toISOString();
     return `and(retries.eq.${retries},processed_at.lt."${failedBefore}")`;
   });
-  return throwOnError(
-    await getSupabaseClient()
-      .from("everything_items")
-      .select("id, url, retries, priority")
-      .eq("status", "error")
-      .or(due.join(",")),
-  ) as RetryableErrorItem[];
+  const rows = await fetchAllRows<Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null }>(
+    () => {
+      const query = getSupabaseClient()
+        .from("everything_items")
+        .select("id, url, title, published_at, retries, priority, everything_projects(feed_url)")
+        .eq("status", "error")
+        .or(due.join(","));
+      return tier === "requested"
+        ? query.gte("priority", QUEUE_PRIORITY.requested)
+        : query.lt("priority", QUEUE_PRIORITY.requested);
+    },
+    "id",
+    { label: "retryableErrorItems" },
+  );
+  return rows.map(({ everything_projects, ...item }) => ({ ...item, feed_url: everything_projects?.feed_url ?? null }));
 }
 
-/** Puts an errored item back in the queue for a repeat attempt and counts the
- *  attempt. The last error text stays on the row until the item finishes, so a
- *  waiting retry still shows why the item failed. A requested page keeps its
- *  tier, because a reader is waiting for it. Every other item drains at the
- *  retry tier, behind all fresh content. */
-export async function requeueErroredItem(item: RetryableErrorItem): Promise<void> {
+/** Puts an errored item back in the queue at the given tier for a repeat
+ *  attempt, and counts the attempt. The last error text stays on the row until
+ *  the item finishes, so a waiting retry still shows why the item failed. */
+export async function requeueErroredItem(item: RetryableErrorItem, priority: number): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({
-        status: "queued",
-        retries: item.retries + 1,
-        priority: item.priority >= QUEUE_PRIORITY.requested ? item.priority : QUEUE_PRIORITY.retry,
-      })
+      .update({ status: "queued", retries: item.retries + 1, priority })
       .eq("id", item.id),
   );
 }
