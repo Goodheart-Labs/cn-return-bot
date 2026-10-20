@@ -3,6 +3,8 @@
  * Every other sample is copied over unchanged. The result is saved as a new run.
  * The cheap research runs again too, so a rerun check can end up on a different path than before.
  *
+ *   With --only <row ids> only those rows are run, and the saved run holds only them.
+ *
  *   bun run src/scripts_jim/2026_09_29_claimchecker_microsite/dataset/rerunStrong.ts --run 2026-10-19-1145 --label "..."
  */
 import "dotenv/config";
@@ -45,8 +47,10 @@ async function main() {
   const queue = new PQueue({ concurrency: CHECK_CONCURRENCY });
   const evaluation = spyOn(noteEvaluationFilter, "getEvaluationScore").mockResolvedValue({});
   let rerun = 0;
+  const only = arg("only")?.split(",");
+  const selectedRows = source.checker.rows.filter((row) => !only || only.includes(row.id));
   const rows = await Promise.all(
-    source.checker.rows.map(async (row) => {
+    selectedRows.map(async (row) => {
       const datapoint = datapoints.find((d) => d.id === row.id)!;
       const index = datapoints.indexOf(datapoint);
       const samples = await Promise.all(
@@ -68,6 +72,7 @@ async function main() {
     id: runId,
     label,
     createdAt: new Date().toISOString(),
+    rowIds: rows.map((r) => r.id),
     checker: { ...source.checker, rows, costUsd: { checks: rows.flatMap((r) => r.samples).reduce((s, x) => s + x.checkCostUsd, 0), judge: rows.flatMap((r) => r.samples).reduce((s, x) => s + x.judgeCostUsd, 0) } },
   };
   mkdirSync(RESULTS_DIR, { recursive: true });

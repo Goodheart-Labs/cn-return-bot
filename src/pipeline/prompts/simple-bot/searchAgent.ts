@@ -118,9 +118,17 @@ A reference document on this post's topic is provided below. Treat it as ground 
 ${params.referenceBlock}`;
 }
 
+const OUTPUT_FORMAT_HEADING = "## Output format";
+
 /** Added to every Claude research call. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
 export const CLAUDE_SOURCE_URL_INSTRUCTION =
-  "When you think the claim is misleading in some way, please include at least one correct source URL. Even if you don't need it, we need it.";
+  "When you think the claim is misleading in some way, you have to use search and include at least one correct source URL in the findings. Even if you don't need it, we need it.";
+
+/** Puts the source URL instruction in front of the output format section of a research prompt. */
+export function withSourceUrlInstruction(prompt: string): string {
+  if (!prompt.includes(OUTPUT_FORMAT_HEADING)) throw new Error(`The research prompt has no "${OUTPUT_FORMAT_HEADING}" section to put the source URL instruction before`);
+  return prompt.replace(OUTPUT_FORMAT_HEADING, `${CLAUDE_SOURCE_URL_INSTRUCTION}\n\n${OUTPUT_FORMAT_HEADING}`);
+}
 
 // This is the strict OpenAI-style json_schema. Anthropic models accept it
 // through OpenRouter.

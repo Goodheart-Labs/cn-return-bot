@@ -22,7 +22,7 @@ import {
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
-  CLAUDE_SOURCE_URL_INSTRUCTION,
+  withSourceUrlInstruction,
 } from "../prompts/simple-bot/searchAgent";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
 import type { LlmCallCost } from "../cost-tracking/costTracker";
@@ -215,7 +215,7 @@ async function searchWithAnthropicNative(
   // and the Sonar path use the same workaround. Opus writes a reasoning
   // preamble before the JSON, so we extract the JSON object instead of parsing
   // the whole message.
-  const systemPrompt = `${getSearchSystemPrompt()}\n\n${CLAUDE_SOURCE_URL_INSTRUCTION}${promptedJsonInstruction()}`;
+  const systemPrompt = `${withSourceUrlInstruction(getSearchSystemPrompt())}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
   const { findings, correctionNeeded, probability, cost } = await dispatchPromptedJsonSearch({
