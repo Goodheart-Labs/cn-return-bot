@@ -2359,6 +2359,7 @@ export type Database = {
           active_devices: number
           bucket: string
           installs: number
+          installs_by_browser: Json
           note_viewers: Json
           notes_seen: number
           notes_written: number
