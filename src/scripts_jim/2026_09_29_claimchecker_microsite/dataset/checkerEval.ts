@@ -155,14 +155,14 @@ export function promptsOf(logs: any): CheckerPrompts {
   };
 }
 
-/** With `researched`, the check starts at the writer on these findings and skips the research. */
-export async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>, researched?: Extract<WriterStageResult, { kind: "researched" }>): Promise<CheckerSample> {
+/** With `replayFrom`, the check starts after the stage it holds: at the writer for the findings of the research, or at the source check for a written note. */
+export async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>, replayFrom?: Exclude<WriterStageResult, { kind: "early_exit" }>): Promise<CheckerSample> {
   const base = { quality: null, research: null, draftNote: null, sourceVerdict: null, checkCostUsd: 0, judgeCostUsd: 0 };
   try {
     // A claim's id has a hyphen, so it can never be mistaken for a tweet id, and it is new for every sample. A tweet keeps its own id.
     const post = (row.xPost ? row.checker.post : { ...row.checker.post, id: `eval-${runId}-${index}-${sample}` }) as Parameters<typeof runClaimCheck>[0];
     if (row.xPost) writeInputCacheMem(post.id, X_POST_VIDEO_STRATEGY, X_POST_INPUT);
-    if (researched) writeWriterCache(post.id, researched);
+    if (replayFrom) writeWriterCache(post.id, replayFrom);
     const { check, run } = await runClaimCheck(post, row.xPost ? { ...X_POST_PICKS, ...picks } : picks);
     mkdirSync(join(LOGS_DIR, `eval-${runId}`), { recursive: true });
     writeFileSync(join(LOGS_DIR, `eval-${runId}`, `${row.id}.${sample}.json`), JSON.stringify(run, null, 1));
