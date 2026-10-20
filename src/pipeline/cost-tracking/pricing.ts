@@ -58,16 +58,22 @@ export interface TokenCost {
   input_tokens: number;
   output_tokens: number;
   cost: number;
+  /** The input tokens that were read from the provider's prompt cache. Only set when the provider reported them. */
+  cached_tokens?: number;
+  /** The input tokens that were written to the provider's prompt cache. Only set when the provider reported them. */
+  cache_write_tokens?: number;
 }
 
 // --- Helpers ---
 
 export function extractOpenRouterCost(response: any): TokenCost {
   const usage = response?.usage;
+  const cacheDetails = usage?.prompt_tokens_details;
   return {
     input_tokens: usage?.prompt_tokens ?? 0,
     output_tokens: usage?.completion_tokens ?? 0,
     cost: usage?.cost ?? 0,
+    ...(cacheDetails ? { cached_tokens: cacheDetails.cached_tokens ?? 0, cache_write_tokens: cacheDetails.cache_write_tokens ?? 0 } : {}),
   };
 }
 
@@ -142,6 +148,8 @@ export function addTokenCost(acc: TokenCost, add: TokenCost): void {
   acc.input_tokens += add.input_tokens;
   acc.output_tokens += add.output_tokens;
   acc.cost += add.cost;
+  if (add.cached_tokens !== undefined) acc.cached_tokens = (acc.cached_tokens ?? 0) + add.cached_tokens;
+  if (add.cache_write_tokens !== undefined) acc.cache_write_tokens = (acc.cache_write_tokens ?? 0) + add.cache_write_tokens;
 }
 
 
