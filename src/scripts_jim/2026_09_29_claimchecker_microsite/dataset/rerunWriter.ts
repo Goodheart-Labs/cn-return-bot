@@ -46,7 +46,9 @@ function researchedOf(sample: CheckerSample): Researched | null {
   const sent = buildWriterUserMessage(userMessage, findings);
   const writerMessage = sample.prompts?.writer ?? "";
   const timingContext = writerMessage.startsWith(sent) && writerMessage.length > sent.length ? writerMessage.slice(sent.length) : undefined;
-  return { kind: "researched", userMessage, findings, researchedBy: quick ? "quick" : "full", timingContext };
+  // The answer the researcher gave, rebuilt from what the sample kept, so that a second round can continue its conversation.
+  const answer = JSON.stringify(quick ? { findings, misleading_probability: sample.cascade?.probability } : sample.strongProbability != null ? { findings, misleading_probability: sample.strongProbability } : { findings, misleading: true });
+  return { kind: "researched", userMessage, findings, answer, researchedBy: quick ? "quick" : "full", timingContext };
 }
 
 async function main() {

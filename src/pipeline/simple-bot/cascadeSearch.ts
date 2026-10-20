@@ -20,7 +20,7 @@ import { COST, STEP } from "../utils/noteWriterSteps";
 import { extractJsonObject } from "../utils/jsonOutput";
 import { parseJsonWithRetry } from "../utils/jsonLlmCall";
 import { appendUrlCitations } from "./searchDispatch";
-import { runSearch, type SearchResult } from "./search";
+import { runSearch, type ResearchFollowUp, type SearchResult } from "./search";
 
 /** At or above this probability the cheap model's findings go straight to the writer. */
 export const CASCADE_NOTE_AT_OR_ABOVE = 0.9;
@@ -48,11 +48,13 @@ export function cascadeDecisionOf(probability: number, audit: boolean): CascadeD
 export interface WeakSearchResult {
   probability: number;
   findings: string;
+  /** The model's answer as JSON text, for a follow-up in the same conversation. */
+  answer: string;
   model: string;
 }
 
 /** One research call of the cheap step on one model, with the usual corrective re-asks when the JSON is bad. */
-async function askWeakModel(userMessage: string, model: string, systemPrompt: string): Promise<WeakSearchResult> {
+async function askWeakModel(userMessage: string, model: string, systemPrompt: string, followUp?: ResearchFollowUp): Promise<WeakSearchResult> {
   const cost = emptyTokenCost();
   let message: any;
   const output = await parseJsonWithRetry<{ findings: string; misleading_probability: number }>({
@@ -60,6 +62,7 @@ async function askWeakModel(userMessage: string, model: string, systemPrompt: st
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userMessage },
+      ...(followUp ? [{ role: "assistant", content: followUp.answer }, { role: "user", content: followUp.message }] : []),
     ],
     schemaHint: SCHEMA_HINT,
     call: async (messages) => {
@@ -78,20 +81,21 @@ async function askWeakModel(userMessage: string, model: string, systemPrompt: st
   });
   trackLlmCall({ name: COST.weakSearch, ...cost, tools: [] });
   const findings = appendUrlCitations(stripBrowserLineCitations(output.findings), message?.annotations);
-  return { probability: output.misleading_probability, findings, model };
+  return { probability: output.misleading_probability, findings, answer: JSON.stringify(output), model };
 }
 
 /** The cheap step: Muse first, and GPT-6 Luna when Muse fails. The log key says where the messages are kept, so that a second round does not overwrite the first. */
-export async function runQuickSearch(userMessage: string, logKey: string = STEP.weakSearch): Promise<WeakSearchResult> {
+export async function runQuickSearch(userMessage: string, logKey: string = STEP.weakSearch, followUp?: ResearchFollowUp): Promise<WeakSearchResult> {
   const log = getTweetLog();
   const systemPrompt = getBotConfig().commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY : SEARCH_SYSTEM_PROMPT_PROBABILITY;
   log?.set(`${logKey}.messages.0`, { systemPrompt, userMessage });
+  if (followUp) log?.set(`${logKey}.follow_up`, followUp);
   let result: WeakSearchResult;
   try {
-    result = await askWeakModel(userMessage, CASCADE_WEAK_MODEL, systemPrompt);
+    result = await askWeakModel(userMessage, CASCADE_WEAK_MODEL, systemPrompt, followUp);
   } catch (err: any) {
     log?.set(`${logKey}.fallback_reason`, err?.message ?? String(err));
-    result = await askWeakModel(userMessage, CASCADE_WEAK_FALLBACK_MODEL, systemPrompt);
+    result = await askWeakModel(userMessage, CASCADE_WEAK_FALLBACK_MODEL, systemPrompt, followUp);
   }
   log?.set(`${logKey}.messages.1`, { content: { findings: result.findings, misleading_probability: result.probability }, model: result.model });
   return result;
@@ -109,15 +113,15 @@ function strongSearchConfig(): BotConfig {
 }
 
 /** The stronger search of the cascade: the regular search step on the stronger model. It answers the question of the cheap step as a yes or no, with the same prompt except that the cheap step is also told to avoid being pedantic. */
-export function runStrongSearch(userMessage: string): Promise<SearchResult> {
-  return withBotConfig(strongSearchConfig(), () => runSearch(userMessage));
+export function runStrongSearch(userMessage: string, followUp?: ResearchFollowUp): Promise<SearchResult> {
+  return withBotConfig(strongSearchConfig(), () => runSearch(userMessage, followUp));
 }
 
 export async function runCascadingSearch(userMessage: string): Promise<SearchResult> {
   const weak = await runQuickSearch(userMessage);
   const decision = cascadeDecisionOf(weak.probability, !!getBotConfig().cascade_audit);
   getTweetLog()?.set("cascade", { probability: weak.probability, answered_by: weak.model, decision });
-  if (decision === "note") return { findings: weak.findings, correctionNeeded: true, researchedBy: "quick" };
-  if (decision === "no_note") return { findings: weak.findings, correctionNeeded: false, researchedBy: "quick" };
+  if (decision === "note") return { findings: weak.findings, answer: weak.answer, correctionNeeded: true, researchedBy: "quick" };
+  if (decision === "no_note") return { findings: weak.findings, answer: weak.answer, correctionNeeded: false, researchedBy: "quick" };
   return { ...(await runStrongSearch(userMessage)), researchedBy: "full" };
 }

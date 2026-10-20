@@ -60,14 +60,14 @@ describe("runCascadingSearch", () => {
   test("a probability of 0.9 or more passes the weak findings on without the strong search", async () => {
     weakAnswers({ misleading_probability: 0.95 });
     const { run: strong } = strongSearch();
-    expect(await run(claimConfig)).toEqual({ findings: "The weak findings", correctionNeeded: true, researchedBy: "quick" });
+    expect(await run(claimConfig)).toMatchObject({ findings: "The weak findings", correctionNeeded: true, researchedBy: "quick" });
     expect(strong).not.toHaveBeenCalled();
   });
 
   test("a probability below 0.3 means no note and no strong search", async () => {
     weakAnswers({ misleading_probability: 0.1 });
     const { run: strong } = strongSearch();
-    expect(await run(claimConfig)).toEqual({ findings: "The weak findings", correctionNeeded: false, researchedBy: "quick" });
+    expect(await run(claimConfig)).toMatchObject({ findings: "The weak findings", correctionNeeded: false, researchedBy: "quick" });
     expect(strong).not.toHaveBeenCalled();
   });
 

@@ -66,9 +66,6 @@ writeFileSync(
         quick: probabilityUserMessage(),
         research: first(short.note_writer_steps.search.messages).userMessage,
         secondRound: secondRoundMessage({
-          userMessage: "<the message the first research was given>",
-          findings: "<the findings the first note was written from>",
-          researchedBy: "full",
           noteText: "<the rejected note>",
           verification: { accepted: false, reasoning: "<the verifier's reasoning>", good_sources: ["<url>"], bad_sources: ["<url>"], source_evaluations: [{ url: "<url>", verdict: "bad", citations: [] }] },
         }),

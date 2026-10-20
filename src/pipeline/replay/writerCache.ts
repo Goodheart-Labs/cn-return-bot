@@ -33,12 +33,14 @@ export type Snippet = { title: string; snippet: string };
 export type WriterStageResult =
   | { kind: "early_exit"; outcome: PipelineOutcome }
   /** The research is done and the writer has not run. It lets an eval replay a run from the writer on. */
-  | { kind: "researched"; userMessage: string; findings: string; researchedBy: "quick" | "full"; timingContext?: string }
+  | { kind: "researched"; userMessage: string; findings: string; answer?: string; researchedBy: "quick" | "full"; timingContext?: string }
   | {
       kind: "writer_done";
       userMessage: string;
       findings: string;
       queries: string[];
+      /** The researcher's answer as JSON text, which the second research round continues from. */
+      answer?: string;
       noteText: string;
       sources: string[];
       /** The entries of the snippetsByUrl map, serialized. The verifier uses

@@ -12,7 +12,7 @@ import { geminiNativeGenerate } from "../llm/gemini";
 import { xaiNativeGenerate } from "../llm/xai";
 import { WEB_SEARCH_TOOL, GOOGLE_SEARCH_TOOL, WEB_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
 import { runToolLoop } from "../tool-calling/toolLoop";
-import { getBotConfig } from "../ab-testing/botConfig";
+import { getBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring/monitoringContext";
 import {
   buildSearchSystemPrompt,
@@ -26,6 +26,7 @@ import {
 } from "../prompts/simple-bot/searchAgent";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost, type TokenCost } from "../cost-tracking/pricing";
 import type { LlmCallCost } from "../cost-tracking/costTracker";
+import type { ResearchFollowUp } from "./search";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP } from "../utils/noteWriterSteps";
 import { ModelOutputInvalidError } from "../utils/errors";
@@ -87,6 +88,8 @@ function promptedJsonInstruction(): string {
 
 export interface SearchDispatchResult {
   findings: string;
+  /** The researcher's answer as JSON text. Only the providers that take a follow-up return it. */
+  answer?: string;
   correctionNeeded: boolean;
   costEntry: LlmCallCost;
 }
@@ -145,7 +148,7 @@ async function dispatchPromptedJsonSearch(params: {
    *  `extractJsonObject` for a model that narrates a preamble first, such as
    *  Opus. Use `stripJsonFences` for a model that emits bare JSON. */
   extractJson: (raw: string) => string;
-}): Promise<{ findings: string; correctionNeeded: boolean; message: any; cost: TokenCost }> {
+}): Promise<{ findings: string; correctionNeeded: boolean; answer: string; message: any; cost: TokenCost }> {
   const cost = emptyTokenCost();
   let message: any;
   const parsed = await parseJsonWithRetry<SearchOutput>({
@@ -165,23 +168,35 @@ async function dispatchPromptedJsonSearch(params: {
       return output;
     },
   });
-  return { findings: parsed.findings, correctionNeeded: (answersWithMisleading() ? parsed.misleading : parsed.correction_needed)!, message, cost };
+  return { findings: parsed.findings, correctionNeeded: (answersWithMisleading() ? parsed.misleading : parsed.correction_needed)!, answer: JSON.stringify(parsed), message, cost };
 }
 
 // --- Dispatcher ---
 
+/** The providers that send the whole conversation to the model, so that a follow-up can continue it. */
+const FOLLOW_UP_SEARCH_PROVIDERS: BotConfig["web_search"][] = ["native", "native_openai", "openrouter_native"];
+
+/** The turns that continue the conversation of the first research call: the researcher's answer, then the follow-up message. */
+function followUpTurns(followUp?: ResearchFollowUp) {
+  return followUp ? [{ role: "assistant" as const, content: followUp.answer }, { role: "user" as const, content: followUp.message }] : [];
+}
+
 export async function dispatchSearch(
   userMessage: string,
   costName: string,
+  followUp?: ResearchFollowUp,
 ): Promise<SearchDispatchResult> {
   const config = getBotConfig();
+  if (followUp && !FOLLOW_UP_SEARCH_PROVIDERS.includes(config.web_search)) {
+    throw new Error(`The search provider "${config.web_search}" cannot take a follow-up message, which the second research round needs`);
+  }
   switch (config.web_search) {
-    case "native":         return searchWithAnthropicNative(userMessage, costName);
+    case "native":         return searchWithAnthropicNative(userMessage, costName, followUp);
     case "native_gemini":  return searchWithGeminiNative(userMessage, costName);
     case "native_grok":    return searchWithGrokNative(userMessage, costName);
-    case "native_openai":  return searchWithOpenaiNative(userMessage, costName);
+    case "native_openai":  return searchWithOpenaiNative(userMessage, costName, followUp);
     case "bundled":        return searchWithSonarBundled(userMessage, costName);
-    case "openrouter_native": return searchWithOpenRouterNative(userMessage, costName);
+    case "openrouter_native": return searchWithOpenRouterNative(userMessage, costName, followUp);
     case "serper":
     case "serper_summarized":
                            return searchWithSerperLoop(userMessage, costName);
@@ -195,6 +210,7 @@ export async function dispatchSearch(
 async function searchWithAnthropicNative(
   userMessage: string,
   costName: string,
+  followUp?: ResearchFollowUp,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
@@ -208,8 +224,9 @@ async function searchWithAnthropicNative(
   // the whole message.
   const systemPrompt = `${withSourceUrlInstruction(getSearchSystemPrompt())}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
+  if (followUp) log?.set(`${STEP.search}.follow_up`, followUp);
 
-  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+  const { findings, correctionNeeded, answer, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithAnthropicNative",
     messages: [
       // This marks the system prompt as an Anthropic prefix-cache breakpoint,
@@ -223,7 +240,11 @@ async function searchWithAnthropicNative(
         role: "system" as const,
         content: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
       },
-      { role: "user" as const, content: userMessage },
+      // The first message is a cache breakpoint too. A follow-up turn repeats
+      // the system prompt and this message unchanged, so it reads both from
+      // the cache that the first call wrote.
+      { role: "user" as const, content: [{ type: "text", text: userMessage, cache_control: { type: "ephemeral" } }] },
+      ...followUpTurns(followUp),
     ],
     createOptions: {
       model,
@@ -234,7 +255,7 @@ async function searchWithAnthropicNative(
   });
   log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded }) } });
 
-  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, answer, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 export async function searchWithGeminiNative(
@@ -318,6 +339,7 @@ const OPENAI_MAX_TOKENS = 16000;
 async function searchWithOpenaiNative(
   userMessage: string,
   costName: string,
+  followUp?: ResearchFollowUp,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
@@ -327,6 +349,7 @@ async function searchWithOpenaiNative(
   const model = config.search_model ?? config.model;
   const systemPrompt = getSearchSystemPrompt();
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
+  if (followUp) log?.set(`${STEP.search}.follow_up`, followUp);
 
   // Called through OpenRouter, OpenAI's web_search_preview tool rejects
   // response_format=json_schema. It returns a 500 on production-sized prompts.
@@ -334,17 +357,18 @@ async function searchWithOpenaiNative(
   // valid JSON reliably when it is told to. If gpt-5 spends its whole budget on
   // reasoning and returns empty content, the retry loop asks again instead of
   // failing the run.
-  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
+  const { findings, correctionNeeded, answer, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithOpenaiNative",
     messages: [
       { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}${promptedJsonInstruction()}` },
+      ...followUpTurns(followUp),
     ],
     createOptions: { model, tools: [{ type: "web_search_preview" }], max_tokens: OPENAI_MAX_TOKENS },
     extractJson: stripJsonFences,
   });
   log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded }) } });
 
-  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, answer, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 async function searchWithSonarBundled(
@@ -399,18 +423,21 @@ async function searchWithSonarBundled(
 async function searchWithOpenRouterNative(
   userMessage: string,
   costName: string,
+  followUp?: ResearchFollowUp,
 ): Promise<SearchDispatchResult> {
   const log = getTweetLog();
   const config = getBotConfig();
   const model = config.search_model ?? config.model;
   const systemPrompt = `${getSearchSystemPrompt()}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage, model });
+  if (followUp) log?.set(`${STEP.search}.follow_up`, followUp);
 
   const result = await dispatchPromptedJsonSearch({
     source: "searchWithOpenRouterNative",
     messages: [
       { role: "system" as const, content: systemPrompt },
       { role: "user" as const, content: userMessage },
+      ...followUpTurns(followUp),
     ],
     createOptions: { model, tools: [OPENROUTER_NATIVE_WEB_SEARCH_TOOL] },
     extractJson: extractJsonObject,
@@ -420,6 +447,7 @@ async function searchWithOpenRouterNative(
 
   return {
     findings,
+    answer: result.answer,
     correctionNeeded: result.correctionNeeded,
     costEntry: { name: costName, ...result.cost, tools: [] },
   };

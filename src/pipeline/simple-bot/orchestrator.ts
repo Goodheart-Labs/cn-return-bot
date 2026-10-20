@@ -60,14 +60,14 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
   const timingContext = timing.action === "inform" ? timing.contextBlock : undefined;
 
-  return writeNote({ kind: "researched", userMessage, findings: search.findings, researchedBy: search.researchedBy ?? "full", timingContext });
+  return writeNote({ kind: "researched", userMessage, findings: search.findings, answer: search.answer, researchedBy: search.researchedBy ?? "full", timingContext });
 }
 
 type Researched = Extract<WriterStageResult, { kind: "researched" }>;
 
 /** Runs the writer on the findings of the research step. */
 async function writeNote(researched: Researched): Promise<Exclude<WriterStageResult, { kind: "researched" }>> {
-  const { userMessage, findings, researchedBy, timingContext } = researched;
+  const { userMessage, findings, answer, researchedBy, timingContext } = researched;
   const note = await runWriter(userMessage, findings, { timingContext });
   // The writer answers with an empty note when nothing in the findings disputes
   // a claim the post rests on. That is a "no note needed" answer, the same as
@@ -81,6 +81,7 @@ async function writeNote(researched: Researched): Promise<Exclude<WriterStageRes
     kind: "writer_done",
     userMessage,
     findings,
+    answer,
     queries: [],
     noteText: note.noteText,
     sources: note.sources,
@@ -156,6 +157,7 @@ async function runGatesWithSecondRound(stage: WriterDone): Promise<PipelineOutco
   const revised = await reviseResearch({
     userMessage: stage.userMessage,
     findings: stage.findings,
+    answer: stage.answer,
     researchedBy: stage.researchedBy ?? "full",
     noteText: stage.noteText,
     verification: first.verification,
