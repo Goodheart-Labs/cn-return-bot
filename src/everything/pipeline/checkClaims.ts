@@ -24,8 +24,10 @@ import { claimCheckFields } from "./claimCheckFields";
 // too many claims that were worth checking. We also force the claim-check search
 // prompt, because a claim here is an excerpt from a transcript or an article and
 // not an X post.
-// The models are pinned to GPT-6 Luna for search, writer and source verifier
-// alike (see model.ts); media descriptions stay on Gemini. Until 2026-10-13 all
+// The models are pinned to GPT-6 Luna for search and source verifier (see
+// model.ts). The writer is Gemini 3.8 Flash since 2026-10-20: in the claim
+// checker evals it wrote as well as the other writers and was the one Jim
+// preferred. Media descriptions stay on Gemini too. Until 2026-10-13 all
 // three ran on Muse Spark 1.3 Contributor (GOO-159), until Meta blocked our
 // access again (GOO-303). Search runs on the provider's own search through
 // OpenRouter's web_search server tool (GOO-258): the model searches, opens pages
@@ -41,7 +43,7 @@ const FORCED_PICKS: Record<string, string> = {
   note_prefilter: "off",
   commonnotes_pipeline: "on",
   simple_bot_search: "gpt6luna-native",
-  simple_bot_writer: "gpt6luna",
+  simple_bot_writer: "gemini38flash",
   simple_bot_verifier: "gpt6luna",
   media_description: "gemini3flash",
   verifier_citations: "on",

@@ -202,14 +202,14 @@ const CASCADE_AUDIT_TEST: ABTest = {
   ],
 };
 
-// One more research turn after the source verifier rejected a note. Off until the evals say it pays for itself.
-// The arm is live only by force. Turning it on for traffic is a change of weights.
+// One more research turn after the source verifier rejected a note. It is live on 20% of the Common Notes
+// checks. X posts do not get it, because some of their search providers cannot take a follow-up turn.
 const SECOND_ROUND_TEST: ABTest = {
   name: "second_round",
-  prerequisites: { botId: "simple-bot" },
+  prerequisites: { commonnotes_pipeline: true },
   variants: [
-    { variant: { name: "off", overrides: { second_round: false } }, weight: 100 },
-    { variant: { name: "on",  overrides: { second_round: true  } }, weight: 0 },
+    { variant: { name: "off", overrides: { second_round: false } }, weight: 80 },
+    { variant: { name: "on",  overrides: { second_round: true  } }, weight: 20 },
   ],
 };
 
