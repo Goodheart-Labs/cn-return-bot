@@ -32,19 +32,19 @@ Return JSON with two fields:
 - If no correction is needed, the findings can be brief — just explain why.`;
 
 /** The search prompt for checking a single claim, used when
- *  `config.commonnotes_pipeline` is on. The input is a verbatim excerpt
- *  highlighted from a podcast, an interview or an article, plus the surrounding passage for
- *  context. It is not an X post and it is not a paraphrase. With the X prompts
+ *  `config.commonnotes_pipeline` is on. The input is a claim drawn from a
+ *  podcast, an interview or an article, plus a short excerpt around it for
+ *  context. It is not an X post. With the X prompts
  *  the model treats the excerpt as a quoted conversation and refuses to
  *  fact-check it. Naming the input as an extracted claim fixes that. The
  *  everything pipeline uses this prompt. */
 export const SEARCH_SYSTEM_PROMPT_CLAIM = `You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.
 
 ## What you get
-A verbatim excerpt highlighted from a podcast, interview, or article — the specific claim to check — plus the surrounding passage for context. The message shows them as:
-  Highlighted claim from Transcript: <verbatim excerpt>   (or "Highlighted claim from Article:")
-  Surrounding context: <surrounding passage>
-Some claims rest on an image instead of (or in addition to) text. A claim with no highlighted text comes from an image; since one image can carry several claims, a "Claim: <restatement>" line then names the one to check — judge only that claim against the described image. A claim a reader picked out by hand also comes with a "Full Article:" (or "Full Transcript:") line holding the whole page, so you can tell what the excerpt refers to. Check only the highlighted claim. Judge whether the claim is factually correct.
+A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
+  Text from Transcript: <excerpt>   (or "Text from Article:")
+  Claim: <the claim>
+A claim a reader picked out by hand also comes with a "Full Article:" (or "Full Transcript:") line holding the whole page, so you can tell what the excerpt refers to. Check only the claim. Judge whether the claim is factually correct.
 
 ## Output format
 Return JSON with two fields:
@@ -59,6 +59,64 @@ Return JSON with two fields:
 ## Sourcing rules
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
+
+/** The cascading search's first step asks for a probability instead of a yes or
+ *  no. It is the claim prompt above with its output field swapped, the note
+ *  "automatically extracted" hint added and the judging question changed. */
+export const SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY = `You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.
+
+## What you get
+A single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:
+  Text from Transcript: <excerpt>   (or "Text from Article:")
+  Claim: <the claim>
+A claim a reader picked out by hand also comes with a "Full Article:" (or "Full Transcript:") line holding the whole page, so you can tell what the excerpt refers to. Check only the claim.
+The claim was automatically extracted and so it should be interpreted in the context. Avoid being pedantic.
+Judge whether the claim is misleading in some way.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
+- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.
+
+## Sourcing rules
+- Include what each source says that's relevant.
+- If the claim is not misleading, the findings can be brief — just explain why.
+
+Respond with strict JSON only matching: { findings: string, misleading_probability: number }`;
+
+/** The same first step for an X post: the X search prompt with its output field swapped. */
+export const SEARCH_SYSTEM_PROMPT_PROBABILITY = `You are a research agent for Community Notes fact-checking on X/Twitter.
+
+Your job: investigate whether the post's main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.
+
+## Output format
+Return JSON with two fields:
+- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.
+- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.
+
+## Sourcing rules
+- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Include what each source says that's relevant.
+- If no correction is needed, the findings can be brief — just explain why.
+
+Respond with strict JSON only matching: { findings: string, misleading_probability: number }`;
+
+const PROBABILITY_ANSWER_FIELD = "- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.";
+const MISLEADING_ANSWER_FIELD = "- misleading: true if the claim is misleading in any way, otherwise false.";
+const PROBABILITY_JSON_LINE = "{ findings: string, misleading_probability: number }";
+const MISLEADING_JSON_LINE = "{ findings: string, misleading: boolean }";
+const PEDANTIC_SENTENCE = " Avoid being pedantic.";
+
+/** The stronger model of the cascade answers yes or no instead of with a probability. */
+function withMisleadingAnswer(probabilityPrompt: string): string {
+  for (const part of [PROBABILITY_ANSWER_FIELD, PROBABILITY_JSON_LINE]) {
+    if (!probabilityPrompt.includes(part)) throw new Error(`The probability prompt has no "${part}"`);
+  }
+  return probabilityPrompt.replace(PROBABILITY_ANSWER_FIELD, MISLEADING_ANSWER_FIELD).replace(PROBABILITY_JSON_LINE, MISLEADING_JSON_LINE);
+}
+
+/** The claim prompt for the stronger model of the cascade. The cheap model is told to avoid being pedantic, and the stronger model was too lenient with that sentence. */
+export const SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING = withMisleadingAnswer(SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY).replace(PEDANTIC_SENTENCE, "");
 
 /** Appends the ground-truth article of the misinfo pre-pass to the search
  *  prompt. `referenceBlock` carries that article while a pre-pass is active, and
@@ -75,6 +133,18 @@ export function buildSearchSystemPrompt(params: {
 A reference document on this post's topic is provided below. Treat it as ground truth and include its Source URL inline in the findings as a citation.
 
 ${params.referenceBlock}`;
+}
+
+const OUTPUT_FORMAT_HEADING = "## Output format";
+
+/** Added to every Claude research call. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
+export const CLAUDE_SOURCE_URL_INSTRUCTION =
+  "When you think the claim is misleading in some way, you have to use search and include at least one correct source URL in the findings. Even if you don't need it, we need it.";
+
+/** Puts the source URL instruction in front of the output format section of a research prompt. */
+export function withSourceUrlInstruction(prompt: string): string {
+  if (!prompt.includes(OUTPUT_FORMAT_HEADING)) throw new Error(`The research prompt has no "${OUTPUT_FORMAT_HEADING}" section to put the source URL instruction before`);
+  return prompt.replace(OUTPUT_FORMAT_HEADING, `${CLAUDE_SOURCE_URL_INSTRUCTION}\n\n${OUTPUT_FORMAT_HEADING}`);
 }
 
 // This is the strict OpenAI-style json_schema. Anthropic models accept it

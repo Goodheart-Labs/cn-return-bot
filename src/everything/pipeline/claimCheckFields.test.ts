@@ -8,24 +8,26 @@ const base: ExtractedClaim = {
   context: "the bridge opened in '32",
   contextParagraph: "As everyone knows, the bridge opened in '32, to great fanfare.",
   imageUrls: [],
-  veryConfidentTrue: false,
-  speculation: false,
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 };
 
 describe("claimCheckFields", () => {
-  test("uses the author's highlighted words and the passage, not the restatement", () => {
+  test("gives the passage around the claim and the restatement", () => {
     expect(claimCheckFields(base, "youtube")).toEqual({
-      "Highlighted claim from Transcript": "the bridge opened in '32",
-      "Surrounding context": "As everyone knows, the bridge opened in '32, to great fanfare.",
+      "Text from Transcript": "As everyone knows, the bridge opened in '32, to great fanfare.",
+      Claim: "The bridge opened in 1932.",
     });
   });
 
   test("labels a Substack claim as coming from an article", () => {
-    expect(Object.keys(claimCheckFields(base, "substack"))[0]).toBe("Highlighted claim from Article");
+    expect(Object.keys(claimCheckFields(base, "substack"))[0]).toBe("Text from Article");
   });
 
-  test("falls back to the restatement for an image-only claim", () => {
+  test("falls back to the highlighted words when the claim has no paragraph", () => {
+    expect(claimCheckFields({ ...base, contextParagraph: "" }, "substack")["Text from Article"]).toBe("the bridge opened in '32");
+  });
+
+  test("gives only the restatement for an image-only claim", () => {
     const imageOnly = { ...base, context: "", contextParagraph: "", imageUrls: ["https://example.com/chart.png"] };
     expect(claimCheckFields(imageOnly, "substack")).toEqual({ Claim: "The bridge opened in 1932." });
   });
@@ -33,8 +35,8 @@ describe("claimCheckFields", () => {
 
 test("a reader's request carries the whole page after the claim and its paragraph", () => {
   expect(claimCheckFields({ ...base, page: "Title\n\nAs everyone knows, the bridge opened in '32, to great fanfare." }, "web")).toEqual({
-    "Highlighted claim from Article": "the bridge opened in '32",
-    "Surrounding context": "As everyone knows, the bridge opened in '32, to great fanfare.",
+    "Text from Article": "As everyone knows, the bridge opened in '32, to great fanfare.",
+    Claim: "The bridge opened in 1932.",
     "Full Article": "Title\n\nAs everyone knows, the bridge opened in '32, to great fanfare.",
   });
 });

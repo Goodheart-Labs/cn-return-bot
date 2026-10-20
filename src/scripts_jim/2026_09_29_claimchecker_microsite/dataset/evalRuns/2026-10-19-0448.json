@@ -1,0 +1,867 @@
+{
+ "id": "2026-10-19-0448",
+ "label": "Research probability: misleading wording and context hint first, realistic claims and X notewriter tweets (X prompts)",
+ "createdAt": "2026-10-19T04:56:28.463Z",
+ "commit": "d5f4b3da",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 0,
+   "checker": 0
+  }
+ },
+ "rowIds": [
+  "realistic-01",
+  "realistic-02",
+  "realistic-03",
+  "realistic-04",
+  "realistic-05",
+  "realistic-06",
+  "realistic-07",
+  "realistic-08",
+  "realistic-09",
+  "realistic-10",
+  "realistic-11",
+  "realistic-12",
+  "realistic-13",
+  "realistic-14",
+  "realistic-15",
+  "realistic-16",
+  "realistic-17",
+  "realistic-18",
+  "realistic-19",
+  "realistic-20",
+  "x-01",
+  "x-02",
+  "x-03",
+  "x-04",
+  "x-05",
+  "x-06",
+  "x-07",
+  "x-08",
+  "x-09",
+  "x-10"
+ ],
+ "extractor": null,
+ "checker": null,
+ "probability": {
+  "samples": 3,
+  "prompt": "You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.\n\n## What you get\nA single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:\n  Text from Transcript: <excerpt>   (or \"Text from Article:\")\n  Claim: <the claim>\nThe claim was automatically extracted and so it should be interpreted in the context. Avoid being pedantic.\nJudge whether the claim is misleading in some way.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.\n\n## Sourcing rules\n- Include what each source says that's relevant.\n- If the claim is not misleading, the findings can be brief — just explain why.\n\nRespond with strict JSON only matching: { findings: string, misleading_probability: number }",
+  "xPrompt": "You are a research agent for Community Notes fact-checking on X/Twitter.\n\nYour job: investigate whether the post's main claim / argument is incorrect and would benefit from a community note. Use the web_search tool to find evidence.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.\n\n## Sourcing rules\n- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).\n- Include what each source says that's relevant.\n- If no correction is needed, the findings can be brief — just explain why.\n\nRespond with strict JSON only matching: { findings: string, misleading_probability: number }",
+  "rows": [
+   {
+    "id": "realistic-01",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.\nClaim: The author of the article is a philosophy Ph.D. student.",
+      "findings": "The article is by Bentham’s Bulldog, and near the end the author says, “I’m a philosophy Ph.D. student.” Matthew Adelstein’s homepage identifies him as the writer of Bentham’s Bulldog and says he is a philosophy Ph.D. student at Princeton: https://matthewadelstein.com/. The claim is therefore supported by both the article and the author’s personal homepage.",
+      "costUsd": 0.0320831
+     },
+     {
+      "probability": 0.03,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.\nClaim: The author of the article is a philosophy Ph.D. student.",
+      "findings": "The article is by Bentham’s Bulldog and states, “I’m a philosophy Ph.D. student” (https://benthams.substack.com/p/data-republicans-slop-site). The author’s Substack profile also describes them as a “PhD student at Princeton in philosophy” (https://substack.com/@benthamsbulldog). This supports the claim; the profile is self-reported, and the author uses a pseudonym, so the identity and credential are not independently verified here.",
+      "costUsd": 0.03130708
+     },
+     {
+      "probability": 0.03,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.\nClaim: The author of the article is a philosophy Ph.D. student.",
+      "findings": "The article’s author explicitly identifies themself as “a philosophy Ph.D. student” while discussing a statement the article attributes to them. This supports the claim as a statement of the author’s own status, though the article alone does not independently verify their enrollment: https://benthams.substack.com/p/data-republicans-slop-site",
+      "costUsd": 0.0324506
+     }
+    ]
+   },
+   {
+    "id": "realistic-02",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.03,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.\nClaim: The speaker said that he would prefer a points deduction that still allowed Manchester City to compete to avoid relegation, rather than a deduction so large that the remaining matches became meaningless.",
+      "findings": "The excerpt supports the claim: “me parecería que estaría bien” expresses that the speaker thinks such a sanction would be appropriate, and “para que puedan pelear por mantenerse” means so they can fight to stay up. The following sentence contrasts that with a 100-point deduction, which the speaker says would make the matches pointless. “Would prefer” is a fair paraphrase of this expressed view. I could not locate an independent source for the original recording using the quoted wording.",
+      "costUsd": 0.011452525
+     },
+     {
+      "probability": 0.02,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.\nClaim: The speaker said that he would prefer a points deduction that still allowed Manchester City to compete to avoid relegation, rather than a deduction so large that the remaining matches became meaningless.",
+      "findings": "The excerpt supports the claim: the speaker says a sanction “sufficient” for City to “fight to stay up” would be appropriate, then contrasts that with a 100-point deduction, which would make the matches pointless. “Would prefer” is a reasonable paraphrase of “me parecería que estaría bien.” I did not locate an independently verifiable URL for the original recording or transcript, so this assessment relies on the excerpt provided.",
+      "costUsd": 0.03207091
+     },
+     {
+      "probability": 0.03,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.\nClaim: The speaker said that he would prefer a points deduction that still allowed Manchester City to compete to avoid relegation, rather than a deduction so large that the remaining matches became meaningless.",
+      "findings": "The supplied Spanish excerpt supports the claim: the speaker says a sanction should leave Manchester City able to “pelear por mantenerse” (fight to stay up), and contrasts that with losing 100 points, after which “los partidos no sirven para nada” (the matches would be pointless). The paraphrase is faithful; it presents the speaker’s preference as a hypothetical opinion, not as a claim about an actual penalty. I could not independently locate the original transcript to verify the excerpt against its wider context.",
+      "costUsd": 0.02154511
+     }
+    ]
+   },
+   {
+    "id": "realistic-03",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.12,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.\nClaim: The latest AI models are significantly better than humans at some tedious, verifiable tasks.",
+      "findings": "The claim is broadly supported when read narrowly: frontier models can outperform people on particular, bounded tasks, including work that is routine or easy to check. Anthropic’s performance-engineering lead reported that Claude Opus 4 outperformed most human applicants on a timed code-optimization exercise, and Claude Opus 4.5 matched the strongest applicants under the test’s time limit; the post also notes that the best human solution still exceeded the model when people had unlimited time (https://www.anthropic.com/engineering/AI-resistant-technical-evaluations). In OpenAI’s GDPval blind comparison of model outputs with professionals’ work across 220 occupational tasks, the strongest model’s deliverables were rated as good as or better than human work on just under half of the tasks; the company says some repetitive, well-specified tasks can be completed faster and more cheaply, while acknowledging that its evaluation is one-shot and does not capture oversight or iterative work (https://openai.com/index/gdpval/). Stanford’s 2026 AI Index also reports model performance above human baselines on some benchmarks, but highlights sharp limitations: the leading model scored 50.6% on analog-clock reading versus 90.1% for humans, and computer-use agents remained below the human baseline (https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance). Thus, the statement is reasonable as a claim about some specific tasks, not a general claim that AI is better than humans at work overall; benchmark scores and narrow timed tests do not by themselves establish broad real-world superiority.",
+      "costUsd": 0.022242845
+     },
+     {
+      "probability": 0.13,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.\nClaim: The latest AI models are significantly better than humans at some tedious, verifiable tasks.",
+      "findings": "Broadly supported, with an important scope caveat. OpenAI’s GDPval evaluation compared leading models’ work products with human professionals’ on 220 tasks across 44 occupations. It reported that the best-performing model produced work rated as good as or better than the human work on just under half of tasks, and that models completed these tasks roughly 100 times faster on inference time; OpenAI also notes the speed and cost figures exclude human oversight and workplace integration (https://openai.com/index/gdpval/). This supports the claim for some routine, well-specified tasks, but does not show that models are generally better than humans: the evaluation was one-shot, and many tasks require context, iteration, or judgment. Stanford’s 2026 AI Index likewise describes uneven performance: AI exceeds human baselines on some benchmarks, while computer-use agents remain below the human baseline on OSWorld and models perform poorly on analog-clock reading compared with people (https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance). So the claim is reasonable if “some” and “verifiable” are taken literally, but should not be generalized to human-level superiority across work or everyday tasks.",
+      "costUsd": 0.03315883
+     },
+     {
+      "probability": 0.16,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.\nClaim: The latest AI models are significantly better than humans at some tedious, verifiable tasks.",
+      "findings": "The claim is broadly plausible, but its support is strongest when read narrowly: AI systems can outperform people on particular bounded tasks, not generally across tedious work. In RE-Bench, researchers compared agents with 61 human experts across seven machine-learning research-engineering environments; the best agents scored four times higher than the experts under a two-hour time budget. Humans slightly surpassed the best agents with eight hours and scored twice as high with 32 hours. These were objectively scored tasks, though not simply routine chores. Source: https://proceedings.mlr.press/v267/wijk25a.html. Stanford’s 2026 AI Index also reports that AI exceeds the human baseline on several benchmarks, while noting that agents still fail roughly one in three attempts on structured benchmarks and lag on some forms of computer use. Source: https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance. A caution about generalizing to tedious, repetitive workflows: a Bank for International Settlements study found agents made enough mistakes on some repetitive tasks to slow overall progress. Source: https://www.bis.org/publications/working-paper-1245-putting-ai-agents-through-their-paces-general-tasks. Overall, “at some” is an important and defensible qualification; the excerpt would be misleading only if taken to imply broad or reliable human-level superiority across such tasks. The specific phrase “latest models” is not tied to a named model or benchmark, so it cannot be verified as a precise model-by-model comparison.",
+      "costUsd": 0.03333833
+     }
+    ]
+   },
+   {
+    "id": "realistic-04",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.14,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.\nClaim: That woman at Vibecamp 2 decompression said that although she had been raped elsewhere, she felt all the men in the Vibecamp space were ‘big brothers’.",
+      "findings": "The January 14, 2026 article states that a woman who attended the Vibecamp 2 decompression event drew on her own experience of rape elsewhere and said she felt the men in that community were “big brothers” (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). The claim accurately reflects what the article reports. However, the article presents the author’s account; it does not independently verify the woman’s exact words or identify her by name. The author also notes that people can remember the same events differently.",
+      "costUsd": 0.02196937
+     },
+     {
+      "probability": 0.22,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.\nClaim: That woman at Vibecamp 2 decompression said that although she had been raped elsewhere, she felt all the men in the Vibecamp space were ‘big brothers’.",
+      "findings": "The article by Ivy Astrix says that a woman who attended Vibecamp 2 decompression invoked her own experience of rape and described the men in that space as “big brothers”: https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange. This supports that the article made the attribution, but the passage is the author’s account—not a direct quotation or independently corroborated record of what the woman said. The article does not identify her in this passage.",
+      "costUsd": 0.02172492
+     },
+     {
+      "probability": 0.28,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.\nClaim: That woman at Vibecamp 2 decompression said that although she had been raped elsewhere, she felt all the men in the Vibecamp space were ‘big brothers’.",
+      "findings": "Ivy Astrix’s January 14, 2026 article explicitly makes this allegation: she says a woman who attended Vibecamp 2 decompression implied she had misrepresented the incident and, drawing on her own experience of rape elsewhere, said she felt the men in that community were “big brothers” (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). This supports that the post accurately reports what Astrix wrote. However, the article presents the “big brothers” remark as Astrix’s account/paraphrase, not as a direct quotation or independently corroborated transcript. In a later article, Astrix acknowledges that accounts of the decompression discussion vary and that trauma can shape recollection (https://theasterisk.substack.com/p/the-effective-altruism-kids-arent). So the claim is attributable to Astrix’s account, but the woman’s exact wording and intended meaning are not independently established by the material located.",
+      "costUsd": 0.05480102
+     }
+    ]
+   },
+   {
+    "id": "realistic-05",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.\nClaim: The company's annual team trip includes work sessions.",
+      "findings": "The provided transcript explicitly says the trip includes “some work sessions” alongside team-bonding time, so the claim accurately reflects the excerpt. The excerpt does not provide an independent source to verify the event separately.",
+      "costUsd": 0.01064212
+     },
+     {
+      "probability": 0,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.\nClaim: The company's annual team trip includes work sessions.",
+      "findings": "The transcript explicitly describes the trip as a “mixture of some work sessions” and team-bonding time, so the claim is supported by the provided text.",
+      "costUsd": 0.00011616
+     },
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Transcript: My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.\nClaim: The company's annual team trip includes work sessions.",
+      "findings": "The transcript directly says the annual trip includes “a mixture of some work sessions” and team-bonding time, so it supports the claim. The excerpt does not provide independent documentation of the trip, but there is no indication that the claim misrepresents what the speaker said.",
+      "costUsd": 0.01060816
+     }
+    ]
+   },
+   {
+    "id": "realistic-06",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.18,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.\nClaim: AFL craft unions maintained apprenticeship requirements, restricted entry, and jealous guarding of trade boundaries.",
+      "findings": "**Mostly accurate, with some overgeneralization.** The AFL was primarily a federation of skilled craft unions, and its executive board defended affiliates’ separate craft jurisdictions—an arrangement that the *Encyclopedia of U.S. Political History* says reinforced rigid trade boundaries and impeded industrial unionism (https://sk.sagepub.com/ency/edvol/embed/encyclopedia-of-us-political-history/chpt/american-federation-labor-1). Contemporary U.S. Bureau of Labor Statistics records document concrete apprenticeship controls: for example, a 1929 handbook reports a union rule limiting apprentices according to the number of journeymen (https://en.wikisource.org/wiki/Page:USBLS_Bulletin_506;_Handbook_of_American_Trade-Unions_(1929).djvu/50), while a 1927 BLS study describes craft-specific apprentice quotas and, in some trades, apprenticeship or examination as a route to journeyman status and union membership (https://fraser.stlouisfed.org/title/apprenticeship-building-construction-4048/fulltext). But this should not be read as a rule applying uniformly to every AFL affiliate: the 1929 handbook also records an AFL-affiliated union with no apprenticeship regulations (https://fraser.stlouisfed.org/files/docs/publications/bls/bls_0506_1929.pdf). So the claim captures a real and prominent tendency, but “the AFL’s craft unions” is broad, and “jealous guarding” is rhetorical phrasing for jurisdictional protection.",
+      "costUsd": 0.033124295
+     },
+     {
+      "probability": 0.15,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.\nClaim: AFL craft unions maintained apprenticeship requirements, restricted entry, and jealous guarding of trade boundaries.",
+      "findings": "The claim is broadly supported for many AFL-affiliated craft unions, but it overgeneralizes if read as applying uniformly to every AFL union. The U.S. Department of Labor’s labor-history chapter says the AFL was founded by craft-union leaders seeking to defend their unions’ jurisdictions, and describes a 1900 agreement involving the International Association of Machinists that regulated apprenticeship: https://www.dol.gov/general/aboutdol/history/chapter4. A scholarly account of machinists’ craft practices reports that union rules and customs limited the number of apprentices—often to one per four or five journeymen—and that apprenticeship helped skilled workers control recruitment and the labor market: https://publishing.cdlib.org/ucpressebooks/public/book/between-craft-and-class-skilled-workers-and-factory-politics-in-the-united-states-and-britain-1890-1922.html. A U.S. Bureau of Labor Statistics handbook also documents union limits on apprentices in building trades: https://fraser.stlouisfed.org/title/handbook-labor-statistics-4025/handbook-labor-statistics-1924-1926-493213/fulltext. These sources substantiate apprenticeship regulation, limits on entry into particular trades, and defense of craft jurisdiction as real practices. But the AFL was a federation of varied unions, and the evidence does not establish that every AFL craft union maintained all of these restrictions to the same degree.",
+      "costUsd": 0.022063295
+     },
+     {
+      "probability": 0.22,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.\nClaim: AFL craft unions maintained apprenticeship requirements, restricted entry, and jealous guarding of trade boundaries.",
+      "findings": "The claim is broadly accurate as a description of a recurring feature of AFL-affiliated craft unionism, but it overgeneralizes if read as applying uniformly to every AFL union. A scholarly overview says the AFL’s emphasis on “rigid lines of jurisdiction” impeded industrial unions that sought to organize everyone in a workplace (https://sk.sagepub.com/ency/edvol/embed/encyclopedia-of-us-political-history/chpt/american-federation-labor-1). A 1924 U.S. Bureau of Labor Statistics handbook documents unions setting apprentice quotas; for example, a bricklayers’ rule limited each contractor to three apprentices. It also reports that such limits were not necessarily the main reason contractors employed few apprentices, so the evidence supports regulation and restriction in some trades, not a blanket claim that unions always blocked entry (https://fraser.stlouisfed.org/title/handbook-labor-statistics-4025/handbook-labor-statistics-1924-1926-493213/fulltext). An Oxford University Press chapter notes AFL president Samuel Gompers defended the closed shop in 1903 as workers’ right to refuse to work with nonunion men—evidence that membership boundaries could be enforced, though a closed shop is not the same thing as an apprenticeship requirement (https://academic.oup.com/illinois-scholarship-online/book/51502/chapter/418031509). In short: trade-boundary enforcement and some apprenticeship controls are well supported for parts of the AFL craft-union movement; “jealous guarding” is rhetorical, and the sentence would be more precise if it said that many AFL craft affiliates used such practices, with variation by union and trade.",
+      "costUsd": 0.02206847
+     }
+    ]
+   },
+   {
+    "id": "realistic-07",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.\nClaim: Opus 5.5 has a system card.",
+      "findings": "The claim is supported. Anthropic’s official system-cards page lists “Claude Opus 5.5” with a system card dated September 2026: https://www.anthropic.com/system-cards. Anthropic’s Opus 5.5 announcement also says that full evaluation details are available in the Opus 5.5 System Card: https://www.anthropic.com/claude-opus-5-5.",
+      "costUsd": 0.010893645
+     },
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.\nClaim: Opus 5.5 has a system card.",
+      "findings": "The claim is supported. Anthropic’s official Model System Cards page lists “Claude Opus 5.5” with a September 2026 system card: https://www.anthropic.com/system-cards. Anthropic’s official Opus 5.5 announcement also refers readers to the model’s system card for full evaluation details: https://www.anthropic.com/claude-opus-5-5.",
+      "costUsd": 0.02169833
+     },
+     {
+      "probability": 0,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:48 UTC\n\n## Post\n\nText from Article: Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.\nClaim: Opus 5.5 has a system card.",
+      "findings": "The claim is supported: Anthropic’s official system-cards index lists “Claude Opus 5.5” with a system card dated September 2026 (https://www.anthropic.com/system-cards). The card is available at Anthropic’s official page (https://www.anthropic.com/claude-opus-5-5-system-card).",
+      "costUsd": 0.03115923
+     }
+    ]
+   },
+   {
+    "id": "realistic-08",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p\nClaim: The game being described is between Washington/the Commanders and the Colts.",
+      "findings": "The match was Indianapolis Colts at Washington Commanders on October 4, 2026. The NFL’s Week 4 schedule lists the final as “Colts 30, Commanders 13” (https://www.nfl.com/schedules/2026/by-week/week-4), and Pro-Football-Reference identifies the box score as Indianapolis Colts at Washington Commanders (https://www.pro-football-reference.com/boxscores/202610040was.htm). The claim correctly identifies the teams; the excerpt’s references to Washington’s turnover and the Colts’ turnovers fit that matchup. The transcript excerpt alone does not independently establish the identity of “Karlis,” but that does not undermine the team identification.",
+      "costUsd": 0.02173252
+     },
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p\nClaim: The game being described is between Washington/the Commanders and the Colts.",
+      "findings": "The claim is supported. The Colts’ official recap identifies the game as the Colts’ 30–13 win over the Washington Commanders on October 4, 2026, and says Colts linebacker Jaylon Carlies intercepted Washington quarterback Athan Kaliakmanis after batting the pass into the air: https://www.colts.com/news/colts-overcome-sluggish-start-to-thump-commanders-in-london. The Colts’ official schedule also lists Washington as their Week 4 opponent and the 30–13 result: https://www.colts.com/schedule/2026/. The transcript’s “Karlis” appears to refer to Carlies.",
+      "costUsd": 0.03302146
+     },
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p\nClaim: The game being described is between Washington/the Commanders and the Colts.",
+      "findings": "The claim is supported. The excerpt matches the October 4, 2026 game in London between the Indianapolis Colts and Washington Commanders: the Colts’ official recap identifies the game as Colts vs. Washington and says linebacker Jaylon Carlies intercepted Washington quarterback Athan Kaliakmanis early in the second half (https://www.colts.com/news/colts-overcome-sluggish-start-to-thump-commanders-in-london). The Washington Post likewise reports that Carlies picked off Kaliakmanis in the Colts’ 30–13 win over Washington (https://www.washingtonpost.com/sports/nfl/2026/10/04/colts-commanders-london-tottenham-score/4b43bede-c016-11f1-8170-681419af1cc9_story.html). “Karlis” appears to refer to Carlies; the identification of the matchup is not misleading.",
+      "costUsd": 0.02201036
+     }
+    ]
+   },
+   {
+    "id": "realistic-09",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.15,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+      "findings": "The claim appears to refer to Posho: Smogon’s official Hall of Fame lists Posho as the winner of Smogon Tour Season 23 (https://www.smogon.com/tournaments/hof/tour/). The season’s playoffs thread says matches included BW2 OU, and lists Posho’s final against craing as BW and ORAS (https://www.smogon.com/forums/threads/smogon-tour-season-23-playoffs-won-by-posho.3603783/). This makes the claim that the winner used a Generation 5 Pokémon in the tour plausible, but the sources checked do not independently establish that Skarmory was on Posho’s tour-winning team. The transcript itself is the direct evidence for that detail; its assertion that Skarmory was “the reason” for the win is subjective and likely playful emphasis.",
+      "costUsd": 0.119250495
+     },
+     {
+      "probability": 0.18,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+      "findings": "The transcript itself directly supports the attribution: the speaker says Gen 5 Skarm was the reason they won “Smogon Tour.” Smogon describes the Smogon Tour as a tournament requiring players to adapt across multiple metagames, including BW OU (Generation 5) (https://www.smogon.com/smog/issue16/tournaments). Smogon’s BW analysis describes Skarmory as a defensive staple in that metagame (https://www.smogon.com/dex/bw/pokemon/skarm/). These sources make the account plausible, but they do not identify the speaker or independently confirm that person’s win or the team used. Nothing found contradicts the claim; the causal phrasing (“the reason I won”) is best understood as the speaker’s opinion.",
+      "costUsd": 0.04373337
+     },
+     {
+      "probability": 0.3,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+      "findings": "The transcript identifies neither the speaker nor a season, replay, or team, so I could not independently verify that this person won a Smogon Tour using Gen 5 Skarmory. Smogon’s Hall of Fame lists season winners, but the excerpt alone does not identify the speaker well enough to match them to that record: https://www.smogon.com/tournaments/hof/tour/. Also, “won a Smogon Tour” can mean winning an individual tour session, not necessarily the season championship; Smogon’s description distinguishes the weekend tours from the later season finals: https://www.smogon.com/articles/top-pokemon-st21. The claim is plausible, but unverified—not contradicted by the sources found.",
+      "costUsd": 0.05490317
+     }
+    ]
+   },
+   {
+    "id": "realistic-10",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.08,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.\nClaim: The Xiaomi Fold has a more visible display crease than the iPhone Duo.",
+      "findings": "The claim is supported as a comparative observation about how noticeable the crease looks. Tom’s Guide, summarizing a hands-on comparison by Mrwhosetheboss, says the Xiaomi 18 Fold’s crease is more noticeable because it lacks the iPhone Duo’s nano-texture display (https://www.tomsguide.com/phones/iphones/the-real-reason-why-iphone-duo-will-beat-all-android-foldable-phones). Apple says the Duo’s nano-texture finish reduces glare and reflections and is intended to minimize crease visibility (https://www.apple.com/iphone-duo/). This supports the claim about visibility, but does not establish that Xiaomi’s crease is physically deeper; the comparison is partly about the different screen finishes and is a subjective viewing impression.",
+      "costUsd": 0.03304042
+     },
+     {
+      "probability": 0.06,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.\nClaim: The Xiaomi Fold has a more visible display crease than the iPhone Duo.",
+      "findings": "The claim appears accurate, assuming “the Xiaomi Fold” means the Xiaomi 18 Fold. Tom’s Guide, discussing Mrwhosetheboss’s direct comparison, says the Xiaomi’s crease is more noticeable because it lacks the iPhone Duo’s nano-texture display: https://www.tomsguide.com/phones/iphones/the-real-reason-why-iphone-duo-will-beat-all-android-foldable-phones. Apple says the Duo’s nano-texture finish reduces glare and reflections and that its display design minimizes crease: https://www.apple.com/iphone-duo/. A separate hands-on review likewise describes the Duo’s crease as tricky to spot, though this is a subjective visual comparison and may vary with lighting and viewing angle: https://www.t3.com/tech/iphones/apple-iphone-duo-first-impressions-review.",
+      "costUsd": 0.03280386
+     },
+     {
+      "probability": 0.04,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.\nClaim: The Xiaomi Fold has a more visible display crease than the iPhone Duo.",
+      "findings": "The claim appears accurate as a subjective visual comparison. Android Central’s hands-on report says the Xiaomi 18 Fold’s crease was “fairly visible” and attributes this partly to its reflective display: https://www.androidcentral.com/phones/xiaomi/xiaomi-18-fold-hands-on. Android Authority’s hands-on report describes the iPhone Duo’s crease as not visible head-on and difficult to spot even at extreme angles, noting that its nano-textured matte layer reduces reflections and makes the crease harder to see: https://www.androidauthority.com/apple-iphone-duo-hands-on-impressions-android-user-3712800/. MacRumors likewise says the iPhone Duo’s crease can be seen in certain lighting, so it is not crease-free: https://www.macrumors.com/2026/09/09/iphone-duo-hands-on/. This supports the comparative claim, though visibility is a hands-on impression rather than a standardized measurement.",
+      "costUsd": 0.03304846
+     }
+    ]
+   },
+   {
+    "id": "realistic-11",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.08,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:49 UTC\n\n## Post\n\nText from Transcript: when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady\nClaim: The speaker read the cited articles again on the morning before appearing on the show.",
+      "findings": "The excerpt appears in a clip identified as *The Joe Rogan Experience* episode #1555, “Alex Jones & Tim Dillon”; its transcript records the speaker saying, “I’m quoting from when I read these again this morning before I came here,” then referring to what he remembered from the articles (https://podclips.com/ct/9putpw). Apple Podcasts lists that episode as published October 27, 2020 (https://podcasts.apple.com/us/podcast/1555-alex-jones-tim-dillon/id360084272?i=1000644539301). This supports that the speaker claimed to have reread the articles that morning before appearing. The sources confirm what he said, but do not independently establish whether he actually read them.",
+      "costUsd": 0.021343995
+     },
+     {
+      "probability": 0.05,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady\nClaim: The speaker read the cited articles again on the morning before appearing on the show.",
+      "findings": "The transcript for Joe Rogan Experience #1555 includes the speaker saying, “I’m quoting from when I read these again this morning before I came here,” which directly supports the claim that the speaker said they had reread the articles that morning before appearing. Source: https://podclips.com/ct/9putpw. The episode is identified as Joe Rogan Experience #1555 with Alex Jones and Tim Dillon: https://www.youtube.com/watch?v=jdVso9FSkmE. This supports what the speaker reported; the transcript alone does not independently verify that the rereading actually occurred.",
+      "costUsd": 0.021205695
+     },
+     {
+      "probability": 0.03,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady\nClaim: The speaker read the cited articles again on the morning before appearing on the show.",
+      "findings": "The transcript supports the claim: the speaker says, “I’m quoting from when I read these again this morning before I came here,” while discussing the articles. The clip’s transcript gives that exchange in context: https://podclips.com/ct/9putpw. This confirms the speaker said they reread them that morning; the clip does not independently verify whether they actually did.",
+      "costUsd": 0.02084939
+     }
+    ]
+   },
+   {
+    "id": "realistic-12",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.68,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+      "findings": "The claim is too categorical without knowing when the trip occurred and whether the speaker means a strict numerical cap or practical customs limits. A Soviet customs rule effective April 1, 1978 allowed Soviet tourists and people traveling abroad for personal reasons to take personal-use items in quantities “necessary” for their stay; it did not set a specific condom count, but it was not an unrestricted right to take any quantity (https://legalacts.ru/doc/prikaz-minvneshtorga-sssr-ot-15121977-n-451/). A December 28, 1988 decree temporarily imposed a 100-ruble total-value limit on consumer goods exported by any traveler, Soviet or foreign, from February 1, 1989; it was later repealed and replaced by a rule effective September 15, 1989. That later rule capped the value of gifts exported by Soviet residents, while applying broader export restrictions to specified categories and travelers resident abroad; its list included medicines and sanitation/hygiene items, though it does not specifically name condoms (https://meganorm.ru/mega_doc/dop1/48/postanovlenie_sovmina_sssr_ot_30_08_1989_N_702_o_merakh_po/0/postanovlenie_sovmina_sssr_ot_28_12_1988_N_1473_o.html; https://lawrussia.ru/texts/legal_346/doc346a268x887.htm). So there may have been no fixed condom-specific quota in the relevant circumstances, but the blanket statement that there was no restriction on quantity is not established and overlooks general personal-needs and, in some periods, value restrictions.",
+      "costUsd": 0.05502327
+     },
+     {
+      "probability": 0.83,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+      "findings": "The claim is too absolute. A 1977 Soviet customs order did not list condoms among prohibited exports, and it gives no condom-specific numerical limit. But it did impose general limits: Soviet citizens traveling abroad for personal reasons could take personal items in quantities needed for their stay, while tourists could take personal items and travel goods in quantities needed for the trip. So the rules do not establish that a person could take an unlimited number; they indicate that the quantity was subject to broader personal-use rules and customs inspection. Source: https://law.tks.ru/document/2606. The anecdote that the traveler managed to collect and pack many condoms does not, by itself, show that there was no customs restriction.",
+      "costUsd": 0.01106976
+     },
+     {
+      "probability": 0.78,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+      "findings": "The claim is too categorical. In Soviet customs rules approved by Order No. 451 on December 15, 1977, and effective April 1, 1978, I found no condom-specific numerical limit. But the rules did not therefore allow unlimited quantities: Soviet citizens traveling abroad temporarily could take personal-use items only in quantities considered necessary for their stay, and those items were not to be sold, exchanged, or given away abroad; the rules also limited gifts. Source: https://law.tks.ru/document/2606. So the anecdote may mean there was no stated condom quota, but the broader assertion that there was no restriction on how many a person could take out is not established by the rules. The excerpt does not identify the year or the traveler’s status, which could affect which provisions applied.",
+      "costUsd": 0.01122496
+     }
+    ]
+   },
+   {
+    "id": "realistic-13",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.04,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.\nClaim: The previous week, Chiefs coach Andy Reid used a goal-line play dating back to the 1930s.",
+      "findings": "The claim is substantially accurate. An Associated Press report published September 15, 2026, says Kansas City ran a goal-line play called “Heisman” against Denver: Patrick Mahomes handed a shovel pass to Kenneth Walker III for a touchdown. The play was inspired by grainy game film recorded in the 1930s. The report adds a nuance: Mahomes said offensive-line coach Andy Heck brought the play to the team, so the historical inspiration is established, but the article does not say Andy Reid personally discovered it. Source: https://www.foxsports.com/articles/nfl/a-1930s-heisman-shovel-pass-sets-tone-for-chiefs-3110-win-over-denver-and-maybe-for-the-season",
+      "costUsd": 0.054969895
+     },
+     {
+      "probability": 0.03,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.\nClaim: The previous week, Chiefs coach Andy Reid used a goal-line play dating back to the 1930s.",
+      "findings": "The claim is essentially accurate. On September 14, 2026, in the Chiefs’ 31–10 win over Denver, Kansas City ran a goal-line play in which Patrick Mahomes took the snap and shovel-passed to Kenneth Walker III for a touchdown. The Associated Press reports that Andy Reid said the design came from 1930s game film; Mahomes called it “Heisman.” https://www.foxsports.com/articles/nfl/a-1930s-heisman-shovel-pass-sets-tone-for-chiefs-3110-win-over-denver-and-maybe-for-the-season The NFL’s recap independently confirms the date and result of the Chiefs-Broncos game. https://amp.nfl.com/news/broncos-chiefs-on-monday-night-football-what-we-learned-from-kansas-city-s-31-10-win",
+      "costUsd": 0.04368755
+     },
+     {
+      "probability": 0.04,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.\nClaim: The previous week, Chiefs coach Andy Reid used a goal-line play dating back to the 1930s.",
+      "findings": "The claim is accurate in substance. On September 14, 2026, Kansas City beat Denver 31–10; in the fourth quarter Patrick Mahomes tossed Kenneth Walker III a 2-yard touchdown on the unusual play. KSHB reports Reid said, “Chris Berman sent me that play, so that’s a 1936’er right there,” supporting both the play’s use and its attribution to the 1930s: https://www.kshb.com/sports/football/chiefs/chris-berman-90-year-old-play-inspire-chiefs-latest-goal-line-wrinkle-for-td. Yahoo likewise describes it as a 1936 play and reports Reid credited Berman: https://sports.yahoo.com/articles/chiefs-chris-berman-thank-90-020734602.html. The nuance is that the 1936 date is Reid’s description of the design; these reports do not independently establish the play’s historical origin.",
+      "costUsd": 0.02209055
+     }
+    ]
+   },
+   {
+    "id": "realistic-14",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.18,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.\nClaim: Parts of the U.S. intelligence community view the Houthis as relatively independent from Iran, while others view them as more aligned with Iran.",
+      "findings": "The claim accurately reflects what CNN military analyst and retired colonel Cedric Leighton said in the transcript: he described differing views among elements of the intelligence community and then offered his own assessment that the Houthis fall somewhere in between (https://transcripts.cnn.com/show/ow/date/2026-10-12/segment/01). Broader analysis also supports the substance of a spectrum of views: CFR describes the Houthis as an Iran-aligned movement and recipient of Iranian weapons, training, and intelligence, while noting that experts characterize them as an informal partner with flexibility and differences from Iran (https://www.cfr.org/articles/irans-support-houthis-what-know). However, the public sources reviewed do not independently establish that U.S. intelligence agencies are in fact divided in the way Leighton described. So the claim is faithful to his attributed account, but that account’s specific assertion about an intelligence-community split remains unverified in public evidence.",
+      "costUsd": 0.032849595
+     },
+     {
+      "probability": 0.12,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.\nClaim: Parts of the U.S. intelligence community view the Houthis as relatively independent from Iran, while others view them as more aligned with Iran.",
+      "findings": "CNN’s October 12, 2026 transcript confirms the claim: retired CNN military analyst Cedric Leighton said that some intelligence-community elements view the Houthis as relatively independent, while others see them as more aligned with Iran. He added that he thought the relationship fell “somewhere in the middle,” with the Houthis pursuing their own war while sometimes following Iran’s line when it suits them (https://transcripts.cnn.com/show/ow/date/2026-10-12/segment/01). Independent analysis also describes the Houthis as an Iranian partner rather than a controllable proxy: Brookings says Iran has significant influence but does not dictate Houthi behavior (https://www.brookings.edu/articles/how-the-houthis-joined-the-israel-gaza-crisis/), while the Council on Foreign Relations notes both Iran’s substantial military support and the Houthis’ distinct interests and flexibility (https://www.cfr.org/articles/irans-support-houthis-what-know). These sources support the substance of the differing views, though they do not independently verify that the U.S. intelligence community is internally divided; that specific assertion is Leighton’s characterization. The claim accurately represents what he said and is not materially misleading.",
+      "costUsd": 0.03274157
+     },
+     {
+      "probability": 0.36,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Transcript: How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.\nClaim: Parts of the U.S. intelligence community view the Houthis as relatively independent from Iran, while others view them as more aligned with Iran.",
+      "findings": "The underlying issue is genuinely contested: public analyses describe the Houthis both as an Iran-aligned movement and as an actor with substantial independent decision-making. For example, a former U.S. intelligence official’s congressional testimony described the Houthis’ relationship with Tehran as “much looser” than some other Iran-linked groups’ (https://www.congress.gov/118/meeting/house/117655/witnesses/HHRG-118-FA13-Wstate-LordJ-20240919.pdf), while Brookings argues that Iran lacks control over Houthi behavior and that the Houthis retain authority over their decisions (https://www.brookings.edu/articles/the-danger-of-calling-the-houthis-an-iranian-proxy/). The Council on Foreign Relations likewise summarizes expert views that the Houthis are better described as an informal partner than a proxy, while noting their ideological affinity and significant Iranian military support (https://www.cfr.org/articles/irans-support-houthis-what-know). However, these sources establish a range of expert and former-official assessments—not that parts of the U.S. intelligence community itself are divided in the specific way the claim asserts. Public evidence therefore supports the substance of the debate, but does not independently verify the attribution to differing intelligence-community views.",
+      "costUsd": 0.04400387
+     }
+    ]
+   },
+   {
+    "id": "realistic-15",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.72,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+      "findings": "The claim is plausible as a practical rule of thumb, but the “approximately linearly” part is not established as a general research finding. An MIT analysis of 250,000 messages on one dating site found that the number of messages sent was the strongest predictor of messages received (https://www.media.mit.edu/publications/romantic-regressions-an-analysis-of-behavior-in-online-dating-systems/). That supports the idea that greater outreach can create more opportunities, but it does not show that dates increase in direct proportion to effort, nor does it test whether lowering standards has a linear effect. A separate study of 14,533 heterosexual online daters in one metropolitan market found that 79% of men’s and 58% of women’s first contacts went unanswered; the authors also cautioned that their data could not establish whether exchanges led to actual dates (https://pmc.ncbi.nlm.nih.gov/articles/PMC4043335/). So more outreach may raise the number of chances, but response rates, compatibility, dating-market conditions, and diminishing returns mean the outcome need not scale linearly. Overall, the statement overstates a reasonable heuristic as though the relationship were reliably linear.",
+      "costUsd": 0.02213042
+     },
+     {
+      "probability": 0.72,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:50 UTC\n\n## Post\n\nText from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+      "findings": "The claim is reasonable as a rough strategy—more outreach can create more chances—but “approximately linear” overstates what the evidence establishes. A linear relationship would require the chance of getting a date per additional person met or asked out to stay roughly constant; the claim gives no evidence for that assumption. In a review of dating research, one speed-dating study found that women at events where they met more potential partners were less likely to agree to a follow-up with any given person; women meeting 9–14 men were over 40% more likely to say yes per partner than those meeting 15–21. This suggests that adding options or encounters does not necessarily translate proportionally into more dates (https://marriage.psych.ucla.edu/wp-content/uploads/sites/213/2020/05/2012_FinkelEastwickKarneyReisSprecher_PSPI.pdf). Online-dating data also show that responses vary with selectivity and the dynamics of the dating market, rather than following a fixed conversion rate (https://pmc.ncbi.nlm.nih.gov/articles/PMC6666423/). So the advice may work directionally for some people and circumstances, but the claim should be framed as a heuristic, not a general empirical law; dropping standards may increase the number of people considered without proportionally increasing dates or compatibility.",
+      "costUsd": 0.02201558
+     },
+     {
+      "probability": 0.72,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+      "findings": "The claim is plausible as a rough rule of thumb—more outreach can create more opportunities—but the evidence found does not establish that dates increase approximately linearly with effort, or that lowering standards reliably produces more dates. An analysis of 250,000 messages among users of one dating site found that the number of messages sent was the strongest predictor of messages received, supporting a positive association between outreach and incoming messages, not a linear relationship between effort and dates (https://www.media.mit.edu/publications/romantic-regressions-an-analysis-of-behavior-in-online-dating-systems/). Research using 1.1 million browsing and writing decisions found that people use deal-breaker cutoffs and that mate evaluation varies across decision stages and groups, so broadening criteria does not translate uniformly into reciprocal interest (https://pubmed.ncbi.nlm.nih.gov/27578870/). A review of online-dating research also describes low and variable reply rates and notes that progressing from messages to an in-person date involves multiple stages and reciprocal decisions (https://www.sas.rochester.edu/psy/people/faculty/reis_harry/assets/pdf/PsychologicalScienceinthePublicInterest-2012-Finkel-3-66.pdf). Thus, the direction of the advice may be reasonable, but calling the results approximately linear overstates what the evidence supports.",
+      "costUsd": 0.02207672
+     }
+    ]
+   },
+   {
+    "id": "realistic-16",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.16,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Article: The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.\nClaim: Male employees at a Canadian telecom where the author worked said women obviously slept their way to promotions or were obviously diversity hires when they thought no woman was listening.",
+      "findings": "The article itself says the author had seen “some indications” of rape culture while working for a Canadian telecom, immediately followed by the reported remarks: men saying a woman “obviously slept her way to that promotion” or was “obviously a diversity hire” when they thought no woman was listening. This supports the claim as a summary of the author’s personal account (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). The article does not identify the telecom or provide independent corroboration, so the episode cannot be verified from the available evidence; it should be understood as an attributed anecdote, not independently established fact.",
+      "costUsd": 0.021760295
+     },
+     {
+      "probability": 0.15,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Article: The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.\nClaim: Male employees at a Canadian telecom where the author worked said women obviously slept their way to promotions or were obviously diversity hires when they thought no woman was listening.",
+      "findings": "The author’s article, published January 14, 2026, says she had seen indications of this culture while working at a Canadian telecom, then describes men saying a woman “obviously slept her way to that promotion” or was “obviously a diversity hire” when they thought no woman was listening (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). This supports the claim as a summary of the author’s personal account. The article does not name the telecom, identify the speakers, or provide independent corroboration, so the incident should be understood as an anecdotal report rather than an independently verified finding about the company or its employees.",
+      "costUsd": 0.02198497
+     },
+     {
+      "probability": 0.18,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Article: The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.\nClaim: Male employees at a Canadian telecom where the author worked said women obviously slept their way to promotions or were obviously diversity hires when they thought no woman was listening.",
+      "findings": "The article says the author had “seen some indications” of rape culture while working for a Canadian telecom, then gives the remarks about women supposedly sleeping their way to promotions or being diversity hires (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). So the claim is a fair paraphrase of the author’s personal account. However, the article does not identify the telecom, say how many employees made such remarks, or provide independent corroboration; it supports that the author reported hearing this, not that the incident has been separately verified or was representative of the workforce.",
+      "costUsd": 0.02202167
+     }
+    ]
+   },
+   {
+    "id": "realistic-17",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.2,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.\nClaim: The speaker's Minecraft screen accepts horizontal runs directly but does not accept vertical runs.",
+      "findings": "The excerpt describes the speaker’s particular screen or display pipeline, so it cannot be confirmed or disproved from Minecraft’s general capabilities alone. Minecraft Forge’s GUI documentation describes both a horizontal line primitive (`#hLine`) and a vertical line primitive (`#vLine`), showing that Minecraft GUI screens are not inherently unable to accept vertical drawing operations: https://docs.minecraftforge.net/en/1.19.2/gui/screens/. But that does not establish what the speaker’s specific screen accepts directly; the statement may accurately describe a limitation of their chosen interface or data format.",
+      "costUsd": 0.021999095
+     },
+     {
+      "probability": 0.38,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.\nClaim: The speaker's Minecraft screen accepts horizontal runs directly but does not accept vertical runs.",
+      "findings": "The excerpt does not identify what kind of Minecraft screen or interface the speaker is using, so the specific claim about that screen cannot be independently verified from the context provided. It should not be read as a general limitation of Minecraft: Forge’s screen documentation describes both horizontal-line and vertical-line drawing functions for GUI screens (https://docs.minecraftforge.net/en/1.19.2/gui/screens/). The claim may be accurate for the speaker’s particular display or input format, but that setup-specific qualification is missing.",
+      "costUsd": 0.02193589
+     },
+     {
+      "probability": 0.14,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.\nClaim: The speaker's Minecraft screen accepts horizontal runs directly but does not accept vertical runs.",
+      "findings": "The excerpt supports the claim as a description of the speaker’s particular screen or input format: they say horizontal runs can be plugged in directly, while vertical runs cannot. It should not be generalized to Minecraft screens generally. Forge’s GUI documentation, for example, describes both horizontal-line and vertical-line drawing functions (https://docs.minecraftforge.net/en/1.20.1/gui/screens/). I found no independent source identifying the speaker’s specific screen or verifying its interface, so that narrower detail remains unconfirmed.",
+      "costUsd": 0.03180929
+     }
+    ]
+   },
+   {
+    "id": "realistic-18",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.12,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.\nClaim: People made analysis videos about the FU format.",
+      "findings": "Supported, with a caveat about scale. A YouTube video titled “Furret Used Tera Types, Ranked,” published September 20, 2024, explicitly presents itself as explaining the Furret Used metagame and discusses its Tera types: https://www.youtube.com/watch?v=QqpN204LSTM. Community discussion also refers to a Furret Used tournament video and describes the format as a fan-made, Furret-only metagame, rather than a standard Smogon tier: https://www.reddit.com/r/stunfisk/comments/1flrw0m/ and https://www.reddit.com/r/stunfisk/comments/1fc5e8a. The evidence confirms analysis/video coverage exists, but does not establish that it was broadly popular or extensively covered.",
+      "costUsd": 0.054746145
+     },
+     {
+      "probability": 0.22,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.\nClaim: People made analysis videos about the FU format.",
+      "findings": "The claim is broadly supported: Jimothy Gaming published a video titled “Competitive Pokemon, but it's just Furret” on August 16, 2024, and its description identifies “Furret Used” as a format where only Furret is available. The video features competitive play in that format, so there is at least one video examining it: https://www.youtube.com/watch?v=hzrHOxrZqcA. A contemporaneous Pokémon competitive subreddit post also refers to Jimothy Cool hosting a Furret Used tournament, supporting that the format was being played and discussed: https://www.reddit.com/r/stunfisk/comments/1fc5e8a. The wording is a little broader than the evidence found: the identifiable video is a gameplay showcase, not clearly a dedicated analysis, and these sources do not establish that multiple analysis videos were made. Overall, the basic claim is plausible, but the transcript may overstate the amount or analytical nature of the video coverage.",
+      "costUsd": 0.05504491
+     },
+     {
+      "probability": 0.18,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.\nClaim: People made analysis videos about the FU format.",
+      "findings": "The statement is broadly supported, though the evidence is stronger for at least one dedicated Furret analysis video and FU tournament coverage than for multiple separate analysis videos specifically about the format. A listing for Jimothy Cool identifies a video titled “an unnecessarily detailed analysis of furret in competitive pokemon” (https://www.last.fm/it/music/Jimothy%2BCool/_/an%2Bunnecessarily%2Bdetailed%2Banalysis%2Bof%2Bfurret%2Bin%2Bcompetitive%2Bpokemon). A Reddit post about the FU scene links Jimothy Cool’s Furret-only tournament video and describes it as such (https://www.reddit.com/r/stunfisk/comments/1fbvpsw). Community discussion also explicitly identifies FU as Furret Used and discusses its meta (https://www.reddit.com/r/stunfisk/comments/1fc5e8a). So the claim is essentially true in context, but “analysis videos about the FU format” may overstate the evidence for multiple format-analysis videos, as opposed to a Furret analysis and tournament videos.",
+      "costUsd": 0.03302441
+     }
+    ]
+   },
+   {
+    "id": "realistic-19",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.84,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+      "findings": "The closest matching documented example is Red Bull’s 2015 BMX video at the Pontiac Silverdome. A behind-the-scenes account says the Silverdome was already abandoned, the shoot lasted four days, and the crew was small; it does not say Red Bull shut down an operating stadium or spent millions. Source: https://www.newsshooter.com/2016/01/29/a-red-a-slider-an-abandoned-stadium-behind-the-scenes-of-red-bulls-most-popular-video-of-2015/ Red Bull has also documented elaborate action-sports productions—for example, a project that took about six months to plan—but that account gives no million-dollar budget and does not involve shutting a stadium. Source: https://www.redbull.com/us-en/air-force-chain-reaction-bts-video The transcript does not identify which clip is meant, and the sources found do not establish the claimed cost. As stated, the claim appears to conflate filming in a stadium with closing an active stadium and presents an unsupported “millions” figure as fact.",
+      "costUsd": 0.043350745
+     },
+     {
+      "probability": 0.88,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+      "findings": "The claim is not substantiated as stated. A likely example is Red Bull’s 2015 BMX video with Tyler Fernengel at Pontiac’s Silverdome: contemporaneous coverage describes the venue as already abandoned, not an operating stadium Red Bull shut down for filming (https://www.upi.com/Odd_News/2015/06/10/BMX-rider-turns-abandoned-Silverdome-into-playground/8421433943359/; https://www.newsshooter.com/2016/01/29/a-red-a-slider-an-abandoned-stadium-behind-the-scenes-of-red-bulls-most-popular-video-of-2015/). Red Bull’s own page likewise calls it an “abandoned stadium” (https://www.redbull.com/us-en/videos/preview-tyler-fernengel-rides-the-silverdome-2017-14-02-2017-14-02). I found no reliable source establishing that Red Bull spent millions on this shoot—or on another specific stadium video. So the broad idea that a Red Bull action-sports production can involve significant production effort is plausible, but the specific “millions” and “shut down an entire stadium” details are unverified and may conflate filming in a disused venue with closing an active one.",
+      "costUsd": 0.04346653
+     },
+     {
+      "probability": 0.78,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+      "findings": "The claim is **unsubstantiated as stated**: the available reporting and Red Bull material reviewed do not establish that Red Bull spent millions of dollars to close an entire stadium specifically to film an extreme-sports clip. Red Bull’s behind-the-scenes account of its “Chain Reaction” aerial-sports video describes roughly six months of planning and demanding coordination, but it does not mention a stadium or a million-dollar budget (https://www.redbull.com/us-en/air-force-chain-reaction-bts-video). Red Bull has held action-sports events in stadiums and other large venues, but that alone does not show that a stadium was shut down for a video shoot or that the cost ran into millions. The speaker may be referring to a particular production, but without its identity or a budget source, the specific claim should be treated as unverified; it may conflate a costly production or event with the cost of closing a stadium.",
+      "costUsd": 0.04366173
+     }
+    ]
+   },
+   {
+    "id": "realistic-20",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:51 UTC\n\n## Post\n\nText from Transcript: And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.\nClaim: Flávio Bolsonaro is mounting a significant electoral challenge to Luiz Inácio Lula da Silva.",
+      "findings": "The claim is accurate. Brazil’s Superior Electoral Court (TSE) reported that Flávio Bolsonaro and Lula were the two top vote-getters in the October 4, 2026 first round, with Bolsonaro receiving 47.03% and Lula 45.16%, and that they would face each other in the runoff: https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica. The Associated Press likewise described the runoff, scheduled for October 25, as a close race: https://apnews.com/article/d80a6c41edf9c9e0ac5cfd0afeb53ed7. This strongly supports calling Bolsonaro’s challenge significant.",
+      "costUsd": 0.021791295
+     },
+     {
+      "probability": 0.02,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\n\n## Post\n\nText from Transcript: And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.\nClaim: Flávio Bolsonaro is mounting a significant electoral challenge to Luiz Inácio Lula da Silva.",
+      "findings": "The claim is accurate as of October 19, 2026. Brazil’s electoral authority lists Flávio Bolsonaro and Luiz Inácio Lula da Silva as registered presidential candidates (https://www.tse.jus.br/comunicacao/noticias/2026/Setembro/tse-valida-seis-registros-de-candidatura-a-presidencia-da-republica). In the October 4 first round, Bolsonaro received about 47% and Lula about 45%, sending them to a runoff scheduled for October 25; the Associated Press describes it as a close contest (https://apnews.com/article/c194f8965632c8af9bcc4e7a3716cd7c). Thus, calling Bolsonaro a significant electoral challenger is well supported.",
+      "costUsd": 0.011063795
+     },
+     {
+      "probability": 0.01,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\n\n## Post\n\nText from Transcript: And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.\nClaim: Flávio Bolsonaro is mounting a significant electoral challenge to Luiz Inácio Lula da Silva.",
+      "findings": "The claim is accurate and, as of October 19, 2026, understates how substantial the challenge is: Brazil’s electoral authority, the Superior Electoral Court, confirmed Flávio Bolsonaro and incumbent Luiz Inácio Lula da Silva as the two candidates advancing to the October 25 presidential runoff (https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica). Reuters reported that Bolsonaro received about 47% of valid first-round votes and Lula about 45% (https://www.investing.com/news/world-news/brazilians-head-to-polls-in-highstakes-polarized-election-4930920). The Associated Press reported on October 19 that the two faced off in a debate just days before the runoff (https://apnews.com/article/d80a6c41edf9c9e0ac5cfd0afeb53ed7).",
+      "costUsd": 0.01109997
+     }
+    ]
+   },
+   {
+    "id": "x-01",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.98,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2982.4 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+      "findings": "The comparison mixes two different audience measures. The NBA’s June 16, 2026 release says Knicks–Spurs Game 5 averaged 24.5 million viewers and peaked at 33 million (https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years?lid=py2w8ncosqjm%5C). For Bulls–Jazz Game 6 in 1998, contemporary reports say an estimated 72 million people watched all or part of the game—not that 72 million watched simultaneously at its peak; its Nielsen rating was 22.3 (https://www.washingtonpost.com/archive/lifestyle/1998/06/17/bulls-a-winner-for-nbc/9e4ac4dd-ecb0-4aa8-b6fd-a6f6e56535a6/; https://www.sportsbusinessjournal.com/Daily/Issues/1998/06/16/Sports-Media/GAME-SIX-NETS-RECORD-RATING-HELPS-NBC-TO-BEST-EVER-AVERAGE/). The 26.1% figure appears to convert that 72-million cumulative reach into a share of the U.S. population, then misleadingly describe it as people watching “at its height.” A fair comparison would use peak-to-peak or average-to-average figures; the cited 1998 statistic does neither. A Community Note could clarify that 72 million is the number who watched some portion of the 1998 game, not a peak concurrent audience.",
+      "costUsd": 0.04486045
+     },
+     {
+      "probability": 0.97,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2982.4 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+      "findings": "The comparison mixes different audience measures. The 2026 Knicks–Spurs Game 5 peak was 33 million viewers watching at once, which is the basis for the post’s roughly 9.5% figure (https://www.nba.com/news/nba-finals-2026-viewership-most-watched-28-years?lid=py2w8ncosqjm%5C). But the 1998 Bulls–Jazz Game 6 figure behind roughly 26.1% is NBC’s estimate that 72 million people watched all or part of the game—not the number watching simultaneously at its peak (https://www.sfgate.com/entertainment/article/72-million-saw-bulls-take-the-prize-3084266.php). That game averaged 35.89 million viewers and had a 22.3 Nielsen rating (https://www.sportsmediawatch.com/nba-finals-ratings-viewership-history/). Thus, saying 26.1% of the U.S. population was watching “at its height” misleadingly presents cumulative reach as a simultaneous audience, making the comparison unequal.",
+      "costUsd": 0.05503198
+     },
+     {
+      "probability": 0.94,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\nTweet posted: 2026-06-16T22:26:48+00:00\nPost age: 2982.4 hours\nTweet URL: https://x.com/i/status/2067011034313900135\n\nAuthor: Darren Rovell — 1,852,132 followers — 216,206 posts\nAuthor bio: Founder of @cllctmedia & Kickstand Cocktails. Partner, Tastemaker Capital. Investor in @athleticbrewing, @popupbagels, @bienasnacks & @lovecorn_snacks.\nEngagement: 42,475 impressions — 361 likes — 41 retweets — 23 replies — 8 quotes\n\n## Post\n\nAt its height, 9.5 percent of the U.S. population was watching Knicks-Spurs. \n\nTo put in perspective, 26.1 percent of the U.S. population was watching Bulls-Jazz in 1998 at its height.",
+      "findings": "The comparison appears to mix different audience measures. The Knicks–Spurs Game 5 audience peaked at 33 million viewers, which is about 9.5% of the roughly 347 million U.S. population in 2026 (https://apnews.com/article/7beaf435be2d8eda3ad87724373f7b7f). For the 1998 Bulls–Jazz Game 6, contemporary reporting says 72 million people watched at least part of the game—not that 26.1% of the population watched simultaneously; the same report gives a 22.3 Nielsen rating and a 38% share (https://www.washingtonpost.com/archive/lifestyle/1998/06/17/bulls-a-winner-for-nbc/9e4ac4dd-ecb0-4aa8-b6fd-a6f6e56535a6/). The 72-million figure divided by the 1998 U.S. population is approximately 26.1%, but it is cumulative reach, not peak concurrent viewership. The 1998 game averaged 35.89 million viewers (https://www.sportsmediawatch.com/nba-finals-ratings-viewership-history/). Thus the post’s broad point that the 1998 game reached a much larger share of Americans may be based on a defensible cumulative-reach calculation, but presenting that figure as a like-for-like comparison of how many people were watching “at its height” is misleading.",
+      "costUsd": 0.04405888
+     }
+    ]
+   },
+   {
+    "id": "x-02",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.98,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4276.1 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ",
+      "findings": "The post presents fan speculation as established canon: the cited rent question does not imply sex work. In the pilot, Penny identifies herself as a Cheesecake Factory waitress and an aspiring actress; the transcript contains no suggestion that she is a prostitute (https://github.com/lgalmant/TBBT-corpus/blob/master/transcripts/Season1/TheBigBangTheory.Season01.Episode01). The show directly addresses her money problems in “The Financial Permeability”: its recap says she is behind on rent, Sheldon lends her money, and she explains that she paid a fine for her ex-boyfriend (https://the-big-bang-theory.com/episodeguide/episode/214/The-Financial-Permeability/). In that episode, Penny also jokes about being called a “Chinese food prostitute” after the guys suggest she gets meals by using her looks; she insists she pays her own way (https://bigbangtrans.wordpress.com/series-2-episode-14-the-financial-permeability-2/). That joke is not evidence she sells sex. Co-creators Chuck Lorre and Bill Prady said they reworked Penny to be kind to the guys rather than someone who would take advantage of them (https://www.yahoo.com/entertainment/big-bang-theory-creators-bill-140000535.html). The claim that her friendship with them proves she was a prostitute is unsupported; the show portrays friendship, not a client relationship.",
+      "costUsd": 0.05495748
+     },
+     {
+      "probability": 0.94,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4276.1 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ",
+      "findings": "The post presents a fan theory as though it were established show canon. The series identifies Penny as a waitress at the Cheesecake Factory and aspiring actress; in “The Financial Permeability,” she says her hours at the restaurant were cut and explains she is behind on rent because of that and car trouble. Sheldon lends her rent money. Source: https://bigbangtheory.fandom.com/wiki/The_Financial_Permeability (episode quotes and details); https://www.nowtv.com/watch/the-big-bang-theory/iYEQYZaB7juAYLWgkt3jPS/seasons/2/episodes/the-financial-permeability-episode-14/A5EK4Gos4kywKdDT7frAq (episode synopsis). A published roundup explicitly labels “Penny is a sex worker” as a fan theory, not a revealed plot point: https://www.ranker.com/list/penny-fan-theories-big-bang-theory/damon-davis. The post’s explanation of why she befriends the men is speculation; the show depicts her as their neighbor and friend, with Leonard also becoming her romantic partner. Thus the claim that prostitution was implied or known from the show is unsupported, although the post may be intended as a joke or fan theory. The quoted rent question is separate: the show does establish Penny’s financial difficulty, but these sources do not establish a real-world rent comparison or that prostitution explains it. Post: https://x.com/i/status/2047477163247723007",
+      "costUsd": 0.03293956
+     },
+     {
+      "probability": 0.99,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:52 UTC\nTweet posted: 2026-04-24T00:46:10+00:00\nPost age: 4276.1 hours\nTweet URL: https://x.com/i/status/2047477163247723007\n\nAuthor: Robot Head 🤖 — 17,655 followers — 23,049 posts\nAuthor bio: Artist who likes to chat and make YouTube videos about movies. Check out my videos here, https://t.co/i55BQ78uMd\nEngagement: 917,067 impressions — 5,101 likes — 92 retweets — 115 replies — 20 quotes\n\n## Post\n\nShe was a prostitute. I thought everyone knew that. It was implied in the show. She was friends with those guys because they were the furthest thing from her clients. Why else would she be friends with them. https://t.co/q5HCMmeI6S\n\n## Quoted post\n\nNobody thought it was weird in the big bang theory that Penny; a waitress, was able to afford rent in a building where two physicists with PHDs were roommates just to split rent? https://t.co/2kdMlAYjmJ",
+      "findings": "The post presents a fan theory as something “implied” by the show, but the cited storyline does not support that: Penny is explicitly shown as a Cheesecake Factory waitress and aspiring actress, including in the pilot transcript (https://github.com/lgalmant/TBBT-corpus/blob/master/transcripts/Season1/TheBigBangTheory.Season01.Episode01). The show also directly depicts her financial hardship: in “The Financial Permeability,” Penny says she has not paid rent, and Sheldon offers to lend her money (https://bigbangtrans.wordpress.com/series-2-episode-14-the-financial-permeability-2/; episode summary: https://tv.apple.com/gb/episode/the-financial-permeability/umc.cmc.5lu6peu3w1rkhwikzc5o0ap7l?showId=umc.cmc.2wse46kqjacc5z5d8p0yl727u). A possible source of confusion is “The Vegas Renormalization”: Leonard and Raj hire a prostitute named Mikayla, who uses the name Esther with Howard; that character is not Penny, who is separately shown spending the episode with Sheldon in Pasadena (https://the-big-bang-theory.com/episodeguide/episode/221/The-Vegas-Renormalization/). Penny’s friendship with her neighbors is part of the show’s premise; the claim that she befriended them because they were unlike clients is unsupported speculation, not an established implication. The rent question may invite discussion about sitcom plausibility, but it is not evidence that Penny was a sex worker.",
+      "costUsd": 0.04389406
+     }
+    ]
+   },
+   {
+    "id": "x-03",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.99,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-06-15T21:12:04+00:00\nPost age: 3007.7 hours\nTweet URL: https://x.com/i/status/2066629840602550490\n\nAuthor: Trucker Fren — 20,123 followers — 106,649 posts\nAuthor bio: i ♥️ pidser n big trucks!™️ ✝️ • semi truck pilot • PNW & sweden enjoyer 🌲 • common sense haver • autonomous vehicle expert • developer 🇺🇸 ↔ 🇨🇦 🇸🇪 🇩🇰\nEngagement: 29,029 impressions — 801 likes — 46 retweets — 50 replies — 7 quotes\n\n## Post\n\nHOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+      "findings": "The claim is misleading. On June 15, 2026, Edwards Air Force Base said a U.S. Air Force B-52 carrying eight people crashed shortly after takeoff at Edwards during a routine test mission; the crash was under investigation. The official statement does not say Israel shot it down: https://www.edwards.af.mil/News/Display/Article/4517897/b-52-crashes-at-edwards-air-force-base/. The Associated Press likewise reported that the aircraft crashed during a test mission at the California base, and that all eight aboard died: https://apnews.com/article/ea237a6eec587adbbf9e7a578014ca93. These sources support a crash at Edwards, not an Israeli shootdown; the available reporting does not establish the crash’s cause.",
+      "costUsd": 0.022029105
+     },
+     {
+      "probability": 0.99,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-06-15T21:12:04+00:00\nPost age: 3007.7 hours\nTweet URL: https://x.com/i/status/2066629840602550490\n\nAuthor: Trucker Fren — 20,123 followers — 106,649 posts\nAuthor bio: i ♥️ pidser n big trucks!™️ ✝️ • semi truck pilot • PNW & sweden enjoyer 🌲 • common sense haver • autonomous vehicle expert • developer 🇺🇸 ↔ 🇨🇦 🇸🇪 🇩🇰\nEngagement: 29,029 impressions — 801 likes — 46 retweets — 50 replies — 7 quotes\n\n## Post\n\nHOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+      "findings": "The post’s claim that Israel shot down an American B-52 is contradicted by reporting on the same-day incident: the U.S. Air Force said a B-52 crashed shortly after takeoff during a local test sortie at Edwards Air Force Base in California at about 11:20 a.m. local time on June 15, 2026; the cause was not yet known and was under investigation. Source: https://www.edwards.af.mil/News/Display/Article/4517897/b-52-crashes-at-edwards-air-force-base/ . The Associated Press likewise reports the aircraft crashed shortly after takeoff at Edwards during a test mission, killing all eight aboard, and says no cause had been determined. Source: https://apnews.com/article/b52-stratofortress-crash-california-2cf849e75640a2e0b98ab94cc4a14430 . The tweet was posted at 21:12 UTC, after the reported crash time of 18:20 UTC (11:20 a.m. PDT). The crash’s precise cause remained undetermined, but the available contemporaneous evidence identifies it as a test-flight crash in California, not an Israeli shootdown.",
+      "costUsd": 0.02223705
+     },
+     {
+      "probability": 0.99,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-06-15T21:12:04+00:00\nPost age: 3007.7 hours\nTweet URL: https://x.com/i/status/2066629840602550490\n\nAuthor: Trucker Fren — 20,123 followers — 106,649 posts\nAuthor bio: i ♥️ pidser n big trucks!™️ ✝️ • semi truck pilot • PNW & sweden enjoyer 🌲 • common sense haver • autonomous vehicle expert • developer 🇺🇸 ↔ 🇨🇦 🇸🇪 🇩🇰\nEngagement: 29,029 impressions — 801 likes — 46 retweets — 50 replies — 7 quotes\n\n## Post\n\nHOLY SHIT: ISRAEL JUST SHOT DOWN AN AMERICAN B52",
+      "findings": "The claim is false. Edwards Air Force Base said on June 15, 2026, that a U.S. Air Force B-52 carrying eight people crashed shortly after takeoff at the base in California during a routine test mission; the crash was under investigation. The official account does not report an Israeli attack or shootdown: https://www.edwards.af.mil/News/Display/Article/4517897/b-52-crashes-at-edwards-air-force-base/. The Associated Press likewise reported that the aircraft crashed during a routine test mission at Edwards, north of Los Angeles—not that Israel shot it down: https://apnews.com/article/ea237a6eec587adbbf9e7a578014ca93. The post appears to conflate the fatal California crash with a military attack; the available evidence supports a crash, not a shootdown by Israel.",
+      "costUsd": 0.02207275
+     }
+    ]
+   },
+   {
+    "id": "x-04",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.88,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-03-24T18:49:23.465Z\nPost age: 5002.1 hours\nTweet URL: https://x.com/i/status/2036515738991870263\n\nAuthor: 35,447 followers\nEngagement: 5,862 impressions — 475 likes — 190 retweets — 131 replies — 25 quotes\n\n## Post\n\nURGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist  Church in AZ)  22-month-old son accidentally shot himself in the chest with a  brad nailer (nail gun). It went off in his heart ~ He is  now in critical condition and not doing well. Please repost. @stiletoprincess",
+      "findings": "The tweet’s wording closely matches a long-running copy-and-paste prayer chain. Lead Stories reports that essentially the same claim about a 22-month-old and a brad nailer circulated in 2010 and later versions changed names or added details; it found no evidence the original request was based on a real incident (https://leadstories.com/hoax-alert/2022/08/fact-check-prayer-request-for-baby-shot-with-nail-gun-is-not-current-or-verified-dates-back-to-2010.html). Truth or Fiction likewise traces the nail-gun prayer request to 2010 and classifies the circulating request as outdated (https://www.truthorfiction.com/prayer-request-kayla-scotts-22-month-old-son-shot-self-with-brad-nailer/). A Baker City Seventh-day Adventist Church bulletin dated March 21, 2026 does list a prayer request for the Scott family’s 22-month-old son after a brad-nailer injury, asking for “continued healing”; this shows the modified request was circulating shortly before the tweet, but is not independent confirmation of the child’s condition or the tweet’s claim that he was then critical and “not doing well” (https://assets.adventistconnect.org/bakerci0/2026/03/20182416/20260321bcchurchbulletin.pdf). A January 11, 2026 post also identifies the “Scott’s (From Antioch Baptist Church)” wording as a version of the recurring hoax (https://www.ricksdailytips.com/child-shot-by-nail-gun-hoax/). The tweet itself is here: https://x.com/i/status/2036515738991870263. Overall, the urgent current-status claim is unverified and substantially recycles a message documented since 2010; the March 2026 church bulletin is limited, indirect evidence of a prayer request, not medical or news verification.",
+      "costUsd": 0.04409073
+     },
+     {
+      "probability": 0.68,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-03-24T18:49:23.465Z\nPost age: 5002.1 hours\nTweet URL: https://x.com/i/status/2036515738991870263\n\nAuthor: 35,447 followers\nEngagement: 5,862 impressions — 475 likes — 190 retweets — 131 replies — 25 quotes\n\n## Post\n\nURGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist  Church in AZ)  22-month-old son accidentally shot himself in the chest with a  brad nailer (nail gun). It went off in his heart ~ He is  now in critical condition and not doing well. Please repost. @stiletoprincess",
+      "findings": "The underlying accident appears to be real, so this is not simply the old chain message reposted unchanged: a March 21, 2026 church bulletin asks for “continued healing” for the Scotts’ 22-month-old son, identified as being from Antioch Baptist Church, after he accidentally shot himself in the chest with a brad nailer (https://assets.adventistconnect.org/bakerci0/2026/03/20182416/20260321bcchurchbulletin.pdf). However, that contemporaneous bulletin does not say the child was in critical condition, “not doing well,” or that the nail entered his heart. The tweet, posted March 24, makes those more specific and urgent claims without a source (https://x.com/i/status/2036515738991870263). The critical-condition wording closely matches a prayer-chain message about “Kayla Scott’s” 22-month-old son that circulated online as early as 2010; a 2022 Lead Stories fact-check traced that viral version’s history and found no evidence that the old chain-message claim was based on a real incident (https://leadstories.com/hoax-alert/2022/08/fact-check-prayer-request-for-baby-shot-with-nail-gun-is-not-current-or-verified-dates-back-to-2010.html). Thus, the 2026 bulletin corroborates a real injury, but the tweet’s claimed current severity and heart injury are not verified and may be recycled details from the older message.",
+      "costUsd": 0.0442179
+     },
+     {
+      "probability": 0.97,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-03-24T18:49:23.465Z\nPost age: 5002.1 hours\nTweet URL: https://x.com/i/status/2036515738991870263\n\nAuthor: 35,447 followers\nEngagement: 5,862 impressions — 475 likes — 190 retweets — 131 replies — 25 quotes\n\n## Post\n\nURGENT PRAYERS NEEDED: The Scott's (From Antioch Baptist  Church in AZ)  22-month-old son accidentally shot himself in the chest with a  brad nailer (nail gun). It went off in his heart ~ He is  now in critical condition and not doing well. Please repost. @stiletoprincess",
+      "findings": "The tweet’s core wording is a recycled viral prayer request, not a newly verified report: Lead Stories documents that substantially the same claim about a 22-month-old, a brad nailer, the child’s heart, and critical condition circulated in 2010, and says there is no evidence that this specific request was based on a real incident (https://leadstories.com/hoax-alert/2022/08/fact-check-prayer-request-for-baby-shot-with-nail-gun-is-not-current-or-verified-dates-back-to-2010.html). An archived prayer-request page contains the same Kayla Scott story dated October 14, 2010 (https://rpmprayer.com/prayer-requests/). A March 21, 2026 Baker City church bulletin repeats a version of the request and asks for continued healing, but it does not independently verify the accident or the child’s current condition (https://assets.adventistconnect.org/bakerci0/2026/03/20182416/20260321bcchurchbulletin.pdf). I found no independent confirmation for the tweet’s added Arizona framing or its claim that the child is currently critical and “not doing well.” The tweet should be treated as unverified and likely recycled, rather than a confirmed urgent update (https://x.com/i/status/2036515738991870263).",
+      "costUsd": 0.0652266
+     }
+    ]
+   },
+   {
+    "id": "x-05",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.94,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2626.3 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+      "findings": "The central “you have to log in every 30 days” claim is unsupported and misleading. Valve’s Offline Mode instructions say it lets users play games without an active Steam Network connection and explain how to prepare for offline play; they do not state a 30-day reauthentication deadline: https://help.steampowered.com/en/faqs/view/0E18-319B-E34B-B2C8. This does not guarantee every Steam game will work offline: individual games may require an internet connection or third-party authentication, and Steam’s own agreement says a Steam account, client, and internet connection may be required for some content: https://store.steampowered.com/subscriber_agreement/. The quoted post is broadly right that a game’s use of Steam’s specific DRM wrapper is optional: Valve documents the wrapper as a feature developers can apply, rather than a requirement for every Steam game: https://partner.steamgames.com/doc/features/drm. But Steam does use account-based licenses, so saying Steam has no platform-level access control would also be too broad; Valve’s agreement says content is licensed, not sold, and access requires a Steam account: https://store.steampowered.com/subscriber_agreement/. GOG does provide offline installers and says games should be playable offline without its Galaxy client, supporting the post’s comparison in that respect: https://support.gog.com/hc/en-us/articles/213148105-How-do-I-download-my-purchased-items and https://docs.gog.com/quality-assurance/. “Work forever” is not guaranteed for every future computer or operating system, but saved installers avoid needing GOG’s client to install and launch compatible offline game builds.",
+      "costUsd": 0.033237755
+     },
+     {
+      "probability": 0.88,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:53 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2626.3 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+      "findings": "The post is right that Steam can act as an access-control layer: Steam’s own agreement says users need a Steam account and may be required to run the Steam client or maintain an internet connection (https://store.steampowered.com/subscriber_agreement/). But the specific claim that everyone must log in every 30 days to reauthenticate is not supported by Valve’s Offline Mode instructions. Valve says to log in, save credentials, fully update and test games, then select “Go Offline”; it describes playing without an active Steam Network connection and gives no 30-day reauthentication rule (https://help.steampowered.com/en/faqs/view/0E18-319B-E34B-B2C8). Valve documents its Steam DRM wrapper as a feature that verifies ownership and launches the game through Steam, while its SDK documentation says features provided through the SDK are optional (https://partner.steamgames.com/doc/features/drm; https://partner.steamgames.com/doc/sdk). Thus, some games depend on Steam or other DRM, but it is not accurate to say every Steam game will stop working 30 days after Steam goes down; that depends on the game’s DRM and online-service requirements. GOG’s general advantage is accurately described: its developer documentation says GOG is DRM-free and offers offline installers so users can install and play without the Galaxy client (https://docs.gog.com/introduction/; https://docs.gog.com/quality-assurance/). However, “work forever” is too absolute: downloaded installers avoid store reauthentication, but continued usability can still depend on the game and compatible hardware/software.",
+      "costUsd": 0.03323567
+     },
+     {
+      "probability": 0.93,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-07-01T18:35:30+00:00\nPost age: 2626.3 hours\nTweet URL: https://x.com/i/status/2072388645794054458\n\nAuthor: not_cyotee — 5,722 followers — 16,491 posts\nAuthor bio: Self-reliance through value generation.\n\nI'm a potato.\n\nYes, your code sucks\nEngagement: 89,456 impressions — 416 likes — 22 retweets — 102 replies — 6 quotes\n\n## Post\n\nActually,  Steam enforces their own DRM.\n\nYou have to login every 30 days to reauthenticate your license.\n\nIt's not much, but it's still DRM. Your games will break in 30 days once Steam goes down.\n\n@GoodOldGames installs and back ups work forever. https://t.co/6XZhhiKpar\n\n## Quoted post\n\nFolks, Steam does not require games to have DRM - it's entirely optional. \n\nIf a game has DRM, that is a developer/publisher decision. https://t.co/H1Orng7ZFD",
+      "findings": "The post conflates Steam’s account/client licensing with a universal 30-day reauthentication rule. Valve’s official Offline Mode instructions say to sign in online, save credentials, update and test games, then select “Go Offline”; they do not state a 30-day expiration. Valve says that if Steam requires a login while offline, there is no way to bypass it without going online (https://help.steampowered.com/en/faqs/view/0E18-319B-E34B-B2C8). So offline play can depend on prior setup and a particular game’s requirements, but the cited rule that all Steam games require a login every 30 days is unsupported by Valve’s documentation.\n\nThe quoted post is broadly right that the Steam DRM wrapper is a developer/publisher choice: Valve’s documentation describes applying the wrapper as a step in publishing a game. But that does not mean Steam has no platform-level account or client licensing checks; Valve documents Steam ownership verification separately (https://partner.steamgames.com/doc/features/drm; https://partner.steamgames.com/doc/features/auth). The accurate distinction is that not every Steam game uses the Steam DRM wrapper, while some games may still depend on Steam or other online services.\n\nThe claim that games will break “in 30 days once Steam goes down” is therefore not established: Valve documents no universal 30-day timer, and outcomes would vary by game, DRM, client state, and whether it was already configured for offline play. GOG does offer offline installers that can be downloaded and installed without the Galaxy client, which supports the post’s comparison about offline backups; however, “work forever” is not a guarantee that every game will remain compatible with all future hardware and operating systems (https://support.gog.com/hc/en-us/articles/213148105-How-do-I-download-my-purchased-items; https://docs.gog.com/introduction/).",
+      "costUsd": 0.033142055
+     }
+    ]
+   },
+   {
+    "id": "x-06",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.9,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2586.4 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭",
+      "findings": "The claim is false if meant literally in South Africa, the likely context of the post. Admission to a mental health institution does not itself cancel debts: the South African Government’s admission guidance discusses when treatment is free or payable, not debt relief (https://www.gov.za/services/services-residents/health/admission-mental-health-institution). Debt discharge is instead addressed through insolvency proceedings: the Insolvency Act provides for rehabilitation after sequestration, which can discharge certain debts; it does not make hospitalization a debt-cancellation process (https://www.justice.gov.za/legislation/acts/1936-024.pdf; https://www.justice.gov.za/salrc/reports/Report-Project100B-Mnt-04October2023-20032024.pdf). The tweet reads as humorous, but its premise would be misleading if taken as advice.",
+      "costUsd": 0.02210898
+     },
+     {
+      "probability": 0.98,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2586.4 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭",
+      "findings": "The claim is misleading. The post does not specify a country, but the author’s profile points to South Africa. There, admission to a mental-health institution does not itself cancel existing debts: the South African government describes the Mental Health Care Act as governing care, admission and administration of a person’s property, not automatic debt forgiveness (https://www.gov.za/ts/documents/mental-health-care-act). Debt relief through insolvency is a separate legal process: the government says an insolvent’s estate is placed under sequestration and the person may apply to court for rehabilitation (https://www.gov.za/services/services-residents/dealing-law/legal-matters/rehabilitation-insolvent). A possible source of confusion is that involuntary admission to a South African public mental-health institution may be free, while voluntary admission is subject to fees; that concerns the cost of care, not the patient’s other debts (https://www.gov.za/services/services-residents/health/admission-mental-health-institution). Laws vary by country, but the post’s blanket claim that going into a mental institution cancels all debts is unsupported.",
+      "costUsd": 0.0327479
+     },
+     {
+      "probability": 0.98,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-07-03T10:29:18+00:00\nPost age: 2586.4 hours\nTweet URL: https://x.com/i/status/2072991064722464981\n\nAuthor: uBHEBHE🇿🇦 — 16,453 followers — 63,210 posts\nAuthor bio: IG: nokwandamhlongo._ 📍DBN || PTA. Please hesitate to DM, I can’t read. @Masandawana Khulisomudauholic 💛\nEngagement: 636,225 impressions — 9,641 likes — 718 retweets — 367 replies — 376 quotes\n\n## Post\n\nI just found out that if you end up in a mental institution, all your debts get cancelled 😭",
+      "findings": "The post is misleading if taken literally. In South Africa—the likely context given the author’s South African location—the government says involuntary admission to a mental-health institution makes that treatment service free; it does not say that admission cancels a person’s existing debts (https://www.gov.za/services/services-residents/health/admission-mental-health-institution). Debt discharge is instead associated with insolvency procedures: the South African Law Reform Commission explains that debts are discharged after rehabilitation of an insolvent person, following sequestration—not simply because someone is admitted to a mental institution (https://www.justice.gov.za/salrc/reports/Report-Project100B-Mnt-04October2023-20032024.pdf). The post does not specify a jurisdiction, so the exact rules vary, but it gives no basis for the broad claim that institutional admission cancels all debts.",
+      "costUsd": 0.022088
+     }
+    ]
+   },
+   {
+    "id": "x-07",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.88,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-10-09T19:39:33+00:00\nPost age: 225.2 hours\nTweet URL: https://x.com/i/status/2108643548992270741\n\nAuthor: Daily Wire — 2,551,397 followers — 202,202 posts\nAuthor bio: Official X account of The Daily Wire.\nEngagement: 431,802 impressions — 547 likes — 77 retweets — 54 replies — 7 quotes\n\n## Post\n\nShe asked the chat to ban Oreos from other kids' lunches. The school said no. She emailed the teacher. The teacher said no. So she searched another child's lunchbox. The parents' group chat chose chaos with Oreo Day.",
+      "findings": "The post retells a story from Instagram creator @ashleighjamz as though it happened: The Daily Wire’s article recounts the lunchbox search and Oreo Day, embedding the creator’s Instagram posts as its source (https://www.dailywire.com/news/mom-tries-to-police-kid-lunches-and-the-group-chat-goes-unhinged). But the story’s authenticity is unverified. AOL reports that people quickly questioned the text exchanges as fake, notes the account posts similar serialized drama, and says the writer suspects the story is fictional (https://www.aol.com/articles/oreogate-probably-fake-unhinged-mom-192631000.html). Yahoo likewise notes reasons for skepticism, including that the creator’s account appears devoted to dramatized text-message stories and Suno AI-generated songs, while concluding that whether the Oreogate story is real is unknown (https://currently.att.yahoo.com/att/a-mom-complained-about-her-daughters-classmate-bringing-cookies-to-school-welcome-to-oreo-gate-214328869.html). Thus, the events may be real, but the post omits that this is a viral, unverified story widely suspected of being staged or fictional; available reporting does not establish definitively that it is fake.",
+      "costUsd": 0.032821555
+     },
+     {
+      "probability": 0.91,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-10-09T19:39:33+00:00\nPost age: 225.2 hours\nTweet URL: https://x.com/i/status/2108643548992270741\n\nAuthor: Daily Wire — 2,551,397 followers — 202,202 posts\nAuthor bio: Official X account of The Daily Wire.\nEngagement: 431,802 impressions — 547 likes — 77 retweets — 54 replies — 7 quotes\n\n## Post\n\nShe asked the chat to ban Oreos from other kids' lunches. The school said no. She emailed the teacher. The teacher said no. So she searched another child's lunchbox. The parents' group chat chose chaos with Oreo Day.",
+      "findings": "The post presents the Oreo dispute as a real school incident, but the available sourcing does not establish that it happened. The Daily Wire article recounts the same events, embedding posts from Instagram creator @ashleighjamz, but provides no independent verification: https://www.dailywire.com/news/mom-tries-to-police-kid-lunches-and-the-group-chat-goes-unhinged. PureWow describes the saga as “probably fake” and identifies it as the creator’s micro-drama, noting that she turned the chat into AI-generated songs: https://www.purewow.com/family/oreogate-mom-group-chat-debate. The Buzz reports that the creator was a paid partner of AI music company Suno, made a series of videos with original music, and sold Oreogate merchandise—evidence consistent with scripted promotional entertainment rather than a verified real-life account: https://thebuzzmagazines.com/articles/2026/09/oreogate-kids-cookies-crazies-and-brilliance. The creator’s posts also use #storytime and #sunopartner, as reflected in this archived post: https://imginn.com/p/Dc3K5rlz9mC/. A note should clarify that this story appears to be a dramatized, likely fictional social-media series, not a substantiated news account; the sources found do not conclusively prove the events were fabricated.",
+      "costUsd": 0.03242037
+     },
+     {
+      "probability": 0.82,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-10-09T19:39:33+00:00\nPost age: 225.3 hours\nTweet URL: https://x.com/i/status/2108643548992270741\n\nAuthor: Daily Wire — 2,551,397 followers — 202,202 posts\nAuthor bio: Official X account of The Daily Wire.\nEngagement: 431,802 impressions — 547 likes — 77 retweets — 54 replies — 7 quotes\n\n## Post\n\nShe asked the chat to ban Oreos from other kids' lunches. The school said no. She emailed the teacher. The teacher said no. So she searched another child's lunchbox. The parents' group chat chose chaos with Oreo Day.",
+      "findings": "The post presents the Oreogate story as a factual incident, but its authenticity has not been established. Reporting says the Instagram creator behind the saga was a paid Suno partner; Suno said it did not devise or control the storyline, and the creator declined to verify whether the messages and people were real. Thus, the post’s underlying events—including the lunchbox search—are unverified, not confirmed false. Source: https://www.dexerto.com/food/viral-oreogate-mom-drama-was-a-paid-ai-ad-and-its-creator-wont-say-if-it-was-real-3403588/ . Business Insider’s report, republished by AOL, likewise describes the series as Suno-sponsored and says the creator would not confirm whether the story was real: https://www.aol.com/articles/oreogate-instagram-went-viral-fake-173312000.html",
+      "costUsd": 0.043867955
+     }
+    ]
+   },
+   {
+    "id": "x-08",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.87,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-01-29T16:18:02.374Z\nPost age: 6300.6 hours\nTweet URL: https://x.com/i/status/2016908705392955775\n\n## Post\n\nJUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+      "findings": "The post is misleading if it means a vote by the full Senate. On January 29, 2026, the Senate Foreign Relations Committee considered H.R. 260, the No Tax Dollars for Terrorists Act; committee records say it passed out of committee that day, not that the full Senate voted on it (https://www.foreign.senate.gov/hearings/business-meeting-01-29-2026; https://www.foreign.senate.gov/press/rep/release/read-out-january-29th-committee-business-meeting). The Senate’s floor log for January 29 lists a vote on government appropriations and no floor vote on the Taliban-related bill (https://www.dailypress.senate.gov/thursday-january-29-2026/). More precisely, the bill was advanced by the committee; describing it as a bill to “defund the Taliban” is shorthand for its stated aim to stop taxpayer dollars from supporting the Taliban (https://www.foreign.senate.gov/press/rep/release/risch-passes-no-tax-dollars-for-terrorists-act-through-committee).",
+      "costUsd": 0.03308963
+     },
+     {
+      "probability": 0.82,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-01-29T16:18:02.374Z\nPost age: 6300.6 hours\nTweet URL: https://x.com/i/status/2016908705392955775\n\n## Post\n\nJUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+      "findings": "The tweet is misleading if read as saying the full Senate was scheduled to vote on the bill. On January 29, 2026, the Senate Foreign Relations Committee advanced H.R. 260, the No Tax Dollars for Terrorists Act; the committee’s own announcement specifies that it passed through that committee: https://www.foreign.senate.gov/press/rep/release/risch-passes-no-tax-dollars-for-terrorists-act-through-committee. The Congressional Record’s daily digest likewise lists H.R. 260 among items ordered favorably reported by the Foreign Relations Committee, while the Senate floor was considering H.R. 7148: https://www.congress.gov/119/crec/2026/01/29/172/21/CREC-2026-01-29-dailydigest.pdf. The bill’s stated focus is a U.S. strategy to oppose financial or material support to the Taliban by foreign countries and nongovernmental organizations—not simply a direct vote to “defund the Taliban”: https://www.congress.gov/119/bills/s226/BILLS-119s226is.pdf. More accurate wording: the Senate Foreign Relations Committee voted on the bill that day; this was not a full-Senate floor vote on it.",
+      "costUsd": 0.04398392
+     },
+     {
+      "probability": 0.78,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-01-29T16:18:02.374Z\nPost age: 6300.6 hours\nTweet URL: https://x.com/i/status/2016908705392955775\n\n## Post\n\nJUST IN: U.S. Senate to vote today on a bill to defund the Taliban.",
+      "findings": "The post is partly accurate but may misleadingly imply a vote by the full Senate. On January 29, 2026, the Senate Foreign Relations Committee considered H.R. 260, the No Tax Dollars for Terrorists Act, and the committee advanced it; the committee’s official readout lists the bill among legislation passed out of committee that day: https://www.foreign.senate.gov/press/rep/release/read-out-january-29th-committee-business-meeting. The committee agenda confirms H.R. 260 was before that committee: https://www.foreign.senate.gov/hearings/business-meeting-01-29-2026. But the Senate floor’s official record for January 29 lists a vote on advancing a government-funding package, not a full-Senate vote on H.R. 260: https://www.dailypress.senate.gov/thursday-january-29-2026/. H.R. 260’s stated purpose is to require a strategy opposing foreign financial or material support to the Taliban; describing it simply as a bill “to defund the Taliban” is shorthand, and committee action did not itself enact the bill or constitute a full-Senate vote. Bill text: https://www.govinfo.gov/content/pkg/BILLS-119hr260rs/pdf/BILLS-119hr260rs.pdf",
+      "costUsd": 0.04374662
+     }
+    ]
+   },
+   {
+    "id": "x-09",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.94,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-05-13T22:34:40+00:00\nPost age: 3798.3 hours\nTweet URL: https://x.com/i/status/2054691828826259922\n\nAuthor: B e a r m a x x e r — 18,393 followers — 17,003 posts\nAuthor bio: The artist formerly known as Will Stancil’s Zippy 2011 Honda Fit\n\n@spencerpratt for LA Mayor\nEngagement: 121,590 impressions — 894 likes — 21 retweets — 69 replies — 4 quotes\n\n## Post\n\nDid you know cornrows were used by runaway slaves to map escape routes, as well as store food for their journey",
+      "findings": "The post presents two claims as established fact, but the evidence supports a more qualified account. On escape-route maps: the Library of Congress describes braids depicting escape routes as “popular African folklore” and recounts an explanation from Afro-Colombian braider Ziomara Asprilla Garcia at the 2011 Smithsonian Folklife Festival; this documents a living cultural account, not proof that cornrows were a documented, widespread mapping system among enslaved people. Source: https://www.loc.gov/static/programs/of-the-people/represent/junior-fellows/documents/CCDI-Guide-Majestie-Varnado.pdf. A historical fact-check likewise concludes that the route-map claim lacks substantial historical documentation: https://factreview.co/fact/did-slaves-braid-maps-in-cornrows-to-facilitate-escape-history-behind-the-legen. On food: scholarly research discusses oral histories linking rice grains hidden in women’s hair to rice cultivation among Maroon communities, while noting the uncertainty and limits of the evidence; this is not the same as establishing that cornrows were used generally to store food for an escape journey. Sources: https://onlinelibrary.wiley.com/doi/full/10.1111/anti.12838 and https://academic.oup.com/edited-volume/61663/chapter-abstract/553412348. Overall, the tweet turns culturally significant but limited oral traditions into a broad, settled historical claim, and blurs carrying seeds for planting with carrying food to eat en route.",
+      "costUsd": 0.04379368
+     },
+     {
+      "probability": 0.93,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:54 UTC\nTweet posted: 2026-05-13T22:34:40+00:00\nPost age: 3798.3 hours\nTweet URL: https://x.com/i/status/2054691828826259922\n\nAuthor: B e a r m a x x e r — 18,393 followers — 17,003 posts\nAuthor bio: The artist formerly known as Will Stancil’s Zippy 2011 Honda Fit\n\n@spencerpratt for LA Mayor\nEngagement: 121,590 impressions — 894 likes — 21 retweets — 69 replies — 4 quotes\n\n## Post\n\nDid you know cornrows were used by runaway slaves to map escape routes, as well as store food for their journey",
+      "findings": "The post presents an unsupported claim as established fact. For the escape-map claim, Snopes’ fact-check found no historical evidence substantiating the widely circulated claim that enslaved people in the United States braided escape maps into cornrows: https://www.snopes.com/news/2022/03/12/maps-cornrows-black-slaves-escape/. There is a narrower Afro-Colombian oral tradition: a Library of Congress research guide describes the escape-route story as popular folklore and notes that an Afro-Colombian braider discussed braiding as communication at a Smithsonian festival; that is not evidence that cornrows were generally used as maps by enslaved people across the Americas: https://www.loc.gov/static/programs/of-the-people/represent/junior-fellows/documents/CCDI-Guide-Majestie-Varnado.pdf. The food part appears to conflate this story with a separate oral tradition among Suriname Maroon communities: an academic paper reports accounts that an African woman carried rice seed in her hair, which was later planted—not that cornrows stored food for escapees to eat on a journey: https://pmc.ncbi.nlm.nih.gov/articles/PMC2840666/. Oxford’s research overview likewise discusses seed rice reaching enslaved people and being planted in provision gardens or Maroon settlements, not food carried for a journey: https://academic.oup.com/edited-volume/61663/chapter-abstract/553412348. A note should clarify that the map claim is unsubstantiated as a general historical fact and that seed-carrying oral traditions are distinct from storing travel food in cornrows.",
+      "costUsd": 0.07480558
+     },
+     {
+      "probability": 0.97,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:55 UTC\nTweet posted: 2026-05-13T22:34:40+00:00\nPost age: 3798.3 hours\nTweet URL: https://x.com/i/status/2054691828826259922\n\nAuthor: B e a r m a x x e r — 18,393 followers — 17,003 posts\nAuthor bio: The artist formerly known as Will Stancil’s Zippy 2011 Honda Fit\n\n@spencerpratt for LA Mayor\nEngagement: 121,590 impressions — 894 likes — 21 retweets — 69 replies — 4 quotes\n\n## Post\n\nDid you know cornrows were used by runaway slaves to map escape routes, as well as store food for their journey",
+      "findings": "The post presents the story as an established fact about “runaway slaves,” but reliable historical documentation for enslaved people in the United States using cornrows as route maps has not been established. The National Park Service–funded Underground Railroad Online Handbook describes how escape-related “secret maps” and codes often became folklore; historian Fergus Bordewich notes that fugitives commonly relied on direct communication and that purported escape codes are often unsupported by evidence: https://housedivided.dickinson.edu/sites/ugrr/thematic-essays/myths-of-the-underground-railroad-bordewich/. A Library of Congress-hosted research guide describes hair-braided escape routes as popular folklore and separately recounts an Afro-Colombian account of braiding as communication; that limited tradition does not establish the post’s broad claim about U.S. slavery: https://www.loc.gov/static/programs/of-the-people/represent/junior-fellows/documents/CCDI-Guide-Majestie-Varnado.pdf. I found no reliable historical documentation supporting the additional claim that food was stored in cornrows for escape journeys. The claim may draw on oral traditions, but it should not be stated as a documented, general practice.",
+      "costUsd": 0.03298498
+     }
+    ]
+   },
+   {
+    "id": "x-10",
+    "group": "x-notes",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.4,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:55 UTC\nTweet posted: 2026-08-16T18:22:28+00:00\nPost age: 1522.5 hours\nTweet URL: https://x.com/i/status/2089055206885519680\n\nAuthor: Kalshi Finance — 83,685 followers — 1,826 posts\nAuthor bio: Trade on financials, commodities, tech and everything else finance. \n\nPowered by @Kalshi\nEngagement: 499,940 impressions — 7,760 likes — 189 retweets — 79 replies — 31 quotes\n\n## Post\n\nJUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter leaner and cutting management layers",
+      "findings": "The underlying attribution is accurate: in Lex Fridman Podcast #383, Mark Zuckerberg said Elon Musk had led an early push to make Twitter leaner and that principles such as making it more technical and having fewer management layers were generally good changes. Zuckerberg said Musk was “quite ahead” of other companies on those principles. However, he also explicitly said it was “very hard to know” from the outside whether Musk cut too much or too little, so this was not an endorsement of the scale or execution of the layoffs. Source: https://www.youtube.com/watch?v=Ff4fRgnuFgQ ; transcript and episode date: https://podscripts.co/podcasts/lex-fridman-podcast/383-mark-zuckerberg-future-of-ai-at-meta-facebook-instagram-and-whatsapp . The key issue is “JUST IN”: the interview was published in June 2023, not shortly before this post dated August 16, 2026. Fortune also reported the remarks on June 9, 2023: https://fortune.com/2023/06/09/mark-zuckerberg-elon-musk-twitter-meta-layoffs-middle-managers/ . A Community Note could clarify the quote’s age and the qualification about not knowing whether Musk cut too much; the core quotation is not fabricated.",
+      "costUsd": 0.032971555
+     },
+     {
+      "probability": 0.96,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:55 UTC\nTweet posted: 2026-08-16T18:22:28+00:00\nPost age: 1522.5 hours\nTweet URL: https://x.com/i/status/2089055206885519680\n\nAuthor: Kalshi Finance — 83,685 followers — 1,826 posts\nAuthor bio: Trade on financials, commodities, tech and everything else finance. \n\nPowered by @Kalshi\nEngagement: 499,940 impressions — 7,760 likes — 189 retweets — 79 replies — 31 quotes\n\n## Post\n\nJUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter leaner and cutting management layers",
+      "findings": "The quote is substantially accurate: in Lex Fridman Podcast #383, Zuckerberg said Musk had pushed to make Twitter leaner, described fewer management layers as among the generally good principles, and said Musk was “quite ahead” of other companies on this. The interview was published June 8, 2023—not just before this tweet, posted August 16, 2026. Source: https://www.youtube.com/watch?v=Ff4fRgnuFgQ. Zuckerberg also explicitly said listeners could agree or disagree with Musk’s tactics and that, from the outside, it was hard to know whether Musk cut too much. Transcript: https://www.dadascribe.com/demos/Mark-Zuckerberg-Future-of-AI-Lex-Fridman.html. Thus the quote is real, but “JUST IN” materially misrepresents a three-year-old interview as breaking news; the post also omits Zuckerberg’s caveats.",
+      "costUsd": 0.02180355
+     },
+     {
+      "probability": 0.82,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:55 UTC\nTweet posted: 2026-08-16T18:22:28+00:00\nPost age: 1522.5 hours\nTweet URL: https://x.com/i/status/2089055206885519680\n\nAuthor: Kalshi Finance — 83,685 followers — 1,826 posts\nAuthor bio: Trade on financials, commodities, tech and everything else finance. \n\nPowered by @Kalshi\nEngagement: 499,940 impressions — 7,760 likes — 189 retweets — 79 replies — 31 quotes\n\n## Post\n\nJUST IN: Mark Zuckerberg says Elon Musk was \"quite ahead\" when making Twitter leaner and cutting management layers",
+      "findings": "Zuckerberg’s underlying comment is real, but it is not new: it came in Lex Fridman Podcast #383, published June 8, 2023. In the discussion of Musk and Twitter, Zuckerberg said, “I do think that Elon led a push early on to make Twitter a lot leaner”; the podcast’s transcript also records the surrounding discussion of organizational structure and management layers (https://lexfridman.com/mark-zuckerberg-2; transcript: https://lawwu.github.io/transcripts/transcript_Ff4fRgnuFgQ.html). Thus, the post’s “JUST IN” framing on August 16, 2026 is misleading by presenting a three-year-old remark as breaking news. The reported praise is broadly consistent with the original comment, but the post should supply the 2023 context.",
+      "costUsd": 0.06472265
+     }
+    ]
+   }
+  ],
+  "costUsd": 2.973294970000001
+ }
+}

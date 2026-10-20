@@ -1,0 +1,366 @@
+{
+ "drawnAt": "2026-10-19T03:03:18.518Z",
+ "poolSize": 24063,
+ "claims": [
+  {
+   "id": "161b6866-b7fc-418b-81f1-64145af32c8c",
+   "claim": "The author of the article is a philosophy Ph.D. student.",
+   "context_quote": "I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.",
+   "context_paragraph": "I’m a philosophy Ph.D. student. Saying controversial things about ethics is kind of our job.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-23T16:09:13.382891+00:00",
+   "everything_items": {
+    "id": "c1b1f77f-5cde-4ac2-a0b3-918123b273c7",
+    "url": "https://benthams.substack.com/p/data-republicans-slop-site",
+    "title": "Data Republican’s Slop Site ",
+    "source": "substack",
+    "everything_projects": {
+     "slug": "benthams"
+    }
+   }
+  },
+  {
+   "id": "18b95631-24e3-48ae-a2b7-894e101c1c0f",
+   "claim": "The speaker said that he would prefer a points deduction that still allowed Manchester City to compete to avoid relegation, rather than a deduction so large that the remaining matches became meaningless.",
+   "context_quote": "De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.",
+   "context_paragraph": "De hecho, hay un a mí me no me a mí me parecería que estaría bien una sanción suficiente como para que puedan pelear por mantenerse. Quiero decir, si te quitan 100 puntos ya directamente los partidos no sirven para nada.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-10-02T05:44:48.962081+00:00",
+   "everything_items": {
+    "id": "addddca6-7de5-400b-8b65-0a433772ff45",
+    "url": "https://www.youtube.com/watch?v=hAoP1zVVkOE",
+    "title": "¿EL MEJOR LAMINE YAMAL? ¿ESPAÑA IMPARABLE? DEBUTS DE XAVI Y KLOPP, RAÚL GARCÍA Y MÁS | DESPEJADOS",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "mundomaldini"
+    }
+   }
+  },
+  {
+   "id": "19d8be72-e466-4857-86c5-72a8710d9658",
+   "claim": "The latest AI models are significantly better than humans at some tedious, verifiable tasks.",
+   "context_quote": "And at this point, they are they are in some levels significantly better than humans at some of these tasks.",
+   "context_paragraph": "And at this point, they are they are in some levels significantly better than humans at some of these tasks. That the ones that were tedious and required, it's like insane. It's like undeniably uh the latest models are just crazy at some of these things.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-10-07T09:24:53.474817+00:00",
+   "everything_items": {
+    "id": "0516bc6b-41c8-420c-bd55-1ffe5f4dd1c7",
+    "url": "https://www.youtube.com/watch?v=jp7hM1vKRpY",
+    "title": "Everything Is Everything Now",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "atriocclips"
+    }
+   }
+  },
+  {
+   "id": "22e31d7f-449a-4510-b9ca-7ffa0aa626a3",
+   "claim": "That woman at Vibecamp 2 decompression said that although she had been raped elsewhere, she felt all the men in the Vibecamp space were ‘big brothers’.",
+   "context_quote": "She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.",
+   "context_paragraph": "A woman who was at Vibecamp 2 decompression implied that I had maliciously misrepresented what happened. She also drew on her own experiences of sexual violence to excuse men in that community, saying that although she had been raped elsewhere, she felt all the men in that space were ‘big brothers’.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-27T14:54:54.274296+00:00",
+   "everything_items": {
+    "id": "df818e5c-639b-42d9-bda6-20b1c7ccbad0",
+    "url": "https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange",
+    "title": "Reflecting On a Few Very, Very Strange Years In Silicon Valley's Rape Culture",
+    "source": "substack",
+    "everything_projects": {
+     "slug": "theasterisk"
+    }
+   }
+  },
+  {
+   "id": "38747951-2f29-4a0f-b96b-ed31d5665e2c",
+   "claim": "The company's annual team trip includes work sessions.",
+   "context_quote": "Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything.",
+   "context_paragraph": "My company organizes a team trip once a year. Three days, nice location, mixture of some work sessions, and a lot of team bonding time. The company pays for everything. Hotel, meals, activities. It is genuinely one of the better things my workplace does, and most people look forward to it.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-17T19:40:07.88284+00:00",
+   "everything_items": {
+    "id": "ee382555-920f-4bd7-822d-6fb0e688d0d8",
+    "url": "https://www.youtube.com/watch?v=UImmYCEZWe8",
+    "title": "Reading Reddit While Red (r/AmITheAsshole)",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "dan_hentschel"
+    }
+   }
+  },
+  {
+   "id": "3bef2db6-ce8b-48e7-b6ae-5383f3e05b5e",
+   "claim": "AFL craft unions maintained apprenticeship requirements, restricted entry, and jealous guarding of trade boundaries.",
+   "context_quote": "The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11",
+   "context_paragraph": "Eugene Debs, by contrast, never demanded the restoration of the artisan’s workshop. He organized across skill, gender, and racial lines. The IWW’s founding convention in 1905 identified the craft union as the central obstacle to working-class solidarity. The AFL’s craft unions were the direct organizational descendants of the guild mentality the Luddites had fought and killed to preserve: apprenticeship requirements, restricted entry, jealous guarding of trade boundaries.11 The IWW set out to organize all workers regardless of skill, trade, race, or sex. Its founding was an explicit repudiation of everything the Luddites stood for.",
+   "status": "no_note",
+   "judgement": "somewhat likely false",
+   "created_at": "2026-09-19T23:11:24.648684+00:00",
+   "everything_items": {
+    "id": "fa0bbd63-cadc-4334-a7e2-777ac32d4730",
+    "url": "https://www.verysane.ai/p/against-the-luddites",
+    "title": "Against the Luddites",
+    "source": "substack",
+    "everything_projects": {
+     "slug": "verysane"
+    }
+   }
+  },
+  {
+   "id": "4a95481a-b485-4687-81a0-0046191ffb9b",
+   "claim": "Opus 5.5 has a system card.",
+   "context_quote": "I covered the system card yesterday, and will cover its capabilities soon.",
+   "context_paragraph": "Opus 5.5 was released on Tuesday. I covered the system card yesterday, and will cover its capabilities soon. By all reports it is an excellent model. There are lots of fun videos going around that Opus has generated, which I will include as part of that.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-24T15:09:17.280922+00:00",
+   "everything_items": {
+    "id": "a2576b2b-5b08-4684-a6f6-c9055e0a5ade",
+    "url": "https://thezvi.substack.com/p/ai-187-coming-into-play",
+    "title": "AI #187: Coming Into Play",
+    "source": "substack",
+    "everything_projects": {
+     "slug": "thezvi"
+    }
+   }
+  },
+  {
+   "id": "583f0af4-3748-4b3b-bac6-f8287f57d849",
+   "claim": "The game being described is between Washington/the Commanders and the Colts.",
+   "context_quote": "First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers,",
+   "context_paragraph": "Karlis does a great job of getting up, batting it up in the air, playing a little hot potato and snatching it. First turnover of the game by Washington. First interception of the season by any quarterback. The Colts have two turnovers, yet they have a four p",
+   "status": "note",
+   "judgement": "certainly false",
+   "created_at": "2026-10-04T15:50:05.090816+00:00",
+   "everything_items": {
+    "id": "09873ff4-91a8-4268-ac14-4adf02d479f8",
+    "url": "https://www.youtube.com/watch?v=tKuDnDuFGZA",
+    "title": "Colts get a takeaway to start the half!",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "nfl"
+    }
+   }
+  },
+  {
+   "id": "58c85183-d818-4689-8bcf-8086fdf0e6df",
+   "claim": "The speaker won a Smogon Tour using Generation 5 Skarmory.",
+   "context_quote": "Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour.",
+   "context_paragraph": "Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-10-06T16:34:28.057268+00:00",
+   "everything_items": {
+    "id": "47e35c7d-7153-48f4-946d-0f30bdacc90e",
+    "url": "https://www.youtube.com/watch?v=GctYSBsrPLk",
+    "title": "Blunder Ranks the MOST ICONIC Pokemon in Competitive Singles History",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "mrcrawclips"
+    }
+   }
+  },
+  {
+   "id": "5e605d13-71ea-4933-9603-a39c0e3bb63c",
+   "claim": "The Xiaomi Fold has a more visible display crease than the iPhone Duo.",
+   "context_quote": "Now the Xiaomi does have a bit more crease... here.",
+   "context_paragraph": "Now the Xiaomi does have a bit more crease... here. It's not terrible, but there is no anti-glare finish and it can sometimes catch your eye once in a while.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-10-12T13:49:44.660371+00:00",
+   "everything_items": {
+    "id": "a32efec7-88d0-4563-8f3d-5abd246585b6",
+    "url": "https://www.youtube.com/watch?v=3iRUwVzRDZQ",
+    "title": "Xiaomi 18 Fold: How Does This Happen?",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "mkbhd"
+    }
+   }
+  },
+  {
+   "id": "65762d35-5a8b-4dab-8ba5-096e66cc3c06",
+   "claim": "The speaker read the cited articles again on the morning before appearing on the show.",
+   "context_quote": "from when i read these again this morning before i came here what i remember",
+   "context_paragraph": "when you said that i'm quoting from when i read these again this morning before i came here what i remember david don durie durley oh that guy and and uh this this chinese lady",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-18T03:00:34.637558+00:00",
+   "everything_items": {
+    "id": "fe3ab847-38ed-4daa-b662-6e165be5f6e4",
+    "url": "https://www.youtube.com/watch?v=jdVso9FSkmE",
+    "title": "Joe Rogan Experience #1555 - Alex Jones & Tim Dillon",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "joerogan"
+    }
+   }
+  },
+  {
+   "id": "6bc35c5a-193d-4089-b10e-8ee13bff0f6e",
+   "claim": "There was no restriction on how many condoms a person could take out of the Soviet Union.",
+   "context_quote": "and so my quest was like when I learned that and there was no restriction how many you can take with you.",
+   "context_paragraph": "and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-24T07:40:42.994029+00:00",
+   "everything_items": {
+    "id": "32a8ea67-9c7f-4451-888c-f8002c378d9b",
+    "url": "https://www.youtube.com/watch?v=w6r1O5Udn0c",
+    "title": "Joe Rogan Experience #2557 - Yakov Smirnoff",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "joerogan"
+    }
+   }
+  },
+  {
+   "id": "6d558e12-315a-40df-aeee-0580daf7daf5",
+   "claim": "The previous week, Chiefs coach Andy Reid used a goal-line play dating back to the 1930s.",
+   "context_quote": "OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s",
+   "context_paragraph": "OF COURSE LAST WEEK DOWN HERE ANDY LEANED ON A PLAY THAT GOES BACK TO THE '30s AND CHRIS BERMAN SAID TO HIM IN THE OFF-SEASON, THEY'RE ALWAYS FULL OF TRICKS.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-22T22:14:20.471489+00:00",
+   "everything_items": {
+    "id": "e01d8acf-e01b-426e-a1fa-ca2ead755152",
+    "url": "https://www.youtube.com/watch?v=0D1NGiCC5oc",
+    "title": "GAME OF THE WEEK! Indianapolis Colts vs. Kansas City Chiefs FULL GAME | NFL 2026 Season Week 2",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "nfl"
+    }
+   }
+  },
+  {
+   "id": "7624a269-e200-41bc-afb1-a34280af9dfd",
+   "claim": "Parts of the U.S. intelligence community view the Houthis as relatively independent from Iran, while others view them as more aligned with Iran.",
+   "context_quote": "So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.",
+   "context_paragraph": "How much independent decision-making do the Houthies have from Iran? So this is a major bone of contention within the intelligence community. Some elements of the intelligence community say they are relatively independent. Uh others say that they are a bit more aligned with the Iranians.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-10-12T21:37:57.920175+00:00",
+   "everything_items": {
+    "id": "63df5946-4f40-4a9b-a7f9-4593f54a0ae2",
+    "url": "https://www.youtube.com/watch?v=AX0x_k-KlOg",
+    "title": "Trump weighs joining Saudi fight against Houthis: Military experts react",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "cnn"
+    }
+   }
+  },
+  {
+   "id": "ad84363b-8c14-412d-8932-cb7eb702127d",
+   "claim": "Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+   "context_quote": "#3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in.",
+   "context_paragraph": "#3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.",
+   "status": "no_note",
+   "judgement": "somewhat likely false",
+   "created_at": "2026-10-04T10:36:36.181293+00:00",
+   "everything_items": {
+    "id": "44485bea-65b4-4341-81d7-e4b6cd43f91f",
+    "url": "https://thingofthings.substack.com/p/the-asking-people-out-manifesto",
+    "title": "The Asking People Out Manifesto",
+    "source": "substack",
+    "everything_projects": {
+     "slug": "thingofthings"
+    }
+   }
+  },
+  {
+   "id": "b95570cc-c563-423d-a55f-69976ba3809c",
+   "claim": "Male employees at a Canadian telecom where the author worked said women obviously slept their way to promotions or were obviously diversity hires when they thought no woman was listening.",
+   "context_quote": "The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.",
+   "context_paragraph": "The things men would say when they thought no woman was listening: She obviously slept her way to that promotion, she was obviously a diversity hire, etc.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-27T14:54:54.274296+00:00",
+   "everything_items": {
+    "id": "df818e5c-639b-42d9-bda6-20b1c7ccbad0",
+    "url": "https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange",
+    "title": "Reflecting On a Few Very, Very Strange Years In Silicon Valley's Rape Culture",
+    "source": "substack",
+    "everything_projects": {
+     "slug": "theasterisk"
+    }
+   }
+  },
+  {
+   "id": "c566e983-25e1-490f-ab76-0d5b4e7a633c",
+   "claim": "The speaker's Minecraft screen accepts horizontal runs directly but does not accept vertical runs.",
+   "context_quote": "Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts.",
+   "context_paragraph": "The problem was this algorithm outputs two types of runs depending on the slope, horizontal runs or vertical runs. Horizontal runs I could plug into the screen directly, but vertical runs are just not what the screen accepts. Still though, I played around with some different ideas to try to solve this.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-10-06T19:35:11.977075+00:00",
+   "everything_items": {
+    "id": "22c84632-4f95-46a2-a550-c5063940b099",
+    "url": "https://www.youtube.com/watch?v=QdUkZBvfczA",
+    "title": "How We Revolutionized Redstone Graphics",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "mattbatwings"
+    }
+   }
+  },
+  {
+   "id": "c7ab3525-eb69-4221-a697-971b683ed6f2",
+   "claim": "People made analysis videos about the FU format.",
+   "context_quote": "People have made analysis videos about it, and it's very popular.",
+   "context_paragraph": "And I could scarcely cover all the nuances of Furret used in this brief section in a video. I mean, a very deep format. People have made analysis videos about it, and it's very popular. They're still talking about it.",
+   "status": "no_note",
+   "judgement": "uncertain",
+   "created_at": "2026-09-25T14:34:03.726466+00:00",
+   "everything_items": {
+    "id": "297bf8c6-1112-4dde-9602-91ae99fc8632",
+    "url": "https://www.youtube.com/watch?v=Dzq-Jga82DY",
+    "title": "an unnecessarily detailed analysis of furret in competitive pokemon",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "jimothycool"
+    }
+   }
+  },
+  {
+   "id": "f831e842-6edc-47b3-a970-aaeeb8f11fbc",
+   "claim": "A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+   "context_quote": "This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip.",
+   "context_paragraph": "anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.",
+   "status": "no_note",
+   "judgement": "somewhat likely false",
+   "created_at": "2026-10-15T07:17:18.484865+00:00",
+   "everything_items": {
+    "id": "3bddabef-4f9a-4fbd-bcf0-b0192164da50",
+    "url": "https://www.youtube.com/watch?v=8Hi0XP8P9ww",
+    "title": "This Is An Invasion",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "atriocclips"
+    }
+   }
+  },
+  {
+   "id": "fc4abfc7-961c-4cf9-9028-d2da4d4b3398",
+   "claim": "Flávio Bolsonaro is mounting a significant electoral challenge to Luiz Inácio Lula da Silva.",
+   "context_quote": "he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age,",
+   "context_paragraph": "And as you have seen, he is now facing a significant challenge from Flávio Bolsonaro, who is not only half his age, but who's also tried to present himself as basically his father, but without the baggage.",
+   "status": "no_note",
+   "judgement": "somewhat likely false",
+   "created_at": "2026-10-09T23:53:19.256876+00:00",
+   "everything_items": {
+    "id": "652b021c-677e-4841-bfec-5eba6711d640",
+    "url": "https://www.youtube.com/watch?v=MIYCek92ICQ",
+    "title": "Brazil Elections 2026: Last Week Tonight with John Oliver (HBO)",
+    "source": "youtube",
+    "everything_projects": {
+     "slug": "lastweektonight"
+    }
+   }
+  }
+ ]
+}

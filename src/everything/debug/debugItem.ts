@@ -32,7 +32,7 @@
 
 import "dotenv/config";
 import { buildClaimPost, runClaimCheck } from "../pipeline/checkClaims";
-import { dropSpeculation, extractClaims } from "../pipeline/extractClaims";
+import { extractClaims } from "../pipeline/extractClaims";
 import { rateClaims, shouldFactCheck } from "../pipeline/rateClaims";
 import { fetchSubstackPost } from "../sources/substack";
 import { ensureYtDlp, fetchYoutubeContent } from "../sources/youtube";
@@ -82,17 +82,15 @@ async function main() {
     console.log(`Not checkable: ${extraction.reason}`);
     return;
   }
-  const parts = extraction.parts.map((part) => ({ ...part, claims: dropSpeculation(part.claims) }));
-  for (const part of parts) {
-    console.log(`Part "${part.title}": ${part.claims.length} claims (${extraction.parts[part.index]!.claims.length - part.claims.length} speculation dropped)`);
-  }
+  const parts = extraction.parts;
+  for (const part of parts) console.log(`Part "${part.title}": ${part.claims.length} claims`);
   console.log("");
 
   // ── Step 3: rate each part with web research (breakpoint inside rateClaims) ──
   const claims = [];
   for (const part of parts) {
-    const toRate = part.claims.filter((c) => !c.veryConfidentTrue);
-    console.log(`Part "${part.title}": ${part.claims.length - toRate.length} very confident, ${toRate.length} to rate`);
+    const toRate = part.claims;
+    console.log(`Part "${part.title}": ${toRate.length} to rate`);
     if (toRate.length === 0) continue;
     const rating = await rateClaims({
       text: part.text,

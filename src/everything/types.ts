@@ -54,13 +54,6 @@ export interface ExtractedClaim {
    *  words carries it, so the checker can tell what the words refer to. Claims
    *  from a whole-page check leave it out. */
   page?: string | null;
-  /** True when the extractor is very confident the claim is correct as
-   *  stated. Such a claim is stored as skipped and never rated or checked. */
-  veryConfidentTrue: boolean;
-  /** True when the claim describes a hypothetical or future scenario rather
-   *  than the present or the past. Such claims are filtered out before
-   *  fact-checking. */
-  speculation: boolean;
   anchor: ClaimAnchor;
 }
 
