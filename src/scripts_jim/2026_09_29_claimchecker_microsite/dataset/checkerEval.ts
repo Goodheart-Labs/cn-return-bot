@@ -19,6 +19,7 @@ import { CASCADE_COMMONNOTES_STRONG_MODEL } from "../../../pipeline/simple-bot/c
 import { AB_TESTS } from "../../../pipeline/ab-testing/abTestsData";
 import { LOGS_DIR } from "../runStore";
 import { checkTraceOf } from "../labRun";
+import { writeWriterCache, type WriterStageResult } from "../../../pipeline/replay/writerCache";
 import type { CascadeTrace, CheckableRow, SecondRoundTrace, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
 import { judgeNoteQuality } from "./judges";
 
@@ -115,12 +116,14 @@ export function promptsOf(logs: any): CheckerPrompts {
   };
 }
 
-export async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>): Promise<CheckerSample> {
+/** With `researched`, the check starts at the writer on these findings and skips the research. */
+export async function checkSample(row: CheckableRow, referenceNotes: string[], runId: string, index: number, sample: number, picks: Record<string, string>, researched?: Extract<WriterStageResult, { kind: "researched" }>): Promise<CheckerSample> {
   const base = { quality: null, research: null, draftNote: null, sourceVerdict: null, checkCostUsd: 0, judgeCostUsd: 0 };
   try {
     // A claim's id has a hyphen, so it can never be mistaken for a tweet id, and it is new for every sample. A tweet keeps its own id.
     const post = (row.xPost ? row.checker.post : { ...row.checker.post, id: `eval-${runId}-${index}-${sample}` }) as Parameters<typeof runClaimCheck>[0];
     if (row.xPost) writeInputCacheMem(post.id, X_POST_VIDEO_STRATEGY, X_POST_INPUT);
+    if (researched) writeWriterCache(post.id, researched);
     const { check, run } = await runClaimCheck(post, row.xPost ? { ...X_POST_PICKS, ...picks } : picks);
     mkdirSync(join(LOGS_DIR, `eval-${runId}`), { recursive: true });
     writeFileSync(join(LOGS_DIR, `eval-${runId}`, `${row.id}.${sample}.json`), JSON.stringify(run, null, 1));

@@ -13,6 +13,7 @@ import { lintWriterNote } from "../utils/noteLint";
 import { runJsonLlmCall, type ChatMessage } from "../utils/jsonLlmCall";
 import {
   WRITER_SYSTEM_PROMPT,
+  WRITER_SYSTEM_PROMPT_CLAIM,
   WRITER_DEFAULT_RULE,
   WRITER_CENTRAL_CLAIM_RULE,
   WRITER_LAST_CHECK,
@@ -42,7 +43,7 @@ export async function runWriter(
   const log = getTweetLog();
   const config = getBotConfig();
   const monitoring = getMonitoringContext();
-  let systemPrompt = WRITER_SYSTEM_PROMPT;
+  let systemPrompt = config.commonnotes_pipeline ? WRITER_SYSTEM_PROMPT_CLAIM : WRITER_SYSTEM_PROMPT;
   if (config.writer_central_claim) {
     systemPrompt = systemPrompt.replace(WRITER_DEFAULT_RULE, WRITER_CENTRAL_CLAIM_RULE);
     log?.set("writer.centralClaim", true);

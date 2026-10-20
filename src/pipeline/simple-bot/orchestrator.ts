@@ -36,7 +36,8 @@ export async function runSimpleBotPipeline(
 ): Promise<PipelineOutcome> {
   const startMs = Date.now();
 
-  const stage = await withWriterCache(post.id, () => produceWriterOutput(post, input));
+  const cached = await withWriterCache(post.id, () => produceWriterOutput(post, input));
+  const stage = cached.kind === "researched" ? await writeNote(cached) : cached;
   const outcome = stage.kind === "early_exit" ? stage.outcome : await runGatesWithSecondRound(stage);
 
   logFinal(startMs);
@@ -59,7 +60,15 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   const timing = await runTimingStage({ userMessage, findings: search.findings, postCreatedAt: post.created_at });
   const timingContext = timing.action === "inform" ? timing.contextBlock : undefined;
 
-  const note = await runWriter(userMessage, search.findings, { timingContext });
+  return writeNote({ kind: "researched", userMessage, findings: search.findings, researchedBy: search.researchedBy ?? "full", timingContext });
+}
+
+type Researched = Extract<WriterStageResult, { kind: "researched" }>;
+
+/** Runs the writer on the findings of the research step. */
+async function writeNote(researched: Researched): Promise<Exclude<WriterStageResult, { kind: "researched" }>> {
+  const { userMessage, findings, researchedBy, timingContext } = researched;
+  const note = await runWriter(userMessage, findings, { timingContext });
   // The writer answers with an empty note when nothing in the findings disputes
   // a claim the post rests on. That is a "no note needed" answer, the same as
   // the search step's, and not a note. Without this exit the empty note went on
@@ -71,12 +80,12 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
   return {
     kind: "writer_done",
     userMessage,
-    findings: search.findings,
+    findings,
     queries: [],
     noteText: note.noteText,
     sources: note.sources,
     snippets: [],
-    researchedBy: search.researchedBy ?? "full",
+    researchedBy,
     timingContext,
   };
 }
