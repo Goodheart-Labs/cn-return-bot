@@ -372,8 +372,8 @@ export async function fetchRetryableErrorItems(waitHours: readonly number[]): Pr
 /** Puts an errored item back in the queue for a repeat attempt and counts the
  *  attempt. The last error text stays on the row until the item finishes, so a
  *  waiting retry still shows why the item failed. A requested page keeps its
- *  tier, because a reader is waiting for it. Every other item drains at the
- *  retry tier, behind all fresh content. */
+ *  tier, because a reader is waiting for it. Every other item waits at the
+ *  retry tier until the feed walk reaches its creator (see runAutoEnqueue). */
 export async function requeueErroredItem(item: RetryableErrorItem): Promise<void> {
   throwOnError(
     await getSupabaseClient()
@@ -385,6 +385,42 @@ export async function requeueErroredItem(item: RetryableErrorItem): Promise<void
       })
       .eq("id", item.id),
   );
+}
+
+/** An item waiting at the retry tier, with the feed address of its creator.
+ *  The feed address is null for an item whose project follows no feed. */
+export interface WaitingRetry {
+  id: string;
+  url: string;
+  title: string | null;
+  published_at: string | null;
+  feed_url: string | null;
+}
+
+/** Every item waiting at the retry tier, in the order the worker would take
+ *  them. The feed walk uses it to give a waiting retry its creator's place in
+ *  the ranking. */
+export async function fetchWaitingRetries(): Promise<WaitingRetry[]> {
+  const rows = await fetchAllRows<Omit<WaitingRetry, "feed_url"> & {
+    priority: number;
+    created_at: string;
+    everything_projects: { feed_url: string | null } | null;
+  }>(
+    () => getSupabaseClient()
+      .from("everything_items")
+      .select("id, url, title, published_at, priority, created_at, everything_projects(feed_url)")
+      .eq("status", "queued")
+      .eq("priority", QUEUE_PRIORITY.retry),
+    "id",
+    { label: "waitingRetries" },
+  );
+  return rows.sort(inWorkerOrder).map((r) => ({
+    id: r.id,
+    url: r.url,
+    title: r.title,
+    published_at: r.published_at,
+    feed_url: r.everything_projects?.feed_url ?? null,
+  }));
 }
 
 export interface ItemClaimRow {

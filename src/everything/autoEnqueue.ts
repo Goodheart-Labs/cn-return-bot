@@ -13,6 +13,16 @@
  * enqueued, and the walk stops there. The newest unchecked recent post goes
  * first, and after those the most popular unchecked top post.
  *
+ * A creator with no unchecked post can still have a post waiting for a retry,
+ * because an earlier attempt failed. The walk stops at that creator too and
+ * moves the newest such retry up to the creator's tier, so the run takes it
+ * next. A retry therefore waits only behind creators who rank higher. Before
+ * 2026-10-20 retries ran only once every creator was caught up. After the
+ * OpenRouter credits ran out from 2026-10-17 to 2026-10-19, 686 failed posts
+ * waited at the retry tier. Every new post went ahead of them, even one by a
+ * creator who ranked far below the retried post's creator. Retries of creators
+ * the walk does not rank still run once every ranked creator is caught up.
+ *
  * Only a feed's five newest posts are ever candidates. A newly ranked creator
  * therefore backfills at most five posts rather than their whole archive. A
  * gap deeper than that stays unfilled on purpose. A post counts as checked
@@ -36,7 +46,7 @@
  */
 
 import "dotenv/config";
-import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { extractYoutubeVideoId, normalizeFeedUrl } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
 import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
 import {
@@ -48,13 +58,16 @@ import {
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
   fetchRetryableErrorItems,
+  fetchWaitingRetries,
   markItemError,
   promoteItemToWholePage,
+  raiseItemPriority,
   requeueErroredItem,
   requeueItem,
   resolveProjectId,
   type KnownItemUrl,
   type TopPostRow,
+  type WaitingRetry,
 } from "./db";
 import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
@@ -233,7 +246,7 @@ export const MAX_ITEM_RETRIES = RETRY_WAIT_HOURS.length;
  *  that made a transcript look missing, or an exhausted API key. Without a
  *  retry each of those failures killed its item forever, because the feed
  *  walker treats every existing whole-page item as processed. Retried items
- *  drain at the retry tier, so they never delay fresh content, and an item
+ *  wait at the retry tier until the walk reaches their creator, and an item
  *  rests between attempts so a cause that lasts a while does not burn every
  *  retry at once. An item that still fails after its retries stays in error,
  *  and the row's error text says why. */
@@ -275,11 +288,11 @@ export async function triageQueue(): Promise<void> {
 const DAY_MS = 24 * 3600_000;
 
 /** Goes down the ranked creators from the top and stops at the first one whose
- *  walk found something unchecked. A creator whose walk returns null could not
- *  be listed and is passed over. `walked` holds every creator that was listed,
- *  including the one the walk stopped at. Exported for the tests, which
- *  inject the walk. */
-export async function walkToFirstUnchecked<C, W extends { unchecked: unknown[] }>(
+ *  walk found something to do: an unchecked post or a waiting retry. A creator
+ *  whose walk returns null could not be listed and is passed over. `walked`
+ *  holds every creator that was listed, including the one the walk stopped at.
+ *  Exported for the tests, which inject the walk. */
+export async function walkToFirstWithWork<C, W extends { unchecked: unknown[]; waitingRetry: unknown }>(
   ranked: C[],
   walk: (creator: C, index: number) => Promise<W | null>,
 ): Promise<{ walked: C[]; unlisted: number; found: { creator: C; index: number; walk: W } | null }> {
@@ -292,14 +305,14 @@ export async function walkToFirstUnchecked<C, W extends { unchecked: unknown[] }
       continue;
     }
     walked.push(creator);
-    if (result.unchecked.length > 0) return { walked, unlisted, found: { creator, index, walk: result } };
+    if (result.unchecked.length > 0 || result.waitingRetry) return { walked, unlisted, found: { creator, index, walk: result } };
   }
   return { walked, unlisted, found: null };
 }
 
 /** Column widths of the walk table, fixed so rows can print as they arrive. */
-const CREATOR_COLUMNS = [4, 24, 20, 8, 5, 6, 16, 9];
-const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "left", "right"];
+const CREATOR_COLUMNS = [4, 24, 20, 8, 5, 6, 16, 9, 7];
+const CREATOR_ALIGN: ("left" | "right")[] = ["right", "left", "left", "right", "right", "right", "left", "right", "right"];
 
 /** How much of a creator's priority window is left, for the walk table. Rounded
  *  down to whole days, because the exact hour is not worth a column. */
@@ -324,6 +337,22 @@ interface CreatorWalk {
   /** Recent posts first, newest first, then top posts by popularity. The walk
    *  enqueues the first. */
   unchecked: UnprocessedEntry[];
+  /** The creator's newest post waiting for a retry. The walk takes it when the
+   *  creator has no unchecked post. */
+  waitingRetry: WaitingRetry | null;
+}
+
+/** Each creator's newest waiting retry, keyed by the normalised feed address.
+ *  The retries arrive in the worker's order, so the first one per creator is
+ *  the newest. */
+function newestRetryPerCreator(retries: WaitingRetry[]): Map<string, WaitingRetry> {
+  const newest = new Map<string, WaitingRetry>();
+  for (const retry of retries) {
+    if (!retry.feed_url) continue;
+    const key = normalizeFeedUrl(retry.feed_url);
+    if (!newest.has(key)) newest.set(key, retry);
+  }
+  return newest;
 }
 
 /** The two YouTube lines at the end of the walk: how many channels the Data API
@@ -385,14 +414,16 @@ async function enqueueEntry(creator: RankedCreator, walk: CreatorWalk, entry: Un
   console.log(`  enqueued`);
 }
 
-/** Walks the ranking to the first creator with an unchecked post and enqueues
- *  that post. Returns how many items were enqueued or promoted: one, or zero
- *  when every ranked creator is caught up. */
+/** Walks the ranking to the first creator with an unchecked post or a waiting
+ *  retry, and enqueues that post or moves the retry up to the creator's tier.
+ *  Returns how many items were enqueued or moved up: one, or zero when every
+ *  ranked creator is caught up. */
 export async function runAutoEnqueue(dryRun = false): Promise<number> {
   const ranked = await rankCreators();
   // The cached top lists serve this walk. The stalest walked creator's list is
   // refreshed after the walk, and the fresh rows serve the next run.
   const topRows = await fetchAllTopPosts();
+  const retryByCreator = newestRetryPerCreator(await fetchWaitingRetries());
 
   const skipped: string[] = [];
   const paidByCreator = new Map<string, number>();
@@ -407,7 +438,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   console.log(`  walked from the top until a creator has a post we have not checked`);
   console.log(groupOpen("the walk, in rank order"));
   console.log(
-    fixedRow(["rank", "creator", "why", "per post", "posts", "people", "listing", "unchecked"], CREATOR_COLUMNS, CREATOR_ALIGN),
+    fixedRow(["rank", "creator", "why", "per post", "posts", "people", "listing", "unchecked", "retry"], CREATOR_COLUMNS, CREATOR_ALIGN),
   );
 
   const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<CreatorWalk | null> => {
@@ -421,13 +452,14 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
       // rather than exceptional. An exhausted YouTube quota is the exception,
       // and the feed run fails at its end for it (see autoRun.ts).
       skipped.push(`  could not list ${feed.project}: ${err?.message ?? "unknown error"}`);
-      console.log(fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN));
+      console.log(fixedRow([String(feedIndex + 1), feed.project, "could not list", "", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN));
       return null;
     }
     if (listing.paidPosts > 0) paidByCreator.set(feed.project, listing.paidPosts);
     if (listing.listedBecause !== undefined) youtubeListings.push(listing.listedBecause);
     const tops = topPostEntries(topRows.filter((t) => t.feed_url === feed.url), listing.entries);
     const unchecked = await unprocessedEntries(feed, [...listing.entries, ...tops]);
+    const waitingRetry = retryByCreator.get(normalizeFeedUrl(feed.url)) ?? null;
     console.log(
       fixedRow(
         [
@@ -439,15 +471,16 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
           String(creator.score.people),
           listingSource(feed, listing),
           String(unchecked.length),
+          waitingRetry ? "waiting" : "",
         ],
         CREATOR_COLUMNS,
         CREATOR_ALIGN,
       ),
     );
-    return { feed, sourceName: listing.sourceName, unchecked };
+    return { feed, sourceName: listing.sourceName, unchecked, waitingRetry };
   };
 
-  const { walked, unlisted, found } = await walkToFirstUnchecked(ranked, walkCreator);
+  const { walked, unlisted, found } = await walkToFirstWithWork(ranked, walkCreator);
 
   const closing = groupClose();
   if (closing) console.log(closing);
@@ -465,7 +498,8 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     console.log("\nQUEUE · nothing to add, every ranked creator is caught up");
     return 0;
   }
-  const entry = found.walk.unchecked[0]!;
+  const entry = found.walk.unchecked[0];
+  if (!entry) return await takeWaitingRetry(found.creator, found.walk, dryRun);
   console.log(`\n  adding: [${found.walk.feed.project}] ${entry.label}`);
   console.log(`          ${entry.url}`);
   if (dryRun) {
@@ -473,6 +507,21 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
     return 0;
   }
   await enqueueEntry(found.creator, found.walk, entry);
+  return 1;
+}
+
+/** Moves the creator's newest waiting retry up to the creator's tier, so the
+ *  worker takes it next. Called when the walk stopped at a creator who has no
+ *  unchecked post but has a retry waiting. */
+async function takeWaitingRetry(creator: RankedCreator, walk: CreatorWalk, dryRun: boolean): Promise<number> {
+  const retry = walk.waitingRetry!;
+  console.log(`\n  taking a waiting retry: [${walk.feed.project}] ${retry.published_at?.slice(0, 10) ?? "undated"} ${retry.title ?? retry.url}`);
+  console.log(`          ${retry.url}`);
+  if (dryRun) {
+    console.log("Dry run, nothing moved");
+    return 0;
+  }
+  await raiseItemPriority(retry.id, creator.priority);
   return 1;
 }
 

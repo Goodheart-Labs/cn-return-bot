@@ -21,8 +21,9 @@
  *
  * The walk for new posts runs only when the feed tiers of the queue are empty.
  * With one item per run, a fresh pick, newer and at a higher tier, would
- * otherwise be taken before a resumed or retried item every time and those
- * would never get their turn.
+ * otherwise be taken before a resumed item every time and it would never get
+ * its turn. A retried item gets its turn through the walk itself, which moves
+ * it up when it reaches the item's creator (see autoEnqueue.ts).
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
