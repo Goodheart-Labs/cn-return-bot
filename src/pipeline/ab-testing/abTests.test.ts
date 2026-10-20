@@ -136,9 +136,9 @@ describe("forced picks", () => {
     expect(claim.picks.second_round).toBeUndefined();
   });
 
-  test("the cascade is live on 60% of traffic and the precheck on 40%", () => {
+  test("the cascade is live on 20% of traffic and the precheck on 80%", () => {
     const test = AB_TESTS.find((t) => t.name === "search_cascade")!;
-    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["cascading", 60], ["precheck", 40]]);
+    expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["cascading", 20], ["precheck", 80]]);
   });
 
   test("a valid topic-only override does not fire on ordinary posts", () => {

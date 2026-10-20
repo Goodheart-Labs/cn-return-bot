@@ -65,7 +65,7 @@ function currentCommit(): string {
 async function main() {
   // The local OPENROUTER_API_KEY is dead. The testing key works.
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
-  // The cascade is live on 60% of traffic, so an eval must choose its arm. The default is the search step as it was before. The cascade threshold and the second round are live on X posts too, so an eval fixes them as well: 0.9, and no second round unless asked for.
+  // The cascade is live on 20% of traffic, so an eval must choose its arm. The default is the search step as it was before. The cascade threshold and the second round are live on X posts too, so an eval fixes them as well: 0.9, and no second round unless asked for.
   const searchCascade = arg("search-cascade") ?? "precheck";
   const label = arg("label");
   if (!label) throw new Error('Give the run a label: --label "what changed"');

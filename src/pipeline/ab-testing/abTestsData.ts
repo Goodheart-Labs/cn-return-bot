@@ -187,8 +187,8 @@ const SEARCH_CASCADE_TEST: ABTest = {
   name: "search_cascade",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 60 },
-    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 40 },
+    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 20 },
+    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 80 },
   ],
 };
 
