@@ -17,8 +17,8 @@ import { getMonitoringContext, buildReferenceBlock } from "../misinfo-monitoring
 import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
-  SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY,
-  SEARCH_SYSTEM_PROMPT_PROBABILITY,
+  SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING,
+  SEARCH_SYSTEM_PROMPT_MISLEADING,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -65,7 +65,7 @@ export function appendUrlCitations(findings: string, annotations: any[] | undefi
  *  all get the same treatment. */
 export function getSearchSystemPrompt(): string {
   const config = getBotConfig();
-  if (answersWithProbability()) return config.commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY : SEARCH_SYSTEM_PROMPT_PROBABILITY;
+  if (answersWithMisleading()) return config.commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING : SEARCH_SYSTEM_PROMPT_MISLEADING;
   // A claim from the everything pipeline is an excerpt plus a claim, not an X
   // post. It gets its own claim-checking prompt and skips the X-only assembly
   // below.
@@ -76,14 +76,11 @@ export function getSearchSystemPrompt(): string {
   });
 }
 
-/** At or above this probability, the findings of a search that answers with a probability go to the writer. */
-export const PROBABILITY_NOTE_AT_OR_ABOVE = 0.5;
+const answersWithMisleading = () => getBotConfig().search_answer === "misleading";
 
-const answersWithProbability = () => getBotConfig().search_answer === "probability";
-
-/** The probability prompts end with their own JSON instruction, so only the other prompts get one appended. */
+/** The prompts of the cascade end with their own JSON instruction, so only the other prompts get one appended. */
 function promptedJsonInstruction(): string {
-  return answersWithProbability() ? "" : `\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
+  return answersWithMisleading() ? "" : `\n\n${SEARCH_PROMPTED_JSON_INSTRUCTION}`;
 }
 
 // --- Public types ---
@@ -91,15 +88,13 @@ function promptedJsonInstruction(): string {
 export interface SearchDispatchResult {
   findings: string;
   correctionNeeded: boolean;
-  /** Set when the search answered with a probability. */
-  probability?: number;
   costEntry: LlmCallCost;
 }
 
 interface SearchOutput {
   findings: string;
   correction_needed?: boolean;
-  misleading_probability?: number;
+  misleading?: boolean;
 }
 
 function parseSearchJson(content: string, source: string): SearchOutput {
@@ -113,17 +108,16 @@ function parseSearchJson(content: string, source: string): SearchOutput {
 }
 
 const SEARCH_SCHEMA_HINT = `{ "findings": string, "correction_needed": boolean }`;
-const SEARCH_PROBABILITY_SCHEMA_HINT = `{ "findings": string, "misleading_probability": number }`;
+const SEARCH_MISLEADING_SCHEMA_HINT = `{ "findings": string, "misleading": boolean }`;
 
 function validSearchOutput(output: SearchOutput): boolean {
   if (typeof output.findings !== "string") return false;
-  if (!answersWithProbability()) return typeof output.correction_needed === "boolean";
-  return typeof output.misleading_probability === "number" && output.misleading_probability >= 0 && output.misleading_probability <= 1;
+  return typeof (answersWithMisleading() ? output.misleading : output.correction_needed) === "boolean";
 }
 
 /** The answer fields as they are saved in the run log. */
-function answerFields(result: { correctionNeeded: boolean; probability?: number }) {
-  return result.probability === undefined ? { correction_needed: result.correctionNeeded } : { misleading_probability: result.probability };
+function answerFields(result: { correctionNeeded: boolean }) {
+  return answersWithMisleading() ? { misleading: result.correctionNeeded } : { correction_needed: result.correctionNeeded };
 }
 
 /**
@@ -151,13 +145,13 @@ async function dispatchPromptedJsonSearch(params: {
    *  `extractJsonObject` for a model that narrates a preamble first, such as
    *  Opus. Use `stripJsonFences` for a model that emits bare JSON. */
   extractJson: (raw: string) => string;
-}): Promise<{ findings: string; correctionNeeded: boolean; probability?: number; message: any; cost: TokenCost }> {
+}): Promise<{ findings: string; correctionNeeded: boolean; message: any; cost: TokenCost }> {
   const cost = emptyTokenCost();
   let message: any;
   const parsed = await parseJsonWithRetry<SearchOutput>({
     source: params.source,
     messages: params.messages,
-    schemaHint: answersWithProbability() ? SEARCH_PROBABILITY_SCHEMA_HINT : SEARCH_SCHEMA_HINT,
+    schemaHint: answersWithMisleading() ? SEARCH_MISLEADING_SCHEMA_HINT : SEARCH_SCHEMA_HINT,
     call: async (messages) => {
       const response = await llm.create({ ...params.createOptions, messages } as any);
       addTokenCost(cost, extractOpenRouterCost(response));
@@ -171,10 +165,7 @@ async function dispatchPromptedJsonSearch(params: {
       return output;
     },
   });
-  if (parsed.misleading_probability !== undefined) {
-    return { findings: parsed.findings, correctionNeeded: parsed.misleading_probability >= PROBABILITY_NOTE_AT_OR_ABOVE, probability: parsed.misleading_probability, message, cost };
-  }
-  return { findings: parsed.findings, correctionNeeded: parsed.correction_needed!, message, cost };
+  return { findings: parsed.findings, correctionNeeded: (answersWithMisleading() ? parsed.misleading : parsed.correction_needed)!, message, cost };
 }
 
 // --- Dispatcher ---
@@ -218,7 +209,7 @@ async function searchWithAnthropicNative(
   const systemPrompt = `${withSourceUrlInstruction(getSearchSystemPrompt())}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
 
-  const { findings, correctionNeeded, probability, cost } = await dispatchPromptedJsonSearch({
+  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithAnthropicNative",
     messages: [
       // This marks the system prompt as an Anthropic prefix-cache breakpoint,
@@ -241,9 +232,9 @@ async function searchWithAnthropicNative(
     },
     extractJson: extractJsonObject,
   });
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded, probability }) } });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded }) } });
 
-  return { findings, correctionNeeded, probability, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 export async function searchWithGeminiNative(
@@ -343,7 +334,7 @@ async function searchWithOpenaiNative(
   // valid JSON reliably when it is told to. If gpt-5 spends its whole budget on
   // reasoning and returns empty content, the retry loop asks again instead of
   // failing the run.
-  const { findings, correctionNeeded, probability, cost } = await dispatchPromptedJsonSearch({
+  const { findings, correctionNeeded, cost } = await dispatchPromptedJsonSearch({
     source: "searchWithOpenaiNative",
     messages: [
       { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}${promptedJsonInstruction()}` },
@@ -351,9 +342,9 @@ async function searchWithOpenaiNative(
     createOptions: { model, tools: [{ type: "web_search_preview" }], max_tokens: OPENAI_MAX_TOKENS },
     extractJson: stripJsonFences,
   });
-  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded, probability }) } });
+  log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded }) } });
 
-  return { findings, correctionNeeded, probability, costEntry: { name: costName, ...cost, tools: [] } };
+  return { findings, correctionNeeded, costEntry: { name: costName, ...cost, tools: [] } };
 }
 
 async function searchWithSonarBundled(
@@ -388,7 +379,6 @@ async function searchWithSonarBundled(
   return {
     findings,
     correctionNeeded: result.correctionNeeded,
-    probability: result.probability,
     costEntry: { name: costName, ...result.cost, tools: [] },
   };
 }
@@ -431,7 +421,6 @@ async function searchWithOpenRouterNative(
   return {
     findings,
     correctionNeeded: result.correctionNeeded,
-    probability: result.probability,
     costEntry: { name: costName, ...result.cost, tools: [] },
   };
 }

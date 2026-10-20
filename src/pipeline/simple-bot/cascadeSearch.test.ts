@@ -79,21 +79,21 @@ describe("runCascadingSearch", () => {
     expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL });
   });
 
-  test("a claim in between escalates to Sonnet 5.5 at medium reasoning, answering with a probability like the cheap step", async () => {
+  test("a claim in between escalates to Sonnet 5.5 at medium reasoning, answering whether the claim is misleading", async () => {
     weakAnswers({ misleading_probability: 0.5 });
     const { seen } = strongSearch();
     expect(await run(claimConfig)).toEqual({ findings: "The strong findings", correctionNeeded: true, researchedBy: "full" });
-    expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native", search_reasoning_effort: "medium", search_answer: "probability" });
+    expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native", search_reasoning_effort: "medium", search_answer: "misleading" });
   });
 
-  test("a post in between escalates to the search model the run was configured with, answering with a probability", async () => {
+  test("a post in between escalates to the search model the run was configured with, answering whether the post is misleading", async () => {
     weakAnswers({ misleading_probability: 0.5 });
     const { seen } = strongSearch();
     await run(xConfig);
-    expect(seen[0]).toMatchObject({ search_model: "anthropic/claude-opus-5", web_search: "native", search_reasoning_effort: "medium", search_answer: "probability" });
+    expect(seen[0]).toMatchObject({ search_model: "anthropic/claude-opus-5", web_search: "native", search_reasoning_effort: "medium", search_answer: "misleading" });
   });
 
-  test("a post whose search provider cannot answer with a probability keeps the yes or no answer", async () => {
+  test("a post whose search provider cannot answer in the prompt keeps its own answer", async () => {
     weakAnswers({ misleading_probability: 0.5 });
     const { seen } = strongSearch();
     await run({ ...xConfig, search_model: "x-ai/grok-4.6", web_search: "native_grok" });

@@ -69,7 +69,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": 0.8
+      "strongProbability": 0.8,
+      "strongMisleading": null
      },
      {
       "quality": {
@@ -138,7 +139,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": 0.8
+      "strongProbability": 0.8,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -169,7 +171,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": 0.85
+      "strongProbability": 0.85,
+      "strongMisleading": null
      }
     ],
     "passedIn": 1,

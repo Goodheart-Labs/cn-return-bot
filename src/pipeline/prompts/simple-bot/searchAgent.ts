@@ -101,6 +101,26 @@ Return JSON with two fields:
 
 Respond with strict JSON only matching: { findings: string, misleading_probability: number }`;
 
+const PROBABILITY_ANSWER_FIELD = "- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.";
+const MISLEADING_ANSWER_FIELD = "- misleading: true if the claim is misleading in any way, otherwise false.";
+const PROBABILITY_JSON_LINE = "{ findings: string, misleading_probability: number }";
+const MISLEADING_JSON_LINE = "{ findings: string, misleading: boolean }";
+const PEDANTIC_SENTENCE = " Avoid being pedantic.";
+
+/** The stronger model of the cascade answers yes or no instead of with a probability. */
+function withMisleadingAnswer(probabilityPrompt: string): string {
+  for (const part of [PROBABILITY_ANSWER_FIELD, PROBABILITY_JSON_LINE]) {
+    if (!probabilityPrompt.includes(part)) throw new Error(`The probability prompt has no "${part}"`);
+  }
+  return probabilityPrompt.replace(PROBABILITY_ANSWER_FIELD, MISLEADING_ANSWER_FIELD).replace(PROBABILITY_JSON_LINE, MISLEADING_JSON_LINE);
+}
+
+/** The claim prompt for the stronger model of the cascade. The cheap model is told to avoid being pedantic, and the stronger model was too lenient with that sentence. */
+export const SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING = withMisleadingAnswer(SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY).replace(PEDANTIC_SENTENCE, "");
+
+/** The same yes or no question for an X post. */
+export const SEARCH_SYSTEM_PROMPT_MISLEADING = withMisleadingAnswer(SEARCH_SYSTEM_PROMPT_PROBABILITY);
+
 /** Appends the ground-truth article of the misinfo pre-pass to the search
  *  prompt. `referenceBlock` carries that article while a pre-pass is active, and
  *  is null in the regular pipeline. The anti-pedantic test closed on 2026-08-06

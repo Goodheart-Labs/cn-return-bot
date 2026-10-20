@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import { LOGS_DIR } from "../runStore";
-import { strongProbabilityOf } from "./checkerEval";
+import { strongAnswerOf } from "./checkerEval";
 
 const RUNS_DIR = join(import.meta.dir, "evalRuns");
 const logFolders = readdirSync(LOGS_DIR).filter((f) => f.startsWith("eval-")).sort().reverse();
@@ -25,12 +25,14 @@ for (const file of readdirSync(RUNS_DIR).filter((f) => f.endsWith(".json"))) {
   let filled = 0;
   for (const row of run.checker?.rows ?? []) {
     row.samples.forEach((sample: any, index: number) => {
-      if (!sample.research || sample.strongProbability !== undefined) return;
+      if (!sample.research || sample.strongMisleading !== undefined) return;
       const logs = findLog(row.id, index, runId, sample.research);
-      sample.strongProbability = logs ? strongProbabilityOf(logs) : null;
-      if (sample.strongProbability !== null) filled++;
+      const answer = logs ? strongAnswerOf(logs) : { probability: null, misleading: null };
+      sample.strongProbability = answer.probability;
+      sample.strongMisleading = answer.misleading;
+      if (answer.probability !== null || answer.misleading !== null) filled++;
     });
   }
   writeFileSync(join(RUNS_DIR, file), JSON.stringify(run, null, 1));
-  if (filled) console.log(`${runId}: ${filled} probabilities`);
+  if (filled) console.log(`${runId}: ${filled} answers`);
 }

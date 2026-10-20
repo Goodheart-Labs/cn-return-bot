@@ -182,8 +182,10 @@ export interface CheckerSample {
   secondRound?: SecondRoundTrace | null;
   /** What the cascade's quick research said. Missing in a run made before the cascade, and null on the precheck path. */
   cascade?: CascadeTrace | null;
-  /** The probability the stronger model gave, when the quick research escalated and the stronger model answered with one. Missing in a run saved before it was kept. */
+  /** The probability the stronger model gave, in a run made when it answered with one. Missing in a run saved before it was kept. */
   strongProbability?: number | null;
+  /** Whether the stronger model said the claim is misleading, in a run made when it answered yes or no. Missing in an earlier run. */
+  strongMisleading?: boolean | null;
   draftNote: string | null;
   sourceVerdict: string | null;
   checkCostUsd: number;

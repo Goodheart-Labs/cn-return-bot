@@ -104,7 +104,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -352,7 +353,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -382,7 +384,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -412,7 +415,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -457,7 +461,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -516,7 +521,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -764,7 +770,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -794,7 +801,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -824,7 +832,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -899,7 +908,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -929,7 +939,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -974,7 +985,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1004,7 +1016,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1034,7 +1047,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -1175,7 +1189,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1205,7 +1220,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1247,7 +1263,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 2,
@@ -1463,7 +1480,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 2,
@@ -1506,7 +1524,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1536,7 +1555,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1566,7 +1586,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -2022,7 +2043,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -2052,7 +2074,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -2082,7 +2105,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -2520,7 +2544,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -2550,7 +2575,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -2819,7 +2845,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -2878,7 +2905,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -3118,7 +3146,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -3148,7 +3177,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -3178,7 +3208,8 @@
        "writer": "openai/gpt-6-luna",
        "verifier": "openai/gpt-6-luna"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -3715,7 +3746,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -3774,7 +3806,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -4202,7 +4235,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4261,7 +4295,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 1,
@@ -4431,7 +4466,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4473,7 +4509,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4515,7 +4552,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -4569,7 +4607,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": {
@@ -4609,7 +4648,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4692,7 +4732,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4734,7 +4775,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4776,7 +4818,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -4818,7 +4861,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4848,7 +4892,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -4878,7 +4923,8 @@
        "writer": "anthropic/claude-sonnet-5",
        "verifier": "google/gemini-3-flash-preview"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,

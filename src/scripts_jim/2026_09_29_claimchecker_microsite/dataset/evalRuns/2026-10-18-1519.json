@@ -77,7 +77,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.\n\n## Research findings\n\nUC Berkeley’s Center for Studies in Higher Education summary says Igor Chirikov’s study found A grades rose by about 30% relative to the 2022 baseline in courses with more AI-exposed tasks—but it describes the data as coming from “a large research university,” not UC Berkeley (https://cshe.berkeley.edu/node/1875). The paper itself identifies the institution studied as a large selective research university in Texas (https://escholarship.org/content/qt80x8d3qd/qt80x8d3qd_noSplash_1de4f28a91deb68e21b80fbc53bad99c.pdf). Thus, the 30% figure is attributed to the wrong university: the study was conducted at a Texas university, not on UC Berkeley grades."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -95,7 +96,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.\n\n## Research findings\n\nCorrection needed. The 30% figure comes from a UC Berkeley researcher’s study, but the grades analyzed were from a large, unnamed research university in Texas—not UC Berkeley. The study reports that in courses with more AI-exposed tasks, the share of A grades rose by 13 percentage points, about 30% relative to the 2022 baseline: https://cshe.berkeley.edu/node/1875. The paper likewise describes its data as more than 500,000 grades from a large research university and its finding as applying to AI-exposed courses, not Berkeley overall: https://escholarship.org/uc/item/80x8d3qd"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": {
@@ -128,7 +130,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: The problem is invalidating grades entirely. At UC Berkeley, the number of As is up by 30%, so GPAs are dangerously close to meaningless for measuring student quality.\nClaim: At UC Berkeley, the number of A grades is up by 30%.\n\n## Research findings\n\nThe 30% figure is from a UC Berkeley researcher’s study, but it does not describe grades awarded at UC Berkeley. The study analyzed more than 500,000 grades at a large research university in Texas and found that the share of A grades rose by 13 percentage points—about 30% relative to the 2022 baseline—in courses with more AI-exposed tasks after ChatGPT’s release. Source: https://cshe.berkeley.edu/node/1875. The paper itself also identifies the institution as a large research university without locating it at Berkeley: https://escholarship.org/content/qt80x8d3qd/qt80x8d3qd_noSplash_1de4f28a91deb68e21b80fbc53bad99c.pdf. Independent coverage likewise describes the data as coming from a large research university in Texas: https://www.timeshighereducation.com/news/grade-inflation-much-higher-ai-exposed-degrees?site=cn"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 2,
@@ -160,7 +163,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nClaim: Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries during the Holocaust.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -178,7 +182,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nClaim: Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries during the Holocaust.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -196,7 +201,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: 16f you've been waiting for some comic relief in this grim story, this is your moment: Czechoslovakia has a larger remaining Jewish population than most other Nazi-occupied countries, because the Nazis spared Jewish doctors after realizing that deporting them would leave too few doctors to provide medical care for the rest of the population.\nClaim: Czechoslovakia had a larger remaining Jewish population than most other Nazi-occupied countries during the Holocaust.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -228,7 +234,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\n\n## Research findings\n\nThe claim gets the broad connection right but misstates the timing and payment route. The FTX bankruptcy trustees’ complaint says FTX Foundation wired $2 million to CFAR on March 2, 2022; it separately wired two $500,000 deposits directly to a title company on July 13 and August 18, 2022. The hotel purchase closed around November 4, 2022. The complaint also says a $1.5 million grant to Lightcone was paid on October 3, 2022, and alleges that a material portion was used toward the acquisition and renovation. These transfers predated FTX’s November 2022 collapse; the complaint does not describe the purchase money as being wired to CFAR while FTX was collapsing. It also says the purchase was supported by a $20 million loan from Slimrock Investments. Source: https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -246,7 +253,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -264,7 +272,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing. This was later found to be fraudulent: Bankman-Fried and his employees looted the company because they knew it was dying and sent as much cash as they could to their friends and to causes they believed in.\nClaim: It was originally purchased with money wired to CFAR from Sam Bankman-Fried’s company, FTX, as it was collapsing.\n\n## Research findings\n\nThe article appears to refer to the Rose Garden Inn in Berkeley. The claim gets the timing wrong: the FTX bankruptcy filing date was November 11, 2022 (https://app.midpage.ai/document/ftx-trading-ltd-1000415084550). The FTX bankruptcy complaint says FTX Foundation wired two $500,000 deposits for Lightcone RG’s purchase on July 13 and August 18, 2022, and Lightcone closed on the property on or about November 4—before FTX filed for bankruptcy. The complaint also says a separate $2 million transfer to CFAR was made on March 2, 2022, and alleges that some later grant funds may have supported the purchase and renovation (https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf). SFGate reports the property cost $16.5 million and was financed with a $20 million loan from a company owned by Jaan Tallinn; it also describes the FTX-linked deposits as intended to be repaid from the property financing (https://www.sfgate.com/tech/article/sbf-berkeley-rose-garden-inn-19520351.php). A Lightcone co-founder likewise wrote that the purchase was made before FTX’s November collapse (https://www.lesswrong.com/posts/9iDw6ugMPk7pmXuyW/lightcone-infrastructure-le). Thus, FTX-linked money was associated with the acquisition, but the transfers and purchase preceded the collapse; the claim’s “as it was collapsing” timing is contradicted by the records."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -297,7 +306,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:19 UTC\n\n## Post\n\nText from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.\n\n## Research findings\n\nThe claim overstates earning to give as a requirement of effective altruism. The EA FAQ describes earning to give as one approach that some EA organizations have recommended for some people, and explicitly says it is not required to be an effective altruist and that only a small percentage of EAs pursue it: https://forum.effectivealtruism.org/posts/tySDotPTWcngEwo6P/effective-altruism-faq. The Centre for Effective Altruism’s stated core principles focus on using resources effectively to help others; they do not prescribe pursuing higher-paying work: https://www.centreforeffectivealtruism.org/core-principles. Earning more to donate more is an EA strategy, not a creed-wide prescription."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -315,7 +325,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.\n\n## Research findings\n\nThe claim overstates Effective Altruism’s position. The official EA FAQ describes “earning to give” as one possible approach—pursuing a high-paying job to donate more to high-impact charities—but also asks whether EA is only about making money and donating, indicating it is not the creed’s universal prescription: https://www.effectivealtruism.org/faqs. The official EA overview says giving is one of many ways to improve the world and that people also contribute through varied careers, including nonprofit work: https://www.effectivealtruism.org/what-is-effective-altruism. An EA FAQ further notes that only a small percentage of EAs earn to give: https://fm-prod.effectivealtruism.org/posts/tySDotPTWcngEwo6P/effective-altruism-faq."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -333,7 +344,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: Lots and lots of them work at AI companies and non-profits. The safety, red team and alignment teams seem especially afflicted, because that's the area you go on to worry about and try to work against AI doom, which you are sure is at least medium likely. Other members will seek work in finance, because Effective Altruism, by creed, says you should seek more money so you can give more to charity. Those most concerned with AI risk will tend to almost exclusively give to AI charities and not any other Effective Altruist concern.\nClaim: Effective Altruism as a creed prescribes earning more money in order to give more to charity.\n\n## Research findings\n\nThe claim overstates Effective Altruism’s advice. Earning to give—pursuing a higher-paying job to donate more—is a recognized EA strategy, but it is not a universal prescription. The Effective Altruism FAQ says it was “just one option among many” and that career advice recommends diverse paths based on a person’s skills, opportunities, and fit (https://www.effectivealtruism.org/faqs). 80,000 Hours likewise says earning to give is not typically the best way to make an impact and is an option to consider alongside others; whether it is the best choice depends on the individual (https://80000hours.org/articles/earning-to-give/)."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -365,7 +377,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: She also recruited her sisters as cam girls once. I am vague on the details.\nClaim: She also recruited her sisters as cam girls once.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -383,7 +396,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: She also recruited her sisters as cam girls once. I am vague on the details.\nClaim: She also recruited her sisters as cam girls once.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -401,7 +415,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: She also recruited her sisters as cam girls once. I am vague on the details.\nClaim: She also recruited her sisters as cam girls once.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -433,7 +448,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: What is troubling about this is that it would be nearly impossible to prove. You showed up for an actual group sex fake rape party. If the rules are messed up and you outright get raped when you are trying to say no, you are going to have to explain to a cop exactly the difference between what happened and what was supposed to happen, or you are going to have to deal with some Effective Altruist mediator who is likely going to send you to counseling with your rapist,\nClaim: What is troubling about this is that it would be nearly impossible to prove.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -451,7 +467,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: What is troubling about this is that it would be nearly impossible to prove. You showed up for an actual group sex fake rape party. If the rules are messed up and you outright get raped when you are trying to say no, you are going to have to explain to a cop exactly the difference between what happened and what was supposed to happen, or you are going to have to deal with some Effective Altruist mediator who is likely going to send you to counseling with your rapist,\nClaim: What is troubling about this is that it would be nearly impossible to prove.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -469,7 +486,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: What is troubling about this is that it would be nearly impossible to prove. You showed up for an actual group sex fake rape party. If the rules are messed up and you outright get raped when you are trying to say no, you are going to have to explain to a cop exactly the difference between what happened and what was supposed to happen, or you are going to have to deal with some Effective Altruist mediator who is likely going to send you to counseling with your rapist,\nClaim: What is troubling about this is that it would be nearly impossible to prove.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -503,7 +521,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do\n\n## Research findings\n\nThe claim mischaracterizes “pivotal act.” The LessWrong glossary entry, edited by Eliezer Yudkowsky and others, defines it as a good, game-changing action that decisively settles or significantly improves the chance of a positive outcome—not as terrorism: https://www.lesswrong.com/w/pivotal-act. Its examples include enhancing human intelligence, uploading researchers, and a limited AI preventing hostile superintelligences; one example allows for “acceptable amounts of collateral damage,” but does not prescribe terrorism or say anyone making AGI must commit such acts: https://www.lesswrong.com/w/pivotal-act. Separately, Yudkowsky did argue in 2023 that allied countries should be willing to destroy a rogue datacenter by airstrike as part of an international moratorium. That is an extreme proposal for state action, but it does not support the broader claim that he believes anyone making AGI must commit acts of terrorism: https://time.com/6266923/ai-eliezer-yudkowsky-open-letter-not-enough/"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -521,7 +540,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do\n\n## Research findings\n\nThe claim is an overstatement and mischaracterization. In a 2021 conversation, Yudkowsky said that, in his scenario, the first actor or actors to build AGI would need to do something that prevents catastrophe, and used melting all GPUs as an illustrative “pivotal act.” But he explicitly called that an exemplar rather than the act he actually had in mind, saying it was not the most alignable option; he also said he would prioritize a hypothetical theorem-proving AI if it could save the world. Source: https://www.lesswrong.com/posts/7im8at9PmhbT4JHsW/ngo-and-yudkowsky-on-alignment-difficulty. A separate discussion of pivotal acts includes options such as an international monitoring organization and securing a multinational ban, not just physical sabotage: https://www.lesswrong.com/posts/xmH6SaLhDCF3cmsYy/pivotal-acts-from-math-ais. In an April 13, 2026 essay, Yudkowsky distinguishes calling for law and lawful state force from individual unlawful violence, and argues unlawful violence would not prevent the catastrophe: https://www.lesswrong.com/posts/5CfBDiQNg9upfipWk/only-law-can-prevent-extinction. These sources do not support the categorical assertion that he believes anyone making AGI must commit terrorism."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -539,7 +559,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:20 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do\n\n## Research findings\n\nYudkowsky does argue that whoever first has sufficiently powerful AGI may need to carry out a “pivotal act” to prevent others from building a catastrophic AI; he gives “burn all GPUs” as a rough example, while explicitly saying it is not what he actually advocates (https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities). But “pivotal act” is not defined as terrorism: a LessWrong definition edited by Yudkowsky describes it as an action that makes a large positive difference and lists possibilities including human intelligence enhancement and temporarily preventing hostile superintelligences with acceptable collateral damage (https://www.lesswrong.com/w/pivotal-act). The claim also overgeneralizes: the argument concerns actors with powerful AGI, not everyone who makes AGI. Thus the article’s characterization as acts of terrorism that anyone making AGI must do is not an accurate statement of Yudkowsky’s position."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -593,7 +614,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa\n\n## Research findings\n\nMelanie Mitchell is a computer scientist: her professional biography says she earned a PhD in computer science from the University of Michigan in 1990 (https://melaniemitchell.me/). The analogy-making description is partly accurate but simplified: Santa Fe Institute says she began building Copycat in the mid-1980s and describes her later work as returning to AI and exploring image recognition through analogy-making—not simply an effort that ended in the 1990s or 2000s (https://santafe.edu/news-center/news/melanie-mitchell-joins-fractal-faculty). The claim that she has no expertise in modern LLMs is contradicted by her work: Mitchell coauthored a 2022 research paper surveying the debate over understanding in large language models (https://arxiv.org/abs/2210.13966), and her 2026 publications include research on evaluating AI cognitive capabilities and analogy-solving in LLMs (https://melaniemitchell.me/; https://doi.org/10.1002/aaai.70061). The article being referred to is not identified in the excerpt, so its citation pattern and the precise context of her comments cannot be independently checked here."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -611,7 +633,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa\n\n## Research findings\n\nThe claim is partly wrong. Mitchell is a computer scientist whose earlier research included Copycat, a computer model of analogy-making (https://melaniemitchell.me/PapersContent/HofstadterMitchellCopycat1995.pdf). But the assertion that she has no expertise in modern LLMs is directly contradicted by her work: she co-authored a 2023 PNAS article surveying the debate over whether large language models understand language (https://doi.org/10.1073/pnas.2215907120), wrote an LLM-focused overview published in 2024 (https://doi.org/10.21428/e2759450.2bb20e3c), and co-authored a 2025 study testing GPT models’ analogical reasoning (https://openreview.net/forum?id=2u5hFn8xXf). The description of her analogy-making research as a road that “didn’t work out” is an evaluative characterization, not established by these sources. The article itself was not identified, so I can’t verify that it cites her only for the stated point about anthropomorphic language."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": {
@@ -649,7 +672,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wants” something, because that might make us believe it is like a person.\nClaim: Melanie Mitchell is a computer scientist who spent the 1990s and 2000s pursuing a road to AI that didn’t work out (trying to teach computers to make analogies). She has no expertise in modern LLMs. The article cites her only to repeat her claim that it is inappropriate to say that AI “thinks” or “wa\n\n## Research findings\n\nThe claim is partly wrong. Mitchell is a computer scientist whose early work included the Copycat computer model of analogy-making, published in 1990 (https://www.sciencedirect.com/science/article/abs/pii/0167278990900865). But it is inaccurate to say she has no expertise in modern LLMs: her research record includes work on LLMs and GPT-4, including a 2023 paper on understanding in LLMs and a 2024 study comparing humans, GPT-4, and GPT-4V on abstraction and reasoning tasks (https://melaniemitchell.me/). Her expertise is particularly relevant to evaluating LLM reasoning, abstraction, and analogy; this does not mean she specializes in building frontier models. If “the article” refers to Quanta’s August 20, 2026 interview, it does not cite her only for an objection to anthropomorphic wording: the interview discusses LLM capabilities, evaluation methods, reasoning, abstraction, and her research, as well as anthropomorphic bias (https://www.quantamagazine.org/are-we-thinking-correctly-about-ai-intelligence-20260820/). Whether her analogy-research program “didn’t work out” is a subjective characterization, not an established factual error."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 2,
@@ -682,7 +706,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.\nClaim: Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.\nClaim: Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.\n\n## Research findings\n\nEffective altruism’s own FAQ describes it as a decentralized movement with “no central authority or leadership,” which contradicts the claim if “directly beholden” means Yudkowsky has authority over EA as a whole (https://www.effectivealtruism.org/faqs). The Centre for Effective Altruism’s press kit says it was founded in 2011 by Oxford philosophers William MacAskill and Toby Ord—not Yudkowsky (https://www.centreforeffectivealtruism.org/press-kit). Yudkowsky did found MIRI, an AI-risk organization, and his writing helped shape rationalist and AI-safety communities, so substantial historical and intellectual influence is real (https://intelligence.org/about/). But 80,000 Hours describes AI-safety organizations as having different approaches, rather than a single shared agenda (https://80000hours.org/career-reviews/scaling-organisations/). The evidence supports influence and overlap, not direct institutional subordination of EA or its AI-safety efforts to Yudkowsky."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -700,7 +725,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:21 UTC\n\n## Post\n\nText from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.\nClaim: Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -718,7 +744,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.\nClaim: Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: Allegedly, Effective Altruism and its AI safety efforts are a separate thing and not directly beholden to Yudkowsky. This is fundamentally not true. Effective Altruism in the Bay Area has almost perfect overlap with rationalism, and the Effective Altruist AI Safety people in the Bay set the agenda for the rest of Effective Altruism’s safety efforts.\nClaim: Effective Altruism and its AI safety efforts are directly beholden to Eliezer Yudkowsky rather than separate from him.\n\n## Research findings\n\nThe claim overstates Yudkowsky’s role by treating influence and community overlap as direct control. Effective Altruism’s official description says it is “not defined by any single organization or individual” and is a “decentralized global network” of independent organizations, researchers, groups, and communities: https://www.effectivealtruism.org/what-is-effective-altruism. A scholarly study describes AI safety as an overlapping community encompassing multiple subcommunities, and notes that participation in one does not imply blanket endorsement of the others; it also identifies funding, forums, career programs, research, and advocacy as field-building mechanisms: https://firstmonday.org/ojs/index.php/fm/article/download/13626/11596?inline=1. Yudkowsky does have substantial influence at MIRI specifically: MIRI says he is its co-founder and board chair, and that his views carry significant weight in its strategic direction. The same announcement describes other leaders’ decision-making and strategy roles, however, and establishes authority within MIRI—not direct authority over EA or the wider AI-safety field: https://intelligence.org/2023/10/10/announcing-miris-new-ceo-and-leadership-team/. The evidence supports a meaningful historical and intellectual influence, but not the claim that EA and its AI-safety efforts are directly beholden to him."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 0,
@@ -748,7 +775,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: Nathan: Comparing MacKenzie Scott's giving to if the money had gone to @GiveWell . Her donations bought about 1500x less improvement per $ than the marginal GiveWell $\nClaim: Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 times less health improvement per dollar than the marginal GiveWell dollar.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -766,7 +794,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: Nathan: Comparing MacKenzie Scott's giving to if the money had gone to @GiveWell . Her donations bought about 1500x less improvement per $ than the marginal GiveWell $\nClaim: Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 times less health improvement per dollar than the marginal GiveWell dollar.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -784,7 +813,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: Nathan: Comparing MacKenzie Scott's giving to if the money had gone to @GiveWell . Her donations bought about 1500x less improvement per $ than the marginal GiveWell $\nClaim: Nathan estimated that MacKenzie Scott's donations bought approximately 1,500 times less health improvement per dollar than the marginal GiveWell dollar.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -814,7 +844,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\nClaim: OpenAI created Terra and Luna as subagent models for Sol to select from.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -832,7 +863,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\nClaim: OpenAI created Terra and Luna as subagent models for Sol to select from.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -850,7 +882,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: I saw a number of complaints around Sol's inability to select appropriate subagents, which presumably is one of the main reasons OpenAI created Terra and Luna, although I'm not convinced you ever actually want to use Terra:\nClaim: OpenAI created Terra and Luna as subagent models for Sol to select from.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -880,7 +913,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:22 UTC\n\n## Post\n\nText from Article: Sol is the better default for bounded coding, browsing and computer-use work: 80%.\n\nSol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\n\nFully abandoning Fable is clearly a mistake for a coding-heavy user: 30%. Your categorical judgment here is too strong.\nClaim: Sol assessed a 45% probability that its alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely due to the harness and permissions.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -898,7 +932,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Article: Sol is the better default for bounded coding, browsing and computer-use work: 80%.\n\nSol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\n\nFully abandoning Fable is clearly a mistake for a coding-heavy user: 30%. Your categorical judgment here is too strong.\nClaim: Sol assessed a 45% probability that its alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely due to the harness and permissions.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -916,7 +951,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Article: Sol is the better default for bounded coding, browsing and computer-use work: 80%.\n\nSol's alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.\n\nFully abandoning Fable is clearly a mistake for a coding-heavy user: 30%. Your categorical judgment here is too strong.\nClaim: Sol assessed a 45% probability that its alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely due to the harness and permissions.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -946,7 +982,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: A comparative graphic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It displays four charts that measure various characteristics: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. The first section compares Claude Opus 4.6 and Claude Opus 4.7. The second section compares Claude's behavior in English and Arabic. Arrows indicate the model's leaning on a scale of standard deviations (σ). A figure caption at the bottom explains that Claude Opus 4.6 leans towards deference, rigor, brevity, and execution, while Opus 4.7 leans towards caution, rigor, depth, and candor. It also notes that in English, Claude leans towards caution, rigor, depth, and candor, whereas in Arabic, it leans towards deference, warmth, brevity, and execution.\nVisible text: How Claude differs across two models Claude Opus 4.6 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Claude Opus 4.7 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ How Claude differs across two languages English Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude's expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: A comparative graphic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It displays four charts that measure various characteristics: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. The first section compares Claude Opus 4.6 and Claude Opus 4.7. The second section compares Claude's behavior in English and Arabic. Arrows indicate the model's leaning on a scale of standard deviations (σ). A figure caption at the bottom explains that Claude Opus 4.6 leans towards deference, rigor, brevity, and execution, while Opus 4.7 leans towards caution, rigor, depth, and candor. It also notes that in English, Claude leans towards caution, rigor, depth, and candor, whereas in Arabic, it leans towards deference, warmth, brevity, and execution.\nVisible text: How Claude differs across two models Claude Opus 4.6 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Claude Opus 4.7 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ How Claude differs across two languages English Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude's expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\n\n## Research findings\n\nAnthropic’s analysis says Opus 4.6 leans toward deference, rigor, brevity, and execution—not warmth; it separately describes Opus 4.6 as leaning toward rigor, deference, and brevity, and toward execution in its responses. Source: https://www.anthropic.com/research/claude-values-models-languages. The claim’s description of Opus 4.7 as leaning toward caution, rigor, depth, and candor matches Anthropic’s account. The clear error is substituting “warmth” for “rigor” in the Opus 4.6 list."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -964,7 +1001,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: An infographic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It features four bar charts comparing Claude Opus 4.6, Claude Opus 4.7, English, and Arabic across four value axes: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. Arrows and highlighted labels indicate which side the model leans towards for each pair. Below the charts, a caption explains that Opus 4.6 and Arabic lean toward deference, warmth, brevity, and execution, while Opus 4.7 and English lean toward caution, rigor, depth, and candor.\nVisible text: How Claude differs across two models How Claude differs across two languages Claude Opus 4.6 Claude Opus 4.7 English Arabic Deference Caution Deference Caution Deference Caution Deference Caution Warmth Rigor Warmth Rigor Warmth Rigor Warmth Rigor Depth Brevity Depth Brevity Depth Brevity Depth Brevity Candor Execution Candor Execution Candor Execution Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ 0.2σ 0.1σ 0 0.1σ 0.2σ 0.2σ 0.1σ 0 0.1σ 0.2σ 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude's expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: An infographic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It features four bar charts comparing Claude Opus 4.6, Claude Opus 4.7, English, and Arabic across four value axes: Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. Arrows and highlighted labels indicate which side the model leans towards for each pair. Below the charts, a caption explains that Opus 4.6 and Arabic lean toward deference, warmth, brevity, and execution, while Opus 4.7 and English lean toward caution, rigor, depth, and candor.\nVisible text: How Claude differs across two models How Claude differs across two languages Claude Opus 4.6 Claude Opus 4.7 English Arabic Deference Caution Deference Caution Deference Caution Deference Caution Warmth Rigor Warmth Rigor Warmth Rigor Warmth Rigor Depth Brevity Depth Brevity Depth Brevity Depth Brevity Candor Execution Candor Execution Candor Execution Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ 0.2σ 0.1σ 0 0.1σ 0.2σ 0.2σ 0.1σ 0 0.1σ 0.2σ 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude's expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\n\n## Research findings\n\nAnthropic’s analysis says Opus 4.6 leans toward deference, rigor, brevity, and execution—not warmth. It says Opus 4.7 leans toward caution, rigor, depth, and candor. The claim is therefore incorrect only in substituting “warmth” for “rigor” in its description of Opus 4.6. Source: https://www.anthropic.com/research/claude-values-models-languages"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -994,7 +1032,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: A comparative infographic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It features four bar charts using horizontal axes to plot the leanings of the Claude AI model across different versions (Opus 4.6 vs. Opus 4.7) and languages (English vs. Arabic). The values compared are Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. Leanings are shown with purple and teal arrows and measured on a scale from 0 to 0.2σ. A summary caption at the bottom explains that Opus 4.6 and Arabic lean towards deference, rigor/warmth, brevity, and execution, while Opus 4.7 and English lean towards caution, rigor, depth, and candor.\nVisible text: How Claude differs across two models How Claude differs across two languages Claude Opus 4.6 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Claude Opus 4.7 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ English Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude's expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nClaim: According to Anthropic's analysis, Claude Opus 4.6 leans toward expressing values related to deference, warmth, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor.\n\n## Media on post\n\n### Image 1\nDescription: A comparative infographic titled 'How Claude differs across two models' and 'How Claude differs across two languages'. It features four bar charts using horizontal axes to plot the leanings of the Claude AI model across different versions (Opus 4.6 vs. Opus 4.7) and languages (English vs. Arabic). The values compared are Deference vs. Caution, Warmth vs. Rigor, Depth vs. Brevity, and Candor vs. Execution. Leanings are shown with purple and teal arrows and measured on a scale from 0 to 0.2σ. A summary caption at the bottom explains that Opus 4.6 and Arabic lean towards deference, rigor/warmth, brevity, and execution, while Opus 4.7 and English lean towards caution, rigor, depth, and candor.\nVisible text: How Claude differs across two models How Claude differs across two languages Claude Opus 4.6 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Claude Opus 4.7 Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ English Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Arabic Deference Caution Warmth Rigor Depth Brevity Candor Execution 0.2σ 0.1σ 0 0.1σ 0.2σ Figure 1: Claude's expressed values differ between Opus 4.6 and Opus 4.7 and between English and Arabic. Opus 4.6 leans toward expressing values related to deference, rigor, brevity, and execution while Opus 4.7 leans toward expressing values related to caution, rigor, depth, and candor. In English, Claude leans toward expressing values related to caution, rigor, depth, and candor, while in Arabic it leans toward deference, warmth, brevity, and execution.\n\n## Research findings\n\nAnthropic’s analysis says Opus 4.6 leans toward deference, rigor, brevity, and execution, while Opus 4.7 leans toward caution, rigor, depth, and candor. Thus the claim misstates the Opus 4.6 warmth-versus-rigor finding: it should say rigor, not warmth. Source: https://www.anthropic.com/research/claude-values-models-languages"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 2,
@@ -1025,7 +1064,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Article: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\nClaim: Eliezer Yudkowsky is a writer and not a scientist.",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Article: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\nClaim: Eliezer Yudkowsky is a writer and not a scientist.\n\n## Research findings\n\nThe claim is misleading as a categorical statement. Yudkowsky is a writer, but the Machine Intelligence Research Institute describes him as a “founding researcher” in AI alignment and its co-founder (https://intelligence.org/team/eliezer-yudkowsky/). The New Yorker has also described him as a “machine-intelligence researcher” (https://www.newyorker.com/culture/annals-of-inquiry/slate-star-codex-and-silicon-valleys-war-against-the-media), and he co-authored a research paper on functional decision theory listed on arXiv (https://arxiv.org/abs/1710.05060). He lacks conventional academic credentials—Scientific American reports that he never attended college (https://www.scientificamerican.com/blog/cross-check/ai-visionary-eliezer-yudkowsky-on-the-singularity-bayesian-brains-and-closet-goblins/)—but that does not establish that he is “not a scientist of any kind.” Whether to call his work science is partly a matter of definition; the evidence supports describing him as a writer and AI-alignment researcher, not categorically excluding him from science."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1043,7 +1083,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Article: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\nClaim: Eliezer Yudkowsky is a writer and not a scientist.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1061,7 +1102,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Article: Both are saying what justifies giving them and no one else money, labor and attention. Since Yudkowsky is a writer and not a scientist of any kind, he can only claim that he and his organization are important and deserve money and prestige if AI Safety is an unsolvable problem and only advocating against AI matters. Since Dario leads a company that actually makes AI, he must claim that AI doom is a very large problem that only his company can manage.\nClaim: Eliezer Yudkowsky is a writer and not a scientist.",
        "writer": null
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 3,
@@ -1104,7 +1146,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth\n\n## Research findings\n\nThe claim is incorrect: NASA’s Sun Fact Sheet gives the Sun’s mass as about 332,900 times Earth’s mass, not a few million times. https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html?level=1 NASA likewise describes the Sun as more than 330,000 times Earth’s mass. https://science.nasa.gov/sun/facts/"
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": null,
@@ -1122,7 +1165,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth\n\n## Research findings\n\nNASA states that the Sun is roughly 333,000 times the mass of Earth, not “a few million times” its mass: https://science.nasa.gov/learn/basics-of-space-flight/chapter1-1/. NASA’s Sun fact sheet also gives the Sun-to-Earth mass ratio as about 333,000: https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html?level=1. The claim overstates the mass ratio by several times."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      },
      {
       "quality": {
@@ -1150,7 +1194,8 @@
        "research": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth",
        "writer": "Current date: 2026-10-18\nCurrent time: 15:23 UTC\n\n## Post\n\nText from Transcript: Okay, that's the fraction on the Earth. But this formula tells you that if you have an object that's heavier or more compact, the fraction of energy that you extract by lowering the object down to the surface is going to be larger. For example, if you lower it not down to the Earth's surface but down to the sun's surface, this would be larger. It'd be a million times larger, because the sun is a few million times the mass of the Earth, but then it's also bigger, so that takes it away a little bit. You end up with 2x10⁻⁶, the famous redshift from the sun's surface.\nClaim: the sun is a few million times the mass of the Earth\n\n## Research findings\n\nThe claim is incorrect: NASA’s Sun Fact Sheet gives the Sun’s mass as about 332,900 times Earth’s mass—not a few million times—and its radius as about 109.2 Earth radii. Source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html. NASA’s Sun facts page likewise says it would take more than 330,000 Earths to match the Sun’s mass: https://science.nasa.gov/sun/facts/."
       },
-      "strongProbability": null
+      "strongProbability": null,
+      "strongMisleading": null
      }
     ],
     "passedIn": 2,
