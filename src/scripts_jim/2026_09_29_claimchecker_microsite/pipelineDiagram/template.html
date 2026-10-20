@@ -147,10 +147,11 @@ const KIND = {
   grok: { color: "--other", soft: "--other-soft", tag: "GROK" },
   claude: { color: "--other", soft: "--other-soft", tag: "SONNET 5.5" },
   code: { color: "--code", soft: "--code-soft", tag: "CODE" },
+  loop: { color: "--accent", soft: "--accent-soft", tag: "SAME MODELS" },
   result: { color: "--accent", soft: "--accent-soft", tag: "RESULT" },
   end: { color: "--warn", soft: "--warn-soft", tag: "NO NOTE" },
 };
-const chipClass = (kind) => ({ muse: "k-muse", gemini: "k-other", deepseek: "k-other", grok: "k-other", claude: "k-other", code: "k-code", result: "k-result", end: "k-end" })[kind];
+const chipClass = (kind) => ({ muse: "k-muse", gemini: "k-other", deepseek: "k-other", grok: "k-other", claude: "k-other", code: "k-code", loop: "k-result", result: "k-result", end: "k-end" })[kind];
 
 const STEPS = {
   fetch: {
@@ -286,10 +287,10 @@ const STEPS = {
   },
   research: {
     kind: "claude", title: "Full research", sub: "stronger model, yes or no", runs: "Once per claim (precheck path), or when the quick step is unsure", model: "Common Notes: Sonnet 5.5 on the cascading path, GPT-6 Luna on the precheck path. Medium reasoning, native search.",
-    summary: "Researches the claim and says whether it contains a clear factual error.",
-    decides: "Whether a correction is needed.",
-    what: "One call with the model provider's native search researches the highlighted claim and writes a dense summary of its findings with the full source links. It also sets correction_needed, which is true only for a clear factual error backed by direct contradicting evidence. Opinions, predictions and subjective characterizations are not corrected. When correction_needed is false, the check ends here as no correction needed. On the precheck path every claim goes through this step. On the cascading path only the unsure ones do. For an X post the stronger model is the search model that the run was configured with.",
-    goesIn: "The synthetic post.", comesOut: "Findings with sources, and correction_needed.",
+    summary: "Researches the claim and says whether it is misleading in any way.",
+    decides: "Whether the claim is misleading, yes or no.",
+    what: "One call with the model provider's native search researches the highlighted claim and writes a dense summary of its findings with the full source links. On the cascading path the stronger model gets the quick research's prompt, except that it is not told to avoid being pedantic, and it answers the field misleading: true if the claim is misleading in any way, otherwise false (search_answer misleading). A claim that is misleading goes on to the writer. When it is not, the check ends here as no correction needed. Claude models also get one sentence in front of the output format: when you think the claim is misleading you have to use search and include at least one correct source URL. On the precheck path every claim goes through this step, with the older prompt and the field correction_needed. On the cascading path only the unsure ones do. For an X post the stronger model is the search model that the run was configured with.",
+    goesIn: "The synthetic post.", comesOut: "Findings with sources, and misleading (or correction_needed on the precheck path).",
     tested: "Part of every Eval 2 check on the precheck path. In the baseline, four of the six difficult note rows ended here as no correction needed, in all three samples.",
     facts: [["Cost", "$0.014 for the search in the Berkeley check"]],
     prompts: [["System prompt", () => P.system.research], ["User message of a real check", () => P.user.research]],
@@ -320,12 +321,22 @@ const STEPS = {
     kind: "muse", title: "Source verifier", sub: "do the sources back it?", runs: "Once per claim", model: "Muse Spark 1.3",
     summary: "Opens every cited page and checks that it supports the note.",
     decides: "Whether the note is accepted.",
-    what: "The verifier opens every link the note cites and reads the page. A source is good only if it opened and its text directly supports a factual claim in the note. The note is accepted only if the good sources together cover every factual claim in it. Otherwise the check ends as check failed, or as unfetchable sources when none of the cited pages could be opened. For every accepted source it also writes the verbatim quote and a plain explanation, which readers see under source details.",
-    goesIn: "The note, its cited links, the text of each page.", comesOut: "A verdict per source, and accepted or rejected.",
+    what: "The code first opens every link the note cites. Then the verifier model reads the note and the text of each page that came back, and answers in JSON with these fields. accepted is true only if the good sources together cover every factual claim in the note. reasoning says why, and names any claim that no source supports. sources has one entry per cited link: its URL, a list of citations, and a verdict that is good or bad. A source is good only if its page opened and its text directly supports a factual claim in the note. Each citation is a quote copied word for word from the page and a plain explanation of how it supports, or fails to support, the note. The model writes the citations before the verdict. The code turns the verdicts into the lists good_sources and bad_sources and keeps only the good sources on the published note. Readers see the quotes under source details. When the note is not accepted the check ends as check failed. When none of the cited pages could be opened, the verifier model is not called at all. The check then ends as unfetchable sources, or, in a second round, the first rejection stands. The log keeps the fetch result of every source and, for every run of the verifier, what it was given and what it answered.",
+    goesIn: "The note, its cited links, the text of each page.", comesOut: "accepted, reasoning, and per source the citations and a good or bad verdict.",
     tested: "Part of every Eval 2 check. In the baseline, 4 of 42 checks ended here because none of the cited pages could be opened, and 1 because the sources did not back the note.",
     facts: [["Cost", "$0.0012 per check"]],
     prompts: [["System prompt", () => P.system.verifier], ["User message of a real check (shortened)", () => P.user.verifier.slice(0, 3500) + "\n\n[... the rest of the fetched pages ...]"]],
     example: () => EX.verifier,
+  },
+  secondRound: {
+    kind: "loop", title: "Second round", sub: "revise, write, check again", runs: "Only when the verifier rejected the note, on the second_round arm", model: "The same models as the first time: the research model that researched, the writer and the source verifier.",
+    summary: "When the verifier rejects the note, the research gets one more turn and the writer and verifier run again.",
+    decides: "Whether a note that was rejected once can be fixed.",
+    what: "This is an A/B test, second_round. Live it has weight 0, so it runs only where an eval or a test forces it. When the source verifier rejects a note, the research step is called once more. It gets its first message again, then its own findings, the rejected note and the verifier's complete answer, with the instruction to keep what the checker confirmed, remove or reword every claim that no fetched page supports, and find another page for a source that could not be fetched. The model that did the first research does this one too: the quick model stays the quick model and the stronger model stays the stronger one. If the revised research says that no note is needed, the check ends as no correction needed. Otherwise the writer writes a second note from the revised findings and the source verifier checks it as its second turn. A second note that passes is the result. A second note that is rejected ends the check as check failed. When none of its cited pages can be opened, the verifier model is not called and the first rejection stands, so the check ends as check failed as well. If the writer writes nothing, the check ends as no correction needed. The log keeps the first findings, the first note and what the verifier said about it under second_round, and the second note, the revised findings and the result next to them. Both verifier runs are in the log under source_verifier, turn 1 and turn 2.",
+    goesIn: "The first message, the first findings, the rejected note and the verifier's answer.", comesOut: "Revised findings, then a second note and its source check.",
+    tested: "Eval 2 forces the arm. The eval page shows the first note, the revised findings, the second note and both source checks, with what the verifier was given and answered.",
+    prompts: [["The message the research gets (the parts in angle brackets are filled in)", () => P.user.secondRound]],
+    example: () => EX.secondRound,
   },
   materiality: {
     kind: "gemini", title: "Materiality judge", sub: "would raters agree?", runs: "Once per note", model: "Gemini 3 Flash",
@@ -346,7 +357,7 @@ const STEPS = {
   },
   noBlocked: { kind: "end", title: "No note", sub: "blocked topic", runs: "", model: "none", summary: "The topic filter blocked the post.", decides: "", what: "The post is about a topic the bot does not write about. The claim is saved with the reason.", goesIn: "", comesOut: "", tested: "" },
   noCorrection: { kind: "end", title: "No note", sub: "no correction needed", runs: "", model: "none", summary: "The research found no clear factual error, or the writer wrote nothing.", decides: "", what: "The research found no clear factual error, or the writer decided that no note would stand. This is by far the most common ending: 172 of the 180 checked claims without a note in the first baseline run. The saved reason is no_correction_needed.", goesIn: "", comesOut: "", tested: "" },
-  noSources: { kind: "end", title: "No note", sub: "sources rejected", runs: "", model: "none", summary: "A note was drafted, but its sources did not back it.", decides: "", what: "A note was drafted, but the source verifier did not accept it: its sources did not cover every claim in the note (reason check_failed, 6 claims in the first baseline run), or none of the cited pages could be opened (reason unfetchable_sources, 2 claims).", goesIn: "", comesOut: "", tested: "" },
+  noSources: { kind: "end", title: "No note", sub: "sources rejected", runs: "", model: "none", summary: "A note was drafted, but its sources did not back it.", decides: "", what: "A note was drafted, but the source verifier did not accept it: its sources did not cover every claim in the note (reason check_failed, 6 claims in the first baseline run), or none of the cited pages could be opened (reason unfetchable_sources, 2 claims). On the second_round arm a rejected note first goes to the second round, and the check ends here only when that does not help.", goesIn: "", comesOut: "", tested: "" },
   noMaterial: { kind: "end", title: "No note", sub: "low materiality", runs: "", model: "none", summary: "The materiality judge scored the note under 0.5.", decides: "", what: "The note was true and cited, but the materiality judge scored it under 0.5, so it was not published. The saved reason is low_materiality_score.", goesIn: "", comesOut: "", tested: "" },
 };
 
@@ -361,8 +372,8 @@ const NODES = [
   ["noBlocked", 2, 550], ["noCorrection", 3, 550], ["research", 4, 550],
   ["timing", 4, 660],
   ["writer", 4, 770],
-  ["noSources", 3, 880], ["verifier", 4, 880],
-  ["noMaterial", 3, 990], ["materiality", 4, 990],
+  ["secondRound", 3, 880], ["verifier", 4, 880],
+  ["noSources", 2, 990], ["noMaterial", 3, 990], ["materiality", 4, 990],
   ["note", 4, 1100],
 ];
 const EDGES = [
@@ -381,7 +392,9 @@ const EDGES = [
   { d: "M1055,716 V766" },
   { d: "M960,802 H930 V578 H904", label: "empty", lx: 934, ly: 700 },
   { d: "M1055,826 V876" },
-  { d: "M960,908 H904", label: "rejected", lx: 906, ly: 899 },
+  { d: "M960,908 H904", label: "rejected", lx: 906, ly: 899, dash: true },
+  { d: "M740,936 V962 H575 V986", label: "rejected again", lx: 586, ly: 957 },
+  { d: "M805,936 V962 H1055", label: "accepted", lx: 812, ly: 955 },
   { d: "M1055,936 V986" },
   { d: "M960,1018 H904", label: "under 0.5", lx: 904, ly: 1009 },
   { d: "M1055,1046 V1096", label: "accepted", lx: 1062, ly: 1076 },

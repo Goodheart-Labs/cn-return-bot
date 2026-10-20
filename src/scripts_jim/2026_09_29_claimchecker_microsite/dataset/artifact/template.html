@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Claimchecker Eval Sets</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 <style>
@@ -645,6 +646,36 @@ function logViewer(files) {
   return { body: holder, load: () => { if (!loaded) { loaded = true; show(files[0]); } } };
 }
 
+/** The addresses a note cited, read from the message the source verifier was given. Null when the message was not kept. */
+function citedSourcesOf(verifierInput) {
+  if (!verifierInput) return null;
+  const section = verifierInput.split("## Note's cited sources")[1]?.split("## Original post")[0] ?? "";
+  return [...section.matchAll(/^### (https?:\/\/\S+)$/gm)].map((m) => m[1]);
+}
+/** Whether each cited source could be opened, with what came back for the ones that could not. */
+const fetchList = (fetches) => node("ul", { class: "small" }, ...fetches.map((f) => node("li", {}, node("a", { href: f.url, target: "_blank", rel: "noreferrer", text: f.url }), ` ${f.fetched ? "could be opened" : "could not be opened"}${f.whatCameBack ? ": " + f.whatCameBack.replace(/^### \S+\n/, "") : ""}`)));
+/** One run of the source verifier: its verdict and reasoning, the evaluation of each source, and the full text it was given. */
+function sourceCheckBody(check, verdictText) {
+  const out = check.output;
+  const body = node("div", {});
+  if (check.notRun) {
+    body.append(node("p", { text: "The verifier model was not called. " + check.notRun.reason + ". The source checker needs at least one cited page to open." }));
+    if (check.fetches) body.append(fetchList(check.fetches));
+    body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "The sources as they were fetched" })), proseBox(check.notRun.sources_as_fetched, true)));
+    return body;
+  }
+  if (out) {
+    body.append(node("p", {}, node("b", { text: out.accepted ? "Accepted. " : "Rejected. " }), out.reasoning));
+    const evaluations = out.source_evaluations ?? [...out.good_sources.map((url) => ({ url, verdict: "good", citations: [] })), ...out.bad_sources.map((url) => ({ url, verdict: "bad", citations: [] }))];
+    body.append(node("h4", { text: "What it said about each source" }), node("ul", { class: "small" }, ...evaluations.map((e) => node("li", {}, node("b", { text: e.verdict === "good" ? "good " : "bad " }), node("a", { href: e.url, target: "_blank", rel: "noreferrer", text: e.url }),
+      ...e.citations.map((c) => node("div", {}, "“" + truncate(c.quote, 240) + "”" + (c.explanation ? " " + c.explanation : "")))))));
+  } else if (verdictText) body.append(proseBox(verdictText));
+  if (check.fetches) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "Which sources could be opened" })), fetchList(check.fetches)));
+  if (check.input) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the verifier was given: the note and the fetched pages" })), proseBox(check.input, true)));
+  if (out) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "Its answer as JSON" })), node("pre", { class: "text", text: JSON.stringify(out, null, 1) })));
+  return body;
+}
+
 /** The whole post as the extractor cut it, with a click on a passage showing its type and claims. */
 function mountUnlabelledDetails(run) {
   for (const key of state.ropen) {
@@ -971,32 +1002,37 @@ function mountCheckerDetail(host, result) {
     const researchChip = researchSkipped ? "skipped" : (s.models?.search ? modelName(s.models.search) + ", native search" : "native search") + (strongAnswerText(s) ? `, ${strongAnswerText(s)}` : "");
     const researchBody = researchSkipped ? node("p", { class: "small", text: "Skipped. The quick research decided on its own, so the stronger model did not run." }) : s.research ? proseBox(s.research) : node("p", { class: "small", text: "No findings were saved. The check ended before the research, or the research failed." });
     steps.push(stepCard(n++, researchSkipped ? "Full research" : "Research", researchChip, !strongAnswerText(s) ? researchBody : node("div", {}, node("p", {}, node("b", { text: strongAnswerText(s) }), s.strongProbability != null ? " that the claim is misleading. From 50% up the check went on to the writer, under it the check ended." : ". A claim that is misleading goes on to the writer, otherwise the check ends."), researchBody)));
-    if (s.draftNote) {
-      const body = node("div", {}, proseBox(s.draftNote));
-      if (s.draftSources?.length) body.append(node("ul", { class: "small" }, ...s.draftSources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url })))));
-      else if (s.draftSources) body.append(node("p", { class: "small", text: "The writer gave no sources." }));
+    // In a check with a second round the writer entry of the log holds the second note, so the first note comes from the record of the second round.
+    const firstDraft = s.secondRound ? { note: s.secondRound.first.note, sources: s.secondRound.first.sources ?? citedSourcesOf(s.sourceChecks?.[0]?.input) } : { note: s.draftNote, sources: s.draftSources };
+    if (firstDraft.note) {
+      const body = node("div", {}, proseBox(firstDraft.note));
+      if (firstDraft.sources?.length) body.append(node("ul", { class: "small" }, ...firstDraft.sources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url })))));
+      else if (firstDraft.sources) body.append(node("p", { class: "small", text: "The writer gave no sources." }));
       if (s.prompts?.writer) body.append(node("details", { class: "block" }, node("summary", {}, node("span", { text: "What the writer was given" })), node("pre", { class: "text" }, withoutTweetLines(s.prompts.writer))));
       steps.push(stepCard(n++, "The note the writer drafted", modelName(s.models?.writer) || "model not recorded", body));
     }
-    if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", modelName(s.models?.verifier) || "model not recorded", proseBox(s.sourceVerdict)));
+    const checks = s.sourceChecks ?? [];
+    const verifierModel = modelName(s.models?.verifier) || "model not recorded";
+    if (checks.length) steps.push(stepCard(n++, s.secondRound ? "Source check of the first note" : "Source check", verifierModel, sourceCheckBody(checks[0], s.sourceVerdict && !s.secondRound ? s.sourceVerdict : null)));
+    else if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", verifierModel, proseBox(s.sourceVerdict)));
     if (s.secondRound) {
       const r = s.secondRound;
       const second = r.second;
-      const fetchList = (fetches) => node("ul", { class: "small" }, ...fetches.map((f) => node("li", {}, node("a", { href: f.url, target: "_blank", rel: "noreferrer", text: f.url }), ` ${f.fetched ? "could be opened" : "could not be opened"}${f.whatCameBack ? ": " + f.whatCameBack.replace(/^### \S+\n/, "") : ""}`)));
-      const afterSecondCheck = !second ? [] : [
-        node("h4", { text: "The second note" }), proseBox(second.note),
-        ...(second.sources.length ? [node("ul", { class: "small" }, ...second.sources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url }))))] : [node("p", { class: "small", text: "The writer gave no sources." })]),
-        node("h4", { text: "The second source check" }),
-        ...(second.error ? [node("p", { text: "It could not run: " + second.error + ". The source checker opens every cited page, and it needs at least one to open." })] : []),
-        ...(second.fetches ? [fetchList(second.fetches)] : second.error ? [node("p", { class: "small", text: "This run did not keep which of the sources failed and what came back. Runs made from now on keep it, and it is in the full log." })] : []),
-        ...(second.verifierReasoning ? [proseBox(second.verifierReasoning)] : []),
-      ];
-      steps.push(stepCard(n++, "Second round", SECOND_ROUND_TEXT[r.result] ?? r.result,
-        node("div", {}, node("p", { class: "small", text: "The source verifier rejected the first note. The research was told what the verifier said and wrote revised findings, and the writer and the verifier ran again. " + (SECOND_ROUND_MEANING[r.result] ?? "") }),
+      steps.push(stepCard(n++, "Second round: revised research", SECOND_ROUND_TEXT[r.result] ?? r.result,
+        node("div", {}, node("p", { class: "small", text: "The source verifier rejected the first note. The research was told what the verifier said and wrote revised findings. " + (SECOND_ROUND_MEANING[r.result] ?? "") }),
           node("h4", { text: "The first note" }), proseBox(r.first.note),
           node("h4", { text: "What the verifier said about it" }), proseBox(r.first.reasoning),
-          node("h4", { text: "The revised findings" }), r.revisedFindings ? proseBox(r.revisedFindings) : node("p", { class: "small", text: "none" }),
-          ...afterSecondCheck), { open: false }));
+          node("h4", { text: "The revised findings" }), r.revisedFindings ? proseBox(r.revisedFindings) : node("p", { class: "small", text: "none" }))));
+      if (second) {
+        steps.push(stepCard(n++, "Second round: the second note", modelName(s.models?.writer) || "model not recorded",
+          node("div", {}, proseBox(second.note),
+            second.sources.length ? node("ul", { class: "small" }, ...second.sources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url })))) : node("p", { class: "small", text: "The writer gave no sources." }))));
+        const second_check = checks.find((c) => c.turn === 2);
+        steps.push(stepCard(n++, "Second round: source check of the second note", verifierModel,
+          second_check ? sourceCheckBody(second_check, null)
+            : node("div", {}, node("p", { text: r.result === "unfetchable_sources" ? "The source verifier model was not called, because none of the pages cited by the second note could be opened. " + (second.error ? second.error + ". " : "") + (second.fetches ? "" : "This run did not keep which pages failed or what came back. Runs made from now on keep it, in this card and in the full log.") : "The source verifier was not called, and this run did not keep more than that." }),
+              second.fetches ? fetchList(second.fetches) : null)));
+      }
     }
     const end = node("div", {});
     if (o.type === "note") {

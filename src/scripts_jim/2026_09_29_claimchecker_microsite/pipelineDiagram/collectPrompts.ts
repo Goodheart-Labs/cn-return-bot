@@ -13,7 +13,9 @@ import { GATE_SPLIT_SYSTEM_PROMPT } from "../../../everything/pipeline/gateAndSp
 import { extractionSystemPrompt } from "../../../everything/pipeline/extractClaims";
 import { RATING_SYSTEM_PROMPT } from "../../../everything/pipeline/rateClaims";
 import { IMAGE_PROMPT } from "../../../pipeline/prompts/media/mediaAnalysis";
-import { SEARCH_SYSTEM_PROMPT_CLAIM, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY } from "../../../pipeline/prompts/simple-bot/searchAgent";
+import { SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, withSourceUrlInstruction } from "../../../pipeline/prompts/simple-bot/searchAgent";
+import { WRITER_SYSTEM_PROMPT_CLAIM } from "../../../pipeline/prompts/simple-bot/writer";
+import { secondRoundMessage } from "../../../pipeline/simple-bot/secondRound";
 import { MATERIALITY_JUDGE_SYSTEM_PROMPT } from "../../../pipeline/prompts/simple-bot/materialityJudge";
 import { TIMING_EXTRACTOR_SYSTEM_PROMPT } from "../../../pipeline/prompts/simple-bot/timingJudge";
 import { LAB_DIR } from "../runStore";
@@ -54,15 +56,22 @@ writeFileSync(
         rating: RATING_SYSTEM_PROMPT,
         topic: first(short.topic_filter.messages).systemPrompt,
         quick: SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY,
-        research: SEARCH_SYSTEM_PROMPT_CLAIM,
+        research: withSourceUrlInstruction(SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING),
         timing: TIMING_EXTRACTOR_SYSTEM_PROMPT,
-        writer: writerMessages.find((m) => m.role === "system")!.content,
+        writer: WRITER_SYSTEM_PROMPT_CLAIM,
         verifier: first(full.note_writer_steps.source_verifier.turn["1"].messages).systemPrompt,
         materiality: MATERIALITY_JUDGE_SYSTEM_PROMPT,
       },
       user: {
         quick: probabilityUserMessage(),
         research: first(short.note_writer_steps.search.messages).userMessage,
+        secondRound: secondRoundMessage({
+          userMessage: "<the message the first research was given>",
+          findings: "<the findings the first note was written from>",
+          researchedBy: "full",
+          noteText: "<the rejected note>",
+          verification: { accepted: false, reasoning: "<the verifier's reasoning>", good_sources: ["<url>"], bad_sources: ["<url>"], source_evaluations: [{ url: "<url>", verdict: "bad", citations: [] }] },
+        }),
         writer: writerMessages.find((m) => m.role === "user")!.content,
         verifier: first(full.note_writer_steps.source_verifier.turn["1"].messages).userMessage,
       },

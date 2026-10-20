@@ -20,7 +20,7 @@ import { AB_TESTS } from "../../../pipeline/ab-testing/abTestsData";
 import { LOGS_DIR } from "../runStore";
 import { checkTraceOf } from "../labRun";
 import { writeWriterCache, type WriterStageResult } from "../../../pipeline/replay/writerCache";
-import type { CascadeTrace, CheckableRow, SecondRoundTrace, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
+import type { SourceCheckTrace, CascadeTrace, CheckableRow, SecondRoundTrace, CheckerEvalResult, CheckerOutcome, CheckerPrompts, CheckerRowResult, CheckerSample, CheckerVerdict } from "./evalTypes";
 import { judgeNoteQuality } from "./judges";
 
 const SAMPLES_PER_ROW = 3;
@@ -111,6 +111,20 @@ export function cascadeOf(logs: any): CascadeTrace | null {
   };
 }
 
+/** Every run of the source verifier in a check, from its log. */
+export function sourceChecksOf(logs: any): SourceCheckTrace[] {
+  const at = (list: any, index: number) => (Array.isArray(list) ? list[index] : list?.[String(index)]);
+  return Object.entries(logs?.note_writer_steps?.source_verifier?.turn ?? {})
+    .map(([turn, step]: [string, any]) => ({
+      turn: Number(turn),
+      input: at(step?.messages, 0)?.userMessage ?? null,
+      output: at(step?.messages, 1)?.content ?? null,
+      fetches: step?.fetches ?? null,
+      notRun: step?.not_run ?? null,
+    }))
+    .sort((a, b) => a.turn - b.turn);
+}
+
 /** What the stronger model answered, from the log of a check. Both are null when the full research did not run. */
 export function strongAnswerOf(logs: any): { probability: number | null; misleading: boolean | null } {
   const messages = logs?.note_writer_steps?.search?.messages;
@@ -156,7 +170,7 @@ export async function checkSample(row: CheckableRow, referenceNotes: string[], r
       quality = judged.answer;
       judgeCostUsd = judged.costUsd;
     }
-    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongAnswerOf(run.logs).probability, strongMisleading: strongAnswerOf(run.logs).misleading, secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, draftSources: trace.draftSources, logFiles: [`logs/eval-${runId}/${row.id}.${sample}.json`], sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
+    return { ...base, outcome, verdict: verdictOf(row.expected, outcome), quality, prompts: promptsOf(run.logs), research: trace.research, cascade: cascadeOf(run.logs), strongProbability: strongAnswerOf(run.logs).probability, strongMisleading: strongAnswerOf(run.logs).misleading, secondRound: secondRoundOf(run.logs), models: modelsOf(run.abTestPicks as Record<string, string> | null, cascadeOf(run.logs)), draftNote: trace.draftNote, draftSources: trace.draftSources, logFiles: [`logs/eval-${runId}/${row.id}.${sample}.json`], sourceChecks: sourceChecksOf(run.logs), sourceVerdict: trace.sourceVerdict, checkCostUsd: run.costUsd ?? 0, judgeCostUsd };
   } catch (err: any) {
     const outcome: CheckerOutcome = { type: "error", error: err?.message ?? String(err) };
     return { ...base, outcome, verdict: "error" };

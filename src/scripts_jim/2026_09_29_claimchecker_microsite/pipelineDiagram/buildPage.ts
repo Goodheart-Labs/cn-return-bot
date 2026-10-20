@@ -37,6 +37,22 @@ function extractionExample(): Example | null {
 const probabilityRun = runFiles.map((f) => JSON.parse(readFileSync(join(runsDir, f), "utf8")) as EvalRun).reverse().find((r) => r.probability?.rows.some((x) => x.id === "realistic-19"));
 const quickSample = probabilityRun?.probability?.rows.find((r) => r.id === "realistic-19")?.samples[0];
 
+const secondRoundSample = run?.checker?.rows.flatMap((r) => r.samples.map((sample) => ({ rowId: r.id, sample }))).filter((x) => x.sample.secondRound?.second).sort((a, b) => Number(b.sample.secondRound?.result === "note") - Number(a.sample.secondRound?.result === "note"))[0];
+const secondRoundExample: Example | null = secondRoundSample
+  ? (() => {
+      const { rowId, sample } = secondRoundSample;
+      const second = sample.secondRound!.second!;
+      const secondCheck = sample.sourceChecks?.find((c) => c.turn === 2);
+      return [
+        [`The first note of the check ${rowId}`, sample.secondRound!.first.note],
+        ["What the source verifier said about it", sample.secondRound!.first.reasoning],
+        ["The revised findings", sample.secondRound!.revisedFindings],
+        ["The second note, with its sources", `${second.note}\n\n${second.sources.join("\n")}`],
+        [`The second source check. The result was: ${sample.secondRound!.result}`, secondCheck?.output ? JSON.stringify(secondCheck.output, null, 1) : (second.error ?? "(not kept in this run)")],
+      ];
+    })()
+  : null;
+
 const checked = run?.checker?.rows.find((r) => r.id === EXAMPLE_ROW)?.samples[0];
 const example = {
   extraction: extractionExample(),
@@ -44,8 +60,10 @@ const example = {
   quick: quickSample?.findings ? ([[`The answer of the quick research for the Red Bull claim: probability ${Math.round((quickSample.probability ?? 0) * 100)}%`, quickSample.findings]] as Example) : null,
   research: checked?.research ? ([["The findings of the Berkeley check", checked.research]] as Example) : null,
   writer: checked?.draftNote ? ([["The note the writer drafted for the Berkeley claim", checked.draftNote]] as Example) : null,
+  secondRound: secondRoundExample,
   verifier: checked
     ? ([
+        ...(checked.sourceChecks?.at(-1)?.output ? ([["The verifier's answer, as JSON", JSON.stringify(checked.sourceChecks.at(-1)!.output, null, 1)]] as Example) : []),
         ["The source check verdict", checked.sourceVerdict ?? "(none)"],
         ...(checked.outcome.type === "note" ? ([["The note that was accepted, with its sources", `${checked.outcome.note}\n\n${checked.outcome.sources.map((s) => s.url).join("\n")}`]] as Example) : []),
       ] as Example)

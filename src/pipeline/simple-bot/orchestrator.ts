@@ -152,7 +152,7 @@ async function runGatesWithSecondRound(stage: WriterDone): Promise<PipelineOutco
   if (first.outcome.type !== "verification_failed" || !getBotConfig().second_round) return first.outcome;
 
   const log = getTweetLog();
-  log?.set("second_round.first", { findings: stage.findings, note: stage.noteText, reasoning: first.verification.reasoning });
+  log?.set("second_round.first", { findings: stage.findings, note: stage.noteText, sources: stage.sources, reasoning: first.verification.reasoning });
   const revised = await reviseResearch({
     userMessage: stage.userMessage,
     findings: stage.findings,

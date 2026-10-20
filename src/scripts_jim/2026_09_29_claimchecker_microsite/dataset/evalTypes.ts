@@ -159,11 +159,31 @@ export interface CascadeTrace {
   userMessage: string | null;
 }
 
+/** One run of the source verifier on a note: what it was given and what it answered. The second round has a second one. */
+export interface SourceCheckTrace {
+  turn: number;
+  /** The user message of the verifier: the note and the pages that were fetched for its sources. Null when the verifier was not called. */
+  input: string | null;
+  /** The verifier's answer as it was logged. Null when the verifier was not called. */
+  output: {
+    accepted: boolean;
+    reasoning: string;
+    good_sources: string[];
+    bad_sources: string[];
+    source_evaluations?: { url: string; verdict: "good" | "bad"; citations: { quote: string; explanation: string }[] }[];
+  } | null;
+  /** Whether each cited source could be opened. */
+  fetches: { url: string; fetched: boolean; whatCameBack?: string }[] | null;
+  /** Set when the verifier was not called, with the reason and the text of the sources as fetched. */
+  notRun: { reason: string; sources_as_fetched: string } | null;
+}
+
 /** What the second research round did, when a run on the second_round arm had its note rejected by the source verifier. */
 export interface SecondRoundTrace {
   /** The outcome of the second round: note, verification_failed, research_withdrew, writer_empty or unfetchable_sources. */
   result: string;
-  first: { findings: string; note: string; reasoning: string };
+  /** The first note and what the verifier said about it. The sources are missing in a run made before they were kept. */
+  first: { findings: string; note: string; sources?: string[]; reasoning: string };
   revisedFindings: string;
   /** What the second round wrote and what became of it. Missing in a run saved before it was kept. */
   second?: {
@@ -200,6 +220,8 @@ export interface CheckerSample {
   draftNote: string | null;
   /** Where the full logs of the check are published, relative to the page. A rerun from the writer on has the log of the research and the log of the rerun. */
   logFiles?: string[];
+  /** Every run of the source verifier in the check. Missing in a run saved before they were kept. */
+  sourceChecks?: SourceCheckTrace[];
   /** The source addresses of the drafted note. Missing in a run saved before they were kept. */
   draftSources?: string[];
   sourceVerdict: string | null;

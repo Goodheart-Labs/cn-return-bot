@@ -297,9 +297,10 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
 
   getTweetLog()?.set(`${logPrefix}.fetches`, fetches);
   if (totalNonTwitter > 0 && fetchedCount === 0) {
-    throw new UnfetchableSourcesError(
-      `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,
-    );
+    const reason = `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`;
+    // The verifier model is never called here, so the log says so and keeps what it would have been given.
+    getTweetLog()?.set(`${logPrefix}.not_run`, { reason, sources_as_fetched: sections });
+    throw new UnfetchableSourcesError(reason);
   }
 
   const verification = config.verifier_claim_based
