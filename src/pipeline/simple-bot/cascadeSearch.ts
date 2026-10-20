@@ -99,15 +99,11 @@ export async function runQuickSearch(userMessage: string, logKey: string = STEP.
   return result;
 }
 
-/** The search providers that ask for JSON in the prompt, which are the ones that can answer with the cascade's prompt. A post whose search model uses another provider keeps its own prompt and answer. */
-const MISLEADING_SEARCH_PROVIDERS: BotConfig["web_search"][] = ["native", "native_openai", "bundled", "openrouter_native"];
-
-/** The config of the stronger search: Sonnet 5.5 for a claim, the run's own search model for a post. */
+/** The config of the stronger search. For a claim it is Sonnet 5.5 answering yes or no to "is the claim misleading". A post keeps its own search model, prompt and answer. */
 function strongSearchConfig(): BotConfig {
   const config = getBotConfig();
-  const answer = config.commonnotes_pipeline || MISLEADING_SEARCH_PROVIDERS.includes(config.web_search) ? ({ search_answer: "misleading" } as const) : {};
-  const base = { ...config, ...answer, search_reasoning_effort: CASCADE_REASONING_EFFORT } as const;
-  return config.commonnotes_pipeline ? { ...base, search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native" as const } : base;
+  if (!config.commonnotes_pipeline) return { ...config, search_reasoning_effort: CASCADE_REASONING_EFFORT };
+  return { ...config, search_answer: "misleading", search_reasoning_effort: CASCADE_REASONING_EFFORT, search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native" };
 }
 
 /** The stronger search of the cascade: the regular search step on the stronger model. It answers the question of the cheap step as a yes or no, with the same prompt except that the cheap step is also told to avoid being pedantic. */

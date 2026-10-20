@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, spyOn, test } from "bun:test";
 import { DEFAULT_CONFIG, withBotConfig, type BotConfig } from "../ab-testing/botConfig";
 import { withCostTracker } from "../cost-tracking/costTracker";
-import { CLAUDE_SOURCE_URL_INSTRUCTION, SEARCH_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_CLAIM, SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, SEARCH_SYSTEM_PROMPT_MISLEADING, SEARCH_SYSTEM_PROMPT_PROBABILITY, withSourceUrlInstruction } from "../prompts/simple-bot/searchAgent";
+import { CLAUDE_SOURCE_URL_INSTRUCTION, SEARCH_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_CLAIM, SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, SEARCH_SYSTEM_PROMPT_PROBABILITY, withSourceUrlInstruction } from "../prompts/simple-bot/searchAgent";
 import * as jsonLlm from "../utils/jsonLlmCall";
 import { dispatchSearch, getSearchSystemPrompt } from "./searchDispatch";
 
@@ -20,7 +20,6 @@ describe("a search that answers whether the claim is misleading", () => {
 
   test("uses the misleading prompt for a claim and for a post", () => {
     expect(withBotConfig({ ...claimConfig, search_answer: "misleading" }, getSearchSystemPrompt)).toBe(SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING);
-    expect(withBotConfig({ ...claimConfig, commonnotes_pipeline: false, search_answer: "misleading" }, getSearchSystemPrompt)).toBe(SEARCH_SYSTEM_PROMPT_MISLEADING);
   });
 
   test("the misleading claim prompt asks for a boolean and does not tell the model to avoid being pedantic", () => {
@@ -52,7 +51,7 @@ describe("a search that answers whether the claim is misleading", () => {
 
 describe("the source URL instruction", () => {
   test("goes in front of the output format section of every research prompt", () => {
-    for (const prompt of [SEARCH_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_CLAIM, SEARCH_SYSTEM_PROMPT_PROBABILITY, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, SEARCH_SYSTEM_PROMPT_MISLEADING, SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING]) {
+    for (const prompt of [SEARCH_SYSTEM_PROMPT, SEARCH_SYSTEM_PROMPT_CLAIM, SEARCH_SYSTEM_PROMPT_PROBABILITY, SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING]) {
       const result = withSourceUrlInstruction(prompt);
       expect(result.indexOf(CLAUDE_SOURCE_URL_INSTRUCTION)).toBeGreaterThan(-1);
       expect(result.indexOf(CLAUDE_SOURCE_URL_INSTRUCTION)).toBeLessThan(result.indexOf("## Output format"));

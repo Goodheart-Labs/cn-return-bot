@@ -18,7 +18,6 @@ import {
   buildSearchSystemPrompt,
   SEARCH_SYSTEM_PROMPT_CLAIM,
   SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING,
-  SEARCH_SYSTEM_PROMPT_MISLEADING,
   SEARCH_RESPONSE_FORMAT,
   SEARCH_INLINE_RESPONSE_SCHEMA,
   SEARCH_PROMPTED_JSON_INSTRUCTION,
@@ -66,7 +65,7 @@ export function appendUrlCitations(findings: string, annotations: any[] | undefi
  *  all get the same treatment. */
 export function getSearchSystemPrompt(): string {
   const config = getBotConfig();
-  if (answersWithMisleading()) return config.commonnotes_pipeline ? SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING : SEARCH_SYSTEM_PROMPT_MISLEADING;
+  if (answersWithMisleading()) return SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING;
   // A claim from the everything pipeline is an excerpt plus a claim, not an X
   // post. It gets its own claim-checking prompt and skips the X-only assembly
   // below.
@@ -225,7 +224,7 @@ async function searchWithAnthropicNative(
   // and the Sonar path use the same workaround. Opus writes a reasoning
   // preamble before the JSON, so we extract the JSON object instead of parsing
   // the whole message.
-  const systemPrompt = `${withSourceUrlInstruction(getSearchSystemPrompt())}${promptedJsonInstruction()}`;
+  const systemPrompt = `${config.commonnotes_pipeline ? withSourceUrlInstruction(getSearchSystemPrompt()) : getSearchSystemPrompt()}${promptedJsonInstruction()}`;
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
   if (followUp) log?.set(`${STEP.search}.follow_up`, followUp);
 

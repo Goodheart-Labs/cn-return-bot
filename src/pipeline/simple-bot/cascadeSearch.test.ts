@@ -80,17 +80,11 @@ describe("runCascadingSearch", () => {
     expect(seen[0]).toMatchObject({ search_model: CASCADE_COMMONNOTES_STRONG_MODEL, web_search: "native", search_reasoning_effort: "medium", search_answer: "misleading" });
   });
 
-  test("a post in between escalates to the search model the run was configured with, answering whether the post is misleading", async () => {
+  test("a post in between escalates to the search model the run was configured with, with its own prompt and answer", async () => {
     weakAnswers({ misleading_probability: 0.5 });
     const { seen } = strongSearch();
     await run(xConfig);
-    expect(seen[0]).toMatchObject({ search_model: "anthropic/claude-opus-5", web_search: "native", search_reasoning_effort: "medium", search_answer: "misleading" });
-  });
-
-  test("a post whose search provider cannot answer in the prompt keeps its own answer", async () => {
-    weakAnswers({ misleading_probability: 0.5 });
-    const { seen } = strongSearch();
-    await run({ ...xConfig, search_model: "x-ai/grok-4.6", web_search: "native_grok" });
+    expect(seen[0]).toMatchObject({ search_model: "anthropic/claude-opus-5", web_search: "native", search_reasoning_effort: "medium" });
     expect(seen[0]?.search_answer).toBeUndefined();
   });
 

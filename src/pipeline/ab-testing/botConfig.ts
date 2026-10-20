@@ -129,8 +129,8 @@ export interface BotConfig {
    * What the search step answers. By default it answers with the yes or no
    * field correction_needed. With "misleading" it uses the cascade's research
    * prompt and answers with the yes or no field misleading: whether the claim
-   * is misleading in any way. Only the providers that ask for JSON in the
-   * prompt support "misleading". The cascade's stronger search sets it.
+   * is misleading in any way. The cascade's stronger search sets it for
+   * Common Notes claims only. X posts keep the default.
    */
   search_answer?: "correction_needed" | "misleading";
   /**

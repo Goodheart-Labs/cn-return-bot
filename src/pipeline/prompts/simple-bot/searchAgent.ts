@@ -118,9 +118,6 @@ function withMisleadingAnswer(probabilityPrompt: string): string {
 /** The claim prompt for the stronger model of the cascade. The cheap model is told to avoid being pedantic, and the stronger model was too lenient with that sentence. */
 export const SEARCH_SYSTEM_PROMPT_CLAIM_MISLEADING = withMisleadingAnswer(SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY).replace(PEDANTIC_SENTENCE, "");
 
-/** The same yes or no question for an X post. */
-export const SEARCH_SYSTEM_PROMPT_MISLEADING = withMisleadingAnswer(SEARCH_SYSTEM_PROMPT_PROBABILITY);
-
 /** Appends the ground-truth article of the misinfo pre-pass to the search
  *  prompt. `referenceBlock` carries that article while a pre-pass is active, and
  *  is null in the regular pipeline. The anti-pedantic test closed on 2026-08-06
@@ -140,7 +137,7 @@ ${params.referenceBlock}`;
 
 const OUTPUT_FORMAT_HEADING = "## Output format";
 
-/** Added to every Claude research call. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
+/** Added to the Claude research calls of Common Notes. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
 export const CLAUDE_SOURCE_URL_INSTRUCTION =
   "When you think the claim is misleading in some way, you have to use search and include at least one correct source URL in the findings. Even if you don't need it, we need it.";
 
