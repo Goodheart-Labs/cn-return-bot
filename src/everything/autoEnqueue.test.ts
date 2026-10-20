@@ -9,7 +9,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { unprocessedEntries, topPostEntries, walkToFirstWithWork } = await import("./autoEnqueue");
+const { unprocessedEntries, topPostEntries, walkToFirstUnchecked } = await import("./autoEnqueue");
 
 const feed = { project: "test", type: "substack" as const, url: "https://test.substack.com" };
 const entry = (url: string) => ({ source: "substack" as const, url, matchKey: url, label: url });
@@ -72,25 +72,22 @@ describe("topPostEntries", () => {
 /* Covers the walk itself: go down the ranking from the top and stop at the
  * first creator with anything unchecked. A creator that cannot be listed is
  * passed over and counted separately. */
-describe("walkToFirstWithWork", () => {
-  const creator = (name: string, unchecked: number | null, waitingRetry: string | null = null) => ({ name, unchecked, waitingRetry });
-  /** The injected walk: answers each creator's unchecked posts and waiting
-   *  retry, or null for a creator whose feed will not list, and records who
-   *  was asked. */
+describe("walkToFirstUnchecked", () => {
+  const creator = (name: string, unchecked: number | null) => ({ name, unchecked });
+  /** The injected walk: answers each creator's unchecked posts, or null for a
+   *  creator whose feed will not list, and records who was asked. */
   const walker = () => {
     const asked: string[] = [];
-    const walk = async (c: ReturnType<typeof creator>) => {
+    const walk = async (c: { name: string; unchecked: number | null }) => {
       asked.push(c.name);
-      return c.unchecked === null
-        ? null
-        : { unchecked: Array.from({ length: c.unchecked }, (_, i) => `${c.name}-${i}`), waitingRetry: c.waitingRetry };
+      return c.unchecked === null ? null : { unchecked: Array.from({ length: c.unchecked }, (_, i) => `${c.name}-${i}`) };
     };
     return { asked, walk };
   };
 
   test("the walk stops at the first creator with something unchecked, and nobody below is asked", async () => {
     const { asked, walk } = walker();
-    const result = await walkToFirstWithWork([creator("a", 0), creator("b", 0), creator("c", 2), creator("d", 5)], walk);
+    const result = await walkToFirstUnchecked([creator("a", 0), creator("b", 0), creator("c", 2), creator("d", 5)], walk);
     expect(asked).toEqual(["a", "b", "c"]);
     expect(result.found?.creator.name).toBe("c");
     expect(result.found?.index).toBe(2);
@@ -100,25 +97,16 @@ describe("walkToFirstWithWork", () => {
 
   test("when everyone is caught up the whole ranking is walked and nothing is found", async () => {
     const { asked, walk } = walker();
-    const result = await walkToFirstWithWork([creator("a", 0), creator("b", 0)], walk);
+    const result = await walkToFirstUnchecked([creator("a", 0), creator("b", 0)], walk);
     expect(asked).toEqual(["a", "b"]);
     expect(result.found).toBeNull();
   });
 
   test("a creator whose feed will not list is passed over and counted", async () => {
     const { walk } = walker();
-    const result = await walkToFirstWithWork([creator("dead", null), creator("b", 1)], walk);
+    const result = await walkToFirstUnchecked([creator("dead", null), creator("b", 1)], walk);
     expect(result.unlisted).toBe(1);
     expect(result.walked.map((c) => c.name)).toEqual(["b"]);
     expect(result.found?.creator.name).toBe("b");
-  });
-
-  test("a waiting retry stops the walk at its creator, ahead of new posts by lower creators", async () => {
-    const { asked, walk } = walker();
-    const result = await walkToFirstWithWork([creator("a", 0), creator("b", 0, "b-retry"), creator("c", 3)], walk);
-    expect(asked).toEqual(["a", "b"]);
-    expect(result.found?.creator.name).toBe("b");
-    expect(result.found?.walk.unchecked).toHaveLength(0);
-    expect(result.found?.walk.waitingRetry).toBe("b-retry");
   });
 });

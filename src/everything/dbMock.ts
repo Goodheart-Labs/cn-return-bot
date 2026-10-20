@@ -6,7 +6,7 @@
  *  order, which is exactly what happened in CI. Every file installs this same
  *  complete mock and steers its behaviour through `dbState`. */
 
-import type { CreatorVisitScore, WaitingRetry } from "./db";
+import type { CreatorVisitScore } from "./db";
 
 export const dbState = {
   /** What fetchItemUrlsIn / fetchItemUrlsContaining answer. */
@@ -23,8 +23,6 @@ export const dbState = {
   }[],
   /** What fetchCreatorVisitScores answers: one row per creator. */
   creatorVisitScores: [] as CreatorVisitScore[],
-  /** What fetchWaitingRetries answers. */
-  waitingRetries: [] as WaitingRetry[],
   /** What fetchAllTopPosts answers. */
   topPosts: [] as {
     feed_url: string;
@@ -54,7 +52,6 @@ export const resetDbState = () => {
   dbState.existingItem = null;
   dbState.creatorProjects = [];
   dbState.creatorVisitScores = [];
-  dbState.waitingRetries = [];
   dbState.topPosts = [];
   dbState.feedPacing = {
     dbNow: new Date("2026-09-15T00:00:00Z"),
@@ -104,7 +101,6 @@ export const dbMock = () => ({
   findItemForPageUrl: () => Promise.resolve(dbState.existingItem),
   promoteItemToWholePage: record("promoteItemToWholePage"),
   raiseItemPriority: record("raiseItemPriority"),
-  fetchWaitingRetries: () => Promise.resolve(dbState.waitingRetries),
   requeueItem: record("requeueItem"),
   resolveNoteRequest: record("resolveNoteRequest"),
   insertQueuedItem: record("insertQueuedItem"),
