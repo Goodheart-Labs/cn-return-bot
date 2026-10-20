@@ -16,7 +16,6 @@ import {
   feedLength,
   filterNotes,
   filterValues,
-  firstNotes,
   improvementsByOriginal,
   itemsWithNotes,
   notesByItem,
@@ -170,7 +169,7 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   } else {
     const ordered = contentOrder(itemsWithNotes(items.values(), byItem), byItem, noteSet.notes);
     const filtered = filterNotes(ordered, filters, viewsOf, rankTally);
-    const sections = arrangeFeed(filtered, order, rankTally);
+    const sections = arrangeFeed(filtered, order, rankTally, new Date());
     filtersButton = (
       <NoteFiltersButton filters={filters} onChange={setFilters} largest={largestValues(ordered, viewsOf, rankTally)} matchingNotes={filtered.length} />
     );
@@ -193,7 +192,7 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
       <p className="text-sm text-fg-secondary">No notes match these filters.</p>
     ) : (
       <>
-        <NoteFeed sections={firstNotes(sections, shownCount)} renderCard={renderCard} />
+        <NoteFeed sections={sections} limit={shownCount} renderCard={renderCard} />
         {shownCount < feedLength(sections) && <div ref={setSentinel} aria-hidden="true" />}
       </>
     );

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { NoteRow } from "@cn/core/types";
-import { arrangeFeed, contentOrder, DEFAULT_NOTE_FILTERS, feedLength, filterNotes, firstNotes, mergeFeedNotes, notesByItem, rankFeed, tallyOf } from "./feed";
+import { arrangeFeed, contentOrder, DEFAULT_NOTE_FILTERS, feedLength, filterNotes, firstNotes, mergeFeedNotes, notesByItem, rankFeed, tallyOf, type FeedSection } from "./feed";
 
 describe("mergeFeedNotes", () => {
   test("leads with three helpful notes, then alternates starting with needs-ratings", () => {
@@ -78,27 +78,27 @@ const ids = (notes: NoteRow[]) => notes.map((n) => n.id);
 
 describe("rankFeed", () => {
   test("puts helpful notes first, most certain first, and mixes in notes that need ratings", () => {
-    const feed = rankFeed([note("unrated"), note("helpful", { h: 3 }), note("very-helpful", { h: 6 })], tallyOf);
-    expect(ids(feed.leading)).toEqual(["very-helpful", "helpful", "unrated"]);
+    const [leading] = rankFeed([note("unrated"), note("helpful", { h: 3 }), note("very-helpful", { h: 6 })], tallyOf);
+    expect(ids(leading!.notes)).toEqual(["very-helpful", "helpful", "unrated"]);
   });
 
   test("sends unhelpful notes to their own section", () => {
-    const feed = rankFeed([note("bad", { n: 3 }), note("unrated")], tallyOf);
-    expect(ids(feed.leading)).toEqual(["unrated"]);
-    expect(ids(feed.unhelpful)).toEqual(["bad"]);
+    const [leading, unhelpful] = rankFeed([note("bad", { n: 3 }), note("unrated")], tallyOf);
+    expect(ids(leading!.notes)).toEqual(["unrated"]);
+    expect(ids(unhelpful!.notes)).toEqual(["bad"]);
   });
 
   test("drops a note on edited source text to the bottom, whatever its rating", () => {
-    const feed = rankFeed([note("stale", { h: 6 }, {}, { updated_quote: "new wording" }), note("unrated")], tallyOf);
-    expect(ids(feed.leading)).toEqual(["unrated"]);
-    expect(ids(feed.staleSource)).toEqual(["stale"]);
+    const [leading, , staleSource] = rankFeed([note("stale", { h: 6 }, {}, { updated_quote: "new wording" }), note("unrated")], tallyOf);
+    expect(ids(leading!.notes)).toEqual(["unrated"]);
+    expect(ids(staleSource!.notes)).toEqual(["stale"]);
   });
 
   test("ranks by the tallies it is given, not the live ones", () => {
     const frozen = new Map([["now-helpful", { helpful_count: 0, somewhat_helpful_count: 0, not_helpful_count: 0 }]]);
-    const feed = rankFeed([note("now-helpful", { h: 6 })], (n) => frozen.get(n.id) ?? tallyOf(n));
-    expect(feed.unhelpful).toEqual([]);
-    expect(ids(feed.leading)).toEqual(["now-helpful"]);
+    const [leading, unhelpful] = rankFeed([note("now-helpful", { h: 6 })], (n) => frozen.get(n.id) ?? tallyOf(n));
+    expect(unhelpful!.notes).toEqual([]);
+    expect(ids(leading!.notes)).toEqual(["now-helpful"]);
   });
 });
 
@@ -120,39 +120,60 @@ describe("arrangeFeed", () => {
   const unrated = note("unrated", {}, { created_at: "2026-09-02T00:00:00Z" });
   const helpful = note("helpful", { h: 3 }, { created_at: "2026-09-01T00:00:00Z" });
 
+  // Noon on 2026-10-20 in the test machine's own time zone, like the reader's.
+  const now = new Date(2026, 9, 20, 12);
+  /** The bands that hold notes, as their labels and note ids. */
+  const bands = (sections: FeedSection[]) => sections.filter((s) => s.notes.length > 0).map((s) => [s.label, ids(s.notes)]);
+
   test("the mixed order is the project page's order, with its bands", () => {
-    expect(arrangeFeed([bad, stale, unrated, helpful], "mixed", tallyOf)).toEqual(rankFeed([bad, stale, unrated, helpful], tallyOf));
+    expect(arrangeFeed([bad, stale, unrated, helpful], "mixed", tallyOf, now)).toEqual(rankFeed([bad, stale, unrated, helpful], tallyOf));
   });
 
-  test("the recent order lists every note newest first, without bands", () => {
-    const feed = arrangeFeed([helpful, stale, unrated, bad], "recent", tallyOf);
-    expect(ids(feed.leading)).toEqual(["bad", "unrated", "helpful", "stale"]);
-    expect(feed.unhelpful).toEqual([]);
-    expect(feed.staleSource).toEqual([]);
+  test("the recent order lists every note newest first, under one band per span of time", () => {
+    const at = (id: string, ...date: [number, number, number, number]) => note(id, {}, { created_at: new Date(...date).toISOString() });
+    const notes = [
+      at("this-morning", 2026, 9, 20, 1),
+      at("last-night", 2026, 9, 19, 23),
+      at("six-days-back", 2026, 9, 14, 0),
+      at("seven-days-back", 2026, 9, 13, 23),
+      at("29-days-back", 2026, 8, 21, 0),
+      at("last-year", 2025, 9, 21, 0),
+      at("long-ago", 2025, 9, 20, 23),
+    ];
+    expect(bands(arrangeFeed([...notes].reverse(), "recent", tallyOf, now))).toEqual([
+      ["Today", ["this-morning"]],
+      ["Yesterday", ["last-night"]],
+      ["Last 7 days", ["six-days-back"]],
+      ["Last 30 days", ["seven-days-back", "29-days-back"]],
+      ["Last 365 days", ["last-year"]],
+      ["Older", ["long-ago"]],
+    ]);
+  });
+
+  test("the recent order breaks a tie in age by content order", () => {
+    expect(bands(arrangeFeed([helpful, stale, unrated, bad], "recent", tallyOf, now))).toEqual([["Last 365 days", ["bad", "unrated", "helpful", "stale"]]]);
   });
 
   test("the helpful order lists every note by its chance of being helpful, without bands", () => {
-    const feed = arrangeFeed([bad, unrated, helpful, stale], "helpful", tallyOf);
-    expect(ids(feed.leading)).toEqual(["stale", "helpful", "unrated", "bad"]);
-    expect(feed.unhelpful).toEqual([]);
-    expect(feed.staleSource).toEqual([]);
+    expect(bands(arrangeFeed([bad, unrated, helpful, stale], "helpful", tallyOf, now))).toEqual([[null, ["stale", "helpful", "unrated", "bad"]]]);
   });
 
   test("the helpful order ranks by the tallies it is given, not the live ones", () => {
     const frozen = new Map([["helpful", { helpful_count: 0, somewhat_helpful_count: 0, not_helpful_count: 0 }]]);
-    const feed = arrangeFeed([unrated, helpful, stale], "helpful", (n) => frozen.get(n.id) ?? tallyOf(n));
-    expect(ids(feed.leading)).toEqual(["stale", "unrated", "helpful"]);
+    const feed = arrangeFeed([unrated, helpful, stale], "helpful", (n) => frozen.get(n.id) ?? tallyOf(n), now);
+    expect(bands(feed)).toEqual([[null, ["stale", "unrated", "helpful"]]]);
   });
 });
 
 describe("firstNotes", () => {
-  const sections = { leading: [note("l1"), note("l2")], unhelpful: [note("u1"), note("u2")], staleSource: [note("s1")] };
+  const sections = [
+    { label: null, notes: [note("l1"), note("l2")] },
+    { label: "Unhelpful notes", notes: [note("u1"), note("u2")] },
+    { label: "Source has since changed", notes: [note("s1")] },
+  ];
 
-  test("takes the leading notes first, then the unhelpful ones, then the stale ones", () => {
-    const first = firstNotes(sections, 3);
-    expect(ids(first.leading)).toEqual(["l1", "l2"]);
-    expect(ids(first.unhelpful)).toEqual(["u1"]);
-    expect(first.staleSource).toEqual([]);
+  test("takes the bands' notes in the order they render", () => {
+    expect(firstNotes(sections, 3).map((s) => ids(s.notes))).toEqual([["l1", "l2"], ["u1"], []]);
     expect(feedLength(firstNotes(sections, 5))).toBe(5);
   });
 
