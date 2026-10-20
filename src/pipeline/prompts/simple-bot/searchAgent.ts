@@ -118,6 +118,10 @@ A reference document on this post's topic is provided below. Treat it as ground 
 ${params.referenceBlock}`;
 }
 
+/** Added to every Claude research call. Claude skips the web search when it feels sure of the answer, and then the findings have no source for the writer and the source verifier. */
+export const CLAUDE_SOURCE_URL_INSTRUCTION =
+  "When you think the claim is misleading in some way, please include at least one correct source URL. Even if you don't need it, we need it.";
+
 // This is the strict OpenAI-style json_schema. Anthropic models accept it
 // through OpenRouter.
 export const SEARCH_RESPONSE_FORMAT = jsonSchemaResponseFormat("simple_bot_search", {

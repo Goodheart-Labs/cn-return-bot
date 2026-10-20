@@ -1,5 +1,5 @@
 /**
- * Takes a saved checker run and runs again every check in which the large model did the research.
+ * Takes a saved checker run and runs again every check in which the large model did the research (with --without-url, only those whose research wrote no https:// link).
  * Every other sample is copied over unchanged. The result is saved as a new run.
  * The cheap research runs again too, so a rerun check can end up on a different path than before.
  *
@@ -27,6 +27,10 @@ function arg(name: string): string | undefined {
 }
 
 const researchedByLargeModel = (sample: CheckerSample) => !!sample.cascade && LARGE_MODEL_DECISIONS.includes(sample.cascade.decision);
+const wroteNoUrl = (sample: CheckerSample) => !sample.research?.includes("https://");
+
+/** With --without-url only the large-model checks whose research findings have no link are run again. */
+const selectedForRerun = (sample: CheckerSample) => researchedByLargeModel(sample) && (!process.argv.includes("--without-url") || wroteNoUrl(sample));
 
 async function main() {
   if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
@@ -47,7 +51,7 @@ async function main() {
       const index = datapoints.indexOf(datapoint);
       const samples = await Promise.all(
         row.samples.map((sample, number) => {
-          if (!researchedByLargeModel(sample)) return sample;
+          if (!selectedForRerun(sample)) return sample;
           rerun++;
           return queue.add(() => checkSample(datapoint, row.referenceNotes, runId, index, number, picks)) as Promise<CheckerSample>;
         }),
@@ -58,7 +62,7 @@ async function main() {
     }),
   );
   evaluation.mockRestore();
-  const rerunCost = rows.flatMap((r) => r.samples).filter((s) => s.cascade && LARGE_MODEL_DECISIONS.includes(s.cascade.decision));
+  const stillLargeModel = rows.flatMap((r) => r.samples).filter(researchedByLargeModel);
   const run: EvalRun = {
     ...source,
     id: runId,
@@ -68,7 +72,7 @@ async function main() {
   };
   mkdirSync(RESULTS_DIR, { recursive: true });
   writeFileSync(join(RESULTS_DIR, `${runId}.json`), JSON.stringify(run, null, 1));
-  console.log(`Saved evalRuns/${runId}.json. ${rerun} checks were rerun, ${rerunCost.length} of the saved samples are on the large-model path now.`);
+  console.log(`Saved evalRuns/${runId}.json. ${rerun} checks were rerun, ${stillLargeModel.length} of the saved samples are on the large-model path now.`);
   console.log(buildEvalSetsPage());
 }
 

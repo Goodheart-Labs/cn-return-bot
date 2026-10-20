@@ -34,10 +34,10 @@ import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type P
 import { extractionModels } from "./model";
 import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
 
-const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
-  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading in some way. When in doubt, choose this type. Also give "claims", as described below.`,
+export const PASSAGE_TYPE_DESCRIPTIONS: Record<(typeof PASSAGE_TYPES)[number], string> = {
+  [STATEMENT_TYPE]: `a statement about the world where there is some chance that a neutral expert on its topic could find it misleading in some way. Things might be worth checking and that are possible to check. Also give "claims", as described below.`,
   [FORECAST_TYPE]: `says what will or might happen in the future`,
-  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Also give "why": a few words on what the passage is (stay maximally concise).`,
+  [OTHER_TYPE]: `everything else (Large parts of articles and scripts do not fit into the above categories). Statements that you are very confident are true from your general knowledge. Things that are not worth checking or not possible to check e.g. parts of personal stories. Also give "why": a few words on what the passage is (stay maximally concise).`,
 };
 
 export interface ExtractionOptions {

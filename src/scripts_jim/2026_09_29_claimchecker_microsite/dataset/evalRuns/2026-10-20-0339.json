@@ -1,0 +1,1015 @@
+{
+ "id": "2026-10-20-0339",
+ "label": "Factory floor, new statement and other wording, example in brackets (production wording)",
+ "createdAt": "2026-10-20T03:40:00.078Z",
+ "commit": "cb603906 with uncommitted changes",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks, search step: precheck",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 3,
+   "checker": 0
+  }
+ },
+ "rowIds": [
+  "memoir-factory-floor"
+ ],
+ "extractor": {
+  "samples": 3,
+  "passAt": 2,
+  "rows": [],
+  "chunkRuns": [],
+  "unlabelled": [
+   {
+    "id": "memoir-factory-floor",
+    "title": "My Year On A Factory Floor Assembly Line",
+    "url": "https://aella.substack.com/p/my-year-on-a-factory-floor-assembly",
+    "productionClaims": 104,
+    "chunks": [
+     {
+      "chunkIndex": 1,
+      "chunkChars": 11869,
+      "passages": [
+       {
+        "text": "When I was 19, I spent a year assembling electrical relays on a factory floor for $10/hr.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I was pretty excited to get the job.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I’d been applying to much worse - I remember looking at at a craigslist ad for a sewage worker, which included a warning that it might be pretty gross.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I applied for that too.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Knowingless is a reader-supported publication.",
+        "type": "statement",
+        "claims": [
+         "Knowingless is a publication supported by its readers."
+        ]
+       },
+       {
+        "text": "To receive new posts and support my work, consider becoming a free or paid subscriber.",
+        "type": "other",
+        "why": "Subscription request",
+        "claims": []
+       },
+       {
+        "text": "I really needed money.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I was so poor I going hungry, would scrape change off the street for meals.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I remember when touring a cheap room in northern Idaho to rent in a house full of strangers, they showed me the fridge, and I asked if people ever ate each other’s leftovers.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "They reassured me no, of course nobody would touch your food, and I was disappointed.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "That’s not what I had been trying to ask.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I’d grown up in a very isolated, borderline-cult type of world where my parents had made it clear that they’d give me no financial assistance once I left home.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Once you’re 18, you’re on your own, get a job, support yourself.",
+        "type": "other",
+        "why": "Reported parental expectation",
+        "claims": []
+       },
+       {
+        "text": "It didn’t even occur to me to let them know I was going hungry; I just figured that’s what happened to people when you were an adult.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "College wasn’t viable to me; I’d enrolled briefly but got kicked out after a few months once the finances didn’t work out.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "A combination of my being homeschooled my entire life (weird transcripts), my parents making just too much money for me to qualify for financial aid while simultaneously refusing to cosign any loans at all, meant my path forward was not going to be one of education.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "So when Schweitzer Engineering Labs called to tell me I got the assembly line job at their Pullman manufacturing location, I was thrilled.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "It paid a full ten dollars an hour (in 2011).",
+        "type": "statement",
+        "claims": [
+         "In 2011, the assembly-line job at Schweitzer Engineering Labs' Pullman manufacturing location paid the author $10 per hour."
+        ]
+       },
+       {
+        "text": "My last job, shelving books at the Nampa public library, had been $7.25 an hour.",
+        "type": "statement",
+        "claims": [
+         "The author's previous job shelving books at the Nampa Public Library paid $7.25 per hour."
+        ]
+       },
+       {
+        "text": "And the assembly line job was indoors and I didn’t have to handle any poop!",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Amazing.",
+        "type": "other",
+        "why": "Personal reaction",
+        "claims": []
+       },
+       {
+        "text": "They said to show up at ~7am for training.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I’d thought jobs usually started at 8am, and was disappointed that it was so early.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "But I was grateful to have a job at all, and I was an adult now and I knew being an adult was supposed to be very difficult, so I said ‘okay’ and showed up at 7.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "They put me and other new hires in a little room and we learned about the history of the company and how electrical relays worked and how the manufacturing floor functioned and then they showed us what all the tools were, how to screw and unscrew things, how to solder, etc.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I liked learning things and I had a great time.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I was determined to do awesome and I paid attention and tried super hard.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "After a few days training was over, I passed their mini tests with flying colors, and they said great - show up tomorrow at 6:30am.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I was oh wow.",
+        "type": "other",
+        "why": "Personal reaction",
+        "claims": []
+       },
+       {
+        "text": "That’s kinda early.",
+        "type": "other",
+        "why": "Personal reaction",
+        "claims": []
+       },
+       {
+        "text": "They were like oh yeah right my bad, actually you’re on mandatory overtime, work starts at 5:30am.",
+        "type": "statement",
+        "claims": [
+         "After the author's training, the employer told the author that the job required mandatory overtime and that work would start at 5:30 a.m."
+        ]
+       },
+       {
+        "text": "I shortly find out that it’s only sometimes 5:30; much of my time working there required us clocking in before 5am.",
+        "type": "statement",
+        "claims": [
+         "During much of the author's employment at Schweitzer Engineering Labs' Pullman manufacturing location, employees were required to clock in before 5 a.m."
+        ]
+       },
+       {
+        "text": "Oh, and you have to work Saturdays.",
+        "type": "statement",
+        "claims": [
+         "The author was required to work Saturdays at the Pullman manufacturing location."
+        ]
+       },
+       {
+        "text": "Sometimes if we’re really strapped, you need to come in on Sunday too.",
+        "type": "statement",
+        "claims": [
+         "When the workplace was short-staffed, employees at the Pullman manufacturing location sometimes had to work Sundays."
+        ]
+       },
+       {
+        "text": "I lived 22 minutes away, so I spent my 19th year on this planet waking up at ~4:15am, getting home at 3:30pm, and going to sleep at 8pm, 6-7 days a week.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I got assigned to a section near the end, where we put the relays into the metal boxes and wired then up.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Everything was on the same huge floor, the units just slowly flowed down the line and got shipped out the butt end of the building.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "There were no windows visible to us.",
+        "type": "statement",
+        "claims": [
+         "The section of the manufacturing floor where the author worked had no windows visible to its workers."
+        ]
+       },
+       {
+        "text": "When you arrive you get lockers where you put your stuff, and you have a little blue antistatic jacket/overcoat thing, and you put on special gloves and goggles and have to de-electrify yourself by plugging a wire from your coat into the wall.",
+        "type": "statement",
+        "claims": [
+         "Workers at the author's manufacturing workplace used lockers, blue antistatic coats, gloves, goggles, and a wire connected from the coat to a wall outlet to discharge static electricity."
+        ]
+       },
+       {
+        "text": "Everything smelled SO specific, it’s hard to describe - like rubber and metal and other stuff I don’t have a term for.",
+        "type": "other",
+        "why": "Personal sensory recollection",
+        "claims": []
+       },
+       {
+        "text": "I was determined to have a good time.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I believed happiness was a choice, and if I just worked hard enough and was good and tried that things would go okay.",
+        "type": "other",
+        "why": "Personal belief",
+        "claims": []
+       },
+       {
+        "text": "I wanted to make everyone’s lives better, so I was annoyingly cheerful.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Just downright homeschool-levels of goofy.",
+        "type": "other",
+        "why": "Personal characterization",
+        "claims": []
+       },
+       {
+        "text": "The units got passed down the floor on trays and these rubber pads.",
+        "type": "statement",
+        "claims": [
+         "At the author's workplace, units moved down the manufacturing floor on trays and rubber pads."
+        ]
+       },
+       {
+        "text": "When I had a little downtime (which was rare and inadvised, they told us strictly that you should be finding something to do nonstop.",
+        "type": "statement",
+        "claims": [
+         "Managers at the author's workplace instructed workers to find tasks to do continuously and treated downtime as inadvisable."
+        ]
+       },
+       {
+        "text": "If you are waiting for another assembler to finish their unit to pass to you, you should start immediately cleaning), I would scratch little cartoons or messages or silly things into the rubber pads.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "They were very superficial and hard to see, you had to just catch the light reflecting off of them at the right angle to notice, and if you rub it really hard it fades away.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I did this for weeks.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "One day I came in and my team was in a special meeting, a rare huddle.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "All the teams on the entire floor were in their own huddles.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "They gravely told us that someone had been VANDALIZING the equipment, and that they needed to find out who it is and that terrible vandal will have to replace everything - many thousands of dollars.",
+        "type": "statement",
+        "claims": [
+         "Managers at the author's workplace told employees that equipment had been vandalized, that they were trying to identify the person responsible, and that the person would have to pay for replacement equipment costing many thousands of dollars."
+        ]
+       },
+       {
+        "text": "I was horrified and filled with shame.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "The next day I went to a company computer and emailed someone as high up as I could find (I think possibly the CEO?) admitting it was me and I’m sorry and I don’t know how I’ll be able to pay for it but I can try somehow, maybe take it out of my wages.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I never heard back; probably it got caught in some filter meant to prevent the plebians from reaching the consuls.",
+        "type": "other",
+        "why": "Personal recollection and speculation",
+        "claims": []
+       },
+       {
+        "text": "I did this on a break.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "We got two legally-mandated 15 minute breaks (in addition to lunch).",
+        "type": "statement",
+        "claims": [
+         "The author's workplace provided two 15-minute rest breaks in addition to a meal break, which the author says were legally required."
+        ]
+       },
+       {
+        "text": "It was a big floor, and took a few minutes to walk into the break room, so the actual breaks were closer to like 9 minutes.",
+        "type": "statement",
+        "claims": [
+         "At the author's workplace, walking to the break room reduced the time available for a break to about nine minutes."
+        ]
+       },
+       {
+        "text": "The lunches were generous; we got a full 45 minutes or hour, I forget.",
+        "type": "statement",
+        "claims": [
+         "Employees at the author's workplace received lunch breaks lasting approximately 45 to 60 minutes."
+        ]
+       },
+       {
+        "text": "They gave us free lunches on Fridays, where the entire company piled into the big special lunch room and we got some kind of presentation.",
+        "type": "statement",
+        "claims": [
+         "The author's employer provided free Friday lunches for employees, accompanied by presentations in a large lunch room."
+        ]
+       },
+       {
+        "text": "There I got to see the other people who worked at the factory - not the assemblers, but the engineers, and the managers, and marketers, and whoever else.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I’d watch them longingly.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I really wanted to be one of those.",
+        "type": "other",
+        "why": "Personal aspiration",
+        "claims": []
+       },
+       {
+        "text": "I had this idea that if I just worked really hard and really well on the factory floor, that eventually I could become one of them.",
+        "type": "other",
+        "why": "Personal belief",
+        "claims": []
+       },
+       {
+        "text": "I had some vague belief that I had a lot of potential.",
+        "type": "other",
+        "why": "Personal belief",
+        "claims": []
+       },
+       {
+        "text": "I was vibrating with vision and an overactive mind.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I thought I can do what they do but I have no idea how to get there.",
+        "type": "other",
+        "why": "Personal thought",
+        "claims": []
+       },
+       {
+        "text": "Eventually I figured out this wasn’t how it worked.",
+        "type": "other",
+        "why": "Personal realization",
+        "claims": []
+       },
+       {
+        "text": "The company advertised some educational program for assemblers to turn into brain people, but I couldn’t afford it.",
+        "type": "statement",
+        "claims": [
+         "The author's employer advertised an educational program intended to help assemblers move into professional or technical roles, but the author could not afford to participate."
+        ]
+       },
+       {
+        "text": "I kept meeting coworkers who’d been on the assembly line floor for decades.",
+        "type": "statement",
+        "claims": [
+         "The author met coworkers who had worked on the assembly line for decades."
+        ]
+       },
+       {
+        "text": "After many months I finally get pulled into a manager’s office for a performance review and they give me a 25 cent raise.",
+        "type": "statement",
+        "claims": [
+         "After many months at the job, the author's manager gave the author a 25-cent raise following a performance review."
+        ]
+       },
+       {
+        "text": "I slowly lost hope.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I really tried to hold on, but exhaustion made my fingers start slipping.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I was tired all the time.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "I got a friend to buy me some alcohol (19 years old remember) and started drinking many nights, which led to me being hungover and nonfunctional during the work hours.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I hateed the work.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "It was a horrible no-good kind of work.",
+        "type": "other",
+        "why": "Personal opinion",
+        "claims": []
+       },
+       {
+        "text": "You couldn’t zone out and just do autopilot, because you had to follow a set of instructions with slight variations, that change a little each time.",
+        "type": "statement",
+        "claims": [
+         "The author's assembly work required following instructions that varied slightly between tasks, preventing workers from doing the job entirely on autopilot."
+        ]
+       },
+       {
+        "text": "You had to pay attention.",
+        "type": "statement",
+        "claims": [
+         "The author's assembly work required sustained attention."
+        ]
+       },
+       {
+        "text": "But the attention you paid was not interesting; it was ongoing, it was relentless, it was stupid.",
+        "type": "other",
+        "why": "Personal opinion",
+        "claims": []
+       },
+       {
+        "text": "My mind wasn’t mine, it was just barely pulled over some threshhold into a mind-killing, mundane amount of repetition.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "I was bad at it.",
+        "type": "other",
+        "why": "Personal assessment",
+        "claims": []
+       },
+       {
+        "text": "Before this I’d tended to be naturally good at almost everything I tried.",
+        "type": "other",
+        "why": "Personal assessment",
+        "claims": []
+       },
+       {
+        "text": "I learned very fast.",
+        "type": "other",
+        "why": "Personal assessment",
+        "claims": []
+       },
+       {
+        "text": "But here I made more mistakes than almost anyone else.",
+        "type": "statement",
+        "claims": [
+         "The author made more mistakes in the assembly job than nearly all of the author's coworkers."
+        ]
+       },
+       {
+        "text": "They tracked mistakes; people spot-checked your work, and you got an anonymized code and you could go look at a leaderboard to see where your code ranked among others.",
+        "type": "statement",
+        "claims": [
+         "The author's employer tracked assembly errors through spot checks and displayed workers' relative performance using anonymized codes on a leaderboard."
+        ]
+       },
+       {
+        "text": "This depressed me more; how would I climb through the ranks and become an engineer if I accidentally screwed the blue wire onto the wrong node once every 200 times?",
+        "type": "other",
+        "why": "Personal reaction and rhetorical question",
+        "claims": []
+       },
+       {
+        "text": "They didn’t want us to sit, and I think I started working there at the end of some kind of sitting war, because there were a few scattered chairs and angry muttering longtimers.",
+        "type": "statement",
+        "claims": [
+         "Management at the author's workplace opposed workers sitting, and only a few chairs were available when the author began working there."
+        ]
+       },
+       {
+        "text": "Management thought sitting was bad and would destroy productivity, but some of the assemblers had fought back with cries of back pain, so they’d grudgingly allowed us a small number of chairs.",
+        "type": "statement",
+        "claims": [
+         "Management at the author's workplace believed sitting would reduce productivity, but allowed some chairs after assemblers complained of back pain."
+        ]
+       },
+       {
+        "text": "I was young, so did not get first access to a chair, but I loved it when I did.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "It made my day so so much better.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "Standing hurt, and made me worse at everything, and made me tired and sad.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "After a few months I got moved up the line, to the section where they installed the boards into the units.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "This was less physically intensive, but more mentally draining.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "We assembled lots of different types of units, and the units went through different corresponding flow lines that had the required amount of tools.",
+        "type": "statement",
+        "claims": [
+         "The factory assembled multiple types of units on different production lines, each equipped with the tools needed for its products."
+        ]
+       },
+       {
+        "text": "But they wouldn’t let you sit and learn a single line, which might have one day allowed you to get used to it enough to zone out and have thoughts that were your own.",
+        "type": "statement",
+        "claims": [
+         "The author's employer did not allow workers to remain seated and learn only one production line."
+        ]
+       },
+       {
+        "text": "No - you had to rotate spots regularly, so that you were always just slightly unfamiliar with your current task.",
+        "type": "statement",
+        "claims": [
+         "Workers at the author's workplace were required to rotate among tasks regularly."
+        ]
+       },
+       {
+        "text": "They did this so if people were out sick or something they could flexibly fill the gap, but it resulted in everyone being slightly worse at everything.",
+        "type": "statement",
+        "claims": [
+         "The employer rotated workers among tasks to cover for absent employees."
+        ]
+       },
+       {
+        "text": "There was no groove to fall into.",
+        "type": "other",
+        "why": "Personal assessment",
+        "claims": []
+       },
+       {
+        "text": "It was an infinite series of tiny tasks that changed a little bit all the time, and a lot sometimes, and if you fail someone might DIE.",
+        "type": "statement",
+        "claims": [
+         "The author's assembly work involved many small tasks that varied, and errors could potentially result in someone's death."
+        ]
+       },
+       {
+        "text": "And then randomly you’d get thrown into the picker role, which meant you spent the day working in the warehouse.",
+        "type": "statement",
+        "claims": [
+         "Workers at the author's factory were sometimes assigned to a warehouse-picking role for a day."
+        ]
+       },
+       {
+        "text": "You’d have to haul in a big stacked tray on wheels and go down a list of paper and then run around the shelves pulling boxes off and scanning them and hauling the tray back.",
+        "type": "statement",
+        "claims": [
+         "The warehouse picker role involved moving a wheeled tray, selecting and scanning boxes according to a paper list, and returning the tray."
+        ]
+       },
+       {
+        "text": "This was awesome cause it meant at least you weren’t standing still, but it was physically exhausting and happened rarely enough you never got used to it.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "Throughout it all, I was still grateful.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I saved most of my money, and felt like a king sitting on a savings account of a few thousand dollars.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "I was happy I was not working in poop.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "I was happy to not be hungry.",
+        "type": "other",
+        "why": "Personal feeling",
+        "claims": []
+       },
+       {
+        "text": "But even so, the depression slowly crept around me and I had this sense that I did not want to spend the rest of my life like this.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "I was so confused by the coworkers that had been there for a decade+ and seemed content with their lives.",
+        "type": "other",
+        "why": "Personal reaction",
+        "claims": []
+       },
+       {
+        "text": "I thought we were all on a ship that had rescued us from the void and we were so thankful and just waiting for the ship to deliver us to better lands, and so why were you still on the boat?",
+        "type": "other",
+        "why": "Metaphor and personal thought",
+        "claims": []
+       },
+       {
+        "text": "Why had you not gotten off?",
+        "type": "other",
+        "why": "Rhetorical question",
+        "claims": []
+       },
+       {
+        "text": "They were all poor.",
+        "type": "statement",
+        "claims": [
+         "The author's coworkers on the factory floor were all poor."
+        ]
+       },
+       {
+        "text": "I had a few coworkers my age; one had come from a farm, the other wanted to do college but hadn’t managed to make it for some reason.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Some were divorced moms, others jolly church guys.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "We all shopped at wal-mart and used coupons for groceries.",
+        "type": "statement",
+        "claims": [
+         "The author and the author's coworkers shopped at Walmart and used grocery coupons."
+        ]
+       },
+       {
+        "text": "I wondered about their lives outside of this, but there probably wasn’t actually that much life outside of this.",
+        "type": "other",
+        "why": "Personal reflection",
+        "claims": []
+       },
+       {
+        "text": "We were with each other for the majority of our waking hours.",
+        "type": "statement",
+        "claims": [
+         "The author and coworkers spent most of their waking hours together at work."
+        ]
+       },
+       {
+        "text": "The factory walled us in both in space and time.",
+        "type": "other",
+        "why": "Metaphor",
+        "claims": []
+       },
+       {
+        "text": "I started calling in sick more often.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "Sometimes I’d wake up and stare at the ceiling and just completely lack the will to make myself get up and go to work.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "I started bumping up against management who frowned at me for taking so many days off.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       },
+       {
+        "text": "My compulsive please-authority streak was not strong enough to force me out of bed, often hungover, into yet another 9-10.5 hours under flourescent lights on a Saturday.",
+        "type": "other",
+        "why": "Personal recollection",
+        "claims": []
+       }
+      ],
+      "error": null
+     },
+     {
+      "chunkIndex": 2,
+      "chunkChars": 2882,
+      "passages": [
+       {
+        "text": "I got out because I got another job.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I’d been watching other job ads on craigslist and saw one opening for a boudoir photographer.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I liked taking photos of my pretty friends on weekends, and  so I applied, and showed them all the pretty photos I’d taken, and one day after work when I was in a hardware store they called me to tell me I was hired.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I almost died of joy.",
+        "type": "other",
+        "why": "Personal reaction",
+        "claims": []
+       },
+       {
+        "text": "I told everyone at the assembly line I was getting out, and they were so happy for me.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I remember my last day clearing out my locker and walking out for the very last time and they were congratulating me and wishing me luck and then I was gone.",
+        "type": "other",
+        "why": "Personal memory",
+        "claims": []
+       },
+       {
+        "text": "I went to the clothing store and asked the lady working there to suggest office clothes for me, because I was going to be a professional now.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "She handed me a set of clothes and I bought them all.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "No more blue antistatic factory coat!",
+        "type": "other",
+        "why": "Personal exclamation",
+        "claims": []
+       },
+       {
+        "text": "The photography job lasted two weeks.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I’d just turned 20 and I’d been homeschooled my whole life and I had no idea how to interact with people where I was in a role of authority.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I’d had all fire quite literally beaten out of me and was compulsively submissive, quiet, nervous.",
+        "type": "other",
+        "why": "Personal reflection",
+        "claims": []
+       },
+       {
+        "text": "I was not good at making strangers feel sexy and like I had everything under control in photoshoots.",
+        "type": "other",
+        "why": "Personal assessment",
+        "claims": []
+       },
+       {
+        "text": "The boss called me into his office and said sorry, we need to let you go.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I said okay.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I understand.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "I walked out, wearing my ill-fitting ‘office’ clothes I’d bought for this job, climbed into my beat-up little car, and wailed like death the entire drive home.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "This was my one shot out into a better life and I’d blown it.",
+        "type": "other",
+        "why": "Personal reflection",
+        "claims": []
+       },
+       {
+        "text": "I had no idea what I was going to do, but I knew no matter what happened, I would not return to the ship that had rescued me from the void.",
+        "type": "other",
+        "why": "Personal reflection",
+        "claims": []
+       },
+       {
+        "text": "I would do anything but that.",
+        "type": "other",
+        "why": "Personal resolve",
+        "claims": []
+       },
+       {
+        "text": "I had a little bit of savings to sustain me for some months, and so I began trying and failing, trying and failing, over and over again, until one day I met a man off okcupid who asked if I’d ever heard of this thing called webcamming.",
+        "type": "other",
+        "why": "Personal account",
+        "claims": []
+       },
+       {
+        "text": "Most of the nightmares I ever have are about the factory floor.",
+        "type": "other",
+        "why": "Personal experience",
+        "claims": []
+       },
+       {
+        "text": "I dream I have to go back for some reason, I’ve lost my job, I have to go recover something and they need my help and I get sucked in.",
+        "type": "other",
+        "why": "Description of a dream",
+        "claims": []
+       },
+       {
+        "text": "It’s strange for that place to be such a nightmare for me - so many other people are working there, right now as you read this, and presumably they do not feel like they’re in a nightmare.",
+        "type": "other",
+        "why": "Personal reflection and speculation",
+        "claims": []
+       },
+       {
+        "text": "Maybe they’re good at their jobs.",
+        "type": "other",
+        "why": "Speculation",
+        "claims": []
+       },
+       {
+        "text": "They get decent health insurance and plenty of money for groceries and a free lunch every Friday.",
+        "type": "statement",
+        "claims": [
+         "Workers at the factory where the narrator used to work receive health insurance, earn enough to buy groceries, and get a free lunch every Friday."
+        ]
+       },
+       {
+        "text": "Am I weak, for failing to endure what others can thrive on?",
+        "type": "other",
+        "why": "Rhetorical question",
+        "claims": []
+       },
+       {
+        "text": "Is something in me so brittle I had to drink to coat my exposed nerves?",
+        "type": "other",
+        "why": "Rhetorical question",
+        "claims": []
+       },
+       {
+        "text": "I don’t know.",
+        "type": "other",
+        "why": "Personal reflection",
+        "claims": []
+       },
+       {
+        "text": "But I think about them a lot, and I hope one day we can get a nicer, bigger boat to rescue them again.",
+        "type": "other",
+        "why": "Personal reflection and hope",
+        "claims": []
+       },
+       {
+        "text": "Knowingless is a reader-supported publication.",
+        "type": "other",
+        "why": "Publication description",
+        "claims": []
+       },
+       {
+        "text": "To receive new posts and support my work, consider becoming a free or paid subscriber.",
+        "type": "other",
+        "why": "Subscription request",
+        "claims": []
+       }
+      ],
+      "error": null
+     }
+    ],
+    "costUsd": 0.004683475
+   }
+  ],
+  "costUsd": {
+   "extraction": 0.004683475,
+   "judge": 0
+  }
+ },
+ "checker": null,
+ "probability": null
+}

@@ -10,7 +10,7 @@
  * in one chunk, share the chunk's extraction calls.
  */
 import PQueue from "p-queue";
-import { bodyOfChunkMessage, runPassageExtraction } from "../../../everything/pipeline/extractClaims";
+import { bodyOfChunkMessage, runPassageExtraction, type ExtractionOptions } from "../../../everything/pipeline/extractClaims";
 import { claimsOfPassages } from "../../../everything/pipeline/passages";
 import type { ChunkRun, ChunkSample, DatasetRow, ExtractableRow, ExtractorEvalResult, ExtractorRowResult, JudgeAnswer, PassageSummary, UnlabelledPostResult, UnlabelledRow } from "./evalTypes";
 import { judgeExtraction, withCost } from "./judges";
@@ -47,9 +47,9 @@ function casesOf(rows: ExtractableRow[]): EvalCase[] {
   });
 }
 
-async function sampleChunk(userMessage: string): Promise<ChunkSample> {
+async function sampleChunk(userMessage: string, options: ExtractionOptions): Promise<ChunkSample> {
   try {
-    const { value, costUsd } = await withCost(() => runPassageExtraction(userMessage));
+    const { value, costUsd } = await withCost(() => runPassageExtraction(userMessage, options));
     const claims = claimsOfPassages(value.passages, bodyOfChunkMessage(userMessage));
     return {
       claims: claims.map((c) => ({ claim: c.claim, context: c.context, imageUrls: c.imageUrls })),
@@ -64,13 +64,13 @@ async function sampleChunk(userMessage: string): Promise<ChunkSample> {
 }
 
 /** Runs the extractor once on every chunk of each unlabelled post. There is no judge, because there are no labels. */
-async function runUnlabelled(rows: UnlabelledRow[], queue: PQueue): Promise<UnlabelledPostResult[]> {
+async function runUnlabelled(rows: UnlabelledRow[], queue: PQueue, options: ExtractionOptions): Promise<UnlabelledPostResult[]> {
   return Promise.all(
     rows.map(async (row) => {
       const chunks = await Promise.all(
         row.unlabelled.chunks.map((message, index) =>
           queue.add(async () => {
-            const sample = await sampleChunk(message);
+            const sample = await sampleChunk(message, options);
             return { chunkIndex: index + 1, chunkChars: message.length, passages: sample.passages ?? [], error: sample.error ?? null, costUsd: sample.costUsd };
           }) as Promise<{ chunkIndex: number; chunkChars: number; passages: PassageSummary[]; error: string | null; costUsd: number }>,
         ),
@@ -88,7 +88,7 @@ async function runUnlabelled(rows: UnlabelledRow[], queue: PQueue): Promise<Unla
   );
 }
 
-export async function runExtractorEval(rows: ExtractableRow[], unlabelledRows: UnlabelledRow[] = []): Promise<ExtractorEvalResult> {
+export async function runExtractorEval(rows: ExtractableRow[], unlabelledRows: UnlabelledRow[] = [], options: ExtractionOptions = {}): Promise<ExtractorEvalResult> {
   const cases = casesOf(rows);
   const chunks = new Map(rows.map((row) => [`${row.item.id}#${row.extractor.chunkIndex}`, { row, message: row.extractor.userMessage }]));
   console.log(`Extractor eval: ${cases.length} statements of ${rows.length} datapoints in ${chunks.size} chunks, ${SAMPLES_PER_CHUNK} samples each`);
@@ -96,13 +96,13 @@ export async function runExtractorEval(rows: ExtractableRow[], unlabelledRows: U
   const extractionQueue = new PQueue({ concurrency: EXTRACTION_CONCURRENCY });
   const chunkRuns: ChunkRun[] = await Promise.all(
     [...chunks].map(async ([key, { row, message }]) => {
-      const samples = await Promise.all(Array.from({ length: SAMPLES_PER_CHUNK }, () => extractionQueue.add(() => sampleChunk(message)) as Promise<ChunkSample>));
+      const samples = await Promise.all(Array.from({ length: SAMPLES_PER_CHUNK }, () => extractionQueue.add(() => sampleChunk(message, options)) as Promise<ChunkSample>));
       console.log(`  ${key}: ${samples.map((s) => (s.error ? "error" : s.claims.length)).join(", ")} claims`);
       return { key, itemTitle: row.item.title, chunkIndex: row.extractor.chunkIndex, chunkCount: row.extractor.chunkCount, chunkChars: message.length, samples };
     }),
   );
 
-  const unlabelled = unlabelledRows.length ? await runUnlabelled(unlabelledRows, extractionQueue) : undefined;
+  const unlabelled = unlabelledRows.length ? await runUnlabelled(unlabelledRows, extractionQueue, options) : undefined;
 
   const judgeQueue = new PQueue({ concurrency: JUDGE_CONCURRENCY });
   let judgeCostUsd = 0;

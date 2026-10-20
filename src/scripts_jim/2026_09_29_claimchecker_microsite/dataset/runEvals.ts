@@ -22,6 +22,8 @@ import { isCheckable, isExtractable, isUnlabelled, type DatasetRow, type EvalNam
 import { buildEvalSetsPage } from "./buildArtifact";
 import { runProbabilityEval } from "./probabilityEval";
 import { runExtractorEval } from "./extractorEval";
+import { OTHER_TYPE } from "../../../everything/pipeline/passages";
+import { PASSAGE_TYPE_DESCRIPTIONS } from "../../../everything/pipeline/extractClaims";
 
 const RESULTS_DIR = join(LAB_DIR, "dataset", "evalRuns");
 
@@ -38,6 +40,20 @@ function selectedRows(all: DatasetRow[]): DatasetRow[] {
   const unknown = (only ?? []).filter((id) => !all.some((r) => r.id === id));
   if (unknown.length) throw new Error(`Unknown row ids: ${unknown.join(", ")}`);
   return all.filter((r) => (!only || only.includes(r.id)) && (!groups || groups.includes(r.group)));
+}
+
+const PERSONAL_STORIES_EXAMPLE = "e.g. parts of personal stories";
+
+/** Other wordings of the example in the description of "other". The default is the production wording, which has the example without brackets. */
+function extractionOptionsOf(variant: string | undefined) {
+  const other = PASSAGE_TYPE_DESCRIPTIONS[OTHER_TYPE];
+  if (!variant) return {};
+  const wordings: Record<string, string> = {
+    "bracket-example": other.replace(PERSONAL_STORIES_EXAMPLE, `(${PERSONAL_STORIES_EXAMPLE})`),
+    "no-example": other.replace(` ${PERSONAL_STORIES_EXAMPLE}`, ""),
+  };
+  if (!(variant in wordings)) throw new Error(`Unknown --other-variant "${variant}". Variants are ${Object.keys(wordings).join(", ")}`);
+  return { extraTypes: { [OTHER_TYPE]: wordings[variant]! } };
 }
 
 function currentCommit(): string {
@@ -61,7 +77,7 @@ async function main() {
 
   // The two evals do not depend on each other, so they run side by side.
   const [extractor, checker, probability] = await Promise.all([
-    evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable), rows.filter(isUnlabelled)) : null,
+    evals.includes("extractor") ? runExtractorEval(rows.filter(isExtractable), rows.filter(isUnlabelled), extractionOptionsOf(arg("other-variant"))) : null,
     evals.includes("checker") ? runCheckerEval(rows.filter(isCheckable), runId, { search_cascade: searchCascade, cascade_audit: "none", ...(arg("jina-fetch") ? { jina_fetch: arg("jina-fetch")! } : {}), ...(arg("second-round") ? { second_round: arg("second-round")! } : {}) }) : null,
     evals.includes("probability") ? runProbabilityEval(rows.filter(isCheckable), runId) : null,
   ]);
