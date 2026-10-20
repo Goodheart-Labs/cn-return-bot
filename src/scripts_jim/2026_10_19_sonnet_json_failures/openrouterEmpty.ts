@@ -11,7 +11,10 @@ import { join } from "path";
 import PQueue from "p-queue";
 import { llm } from "../../pipeline/llm/llm";
 import { SEARCH_PROMPTED_JSON_INSTRUCTION, SEARCH_SYSTEM_PROMPT_CLAIM } from "../../pipeline/prompts/simple-bot/searchAgent";
-import { CLAUDE_RESEARCH_FETCH_TOOL, WEB_SEARCH_TOOL } from "../../pipeline/tool-calling/tools";
+import { WEB_SEARCH_TOOL, webFetchNativeTool } from "../../pipeline/tool-calling/tools";
+
+/** The fetch tool that PR #599 gave every Claude and PR #607 took away again. The experiment still needs it. */
+const CLAUDE_RESEARCH_FETCH_TOOL = webFetchNativeTool({ maxUses: 5, maxContentTokens: 20000 });
 
 const DIR = new URL(".", import.meta.url).pathname;
 const inputs = JSON.parse(readFileSync(join(DIR, "inputs.json"), "utf8"));

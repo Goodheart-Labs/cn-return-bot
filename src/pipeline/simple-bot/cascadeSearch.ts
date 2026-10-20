@@ -10,7 +10,7 @@
  */
 
 import { llm } from "../llm/llm";
-import { CLAUDE_RESEARCH_FETCH_TOOL, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
+import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../tool-calling/tools";
 import { getBotConfig, withBotConfig } from "../ab-testing/botConfig";
 import { SEARCH_SYSTEM_PROMPT_CLAIM_PROBABILITY, SEARCH_SYSTEM_PROMPT_PROBABILITY } from "../prompts/simple-bot/searchAgent";
 import { addTokenCost, emptyTokenCost, extractOpenRouterCost } from "../cost-tracking/pricing";
@@ -124,7 +124,7 @@ export async function runStrongSearch(userMessage: string): Promise<SearchResult
   const systemPrompt = researchPrompt();
   log?.set(`${STEP.search}.messages.0`, { systemPrompt, userMessage });
   const model = config.search_model ?? config.model;
-  const answer = await askResearchModel({ userMessage, model, systemPrompt, tools: [WEB_SEARCH_TOOL, CLAUDE_RESEARCH_FETCH_TOOL], costName: COST.search });
+  const answer = await askResearchModel({ userMessage, model, systemPrompt, tools: [WEB_SEARCH_TOOL], costName: COST.search });
   log?.set(`${STEP.search}.messages.1`, { content: { findings: answer.findings, misleading_probability: answer.probability }, model });
   return { findings: answer.findings, correctionNeeded: answer.probability >= CASCADE_STRONG_NOTE_AT_OR_ABOVE };
 }

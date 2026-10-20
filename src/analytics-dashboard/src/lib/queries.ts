@@ -106,9 +106,10 @@ export interface MetricSeriesRow {
   votes: number | null;
   writers: TimesHistogram | null;
   notes_written: number | null;
+  installs: number | null;
 }
 
-export type CountMetricKey = "active_devices" | "notes_seen" | "votes" | "notes_written";
+export type CountMetricKey = "active_devices" | "notes_seen" | "votes" | "notes_written" | "installs";
 export type HistogramMetricKey = "note_viewers" | "voters" | "writers";
 
 /** People who did the thing at least `times` times. Null passes through, so a
