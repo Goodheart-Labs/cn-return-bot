@@ -237,7 +237,9 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
               stroke={AXIS_COLOR}
             />
           )}
-          {series.map((s) => (
+          {/* The first line is the total, so it is drawn last and stays on top
+              where the browsers sit on the same values, mostly at zero. */}
+          {[...series].reverse().map((s) => (
             <Group key={s.label}>
               <LinePath
                 data={s.points}
@@ -277,7 +279,7 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
               <div style={{ marginBottom: 2 }}>{bucketLabel(points[hovered]!.date, granularity)}</div>
               {series.map((s) => (
                 <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 2, background: s.color, border: "1px solid #fff" }} />
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: s.color, border: "1px solid #9ca3af" }} />
                   <span style={{ flex: 1 }}>{s.label}</span>
                   <span style={{ fontVariantNumeric: "tabular-nums" }}>{s.points[hovered]?.value == null ? "–" : formatValue(s.points[hovered]!.value!)}</span>
                 </div>
