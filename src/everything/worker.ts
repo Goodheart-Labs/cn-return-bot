@@ -125,8 +125,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
 function tierName(priority: number): string {
   if (priority >= QUEUE_PRIORITY.requested) return "requested";
   if (priority === QUEUE_PRIORITY.prioritized) return "priority";
-  if (priority === QUEUE_PRIORITY.backlog) return "visits";
-  return "retry";
+  return "visits";
 }
 
 /** Prints what is waiting, in the order this worker will take it, and returns
@@ -156,32 +155,26 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
   return queue;
 }
 
-/** Whether a fresh feed item is waiting: one at the prioritized or backlog
- *  tier, which includes an item a killed run left half done. The feed run walks
- *  for new posts only when this is false, so such an item is finished before
- *  another post is pulled in. Items waiting for a retry do not count. They run
- *  only once the walk finds every creator caught up. Before 2026-10-14 they did
- *  count. After Muse's outage on 2026-10-13 the feed run spent about 40 hours on
- *  147 retried items and picked up a single new post, so even Zvi's posts waited. */
-export const freshFeedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
-  queue.some(
-    (item) => item.status === "queued" && item.priority >= QUEUE_PRIORITY.backlog && item.priority < QUEUE_PRIORITY.requested,
-  );
+/** Whether a feed item is waiting: the post the last walk picked, or an item a
+ *  killed run left half done. The feed run walks only when this is false, so
+ *  whatever waits is finished before the walk picks the next post. */
+export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
+  queue.some((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested);
 
-/** Where one item ended. "no_captions_yet" is an error that the retry sweep
- *  picks up like any other, but it is expected, so it does not fail the feed
+/** Where one item ended. "no_captions_yet" is an error that gets its repeat
+ *  attempts like any other, but it is expected, so it does not fail the feed
  *  run. */
 type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
 
 /** A video we cannot read is not a failure (GOO-422). A young video without
- *  captions stays in error so the retry sweep tries it again, because YouTube
+ *  captions stays in error so the walk tries it again later, because YouTube
  *  may not have made its automatic captions yet. On its last allowed attempt,
  *  and for every other unreadable video, the item ends as done with the
  *  reason as its skip reason. We do not put the young video back in the queue
  *  ourselves, because the feed worker would take it again at once. */
 async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoError): Promise<ItemOutcome> {
   if (err.captionsMayStillCome && item.retries < MAX_ITEM_RETRIES) {
-    console.log(`  ${err.message} · the retry sweep tries again later`);
+    console.log(`  ${err.message} · tried again after its rest time`);
     await markItemError(item.id, err.message);
     return "no_captions_yet";
   }
