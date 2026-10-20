@@ -78,7 +78,16 @@ function pickedModel(picks: Record<string, string> | null, testName: string, fie
 export function secondRoundOf(logs: any): SecondRoundTrace | null {
   const second = logs?.second_round;
   if (!second?.first) return null;
-  return { result: second.result ?? "unknown", first: second.first, revisedFindings: second.revised_findings ?? "" };
+  const secondTurn = logs?.note_writer_steps?.source_verifier?.turn?.["2"];
+  // A log from before the second note was logged still has it, because the second round's writer wrote over the first one's entry.
+  const lastAttempt = Object.values(logs?.note_writer_steps?.note_writer?.attempts ?? {}).at(-1) as any;
+  const secondNote = second.second_note ?? (lastAttempt?.response ? { note: lastAttempt.response.note_text, sources: lastAttempt.response.sources } : null);
+  return {
+    result: second.result ?? "unknown",
+    first: second.first,
+    revisedFindings: second.revised_findings ?? "",
+    second: secondNote ? { ...secondNote, error: second.error ?? null, verifierReasoning: secondTurn?.messages?.["1"]?.content?.reasoning ?? null, fetches: secondTurn?.fetches ?? null } : undefined,
+  };
 }
 
 /** The models of a check, from its picks. The full research does not run when the quick research decided alone. A claim that is escalated goes to the cascade's own strong model. */

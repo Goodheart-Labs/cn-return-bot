@@ -147,6 +147,17 @@ function mediaContentLines(media: MediaSourceDescription): (string | null)[] {
   }
 }
 
+/** How much of a failed fetch's content the log keeps. It is the error text, so it is short. */
+const FAILED_FETCH_LOG_CHARS = 300;
+
+/** What the log keeps about each cited source: whether the page could be read, and when not, what came back instead. */
+interface SourceFetchLog {
+  url: string;
+  fetched: boolean;
+  fetchedUrl: string;
+  whatCameBack?: string;
+}
+
 interface FetchedSource {
   /** The URL the writer cited. */
   url: string;
@@ -163,7 +174,7 @@ async function fetchSourceContent(
   logPrefix: string,
   acceptMediaSources: boolean,
   snippetsByUrl?: Map<string, { title: string; snippet: string }>,
-): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number; snapshotUrls: Map<string, string> }> {
+): Promise<{ sections: string; fetchedCount: number; totalNonTwitter: number; snapshotUrls: Map<string, string>; fetches: SourceFetchLog[] }> {
   const results: FetchedSource[] = [];
   for (let i = 0; i < sources.length; i++) {
     const fetched = await fetchOneSource(sources[i]!, `${costPrefix}.source.${i}`, `${logPrefix}.source.${i}`, acceptMediaSources);
@@ -184,6 +195,7 @@ async function fetchSourceContent(
     fetchedCount: nonTwitter.filter((r) => r.fetched).length,
     totalNonTwitter: nonTwitter.length,
     snapshotUrls: new Map(results.filter((r) => r.fetchedUrl !== r.url).map((r) => [r.url, r.fetchedUrl])),
+    fetches: results.map((r) => ({ url: r.url, fetched: r.fetched, fetchedUrl: r.fetchedUrl, ...(r.fetched ? {} : { whatCameBack: r.content.slice(0, FAILED_FETCH_LOG_CHARS) }) })),
   };
 }
 
@@ -275,7 +287,7 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
   const logPrefix = `${STEP.sourceVerifier}.turn.${params.turnNumber}`;
 
   const acceptMediaSources = config.verifier_accepts_media_sources ?? false;
-  const { sections, fetchedCount, totalNonTwitter, snapshotUrls } = await fetchSourceContent(
+  const { sections, fetchedCount, totalNonTwitter, snapshotUrls, fetches } = await fetchSourceContent(
     params.sources,
     costPrefix,
     logPrefix,
@@ -283,6 +295,7 @@ export async function verifySources(params: VerifySourcesParams): Promise<Source
     params.snippetsByUrl,
   );
 
+  getTweetLog()?.set(`${logPrefix}.fetches`, fetches);
   if (totalNonTwitter > 0 && fetchedCount === 0) {
     throw new UnfetchableSourcesError(
       `None of the ${totalNonTwitter} non-Twitter source(s) could be fetched`,

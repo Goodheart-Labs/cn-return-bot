@@ -165,6 +165,17 @@ export interface SecondRoundTrace {
   result: string;
   first: { findings: string; note: string; reasoning: string };
   revisedFindings: string;
+  /** What the second round wrote and what became of it. Missing in a run saved before it was kept. */
+  second?: {
+    note: string;
+    sources: string[];
+    /** Why the second source check did not run: the fetch error, when none of the revised sources could be opened. */
+    error: string | null;
+    /** What the second source check said, when it ran. */
+    verifierReasoning: string | null;
+    /** Whether each revised source could be opened. Missing when the log did not keep it. */
+    fetches: { url: string; fetched: boolean; whatCameBack?: string }[] | null;
+  };
 }
 
 /** One run of the whole claim check on one row. */

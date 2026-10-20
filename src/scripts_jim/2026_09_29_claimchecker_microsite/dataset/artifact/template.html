@@ -847,6 +847,13 @@ function cascadeSummary(c) {
   return `<p class="small">Cascading search, on ${samples.length} checks: ${n("note")} went straight to the writer, ${n("no_note")} ended with no note, ${n("escalate") + n("audit")} went to the stronger model. The percentage in front of each check is the quick research's probability that the claim is misleading.</p>`;
 }
 const SECOND_ROUND_TEXT = { note: "accepted", verification_failed: "rejected again", research_withdrew: "research withdrew", writer_empty: "writer wrote nothing", unfetchable_sources: "sources not fetched" };
+const SECOND_ROUND_MEANING = {
+  note: "The second note passed the check, so it is the result.",
+  verification_failed: "The second note was rejected as well, so the check ended with no note.",
+  research_withdrew: "The revised research said that no note is needed, so the check ended with no note.",
+  writer_empty: "The writer wrote nothing from the revised findings, so the check ended with no note.",
+  unfetchable_sources: "None of the revised sources could be opened, so the second check could not run. The first rejection stands, so the check ended with no note and the reason check_failed.",
+};
 const secondRoundLine = (s) => (s ? `<span class="small">second round: ${SECOND_ROUND_TEXT[s.result] ?? esc(s.result)}</span><br>` : "");
 function secondRoundSummary(c) {
   const samples = c.rows.flatMap((r) => r.samples).filter((s) => s.secondRound);
@@ -974,11 +981,22 @@ function mountCheckerDetail(host, result) {
     if (s.sourceVerdict) steps.push(stepCard(n++, "Source check", modelName(s.models?.verifier) || "model not recorded", proseBox(s.sourceVerdict)));
     if (s.secondRound) {
       const r = s.secondRound;
+      const second = r.second;
+      const fetchList = (fetches) => node("ul", { class: "small" }, ...fetches.map((f) => node("li", {}, node("a", { href: f.url, target: "_blank", rel: "noreferrer", text: f.url }), ` ${f.fetched ? "could be opened" : "could not be opened"}${f.whatCameBack ? ": " + f.whatCameBack.replace(/^### \S+\n/, "") : ""}`)));
+      const afterSecondCheck = !second ? [] : [
+        node("h4", { text: "The second note" }), proseBox(second.note),
+        ...(second.sources.length ? [node("ul", { class: "small" }, ...second.sources.map((url) => node("li", {}, node("a", { href: url, target: "_blank", rel: "noreferrer", text: url }))))] : [node("p", { class: "small", text: "The writer gave no sources." })]),
+        node("h4", { text: "The second source check" }),
+        ...(second.error ? [node("p", { text: "It could not run: " + second.error + ". The source checker opens every cited page, and it needs at least one to open." })] : []),
+        ...(second.fetches ? [fetchList(second.fetches)] : second.error ? [node("p", { class: "small", text: "This run did not keep which of the sources failed and what came back. Runs made from now on keep it, and it is in the full log." })] : []),
+        ...(second.verifierReasoning ? [proseBox(second.verifierReasoning)] : []),
+      ];
       steps.push(stepCard(n++, "Second round", SECOND_ROUND_TEXT[r.result] ?? r.result,
-        node("div", {}, node("p", { class: "small", text: "The source verifier rejected the first note. The research was told what the verifier said and wrote revised findings, and the writer and the verifier ran again. The search and writer cards above show the last round. The first round was:" }),
+        node("div", {}, node("p", { class: "small", text: "The source verifier rejected the first note. The research was told what the verifier said and wrote revised findings, and the writer and the verifier ran again. " + (SECOND_ROUND_MEANING[r.result] ?? "") }),
           node("h4", { text: "The first note" }), proseBox(r.first.note),
           node("h4", { text: "What the verifier said about it" }), proseBox(r.first.reasoning),
-          node("h4", { text: "The revised findings" }), r.revisedFindings ? proseBox(r.revisedFindings) : node("p", { class: "small", text: "none" })), { open: false }));
+          node("h4", { text: "The revised findings" }), r.revisedFindings ? proseBox(r.revisedFindings) : node("p", { class: "small", text: "none" }),
+          ...afterSecondCheck), { open: false }));
     }
     const end = node("div", {});
     if (o.type === "note") {

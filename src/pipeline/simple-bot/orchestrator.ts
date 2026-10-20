@@ -170,6 +170,7 @@ async function runGatesWithSecondRound(stage: WriterDone): Promise<PipelineOutco
     log?.set("second_round.result", "writer_empty");
     return { type: "no_correction", reason: WRITER_EMPTY_NOTE_REASON };
   }
+  log?.set("second_round.second_note", { note: note.noteText, sources: note.sources });
   try {
     const second = await runGates({ ...stage, findings: revised.findings, noteText: note.noteText, sources: note.sources }, 2);
     log?.set("second_round.result", second.outcome.type);
@@ -178,6 +179,7 @@ async function runGatesWithSecondRound(stage: WriterDone): Promise<PipelineOutco
     // The revised sources could not be opened at all. The first rejection still stands, so the check ends as it would have without a second round.
     if (!(err instanceof UnfetchableSourcesError)) throw err;
     log?.set("second_round.result", "unfetchable_sources");
+    log?.set("second_round.error", err.message);
     return first.outcome;
   }
 }
