@@ -21,6 +21,9 @@ test("a *.substack.com post loses every query parameter, a custom-domain post on
   expect(canonicalizePageUrl("https://www.astralcodexten.com/p/some-post?lli=1&utm_source=profile&r=abc12", null)).toBe(
     "https://www.astralcodexten.com/p/some-post?r=abc12",
   );
+  expect(canonicalizePageUrl("https://www.newyorker.com/magazine/2026/10/26/james-daunt-profile?_sp=769c5ec4.1792595541644", null)).toBe(
+    "https://www.newyorker.com/magazine/2026/10/26/james-daunt-profile",
+  );
 });
 
 test("query parameters that select content are kept", () => {

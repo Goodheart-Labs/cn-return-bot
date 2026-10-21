@@ -8,7 +8,9 @@
 // post link it shows, for example on a profile's Posts tab, next to its utm_
 // parameters. On *.substack.com post links the whole query is dropped anyway
 // (see isSubstackHostPost), so lli is listed here for the custom domains.
-const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli"];
+// Condé Nast sites such as The New Yorker add _sp, a session id, to links they
+// share.
+const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli", "_sp"];
 
 /** Whether the URL is a post on a *.substack.com host. Such a post is chosen by
  *  its path alone, and its stored item URL never has a query. Substack keeps
