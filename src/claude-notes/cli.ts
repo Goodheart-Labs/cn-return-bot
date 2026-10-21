@@ -13,6 +13,7 @@
  *   delete-pipeline-note <item id> <note id> <reason>
  *   finish <item id> <summary.json>
  *   hand-back <item id> <reason>
+ *   skip <item id> <reason>       records that a post was judged not worth checking
  *   messages                      reviewer messages still waiting for an answer
  *   watch                         waits until a reviewer message is waiting, prints it and exits
  *   answer <answer.json>          { draftId, reply, note?, sources?, passage? }
@@ -127,6 +128,8 @@ async function main() {
       return deletePipelineNote(arg(0), arg(1), args.slice(2).join(" "));
     case "finish":
       return finishItem(arg(0), readJson(arg(1)));
+    case "skip":
+      return logEvent({ actor: "claude", type: "item_skipped", itemId: arg(0), data: { reason: args.slice(1).join(" ") } });
     case "hand-back":
       return handBack(arg(0), args.slice(1).join(" "));
     case "messages":

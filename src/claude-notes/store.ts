@@ -192,6 +192,13 @@ export async function readDraft(draftId: string): Promise<DraftRow> {
   return unwrap(await db().from("everything_claude_drafts").select("*").eq("id", draftId).single());
 }
 
+/** Approving a note counts as the reviewer's Helpful vote, the same vote a
+ *  note's author gets automatically on the website. */
+const HELPFUL = 1;
+async function voteHelpful(noteId: string, by: Exclude<Actor, "claude">) {
+  check(await db().from("everything_votes").upsert({ note_id: noteId, voter_id: ACCOUNTS[by].id, vote: HELPFUL }, { onConflict: "note_id,voter_id" }));
+}
+
 /** Jim or Nathan keeps a note. A note that waited for approval goes up now. */
 export async function approve(draftId: string, by: Exclude<Actor, "claude">): Promise<DraftRow> {
   let draft = await readDraft(draftId);
@@ -205,6 +212,7 @@ export async function approve(draftId: string, by: Exclude<Actor, "claude">): Pr
       .select("*")
       .single(),
   );
+  if (row.note_id) await voteHelpful(row.note_id, by);
   await logEvent({ actor: by, type: "approved", draftId, itemId: draft.item_id, noteId: draft.note_id ?? undefined });
   return row;
 }
