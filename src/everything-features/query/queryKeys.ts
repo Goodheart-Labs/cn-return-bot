@@ -16,6 +16,8 @@ export const queryKeys = {
   projects: ["projects"] as const,
   projectItems: (projectId: string) => ["projectItems", projectId] as const,
   itemsWithNotes: ["itemsWithNotes"] as const,
+  /** How many devices outside the team saw each item's notes. */
+  itemNoteViewers: ["itemNoteViewers"] as const,
   leaderboard: ["leaderboard"] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };

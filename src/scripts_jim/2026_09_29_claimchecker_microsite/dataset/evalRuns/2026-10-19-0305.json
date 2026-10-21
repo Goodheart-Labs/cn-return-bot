@@ -1,0 +1,526 @@
+{
+ "id": "2026-10-19-0305",
+ "label": "Research step only: probability that the claim is misleading, realistic claims",
+ "createdAt": "2026-10-19T03:13:41.685Z",
+ "commit": "1b693b71",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 0,
+   "checker": 0
+  }
+ },
+ "rowIds": [
+  "realistic-01",
+  "realistic-02",
+  "realistic-03",
+  "realistic-04",
+  "realistic-05",
+  "realistic-06",
+  "realistic-07",
+  "realistic-08",
+  "realistic-09",
+  "realistic-10",
+  "realistic-11",
+  "realistic-12",
+  "realistic-13",
+  "realistic-14",
+  "realistic-15",
+  "realistic-16",
+  "realistic-17",
+  "realistic-18",
+  "realistic-19",
+  "realistic-20"
+ ],
+ "extractor": null,
+ "checker": null,
+ "probability": {
+  "samples": 3,
+  "prompt": "You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.\n\n## What you get\nA single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:\n  Text from Transcript: <excerpt>   (or \"Text from Article:\")\n  Claim: <the claim>\nJudge whether the claim is factually correct.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.\n\n## Sourcing rules\n- Include what each source says that's relevant.\n- If the claim is not misleading, the findings can be brief — just explain why.\n\nRespond with strict JSON only matching: { findings: string, misleading_probability: number }",
+  "rows": [
+   {
+    "id": "realistic-01",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "findings": "The article is by “Bentham’s Bulldog” and states, “I’m a philosophy Ph.D. student” (https://benthams.substack.com/p/data-republicans-slop-site). The author’s personal website identifies Bentham’s Bulldog as Matthew Adelstein and says he is a philosophy PhD student at Princeton; it lists his Princeton philosophy PhD program as starting in Fall 2026 (https://matthewadelstein.com/). Princeton’s official Philosophy Department graduate-student directory also lists Matthew Adelstein (https://philosophy.princeton.edu/people/graduate-students). These sources support the claim.",
+      "costUsd": 0.06336777
+     },
+     {
+      "probability": 0.02,
+      "findings": "The article is by “Bentham’s Bulldog,” and in the article the author directly says, “I’m a philosophy Ph.D. student” (https://benthams.substack.com/p/data-republicans-slop-site). A profile for the same account also describes Bentham’s Bulldog as a philosophy Ph.D. student at Princeton (https://www30.twstalker.com/Benthamsbulldog). This supports the claim; the available evidence is the author’s own statement and account profile, rather than independent confirmation of enrollment.",
+      "costUsd": 0.032697575
+     },
+     {
+      "probability": 0.01,
+      "findings": "The claim is supported. The article, published September 23, 2026, identifies its author as a philosophy Ph.D. student (https://benthams.substack.com/p/data-republicans-slop-site). The author’s homepage independently identifies Matthew Adelstein as a philosophy Ph.D. student at Princeton and lists his Ph.D. program as beginning Fall 2026 (https://matthewadelstein.com/). The newsletter’s About page likewise says he is starting a Ph.D. in philosophy the following term (https://benthams.substack.com/about).",
+      "costUsd": 0.05391267
+     }
+    ]
+   },
+   {
+    "id": "realistic-02",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.02,
+      "findings": "The claim is a faithful paraphrase of the excerpt. The speaker says a sanction that lets Manchester City “pelear por mantenerse” (fight to stay up) would seem appropriate, then says that if the club lost 100 points, the matches would “no sirven para nada” (be pointless). This supports both parts of the claim. The excerpt expresses the speaker’s view; it does not establish what sanction will actually be imposed. For context, the Premier League’s statement concerns the case and potential disciplinary process: https://www.premierleague.com/en/news/4727779/premier-league-statement-manchester-city-fc?trk=article-ssr-frontend-pulse-little-text-block",
+      "costUsd": 0.0219146
+     },
+     {
+      "probability": 0.03,
+      "findings": "The claim is a faithful paraphrase of the supplied Spanish excerpt. The speaker says a sanction sufficient for Manchester City to “pelear por mantenerse” (fight to stay up) would be good, and adds that a 100-point deduction would make the matches effectively pointless. “Would prefer” is a reasonable rendering of “a mí me parecería que estaría bien,” though the speaker expresses an opinion rather than stating a formal preference. I did not locate an external transcript source to independently verify the excerpt.",
+      "costUsd": 0.011194185
+     },
+     {
+      "probability": 0.02,
+      "findings": "The paraphrase is accurate. The speaker says a sanction should still leave Manchester City able to “pelear por mantenerse” (fight to stay up), then contrasts that with a 100-point deduction that would make the remaining matches pointless. This captures the speaker’s preference, not a claim that a deduction has actually been imposed. As of October 5, 2026, the case tracker reported that no sanction or points deduction had been set: https://theunevenfield.com/es/case-map/final-award/",
+      "costUsd": 0.0327879
+     }
+    ]
+   },
+   {
+    "id": "realistic-03",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.18,
+      "findings": "Mostly accurate, with important limits. Stanford HAI’s 2026 AI Index reports that frontier models have surpassed human-level performance on several benchmarks, including a gold-medal score by Gemini Deep Think on the 2025 International Mathematical Olympiad; it also describes automatically checkable software and computer-use evaluations. Source: https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance . For tasks that are clearly specified and automatically scored, METR compares AI agents directly with human experts on software engineering, machine learning, and cybersecurity tasks. It cautions that these tasks are cleaner and narrower than real-world work, and that model capability varies substantially by domain. Source: https://metr.org/time-horizons/ . The evidence therefore supports the claim’s qualified wording—“some” tasks—but not a general conclusion that AI is better than people at tedious work overall. Benchmarks also have measurement limitations: Stanford notes that reviews found invalid-question rates as high as 42% on some widely used evaluations (same Stanford source).",
+      "costUsd": 0.022170435
+     },
+     {
+      "probability": 0.22,
+      "findings": "Mostly supported, with an important scope limitation. Stanford HAI’s 2026 AI Index reports that frontier systems meet or exceed human performance on several structurally evaluable benchmarks, including ImageNet, SuperGLUE, and MMLU; its comparison method treats 105% as 5% above the established human baseline. These benchmark tasks are narrow and can have objectively scored answers, consistent with the claim that AI is better than humans at some verifiable tasks. Source: https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_2_technical.pdf. The same report cautions that benchmark results do not capture the full range of abilities needed in real-world deployment, and describes uneven performance: for example, its cited ClockBench result has the top model at 50.6% versus 90.1% for humans, while software-engineering and computer-use agents remained below human baselines in the report’s broader comparison. Source: https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_2_technical.pdf. So the claim is credible when read narrowly as referring to particular bounded tasks, but would be misleading if taken to mean that current models are generally better than people at tedious work. The excerpt does not identify which tasks or models it means, so it does not establish a specific head-to-head comparison.",
+      "costUsd": 0.043860535
+     },
+     {
+      "probability": 0.16,
+      "findings": "Mostly accurate, with an important scope limitation. Stanford HAI’s 2026 AI Index reports that AI exceeds human baselines on several measured benchmarks, but performance remains uneven: the top model scored 50.6% on analog-clock reading versus 90.1% for humans, and computer-use agents scored 66.3% on OSWorld versus a 72.35% human baseline. Source: https://hai.stanford.edu/ai-index/2026-ai-index-report/technical-performance. METR evaluates agents on self-contained software, machine-learning, and cybersecurity tasks with clear, often automatically scored success criteria. It says agents are typically several times faster than humans on tasks they complete successfully, while emphasizing that these tasks are much cleaner and narrower than most real-world work. Its published measurements are not necessarily for the newest models: the page says it lacks time-horizon results for some recent releases. Source: https://metr.org/time-horizons/. So the claim is credible for some narrow, measurable tasks, but would be misleading if taken to mean that the latest models generally outperform humans across tedious work or real-world tasks.",
+      "costUsd": 0.03321572
+     }
+    ]
+   },
+   {
+    "id": "realistic-04",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.28,
+      "findings": "The claim is supported as a description of what Ivy Astrix’s article alleges: the January 14, 2026 post says that a woman who attended Vibecamp 2 decompression had been raped elsewhere and felt the men in that space were “big brothers” (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). However, the article presents this as the author’s paraphrase, not a direct quotation, and does not identify the woman in that passage or provide a recording, transcript, or independent corroboration of the exchange. Thus, the article confirms that the allegation was published, but the woman’s exact words and the underlying account cannot be independently verified from the available evidence.",
+      "costUsd": 0.03297446
+     },
+     {
+      "probability": 0.2,
+      "findings": "The article directly supports the claim as a description of what its author reported: it says a woman at Vibecamp 2 decompression implied the author had “maliciously misrepresented” events and, drawing on her own experience of rape, said she felt the men in that space were “big brothers” (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). However, this is the author’s account of the woman’s remarks; the article does not provide a recording, transcript, or independent corroboration of the exchange. So the claim accurately reflects the article, but the underlying statement cannot be independently verified from the evidence located.",
+      "costUsd": 0.03286461
+     },
+     {
+      "probability": 0.18,
+      "findings": "The article itself explicitly says that a woman who attended Vibecamp 2 decompression drew on her own experience of rape and said she felt the men in that community were “big brothers,” which supports the claim as a description of what the author reported (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). A later article by the same author similarly says a woman at decompression used her own experience of rape to downplay the author’s account, but does not repeat the “big brothers” wording (https://theasterisk.substack.com/p/the-effective-altruism-kids-arent?r=8qt9d). The wording is the author’s paraphrase, not a direct quotation of the woman, and the cited articles do not independently verify her exact words.",
+      "costUsd": 0.01114101
+     }
+    ]
+   },
+   {
+    "id": "realistic-05",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0,
+      "findings": "The transcript explicitly describes the annual trip as including “a mixture of some work sessions” and team-bonding time. This supports the claim that the trip includes work sessions.",
+      "costUsd": 0.00012441
+     },
+     {
+      "probability": 0,
+      "findings": "The transcript explicitly describes the annual trip as a “mixture of some work sessions” and team-bonding time, so the claim is supported by the provided excerpt.",
+      "costUsd": 0.00010845
+     },
+     {
+      "probability": 0,
+      "findings": "The transcript explicitly describes the annual trip as having “a mixture of some work sessions” and team-bonding time, so the claim is supported by the provided excerpt.",
+      "costUsd": 0.00012145
+     }
+    ]
+   },
+   {
+    "id": "realistic-06",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.22,
+      "findings": "The claim is broadly accurate as a description of the typical AFL-affiliated craft union, but it overgeneralizes if read to mean every AFL craft union enforced all three practices. EH.net’s overview of the 1920s U.S. economy says most craft unions required apprenticeships before workers could become journeymen, making skill and apprenticeship barriers to entry; it also describes the AFL as built around national unions’ exclusive jurisdictions (https://eh.net/encyclopedia/the-u-s-economy-in-the-1920s/). A historical account in the *Encyclopedia of U.S. Political History* says the AFL executive board defended boundaries between craft unions and exclusive representation of particular crafts (https://sk.sagepub.com/ency/edvol/embed/encyclopedia-of-us-political-history/chpt/american-federation-labor-1). But the AFL was a federation of autonomous unions, and practices varied: the Bureau of Labor Statistics’ 1929 handbook lists at least one AFL-affiliated union with no apprenticeship regulations (https://fraser.stlouisfed.org/files/docs/publications/bls/bls_0506_1929.pdf). So the claim captures a real and characteristic pattern, especially around apprenticeship and jurisdiction, but “AFL craft unions” should not be taken as a universal statement about every affiliate.",
+      "costUsd": 0.022132785
+     },
+     {
+      "probability": 0.18,
+      "findings": "The claim is broadly accurate for many AFL-affiliated craft unions, but it overgeneralizes if read as applying uniformly to all of them. The U.S. Bureau of Labor Statistics’ 1925 *Handbook of American Trade-Unions* documents craft unions setting apprenticeship terms and limits: for example, some unions required a set apprenticeship before journeyman membership and capped apprentices relative to journeymen; the handbook also records unions with no apprenticeship system, showing the practice was not universal (https://fraser.stlouisfed.org/title/handbook-american-trade-unions-4034/fulltext). The handbook describes AFL’s 1907 “one craft, one union” policy and records jurisdictional disputes and efforts to consolidate unions representing the same or similar trades—evidence of formal trade-boundary protection, though not proof that every union behaved identically (https://fraser.stlouisfed.org/title/handbook-american-trade-unions-4034/fulltext). A later BLS handbook likewise records craft unions encouraging apprenticeship systems and regulating apprentice numbers (https://fraser.stlouisfed.org/title/handbook-american-trade-unions-4139/fulltext). In short, apprenticeship regulation, entry limits in some trades, and defense of craft jurisdiction were real and recurring features, but “AFL craft unions” is too sweeping without qualification.",
+      "costUsd": 0.03313996
+     },
+     {
+      "probability": 0.13,
+      "findings": "Substantially accurate, with a qualification: this describes a common feature of AFL-affiliated craft unions, not a uniform rule imposed by every affiliate. The historical study *Between Craft and Class* reports that, in late-19th-century metalworking, union rules and customs limited the number of apprentices and that skilled work was often restricted to apprenticed craftsmen or union members; it also documents disputes over work assigned across craft boundaries (https://publishing.cdlib.org/ucpressebooks/public/book/between-craft-and-class-skilled-workers-and-factory-politics-in-the-united-states-and-britain-1890-1922.html). The U.S. Department of Labor’s history describes the AFL as founded by craft-union leaders seeking to protect their jurisdictions (https://www.dol.gov/general/aboutdol/history/chapter4). A 1926 U.S. Bureau of Labor Statistics handbook records particular AFL-affiliated unions requiring completed apprenticeships for membership and imposing apprentice limits, while also showing that rules varied by union (https://fraser.stlouisfed.org/files/docs/publications/bls/bls_0420_1926.pdf). Thus apprenticeship controls, restricted access to particular skilled work, and protection of trade jurisdictions are well supported; “jealous guarding” is rhetorical phrasing, and the sentence is somewhat overgeneralized if read to mean every AFL craft union applied all these practices.",
+      "costUsd": 0.03274796
+     }
+    ]
+   },
+   {
+    "id": "realistic-07",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0,
+      "findings": "The claim is correct. Anthropic’s official Claude Opus 5.5 announcement explicitly links to an “Opus 5.5 System Card” for evaluation details: https://www.anthropic.com/claude-opus-5-5. Anthropic’s system-card catalog also lists “Claude Opus 5.5” with a system card dated September 2026: https://www.anthropic.com/system-cards. The card itself is at https://www.anthropic.com/claude-opus-5-5-system-card.",
+      "costUsd": 0.031938535
+     },
+     {
+      "probability": 0,
+      "findings": "The claim is correct. Anthropic’s Opus 5.5 announcement states that full evaluation details are available in the “Opus 5.5 System Card”: https://www.anthropic.com/claude-opus-5-5. Anthropic’s system-card page also lists a Claude Opus 5.5 system card: https://www.anthropic.com/claude-opus-5-5-system-card.",
+      "costUsd": 0.04265052
+     },
+     {
+      "probability": 0.01,
+      "findings": "The claim is factually correct. Anthropic’s official system-cards page lists “Claude Opus 5.5” with a “Read system card” entry, confirming that a system card exists: https://www.anthropic.com/system-cards. The linked card is titled “Claude Opus 5.5 System Card”: https://www.anthropic.com/claude-opus-5-5-system-card.",
+      "costUsd": 0.030747935
+     }
+    ]
+   },
+   {
+    "id": "realistic-08",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.03,
+      "findings": "The claim is correct. The excerpt matches the October 4, 2026 game between the Washington Commanders and Indianapolis Colts: the Colts’ official recap identifies that matchup and says Indianapolis had committed two turnovers while leading 10–6 at halftime (https://www.colts.com/news/colts-overcome-sluggish-start-to-thump-commanders-in-london). The recap also describes linebacker Jaylon Carlies intercepting Washington quarterback Athan Kaliakmanis in the second half, suggesting “Karlis” in the transcript may be a rendering of “Carlies.”",
+      "costUsd": 0.01117061
+     },
+     {
+      "probability": 0.01,
+      "findings": "The claim is correct. The excerpt identifies the Indianapolis Colts and Washington Commanders game: the Colts’ official schedule lists a Week 4 game against Washington on October 4, 2026, ending in a 30–13 Colts win (https://www.colts.com/schedule/2026/). The Commanders’ official game-day page likewise identifies the matchup as Indianapolis Colts at Washington Commanders (https://www.commanders.com/game-day/indianapolis-colts-at-washington-commanders/play-by-play).",
+      "costUsd": 0.02167365
+     },
+     {
+      "probability": 0.01,
+      "findings": "Correct. The excerpt matches the Indianapolis Colts–Washington Commanders game on October 4, 2026: NFL.com identifies the Week 4 result as “Indianapolis Colts 30, Washington Commanders 13” (https://www.nfl.com/news/2026-nfl-season-week-4-what-we-learned-from-sunday-s-games). The Colts’ roster page also records Jaylon Carlies’ game against the Commanders that day (https://www.colts.com/team/players-roster/jaylon-carlies/logs/). “Karlis” in the transcript is likely a mishearing of Carlies.",
+      "costUsd": 0.03270325
+     }
+    ]
+   },
+   {
+    "id": "realistic-09",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.25,
+      "findings": "Likely correct if the speaker is BKC, as the context suggests, but the excerpt alone does not identify the speaker. Smogon’s Old Gens Tournament Hall of Fame lists BKC as the Smogon Tour 16 champion: https://www.smogon.com/forums/threads/old-gens-tournaments-records-and-hall-of-fame.3713946/. The official Smogon Tour 16 thread says the event included BW2 OU: https://www.smogon.com/forums/threads/smogon-tour-16.3487488/. Smogon’s interview with BKC confirms he played BW during a tour-winning campaign and used several BW team styles, including sand stall: https://www.smogon.com/competitor/articles/interview_bkc. BW Skarmory was a recognized staple of the format: https://www.smogon.com/dex/bw/pokemon/skarmory/. These sources support the general claim that BKC won a Smogon Tour in a season featuring Gen 5 and played Gen 5 teams, but they do not directly establish that Skarmory was on his winning-tour team or that it was the reason for the win. So the tournament win is verified; the specific Skarmory attribution is plausible but not independently confirmed by the sources found.",
+      "costUsd": 0.096324085
+     },
+     {
+      "probability": 0.38,
+      "findings": "The excerpt does not identify the speaker, so I could not match the first-person statement to a specific Smogon Tour champion or verify the speaker’s team from the available records. Smogon’s official Hall of Fame explains that the Tour’s finals are best-of-three across three generations, but its champion list does not document Pokémon used: https://www.smogon.com/tournaments/hof/tour/. Smogon’s BW Skarmory analysis describes Skarmory as a defensive staple in that generation’s OU, making the claim plausible but not confirming this specific win or team: https://www.smogon.com/dex/bw/pokemon/skarmory/. Verdict: unverified, not disproven; the excerpt itself is the only evidence tying the speaker’s claimed win to Gen 5 Skarmory.",
+      "costUsd": 0.06593176
+     },
+     {
+      "probability": 0.35,
+      "findings": "The transcript does not identify the speaker, so the claim cannot be confirmed for that person. However, Smogon’s official coverage says Masterclass won the first BW OU tournament of Smogon Tour 15 and used a Custap Berry Skarmory: https://www.smogon.com/competitor/articles/st_week1. That supports the underlying possibility that someone won a Smogon Tour tournament using Generation 5 Skarmory, but it does not establish that the unidentified speaker was Masterclass or that this is the event they mean. Smogon’s Hall of Fame distinguishes season champions from the tournaments played during a season: https://www.smogon.com/tournaments/hof/tour/",
+      "costUsd": 0.02215386
+     }
+    ]
+   },
+   {
+    "id": "realistic-10",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.07,
+      "findings": "The claim is supported as a subjective visual comparison. Tom’s Guide says the Xiaomi 18 Fold’s crease is more noticeable than the iPhone Duo’s, attributing the difference to Xiaomi lacking the Duo’s nano-texture display; it reports this in the context of a hands-on comparison referencing Mrwhosetheboss (https://www.tomsguide.com/phones/iphones/the-real-reason-why-iphone-duo-will-beat-all-android-foldable-phones). Apple describes the Duo’s nano-texture finish as reducing glare and reflections and says its display layers glide as the phone folds, minimizing stress and crease (https://www.apple.com/iphone-duo/). This supports greater *perceived visibility* on the Xiaomi, but does not establish that its physical crease is deeper by an objective measurement.",
+      "costUsd": 0.03306811
+     },
+     {
+      "probability": 0.08,
+      "findings": "Assuming “the Xiaomi Fold” refers to the Xiaomi 18 Fold, the claim is supported as a comparative visual impression. Tom’s Guide reports that the Xiaomi 18 Fold’s crease is more noticeable than the iPhone Duo’s, attributing the difference to Xiaomi lacking the Duo’s nano-texture display: https://www.tomsguide.com/phones/iphones/the-real-reason-why-iphone-duo-will-beat-all-android-foldable-phones. Apple says the Duo’s nano-texture reduces glare and reflections and minimizes crease visibility: https://www.macrumors.com/2026/09/09/iphone-duo-crease/. Visibility is subjective and angle-dependent: GSMArena reported not noticing the Xiaomi crease most of the time, though it could be felt as a small indent: https://www.gsmarena.com/xiaomi_18_fold_handson-news-74508.php. So the claim is broadly accurate, but it should not be read as saying the Xiaomi’s crease is conspicuous in every viewing condition or that the difference has been objectively measured.",
+      "costUsd": 0.03310635
+     },
+     {
+      "probability": 0.03,
+      "findings": "The claim is supported. Tom’s Guide reports that the Xiaomi 18 Fold’s crease is more noticeable than the iPhone Duo’s because Xiaomi lacks the Duo’s nano-texture display: https://www.tomsguide.com/phones/iphones/the-real-reason-why-iphone-duo-will-beat-all-android-foldable-phones. MacRumors’ hands-on account says the iPhone Duo’s nano-texture cuts glare and minimizes the crease’s appearance, though the crease remains visible in some lighting: https://www.macrumors.com/2026/09/09/iphone-duo-hands-on/. The comparison is based on visual impressions rather than a standardized measurement, but it aligns with the transcript.",
+      "costUsd": 0.05460091
+     }
+    ]
+   },
+   {
+    "id": "realistic-11",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.03,
+      "findings": "The transcript supports the claim: during a discussion about articles, the speaker says, “I’m quoting from when I read these again this morning before I came here.” This indicates he said he had reread them that morning before appearing on the show. Source: https://podscripts.co/podcasts/knowledge-fight/497-third-try-s-a-charm. The transcript verifies what he said, though it does not independently establish whether he actually read them.",
+      "costUsd": 0.021149685
+     },
+     {
+      "probability": 0.08,
+      "findings": "The claim is supported as the speaker’s own account: in the clip from Joe Rogan Experience episode #1555, the speaker says, “when I read these again this morning before I came here,” while referring to the articles. The clip transcript is at https://podclips.com/ct/9putpw, and the episode is identified as #1555, “Alex Jones & Tim Dillon,” at https://www.youtube.com/watch?v=jdVso9FSkmE. This confirms the speaker said they had reread them that morning; the statement is self-reported, so the sources do not independently establish that the rereading actually occurred.",
+      "costUsd": 0.03186598
+     },
+     {
+      "probability": 0.08,
+      "findings": "The transcript excerpt explicitly says, “I’m quoting from when I read these again this morning before I came here,” which supports the claim that the speaker said he reread the articles that morning before appearing. The excerpt is from the Alex Jones and Tim Dillon episode, as identified by PodClips: https://podclips.com/ct/9putpw. This confirms what the speaker claimed, though the transcript alone cannot independently verify that he actually read the articles that morning.",
+      "costUsd": 0.02135028
+     }
+    ]
+   },
+   {
+    "id": "realistic-12",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.66,
+      "findings": "The claim is too broad to verify as stated because it gives no date or traveler category. A 1977 Soviet customs rule said belongings crossing the border were generally admitted duty-free “within personal needs” and separately listed categories with specific quantity limits; it did not establish an unlimited right to take any amount of every item (https://law.tks.ru/document/2606). In the version of the 1989 Soviet customs regulation available here, the enumerated export prohibitions do not name condoms, but that list alone does not prove that no other customs or personal-needs rules applied (https://legalacts.ru/doc/polozhenie-o-porjadke-propuska-i-deklarirovanija-tovarov/). Contemporary reporting also documents that the USSR imposed restrictions on exporting certain consumer goods in 1989, illustrating that export rules changed over time; it does not establish a condom-specific limit (https://www.washingtonpost.com/archive/business/1989/01/06/trade-war-within-soviet-bloc-escalates-disrupting-travel/). So the evidence found is consistent with there being no specific numerical cap on condoms under the cited rules, but it does not substantiate the absolute claim that there was no restriction on how many a person could take out of the Soviet Union.",
+      "costUsd": 0.04374266
+     },
+     {
+      "probability": 0.72,
+      "findings": "The claim is too broad to verify without the traveler’s date and status. Soviet customs rules approved on December 15, 1977 did not specify a numerical limit for condoms, but they did not allow unlimited personal luggage: goods had to be within “personal needs,” defined by the circumstances of the trip, and personal items had to correspond in kind and quantity to its purpose and duration. Source: https://law.tks.ru/document/2606. From September 15, 1989, a separate decree banned certain categories of consumer goods from export by specified travelers and imposed a 100-ruble-per-person value ceiling; its prohibited list included medicines and sanitation/hygiene articles, though it does not name condoms specifically. Source: https://lawrussia.ru/texts/legal_346/doc346a268x887.htm. So the evidence supports a narrower statement—there may have been no condom-specific numerical quota in some circumstances—not the categorical claim that there was no restriction on how many condoms a person could take out of the USSR.",
+      "costUsd": 0.04375705
+     },
+     {
+      "probability": 0.85,
+      "findings": "The claim is too absolute. The USSR Ministry of Foreign Trade’s customs rules of December 15, 1977 did not specify a separate numerical quota for condoms in the provisions reviewed, but they did impose general quantity limits: for personal trips, items had to be in quantities necessary for the stay abroad (clause 20); for permanent relocation abroad, belongings were allowed only “within personal needs” (clause 45). The rules also said items exceeding their established quantities would not be admitted across the border (clause 42). Source: https://law.tks.ru/document/2606. Thus, there may have been no condom-specific cap, but that is not the same as there being no restriction at all. Because the excerpt does not give the date or type of departure, the exact rule applicable to the anecdote cannot be determined.",
+      "costUsd": 0.03310355
+     }
+    ]
+   },
+   {
+    "id": "realistic-13",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.12,
+      "findings": "Mostly correct. In the Chiefs’ October 12, 2026 game against Denver, Kansas City scored a goal-line touchdown on a play inspired by 1930s football film: Patrick Mahomes took the snap and shovel-passed to Kenneth Walker III. The Associated Press reported that the play was called “Heisman” and that Chiefs offensive-line coach Andy Heck brought it to the team; the report does not say Andy Reid devised it. Thus, saying Reid’s Chiefs used the old play is accurate, but crediting Reid personally as its source would be imprecise. Source: https://apnews.com/article/chiefs-patrick-mahomes-injury-return-broncos-8f42711e4d482cdf0ddd20508f7ef755",
+      "costUsd": 0.043658285
+     },
+     {
+      "probability": 0.02,
+      "findings": "The claim is substantially correct. In the Chiefs’ September 14, 2026 game against Denver, Andy Reid used a trick play for Kenneth Walker III’s 2-yard touchdown from the Denver 2-yard line. KMBC reports that the Chiefs were near the goal line, describes the play, and quotes Reid calling it a “1936-er”: https://www.kmbc.com/article/chiefs-1936-heisman-play-mahomes-fields-kenneth-walker-touchdown/73735677. The Chiefs’ official game recap confirms Walker scored on a 2-yard pass from Patrick Mahomes: https://www.chiefs.com/game-day/2026/reg-week1/broncos-at-chiefs/. KCTV reports Reid said Chris Berman sent him the play and that it originated in 1936: https://www.kctv5.com/2026/09/15/chiefs-offense-changes-style-keeps-throwback-red-zone-tricks-high-scoring-performance/. Thus, describing it as a goal-line play dating to the 1930s is fair.",
+      "costUsd": 0.04387214
+     },
+     {
+      "probability": 0.02,
+      "findings": "The claim is supported. In the Chiefs’ September 14, 2026 game against Denver, Andy Reid used a goal-line play that resulted in a 2-yard touchdown pass from Patrick Mahomes to Kenneth Walker III. KMBC reports that Reid said, “Chris Berman sent me that play, so that’s a 1936-er right there,” and that Mahomes called it the “Heisman” play: https://www.kmbc.com/article/chiefs-1936-heisman-play-mahomes-fields-kenneth-walker-touchdown/73735677. The Associated Press likewise describes the play as inspired by 1930s game film: https://www.foxsports.com/articles/nfl/a-1930s-heisman-shovel-pass-sets-tone-for-chiefs-3110-win-over-denver-and-maybe-for-the-season. The 1936 date is Reid’s characterization of the play’s history, but the reported use of the play near the goal line is clear.",
+      "costUsd": 0.03302554
+     }
+    ]
+   },
+   {
+    "id": "realistic-14",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.12,
+      "findings": "The claim accurately reflects what was said in the transcript: on CNN’s October 12, 2026, “One World,” retired Colonel and CNN military analyst Cedric Leighton said that some elements of the intelligence community view the Houthis as relatively independent, while others see them as more aligned with Iran (https://transcripts.cnn.com/show/ow/date/2026-10-12/segment/01). The broader issue is consistent with a September 2024 congressional hearing statement by a CSIS expert: it described Iran’s network as a loose consortium, said the Houthis should not be viewed simply as extensions carrying out Tehran’s orders, and characterized their relationship with Tehran as comparatively loose and unstructured (https://www.congress.gov/118/meeting/house/117655/witnesses/HHRG-118-FA13-Wstate-LordJ-20240919.pdf). That testimony supports the substance of the independence-versus-alignment debate, but does not independently document a split within the U.S. intelligence community. Thus the claim is supported as an accurate report of Leighton’s characterization; the asserted internal intelligence-community disagreement is not publicly verified by these sources.",
+      "costUsd": 0.043916185
+     },
+     {
+      "probability": 0.25,
+      "findings": "The claim is plausible, but the specific assertion that different parts of the U.S. Intelligence Community hold opposing views is not clearly established by the public sources reviewed. In Senate testimony, then-DNI Avril Haines said the Houthis pursue domestic political advantage and produce some weapons themselves, while also receiving Iranian assistance—an assessment compatible with both local agency and close ties (https://www.govinfo.gov/content/pkg/CHRG-118shrg60835/html/CHRG-118shrg60835.htm). The Intelligence Community’s 2025 Annual Threat Assessment characterized the broader “axis of resistance” as a “loose consortium of like-minded” actors; a Congressional Research Service report notes that experts debate how much autonomy Iran-backed groups have (https://www.everycrsreport.com/files/2025-05-22_R47321_78886ef22e8ac264c34c001b2915590f48893507.html). These sources support the existence of differing interpretations of Houthi-Iran ties, but do not independently confirm that the disagreement is specifically between elements within the U.S. intelligence community.",
+      "costUsd": 0.03300866
+     },
+     {
+      "probability": 0.08,
+      "findings": "The claim accurately summarizes what retired U.S. Army intelligence officer Robert Leighton said in a CNN interview transcript dated October 12, 2026: he called Houthi independence from Iran a “bone of contention” within the intelligence community, saying some elements viewed the Houthis as relatively independent while others saw them as more aligned with Iran (https://transcripts.cnn.com/show/ow/date/2026-10-12/segment/01). This verifies the attribution, but the transcript does not identify the agencies or provide independent evidence of their internal assessments. The underlying distinction is consistent with public analysis: a 2024 congressional hearing statement said Iran did not create the Houthi movement and described Iranian support as opportunistic, while noting the Houthis’ own interests (https://www.congress.gov/118/meeting/house/116760/witnesses/HHRG-118-FA13-Wstate-AltermanJ-20240214.pdf); the Council on Foreign Relations describes the Houthis as Iran-aligned and a major recipient of Iranian military support, while noting that many experts characterize them as an informal partner with some flexibility (https://www.cfr.org/articles/irans-support-houthis-what-know).",
+      "costUsd": 0.033009885
+     }
+    ]
+   },
+   {
+    "id": "realistic-15",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.76,
+      "findings": "The claim is plausible as a rough rule of thumb—more introductions or invitations can create more chances—but its key assertion, that dates scale approximately linearly with effort, is not established as a general factual relationship. A randomized field experiment on a South Korean dating platform found that expanding users’ choice capacity changed choices and matches in different ways: the group with the most choices did not have the most matches, and effects varied by gender and by how selectively users chose. This is evidence that more opportunity does not translate mechanically into proportionally more matches, though the study measured platform chats rather than in-person dates (https://pubsonline.informs.org/doi/10.1287/isre.2021.1028). Separately, an analysis of dating-site data from four U.S. cities found that the probability of receiving a reply fell as the desirability gap between the person sending a message and the recipient increased, so broadening whom one approaches can change the response rate rather than preserve a constant conversion rate (https://pmc.ncbi.nlm.nih.gov/articles/PMC6082652). Overall, increased effort may increase opportunities, but the article’s approximate-linearity framing is an unsupported simplification; outcomes depend on reciprocal interest, selectivity, and context.",
+      "costUsd": 0.04381051
+     },
+     {
+      "probability": 0.82,
+      "findings": "The claim is plausible as a rough piece of dating advice, but it presents an unsupported linear relationship as though it were established. More attempts can create more opportunities, and being open to a wider range of people can expand the pool; however, the evidence located does not show that dates rise in direct proportion to effort or to how much someone lowers their standards. In a large observational study of online dating across four U.S. cities, the chance of receiving a reply varied with the desirability gap between sender and recipient, illustrating that outcomes depend on the other person’s response, not just the sender’s activity (https://pmc.ncbi.nlm.nih.gov/articles/PMC6082652/). Another study using data from an online dating company noted that the likelihood of any one message leading to reciprocated communication and eventually a date was very small (https://pmc.ncbi.nlm.nih.gov/articles/PMC4043335/). A review of research on relationship initiation reports that in one study nearly three-quarters of participants said they would agree to a date with someone who had at least two of their stated dealbreakers—evidence that stated standards do not map neatly onto actual date decisions, rather than evidence of a simple linear effect (https://pmc.ncbi.nlm.nih.gov/articles/PMC8597186/). Overall, meeting and asking out more people may increase opportunities, and being less restrictive may broaden them, but the size and shape of any increase are context-dependent; “approximately linear” is not established by these sources.",
+      "costUsd": 0.02212757
+     },
+     {
+      "probability": 0.8,
+      "findings": "The claim is plausible as a rough dating strategy—meeting and approaching more people can create more opportunities—but the stronger assertion that dates increase approximately linearly with effort is not established and is too broad. A randomized field experiment on a South Korean dating platform found that increasing users’ choice capacity affected choices and matches differently: the group with the most choices did not have the most matches, and effects varied by gender and selectivity (https://pubsonline.informs.org/doi/10.1287/isre.2021.1028). A study of dating markets in four U.S. cities found that the probability of receiving a response to an advance dropped markedly as the desirability gap between sender and recipient increased, so additional approaches do not necessarily convert into dates at a constant rate (https://arxiv.org/abs/1808.04840). In three online-dating studies, acceptance rates changed as participants encountered more options, with patterns differing by study and gender; in one study, the chance of a match decreased for women as dating progressed (https://journals.sagepub.com/doi/10.1177/1948550619866189). Overall, increased effort may improve opportunities, but the evidence does not support a general approximately linear relationship between effort and dates; outcomes depend on context and reciprocal interest.",
+      "costUsd": 0.02203737
+     }
+    ]
+   },
+   {
+    "id": "realistic-16",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.2,
+      "findings": "The article itself supports the claim as the author’s account: it says she had seen these attitudes while working at a Canadian telecom, then describes men saying women had “slept [their] way to that promotion” or were “a diversity hire” when they thought no woman was listening. Source: https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange. This is first-person testimony, not independently corroborated evidence; the article does not identify the telecom or provide other witnesses or documentation. So the claim is accurately attributed to the author’s reported experience, but cannot be independently verified from the available source.",
+      "costUsd": 0.011072285
+     },
+     {
+      "probability": 0.18,
+      "findings": "The article says the author had “seen some indications” of rape culture while working for a Canadian telecom, then gives the examples that men would say a woman “obviously slept her way to that promotion” or was “obviously a diversity hire” when they thought no woman was listening (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). Thus the claim accurately summarizes the author’s account. The source is a first-person recollection, however, and the passage provides no independent corroboration, identification of the telecom, or evidence establishing how widespread such remarks were.",
+      "costUsd": 0.02189306
+     },
+     {
+      "probability": 0.18,
+      "findings": "The article itself supports this as the author’s personal account: Ivy Astrix writes that, while working for a Canadian telecom, she heard men say women had “obviously slept” their way to promotions or were “obviously a diversity hire” (https://theasterisk.substack.com/p/reflecting-on-a-few-very-very-strange). The claim is a faithful paraphrase of that passage. The article does not name the telecom or provide independent corroboration, so the underlying incident is not independently verified.",
+      "costUsd": 0.03195836
+     }
+    ]
+   },
+   {
+    "id": "realistic-17",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.18,
+      "findings": "The excerpt directly supports the claim as a description of the speaker’s own setup: the speaker says horizontal runs can be plugged into their screen directly, while vertical runs cannot. I found no independent source identifying that particular screen or verifying its input constraints, so this is supported as a self-report, not independently confirmed. It should not be generalized to Minecraft screens overall; for example, Forge documentation describes both horizontal- and vertical-line drawing methods for Minecraft GUI screens: https://docs.minecraftforge.net/en/1.19.2/gui/screens/.",
+      "costUsd": 0.021592985
+     },
+     {
+      "probability": 0.08,
+      "findings": "The excerpt itself explicitly says the speaker could send horizontal runs to their screen but the screen would not accept vertical runs, so it supports the claim as a description of that particular setup. I found no independent documentation identifying the speaker’s screen or verifying its input limitation. This should not be read as a general limitation of Minecraft: Forge’s GUI documentation describes both horizontal-line and vertical-line drawing primitives (https://docs.minecraftforge.net/en/1.19.2/gui/screens/). On the available evidence, the claim is plausible and not misleading when understood as setup-specific.",
+      "costUsd": 0.032062585
+     },
+     {
+      "probability": 0.35,
+      "findings": "The excerpt describes a limitation of the speaker’s particular screen or display setup, not a general rule about Minecraft. Run-based raster algorithms can produce horizontal or vertical pixel runs; a paper on run-length algorithms explains that nearly horizontal and nearly vertical curve segments tend to produce the corresponding runs (https://www.sciencedirect.com/science/article/abs/pii/S0097-8493(98)00045-4). However, I found no source identifying the speaker’s screen or independently confirming which run orientation its input accepts. So the claim is plausible as a description of that specific setup, but remains unverified.",
+      "costUsd": 0.02143328
+     }
+    ]
+   },
+   {
+    "id": "realistic-18",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.2,
+      "findings": "The claim is broadly supported: “FU” refers to Furret Used, a competitive Pokémon format in which only Furret is available. Jimothy Gaming published a dedicated video on August 16, 2024, titled “Competitive Pokemon, but it's just Furret,” explicitly describing Furret Used and discussing whether it is a strategic format (https://www.youtube.com/watch?v=hzrHOxrZqcA). Players also discussed the format’s strategy and complexity in a September 2024 community thread (https://www.reddit.com/r/stunfisk/comments/1fc2hjf). The evidence confirms at least one video analyzing the format, though it does not by itself establish that multiple creators made such videos.",
+      "costUsd": 0.043698235
+     },
+     {
+      "probability": 0.04,
+      "findings": "The claim is supported: creators published videos analyzing aspects of the Furret Used (FU) format. For example, Zanedotmidi’s “Furret Used Tera Types, Ranked” says it discusses the metagame and ranks its Tera types: https://www.youtube.com/watch?v=QqpN204LSTM. Jimothy Gaming also published “Competitive Pokemon, but it's just Furret,” describing Furret Used as a format where only Furret is available and showcasing competitive play in it: https://www.youtube.com/watch?v=hzrHOxrZqcA. These sources establish that videos about the format were made; they do not, by themselves, substantiate the surrounding suggestion that it is broadly popular or that people are still discussing it.",
+      "costUsd": 0.0328796
+     },
+     {
+      "probability": 0.3,
+      "findings": "The claim is broadly supported, though the evidence more clearly establishes multiple videos about the Furret-only format than multiple videos specifically framed as analysis. Jimothy Cool’s “Competitive Pokemon, but it's just Furret” calls “Furret Used” a format where only Furret is available and discusses competitive play: https://www.youtube.com/watch?v=hzrHOxrZqcA. Jimothy Cool also published a tournament video, “I Hosted a Furret Only Pokemon Tournament,” describing a 6v6 Furret-only event and showing the metagame developing: https://www.youtube.com/watch?v=cq5QyEV3Epo. Another creator, PortobelloMushroom, posted a video about playing in that tournament: https://www.youtube.com/watch?v=-1KL6Mf0ARs. These support that creators made videos covering the format and its play, but do not firmly establish that multiple creators made analysis videos in the narrower sense.",
+      "costUsd": 0.0435843
+     }
+    ]
+   },
+   {
+    "id": "realistic-19",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.74,
+      "findings": "The claim is **unverified**: the excerpt provides no particular stadium, video, or source for the “millions” figure, and I found no reliable reporting substantiating that Red Bull spent millions to close an entire stadium specifically for an extreme-sports video clip. Red Bull does produce elaborate action-sports videos: its account of the “Chain Reaction” aerial project describes about six months of planning and complex coordination, but does not say it involved a stadium or disclose a million-dollar cost (https://www.redbull.com/us-en/air-force-chain-reaction-bts-video). Red Bull’s account of its Barnstorming video describes planes flying through a hangar at Llanbedr Airfield, not a stadium (https://www.redbull.com/us-en/red-bull-barnstorming-air-plane-action). These examples show that Red Bull undertakes ambitious productions, but they do not establish the specific stadium-closure or cost claim. The transcript also frames this as what “this guy” is talking about, rather than independently confirming it.",
+      "costUsd": 0.032977335
+     },
+     {
+      "probability": 0.82,
+      "findings": "The claim is **unsubstantiated as stated**. Red Bull’s official account of its “Chain Reaction” aerial-sports video describes a six-month planning effort and filming in Moab, but does not say a stadium was closed or that the project cost millions: https://www.redbull.com/us-en/air-force-chain-reaction-bts-video. Red Bull has also published footage of skateboarder Danny León performing a trick at a professional football stadium, but the available coverage does not report that the entire stadium was shut down or that Red Bull spent millions on the clip: https://as.com/masdeporte/polideportivo/danny-leon-registra-un-world-firts-en-el-metropolitano-f202608-n/. The transcript provides no stadium, video, or source for the figure, so it does not establish the specific spending claim; the amount and stadium closure remain unverified.",
+      "costUsd": 0.04402482
+     },
+     {
+      "probability": 0.93,
+      "findings": "The claim is misleading. It appears to refer to Red Bull’s 2015 BMX video with Tyler Fernengel at the Pontiac Silverdome: Red Bull’s own page describes the venue as an “abandoned stadium” (https://www.redbull.com/us-en/videos/preview-tyler-fernengel-rides-the-silverdome-2017-14-02-2017-14-02). CBS Detroit reported the Silverdome had closed in 2006 and was completely abandoned when Fernengel rode through it (https://www.cbsnews.com/detroit/news/a-bmx-bike-ride-inside-the-abandoned-pontiac-silverdome-goes-viral/). Sports Illustrated reported the crew took over the dilapidated structure for four days, while a behind-the-scenes account described a four-day shoot and a small crew (https://www.si.com/edge/2015/06/09/red-bull-bmx-silverdome-detroit-lions-tyler-fernengel; https://www.newsshooter.com/2016/01/29/a-red-a-slider-an-abandoned-stadium-behind-the-scenes-of-red-bulls-most-popular-video-of-2015/). These sources support that Red Bull made an extreme-sports video inside a whole stadium, but not that it shut down an operating stadium or spent millions to do so; the venue was already abandoned, and the available reporting does not substantiate a multimillion-dollar cost.",
+      "costUsd": 0.033009635
+     }
+    ]
+   },
+   {
+    "id": "realistic-20",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.01,
+      "findings": "The claim is factually correct. Brazil’s Superior Electoral Court reported that, with 99.99% of first-round ballots counted on October 5, 2026, Flávio Bolsonaro had 47.03% of valid votes and Lula 45.16%, sending both to the October 25 runoff. That result makes Bolsonaro a substantial electoral challenger, not merely a prospective one. Source: https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica. The Associated Press likewise described the two as facing off in the runoff and reported Bolsonaro’s first-round vote lead: https://apnews.com/article/brazil-elections-lula-flavio-bolsonaro-laydown-c194f8965632c8af9bcc4e7a3716cd7c.",
+      "costUsd": 0.022111085
+     },
+     {
+      "probability": 0.01,
+      "findings": "The claim is factually correct. Brazil’s Superior Electoral Court reported that Flávio Bolsonaro and Luiz Inácio Lula da Silva were the top two candidates in the October 4, 2026 first round, with Bolsonaro receiving 47.03% and Lula 45.16%, and confirmed they would meet in a runoff (https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/flavio-bolsonaro-e-lula-vao-disputar-o-2o-turno-para-a-presidencia-da-republica). The Associated Press likewise described the race as close: Bolsonaro was about 2.2 million votes behind Lula in the first round and would face him in the October 25 runoff (https://apnews.com/article/brazil-elections-lula-flavio-bolsonaro-runoff-53b7f13ea226017fd62c7edbd6af5892). Thus “mounting a significant electoral challenge” is supported by the official results and current race; “significant” is a reasonable characterization, not a precisely measurable fact.",
+      "costUsd": 0.02210636
+     },
+     {
+      "probability": 0.01,
+      "findings": "The claim is factually correct as of October 19, 2026. Flávio Bolsonaro and incumbent Luiz Inácio Lula da Silva advanced to Brazil’s October 25 presidential runoff after Bolsonaro received about 47% of valid first-round votes and Lula about 45%. The Associated Press describes them as being in a close race (https://apnews.com/article/brazil-lula-meta-complaint-electoral-court-42270ca42bf27b3c9c30d73961759bc9). Brazil’s Senate likewise reports that Bolsonaro placed first with 47.05% and Lula second with 45.14% (https://www12.senado.leg.br/noticias/materias/2026/10/04/flavio-bolsonaro-e-lula-disputam-o-segundo-turno-das-eleicoes-para-presidente). Reuters also reports that Bolsonaro’s first-round showing sent him into a runoff against Lula (https://www.investing.com/news/world-news/brazilians-head-to-polls-in-highstakes-polarized-election-4930920). Thus, describing him as mounting a significant electoral challenge is supported; the runoff had not yet occurred as of the stated date.",
+      "costUsd": 0.02207466
+     }
+    ]
+   }
+  ],
+  "costUsd": 1.9064599949999999
+ }
+}

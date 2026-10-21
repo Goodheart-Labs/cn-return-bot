@@ -11,7 +11,7 @@ import TurndownService from "turndown";
 import { grokCallCost, xai } from "../llm/xai";
 import { extractCitations, llm } from "../llm/llm";
 import { countNoteLength } from "../utils/noteLength";
-import { getBotConfig } from "../ab-testing/botConfig";
+import { getBotConfig, getBotConfigIfActive } from "../ab-testing/botConfig";
 import { getBrowser } from "../utils/browserManager";
 import { isWebUrl } from "../utils/webUrl";
 import { callFetchService } from "../../service/client";
@@ -29,6 +29,7 @@ import {
   type TokenCost,
 } from "../cost-tracking/pricing";
 import { fetchSearchResults, formatSearchResults, SearchUnavailableError, type SearchResult } from "./serper";
+import { fetchWithJinaReader } from "./jinaReader";
 import { buildSearchSummarizePrompt } from "../prompts/tool-calling/searchSummarize";
 export { fetchSearchResults, formatSearchResults, SearchUnavailableError };
 export type { SearchResult };
@@ -210,8 +211,8 @@ export async function handleGoogleSearchSummarized(query: string): Promise<ToolR
  *   4. If it is still blocked, read a Wayback Machine snapshot.
  *   5. If it is still blocked, read an archive.ph snapshot. That site has
  *      captures of paywalled pages Wayback is refused on.
- *   6. As a last resort, render the page with headless Chromium through the
- *      shared browserManager. This catches single-page apps that only work with
+ *   6. Render the page with headless Chromium through the shared
+ *      browserManager. This catches single-page apps that only work with
  *      JavaScript, and sites that answer 403 to a plain HTTP request but render
  *      fine for a real browser. It costs about 3 seconds, so it only runs when
  *      steps 1 to 5 have all failed.
@@ -277,6 +278,10 @@ const WALL_PATTERNS = [
   "captcha",
   "verifying you are human",
   "checking your browser",
+  // Cloudflare's challenge page. Jina Reader can come back with it, padded out
+  // with the challenge's script, when it could not pass the challenge either.
+  "just a moment...",
+  "are you a robot",
   "this browser isn't supported",
   // Cookie and consent gateways answer 200 with a privacy prompt instead of the
   // article we asked for. Yahoo's "guce" subdomain is the one we hit most often.
@@ -387,10 +392,14 @@ type ContentClass = "good" | "wall" | "thin";
 
 function classifyContent(html: string | undefined): { cls: ContentClass; markdown: string } {
   if (!html) return { cls: "thin", markdown: "" };
-  const md = htmlToMarkdown(html);
-  if (looksLikeWall(md) || looksLikeWall(html)) return { cls: "wall", markdown: md };
-  if (md.length < MIN_GOOD_CONTENT_CHARS) return { cls: "thin", markdown: md };
-  return { cls: "good", markdown: md };
+  const markdown = htmlToMarkdown(html);
+  return { cls: looksLikeWall(html) ? "wall" : classifyMarkdown(markdown), markdown };
+}
+
+function classifyMarkdown(markdown: string): ContentClass {
+  if (looksLikeWall(markdown)) return "wall";
+  if (markdown.length < MIN_GOOD_CONTENT_CHARS) return "thin";
+  return "good";
 }
 
 async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
@@ -469,8 +478,25 @@ export interface WebFetchResult {
  *  Actions and local runs, this process fetches the page itself. */
 export async function fetchWebPage(url: string): Promise<WebFetchResult> {
   const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
-  if (!socket) return fetchWebPageInProcess(url);
-  return callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url } satisfies FetchPageRequest);
+  const result = socket
+    ? await callFetchService<WebFetchResult>(socket, FETCH_PAGE_PATH, { url } satisfies FetchPageRequest)
+    : await fetchWebPageInProcess(url);
+  return withJinaFallback(url, result);
+}
+
+/** When the run is on the `jina_fetch` arm and the free ladder failed, this asks
+ *  Jina Reader for the page. Jina is a paid service that fetches the page from
+ *  its own addresses with its own browsers, so it gets through many bot
+ *  defences that refuse ours. It runs here and not inside the fetcher, because
+ *  the fetcher holds no keys. It costs about $0.0004 per page and only runs for
+ *  pages that every free step failed on. Jina fetches the live page, so the
+ *  note cites the original URL. A run outside any bot config, such as the
+ *  Common Notes page reads, never uses it. */
+export async function withJinaFallback(url: string, failed: WebFetchResult): Promise<WebFetchResult> {
+  if (failed.ok || !getBotConfigIfActive()?.jina_fetch) return failed;
+  const jina = await fetchWithJinaReader(url);
+  if (jina.type !== "page" || classifyMarkdown(jina.markdown) !== "good") return failed;
+  return { content: `[fetched via Jina Reader]\n\n${jina.markdown.slice(0, MAX_PAGE_TEXT_CHARS)}`, fetchedUrl: url, ok: true };
 }
 
 const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";

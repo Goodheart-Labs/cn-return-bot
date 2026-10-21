@@ -2346,6 +2346,13 @@ export type Database = {
         }[]
       }
       everything_is_admin: { Args: never; Returns: boolean }
+      everything_item_note_viewers: {
+        Args: never
+        Returns: {
+          item_id: string
+          viewers: number
+        }[]
+      }
       everything_leaderboard: {
         Args: never
         Returns: {
@@ -2358,6 +2365,7 @@ export type Database = {
         Returns: {
           active_devices: number
           bucket: string
+          installs: number
           note_viewers: Json
           notes_seen: number
           notes_written: number

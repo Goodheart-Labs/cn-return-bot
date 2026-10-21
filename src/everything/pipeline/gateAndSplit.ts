@@ -19,7 +19,7 @@ import { parseJsonWithRetry } from "../../pipeline/utils/jsonLlmCall";
 import { stripJsonFences } from "../../pipeline/utils/jsonOutput";
 import { extractionModels } from "./model";
 
-const GATE_SPLIT_SYSTEM_PROMPT = `You read a text (an article or a podcast transcript) and answer two questions.
+export const GATE_SPLIT_SYSTEM_PROMPT = `You read a text (an article or a podcast transcript) and answer two questions.
 
 1. Does the text try to shape the reader's beliefs about the world: argue a point, explain how something is, report what happened, give advice? Answer "checkable": true. If it is an announcement, a personal update, an event notice, a list of links, entertainment, or anything else that makes no claims worth checking, answer "checkable": false and say why in "reason".
 

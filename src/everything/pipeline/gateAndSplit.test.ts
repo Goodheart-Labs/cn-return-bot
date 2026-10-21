@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cutCues, cutText, locatePartStarts, parseGateSplitOutput } from "./gateAndSplit";
+import { GATE_SPLIT_SYSTEM_PROMPT, cutCues, cutText, locatePartStarts, parseGateSplitOutput } from "./gateAndSplit";
 import type { SubtitleCue } from "../../pipeline/media/youtubeCaptions";
 
 const text = [
@@ -102,5 +102,11 @@ describe("parseGateSplitOutput", () => {
 
   test("rejects a reply missing the parts list", () => {
     expect(() => parseGateSplitOutput('{"checkable":true,"reason":"argues"}')).toThrow();
+  });
+});
+
+describe("GATE_SPLIT_SYSTEM_PROMPT", () => {
+  test("asks for every field the parser requires", () => {
+    for (const field of ["checkable", "reason", "parts", "title", "start_excerpt"]) expect(GATE_SPLIT_SYSTEM_PROMPT).toContain(field);
   });
 });

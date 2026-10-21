@@ -6,7 +6,8 @@
  * the part's text, the piece's introduction ahead of it as context, and the
  * claims as a numbered JSON object, together with web search, and returns one
  * rating per claim on a seven-level scale.
- * The rating decides which claims get fact-checked.
+ * The rating decides which claims get fact-checked. When the answer leaves
+ * claims out, a follow-up turn in the same conversation asks for just those.
  *
  * One call for a whole part is deliberate. The claims of one topic are
  * correlated, and a single good source often settles most of them. A search per
@@ -45,18 +46,22 @@ export const JUDGEMENTS = [
 // and everything below it.
 const FACT_CHECK_FROM = JUDGEMENTS.indexOf("uncertain");
 export function shouldFactCheck(judgement: string): boolean {
+  if (judgement === UNRATED_JUDGEMENT) return false;
   const idx = (JUDGEMENTS as readonly string[]).indexOf(judgement);
   return idx === -1 || idx >= FACT_CHECK_FROM; // A judgement we do not recognize is checked to be safe.
 }
 
-// A claim the rater left out, or rated with a word outside the scale, is
-// treated as uncertain, so it still gets checked.
-const UNRATED_JUDGEMENT = "uncertain";
+/** The judgement of a claim the rater never rated. A claim it leaves out, or
+ *  rates with a word outside the scale, is asked about once more. A claim that
+ *  is still unrated after that gets this judgement and is not fact-checked.
+ *  Until GOO-419 such a claim counted as "uncertain" and was checked. On long
+ *  items the rater sometimes answered for only part of the claims, and one
+ *  video then sent 306 claims to checking for $9.63. */
+export const UNRATED_JUDGEMENT = "unrated";
 
 /** The judgement a claim the extractor marked very confident is stored with.
  *  It never reaches the rater, so this is the rater's top rating applied by
  *  the extractor's confidence instead. */
-export const VERY_CONFIDENT_JUDGEMENT = "certainly true";
 
 const RATING_SCHEMA_HINT = `{ "research": string, "ratings": [{ "claim": number, "rating": string }] }`;
 
@@ -81,7 +86,7 @@ const RATING_RESPONSE_FORMAT = jsonSchemaResponseFormat("claim_ratings", {
   additionalProperties: false,
 });
 
-const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get one part of an article or transcript, possibly with the piece's introduction ahead of it for context, and the claims extracted from that part as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
+export const RATING_SYSTEM_PROMPT = `You rate how true the factual claims of a text are. You get one part of an article or transcript, possibly with the piece's introduction ahead of it for context, and the claims extracted from that part as a JSON object keyed by claim number. Each claim is the author's own words, with the passage it sits in.
 
 Research first. Search the web for sources on the events, people and figures the text is about, and open the most relevant pages to read them in full. Related claims usually share a source, so read the few pages that settle many claims at once. Search before you rate.
 
@@ -138,29 +143,51 @@ export function parseRatingOutput(toParse: string): RatingOutput {
   return output;
 }
 
-/** Attaches the ratings to the claims by their number in the list. Claim
- *  numbers that do not exist are ignored. A claim without a valid rating gets
- *  the unrated judgement. */
-export function applyRatings(claims: ExtractedClaim[], ratings: RatingOutput["ratings"]): RatedClaim[] {
+/** The valid ratings of an answer, keyed by claim number. A rating outside the
+ *  scale is left out, so it counts as a claim the rater did not rate. */
+function validRatingsByNumber(ratings: RatingOutput["ratings"]): Map<number, string> {
   const byNumber = new Map<number, string>();
   for (const { claim, rating } of ratings) {
     if ((JUDGEMENTS as readonly string[]).includes(rating)) byNumber.set(claim, rating);
   }
+  return byNumber;
+}
+
+/** The numbers of the claims that have no valid rating yet. */
+function unratedClaimNumbers(claimCount: number, byNumber: Map<number, string>): number[] {
+  return Array.from({ length: claimCount }, (_, i) => i + 1).filter((n) => !byNumber.has(n));
+}
+
+/** Attaches the ratings to the claims by their number in the list. Claim
+ *  numbers that do not exist are ignored. A claim without a valid rating gets
+ *  the unrated judgement. */
+export function applyRatings(claims: ExtractedClaim[], ratings: RatingOutput["ratings"]): RatedClaim[] {
+  const byNumber = validRatingsByNumber(ratings);
   return claims.map((claim, i) => ({ ...claim, judgement: byNumber.get(i + 1) ?? UNRATED_JUDGEMENT }));
+}
+
+/** The follow-up turn that asks for the claims the first answer left out. */
+function leftOutRequest(rated: number, total: number, leftOut: number[]): string {
+  return `You rated ${rated} of ${total} claims. Rate the claims you left out: ${leftOut.join(", ")}. Answer with the same JSON, with one rating for each of these claim numbers.`;
 }
 
 export interface ClaimRatingResult {
   claims: RatedClaim[];
-  /** What the model found, with its source URLs. This is the only record of the
-   *  research, because the step writes no run row. It is logged, not stored. */
+  /** What the model found, with its source URLs. The caller logs it. */
   research: string;
   cost: TokenCost;
   /** How many searches Meta ran. The pages it opened inside them are not reported. */
   webSearches: number;
+  /** Every reply the model gave, in order, for the rating row's log. */
+  answers: string[];
+  /** How many claims the first answer left out, and so were asked about again. */
+  leftOutByFirstAnswer: number;
 }
 
 export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingResult> {
-  if (params.claims.length === 0) return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0 };
+  if (params.claims.length === 0) {
+    return { claims: [], research: "", cost: emptyTokenCost(), webSearches: 0, answers: [], leftOutByFirstAnswer: 0 };
+  }
 
   const messages: any[] = [
     { role: "system", content: RATING_SYSTEM_PROMPT },
@@ -168,34 +195,60 @@ export async function rateClaims(params: RateClaimsParams): Promise<ClaimRatingR
   ];
   const cost = emptyTokenCost();
   let webSearches = 0;
-  // The first attempt does the research. A retry only asks for clean JSON over
-  // the conversation so far, without the search tool, so the research is never
-  // paid for twice.
-  const output = await parseJsonWithRetry<RatingOutput>({
-    source: "rateClaims",
-    messages,
-    schemaHint: RATING_SCHEMA_HINT,
-    call: async (msgs, attempt) => {
-      const { model, reasoning, ratingTools } = extractionModels();
-      const response: any = await llm.create({
-        model,
-        messages: msgs,
-        response_format: RATING_RESPONSE_FORMAT,
-        reasoning_effort: reasoning.rating,
-        ...(attempt === 1 ? { tools: ratingTools } : {}),
-      } as any);
-      addTokenCost(cost, extractOpenRouterCost(response));
-      // Meta's search reports its searches. For Claude, OpenRouter reports only
-      // the server-side tool calls, searches and fetches together.
-      const toolUse = response.usage?.server_tool_use_details;
-      webSearches += toolUse?.web_search_requests ?? toolUse?.tool_calls_executed ?? 0;
-      const content: string = response.choices?.[0]?.message?.content ?? "";
-      // Muse narrates its research steps before the JSON even under a schema,
-      // so the object is extracted rather than parsed whole.
-      return { toParse: extractJsonObject(content), assistantEcho: content };
-    },
-    parse: parseRatingOutput,
-  });
+  const answers: string[] = [];
+  // The first attempt of each question may search. A retry only asks for
+  // clean JSON over the conversation so far, without the search tool, so the
+  // research is never paid for twice.
+  const askForRatings = () =>
+    parseJsonWithRetry<RatingOutput>({
+      source: "rateClaims",
+      messages,
+      schemaHint: RATING_SCHEMA_HINT,
+      call: async (msgs, attempt) => {
+        const { model, reasoning, ratingTools } = extractionModels();
+        const response: any = await llm.create({
+          model,
+          messages: msgs,
+          response_format: RATING_RESPONSE_FORMAT,
+          reasoning_effort: reasoning.rating,
+          ...(attempt === 1 ? { tools: ratingTools } : {}),
+        } as any);
+        addTokenCost(cost, extractOpenRouterCost(response));
+        // Meta's search reports its searches. For Claude, OpenRouter reports only
+        // the server-side tool calls, searches and fetches together.
+        const toolUse = response.usage?.server_tool_use_details;
+        webSearches += toolUse?.web_search_requests ?? toolUse?.tool_calls_executed ?? 0;
+        const content: string = response.choices?.[0]?.message?.content ?? "";
+        answers.push(content);
+        // Muse narrates its research steps before the JSON even under a schema,
+        // so the object is extracted rather than parsed whole.
+        return { toParse: extractJsonObject(content), assistantEcho: content };
+      },
+      parse: parseRatingOutput,
+    });
 
-  return { claims: applyRatings(params.claims, output.ratings), research: stripBrowserLineCitations(output.research), cost, webSearches };
+  const first = await askForRatings();
+  const ratings = first.ratings;
+  const research = [first.research];
+  const leftOut = unratedClaimNumbers(params.claims.length, validRatingsByNumber(first.ratings));
+  // The follow-up stays in the same conversation, so the model keeps the
+  // research it already did and is asked only for the claims it skipped.
+  if (leftOut.length > 0) {
+    messages.push({ role: "assistant", content: answers.at(-1) });
+    messages.push({ role: "user", content: leftOutRequest(params.claims.length - leftOut.length, params.claims.length, leftOut) });
+    const followUp = await askForRatings();
+    // Only the left-out claims are taken from the follow-up. A claim the
+    // first answer rated keeps that rating.
+    ratings.push(...followUp.ratings.filter((r) => leftOut.includes(r.claim)));
+    research.push(followUp.research);
+  }
+
+  return {
+    claims: applyRatings(params.claims, ratings),
+    research: stripBrowserLineCitations(research.filter(Boolean).join("\n\n")),
+    cost,
+    webSearches,
+    answers,
+    leftOutByFirstAnswer: leftOut.length,
+  };
 }

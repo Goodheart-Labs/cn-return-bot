@@ -21,11 +21,8 @@ export interface ToolCallCost {
   cost: number;
 }
 
-export interface LlmCallCost {
+export interface LlmCallCost extends TokenCost {
   name: string;
-  input_tokens: number;
-  output_tokens: number;
-  cost: number;
   tools: ToolCallCost[];
 }
 
@@ -71,7 +68,7 @@ export async function trackedLlmCreate(
 // --- Aggregation ---
 
 function entryCost(entry: LlmCallCost): TokenCost {
-  const cost = { input_tokens: entry.input_tokens, output_tokens: entry.output_tokens, cost: entry.cost };
+  const { name: _name, tools: _tools, ...cost } = entry;
   for (const tool of entry.tools) {
     cost.cost += tool.cost;
   }

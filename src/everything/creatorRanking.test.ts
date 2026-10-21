@@ -26,12 +26,12 @@ const creator = (slug: string, overrides: Partial<(typeof dbState.creatorProject
   ...overrides,
 });
 
-/** One creator's score row. The defaults are one person who opened two posts,
- *  the smallest creator the walk accepts, so a test that is about something
- *  else does not have to think about it. */
+/** One creator's score row. The default score is 1.5, the smallest the walk
+ *  accepts, so a test that is about something else does not have to think
+ *  about it. */
 const visited = (feedUrl: string, score: { perPost?: number; posts?: number; people?: number } = {}) => ({
   feed_url: feedUrl,
-  visitors_per_post: score.perPost ?? 1,
+  visitors_per_post: score.perPost ?? 1.5,
   posts: score.posts ?? 2,
   people: score.people ?? 1,
 });
@@ -39,23 +39,24 @@ const visited = (feedUrl: string, score: { perPost?: number; posts?: number; peo
 const rankedSlugs = async () => (await rankCreators()).map((c) => c.project_slug);
 
 describe("rankCreators, score", () => {
-  test("a creator needs two visited posts, however many people opened the one post", async () => {
+  test("a creator needs a score of at least 1.5", async () => {
     dbState.creatorVisitScores = [
-      visited("https://onehit.substack.com", { perPost: 8, posts: 1, people: 8 }),
-      visited("https://twoposts.substack.com", { perPost: 1, posts: 2, people: 1 }),
+      visited("https://onereader.substack.com", { perPost: 1, posts: 10, people: 1 }),
+      visited("https://almost.substack.com", { perPost: 1.4, posts: 10, people: 4 }),
+      visited("https://enough.substack.com", { perPost: 1.5, posts: 10, people: 4 }),
     ];
-    expect(await rankedSlugs()).toEqual(["twoposts"]);
+    expect(await rankedSlugs()).toEqual(["enough"]);
   });
 
-  test("a prioritized creator is walked with fewer than two visited posts", async () => {
+  test("a prioritized creator is walked with a low score", async () => {
     dbState.creatorProjects = [creator("pressed", { priority_until: inDays(3) })];
-    dbState.creatorVisitScores = [visited("https://pressed.substack.com", { posts: 1 })];
+    dbState.creatorVisitScores = [visited("https://pressed.substack.com", { perPost: 1, posts: 10 })];
     expect(await rankedSlugs()).toEqual(["pressed"]);
   });
 
   test("creators order by the average number of people per post, so a few widely read posts beat many lightly read ones", async () => {
     dbState.creatorVisitScores = [
-      visited("https://daily.substack.com", { perPost: 1.2, posts: 10, people: 9 }),
+      visited("https://daily.substack.com", { perPost: 1.6, posts: 10, people: 9 }),
       visited("https://monthly.substack.com", { perPost: 4, posts: 2, people: 5 }),
     ];
     expect(await rankedSlugs()).toEqual(["monthly", "daily"]);
@@ -63,8 +64,8 @@ describe("rankCreators, score", () => {
 
   test("creators with the same average order by how many different people visited them", async () => {
     dbState.creatorVisitScores = [
-      visited("https://few.substack.com", { perPost: 1, people: 1 }),
-      visited("https://many.substack.com", { perPost: 1, people: 7 }),
+      visited("https://few.substack.com", { perPost: 2, people: 2 }),
+      visited("https://many.substack.com", { perPost: 2, people: 7 }),
     ];
     expect(await rankedSlugs()).toEqual(["many", "few"]);
   });

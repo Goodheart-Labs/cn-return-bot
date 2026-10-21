@@ -56,10 +56,6 @@ const MISINFO_MAX_PROCESS = 10;
 // being too slow must not come back in through the stored-verdict rescue there.
 
 export interface MisinfoCandidatesOptions {
-  /** Post ids the crawl must leave alone. This set is shared with generateCandidates,
-   *  so a tweet we have already noted, or one that is cooling down, is not handled
-   *  twice. */
-  skipPostIds: Set<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
   /** The soft deadline for starting new posts, passed through to processPosts.
    *  See ProcessPostsOptions.deadlineMs. */
@@ -77,14 +73,11 @@ export interface MisinfoCandidatesOptions {
 /** Tries each feed size in turn, and falls through to the next one on any error.
  *  Returns null when every size fails, so a passing feed problem never breaks the
  *  whole run. */
-async function crawlFeed(
-  skipPostIds: Set<string>,
-): Promise<{ feedSize: FeedSize; posts: Post[] } | null> {
+async function crawlFeed(): Promise<{ feedSize: FeedSize; posts: Post[] } | null> {
   for (const size of MISINFO_FEED_SIZES) {
     try {
       const posts = await fetchEligiblePosts(
         MISINFO_MAX_RESULTS,
-        skipPostIds,
         MISINFO_MAX_PAGES,
         buildPostSelection(size),
       );
@@ -208,7 +201,7 @@ function buildWorkList(
 
 export async function generateMisinfoCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { skipPostIds, onTweetProcessed, deadlineMs, dumpPath, topicIds }: MisinfoCandidatesOptions,
+  { onTweetProcessed, deadlineMs, dumpPath, topicIds }: MisinfoCandidatesOptions,
 ): Promise<Candidate[]> {
   // The sightings table is the ledger that stops us judging the same post twice.
   // Without it every run would re-evaluate the whole crawl.
@@ -227,14 +220,18 @@ export async function generateMisinfoCandidates(
 
   let crawl: { feedSize: FeedSize; posts: Post[] } | null;
   if (dumpPath) {
-    const posts = loadDumpFeed(dumpPath).filter((p) => !skipPostIds.has(p.id));
+    const posts = loadDumpFeed(dumpPath);
     console.log(`[misinfo] Loaded ${posts.length} posts from dump ${dumpPath} (live crawl bypassed)`);
     crawl = { feedSize: "xxl", posts };
   } else {
-    crawl = await crawlFeed(skipPostIds);
+    crawl = await crawlFeed();
   }
   if (!crawl) return [];
-  const { feedSize, posts } = crawl;
+  const { feedSize } = crawl;
+  // Leave out tweets we have already noted or that are cooling down, as the
+  // regular pass does, so they are not handled twice.
+  const cooldown = await supabaseLogger.getCooldownTweetIds(crawl.posts.map((p) => p.id));
+  const posts = crawl.posts.filter((p) => !cooldown.has(p.id));
 
   const matched = matchPostsByTopic(posts);
   const selectedNew = await evaluateNewMatches(supabaseLogger, feedSize, matched, topics);

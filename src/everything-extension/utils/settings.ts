@@ -3,9 +3,9 @@ import { DEFAULT_MARGIN_OPTIONS, type CardPlacement } from "@cn/core/marginCards
 import type { NoteStatus } from "@cn/core/noteScore";
 import { DEFAULT_PILL_PALETTE, type PillPalette } from "@cn/features/notes/pillPalette";
 
-// The pages the user has already asked us to cover with "Request notes on this
-// page". Reopening the popup on such a page shows the done state instead of creating
-// a second request. The list is a rolling window. Sync storage allows about 8KB per
+// The pages the user has already asked us to cover with "Check this page".
+// Reopening the popup on such a page shows the done state instead of creating a
+// second request. The list is a rolling window. Sync storage allows about 8KB per
 // key, so we only remember the most recent requests.
 //
 // Each page is remembered with the time it was asked for, and only while the

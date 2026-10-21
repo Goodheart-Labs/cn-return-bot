@@ -21,7 +21,8 @@ import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
-import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent } from "./sources/youtube";
+import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
+import { MAX_ITEM_RETRIES } from "./autoEnqueue";
 import { describeTodaySpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
@@ -124,8 +125,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
 function tierName(priority: number): string {
   if (priority >= QUEUE_PRIORITY.requested) return "requested";
   if (priority === QUEUE_PRIORITY.prioritized) return "priority";
-  if (priority === QUEUE_PRIORITY.backlog) return "visits";
-  return "retry";
+  return "visits";
 }
 
 /** Prints what is waiting, in the order this worker will take it, and returns
@@ -155,17 +155,39 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
   return queue;
 }
 
-/** Whether any feed-tier item is waiting. The feed run walks for new posts
- *  only when this is false, so a resumed or retried item is finished before
- *  fresh content is pulled in front of it. */
+/** Whether a feed item is waiting: the post the last walk picked, or an item a
+ *  killed run left half done. The feed run walks only when this is false, so
+ *  whatever waits is finished before the walk picks the next post. */
 export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
   queue.some((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested);
+
+/** Where one item ended. "no_captions_yet" is an error that gets its repeat
+ *  attempts like any other, but it is expected, so it does not fail the feed
+ *  run. */
+type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
+
+/** A video we cannot read is not a failure (GOO-422). A young video without
+ *  captions stays in error so the walk tries it again later, because YouTube
+ *  may not have made its automatic captions yet. On its last allowed attempt,
+ *  and for every other unreadable video, the item ends as done with the
+ *  reason as its skip reason. We do not put the young video back in the queue
+ *  ourselves, because the feed worker would take it again at once. */
+async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoError): Promise<ItemOutcome> {
+  if (err.captionsMayStillCome && item.retries < MAX_ITEM_RETRIES) {
+    console.log(`  ${err.message} · tried again after its rest time`);
+    await markItemError(item.id, err.message);
+    return "no_captions_yet";
+  }
+  console.log(`  ${err.message} · finished without checking`);
+  await markItemDone(item.id, err.reason);
+  return "done";
+}
 
 /** Runs one claimed item through fetch, extraction and checking, and records
  *  where it ended: done, put back because a budget ran out part way, or
  *  errored. Both workers use this: the Actions feed run for the backlog tiers,
  *  and the intake service for reader-requested items. */
-export async function processQueuedItem(item: EverythingItem): Promise<"done" | "capped" | "error"> {
+export async function processQueuedItem(item: EverythingItem): Promise<ItemOutcome> {
   const startedAt = Date.now();
   const spentBefore = await todaySpendUsd();
   try {
@@ -206,6 +228,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
     );
     return "done";
   } catch (err: any) {
+    if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
     console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
     await markItemError(item.id, err?.message ?? "unknown");
     return "error";
@@ -216,7 +239,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<"done" | 
  *  waiting. The Actions feed run calls this once per run;
  *  reader-requested items are never taken here, the intake service on the
  *  machine owns that tier. */
-export async function processNextFeedItem(): Promise<"done" | "capped" | "error" | "empty"> {
+export async function processNextFeedItem(): Promise<ItemOutcome | "empty"> {
   const item = await claimNextQueuedItem("feed");
   if (!item) return "empty";
   console.log(`\nCHECKING NOW · [${item.source}] ${clip(item.title ?? item.url, 60)}`);

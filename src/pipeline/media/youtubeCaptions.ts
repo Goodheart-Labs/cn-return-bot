@@ -31,10 +31,16 @@ export class YoutubeUnreachableError extends Error {
 
 /** What yt-dlp prints when the trouble is the path to YouTube rather than the
  *  video: the residential proxy's requests hanging or being refused, a proxy
- *  address YouTube has flagged, our own kill of a hung call, or a PO token
- *  YouTube did not accept. */
+ *  address YouTube has flagged as a bot, our own kill of a hung call, or a PO
+ *  token YouTube did not accept. YouTube's bot check reads "Sign in to confirm
+ *  you're not a bot", with a straight or a curly apostrophe. */
 const YOUTUBE_UNREACHABLE_RE =
-  /Unable to download (API page|webpage)|operation timed out|ETIMEDOUT|wrong version number|HTTP Error 429|Sign in to confirm|PO Token/i;
+  /Unable to download (API page|webpage)|operation timed out|ETIMEDOUT|wrong version number|HTTP Error 429|Sign in to confirm you.re not a bot|PO Token/i;
+
+/** What yt-dlp prints for a video YouTube shows only to signed-in adults. No
+ *  retry opens such a video without a signed-in account, so it is a fact
+ *  about the video and not a failure to reach YouTube (GOO-422). */
+const AGE_RESTRICTED_RE = /Sign in to confirm your age/i;
 
 /** How long one caption call may run before it is killed and counted as not
  *  having reached YouTube. A good call through the proxy takes 6 to 25
@@ -92,8 +98,12 @@ const webPlayerArgs = (poToken: string): string[] => ["--extractor-args", `youtu
 async function dumpVideoJson(video: YoutubeVideo, proxyUrl: string | undefined): Promise<{ stdout: string; stderr: string }> {
   const args = [...proxyArgs(proxyUrl), ...webPlayerArgs(await fetchPoToken(video.videoId)), "--dump-single-json", "--skip-download", "--ignore-no-formats-error", video.url];
   const run = await runYtDlp(args, CAPTION_CALL_TIMEOUT_MS);
-  const failure = run.error?.killed ? "yt-dlp operation timed out" : typeof run.error?.code === "string" ? run.error.message : "";
-  return { stdout: run.stdout, stderr: failure ? `${run.stderr}\n${failure}` : run.stderr };
+  // Node gives a text code such as ENOENT when yt-dlp could not be started at
+  // all, and a number when it ran and exited with an error. A process that
+  // never ran says nothing about the video, so it must not end up as "no
+  // captions".
+  if (typeof run.error?.code === "string") throw new Error(`yt-dlp could not run: ${hideProxyAddress(run.error.message).slice(0, MAX_REASON_LENGTH)}`);
+  return { stdout: run.stdout, stderr: run.error?.killed ? `${run.stderr}\nyt-dlp operation timed out` : run.stderr };
 }
 
 /** One caption track of a video, as yt-dlp's JSON dump describes it. */
@@ -154,26 +164,36 @@ export function chooseCaptionTrack(tracks: CaptionTrack[], audioLanguage: string
 }
 
 /** Every caption track the video has, or none when YouTube answered and the
- *  video has no captions. The addresses carry the PO token.
+ *  video has no captions, or the news that YouTube shows the video only to
+ *  signed-in adults. The addresses carry the PO token.
  *
  *  Success is judged by the tracks in the dump and never by the warnings,
  *  because a call that got the tracks can still print "HTTP Error 429" for a
  *  page it did not need. A call that got no tracks and whose output says
  *  YouTube was not reached throws YoutubeUnreachableError, and the proxy
  *  wrapper runs it again on a fresh connection until its tries run out. */
-async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionTrack[]> {
+async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionTrack[] | "age_restricted"> {
   return withResidentialProxy(
     video.url,
     async (proxyUrl) => {
       const { stdout, stderr } = await dumpVideoJson(video, proxyUrl);
       const tracks = stdout.trim() ? captionTracksFromDump(JSON.parse(stdout)) : [];
       if (tracks.length) return tracks;
-      const unreachableLine = stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
-      if (!unreachableLine) return [];
-      throw new YoutubeUnreachableError(video.url, unreachableLine.trim().slice(0, MAX_REASON_LENGTH));
+      const answer = readTracklessAnswer(stderr);
+      if (answer.kind === "unreachable") throw new YoutubeUnreachableError(video.url, answer.line.trim().slice(0, MAX_REASON_LENGTH));
+      return answer.kind === "age_restricted" ? "age_restricted" : [];
     },
     (err) => err instanceof YoutubeUnreachableError,
   );
+}
+
+/** What a dump without caption tracks means, read from yt-dlp's complaints:
+ *  YouTube was not reached, the video is age-restricted, or the video simply
+ *  has no captions. */
+export function readTracklessAnswer(stderr: string): { kind: "none" } | { kind: "age_restricted" } | { kind: "unreachable"; line: string } {
+  if (AGE_RESTRICTED_RE.test(stderr)) return { kind: "age_restricted" };
+  const unreachableLine = stderr.split("\n").find((line) => YOUTUBE_UNREACHABLE_RE.test(line));
+  return unreachableLine ? { kind: "unreachable", line: unreachableLine } : { kind: "none" };
 }
 
 /** The caption file's text, fetched through the residential proxy. When every
@@ -186,17 +206,27 @@ async function downloadCaptionFile(videoUrl: string, track: CaptionTrack): Promi
   }
 }
 
+/** What YouTube answered about a video's captions. */
+export type YoutubeCaptions =
+  | { kind: "captions"; cues: SubtitleCue[] }
+  /** The video has no captions in its own language. */
+  | { kind: "none" }
+  /** YouTube shows the video only to signed-in adults. */
+  | { kind: "age_restricted" };
+
 /**
- * The video's captions as timestamped cues, or null when YouTube answered and
- * the video has no captions in its own language. When YouTube could not be
- * reached at all, this throws a YoutubeUnreachableError instead, so that a
- * proxy outage is never recorded as a video without captions (GOO-169).
+ * The video's captions as timestamped cues, or what YouTube answered instead.
+ * When YouTube could not be reached at all, this throws a
+ * YoutubeUnreachableError, so that a proxy outage is never recorded as a
+ * video without captions (GOO-169).
  */
-export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<SubtitleCue[] | null> {
-  const track = chooseCaptionTrack(await listCaptionTracks(video), video.audioLanguage);
-  if (!track) return null;
+export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<YoutubeCaptions> {
+  const tracks = await listCaptionTracks(video);
+  if (tracks === "age_restricted") return { kind: "age_restricted" };
+  const track = chooseCaptionTrack(tracks, video.audioLanguage);
+  if (!track) return { kind: "none" };
   const cues = parseSubtitleToCues(await downloadCaptionFile(video.url, track));
-  return cues.length ? cues : null;
+  return cues.length ? { kind: "captions", cues } : { kind: "none" };
 }
 
 export interface SubtitleCue {

@@ -119,7 +119,7 @@ export interface ExtractClaimsRequest {
 
 /** Either the gate declined the content, or every claim found, part by part,
  *  including the ones not worth checking. The caller decides what to do with
- *  them, using `shouldFactCheck` and `dropSpeculation`, so that the extraction
+ *  them, using `shouldFactCheck`, so that the extraction
  *  service stays a pure reader of text with no policy of its own. The one
  *  policy it applies is the gate, and only for backlog work: a page a reader
  *  asked for is never declined. */
@@ -148,11 +148,14 @@ export interface RateClaimsRequest {
 export interface RateClaimsResponse {
   /** The same claims back, each carrying its judgement. */
   claims: RatedClaim[];
-  /** What the model found, with its source URLs. The caller logs it; it is
-   *  stored nowhere else. */
+  /** What the model found, with its source URLs. The caller logs it. */
   research: string;
   webSearches: number;
   costUsd: number | null;
+  /** Every reply the model gave, which the caller stores on the rating row. */
+  answers: string[];
+  /** How many claims the first answer left out and the follow-up asked about. */
+  leftOutByFirstAnswer: number;
 }
 
 // ---------------------------------------------------------------------------

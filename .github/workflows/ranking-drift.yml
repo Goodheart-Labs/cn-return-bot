@@ -43,4 +43,8 @@ jobs:
             cat replay.txt
             echo '```'
           } > body.md
+          # The issue cannot be created with a label that does not exist. On 1 October 2026
+          # the label was missing and the result was lost. --force makes this line succeed
+          # whether or not the label already exists.
+          gh label create ranking --force --color 5319e7 --description "Monthly ranking drift check results"
           gh issue create --title "$TITLE" --body-file body.md --label ranking

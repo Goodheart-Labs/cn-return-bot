@@ -1,0 +1,408 @@
+{
+ "id": "2026-10-19-0156",
+ "label": "Research step only: probability that the claim is misleading",
+ "createdAt": "2026-10-19T02:04:08.305Z",
+ "commit": "737a02f2",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 0,
+   "checker": 0
+  }
+ },
+ "rowIds": [
+  "berkeley-as",
+  "czechoslovakia-doctors",
+  "cfar-ftx",
+  "ea-earning-to-give",
+  "aella-cam-girls",
+  "nearly-impossible-to-prove",
+  "pivotal-act-terrorism",
+  "melanie-mitchell",
+  "ea-beholden-to-yudkowsky",
+  "givewell-1500x",
+  "sol-subagents",
+  "sol-destructive-45",
+  "opus-values-figure",
+  "yudkowsky-writer-not-scientist",
+  "treasury-systemic-risk",
+  "hungary-population",
+  "sun-mass-ratio"
+ ],
+ "extractor": null,
+ "checker": null,
+ "probability": {
+  "samples": 3,
+  "prompt": "You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.\n\n## What you get\nA single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:\n  Text from Transcript: <excerpt>   (or \"Text from Article:\")\n  Claim: <the claim>\nJudge whether the claim is factually correct.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.\n\n## Sourcing rules\n- Include what each source says that's relevant.\n- If the claim is not misleading, the findings can be brief — just explain why.\n\nRespond with strict JSON only matching: { findings: string, misleading_probability: number }",
+  "rows": [
+   {
+    "id": "berkeley-as",
+    "group": "note-easy",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.99,
+      "findings": "Misleading. The 30% figure comes from a 2026 study by UC Berkeley researcher Igor Chirikov, but the grades were from a large research university in Texas—not UC Berkeley. The study reports that in courses with more AI-exposed tasks, the share of A grades rose by 13 percentage points, about 30% relative to the 2022 baseline; it does not say Berkeley’s overall number of A grades rose 30%. The Berkeley research center’s summary describes the dataset and result: https://cshe.berkeley.edu/node/1875. Axios identifies the institution studied as a Texas research university and notes that Chirikov did not name it: https://www.axios.com/2026/05/16/ai-grade-inflation-college-classes.",
+      "costUsd": 0.02198394
+     },
+     {
+      "probability": 0.99,
+      "findings": "Misleading. The 30% figure comes from a study by UC Berkeley researcher Igor Chirikov, but the data were from an unnamed large research university in Texas—not UC Berkeley. The study says that, after ChatGPT’s release, the share of A grades in courses with more AI-exposed tasks rose by 13 percentage points, about 30% relative to the 2022 baseline; it does not report that the number of A grades at Berkeley rose by 30%. Source: https://cshe.berkeley.edu/node/1875. The paper’s abstract likewise identifies its data as coming from “a large research university” and reports the increase for AI-exposed courses, not for UC Berkeley: https://escholarship.org/uc/item/80x8d3qd. The article appears to have conflated the researcher’s Berkeley affiliation with the university studied; it also turns a change in the share of grades in particular courses into a claim about the total number of A grades.",
+      "costUsd": 0.02200174
+     },
+     {
+      "probability": 0.99,
+      "findings": "The claim misattributes the study’s finding to UC Berkeley. The study’s author, UC Berkeley researcher Igor Chirikov, analyzed grades from an unnamed Texas research university—not UC Berkeley. Axios reports that the school had over 50,000 students and that the share of A grades rose by about 30% in courses where AI could be useful, while grades in other types of courses remained flat (https://www.axios.com/2026/05/16/ai-grade-inflation-college-classes). The study summary specifies an increase of 13 percentage points, or about 30% relative to the 2022 baseline, in courses with more AI-exposed tasks; it does not report a 30% campus-wide increase in the number of A grades at Berkeley (https://cshe.berkeley.edu/node/1875).",
+      "costUsd": 0.0331098
+     }
+    ]
+   },
+   {
+    "id": "czechoslovakia-doctors",
+    "group": "note-easy",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.12,
+      "findings": "Broadly correct if “larger remaining Jewish population” means the absolute number of Jews estimated to be living in each country after the war. A 1946 estimate lists 65,000 Jews in Czechoslovakia—60,000 native and 6,600 refugees or displaced people. Among the other countries in the table, only Romania (335,000), Hungary (200,000), France (180,000), Poland (80,000), and Germany (94,000) had higher totals; most listed countries had fewer. The estimate excludes survivors in Carpathian Ukraine, then part of the Soviet Union. Source: https://avalon.law.yale.edu/20th_century/angap03.asp. The comparison depends on the date and borders used: the US Holocaust Memorial Museum says about 14,000 Protectorate Jews remained alive in the Czech lands by 1945, while its estimate for Czechoslovakia as a whole is 17,000 in 1950. Source: https://encyclopedia.ushmm.org/content/en/article/the-holocaust-in-bohemia-and-moravia and https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945. Thus, the claim is a reasonable broad comparison, but it should not be read as a precise, same-date count across consistently defined countries.",
+      "costUsd": 0.03262533
+     },
+     {
+      "probability": 0.55,
+      "findings": "The claim is ambiguous about both the date and what “larger” means. By raw count, it is plausible: the US Holocaust Memorial Museum reports about 17,000 Jews in Czechoslovakia in 1950, more than the postwar Jewish populations it gives for Greece (about 7,000), Yugoslavia (3,500), and Bulgaria (6,500). But the same figures show much larger populations in several other countries, including Romania (about 280,000), Hungary (190,000), Poland (45,000), and Germany (37,000). The source does not establish that Czechoslovakia ranked above a majority of all Nazi-occupied countries, and 1950 is after—not during—the Holocaust. Source: https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945. The claim should not be read as saying that Jews in Czechoslovakia had an unusually high survival rate: the Museum says approximately 263,000 Jews from Czechoslovak territory were murdered and about 14,000 Jews remained alive in the Czech lands by 1945. Source: https://encyclopedia.ushmm.org/content/en/article/the-holocaust-in-bohemia-and-moravia. Overall, the claim may be true as a loose comparison of absolute postwar population counts, but its timing and unspecified comparison make it potentially misleading.",
+      "costUsd": 0.02239703
+     },
+     {
+      "probability": 0.22,
+      "findings": "A 1946 Anglo-American Committee of Inquiry table lists 65,000 Jews in Czechoslovakia (60,000 native residents and 6,600 refugees/displaced people). In that table, this is more than the totals listed for 9 of the other 16 countries in Table A, so the claim is broadly defensible if “most” means a narrow majority and “remaining” refers to the immediate postwar population. The ranking depends on the date, geographic boundaries, and which countries count as Nazi-occupied; the table itself cautions that its Czechoslovak figure excludes some survivors in Carpatho-Ukraine. Source: https://avalon.law.yale.edu/20th_century/angap03.asp. For comparison, the US Holocaust Memorial Museum gives Czechoslovakia’s Jewish population as 17,000 in 1950, underscoring that this is not a timeless count: https://encyclopedia.ushmm.org/content/en/article/remaining-jewish-population-of-europe-in-1945.",
+      "costUsd": 0.02240226
+     }
+    ]
+   },
+   {
+    "id": "cfar-ftx",
+    "group": "note-easy",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.78,
+      "findings": "The item appears to be the Rose Garden Inn in Berkeley, later used as CFAR’s Lighthaven venue. The FTX debtors’ complaint says FTX Trading wired $2 million to CFAR on March 3, 2022, and alleges that FTX-related transfers totaling about $4.9 million went to CFAR and were used in part for the hotel project: https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf. The complaint says Lightcone RG closed on the hotel on or about November 4, 2022; it also says FTX Foundation wired $500,000 payments to a title company in July and August and approved a $1.5 million grant on October 3, alleging that a material portion supported the acquisition and renovation. Thus, FTX-related money was connected to the purchase and improvements, but the main $2 million wire to CFAR was in March—months before FTX’s November collapse. The complaint is the debtors’ allegation, not by itself a court finding that the transfers were fraudulent. A later bankruptcy-court filing likewise describes the Trust’s effort to recover $4.9 million transferred to CFAR to acquire and improve the Rose Garden Inn: https://assets.bwbx.io/documents/users/iqjWHBFdfxIU/rYYNupcUPj1M/v0. The claim is therefore misleading on timing: it compresses transfers made across March–October into money wired to CFAR “as” FTX was collapsing, although some later transfers were near the collapse and the hotel purchase closed shortly before FTX filed for bankruptcy on November 11, 2022.",
+      "costUsd": 0.04362926
+     },
+     {
+      "probability": 0.9,
+      "findings": "The claim is misleading if “it” refers to Berkeley’s Rose Garden Inn. The FTX debtors’ complaint alleges that Lightcone RG bought the property for $16.5 million using a $20 million loan from Slimrock Investments; it says FTX Foundation separately wired $1 million to a title company in July and August 2022 as an initial deposit, and that a portion of a further $1.5 million grant approved October 3 may have gone toward the property. The complaint does not establish that the purchase was primarily made with money wired to CFAR, and describes the $1 million as a loan intended to be repaid when the property financing closed (https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf). SFGATE likewise reports that the property’s $16.5 million purchase price was financed by a loan from Jaan Tallinn’s company, while FTX-linked funds were alleged to have supported the purchase or renovation (https://www.sfgate.com/tech/article/sbf-berkeley-rose-garden-inn-19520351.php). The timing is also compressed: the complaint dates the FTX Foundation grant to October 3, 2022, and the property closing to about November 4, shortly before FTX’s November collapse. Thus, FTX-linked funds were involved, but saying the property was purchased with money wired to CFAR “as FTX was collapsing” obscures the primary financing and blurs distinct transfers and dates.",
+      "costUsd": 0.04420091
+     },
+     {
+      "probability": 0.88,
+      "findings": "The claim appears to refer to the Rose Garden Inn, later called Lighthaven. FTX’s bankruptcy trustees alleged in their May 13, 2024 complaint that FTX Foundation wired $2 million to CFAR on March 2, 2022, and made further transfers to CFAR; they also alleged that a material portion of a separate $1.5 million October grant was used toward the property’s acquisition and renovation. But the same complaint says the purchase was funded by a $20 million loan from Slimrock Investments, and describes two $500,000 FTX-related deposits as wired directly to the title company—not to CFAR. The Guardian later added Oliver Habryka’s response and escrow document: the $1 million deposit was refunded, and he said no FTX money was used to buy the property. Sources: https://www.sfgate.com/file/149/93/14993-complaint%20ftx%20v%20cfar%20and%20lightcone.pdf ; https://www.theguardian.com/technology/article/2024/jun/16/sam-bankman-fried-ftx-eugenics-scientific-racism . Thus, FTX funds were transferred to CFAR and trustees alleged some funds benefited the project, but the statement that the property was purchased with money wired to CFAR presents a disputed allegation as settled fact and obscures the reported loan financing and refunded deposit.",
+      "costUsd": 0.03319941
+     }
+    ]
+   },
+   {
+    "id": "ea-earning-to-give",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note",
+     "referenceNote": "EA organisations have come to regret pushing earning to give, and they do not see it as a less impactful career path than others."
+    },
+    "samples": [
+     {
+      "probability": 0.88,
+      "findings": "The claim is misleading as a description of Effective Altruism’s general prescription. “Earning to give”—choosing a higher-earning career in order to donate more—is a strategy promoted within the movement, but 80,000 Hours describes it as appropriate for only a small proportion of people in the long term (https://80000hours.org/2020/08/misconceptions-effective-altruism/; https://80000hours.org/2015/07/80000-hours-thinks-that-only-a-small-proportion-of-people-should-earn-to-give-long-term/). Effective Altruism’s FAQ says career choices should vary by a person’s skills, opportunities, and fit, and presents earning to give as one option rather than a universal rule (https://www.effectivealtruism.org/faqs). Thus, the article turns one recognized EA strategy into an overly broad claim about what EA “as a creed” prescribes.",
+      "costUsd": 0.010663985
+     },
+     {
+      "probability": 0.83,
+      "findings": "The claim is misleading because it presents “earning to give” as a general prescription of Effective Altruism. The Centre for Effective Altruism defines EA as finding and putting into practice the best ways to help others, and says earning to give is a good strategy for some people—especially those suited to high-paying careers—not a requirement for everyone. It also notes that people can have impact more directly through their careers: https://www.effective-altruism.com/faqs. The official EA careers page lists earning to give as one career path, alongside other options: https://www.effectivealtruism.org/careers. Thus, earning more to donate is an EA-endorsed option, but saying the creed prescribes it broadly overstates the position.",
+      "costUsd": 0.02158044
+     },
+     {
+      "probability": 0.9,
+      "findings": "The claim is misleading. “Earning to give”—choosing a well-paid career partly to donate more—is a strategy associated with effective altruism, but it is not a creed-wide prescription. Effective Altruism’s official explanation says EA is not a set of moral rules or fixed answers and describes people pursuing a variety of careers: https://www.effectivealtruism.org/what-is-effective-altruism. Its FAQ says earning to give was sometimes overemphasized in the movement’s early days and that EA does not dictate what people are morally required to do: https://www.effectivealtruism.org/faqs. 80,000 Hours, an influential EA career-advice organization, says it recommends earning to give long-term for only about 15% of altruistically motivated graduates who would be happy in a wide variety of careers: https://80000hours.org/2020/08/misconceptions-effective-altruism/. So the post describes a real EA-associated option, but overstates it as something EA prescribes as a creed.",
+      "costUsd": 0.011087985
+     }
+    ]
+   },
+   {
+    "id": "aella-cam-girls",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.28,
+      "findings": "Assuming “she” refers to Aella, the claim is broadly supported but needs qualification. A 2017 Playboy profile says Aella suggested that her sister Rose try camming; Rose considered it and decided to try it herself (https://www.playboy.com/read/when-camming-is-the-family-business-1; a copy of the profile is at https://kawaiiyuri.com/playboy/Playboy.USA.TruePDF-November.December.2017.pdf). Aella also publicly promoted a sister’s first cam-site broadcast, and a contemporary post reproducing her message documents that promotion (https://x.com/Aella_Girl/status/842109129682497537; https://emilkirkegaard.dk/en/2017/03/the-polgar-sisters-of-camming/). However, Aella later characterized that younger sister’s banana-costume debut as a prank involving slapstick, not sexual performance (https://tbsky.app/profile/faineg.com/post/3mwj66cpstk2m). So “recruited her sisters as cam girls” is a compressed, potentially misleading description: she encouraged one sister and promoted another’s debut, but the evidence does not establish coercive recruitment, and the younger sister’s debut was reportedly nonsexual. The excerpt does not name the person, so the identification as Aella remains an assumption.",
+      "costUsd": 0.09730011
+     },
+     {
+      "probability": 0.42,
+      "findings": "The article appears to refer to camgirl Aella. Playboy’s profile says Aella suggested that her younger sister Rose start camming; Rose later decided to try it. This supports that Aella encouraged one sister, but the passage does not establish that she recruited multiple sisters as camgirls: https://www.playboy.com/read/when-camming-is-the-family-business-1 (the article is also reproduced here: https://kawaiiyuri.com/playboy/Playboy.USA.TruePDF-November.December.2017.pdf). So the claim is broadly grounded in the account, but its plural wording overstates what that passage specifically documents.",
+      "costUsd": 0.04259011
+     },
+     {
+      "probability": 0.5,
+      "findings": "The excerpt does not identify who “she” refers to, and the claim gives no article title, date, or other identifying context. Searches for the exact wording and close variants did not find a reliable source confirming that someone recruited her sisters as cam girls. With the subject unidentified, the claim cannot be independently verified from the information provided.",
+      "costUsd": 0.01065341
+     }
+    ]
+   },
+   {
+    "id": "nearly-impossible-to-prove",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.78,
+      "findings": "The claim that such an assault would be “nearly impossible to prove” is an unsupported overstatement, not an established fact. A consensual-non-consent setting could make it harder to interpret apparent resistance because investigators would need to distinguish agreed roleplay from a boundary being withdrawn or exceeded. But the U.S. Department of Justice’s prosecutor framework describes evaluating sexual-assault allegations using the full account and available evidence, including witness statements, forensic evidence, and other relevant circumstances; it does not suggest that a complicated consent context makes proof nearly impossible (https://www.justice.gov/ovw/framework-prosecutors-strengthen-our-national-response-sexual-assault-and-domestic-violence). RAINN likewise describes collecting evidence such as witness statements, crime-scene evidence, and DNA when investigating a report (https://rainn.org/reporting-sexual-assault-to-law-enforcement/what-to-expect-if-you-report-assault-or-abuse-to-law-enforcement/). The legal standard and relevant evidence vary by jurisdiction (https://www.law.cornell.edu/wex/rape). In short, the scenario might pose evidentiary challenges, but the passage provides no basis for concluding it would be nearly impossible to prove; whether a particular case could be proved would depend on its facts and evidence.",
+      "costUsd": 0.03318346
+     },
+     {
+      "probability": 0.78,
+      "findings": "The claim is an unsupported prediction, not an established fact: the article gives no case-specific evidence or data showing that a rape occurring during a consensual-non-consent party would be “nearly impossible to prove.” The U.S. Department of Justice’s prosecutor framework says sexual-assault cases can be difficult because they often lack eyewitnesses or decisive physical evidence, but also explicitly says such cases are provable and that a credible victim account can legally support a conviction; it discusses corroboration and evidence that may rebut a consent defense (https://www.justice.gov/ovw/framework-prosecutors-strengthen-our-national-response-sexual-assault-and-domestic-violence). Whether a particular case could be proved would depend on its evidence and applicable law. The passage identifies a plausible evidentiary complication—distinguishing agreed role-play from conduct outside the agreed boundaries—but overstates that complication as near-impossibility without substantiation.",
+      "costUsd": 0.02196967
+     },
+     {
+      "probability": 0.86,
+      "findings": "The claim is an unsupported overstatement, not an established fact. U.S. Department of Justice guidance says sexual-assault cases can be challenging because they often turn on the complainant’s credibility and lack eyewitnesses or decisive physical evidence. But it explicitly says such cases are provable: the complainant’s account is evidence, and investigators can seek corroboration in communications, witness accounts, surrounding events, and other evidence. The same guidance says the applicable law and evidence vary by jurisdiction. Source: https://www.justice.gov/ovw/framework-prosecutors-strengthen-our-national-response-sexual-assault-and-domestic-violence. A consensual-nonconsent party could make the agreed boundaries and evidence about them important to investigate, but the excerpt provides no case-specific facts establishing that a violation would be nearly impossible to prove. Thus, “nearly impossible” is not substantiated; “potentially difficult, depending on the evidence and jurisdiction” is better supported.",
+      "costUsd": 0.03301747
+     }
+    ]
+   },
+   {
+    "id": "pivotal-act-terrorism",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note",
+     "referenceNote": "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him."
+    },
+    "samples": [
+     {
+      "probability": 0.94,
+      "findings": "The claim is misleading. A LessWrong glossary page edited by Eliezer Yudkowsky defines “pivotal act” broadly as an action that makes a large positive difference to the long-run outcome, and gives examples including human-intelligence enhancement, preventing hostile superintelligences, and other possible risk-reducing interventions—not simply terrorism: https://www.lesswrong.com/w/pivotal-act. Yudkowsky has, however, advocated a forceful policy response to AI development: in his 2023 essay he called for a worldwide halt to large AI training runs and said governments should be willing to destroy a rogue datacenter by airstrike if it violated the proposed moratorium: https://www.lesswrong.com/posts/Aq5X9tapacnk2QGY4/pausing-ai-developments-isn-t-enough-we-need-to-shut-it-all. That is a serious basis for criticism of his position, but the essay presents this as state enforcement of a worldwide ban, not as a “pivotal act” that every person making AGI must perform. The claim also collapses distinct proposals: a pivotal act can be imagined as an aligned AI preventing dangerous AI development, while Yudkowsky’s cited airstrike proposal concerns governments enforcing a moratorium. The cited sources support describing some proposed measures as coercive or potentially violent; they do not establish that “pivotal act” is a euphemism for terrorism or that Yudkowsky believes all AGI builders must commit terrorist acts.",
+      "costUsd": 0.065769785
+     },
+     {
+      "probability": 0.9,
+      "findings": "The claim is misleading. The LessWrong glossary page edited by Eliezer Yudkowsky defines a “pivotal act” broadly as an action intended to make a large positive difference and decisively change the AI-risk situation; it does not define the term as terrorism or say every person making AGI must commit such acts: https://www.lesswrong.com/w/pivotal-act. Yudkowsky has discussed extreme uses of force in a specific policy scenario: in his TIME essay, he proposes multinational agreements under which governments could destroy a rogue AI datacenter by airstrike if necessary. That is a conditional proposal for government action—not a claim that AGI developers themselves must commit terrorism: https://time.com/6266923/ai-eliezer-yudkowsky-open-letter-not-enough/. So the claim has a kernel of truth in connecting pivotal-act discussions with drastic measures to prevent dangerous AI development, but “acts of terrorism” and “anyone making AGI must do” overstate and misattribute the position.",
+      "costUsd": 0.03308594
+     },
+     {
+      "probability": 0.96,
+      "findings": "The claim is misleading. Yudkowsky argues that, in a scenario where a powerful AGI is developed and competing actors may soon build dangerous AGIs, preventing catastrophe could require a “pivotal use” powerful enough to change the situation. He gives “burn all GPUs” as an example of the scale of intervention, but explicitly says he does not advocate that particular action. His essay does not say the required acts are terrorism, nor that anyone making AGI must commit terrorist acts. Source: https://intelligence.org/agi-ruin/ . A LessWrong glossary edited by Yudkowsky defines a “pivotal act” as a positive, game-changing action that settles or substantially improves the chance of a win; it does not define the term as terrorism. Source: https://www.lesswrong.com/w/pivotal-act",
+      "costUsd": 0.03295854
+     }
+    ]
+   },
+   {
+    "id": "melanie-mitchell",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note",
+     "referenceNote": "Melanie Mitchell worked on analogies during her PhD in the 1980s. Today she publishes papers on LLMs (https://x.com/MelMitchell1/status/2107633255352865182)."
+    },
+    "samples": [
+     {
+      "probability": 0.88,
+      "findings": "Mixed, but materially misleading. Melanie Mitchell is indeed a computer scientist whose doctoral work involved the Copycat analogy-making program; however, her Ph.D. and dissertation were completed in 1990, and Copycat work began in the mid-1980s—not a research road she spent both the 1990s and 2000s pursuing. Her CV records varied work across adaptive computation, complex systems, machine learning, and AI, while the Santa Fe Institute describes analogy and abstraction as continuing research interests (https://melaniemitchell.me/MitchellCV.pdf; https://www.santafe.edu/news-center/news/melanie-mitchell-joins-fractal-faculty; https://www.santafe.edu/people/profile/melanie-mitchell). Calling that research a road that “didn’t work out” is an evaluative characterization, not an established factual result: her 2021 review argues that humanlike abstraction and analogy remain difficult for AI, and her later work continues to study the question (https://arxiv.org/abs/2102.10717; https://arxiv.org/abs/2411.02348). The claim that she has “no expertise in modern LLMs” is contradicted by her coauthorship of research specifically on large language models, including a 2023 PNAS paper surveying the debate over LLM understanding and a 2023 PNAS paper probing LLM behavior; she also coauthored a study testing LLM analogy generalization (https://www.pnas.org/doi/10.1073/pnas.2215907120; https://pmc.ncbi.nlm.nih.gov/articles/PMC10013777/; https://arxiv.org/abs/2411.02348). These publications support expertise in studying LLMs, though they do not by themselves establish that she is a practitioner who builds frontier LLMs. The referenced article is The Australian’s September 2026 piece, “Superintelligence is a fantasy: leading scientists reject apocalyptic rogue AI extinction warnings” (https://www.theaustralian.com.au/inquirer/superintelligence-is-a-fantasy-leading-scientists-reject-apocalyptic-rogue-ai-extinction-warnings/news-story/618eef10b92d4357e51e4b459eaf9fa9). Its full text was not accessible for independent inspection here; the claim that its only use of Mitchell is about anthropomorphic language is therefore not independently confirmed. A contemporaneous account describes her contribution in that article as addressing whether language such as AI “thinks” or “wants” encourages people to treat it as human, but that is secondary reporting (https://www.astralcodexten.com/p/an-open-letter-to-steven-pinker-on?triedRedirect=true).",
+      "costUsd": 0.108715835
+     },
+     {
+      "probability": 0.9,
+      "findings": "The claim is substantially misleading. Mitchell is a computer scientist, and analogy-making has been part of her research since the 1980s: her CV lists analogy papers from 1988, 1989, and 1990, and identifies her later research as including conceptual abstraction and analogy-making in humans and AI systems (https://www.melaniemitchell.me/MitchellCV.pdf; https://melaniemitchell.me/). But calling this a road that “didn’t work out” is an evaluative gloss, not an established factual conclusion; her research did not end there, and she has since studied contemporary AI systems. Her CV lists work directly on LLMs, including a 2023 paper on understanding in LLMs, a 2024 study comparing GPT models’ analogical reasoning with humans, and a 2025 study of abstraction in OpenAI’s o3 model (https://www.melaniemitchell.me/MitchellCV.pdf). Thus, the categorical assertion that she has “no expertise in modern LLMs” is contradicted by her documented research, although her expertise is in cognitive capabilities and evaluation—not necessarily in building frontier models. The referenced Australian article is identifiable as “Superintelligence is a fantasy: Leading scientists reject apocalyptic rogue AI extinction warnings” (https://www.theaustralian.com.au/inquirer/superintelligence-is-a-fantasy-leading-scientists-reject-apocalyptic-rogue-ai-extinction-warnings/news-story/618eef10b92d4357e51e4b459eaf9fa9). I could not independently inspect its full text, so I cannot verify the assertion that it cites her only for the anthropomorphism point. In any event, that narrow characterization does not support the broader claim that she lacks LLM expertise. A separate Quanta interview illustrates the breadth of her current discussion of LLMs—covering model evaluation, reasoning, robustness, and interpretability—but it is not the Australian article at issue (https://www.quantamagazine.org/are-we-thinking-correctly-about-ai-intelligence-20260820/).",
+      "costUsd": 0.10805914
+     },
+     {
+      "probability": 0.88,
+      "findings": "The claim is mixed, but materially misleading. It is accurate that Melanie Mitchell is a computer scientist and that her earlier work included developing Copycat, a computer model for analogy-making; her 1990 paper describes the model and its analogy-making aims (https://www.sciencedirect.com/science/article/abs/pii/0167278990900865). But calling this a research “road that didn’t work out” is a dismissive interpretation, not a straightforward fact: she continued publishing on analogy and abstraction, and the Santa Fe Institute currently lists those topics among her research interests (https://www.santafe.edu/people/profile/melanie-mitchell). The claim that she has no expertise in modern LLMs is contradicted by her direct scholarship on them: she coauthored a 2023 PNAS review of the debate over understanding in large language models (https://www.pnas.org/doi/10.1073/pnas.2215907120), and coauthored research evaluating analogical reasoning in LLMs (https://arxiv.org/abs/2411.14215). Her 2026 article also examines evaluating abstraction and analogy in AI systems (https://www.psychologicalscience.org/journals/current-directions/09637214261433528/). The excerpt’s characterization of her view on anthropomorphic language is broadly consistent with a 2025 Princeton interview, where she discusses how terms such as “chain of thought” can anthropomorphize AI and shape how people perceive systems (https://blog.citp.princeton.edu/2025/04/02/a-guide-to-cutting-through-ai-hype-arvind-narayanan-and-melanie-mitchell-discuss-artificial-and-human-intelligence/). However, the source article itself is not identified, so its alleged use of Mitchell as a citation “only” for that point cannot be checked from the provided material.",
+      "costUsd": 0.044256335
+     }
+    ]
+   },
+   {
+    "id": "ea-beholden-to-yudkowsky",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note",
+     "referenceNote": "Yudkowsky and Nate Soares disagree with much of the AI safety community. They think that agent foundations work is important, but that most other work, such as prosaic alignment, interpretability and control, will not scale to superintelligence and so does not really matter."
+    },
+    "samples": [
+     {
+      "probability": 0.86,
+      "findings": "The claim is too broad and overstates what the evidence establishes. Effective Altruism’s own FAQ describes EA as a decentralized movement with no central authority or leadership, and says its communities and organizations are varied: https://www.effectivealtruism.org/faqs. Its overview also says EA is not defined by any single person or organization, and that people in the movement work on different causes and often disagree: https://www.effectivealtruism.org/what-is-effective-altruism. Those descriptions do not prove that no individual or subgroup exerts outsized informal influence, but they weigh against treating EA as directly beholden to Yudkowsky as a whole. There is documented overlap: a Bay Area community guide says Berkeley has significant EA–rationalist overlap and that many senior or engaged members work on AI safety, while distinguishing San Francisco as less rationalist and less AI-focused: https://fm-prod.effectivealtruism.org/posts/W2w7xA9AtDnjcK6DP/an-ea-s-guide-to-berkeley-and-the-bay-area. That supports a narrower claim about concentrated community overlap, not direct subordination. The strongest evidence for Yudkowsky’s authority concerns MIRI specifically: MIRI’s announcement says he co-founded the organization, became board chair, and that his views carry substantial weight in its strategic direction; it also identifies a CEO and president with their own leadership roles: https://intelligence.org/2023/10/10/announcing-miris-new-ceo-and-leadership-team/. This establishes meaningful influence at MIRI, not control over EA or all EA-associated AI-safety work. As further evidence that the Bay Area communities are not simply one unit, an October 4, 2026 newsletter announced that AI Safety SF was branching out of Effective Altruism SF; this is evidence of organizational separation, though not by itself proof of independence in agenda-setting: https://effectivealtruism-sf.beehiiv.com/p/october-2026. Overall: real historical and local overlap, and substantial Yudkowsky influence at MIRI, but no evidence here that EA and its AI-safety efforts generally are directly beholden to him.",
+      "costUsd": 0.03315456
+     },
+     {
+      "probability": 0.82,
+      "findings": "The claim overstates the evidence by treating intellectual and social influence as direct control. Effective altruism’s own history describes the movement as bringing together several distinct communities: Oxford’s Giving What We Can and Future of Humanity Institute, Bay Area rationalists, and GiveWell in New York (https://www.effectivealtruism.org/what-is-effective-altruism). It also says EA is not a centralized institution and has no individual leader who speaks for the whole movement (https://www.effectivealtruism.org/what-is-effective-altruism). There is substantial overlap and influence: Yudkowsky’s work and MIRI were important to the Bay Area AI-risk community, and an academic study describes Open Philanthropy funding AI-safety work at both MIRI and UC Berkeley’s Center for Human-Compatible AI (https://pmc.ncbi.nlm.nih.gov/articles/PMC11912955/). That supports describing Yudkowsky and the Bay Area rationalist network as influential in some strands of EA-associated AI safety—not establishing that EA or its AI-safety efforts are directly beholden to him. The cited evidence does not demonstrate that he controls EA organizations or sets the agenda for all EA safety work.",
+      "costUsd": 0.03305949
+     },
+     {
+      "probability": 0.84,
+      "findings": "The claim is misleading if “directly beholden” means that Eliezer Yudkowsky controls or directs Effective Altruism (EA) and its AI-safety work. EA describes itself as a decentralized movement that is not defined by any individual or organization: https://www.effectivealtruism.org/what-is-effective-altruism. Its own history traces EA’s formation to several communities, including Oxford groups, GiveWell, and Bay Area rationalists—not to Yudkowsky alone: https://fm-prod.effectivealtruism.org/ea/6x/introduction_to_effective_altruism/. There is substantial historical and intellectual overlap: a scholarly study describes Yudkowsky as a central AI-safety figure and founder of LessWrong, and documents how EA, rationalist, and AI-safety communities exchange ideas and influence one another. But it also calls technical AI safety a “separate but tightly related community” and notes that not all AI-safety researchers identify as EAs: https://firstmonday.org/ojs/index.php/fm/article/download/13626/11596?inline=1. The relationship is most direct at MIRI: Yudkowsky co-founded it, chairs its board, and MIRI says his views carry substantial weight in its strategic direction. That establishes influence over MIRI, not control over EA as a whole: https://intelligence.org/2023/10/10/announcing-miris-new-ceo-and-leadership-team/. The claim’s Bay Area premise is also too sweeping: an EA community guide distinguishes Berkeley’s technical-safety focus from San Francisco’s broader, less rationalist- and AI-safety-focused community, while noting intermixing: https://fm-prod.effectivealtruism.org/posts/W2w7xA9AtDnjcK6DP/an-ea-s-guide-to-berkeley-and-the-bay-area. Overall, Yudkowsky has been influential in parts of the rationalist and AI-safety ecosystem, and those networks overlap with EA; the evidence does not support the stronger assertion that EA and its AI-safety efforts are directly beholden to him.",
+      "costUsd": 0.04423559
+     }
+    ]
+   },
+   {
+    "id": "givewell-1500x",
+    "group": "no-note-easy",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.35,
+      "findings": "The attribution is substantially accurate: Nathan’s post is reproduced as saying MacKenzie Scott’s donations bought “about 1500x less improvement per $” than the marginal GiveWell dollar (https://thezvi.substack.com/p/monthly-roundup-44-july-2026). However, the 1,500× figure came from an earlier version of Max Ghenis’s health-only model. On July 13, 2026, Ghenis corrected a major geographic-pricing error: health grants delivered outside the U.S. had been priced using U.S. cost benchmarks. After the correction, the model’s estimated comparison fell from about 1,500× to about 515× (later summarized as roughly 520×) for the marginal dollar, not 1,500× (https://forum.effectivealtruism.org/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive). Thus, the claim correctly reports Nathan’s estimate at the time, but would be misleading if presented as the model’s corrected estimate or as an established measurement of all philanthropic impact: the comparison is model-dependent and limited to health gains.",
+      "costUsd": 0.022110835
+     },
+     {
+      "probability": 0.23,
+      "findings": "The attribution and approximate number are supported: Nathan’s post is reproduced in Zvi Mowshowitz’s roundup as saying MacKenzie Scott’s donations bought “about 1500x less improvement per $” than a marginal GiveWell dollar (https://thezvi.substack.com/p/monthly-roundup-44-july-2026). The linked post is Nathan’s X post (https://x.com/NathanpmYoung/status/2076423932526407772). However, this is an estimate from a health-only comparison, not an independently established measurement of the total value of Scott’s philanthropy. The underlying model explicitly says QALYs miss much of the non-health value of Scott’s giving and relies on uncertain assumptions about causal evidence and how effects translate to grants (https://github.com/MaxGhenis/mackenzie-scott-qaly). Its current README reports about 521× more health per dollar for a like-for-like comparison after applying common realization and credibility adjustments, and cautions that deploying Scott’s entire portfolio at the marginal GiveWell frontier is unrealistic; the portfolio-scale multiple would be lower (same GitHub URL). GiveWell also explains that marginal impact differs from average impact and that additional funding can go to less cost-effective opportunities (https://www.givewell.org/impact-estimates). Thus, the claim accurately reports Nathan’s estimate, but the 1,500× figure should not be read as a settled or like-for-like finding about all philanthropic impact.",
+      "costUsd": 0.07581098
+     },
+     {
+      "probability": 0.3,
+      "findings": "The attribution is supported: Zvi Mowshowitz’s July 15, 2026 roundup reproduces Nathan’s statement that Scott’s donations bought “about 1500x less improvement per $” than GiveWell’s marginal dollar (https://thezvi.substack.com/p/monthly-roundup-44-july-2026). But the number was a model-based estimate, not a measured result. In the model author’s July 12 EA Forum post, he says its estimates depend on judgment-based assumptions and describes the comparison as health-focused; the post notes that the model does not capture much of the non-health value of Scott’s giving (https://forum.effectivealtruism.org/posts/SePcpmiSGM5Y5jmuk/mackenzie-scott-s-usd26-billion-in-qalys-an-interactive). Importantly, the author reports that a July 13 geographic correction changed the frontier comparison from about 1,500× to about 515×, and a July 22 audit put it at about 520× (same EA Forum URL). Thus, the claim fairly reports what Nathan estimated at the time, but the 1,500× figure was provisional and should not be presented as the model’s later estimate or as an established fact about the donations’ overall impact.",
+      "costUsd": 0.04395208
+     }
+    ]
+   },
+   {
+    "id": "sol-subagents",
+    "group": "no-note-easy",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.82,
+      "findings": "OpenAI describes Sol, Terra, and Luna as three capability tiers in the GPT-5.6 model family: Sol is the flagship, Terra is a lower-cost model, and Luna is the fastest and most affordable. OpenAI also says its API’s beta multi-agent feature lets GPT-5.6 run concurrent subagents, but does not say Terra and Luna were created specifically as subagents for Sol to select. Source: https://openai.com/index/gpt-5-6/ . Thus, the claim takes a documented capability (GPT-5.6 multi-agent use) and presents an unstated design rationale as fact; the asserted purpose is unsupported by the cited announcement.",
+      "costUsd": 0.02200551
+     },
+     {
+      "probability": 0.82,
+      "findings": "The claim is misleading. OpenAI’s June 26, 2026 announcement described Sol, Terra, and Luna as a model family—Sol as the flagship, Terra as a balanced model for everyday work, and Luna as a fast, affordable model. It also said Sol’s “ultra” mode uses subagents, but did not say Terra and Luna were created specifically as models for Sol to choose among: https://openai.com/index/previewing-gpt-5-6-sol/. OpenAI’s multi-agent API documentation says subagents share the root request’s model, rather than describing them as a pool of different models that Sol selects from: https://developers.openai.com/api/docs/guides/responses-multi-agent. So the models can be discussed alongside multi-agent use, but the claimed purpose and model-selection relationship are not established by these sources.",
+      "costUsd": 0.04417623
+     },
+     {
+      "probability": 0.86,
+      "findings": "Misleading / unsubstantiated as stated. OpenAI’s launch announcement describes Sol as its flagship model, Terra as a balanced model for everyday work, and Luna as a fast, affordable model; it separately says Sol’s “ultra” mode uses subagents for complex work. It does not say Terra and Luna were created as subagent models or that subagent-selection complaints motivated their creation: https://openai.com/index/previewing-gpt-5-6-sol/ . OpenAI’s multi-agent API documentation confirms that models can coordinate subagents, but says those subagents share the request’s model, rather than describing Terra and Luna as alternatives Sol selects: https://developers.openai.com/api/docs/guides/responses-multi-agent . Thus, the models’ potential use in agent workflows does not substantiate the asserted purpose or causal explanation.",
+      "costUsd": 0.04416581
+     }
+    ]
+   },
+   {
+    "id": "sol-destructive-45",
+    "group": "no-note-easy",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.03,
+      "findings": "The article reproduces Sol’s estimate verbatim: “Sol’s alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.” The author introduces this as Sol’s “current estimates” (https://thezvi.wordpress.com/2026/07/13/better-call-sol-the-workhorse/). Thus, the attribution and percentage are accurate. This is Sol’s subjective probability estimate, not a measured 45% rate of destructive behavior.",
+      "costUsd": 0.04388646
+     },
+     {
+      "probability": 0.05,
+      "findings": "Accurate as a report of what the article says: its quoted “Sol” assessment assigns 45% to the possibility that the destructive behavior is meaningfully more common because of the model itself rather than almost entirely the harness and permissions (https://www.lesswrong.com/posts/zPdDmJTovsKTvAiH2/better-call-sol-the-workhorse). This verifies the attribution and number, not whether 45% is a well-calibrated or evidence-based probability; it is presented as Sol’s subjective estimate.",
+      "costUsd": 0.03195739
+     },
+     {
+      "probability": 0.01,
+      "findings": "Correct. The article reproduces Sol’s “current estimates” and explicitly lists: “Sol’s alarming destructive behavior is meaningfully more common because of the model itself, rather than almost entirely the harness and permissions: 45%.” The article also says these were Sol’s assessments. Source: https://thezvi.wordpress.com/2026/07/13/better-call-sol-the-workhorse/",
+      "costUsd": 0.03271779
+     }
+    ]
+   },
+   {
+    "id": "opus-values-figure",
+    "group": "no-note-easy",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.97,
+      "findings": "Misleading in one important detail. Anthropic’s Figure 1 says Opus 4.6 leans toward deference, rigor, brevity, and execution—not warmth. It says Opus 4.7 leans toward caution, rigor, depth, and candor. Thus the claim incorrectly substitutes “warmth” for “rigor” in its description of Opus 4.6; its description of Opus 4.7 matches the figure. Anthropic’s model-by-model discussion also identifies Opus 4.6 with rigor, deference, and brevity, while describing warmth as a tendency associated more with Sonnet 4.6. Source: https://www.anthropic.com/research/claude-values-models-languages",
+      "costUsd": 0.01118566
+     },
+     {
+      "probability": 0.99,
+      "findings": "Anthropic’s article says Opus 4.6 leans toward deference, **rigor**, brevity, and execution—not warmth. It says Opus 4.7 leans toward caution, rigor, depth, and candor, so that part of the claim is accurate. The article separately associates warmth with Sonnet 4.6 and notes that Claude’s language profile can lean toward warmth in Arabic. Thus the claim appears to substitute warmth for rigor in describing Opus 4.6. Anthropic defines these as values expressed in model behavior and outputs, not values Claude intrinsically holds. Source: https://www.anthropic.com/research/claude-values-models-languages",
+      "costUsd": 0.02198911
+     },
+     {
+      "probability": 0.96,
+      "findings": "Anthropic’s analysis says Opus 4.6 leans toward deference, **rigor**, brevity, and execution—not warmth; its reported lean toward rigor was 0.10σ. Opus 4.7 leans toward caution, rigor, depth, and candor, so that part of the claim is accurate. The mix-up may be with Sonnet 4.6, which Anthropic says leans toward warmth. These are measured tendencies in expressed responses, not claims that the models intrinsically hold values; Anthropic notes the model differences are small relative to variation across conversations. Source: https://www.anthropic.com/research/claude-values-models-languages",
+      "costUsd": 0.021954885
+     }
+    ]
+   },
+   {
+    "id": "yudkowsky-writer-not-scientist",
+    "group": "no-note-difficult",
+    "expected": {
+     "decision": "no_note",
+     "noteTolerated": true
+    },
+    "samples": [
+     {
+      "probability": 0.72,
+      "findings": "The description of Yudkowsky as a writer is accurate: TIME reports that he has written hundreds of articles on AI, and Scientific American quotes him saying he sometimes describes his work as writing fiction (https://time.com/collections/time100-ai/6309037/eliezer-yudkowsky/; https://www.scientificamerican.com/blog/cross-check/ai-visionary-eliezer-yudkowsky-on-the-singularity-bayesian-brains-and-closet-goblins/). But “not a scientist of any kind” is too categorical and potentially misleading. MIRI describes him as a “founding researcher” in AI alignment who helped shape its technical research agenda (https://intelligence.org/team/eliezer-yudkowsky/). TIME likewise calls him a decision theorist and one of AI alignment’s founders, while Scientific American describes him as a theorist of intelligence (same TIME and Scientific American URLs above). These sources establish that he has held research and theory roles, though they do not establish that he is a conventionally credentialed or academically employed scientist. TIME and Scientific American report that he did not attend high school or college; that supports the narrower point that he lacks formal higher-education credentials, but does not by itself prove he is not a scientist (same URLs above).",
+      "costUsd": 0.02222861
+     },
+     {
+      "probability": 0.75,
+      "findings": "The claim is partly accurate but too categorical. Yudkowsky is plainly a writer: TIME describes his extensive writing about AI risks (https://time.com/6309037/eliezer-yudkowsky/). He did not attend high school or college, according to TIME, so he lacks the conventional academic training often associated with professional scientists (https://time.com/6309037/eliezer-yudkowsky/). But describing him as “not a scientist of any kind” overlooks that he has held research roles: MIRI listed him as a Senior Research Fellow (https://intelligence.org/files/MIRI_Overview.pdf), and he is a coauthor of a technical paper on functional decision theory available on arXiv (https://arxiv.org/abs/1710.05060). Those facts do not establish that he is a scientist in the usual academic or experimental sense; they do make the blanket assertion misleading. A more precise description would be that he is a writer and independent AI theorist/researcher without formal academic credentials.",
+      "costUsd": 0.03283865
+     },
+     {
+      "probability": 0.72,
+      "findings": "The claim is **partly accurate but misleading as phrased**. Yudkowsky is a writer, and TIME describes him as a decision theorist who did not attend high school or college (https://time.com/6309037/eliezer-yudkowsky/). But the categorical claim that he is “not a scientist of any kind” omits that he has also been described as an AI researcher: MIRI calls him a “founding researcher” in AI alignment (https://intelligence.org/team/eliezer-yudkowsky/), and TIME’s profile calls him an AI theorist and notes his work founding an institute and writing about AI risks (https://time.com/collections/time100-ai/6309037/eliezer-yudkowsky/). Those descriptions do not establish that he is a practicing empirical scientist or holds scientific credentials; rather, they show that “writer, not a scientist” presents a contested distinction as settled fact.",
+      "costUsd": 0.02208555
+     }
+    ]
+   },
+   {
+    "id": "sun-mass-ratio",
+    "group": "note-easy",
+    "expected": {
+     "decision": "note"
+    },
+    "samples": [
+     {
+      "probability": 0.99,
+      "findings": "The claim is incorrect: NASA says the Sun has more than 330,000 times Earth’s mass (about 333,000 Earth masses), not a few million. “About 1.3 million” refers to how many Earths’ volumes fit inside the Sun, which may be the source of the mix-up. Sources: https://science.nasa.gov/sun/facts/ ; https://solarscience.msfc.nasa.gov/",
+      "costUsd": 0.01068906
+     },
+     {
+      "probability": 0.99,
+      "findings": "The claim is misleading: NASA says the Sun has about 333,000 times Earth’s mass—not “a few million” times. NASA’s Sun facts page likewise says it would take more than 330,000 Earths to equal the Sun’s mass, while the much larger figure of about 1.3 million refers to how many Earths could fit inside the Sun by volume. Sources: https://science.nasa.gov/learn/basics-of-space-flight/chapter1-1/ ; https://science.nasa.gov/sun/facts/",
+      "costUsd": 0.01074059
+     },
+     {
+      "probability": 0.99,
+      "findings": "The claim is false: NASA says the Sun has roughly 333,000 times Earth’s mass—not a few million times—and separately notes that about 1.3 million Earths could fit inside the Sun by volume. The transcript may be conflating mass with volume. Sources: https://science.nasa.gov/learn/basics-of-space-flight/chapter1-1/ and https://science.nasa.gov/sun/facts/",
+      "costUsd": 0.01074519
+     }
+    ]
+   }
+  ],
+  "costUsd": 1.5861319249999999
+ }
+}

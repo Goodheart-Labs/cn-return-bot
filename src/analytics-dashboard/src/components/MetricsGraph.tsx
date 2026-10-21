@@ -34,6 +34,12 @@ const METRICS: readonly Metric[] = [
     label: "Number of browsers with the extension open",
     qualifier: "our own test installs left out from version 0.4.1 on",
   },
+  {
+    kind: "count",
+    key: "installs",
+    label: "Number of new extension installs",
+    qualifier: "our own test installs left out from version 0.4.1 on",
+  },
   { kind: "people", key: "note_viewers", label: "Number of people who have seen a note" },
   { kind: "people", key: "voters", label: "Number of people who have voted" },
   { kind: "people", key: "writers", label: "Number of people who have written a note" },
@@ -215,7 +221,7 @@ function selectionTitle(key: SelectionKey, times: number): string {
 }
 
 /** One line of the fraction, which is also its picker: a framed heading with
- *  a chevron that opens the list of the seven metrics, plus "1" for the
+ *  a chevron that opens the list of the eight metrics, plus "1" for the
  *  denominator. A people metric renders its threshold as a nested control:
  *  clicking "once" opens the slider that changes n instead of opening the
  *  menu. */

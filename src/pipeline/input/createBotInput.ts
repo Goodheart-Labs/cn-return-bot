@@ -8,6 +8,7 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
+import { isRealTweetId } from "../utils/tweetId";
 import { addWarning } from "../utils/warnings";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
@@ -90,8 +91,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   // claim. The check fails open and never blocks note generation.
   // The check is switched off at the moment, so this call returns false right
   // away and no browser starts. See madeWithAiLabel.ts for why.
-  const isRealTweetId = /^\d+$/.test(post.id);
-  const mediaMadeWithAiLabel = hasMedia && isRealTweetId ? await detectMadeWithAiLabel(post.id, logTag) : false;
+  const mediaMadeWithAiLabel = hasMedia && isRealTweetId(post.id) ? await detectMadeWithAiLabel(post.id, logTag) : false;
 
   // The author_history A/B test decides whether we look this up at all. When the
   // arm is off we skip the query, and the writer gets no author-history block.
