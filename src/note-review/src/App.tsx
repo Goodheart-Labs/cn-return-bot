@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { NoteRow } from "@cn/core/types";
+import { ContextParagraph } from "@cn/features/notes/ContextParagraph";
 import { NoteBox } from "@cn/features/notes/NoteBox";
 import { queryClient } from "@cn/features/query/queryClient";
 import { queryKeys } from "@cn/features/query/queryKeys";
@@ -192,10 +193,37 @@ function EarlierVersions({ draft }: { draft: Draft }) {
   );
 }
 
+/** A card with the post's paragraph around the passage, laid out as on the
+ *  website: beside the card on wide screens, behind a toggle on narrow ones. */
+function CardWithContext({ draft, className, children }: { draft: Draft; className: string; children: ReactNode }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const paragraph = draft.contextParagraph;
+  return (
+    <div className="items-start xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4">
+      {paragraph && (
+        <div className="hidden xl:col-start-1 xl:row-start-1 xl:block">
+          <ContextParagraph paragraph={paragraph} quote={draft.passage} fitTo={cardRef} />
+        </div>
+      )}
+      <Card ref={cardRef} className={`mx-auto w-full max-w-[40rem] p-4 xl:col-start-2 xl:row-start-1 xl:mx-0 xl:max-w-none ${className}`}>
+        <DraftHeader draft={draft} />
+        {paragraph && (
+          <details className="text-sm xl:hidden">
+            <summary className="cursor-pointer text-fg-muted">Show surrounding context</summary>
+            <div className="mt-2">
+              <ContextParagraph paragraph={paragraph} quote={draft.passage} bare />
+            </div>
+          </details>
+        )}
+        {children}
+      </Card>
+    </div>
+  );
+}
+
 function DraftCard({ draft }: { draft: Draft }) {
   return (
-    <Card className="space-y-4 p-4">
-      <DraftHeader draft={draft} />
+    <CardWithContext draft={draft} className="space-y-4">
       <NoteBox note={draftAsNote(draft)} status="needs_ratings" sourcesOpen />
       <details className="text-sm text-fg-secondary">
         <summary className="cursor-pointer text-fg-muted">The agent's reasoning</summary>
@@ -204,18 +232,17 @@ function DraftCard({ draft }: { draft: Draft }) {
       <EarlierVersions draft={draft} />
       <Conversation draft={draft} />
       <Decision draft={draft} />
-    </Card>
+    </CardWithContext>
   );
 }
 
 function SkippedPassage({ draft }: { draft: Draft }) {
   return (
-    <Card className="space-y-2 p-4">
-      <DraftHeader draft={draft} />
+    <CardWithContext draft={draft} className="space-y-2">
       <p className="text-sm text-fg-secondary">
         <span className="font-medium">{OUTCOME_LABELS[draft.outcome as Exclude<Draft["outcome"], "note">]}.</span> {draft.reasoning}
       </p>
-    </Card>
+    </CardWithContext>
   );
 }
 
@@ -230,24 +257,24 @@ export function App() {
   const decided = notes.filter((d) => d.review);
   const skipped = all.filter((d) => d.outcome !== "note");
   return (
-    <main className="mx-auto max-w-[44rem] space-y-6 px-4 py-8">
-      <h1 className="font-title text-2xl font-bold">Note review</h1>
-      {drafts.isError && <p className="text-sm text-negative">{drafts.error.message}</p>}
-      {drafts.isLoading && <p className="text-sm text-fg-muted">Loading…</p>}
+    <main className="space-y-6 px-4 py-8">
+      <h1 className="mx-auto max-w-[40rem] font-title text-2xl font-bold">Note review</h1>
+      {drafts.isError && <p className="mx-auto max-w-[40rem] text-sm text-negative">{drafts.error.message}</p>}
+      {drafts.isLoading && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Waiting for you ({waiting.length})</h2>
-        {waiting.length === 0 && <p className="text-sm text-fg-muted">No notes are waiting. The page checks for new ones every 10 seconds.</p>}
+        <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">Waiting for you ({waiting.length})</h2>
+        {waiting.length === 0 && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">No notes are waiting. The page checks for new ones every 10 seconds.</p>}
         {waiting.map((d) => <DraftCard key={d.file} draft={d} />)}
       </section>
       {decided.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Decided ({decided.length})</h2>
+          <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">Decided ({decided.length})</h2>
           {decided.map((d) => <DraftCard key={d.file} draft={d} />)}
         </section>
       )}
       {skipped.length > 0 && (
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Looked at, no note ({skipped.length})</h2>
+          <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">Looked at, no note ({skipped.length})</h2>
           {skipped.map((d) => <SkippedPassage key={d.file} draft={d} />)}
         </section>
       )}

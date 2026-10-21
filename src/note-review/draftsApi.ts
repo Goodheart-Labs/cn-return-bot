@@ -13,7 +13,7 @@ import { createClient } from "@supabase/supabase-js";
 import { config as loadDotenv } from "dotenv";
 import type { Plugin } from "vite";
 import { ENV_DIR } from "../cnEnv";
-import { appendExample, logReviewEvent, readDraft, readDrafts, writeDraft } from "./draftStore";
+import { appendExample, contextParagraph, logReviewEvent, readDraft, readDrafts, writeDraft } from "./draftStore";
 import type { Draft, DraftReview } from "./src/draft";
 
 const JIM_USER_ID = "0e97e940-652f-466b-8693-c142257e083d";
@@ -108,7 +108,7 @@ export const draftsApi: Plugin = {
     server.middlewares.use("/api/drafts", (req, res) => {
       const [file, action] = new URL(req.url ?? "/", "http://localhost").pathname.split("/").filter(Boolean);
       const handle = async () => {
-        if (req.method === "GET" && !file) return send(res, 200, readDrafts());
+        if (req.method === "GET" && !file) return send(res, 200, readDrafts().map((d) => ({ ...d, contextParagraph: contextParagraph(d) })));
         if (req.method !== "POST" || !file) return send(res, 404, { error: "Unknown request" });
         const body = await readJson(req);
         if (action === "accept") return send(res, 200, await decide(file, "accepted", undefined));

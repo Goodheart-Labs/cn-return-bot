@@ -22,6 +22,8 @@ export interface Draft {
   feedback?: DraftFeedback[];
   /** Every earlier version of the note, oldest first. */
   revisions?: DraftRevision[];
+  /** The post's paragraph around the passage, added by the server. */
+  contextParagraph?: string;
 }
 
 export interface DraftSource {

@@ -10,6 +10,12 @@ import type { Draft, ReviewEvent } from "./src/draft";
 
 const WORK_DIR = path.join(homedir(), ".local/share/claude-note-finder");
 const DRAFTS_DIR = path.join(WORK_DIR, "drafts");
+const POSTS_DIR = path.join(WORK_DIR, "posts");
+/** A paragraph longer than this, such as a whole video transcript, is cut to a
+ *  window of CONTEXT_WINDOW_CHARS around the passage. */
+const MAX_PARAGRAPH_CHARS = 3_000;
+const CONTEXT_WINDOW_CHARS = 1_500;
+const PASSAGE_OPENING_CHARS = 40;
 /** Every accept, reject, comment and revision, one JSON object per line. */
 export const REVIEW_LOG_PATH = path.join(WORK_DIR, "review-log.jsonl");
 const EXAMPLES_PATH = path.join(ENV_DIR, "docs/note-examples.md");
@@ -33,6 +39,22 @@ export function readDraft(file: string): Draft {
 
 export function writeDraft({ file, ...draft }: Draft) {
   writeFileSync(draftPath(file), JSON.stringify(draft, null, 2));
+}
+
+/** The paragraph of the post that contains the draft's passage, as the website
+ *  shows it beside a note. An agent's passage sometimes leaves out a footnote
+ *  marker inside it, so a paragraph that holds only the passage's opening words
+ *  counts too. It is undefined when neither is found. */
+export function contextParagraph(draft: Draft): string | undefined {
+  const postText = readFileSync(path.join(POSTS_DIR, draft.postDir, "post.md"), "utf8");
+  const paragraphs = postText.split(/\n\s*\n/);
+  const opening = draft.passage.slice(0, PASSAGE_OPENING_CHARS);
+  const paragraph = paragraphs.find((p) => p.includes(draft.passage)) ?? paragraphs.find((p) => p.includes(opening));
+  if (!paragraph || paragraph.length <= MAX_PARAGRAPH_CHARS) return paragraph;
+  const passageStart = Math.max(0, paragraph.indexOf(opening));
+  const start = paragraph.lastIndexOf(" ", Math.max(0, passageStart - CONTEXT_WINDOW_CHARS / 2)) + 1;
+  const end = paragraph.indexOf(" ", passageStart + draft.passage.length + CONTEXT_WINDOW_CHARS / 2);
+  return `${start > 0 ? "… " : ""}${paragraph.slice(start, end < 0 ? undefined : end)}${end < 0 ? "" : " …"}`;
 }
 
 export function logReviewEvent(event: ReviewEvent) {
