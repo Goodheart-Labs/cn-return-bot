@@ -23,7 +23,7 @@
 
 import "dotenv/config";
 import { consumeDirectedNoteRequest } from "./directedNoteRequest";
-import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { canonicalizePageUrl, extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { canonicalFeed, substackFeedOfPage, type CanonicalFeed } from "./feedUrls";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { group } from "./logFormat";
@@ -83,7 +83,11 @@ export type NoteRequestOutcome = {
 
 /** Consumes one note request. Exported for the tests, which mock the db module
  *  underneath it. */
-export async function consumeNoteRequest(request: NoteRequestRow): Promise<NoteRequestOutcome> {
+export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<NoteRequestOutcome> {
+  // Older extension versions and other clients may send an address that still
+  // carries tracking parameters, such as The New Yorker's _sp. Stored that
+  // way, the page is never found under its plain address (GOO-507).
+  const request = { ...rawRequest, page_url: canonicalizePageUrl(rawRequest.page_url, null) };
   const existing = await findItemForPageUrl(request.page_url);
   if (existing && (request.steer || request.passage_question_id)) return consumeDirectedNoteRequest(request, existing);
   if (existing) {
