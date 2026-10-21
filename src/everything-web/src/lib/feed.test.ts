@@ -187,8 +187,9 @@ describe("filterNotes", () => {
   const unseen = note("unseen", {}, {}, { item_id: "quiet" });
   const voted = note("voted", { h: 2, s: 1, n: 3 }, {}, { item_id: "popular" });
   const viewsOf = (n: NoteRow) => (n.claim.item_id === "popular" ? 7 : 0);
+  const NONE_VOTED = new Set<string>();
   const filter = (filters: Partial<typeof DEFAULT_NOTE_FILTERS>) =>
-    filterNotes([seen, unseen, voted], { ...DEFAULT_NOTE_FILTERS, ...filters }, viewsOf, tallyOf).map((n) => n.id);
+    filterNotes([seen, unseen, voted], { ...DEFAULT_NOTE_FILTERS, ...filters }, viewsOf, tallyOf, NONE_VOTED).map((n) => n.id);
 
   test("by default keeps only notes on posts at least 5 readers saw", () => {
     expect(filter({})).toEqual(["seen", "voted"]);
@@ -210,7 +211,13 @@ describe("filterNotes", () => {
 
   test("reads votes from the tally it is given, not the live counts", () => {
     const frozen = () => ({ helpful_count: 0, somewhat_helpful_count: 0, not_helpful_count: 0 });
-    expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0 }, viewsOf, frozen)).toEqual([voted]);
-    expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0, votes: 1 }, viewsOf, frozen)).toEqual([]);
+    expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0 }, viewsOf, frozen, NONE_VOTED)).toEqual([voted]);
+    expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0, votes: 1 }, viewsOf, frozen, NONE_VOTED)).toEqual([]);
+  });
+
+  test("by default hides the notes the reader voted on", () => {
+    const mine = new Set(["seen"]);
+    expect(filterNotes([seen, unseen], { ...DEFAULT_NOTE_FILTERS, views: 0 }, viewsOf, tallyOf, mine)).toEqual([unseen]);
+    expect(filterNotes([seen, unseen], { ...DEFAULT_NOTE_FILTERS, views: 0, unvotedOnly: false }, viewsOf, tallyOf, mine)).toEqual([seen, unseen]);
   });
 });

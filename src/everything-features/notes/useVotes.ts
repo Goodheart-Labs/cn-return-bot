@@ -14,11 +14,20 @@ import { updateNnnInNoteSets, updateNoteInNoteSets } from "./noteSet";
 
 const NO_VOTES: ReadonlyMap<string, Vote> = new Map();
 
-/** The signed-in reader's own votes on notes, keyed by note id. */
-export function useMyVotes(): ReadonlyMap<string, Vote> {
-  const userId = useSession().session?.user.id;
-  return useQuery({ queryKey: queryKeys.myVotes(userId), queryFn: fetchMyVotes, enabled: !!userId }).data ?? NO_VOTES;
+/** The signed-in reader's own votes on notes, keyed by note id. It is
+ *  undefined while the session or the votes are still loading. A reader
+ *  without a session has no votes, so they get an empty map. */
+export function useLoadedMyVotes(): ReadonlyMap<string, Vote> | undefined {
+  const { session, ready } = useSession();
+  const userId = session?.user.id;
+  const { data } = useQuery({ queryKey: queryKeys.myVotes(userId), queryFn: fetchMyVotes, enabled: !!userId });
+  if (!ready) return undefined;
+  return userId ? data : NO_VOTES;
 }
+
+/** The signed-in reader's own votes on notes, keyed by note id. It is empty
+ *  while they load. */
+export const useMyVotes = (): ReadonlyMap<string, Vote> => useLoadedMyVotes() ?? NO_VOTES;
 
 /** The signed-in reader's own votes on note-not-needed entries, keyed by entry
  *  id. */
