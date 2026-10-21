@@ -50,6 +50,8 @@ a passage from memory because no agent was free.
    - Do not open every note with a negation ("X, not Y"). Often it is clearer to state
      what the source shows, with its numbers, and let the reader see the difference.
    - Neutral, no "the author", no hedging filler.
+   - Leave out who reported a fact ("officials told the New York Times") unless the
+     source matters to the point. The sources list already carries it.
    - It says what is actually the case, not just that something is wrong.
    - No links in the note text. Sources go in the sources list.
    - Every sentence must be supported by at least one source.

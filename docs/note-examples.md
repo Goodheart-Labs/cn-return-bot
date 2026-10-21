@@ -847,3 +847,117 @@ Jim's comment:
 
 New version:
 > The tracker the post cites shows the count doubling about once a year: about 5 members by mid-2023, 11 by mid-2024, 22 by mid-2025 and 40 by June 2026.
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> 40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months
+
+Earlier version:
+> The tracker the post cites shows the count doubling about once a year: about 5 members by mid-2023, 11 by mid-2024, 22 by mid-2025 and 40 by June 2026.
+
+Jim's comment:
+> I don't get it.  june is 40 and a few montsh later its almost double at 74. That seems important!
+
+New version:
+> For context: by the cited tracker's dates, the count doubled about once a year before this post, from about 5 members in mid-2023 to about 40. It then jumped to 74 by October 2026, with 29 members speaking up for the first time in September.
+
+### Jim rejected (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> In most other fields, the safety regime arrived primarily after a disaster: aviation after a string of crashes, nuclear after Three Mile Island.
+
+Note:
+> The US had a nuclear safety regulator before Three Mile Island: the Nuclear Regulatory Commission began operating in 1975, four years before the 1979 accident. The accident led to new regulations within that regime.
+> 
+> https://en.wikipedia.org/wiki/Nuclear_Regulatory_Commission
+> https://en.wikipedia.org/wiki/Three_Mile_Island_accident
+
+Why: regulatory commision doesen't necessarily mean safety regime
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> 40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months
+
+Earlier version:
+> For context: by the cited tracker's dates, the count doubled about once a year before this post, from about 5 members in mid-2023 to about 40. It then jumped to 74 by October 2026, with 29 members speaking up for the first time in September.
+
+Jim's comment:
+> I feel like you should say that the doubling rate is now as high as the article says or at least roughly and also "to about 40" Whhhheeeeeen, this makes the note super random and confused
+
+New version:
+> For context: the tracker the post cites counted about 5 members in mid-2023 and 40 in June 2026, roughly one doubling a year. Since then the pace has matched the post's 5.5 months: 74 members by October 2026.
+
+### Jim rejected (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> Did you know that the Mexican government has already been hacked by an unattributed hacker using Claude? (Bloomberg, Feb 2026)
+
+Note:
+> Bloomberg reported a security firm's findings that one attacker used Claude to break into several Mexican agencies, including the tax authority (SAT) and the electoral institute (INE). SAT and INE denied that their systems were breached.
+> 
+> https://news.bloomberglaw.com/esg/hacker-used-anthropics-claude-to-steal-sensitive-mexican-data
+> https://gigazine.net/gsc_news/en/20260226-hacker-claude
+> https://www.nmas.com.mx/seguridad/hackeo-sat-ine-chatbot-ia-claude-autoridades-mexico-responden/
+> https://www.cnnchile.com/bits/gobierno-de-mexico-descarta-haber-sufrido-hackeo-masivo-tras-reportes-de-un-ataque-gracias-a-ia/
+
+Why: This context doesen't seem necessary. idk. the statement is true and the specifics don't seem that interesting and he didn't choose to mention them
+
+### Jim accepted (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> 40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months
+
+Note:
+> For context: the tracker the post cites counted about 5 members in mid-2023 and 40 in June 2026, roughly one doubling a year. Since then the pace has matched the post's 5.5 months: 74 members by October 2026.
+> 
+> https://web.archive.org/web/20260606223706/https://theaipn.org/issue/quotes/
+> https://theaipn.org/issue/quotes/
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> It seems that, in an authorized red-team test, a frontier model reportedly compromised most of the NSA's classified systems within hours (NYT).
+
+Earlier version:
+> Officials told the New York Times that in the NSA's tightly controlled test, Anthropic's Mythos identified vulnerabilities but did not exploit them. The "almost all of our classified systems" line came from Sen. Mark Warner, relaying NSA chief Gen. Joshua Rudd.
+
+Jim's comment:
+> "Officials told the New York Times that in the NSA's tightly controlled test, Anthropic's Mythos identified vulnerabilities but did not exploit them. The "almost all of our classified systems" line came from Sen. Mark Warner, relaying NSA chief Gen. Joshua Rudd." Not sure how to call it, but you are not consice enough, you are speak like a politician, you have to mention that this was tightly controlled. Bruh but people assume that ... Just say the model indentified vulnerabilities in ... this does not mean the model could have exploited them  or something. You are better at writing then me
+
+New version:
+> The model found vulnerabilities in the NSA's systems but did not exploit them, officials told the New York Times. So it did not actually break into them.
+
+### Jim accepted (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> yet AI does not appear at all in Pew's 24-item ranking of top national problems (Feb 2025)
+
+Note:
+> Pew's February 2025 list of 24 national problems did include AI: 27% called "the use of artificial intelligence (AI)" a very big problem, 23rd of the 24 items.
+> 
+> https://www.pewresearch.org/wp-content/uploads/sites/20/2025/02/PP_2025.2.20_national-problems_topline.pdf
+> https://www.pewresearch.org/politics/2025/02/20/americans-continue-to-view-several-economic-issues-as-top-national-problems/
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> It seems that, in an authorized red-team test, a frontier model reportedly compromised most of the NSA's classified systems within hours (NYT).
+
+Earlier version:
+> The model found vulnerabilities in the NSA's systems but did not exploit them, officials told the New York Times. So it did not actually break into them.
+
+Jim's comment:
+> ", officials told the New York Times" not needed
+
+New version:
+> The model found vulnerabilities in the NSA's systems but did not exploit them. So it did not actually break into them.
