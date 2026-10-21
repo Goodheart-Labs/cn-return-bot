@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
@@ -174,6 +174,176 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      everything_claude_drafts: {
+        Row: {
+          claim: string
+          created_at: string
+          id: string
+          item_id: string
+          kind: string
+          note: string
+          note_id: string | null
+          outcome: string
+          passage: string
+          posted_as: string | null
+          reasoning: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sources: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          claim: string
+          created_at?: string
+          id?: string
+          item_id: string
+          kind: string
+          note?: string
+          note_id?: string | null
+          outcome: string
+          passage: string
+          posted_as?: string | null
+          reasoning: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sources?: Json
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          claim?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          kind?: string
+          note?: string
+          note_id?: string | null
+          outcome?: string
+          passage?: string
+          posted_as?: string | null
+          reasoning?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sources?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_drafts_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_drafts_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_events: {
+        Row: {
+          actor: string
+          at: string
+          data: Json
+          draft_id: string | null
+          id: number
+          item_id: string | null
+          note_id: string | null
+          type: string
+        }
+        Insert: {
+          actor: string
+          at?: string
+          data?: Json
+          draft_id?: string | null
+          id?: never
+          item_id?: string | null
+          note_id?: string | null
+          type: string
+        }
+        Update: {
+          actor?: string
+          at?: string
+          data?: Json
+          draft_id?: string | null
+          id?: never
+          item_id?: string | null
+          note_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_events_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_events_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_handbacks: {
+        Row: {
+          at: string
+          item_id: string
+          reason: string
+        }
+        Insert: {
+          at?: string
+          item_id: string
+          reason: string
+        }
+        Update: {
+          at?: string
+          item_id?: string
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_handbacks_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: true
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_settings: {
+        Row: {
+          approval_required: boolean
+          id: boolean
+          updated_at: string
+          updated_by: string
+          writer: string
+        }
+        Insert: {
+          approval_required?: boolean
+          id?: boolean
+          updated_at?: string
+          updated_by?: string
+          writer?: string
+        }
+        Update: {
+          approval_required?: boolean
+          id?: boolean
+          updated_at?: string
+          updated_by?: string
+          writer?: string
+        }
+        Relationships: []
       }
       everything_donations: {
         Row: {
@@ -356,7 +526,7 @@ export type Database = {
           feed_url?: string | null
           id?: string
           item_id?: string | null
-          page_url?: never
+          page_url?: string | null
           reader_hash?: string | null
           url: string
           visited_at?: string
@@ -365,7 +535,7 @@ export type Database = {
           feed_url?: string | null
           id?: string
           item_id?: string | null
-          page_url?: never
+          page_url?: string | null
           reader_hash?: string | null
           url?: string
           visited_at?: string
@@ -2366,6 +2536,7 @@ export type Database = {
           active_devices: number
           bucket: string
           installs: number
+          installs_by_browser: Json
           note_viewers: Json
           notes_seen: number
           notes_written: number

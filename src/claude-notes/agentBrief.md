@@ -1,14 +1,20 @@
-# Brief for the note-finding agents (GOO-504)
+# Brief for the note-finding agents (GOO-504, GOO-507)
 
 Three levels of agents find and write Common Notes on one post. Every level reads
 `docs/note-examples.md` in the repo
-`/home/jim/dev/repos/cn-return-bot--sandbox-claude-note-finder` first. It holds the
+`/home/jim/dev/repos/cn-return-bot--feature-claude-note-writer` first. It holds the
 notes Jim judged very good and the ones that were rejected, with reasons. Match the
 good ones in tone, length and kind of finding.
 
-Work data lives in `~/.local/share/claude-note-finder/`:
-- `posts/<post>/post.md` is the post's text and `meta.json` its id, address and creator.
-- `drafts/<post>--<n>.json` is one finished candidate, written by level 2.
+The post's text is `~/.local/share/claude-note-finder/posts/<post>/post.md`, and
+`meta.json` next to it holds the item id, address and creator. If post.md has no body
+text, read the page with `bun run read-page <url>` in the repo and save the text there.
+
+Drafts go to the prod database, not to files: level 2 saves each one with
+`bun run claude-notes draft <file.json>` in the repo. A draft with outcome `note` is
+posted on commonnotes.net at once as an AI note, unless notes currently wait for
+approval. So only save a note you would stand behind in public. Write the JSON file to
+the scratchpad first, named after the post and your draft number.
 
 ## Level 1: one Opus agent per post
 
@@ -24,7 +30,16 @@ Work data lives in `~/.local/share/claude-note-finder/`:
    once. Give each one this brief's path, the post folder, the exact passage, why
    you picked it, and its draft number n (1, 2, 3, ... in your order). Agents that
    pick a number themselves overwrite each other's files.
-4. When all are done, report one line per passage: its outcome and the draft file.
+4. When all are done, judge the pipeline's own notes on the post. Run
+   `bun run claude-notes pipeline-notes <item id>`. For each note, decide whether it is
+   good by the same standard as yours: correct, sourced, something a reader would want,
+   and not a duplicate of a note your agents just posted on the same passage. Research
+   it on the web when you are not sure. Then run either
+   `bun run claude-notes keep-pipeline-note <item id> <note id> <reason>` or
+   `bun run claude-notes delete-pipeline-note <item id> <note id> <reason>`. Deleting
+   removes the note and its votes from the site, which Jim accepted.
+5. Report one line per passage with its outcome, and one line per pipeline note with
+   kept or deleted and why.
 
 Several level-1 agents run at the same time and share one scratchpad folder. Name
 every scratch file after your post folder, for example `<post>-level2.txt`, never a
@@ -72,26 +87,22 @@ a passage from memory because no agent was free.
    drop the claim it supported, then check again with a new Haiku agent. Stop after
    3 rounds. If no well-sourced note is possible, the outcome is `too_hard`. If the
    research shows the passage is fine, the outcome is `no_note_needed`.
-6. Write the draft file `drafts/<post>--<n>.json`, with the n your level-1 agent gave you, in this shape:
+6. Save the draft: write this JSON to a scratchpad file named after the post and your
+   draft number n, then run `bun run claude-notes draft <file>` in the repo.
 
 ```json
 {
-  "postDir": "<post folder name>",
   "itemId": "<from meta.json>",
-  "postUrl": "<from meta.json>",
-  "postTitle": "<from meta.json>",
-  "creator": "<from meta.json>",
   "passage": "<copied verbatim from post.md, the shortest span that carries the claim>",
   "claim": "<the passage's claim in neutral self-contained words>",
   "kind": "small_mistake | missing_context | wrong_or_misleading",
   "outcome": "note | no_note_needed | too_hard",
   "note": "<the note text, or empty>",
   "reasoning": "<2 to 4 sentences: what you found and why the note says what it says>",
-  "sources": [{ "url": "...", "quote": "<Haiku's verbatim quote>", "explanation": "<what it supports>" }],
-  "verificationRounds": 1
+  "sources": [{ "url": "...", "quote": "<Haiku's verbatim quote>", "explanation": "<what it supports>" }]
 }
 ```
 
 Every source in a `note` draft must have a quote that a Haiku agent found in the
 raw page text.
-Return only the draft file's path and the outcome.
+Return only the outcome and, for a note, its text.

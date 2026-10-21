@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { NoteRow } from "@cn/core/types";
 import { ContextParagraph } from "@cn/features/notes/ContextParagraph";
@@ -9,207 +9,121 @@ import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
 import { Textarea } from "@cn/ui/Field";
 import { Quote } from "@cn/ui/typography";
-import type { Draft } from "./draft";
+import type { PostedAs, Reviewer, ReviewDraft, ReviewState } from "./draft";
 
-const DRAFTS_KEY = ["drafts"] as const;
-/** How often the page looks for new drafts and for Claude's answers to comments. */
+const STATE_KEY = ["review-state"] as const;
+/** How often the page looks for new notes and for Claude's answers. */
 const REFRESH_MS = 10_000;
 
-const KIND_LABELS: Record<Draft["kind"], string> = {
+const KIND_LABELS: Record<ReviewDraft["kind"], string> = {
   small_mistake: "Small mistake",
   missing_context: "Missing context",
   wrong_or_misleading: "Wrong or misleading",
 };
-
-const OUTCOME_LABELS: Record<Exclude<Draft["outcome"], "note">, string> = {
+const NO_NOTE_LABELS: Record<Exclude<ReviewDraft["outcome"], "note">, string> = {
   no_note_needed: "No note needed",
   too_hard: "Too hard to source",
+  withdrawn: "Withdrawn by Claude",
 };
+const PERSON: Record<Reviewer | "claude", string> = { jim: "Jim", nathan: "Nathan", claude: "Claude" };
+const POSTED_AS: Record<PostedAs, string> = { ai: "an AI note", jim: "JimMaar1", nathan: "NathanpmYoung" };
 
-const draftNoteId = (draft: Draft) => `draft:${draft.file}`;
+const noteBoxId = (draft: ReviewDraft) => `draft:${draft.id}`;
 
-/** Loads the drafts. Each draft's source quotes go into the query cache under
- *  the draft's own key, which is where the website's note box reads its
- *  "Source details" from. Nothing in the cache goes stale by time, so the note
- *  box never asks the database for these made-up ids. */
-async function fetchDrafts(): Promise<Draft[]> {
+/** Loads the review state. Each draft's source quotes go into the query cache
+ *  under the draft's own key, which is where the website's note box reads its
+ *  "Source details" from, so it never asks the database for these ids. */
+async function fetchState(): Promise<ReviewState> {
   const response = await fetch("/api/drafts");
   if (!response.ok) throw new Error((await response.json()).error);
-  const drafts: Draft[] = await response.json();
-  for (const draft of drafts) {
+  const state: ReviewState = await response.json();
+  for (const draft of state.drafts) {
     queryClient.setQueryData(
-      queryKeys.sourceDetails(draftNoteId(draft)),
+      queryKeys.sourceDetails(noteBoxId(draft)),
       draft.sources.map((s, i) => ({ ...s, sort_order: i })),
     );
   }
-  return drafts;
+  return state;
 }
 
-type Action = { action: "accept" } | { action: "reject"; reason: string } | { action: "comment"; comment: string };
+type Action =
+  | { action: "approve" }
+  | { action: "reject"; reason: string }
+  | { action: "rewrite"; note: string; postedAs: PostedAs }
+  | { action: "message"; text: string };
 
-async function postAction(file: string, { action, ...body }: Action) {
-  const response = await fetch(`/api/drafts/${file}/${action}`, { method: "POST", body: JSON.stringify(body) });
+async function postAction(draftId: string, { action, ...body }: Action) {
+  const response = await fetch(`/api/drafts/${draftId}/${action}`, { method: "POST", body: JSON.stringify(body) });
   if (!response.ok) throw new Error((await response.json()).error);
 }
 
+function useDraftAction(draft: ReviewDraft, onSuccess?: () => void) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (action: Action) => postAction(draft.id, action),
+    onSuccess,
+    onSettled: () => client.invalidateQueries({ queryKey: STATE_KEY }),
+  });
+}
+
 /** The draft dressed as a note row, so the website's own note box can draw it. */
-function draftAsNote(draft: Draft): NoteRow {
-  const noteId = draftNoteId(draft);
+function draftAsNote(draft: ReviewDraft): NoteRow {
+  const id = noteBoxId(draft);
+  const author = draft.postedAs && draft.postedAs !== "ai" ? POSTED_AS[draft.postedAs] : null;
   return {
-    id: noteId,
-    claim_id: noteId,
+    id,
+    claim_id: id,
     note: draft.note,
     sources: draft.sources.map((s, i) => ({ url: s.url, sort_order: i })),
     has_source_details: true,
     helpful_count: 0,
     somewhat_helpful_count: 0,
     not_helpful_count: 0,
-    author_id: "jim",
-    author_name: "JimMaar1",
+    author_id: author,
+    author_name: author,
     improved_from_note_id: null,
     status: "draft",
-    created_at: new Date().toISOString(),
+    created_at: draft.createdAt,
     claim: {
-      id: noteId,
+      id,
       item_id: draft.itemId,
       claim: draft.claim,
       context_quote: draft.passage,
       context_paragraph: null,
       image_urls: [],
       updated_quote: null,
-      context_url: draft.postUrl,
+      context_url: draft.post.url,
       start_seconds: null,
       end_seconds: null,
     },
   } as NoteRow;
 }
 
-function DraftHeader({ draft }: { draft: Draft }) {
+function statusLine(draft: ReviewDraft): string {
+  if (draft.status === "awaiting_approval") return "Waiting for approval";
+  if (draft.status === "rejected") return `Rejected by ${PERSON[draft.reviewedBy ?? "jim"]}`;
+  if (draft.status !== "posted") return NO_NOTE_LABELS[draft.outcome as Exclude<ReviewDraft["outcome"], "note">];
+  const posted = `Posted as ${POSTED_AS[draft.postedAs ?? "ai"]}`;
+  return draft.reviewedBy ? `${posted}, approved by ${PERSON[draft.reviewedBy]}` : `${posted}, not reviewed yet`;
+}
+
+function DraftHeader({ draft }: { draft: ReviewDraft }) {
   return (
     <div className="space-y-1">
-      <a href={draft.postUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-link hover:underline">
-        {draft.postTitle}
+      <a href={draft.post.url} target="_blank" rel="noreferrer" className="text-sm font-medium text-link hover:underline">
+        {draft.post.title}
       </a>
       <p className="text-xs text-fg-muted">
-        {draft.creator} · {KIND_LABELS[draft.kind]} · {draft.verificationRounds === 1 ? "1 source check" : `${draft.verificationRounds} source checks`}
+        {draft.post.creator} · {KIND_LABELS[draft.kind]} · {statusLine(draft)}
       </p>
       <Quote className="text-sm">{draft.passage}</Quote>
     </div>
   );
 }
 
-function useDraftAction(draft: Draft, onSuccess: () => void) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (action: Action) => postAction(draft.file, action),
-    onSuccess,
-    onSettled: () => queryClient.invalidateQueries({ queryKey: DRAFTS_KEY }),
-  });
-}
-
-function Decision({ draft }: { draft: Draft }) {
-  const [rejecting, setRejecting] = useState(false);
-  const [reason, setReason] = useState("");
-  const act = useDraftAction(draft, () => setRejecting(false));
-  if (draft.review) {
-    const verdict = draft.review.decision === "accepted" ? "Accepted and posted" : "Rejected";
-    return (
-      <p className="text-sm text-fg-muted">
-        {verdict} {draft.review.reason && <>: {draft.review.reason}</>}
-      </p>
-    );
-  }
-  return (
-    <div className="space-y-2">
-      {rejecting && (
-        <Textarea className="w-full" rows={2} autoFocus placeholder="Why is this note not good? This goes to the agents as a lesson." value={reason} onChange={(e) => setReason(e.currentTarget.value)} />
-      )}
-      <div className="flex flex-wrap items-center gap-2">
-        {rejecting ? (
-          <>
-            <Button disabled={act.isPending} onClick={() => act.mutate({ action: "reject", reason })}>
-              Reject
-            </Button>
-            <Button variant="quiet" onClick={() => setRejecting(false)}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button disabled={act.isPending} onClick={() => act.mutate({ action: "accept" })}>
-              Accept and post as JimMaar1
-            </Button>
-            <Button variant="secondary" disabled={act.isPending} onClick={() => setRejecting(true)}>
-              Reject
-            </Button>
-          </>
-        )}
-        {act.isError && <span className="text-sm text-negative">{act.error.message}</span>}
-      </div>
-    </div>
-  );
-}
-
-/** A chat with Claude about one draft. Jim asks a question or suggests a
- *  change, and Claude answers here, changing the note if that was asked. */
-function Chat({ draft }: { draft: Draft }) {
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const act = useDraftAction(draft, () => setMessage(""));
-  const messages = draft.feedback ?? [];
-  if (!open && messages.length === 0) {
-    return (
-      <Button variant="secondary" onClick={() => setOpen(true)}>
-        Chat with Claude
-      </Button>
-    );
-  }
-  return (
-    <div className="space-y-3 rounded-control border border-line p-3 text-sm">
-      {messages.map((m) => (
-        <div key={m.at} className="space-y-1">
-          <p>
-            <span className="font-medium">You:</span> {m.comment}
-          </p>
-          <p className="text-fg-secondary">
-            <span className="font-medium">Claude:</span> {m.answer ? m.answer.reply : <span className="text-fg-muted">Working on it. The page updates when Claude answers.</span>}
-          </p>
-        </div>
-      ))}
-      <Textarea
-        className="w-full"
-        rows={2}
-        placeholder="Ask a question or suggest a change. Claude answers here."
-        value={message}
-        onChange={(e) => setMessage(e.currentTarget.value)}
-      />
-      <div className="flex items-center gap-2">
-        <Button disabled={act.isPending || !message.trim()} onClick={() => act.mutate({ action: "comment", comment: message })}>
-          Send
-        </Button>
-        {act.isError && <span className="text-negative">{act.error.message}</span>}
-      </div>
-    </div>
-  );
-}
-
-function EarlierVersions({ draft }: { draft: Draft }) {
-  if (!draft.revisions?.length) return null;
-  return (
-    <details className="text-sm text-fg-secondary">
-      <summary className="cursor-pointer text-fg-muted">Earlier versions ({draft.revisions.length})</summary>
-      {draft.revisions.map((r) => (
-        <Quote key={r.at} className="mt-2 text-sm">
-          {r.previousNote}
-        </Quote>
-      ))}
-    </details>
-  );
-}
-
 /** A card with the post's paragraph around the passage, laid out as on the
  *  website: beside the card on wide screens, behind a toggle on narrow ones. */
-function CardWithContext({ draft, className, children }: { draft: Draft; className: string; children: ReactNode }) {
+function CardWithContext({ draft, children }: { draft: ReviewDraft; children: ReactNode }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const paragraph = draft.contextParagraph;
   return (
@@ -219,7 +133,7 @@ function CardWithContext({ draft, className, children }: { draft: Draft; classNa
           <ContextParagraph paragraph={paragraph} quote={draft.passage} fitTo={cardRef} />
         </div>
       )}
-      <Card ref={cardRef} className={`mx-auto w-full max-w-[40rem] p-4 xl:col-start-2 xl:row-start-1 xl:mx-0 xl:max-w-none ${className}`}>
+      <Card ref={cardRef} className="mx-auto w-full max-w-[40rem] space-y-4 p-4 xl:col-start-2 xl:row-start-1 xl:mx-0 xl:max-w-none">
         <DraftHeader draft={draft} />
         {paragraph && (
           <details className="text-sm xl:hidden">
@@ -235,65 +149,199 @@ function CardWithContext({ draft, className, children }: { draft: Draft; classNa
   );
 }
 
-function DraftCard({ draft }: { draft: Draft }) {
+function EarlierVersions({ draft }: { draft: ReviewDraft }) {
+  if (draft.earlierVersions.length === 0) return null;
   return (
-    <CardWithContext draft={draft} className="space-y-4">
-      <NoteBox note={draftAsNote(draft)} status="needs_ratings" sourcesOpen />
-      <details className="text-sm text-fg-secondary">
-        <summary className="cursor-pointer text-fg-muted">The agent's reasoning</summary>
-        <p className="mt-1">{draft.reasoning}</p>
-      </details>
+    <details className="text-sm text-fg-secondary">
+      <summary className="cursor-pointer text-fg-muted">Earlier versions ({draft.earlierVersions.length})</summary>
+      {draft.earlierVersions.map((v) => (
+        <div key={v.at} className="mt-2 space-y-1">
+          <Quote className="text-sm">{v.note}</Quote>
+          {v.reason && <p className="text-xs text-fg-muted">{v.reason}</p>}
+        </div>
+      ))}
+    </details>
+  );
+}
+
+/** A chat with Claude about one draft. A reviewer asks a question or suggests
+ *  a change, and Claude answers here, changing the note if that was asked. */
+function Chat({ draft }: { draft: ReviewDraft }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const act = useDraftAction(draft, () => setText(""));
+  const waiting = draft.messages.at(-1)?.actor !== "claude" && draft.messages.length > 0;
+  if (!open && draft.messages.length === 0) {
+    return (
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Chat with Claude
+      </Button>
+    );
+  }
+  const send = (event: FormEvent) => {
+    event.preventDefault();
+    if (text.trim()) act.mutate({ action: "message", text: text.trim() });
+  };
+  return (
+    <form onSubmit={send} className="space-y-3 rounded-control border border-line p-3 text-sm">
+      {draft.messages.map((m) => (
+        <p key={m.at} className={m.actor === "claude" ? "text-fg-secondary" : undefined}>
+          <span className="font-medium">{PERSON[m.actor]}:</span> {m.text}
+        </p>
+      ))}
+      {waiting && <p className="text-fg-muted">Claude is working on it. The page updates when Claude answers.</p>}
+      <Textarea className="w-full" rows={2} placeholder="Ask a question or suggest a change. Claude answers here." value={text} onChange={(e) => setText(e.currentTarget.value)} />
+      <div className="flex items-center gap-2">
+        <Button type="submit" disabled={act.isPending || !text.trim()}>
+          Send
+        </Button>
+        {act.isError && <span className="text-negative">{act.error.message}</span>}
+      </div>
+    </form>
+  );
+}
+
+function RewriteForm({ draft, reviewer, onDone }: { draft: ReviewDraft; reviewer: Reviewer; onDone: () => void }) {
+  const [note, setNote] = useState(draft.note);
+  const [postedAs, setPostedAs] = useState<PostedAs>(reviewer);
+  const act = useDraftAction(draft, onDone);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    act.mutate({ action: "rewrite", note, postedAs });
+  };
+  return (
+    <form onSubmit={submit} className="space-y-2">
+      <Textarea className="w-full" rows={4} value={note} onChange={(e) => setNote(e.currentTarget.value)} />
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <label htmlFor={`posted-as-${draft.id}`}>Post as</label>
+        <select
+          id={`posted-as-${draft.id}`}
+          className="rounded-control border border-line-input bg-surface px-2 py-1.5 text-sm text-fg"
+          value={postedAs}
+          onChange={(e) => setPostedAs(e.currentTarget.value as PostedAs)}
+        >
+          {(Object.keys(POSTED_AS) as PostedAs[]).map((p) => (
+            <option key={p} value={p}>
+              {POSTED_AS[p]}
+            </option>
+          ))}
+        </select>
+        <Button type="submit" disabled={act.isPending || !note.trim() || note === draft.note}>
+          {draft.status === "posted" ? "Replace the posted note" : "Save"}
+        </Button>
+        <Button type="button" variant="quiet" onClick={onDone}>
+          Cancel
+        </Button>
+        {act.isError && <span className="text-negative">{act.error.message}</span>}
+      </div>
+    </form>
+  );
+}
+
+function Actions({ draft, reviewer }: { draft: ReviewDraft; reviewer: Reviewer }) {
+  const [mode, setMode] = useState<"rewrite" | "reject" | null>(null);
+  const [reason, setReason] = useState("");
+  const act = useDraftAction(draft, () => setMode(null));
+  if (draft.status !== "posted" && draft.status !== "awaiting_approval") return null;
+  if (mode === "rewrite") return <RewriteForm draft={draft} reviewer={reviewer} onDone={() => setMode(null)} />;
+  if (mode === "reject") {
+    return (
+      <div className="space-y-2">
+        <Textarea className="w-full" rows={2} autoFocus placeholder="Why is this note not good? Claude learns from this." value={reason} onChange={(e) => setReason(e.currentTarget.value)} />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button disabled={act.isPending} onClick={() => act.mutate({ action: "reject", reason })}>
+            {draft.status === "posted" ? "Reject and delete the note" : "Reject"}
+          </Button>
+          <Button variant="quiet" onClick={() => setMode(null)}>
+            Cancel
+          </Button>
+          {act.isError && <span className="text-sm text-negative">{act.error.message}</span>}
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {!draft.reviewedBy && (
+        <Button disabled={act.isPending} onClick={() => act.mutate({ action: "approve" })}>
+          {draft.status === "awaiting_approval" ? "Approve and post" : "Approve"}
+        </Button>
+      )}
+      <Button variant="secondary" disabled={act.isPending} onClick={() => setMode("rewrite")}>
+        Rewrite
+      </Button>
+      <Button variant="secondary" disabled={act.isPending} onClick={() => setMode("reject")}>
+        Reject
+      </Button>
+      {act.isError && <span className="text-sm text-negative">{act.error.message}</span>}
+    </div>
+  );
+}
+
+function DraftCard({ draft, reviewer }: { draft: ReviewDraft; reviewer: Reviewer }) {
+  const isNote = draft.status === "posted" || draft.status === "awaiting_approval" || draft.status === "rejected";
+  return (
+    <CardWithContext draft={draft}>
+      {isNote ? (
+        <NoteBox note={draftAsNote(draft)} status="needs_ratings" sourcesOpen />
+      ) : (
+        <p className="text-sm text-fg-secondary">{draft.reasoning}</p>
+      )}
+      {isNote && (
+        <details className="text-sm text-fg-secondary">
+          <summary className="cursor-pointer text-fg-muted">The agent's reasoning</summary>
+          <p className="mt-1">{draft.reasoning}</p>
+        </details>
+      )}
       <EarlierVersions draft={draft} />
       <Chat draft={draft} />
-      <Decision draft={draft} />
+      <Actions draft={draft} reviewer={reviewer} />
     </CardWithContext>
   );
 }
 
-function SkippedPassage({ draft }: { draft: Draft }) {
+function Section({ title, drafts, reviewer, empty }: { title: string; drafts: ReviewDraft[]; reviewer: Reviewer; empty?: string }) {
+  if (drafts.length === 0 && !empty) return null;
   return (
-    <CardWithContext draft={draft} className="space-y-2">
-      <p className="text-sm text-fg-secondary">
-        <span className="font-medium">{OUTCOME_LABELS[draft.outcome as Exclude<Draft["outcome"], "note">]}.</span> {draft.reasoning}
-      </p>
-      <EarlierVersions draft={draft} />
-      <Chat draft={draft} />
-    </CardWithContext>
+    <section className="space-y-4">
+      <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">
+        {title} ({drafts.length})
+      </h2>
+      {drafts.length === 0 && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">{empty}</p>}
+      {drafts.map((d) => (
+        <DraftCard key={d.id} draft={d} reviewer={reviewer} />
+      ))}
+    </section>
   );
 }
 
-/** Every draft the note-finding agents wrote. Notes waiting for a decision come
- *  first, then the decided ones, then the passages the agents looked at but
- *  wrote no note on. */
+const newestFirst = (a: ReviewDraft, b: ReviewDraft) => b.createdAt.localeCompare(a.createdAt);
+
+/** Every passage the Claude note writer's agents looked at, grouped by what
+ *  happened to it, the ones that need a reviewer first. */
 export function App() {
-  const drafts = useQuery({ queryKey: DRAFTS_KEY, queryFn: fetchDrafts, refetchInterval: REFRESH_MS });
-  const all = drafts.data ?? [];
-  const notes = all.filter((d) => d.outcome === "note");
-  const waiting = notes.filter((d) => !d.review);
-  const decided = notes.filter((d) => d.review);
-  const skipped = all.filter((d) => d.outcome !== "note");
+  const state = useQuery({ queryKey: STATE_KEY, queryFn: fetchState, refetchInterval: REFRESH_MS });
+  const drafts = [...(state.data?.drafts ?? [])].sort(newestFirst);
+  const reviewer = state.data?.reviewer ?? "jim";
+  const posted = drafts.filter((d) => d.status === "posted");
   return (
     <main className="space-y-6 px-4 py-8">
-      <h1 className="mx-auto max-w-[40rem] font-title text-2xl font-bold">Note review</h1>
-      {drafts.isError && <p className="mx-auto max-w-[40rem] text-sm text-negative">{drafts.error.message}</p>}
-      {drafts.isLoading && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>}
-      <section className="space-y-4">
-        <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">Waiting for you ({waiting.length})</h2>
-        {waiting.length === 0 && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">No notes are waiting. The page checks for new ones every 10 seconds.</p>}
-        {waiting.map((d) => <DraftCard key={d.file} draft={d} />)}
-      </section>
-      {decided.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">Decided ({decided.length})</h2>
-          {decided.map((d) => <DraftCard key={d.file} draft={d} />)}
-        </section>
-      )}
-      {skipped.length > 0 && (
-        <section className="space-y-4">
-          <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">Looked at, no note ({skipped.length})</h2>
-          {skipped.map((d) => <SkippedPassage key={d.file} draft={d} />)}
-        </section>
-      )}
+      <header className="mx-auto max-w-[40rem] space-y-1">
+        <h1 className="font-title text-2xl font-bold">Note review</h1>
+        {state.data && (
+          <p className="text-sm text-fg-muted">
+            Reviewing as {PERSON[reviewer]}. {state.data.writer === "claude" ? "Claude writes the notes." : "The pipeline writes the notes."}{" "}
+            {state.data.approvalRequired ? "Notes wait for approval before they go up." : "Notes go up at once."}
+          </p>
+        )}
+        {state.isError && <p className="text-sm text-negative">{state.error.message}</p>}
+        {state.isLoading && <p className="text-sm text-fg-muted">Loading…</p>}
+      </header>
+      <Section title="Waiting for approval" drafts={drafts.filter((d) => d.status === "awaiting_approval")} reviewer={reviewer} />
+      <Section title="Posted, not reviewed yet" drafts={posted.filter((d) => !d.reviewedBy)} reviewer={reviewer} empty="Every posted note has been reviewed." />
+      <Section title="Approved" drafts={posted.filter((d) => d.reviewedBy)} reviewer={reviewer} />
+      <Section title="Rejected" drafts={drafts.filter((d) => d.status === "rejected")} reviewer={reviewer} />
+      <Section title="Looked at, no note" drafts={drafts.filter((d) => d.status === "not_a_note")} reviewer={reviewer} />
     </main>
   );
 }

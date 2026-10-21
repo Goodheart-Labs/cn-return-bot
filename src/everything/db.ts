@@ -418,6 +418,17 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
+/** While the Claude note writer writes the notes (migration 129, GOO-507),
+ *  the pipeline takes only the items Claude handed back to it, and this returns
+ *  their ids. It returns null while the pipeline writes the notes as before. */
+async function itemsLeftToThePipeline(): Promise<string[] | null> {
+  const db = getSupabaseClient();
+  const settings = throwOnError(await db.from("everything_claude_settings").select("writer").single()) as { writer: string };
+  if (settings.writer !== "claude") return null;
+  const handbacks = throwOnError(await db.from("everything_claude_handbacks").select("item_id")) as { item_id: string }[];
+  return handbacks.map((h) => h.item_id);
+}
+
 /** Moves the next queued item to `processing` and returns it. The highest
  *  priority tier wins, and within a tier the newest published content comes
  *  first. An item with no published date yet, which is typically a freshly
@@ -428,13 +439,16 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
  *  safe because each tier has exactly one worker: the intake service on the
  *  machine takes only the requested tier, and the Actions feed run takes only
  *  the tiers below it. Two workers exist, but they can never want the same
- *  row. */
+ *  row. While the Claude note writer is on, both take only what it handed
+ *  back, and Claude takes the rest. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
   let query = db
     .from("everything_items")
     .select(ITEM_COLUMNS)
     .eq("status", "queued");
+  const handedBack = await itemsLeftToThePipeline();
+  if (handedBack) query = query.in("id", handedBack);
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)

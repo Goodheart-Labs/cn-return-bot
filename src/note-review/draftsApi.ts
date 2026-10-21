@@ -1,61 +1,89 @@
-/* The note review dashboard's server side (GOO-504). It runs inside the Vite
+/* The note review dashboard's server side (GOO-507). It runs inside the Vite
  * development server on the reviewer's machine and never ships to a browser.
- * The drafts are JSON files that the note-finding agents write. Accepting a
- * draft posts it to prod as Jim, with its sources and their supporting quotes.
- * Rejecting it records the reason. A chat message asks Claude a question or
- * for a change, on any draft; Claude answers with reviseDraft.ts. Every step goes into the review log, and
- * decisions are appended to docs/note-examples.md, which the agents read
- * before they write notes. */
+ * It reads the Claude note writer's drafts and history from prod and records
+ * the reviewer's approvals, rejections, rewrites and chat messages there, so
+ * Jim's and Nathan's dashboards and the Claude session share one state. The
+ * script that starts the server says who the reviewer is (CN_REVIEWER). */
 
-import * as path from "path";
 import type { IncomingMessage, ServerResponse } from "http";
-import { createClient } from "@supabase/supabase-js";
-import { config as loadDotenv } from "dotenv";
 import type { Plugin } from "vite";
-import { ENV_DIR } from "../cnEnv";
-import { appendExample, contextParagraph, logReviewEvent, readDraft, readDrafts, writeDraft } from "./draftStore";
-import type { Draft, DraftReview } from "./src/draft";
+import { addMessage, approve, type DraftRow, eventsOfDrafts, type EventRow, listDrafts, readItemTexts, readSettings, reject, rewrite } from "../claude-notes/store";
+import type { DraftSource, PostedAs, Reviewer, ReviewDraft, ReviewState } from "./src/draft";
 
-const JIM_USER_ID = "0e97e940-652f-466b-8693-c142257e083d";
-const JIM_AUTHOR_NAME = "JimMaar1";
-/** A claim a person created keeps only a preview of its text in `claim`, as on
- *  the website (postNote.ts). */
-const CLAIM_PREVIEW_CHARS = 300;
+/** A paragraph longer than this, such as a whole video transcript, is cut to a
+ *  window of CONTEXT_WINDOW_CHARS around the passage. */
+const MAX_PARAGRAPH_CHARS = 3_000;
+const CONTEXT_WINDOW_CHARS = 1_500;
+/** An agent's passage sometimes leaves out a footnote marker inside it, so a
+ *  paragraph that holds only the passage's opening words counts too. */
+const PASSAGE_OPENING_CHARS = 40;
 
-function prodClient() {
-  loadDotenv({ path: path.join(ENV_DIR, ".env"), quiet: true });
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY;
-  if (!url || !key) throw new Error("SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in the root .env");
-  return createClient(url, key);
+function reviewer(): Reviewer {
+  const value = process.env.CN_REVIEWER;
+  if (value !== "jim" && value !== "nathan") throw new Error("Start the dashboard with CN_REVIEWER=jim or CN_REVIEWER=nathan");
+  return value;
 }
 
-async function postAsJim(draft: Draft): Promise<string> {
-  const db = prodClient();
-  const { data: claim, error: claimError } = await db
-    .from("everything_claims")
-    .insert({
-      item_id: draft.itemId,
-      claim: draft.passage.slice(0, CLAIM_PREVIEW_CHARS),
-      judgement: "user",
-      context_quote: draft.passage,
-      context_url: draft.postUrl,
-      status: "note",
-      created_by: JIM_USER_ID,
-    })
-    .select("id")
-    .single();
-  if (claimError) throw claimError;
-  const { data: note, error: noteError } = await db
-    .from("everything_notes")
-    .insert({ claim_id: claim.id, note: draft.note, author_id: JIM_USER_ID, author_name: JIM_AUTHOR_NAME, status: "draft" })
-    .select("id")
-    .single();
-  if (noteError) throw noteError;
-  const sources = draft.sources.map((s, i) => ({ note_id: note.id, url: s.url, quote: s.quote, explanation: s.explanation, sort_order: i }));
-  const { error: sourceError } = await db.from("everything_note_sources").insert(sources);
-  if (sourceError) throw sourceError;
-  return note.id;
+/** The paragraph of the post that contains the passage. */
+function contextParagraph(postText: string | null, passage: string): string | undefined {
+  if (!postText) return undefined;
+  const paragraphs = postText.split(/\n\s*\n/);
+  const opening = passage.slice(0, PASSAGE_OPENING_CHARS);
+  const paragraph = paragraphs.find((p) => p.includes(passage)) ?? paragraphs.find((p) => p.includes(opening));
+  if (!paragraph || paragraph.length <= MAX_PARAGRAPH_CHARS) return paragraph;
+  const passageStart = Math.max(0, paragraph.indexOf(opening));
+  const start = paragraph.lastIndexOf(" ", Math.max(0, passageStart - CONTEXT_WINDOW_CHARS / 2)) + 1;
+  const end = paragraph.indexOf(" ", passageStart + passage.length + CONTEXT_WINDOW_CHARS / 2);
+  return `${start > 0 ? "… " : ""}${paragraph.slice(start, end < 0 ? undefined : end)}${end < 0 ? "" : " …"}`;
+}
+
+/** Rewrites imported from the GOO-504 file log name the old text previousNote. */
+const previousNote = (e: EventRow): string | undefined => {
+  const data = e.data as Record<string, string>;
+  return data.previous_note ?? data.previousNote;
+};
+
+type ItemText = { url: string; title: string | null; creator: string; fullText: string | null };
+
+function toReviewDraft(row: DraftRow, events: EventRow[], item: ItemText): ReviewDraft {
+  const data = (e: EventRow) => e.data as Record<string, string>;
+  return {
+    id: row.id,
+    itemId: row.item_id,
+    passage: row.passage,
+    claim: row.claim,
+    kind: row.kind as ReviewDraft["kind"],
+    outcome: row.outcome as ReviewDraft["outcome"],
+    note: row.note,
+    reasoning: row.reasoning,
+    sources: row.sources as unknown as DraftSource[],
+    status: row.status as ReviewDraft["status"],
+    noteId: row.note_id,
+    postedAs: row.posted_as as PostedAs | null,
+    reviewedBy: row.reviewed_by as Reviewer | null,
+    reviewedAt: row.reviewed_at,
+    createdAt: row.created_at,
+    post: { url: item.url, title: item.title ?? item.url, creator: item.creator },
+    contextParagraph: contextParagraph(item.fullText, row.passage),
+    messages: events
+      .filter((e) => e.type === "message" || e.type === "answer")
+      .map((e) => ({ at: e.at, actor: e.actor as Reviewer | "claude", text: data(e).text ?? "" })),
+    earlierVersions: events
+      .filter((e) => (e.type === "rewritten" && previousNote(e)) || e.type === "withdrawn")
+      .map((e) => ({ at: e.at, note: previousNote(e) ?? data(e).note ?? "", reason: data(e).reason ?? data(e).reply ?? "" })),
+  };
+}
+
+async function reviewState(): Promise<ReviewState> {
+  const [settings, rows] = await Promise.all([readSettings(), listDrafts()]);
+  const [events, items] = await Promise.all([eventsOfDrafts(rows.map((r) => r.id)), readItemTexts([...new Set(rows.map((r) => r.item_id))])]);
+  const eventsByDraft = Map.groupBy(events, (e) => e.draft_id);
+  return {
+    reviewer: reviewer(),
+    approvalRequired: settings.approvalRequired,
+    writer: settings.writer,
+    drafts: rows.map((r) => toReviewDraft(r, eventsByDraft.get(r.id) ?? [], items.get(r.item_id)!)),
+  };
 }
 
 async function readJson(req: IncomingMessage): Promise<Record<string, string>> {
@@ -70,51 +98,27 @@ function send(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
-function undecidedDraft(file: string): Draft {
-  const draft = readDraft(file);
-  if (draft.review) throw new Error(`Draft ${file} was already ${draft.review.decision}`);
-  return draft;
+async function act(draftId: string, action: string, body: Record<string, string>) {
+  const by = reviewer();
+  if (action === "approve") return approve(draftId, by);
+  if (action === "reject") return reject(draftId, by, body.reason ?? "");
+  if (action === "rewrite") return rewrite(draftId, { actor: by, note: body.note ?? "", postedAs: body.postedAs as PostedAs, reason: `${by} rewrote it in the dashboard` });
+  if (action === "message") return addMessage(draftId, by, body.text ?? "");
+  throw new Error(`Unknown action ${action}`);
 }
 
-async function decide(file: string, decision: DraftReview["decision"], reason: string | undefined): Promise<DraftReview> {
-  const draft = undecidedDraft(file);
-  const noteId = decision === "accepted" ? await postAsJim(draft) : undefined;
-  const review: DraftReview = { decision, at: new Date().toISOString(), ...(reason && { reason }), ...(noteId && { noteId }) };
-  writeDraft({ ...draft, review });
-  logReviewEvent(
-    noteId ? { type: "accepted", at: review.at, file, note: draft.note, noteId } : { type: "rejected", at: review.at, file, note: draft.note, reason },
-  );
-  appendExample({
-    heading: `Jim ${decision} (${review.at.slice(0, 10)})`,
-    draft,
-    parts: [["Note", `${draft.note}\n\n${draft.sources.map((s) => s.url).join("\n")}`]],
-    why: reason,
-  });
-  return review;
-}
-
-function comment(file: string, text: string) {
-  const draft = readDraft(file);
-  const at = new Date().toISOString();
-  writeDraft({ ...draft, feedback: [...(draft.feedback ?? []), { at, comment: text, noteAtTheTime: draft.note }] });
-  logReviewEvent({ type: "feedback", at, file, note: draft.note, comment: text });
-}
-
-/** GET /api/drafts lists every draft. POST /api/drafts/<file>/accept,
- *  /reject with { reason } and /comment with { comment } record a step. */
+/** GET /api/drafts returns the review state. POST /api/drafts/<id>/approve,
+ *  /reject { reason }, /rewrite { note, postedAs } and /message { text }
+ *  record the reviewer's step. */
 export const draftsApi: Plugin = {
   name: "note-review-drafts-api",
   configureServer(server) {
     server.middlewares.use("/api/drafts", (req, res) => {
-      const [file, action] = new URL(req.url ?? "/", "http://localhost").pathname.split("/").filter(Boolean);
+      const [draftId, action] = new URL(req.url ?? "/", "http://localhost").pathname.split("/").filter(Boolean);
       const handle = async () => {
-        if (req.method === "GET" && !file) return send(res, 200, readDrafts().map((d) => ({ ...d, contextParagraph: contextParagraph(d) })));
-        if (req.method !== "POST" || !file) return send(res, 404, { error: "Unknown request" });
-        const body = await readJson(req);
-        if (action === "accept") return send(res, 200, await decide(file, "accepted", undefined));
-        if (action === "reject") return send(res, 200, await decide(file, "rejected", body.reason?.trim() || undefined));
-        if (action === "comment" && body.comment?.trim()) {
-          comment(file, body.comment.trim());
+        if (req.method === "GET" && !draftId) return send(res, 200, await reviewState());
+        if (req.method === "POST" && draftId && action) {
+          await act(draftId, action, await readJson(req));
           return send(res, 200, {});
         }
         send(res, 404, { error: "Unknown request" });
