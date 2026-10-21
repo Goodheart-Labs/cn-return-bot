@@ -6,7 +6,7 @@ Data as of 2026-10-18 04:15 UTC. All times are UTC.
 
 - **What hit the limit.** OpenRouter is the service that forwards our model
   calls to the model makers and bills us for them. Each OpenRouter API key can
-  carry a spending limit. Our production key (its hash starts `3cec2aea`) has a
+  carry a spending limit. Our production key has a
   limit of **$1,500 per calendar month**. It reached the limit on **Oct 16 at
   08:54**. Since then OpenRouter refuses every call on it with "Key limit
   exceeded (monthly limit)". It shows $1,503.25 used, because calls already
@@ -70,7 +70,7 @@ Data as of 2026-10-18 04:15 UTC. All times are UTC.
   been dead since at least September. With a new key, `fetch.py` downloads
   OpenRouter's own numbers: every key on the account with its limit and
   monthly usage, plus spend per day, per hour, per model and per key for the
-  last 30 days. It also shows any key other than `3cec2aea`, for example the
+  last 30 days. It also shows any key other than the production key, for example the
   one in the GitHub secret, if that is a different key.
 
 ## When: OpenRouter spend per day
@@ -192,7 +192,7 @@ was in a position to stop the key from running out.
 
 ## Options
 
-1. **Raise the limit on key `3cec2aea`** in the OpenRouter dashboard
+1. **Raise the production key's limit** in the OpenRouter dashboard
    (Settings, then API keys). At about $97 a day, the rest of October needs
    about $1,500, so a limit of about $3,000. Both products resume within
    minutes, without a deploy. This is your decision. I changed nothing. The
