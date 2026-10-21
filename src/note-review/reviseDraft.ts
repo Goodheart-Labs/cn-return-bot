@@ -23,6 +23,7 @@ if (!open) throw new Error(`Draft ${file} has no open comment`);
 const at = new Date().toISOString();
 open.answer = { at, reply: answer.reply };
 const changed = answer.note !== undefined && answer.note !== draft.note;
+if (changed && draft.review) throw new Error(`Draft ${file} was already ${draft.review.decision}, so its note cannot change here`);
 writeDraft({
   ...draft,
   feedback,

@@ -98,18 +98,19 @@ function DraftHeader({ draft }: { draft: Draft }) {
   );
 }
 
-function Decision({ draft }: { draft: Draft }) {
+function useDraftAction(draft: Draft, onSuccess: () => void) {
   const queryClient = useQueryClient();
-  const [writing, setWriting] = useState<"reject" | "comment" | null>(null);
-  const [text, setText] = useState("");
-  const act = useMutation({
+  return useMutation({
     mutationFn: (action: Action) => postAction(draft.file, action),
-    onSuccess: () => {
-      setWriting(null);
-      setText("");
-    },
+    onSuccess,
     onSettled: () => queryClient.invalidateQueries({ queryKey: DRAFTS_KEY }),
   });
+}
+
+function Decision({ draft }: { draft: Draft }) {
+  const [rejecting, setRejecting] = useState(false);
+  const [reason, setReason] = useState("");
+  const act = useDraftAction(draft, () => setRejecting(false));
   if (draft.review) {
     const verdict = draft.review.decision === "accepted" ? "Accepted and posted" : "Rejected";
     return (
@@ -118,26 +119,18 @@ function Decision({ draft }: { draft: Draft }) {
       </p>
     );
   }
-  const send = () => act.mutate(writing === "reject" ? { action: "reject", reason: text } : { action: "comment", comment: text });
   return (
     <div className="space-y-2">
-      {writing && (
-        <Textarea
-          className="w-full"
-          rows={3}
-          autoFocus
-          placeholder={writing === "reject" ? "Why is this note not good? This goes to the agents as a lesson." : "What should change? Claude reads this and updates the note."}
-          value={text}
-          onChange={(e) => setText(e.currentTarget.value)}
-        />
+      {rejecting && (
+        <Textarea className="w-full" rows={2} autoFocus placeholder="Why is this note not good? This goes to the agents as a lesson." value={reason} onChange={(e) => setReason(e.currentTarget.value)} />
       )}
       <div className="flex flex-wrap items-center gap-2">
-        {writing ? (
+        {rejecting ? (
           <>
-            <Button disabled={act.isPending || (writing === "comment" && !text.trim())} onClick={send}>
-              {writing === "reject" ? "Reject" : "Send to Claude"}
+            <Button disabled={act.isPending} onClick={() => act.mutate({ action: "reject", reason })}>
+              Reject
             </Button>
-            <Button variant="quiet" onClick={() => setWriting(null)}>
+            <Button variant="quiet" onClick={() => setRejecting(false)}>
               Cancel
             </Button>
           </>
@@ -146,10 +139,7 @@ function Decision({ draft }: { draft: Draft }) {
             <Button disabled={act.isPending} onClick={() => act.mutate({ action: "accept" })}>
               Accept and post as JimMaar1
             </Button>
-            <Button variant="secondary" disabled={act.isPending} onClick={() => setWriting("comment")}>
-              Suggest a change
-            </Button>
-            <Button variant="secondary" disabled={act.isPending} onClick={() => setWriting("reject")}>
+            <Button variant="secondary" disabled={act.isPending} onClick={() => setRejecting(true)}>
               Reject
             </Button>
           </>
@@ -160,21 +150,45 @@ function Decision({ draft }: { draft: Draft }) {
   );
 }
 
-/** Jim's comments on the note and Claude's answers, oldest first. */
-function Conversation({ draft }: { draft: Draft }) {
-  if (!draft.feedback?.length) return null;
+/** A chat with Claude about one draft. Jim asks a question or suggests a
+ *  change, and Claude answers here, changing the note if that was asked. */
+function Chat({ draft }: { draft: Draft }) {
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const act = useDraftAction(draft, () => setMessage(""));
+  const messages = draft.feedback ?? [];
+  if (!open && messages.length === 0) {
+    return (
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Chat with Claude
+      </Button>
+    );
+  }
   return (
-    <div className="space-y-2 text-sm">
-      {draft.feedback.map((f) => (
-        <div key={f.at} className="space-y-1">
+    <div className="space-y-3 rounded-control border border-line p-3 text-sm">
+      {messages.map((m) => (
+        <div key={m.at} className="space-y-1">
           <p>
-            <span className="font-medium">You:</span> {f.comment}
+            <span className="font-medium">You:</span> {m.comment}
           </p>
           <p className="text-fg-secondary">
-            <span className="font-medium">Claude:</span> {f.answer ? f.answer.reply : <span className="text-fg-muted">Working on it. The page updates when Claude answers.</span>}
+            <span className="font-medium">Claude:</span> {m.answer ? m.answer.reply : <span className="text-fg-muted">Working on it. The page updates when Claude answers.</span>}
           </p>
         </div>
       ))}
+      <Textarea
+        className="w-full"
+        rows={2}
+        placeholder="Ask a question or suggest a change. Claude answers here."
+        value={message}
+        onChange={(e) => setMessage(e.currentTarget.value)}
+      />
+      <div className="flex items-center gap-2">
+        <Button disabled={act.isPending || !message.trim()} onClick={() => act.mutate({ action: "comment", comment: message })}>
+          Send
+        </Button>
+        {act.isError && <span className="text-negative">{act.error.message}</span>}
+      </div>
     </div>
   );
 }
@@ -230,7 +244,7 @@ function DraftCard({ draft }: { draft: Draft }) {
         <p className="mt-1">{draft.reasoning}</p>
       </details>
       <EarlierVersions draft={draft} />
-      <Conversation draft={draft} />
+      <Chat draft={draft} />
       <Decision draft={draft} />
     </CardWithContext>
   );
@@ -242,6 +256,7 @@ function SkippedPassage({ draft }: { draft: Draft }) {
       <p className="text-sm text-fg-secondary">
         <span className="font-medium">{OUTCOME_LABELS[draft.outcome as Exclude<Draft["outcome"], "note">]}.</span> {draft.reasoning}
       </p>
+      <Chat draft={draft} />
     </CardWithContext>
   );
 }

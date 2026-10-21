@@ -2,8 +2,8 @@
  * development server on the reviewer's machine and never ships to a browser.
  * The drafts are JSON files that the note-finding agents write. Accepting a
  * draft posts it to prod as Jim, with its sources and their supporting quotes.
- * Rejecting it records the reason. A comment asks Claude to improve the note;
- * Claude answers with reviseDraft.ts. Every step goes into the review log, and
+ * Rejecting it records the reason. A chat message asks Claude a question or
+ * for a change, on any draft; Claude answers with reviseDraft.ts. Every step goes into the review log, and
  * decisions are appended to docs/note-examples.md, which the agents read
  * before they write notes. */
 
@@ -94,7 +94,7 @@ async function decide(file: string, decision: DraftReview["decision"], reason: s
 }
 
 function comment(file: string, text: string) {
-  const draft = undecidedDraft(file);
+  const draft = readDraft(file);
   const at = new Date().toISOString();
   writeDraft({ ...draft, feedback: [...(draft.feedback ?? []), { at, comment: text, noteAtTheTime: draft.note }] });
   logReviewEvent({ type: "feedback", at, file, note: draft.note, comment: text });
