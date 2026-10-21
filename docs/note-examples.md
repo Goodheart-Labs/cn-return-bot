@@ -500,3 +500,18 @@ Jim's comment:
 
 New version:
 > Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> Moloch is introduced as the answer to a question – C. S. Lewis’ question in Hierarchy Of Philosophers – what does it? Earth could be fair, and all men glad and wise.
+
+Earlier version:
+> 'Hierarchy of Philosophers' is a joke image, not a work by C. S. Lewis: it gives Lewis the pun 'What does it?'. The line 'Earth might be fair, and all men glad and wise' is from Clifford Bax's 1916 hymn 'Turn Back, O Man'.
+
+Jim's comment:
+> Mhhh maybe its better to say something like : "He meant "The hierarchy of heaven and earth"" or something like that. Idk the current note gives me a bunch of icks. theres so much going on. So much evidence is presented that this is false. But I just want a simple short explanation of whats going on
+
+New version:
+> "Hierarchy of Philosophers" is a joke image, not a work by C. S. Lewis. It shortens the question with each philosopher, and Lewis's line is the pun "What does it?".
