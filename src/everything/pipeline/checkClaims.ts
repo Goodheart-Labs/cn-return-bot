@@ -38,9 +38,13 @@ import { claimCheckFields } from "./claimCheckFields";
 // verifier_citations is on, so every accepted source carries a verbatim
 // supporting quote and an explanation. We save those per source.
 // Keep the single-call classic verifier here; X uses the claim-based flow.
+// Every claim takes the cascading research path: a cheap model researches
+// first, and a stronger one repeats the research only when the cheap one is
+// unsure. X posts keep the search_cascade A/B test.
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
+  search_cascade: "cascading",
   commonnotes_pipeline: "on",
   simple_bot_search: "gpt6luna-native",
   simple_bot_writer: "gemini38flash",
