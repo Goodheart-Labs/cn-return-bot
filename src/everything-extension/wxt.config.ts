@@ -20,6 +20,13 @@ const repoRoot = path.resolve(__dirname, "../..");
 const CHROME_PUBLIC_KEY =
   "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2qdIOMvZuGlFH1UrpRid5yNL/QhfTmU6E9B2jbE5aCs3TBkrTZP6YU8LGRnPZvUAgFLrD4jUFL5eNxqWgsfzgubcNXXvDXYDdbL/jazzIayocG4GH8ONBAKOTSQaQ8s1T2PZSImbuB0I4m2I3IlYtIZKsXqM80ky42+mv04SfBQZxRgP0slrO+4QqrD300uQtBhj8XhLremut05B8mtfgOJDC7S9CT73mae0vbXJEL1dC34mEt98hT1nDGEKeNXXcEIHO3L/c1d101oBsoXG2A+O/ze0OmDIi6xqnU31YSkvcWT20mVKKZXUqz4FUFkKyRaG/mHkSs0Dt/hKePdSEQIDAQAB";
 
+// A build in this mode runs next to the normal extension in the same Chrome,
+// against a local database copy (GOO-495). It has its own name and, without
+// the key, an ID of its own. Chrome cannot load two extensions with one ID.
+// X sign-in does not work in it, because its redirect URL is not on the
+// allow-list.
+const SIDE_BY_SIDE_MODE = "local-rerun";
+
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   // Dev mode must not launch its own Chrome. We load the dev output unpacked into
@@ -36,9 +43,9 @@ export default defineConfig({
   // send to reviewers with `git archive` instead. This exclusion is a second line of
   // defence.
   zip: { excludeSources: ["chrome-signing-key.pem", "store-assets/**"] },
-  manifest: ({ browser }) => ({
+  manifest: ({ browser, mode }) => ({
     version: "0.4.4",
-    name: "Common Notes",
+    name: mode === SIDE_BY_SIDE_MODE ? "Common Notes (local rerun)" : "Common Notes",
     description: "Community Notes Everywhere",
     icons: { 16: "icon/16.png", 32: "icon/32.png", 48: "icon/48.png", 128: "icon/128.png" },
     action: { default_icon: { 16: "icon/16.png", 32: "icon/32.png" } },
@@ -56,7 +63,7 @@ export default defineConfig({
     // at install, and each user allows sites from the toolbar button, which is
     // why the Safari welcome page asks for "Always Allow on Every Website".
     host_permissions: ["<all_urls>"],
-    ...(browser === "chrome" ? { key: CHROME_PUBLIC_KEY } : {}),
+    ...(browser === "chrome" && mode !== SIDE_BY_SIDE_MODE ? { key: CHROME_PUBLIC_KEY } : {}),
     ...(browser === "firefox" ? { browser_specific_settings: {
       // A fixed add-on ID keeps the OAuth redirect URL on extensions.allizom.org
       // the same across every Firefox install. This is not the original ID. AMO

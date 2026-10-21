@@ -7,7 +7,9 @@
 // It must only ever run against the local Supabase. It refuses any other URL.
 //
 // Usage: source the local env, then
-//   bun run src/scripts_jim/2026_10_21_nathan_claude_code_notes/runItems.ts
+//   bun run src/scripts_jim/2026_10_21_nathan_claude_code_notes/runItems.ts [<url>...]
+// With URLs it runs only those items, including items a stopped run left in
+// processing.
 
 import "dotenv/config";
 import { getSupabaseClient } from "../../api/supabaseClient";
@@ -22,9 +24,12 @@ const LOCAL_SUPABASE_URL = "http://127.0.0.1:54321";
 if (process.env.SUPABASE_URL !== LOCAL_SUPABASE_URL) throw new Error(`SUPABASE_URL must be ${LOCAL_SUPABASE_URL}`);
 
 const db = getSupabaseClient();
-const { data: items, error } = await db.from("everything_items").select("*").eq("status", "queued");
+const urls = process.argv.slice(2);
+const { data: items, error } = urls.length
+  ? await db.from("everything_items").select("*").in("url", urls)
+  : await db.from("everything_items").select("*").eq("status", "queued");
 if (error) throw error;
-console.log(`${items.length} queued items`);
+console.log(`${items.length} items to run`);
 
 ensureYtDlp();
 const waiting = [...(items as EverythingItem[])];
