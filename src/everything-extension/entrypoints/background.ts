@@ -6,6 +6,7 @@ import { fetchReaderCanonical } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
+import { performRelayedRequest, RELAY_DB_FETCH_MESSAGE, type RelayedRequest } from "@cn/core/relayFetch";
 import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
 import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } from "../utils/authorFeed";
@@ -370,6 +371,12 @@ export default defineBackground(() => {
       signInWithTwitterInPopup(browser.identity.getRedirectURL(), (url) =>
         browser.identity.launchWebAuthFlow({ url, interactive: true }),
       ).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if (import.meta.env.VITE_CN_RELAY_DB_FETCH === "1" && (message as { type?: string })?.type === RELAY_DB_FETCH_MESSAGE) {
+      // A content script of the local-rerun build cannot reach the local
+      // database itself. See @cn/core/relayFetch.
+      performRelayedRequest(message as RelayedRequest).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === "cn-reader-canonical") {

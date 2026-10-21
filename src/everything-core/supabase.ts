@@ -1,6 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClientOptions } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 import { extensionStorage } from "./extensionStorage";
+import { headerPairs, RELAY_DB_FETCH_MESSAGE, responseFromRelay, type RelayedRequest, type RelayedResponse } from "./relayFetch";
 
 // The anon key is public by design, because it is baked into the static site and
 // into the extension. Migration 050 locks down what the anon role can actually
@@ -54,6 +55,35 @@ const sessionStorageAdapter = local
 // GoTrue's refresh-token reuse window absorbs that.
 const passthroughLock = <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn();
 
-export const supabase = createClient<Database>(url, anonKey, sessionStorageAdapter
-  ? { auth: { storage: sessionStorageAdapter, storageKey: EXTENSION_AUTH_KEY, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock } }
-  : undefined);
+// The local-rerun build (GOO-495) reads a database on the reviewer's own
+// machine, at a localhost address. Chrome's Local Network Access check blocks
+// a content script's request to localhost, because the request counts as
+// coming from the public page the script runs in. The background and the
+// popup are extension pages, and Chrome lets them through. So in that build a
+// content script hands each database request to the background. Every other
+// build sets no VITE_CN_RELAY_DB_FETCH and fetches directly.
+const runsInContentScript = local !== undefined && location.protocol.startsWith("http");
+const relayedFetch =
+  import.meta.env.VITE_CN_RELAY_DB_FETCH === "1" && runsInContentScript
+    ? async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        const request = new Request(input, init);
+        const message: RelayedRequest = {
+          type: RELAY_DB_FETCH_MESSAGE,
+          url: request.url,
+          method: request.method,
+          headers: headerPairs(request.headers),
+          body: request.method === "GET" || request.method === "HEAD" ? null : await request.text(),
+        };
+        const g = globalThis as { chrome?: { runtime: { sendMessage(message: unknown): Promise<RelayedResponse> } } };
+        const answer = await g.chrome!.runtime.sendMessage(message);
+        return responseFromRelay(answer);
+      }
+    : undefined;
+
+const options: SupabaseClientOptions<"public"> = {};
+if (sessionStorageAdapter) {
+  options.auth = { storage: sessionStorageAdapter, storageKey: EXTENSION_AUTH_KEY, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock };
+}
+if (relayedFetch) options.global = { fetch: relayedFetch as typeof fetch };
+
+export const supabase = createClient<Database>(url, anonKey, options);
