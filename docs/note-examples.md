@@ -585,3 +585,211 @@ Jim's comment:
 
 New version:
 > It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.
+
+### Jim accepted (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> China’s Baidu has ~2000 cars under “Apollo Go” in 6 cities.
+
+Note:
+> Baidu reported in August 2026 that Apollo Go's global footprint had reached 28 cities, not 6.
+> 
+> https://www.nasdaq.com/press-release/baidu-announces-second-quarter-2026-results-2026-08-18
+
+### Jim rejected (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> Most outrageously, it has a provision that looks like its intended to stops states from enforcing laws or judicial decrees that “suspend the development, deployment, or internal use of an AI model” to protect their citizens from imminent catastrophic harms.
+
+Note:
+> As drafted, the bill's preemption clause, Section 14(b), applies only to state rules on disclosure, outside evaluation and incident reporting, not to state suspensions of models. Model suspension is defined as a "covered function" in Section 14(a)(4) but is not listed in that clause.
+> 
+> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
+> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
+> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
+
+Why: Zvi is generally correct here
+
+### Jim rejected (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).
+
+Note:
+> It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.
+> 
+> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
+> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
+> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
+> https://www.insurancejournal.com/news/national/2026/10/19/889292.htm
+> https://www.thestar.com.my/tech/tech-news/2026/10/17/anthropic-quietly-pitches-its-own-ai-safety-bill-to-lawmakers-politico-reports
+
+Why: I find the note to be pedantic (those four risks are the ones we care about ...)
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> The reason they stuck with the whips-and-chains method owed less to economic considerations and more to racist government officials cracking down on lucrative but not-exactly-white-supremacy-promoting attempts to free slaves and have them go into business.
+
+Earlier version:
+> Moes's paper says nearly the opposite: self-purchase in the South stayed "a very minor affair", and many owners did not free slaves mainly because they disapproved or did not see the gain, not because of outward circumstances such as the laws.
+
+Jim's comment:
+> Okay, but can you still improve the language please
+
+New version:
+> Moes saw the cause differently. In his paper the laws were not the main reason: many owners did not free their slaves mostly because they disapproved of it or did not see the gain in it.
+
+### Jim accepted (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> The reason they stuck with the whips-and-chains method owed less to economic considerations and more to racist government officials cracking down on lucrative but not-exactly-white-supremacy-promoting attempts to free slaves and have them go into business.
+
+Note:
+> Moes saw the cause differently. In his paper the laws were not the main reason: many owners did not free their slaves mostly because they disapproved of it or did not see the gain in it.
+> 
+> https://slatestarcodex.com/Stuff/manumission.pdf
+
+### Jim rejected (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> when the piece does actually disclose this as the lede of the article.
+
+Note:
+> The disclosure is not the lede. It comes at the end of the introduction, after the list of participants, where Asterisk's editor-in-chief writes that Asterisk "receives funding from Coefficient Giving, as do some of these sources or their organizations."
+> 
+> https://nymag.com/intelligencer/article/ai-researchers-quit-openai-anthropic.html
+> https://nymag.com/intelligencer/article/ai-researchers-quit-openai-anthropic.html
+
+Why: too pedantic
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Airlines will no longer be required to provide compensation for lodging, meals and other assistance when flights are delayed or canceled due to certain causes now classified as ‘uncontrollable.’
+
+Earlier version:
+> Meals and hotels for delays are commitments airlines make in their own customer service plans for delays within their control, not legal requirements. The DOT rule, required by Congress in the 2024 FAA Reauthorization Act, moves ten causes, including unscheduled maintenance that cannot be deferred, out of that category.
+
+Jim's comment:
+> Ah you need to make your intention clear. you want to provide additional context so do something like: "Some comtext: ... not law, its their own commitments" okay that was a very loose suggestion, but you know what I mean I think
+
+New version:
+> For context: no law required this. Airlines promise meals and hotels in their own service plans for delays they cause, and the new rule moves ten causes, such as unscheduled maintenance, out of that category.
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Of course then, he’s promising to pay the 200 people to not drive horses around, and also paying for the horses
+
+Earlier version:
+> The deal does not commit the city to paying the drivers or buying the horses. The bill requires a job-transition plan for drivers by April 2027 and says only that the city should "consider" compensating carriage owners, while owners keep their horses and may not sell them for slaughter or to another carriage business.
+
+Jim's comment:
+> "The bill requires a job-transition plan for drivers by April 2027 and says only that the city should "consider" compensating carriage owners" I feel like the second part of the sentence should come first. The first part is details for me and the second part is very on topic and important
+
+New version:
+> The deal does not commit the city to paying the drivers or buying the horses. The bill says only that the city should "consider" compensating carriage owners. It also requires a job-transition plan for drivers by April 2027, and owners keep their horses but may not sell them for slaughter or to another carriage business.
+
+### Jim accepted (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Airlines will no longer be required to provide compensation for lodging, meals and other assistance when flights are delayed or canceled due to certain causes now classified as ‘uncontrollable.’
+
+Note:
+> For context: no law required this. Airlines promise meals and hotels in their own service plans for delays they cause, and the new rule moves ten causes, such as unscheduled maintenance, out of that category.
+> 
+> https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html
+> https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html
+> https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html
+
+### Jim accepted (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Of course then, he’s promising to pay the 200 people to not drive horses around, and also paying for the horses
+
+Note:
+> The deal does not commit the city to paying the drivers or buying the horses. The bill says only that the city should "consider" compensating carriage owners. It also requires a job-transition plan for drivers by April 2027, and owners keep their horses but may not sell them for slaughter or to another carriage business.
+> 
+> https://www.cbsnews.com/newyork/news/nyc-horse-carriage-ban/
+> https://www.cnn.com/2026/10/13/us/nyc-horse-carriage-ban
+> https://www.foxnews.com/politics/mamdani-praised-move-dismantle-controversial-nyc-industry-insiders-say-theres-more-story
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Texting more often is associated with higher life satisfaction.
+
+Earlier version:
+> These associations compare different people. When the study followed the same 1,966 adults over time, it found very little credible evidence that using any of these technologies more often changed their later life satisfaction.
+
+Jim's comment:
+> Are you agreeing with Zvi? Then it would be better to highlight the full secion and say. Some evidence for this is that ...
+
+New version:
+> Some evidence for this: when the study followed the same 1,966 adults over time, it found very little evidence that texting or other technology use more often changed their later life satisfaction. The link comes from comparing different people.
+
+### Jim accepted (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Twitter identifies and suspends a Chinese bot farm of ~200,000 accounts engaged in influence operations. This included 200 working to build American opposition to data centers.
+
+Note:
+> The 200 data-center accounts were a campaign OpenAI had already reported in June. Their posts were from December 2025 and January 2026, two or three per account, and got little or no engagement.
+> 
+> https://san.com/cc/how-x-turned-old-bot-data-into-a-story-about-a-national-threat-from-china/
+> https://thenextweb.com/news/x-chinese-bots-data-centre-backlash-no-engagement
+> https://thenextweb.com/news/x-chinese-bots-data-centre-backlash-no-engagement
+> https://cdn.openai.com/pdf/96b559fa-c165-4575-805d-e636909e2f78/June-2026-Threat-Report.pdf
+
+### Jim rejected (2026-10-21)
+Post: [China's growth machines - Works in Progress Magazine](https://worksinprogress.co/issue/chinas-growth-machine/)
+
+Passage:
+> In 2008, the municipal government invested $500 million in the electronic display company BOE Technology to build a new-generation LCD production line, bringing China to the cutting edge of panel production for the first time.
+
+Note:
+> The Hefei line was a sixth-generation line, the first of that size in mainland China, not the world's most advanced. Sharp had already opened the world's first tenth-generation plant in October 2009, before the Hefei line reached mass production in 2010.
+> 
+> https://eu.36kr.com/en/p/3946260281785736
+> https://ceedi.com.cn/gtdzyen/zxzx/webinfo/2021/06/162434980356849329.htm
+> https://global.sharp/corporate/news/091001.html
+
+Why: idk. seems pedantic. not sure though
+
+### Jim accepted (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Texting more often is associated with higher life satisfaction. Tyler Cowen asks ‘should you text more?’ and my response would be ‘yes, but only insofar as you should have more friends that you want to text.’
+
+Note:
+> Some evidence for this: when the study followed the same 1,966 adults over time, it found very little evidence that texting or other technology use more often changed their later life satisfaction. The link comes from comparing different people.
+> 
+> https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372
+> https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372
+> https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372
+
+### Jim accepted (2026-10-21)
+Post: [China's growth machines - Works in Progress Magazine](https://worksinprogress.co/issue/chinas-growth-machine/)
+
+Passage:
+> CXMT (Changxin Memory Technologies), 24 percent of which is directly or indirectly owned by the city of Hefei
+
+Note:
+> Hefei's state-owned investors held about 37 percent of CXMT before its July 2026 IPO and about 33 percent after it, not 24 percent.
+> 
+> https://www.stheadline.com/zh-hans/realtime-china/3598195/
+> https://news.10jqka.com.cn/20260608/c677286196.shtml

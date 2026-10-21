@@ -63,4 +63,6 @@ export type ReviewEvent = { at: string; file: string; note: string } & (
   | { type: "rejected"; reason?: string }
   | { type: "feedback"; comment: string }
   | { type: "revised"; previousNote: string; reply: string }
+  /** Claude undid an accept on Jim's request and removed the note from prod. */
+  | { type: "reverted"; noteId: string }
 );
