@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
+import { useLoadedMyVotes } from "@cn/features/notes/useVotes";
 import { Button } from "@cn/ui/Button";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
@@ -15,12 +16,14 @@ import {
   entriesByClaim,
   feedLength,
   filterNotes,
-  filterValues,
   improvementsByOriginal,
   itemsWithNotes,
+  MINIMUM_KEYS,
+  minimumValues,
   notesByItem,
   type FeedOrder,
   type NoteFilters,
+  type NoteMinimums,
   type RankTally,
 } from "../lib/feed";
 import { useAllNotesFeed, useItemNoteViewers, useProjects } from "../lib/feedQueries";
@@ -42,8 +45,9 @@ const ORDER_KEY = "cn:allNotesOrder";
 /** The filters the reader set last time, remembered on this device. */
 const FILTERS_KEY = "cn:allNotesFilters";
 
-/** Reads the remembered filters. A filter that is missing, or is not a whole
- *  number of at least zero, gets its default. */
+/** Reads the remembered filters. A minimum that is missing, or is not a whole
+ *  number of at least zero, gets its default. So does a checkbox that is
+ *  missing or not true or false. */
 function parseFilters(stored: string | null): NoteFilters {
   let parsed: Partial<Record<keyof NoteFilters, unknown>> = {};
   try {
@@ -51,22 +55,34 @@ function parseFilters(stored: string | null): NoteFilters {
   } catch {
     // Unreadable text means nothing usable was stored.
   }
-  const valid = (value: unknown): value is number => Number.isInteger(value) && (value as number) >= 0;
-  const entries = Object.entries(DEFAULT_NOTE_FILTERS).map(([key, fallback]) => {
-    const value = parsed[key as keyof NoteFilters];
-    return [key, valid(value) ? value : fallback];
-  });
-  return Object.fromEntries(entries) as NoteFilters;
+  const validMinimum = (value: unknown): value is number => Number.isInteger(value) && (value as number) >= 0;
+  const minimums = MINIMUM_KEYS.map((key) => [key, validMinimum(parsed[key]) ? parsed[key] : DEFAULT_NOTE_FILTERS[key]]);
+  const unvotedOnly = typeof parsed.unvotedOnly === "boolean" ? parsed.unvotedOnly : DEFAULT_NOTE_FILTERS.unvotedOnly;
+  return { ...(Object.fromEntries(minimums) as NoteMinimums), unvotedOnly };
 }
 
-/** The largest value each filter takes among the given notes. */
-function largestValues(notes: NoteRow[], viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally): NoteFilters {
+/** The largest value each minimum takes among the given notes. */
+function largestValues(notes: NoteRow[], viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally): NoteMinimums {
   const largest = { views: 0, votes: 0, helpful: 0, notHelpful: 0 };
   for (const note of notes) {
-    const values = filterValues(note, viewsOf, rankTally(note));
-    for (const key of Object.keys(largest) as (keyof NoteFilters)[]) largest[key] = Math.max(largest[key], values[key]);
+    const values = minimumValues(note, viewsOf, rankTally(note));
+    for (const key of MINIMUM_KEYS) largest[key] = Math.max(largest[key], values[key]);
   }
   return largest;
+}
+
+/** The ids of the notes the reader had voted on when the feed was last
+ *  arranged. The page uses it to hide those notes. A vote cast after that
+ *  moment does not hide its card, so the reader can still change the vote and
+ *  read the donation notice. A new snapshot is taken when `resetKey` changes.
+ *  It is undefined until the reader's votes have loaded for the first time. */
+function useVotedNoteIds(resetKey: string): ReadonlySet<string> | undefined {
+  const votes = useLoadedMyVotes();
+  const [snapshot, setSnapshot] = useState<{ key: string; ids: ReadonlySet<string> } | null>(null);
+  // Taking the snapshot during render is React's pattern for state derived
+  // from props: React re-renders straight away with the new snapshot.
+  if (votes && snapshot?.key !== resetKey) setSnapshot({ key: resetKey, ids: new Set(votes.keys()) });
+  return snapshot?.ids;
 }
 
 /** How many cards the page renders at first, and how many more it adds each
@@ -129,9 +145,10 @@ function CreatorByline({ project, views, navigate }: { project: FeedProjectRow; 
 
 /** Every note of every project in one feed. The reader picks the order: the
  *  newest notes first, the mixed order every project page uses, or the most
- *  helpful first. Filters hide notes below a minimum of views or votes, and by
- *  default only notes on posts that at least 5 readers saw are shown. Each card
- *  names its creator. */
+ *  helpful first. Filters hide notes the reader voted on and notes below a
+ *  minimum of views or votes. By default the page shows only notes the reader
+ *  has not voted on, on posts that at least 5 readers saw. Each card names its
+ *  creator. */
 export function AllNotesPage({ navigate }: { navigate: (route: Route) => void }) {
   const projectsQuery = useProjects();
   const { items, noteSet, failed, retry } = useAllNotesFeed();
@@ -144,7 +161,9 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   const entries = useMemo(() => entriesByClaim(noteSet?.nnn.values() ?? []), [noteSet]);
   const projectsById = useMemo(() => new Map((projectsQuery.data ?? []).map((p) => [p.id, p])), [projectsQuery.data]);
   const rankTally = useFrozenTallies(notes?.values() ?? []);
-  const [shownCount, setSentinel] = useGrowingCount(`${order} ${JSON.stringify(filters)}`);
+  const feedKey = `${order} ${JSON.stringify(filters)}`;
+  const [shownCount, setSentinel] = useGrowingCount(feedKey);
+  const votedNoteIds = useVotedNoteIds(feedKey);
   const viewsOf = (note: NoteRow) => viewersQuery.data?.get(note.claim.item_id) ?? 0;
 
   let feed: ReactNode;
@@ -164,11 +183,11 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
         </Button>
       </div>
     );
-  } else if (!items || !noteSet || !projectsQuery.data || !viewersQuery.data) {
+  } else if (!items || !noteSet || !projectsQuery.data || !viewersQuery.data || !votedNoteIds) {
     feed = <p className="text-sm text-fg-muted">Loading…</p>;
   } else {
     const ordered = contentOrder(itemsWithNotes(items.values(), byItem), byItem, noteSet.notes);
-    const filtered = filterNotes(ordered, filters, viewsOf, rankTally);
+    const filtered = filterNotes(ordered, filters, viewsOf, rankTally, votedNoteIds);
     const sections = arrangeFeed(filtered, order, rankTally, new Date());
     filtersButton = (
       <NoteFiltersButton filters={filters} onChange={setFilters} largest={largestValues(ordered, viewsOf, rankTally)} matchingNotes={filtered.length} />

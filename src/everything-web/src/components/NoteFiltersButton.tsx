@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
+import { Checkbox } from "@cn/ui/Field";
 import { Slider } from "@cn/ui/Slider";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
-import { DEFAULT_NOTE_FILTERS, type NoteFilters } from "../lib/feed";
+import { DEFAULT_NOTE_FILTERS, type NoteFilters, type NoteMinimums } from "../lib/feed";
 
-const SLIDERS: { key: keyof NoteFilters; label: string }[] = [
+const SLIDERS: { key: keyof NoteMinimums; label: string }[] = [
   { key: "views", label: "Views" },
   { key: "votes", label: "Votes" },
   { key: "helpful", label: "Helpful votes" },
@@ -18,19 +19,21 @@ const SLIDERS: { key: keyof NoteFilters; label: string }[] = [
  *  visible steps. */
 const SMALLEST_SLIDER_END = 10;
 
-/** A Filters button that opens a popover with one minimum slider per filter.
+/** A Filters button that opens a popover with a checkbox that hides the notes
+ *  the reader voted on, and one minimum slider per vote or view count.
  *  A second click on the button, a press outside the popover, or Escape closes
  *  it. The page does not close it on scroll, because filtering changes the
  *  feed's length and the page can scroll by itself while a slider is dragged.
- *  The button counts the filters that are above zero.
+ *  The button counts the filters that are switched on: the checkbox when it is
+ *  ticked, and each slider above zero.
  *  The popover hangs below the nearest positioned ancestor, which the page
  *  picks. On a phone it spans that ancestor's whole width, because the button
  *  may have wrapped to the left edge. On a wider screen it sits at the right. */
 export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }: {
   filters: NoteFilters;
   onChange: (filters: NoteFilters) => void;
-  /** The largest value of each filter among all notes, before filtering. */
-  largest: NoteFilters;
+  /** The largest value of each minimum among all notes, before filtering. */
+  largest: NoteMinimums;
   matchingNotes: number;
 }) {
   const [open, setOpen] = useState(false);
@@ -47,7 +50,7 @@ export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }:
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, [open]);
-  const activeCount = SLIDERS.filter(({ key }) => filters[key] > 0).length;
+  const activeCount = SLIDERS.filter(({ key }) => filters[key] > 0).length + Number(filters.unvotedOnly);
 
   return (
     <div ref={ref}>
@@ -56,6 +59,9 @@ export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }:
       </Button>
       {open && (
         <div role="dialog" aria-label="Filters" className={cn(cardVariants({ elevation: "floating" }), "absolute inset-x-0 top-full z-20 mt-2 space-y-4 p-4 sm:left-auto sm:w-72")}>
+          <Checkbox checked={filters.unvotedOnly} onChange={(unvotedOnly) => onChange({ ...filters, unvotedOnly })} className="text-sm font-medium text-fg-secondary">
+            Only notes I haven't voted on
+          </Checkbox>
           {SLIDERS.map(({ key, label }) => (
             <Slider
               key={key}

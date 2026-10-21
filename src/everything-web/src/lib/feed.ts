@@ -243,19 +243,30 @@ export const feedLength = (sections: FeedSection[]) => sections.reduce((sum, { n
  *  belongs to the note's post: it counts the devices outside our team on which
  *  the extension showed that post's notes. The three vote minimums count all
  *  votes, Helpful votes and Not helpful votes. */
-export interface NoteFilters {
+export interface NoteMinimums {
   views: number;
   votes: number;
   helpful: number;
   notHelpful: number;
 }
 
-/** Notes on posts that at least a few real readers saw come first by default,
- *  because a vote on those improves what people actually read. */
-export const DEFAULT_NOTE_FILTERS: NoteFilters = { views: 5, votes: 0, helpful: 0, notHelpful: 0 };
+export const MINIMUM_KEYS: (keyof NoteMinimums)[] = ["views", "votes", "helpful", "notHelpful"];
 
-/** Each filter's value for one note. */
-export function filterValues(note: NoteRow, viewsOf: (note: NoteRow) => number, tally: RankTally): NoteFilters {
+/** Everything that decides which notes stay in the All notes feed. With
+ *  `unvotedOnly`, the notes the reader has voted on are hidden. That includes
+ *  the notes they wrote, because posting a note casts a Helpful vote on it. */
+export interface NoteFilters extends NoteMinimums {
+  unvotedOnly: boolean;
+}
+
+/** Notes on posts that at least a few real readers saw come first by default,
+ *  because a vote on those improves what people actually read. Notes the reader
+ *  already voted on are hidden by default, so the feed shows what still needs
+ *  their vote. */
+export const DEFAULT_NOTE_FILTERS: NoteFilters = { views: 5, votes: 0, helpful: 0, notHelpful: 0, unvotedOnly: true };
+
+/** Each minimum's value for one note. */
+export function minimumValues(note: NoteRow, viewsOf: (note: NoteRow) => number, tally: RankTally): NoteMinimums {
   return {
     views: viewsOf(note),
     votes: totalVotes(tally),
@@ -264,13 +275,15 @@ export function filterValues(note: NoteRow, viewsOf: (note: NoteRow) => number, 
   };
 }
 
-/** The notes that reach every minimum, in the order given. Votes are read from
+/** The notes that pass every filter, in the order given. Votes are read from
  *  `rankTally`, the counts a note had when it first appeared, so a card does
- *  not vanish under a reader who just took back a vote. */
-export function filterNotes(notes: NoteRow[], filters: NoteFilters, viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally): NoteRow[] {
-  const keys = Object.keys(filters) as (keyof NoteFilters)[];
+ *  not vanish under a reader who just took back a vote. For the same reason
+ *  `votedNoteIds` should be the reader's votes at an earlier moment, not their
+ *  live votes. */
+export function filterNotes(notes: NoteRow[], filters: NoteFilters, viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally, votedNoteIds: ReadonlySet<string>): NoteRow[] {
   return notes.filter((note) => {
-    const values = filterValues(note, viewsOf, rankTally(note));
-    return keys.every((key) => values[key] >= filters[key]);
+    if (filters.unvotedOnly && votedNoteIds.has(note.id)) return false;
+    const values = minimumValues(note, viewsOf, rankTally(note));
+    return MINIMUM_KEYS.every((key) => values[key] >= filters[key]);
   });
 }
