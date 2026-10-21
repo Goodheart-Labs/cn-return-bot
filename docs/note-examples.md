@@ -365,3 +365,111 @@ Note:
 ## Jim's review decisions
 
 The review dashboard appends each note Jim accepts or rejects here, newest last.
+
+Jim's rewrites of first drafts, and one rewrite made after his feedback, come first. They show the length and directness he wants: the correction in one plain sentence, details only when a reader needs them.
+
+### Jim rewrote the note (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug
+
+First draft:
+> Kumar's repository presented a disproof of the Collatz conjecture, not a proof. Its main result states that some positive number never reaches 1. Kiran Gopinathan reduced it to a proof of False and reported the kernel bug on July 28, three days after the repository was published.
+
+Jim's version:
+> Typo, the repository presented a disproof, not a proof.
+
+Why: Not so explainy.
+
+### Jim rewrote the note (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)
+
+First draft:
+> Quine's 1940 system was not a reworking of ZFC. It was ML, from his book Mathematical Logic, which added classes to New Foundations (NF), his own set theory from 1937. Rosser derived the Burali-Forti paradox in the 1940 version in 1942; the result concerns ML, not NF.
+
+Jim's version:
+> Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.
+
+Why: Start with the correction itself. The details are not needed.
+
+### Rewritten after Jim's feedback (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.
+
+First draft:
+> The error, reported in Carneiro's March 2024 Lean4Lean paper, was in a technical lemma behind two other results, unique typing and definitional inversion, which were downgraded to conjectures. The paper says the consistency (soundness) proof is not impacted, because the set-theoretic model can be built without unique typing.
+
+Rewritten version:
+> The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.
+
+Why: Hard to understand. Say plainly what the flaw did and did not break.
+
+### Jim accepted (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug
+
+Note:
+> Typo, the repository presented a disproof, not a proof.
+
+https://github.com/xrchz/CollatzLean
+https://leodemoura.github.io/blog/2026-8-1-postmortem-for-kernel-soundness-bug-14576/
+https://www.openwall.com/lists/oss-security/2026/08/02/1
+
+### Jim accepted (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> This search uncovered six new soundness bugs
+
+Note:
+> Only four of the six were bugs in the kernel's own code. The other two were in the Lean runtime: an overflow of the reference counter in Lean's own code (#14838), and Lean's Linux builds using GMP 6.1.2, an old version with a known bug (#14833).
+
+https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/
+https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/
+https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/
+
+### Jim accepted (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> Lean4's type theory is experimental, not publicly exposited outside of its C++ library documentation
+
+Note:
+> Lean 4's kernel type theory is publicly described outside its C++ code. The open book "Type Checking in Lean 4" documents Lean's kernel language for people who want to write their own external type checkers. Mario Carneiro's 2024 Lean4Lean paper presents a second complete Lean 4 typechecker, written in Lean, and takes first steps to formalize the type theory abstractly.
+
+https://ammkrn.github.io/type_checking_in_lean4/
+https://arxiv.org/abs/2403.14064v2
+https://arxiv.org/abs/2403.14064v2
+
+### Jim accepted (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)
+
+Note:
+> Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.
+
+https://plato.stanford.edu/entries/quine-nf/
+https://en.wikipedia.org/wiki/New_Foundations
+https://www.cambridge.org/core/journals/journal-of-symbolic-logic/article/buraliforti-paradox/01B4F184BDBDB8F5C29A2D10ECF83907
+
+### Jim accepted (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.
+
+Note:
+> The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.
+
+https://arxiv.org/html/2403.14064v3
+https://arxiv.org/html/2403.14064v3
