@@ -219,7 +219,7 @@ describe("author filter", () => {
   const ai = note("ai");
   const nathanOld = note("n1", {}, { author_id: "nathan", author_name: "Nathan", created_at: "2026-10-01T00:00:00Z" });
   const nathanNew = note("n2", {}, { author_id: "nathan", author_name: "NathanpmYoung", created_at: "2026-10-21T00:00:00Z" });
-  const other = note("o1", {}, { author_id: "other", author_name: null });
+  const other = note("o1", {}, { author_id: "other", author_name: "" });
   const all = [ai, nathanOld, nathanNew, other];
 
   test("keeps the notes of the chosen kind of author or person", () => {

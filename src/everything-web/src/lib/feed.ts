@@ -295,16 +295,17 @@ export interface NoteAuthor {
 }
 
 /** Every person who wrote one of the notes, with the name on their newest
- *  note, most notes first. A note posted without a name counts as anonymous. */
+ *  note, most notes first. A note posted without a name, or with an empty
+ *  one, counts as anonymous. */
 export function noteAuthors(notes: Iterable<NoteRow>): NoteAuthor[] {
   const byId = new Map<string, NoteAuthor & { newest: string }>();
   for (const note of notes) {
     if (!note.author_id) continue;
-    const author = byId.get(note.author_id) ?? { id: note.author_id, name: "Anonymous", noteCount: 0, newest: "" };
+    const author = byId.get(note.author_id) ?? { id: note.author_id, name: "", noteCount: 0, newest: "" };
     author.noteCount++;
     if (note.created_at > author.newest) {
       author.newest = note.created_at;
-      author.name = note.author_name ?? "Anonymous";
+      author.name = note.author_name || "Anonymous";
     }
     byId.set(note.author_id, author);
   }
