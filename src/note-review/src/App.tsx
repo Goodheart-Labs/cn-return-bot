@@ -300,48 +300,79 @@ function DraftCard({ draft, reviewer }: { draft: ReviewDraft; reviewer: Reviewer
   );
 }
 
-function Section({ title, drafts, reviewer, empty }: { title: string; drafts: ReviewDraft[]; reviewer: Reviewer; empty?: string }) {
-  if (drafts.length === 0 && !empty) return null;
+interface Page {
+  id: string;
+  title: string;
+  drafts: ReviewDraft[];
+  empty: string;
+}
+
+function pagesOf(drafts: ReviewDraft[]): Page[] {
+  const posted = drafts.filter((d) => d.status === "posted");
+  return [
+    { id: "unreviewed", title: "Posted, not reviewed", drafts: posted.filter((d) => !d.reviewedBy), empty: "Every posted note has been reviewed." },
+    { id: "waiting", title: "Waiting for approval", drafts: drafts.filter((d) => d.status === "awaiting_approval"), empty: "No note is waiting for approval." },
+    { id: "approved", title: "Approved", drafts: posted.filter((d) => d.reviewedBy), empty: "No note has been approved yet." },
+    { id: "rejected", title: "Rejected", drafts: drafts.filter((d) => d.status === "rejected"), empty: "No note has been rejected." },
+    { id: "no-note", title: "No note", drafts: drafts.filter((d) => d.status === "not_a_note"), empty: "No passage ended without a note." },
+  ];
+}
+
+/** The page named in the address, so a reload or a shared link opens it. */
+function initialPageId(): string {
+  return window.location.hash.slice(1) || "unreviewed";
+}
+
+function TopBar({ pages, current, onSelect }: { pages: Page[]; current: string; onSelect: (id: string) => void }) {
   return (
-    <section className="space-y-4">
-      <h2 className="mx-auto max-w-[40rem] text-lg font-semibold">
-        {title} ({drafts.length})
-      </h2>
-      {drafts.length === 0 && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">{empty}</p>}
-      {drafts.map((d) => (
-        <DraftCard key={d.id} draft={d} reviewer={reviewer} />
-      ))}
-    </section>
+    <nav className="sticky top-0 z-10 border-b border-line bg-canvas" aria-label="Sections">
+      <div className="mx-auto flex max-w-[40rem] flex-wrap gap-1 py-2 xl:max-w-none xl:justify-center">
+        {pages.map((p) => (
+          <Button key={p.id} variant={p.id === current ? "primary" : "quiet"} aria-current={p.id === current ? "page" : undefined} onClick={() => onSelect(p.id)}>
+            {p.title} ({p.drafts.length})
+          </Button>
+        ))}
+      </div>
+    </nav>
   );
 }
 
 const newestFirst = (a: ReviewDraft, b: ReviewDraft) => b.createdAt.localeCompare(a.createdAt);
 
-/** Every passage the Claude note writer's agents looked at, grouped by what
- *  happened to it, the ones that need a reviewer first. */
+/** Every passage the Claude note writer's agents looked at. Each group is a
+ *  page of its own, picked in the top bar. */
 export function App() {
   const state = useQuery({ queryKey: STATE_KEY, queryFn: fetchState, refetchInterval: REFRESH_MS });
+  const [pageId, setPageId] = useState(initialPageId);
   const drafts = [...(state.data?.drafts ?? [])].sort(newestFirst);
   const reviewer = state.data?.reviewer ?? "jim";
-  const posted = drafts.filter((d) => d.status === "posted");
+  const pages = pagesOf(drafts);
+  const page = pages.find((p) => p.id === pageId) ?? pages[0]!;
+  const select = (id: string) => {
+    setPageId(id);
+    window.history.replaceState(null, "", `#${id}`);
+    window.scrollTo({ top: 0 });
+  };
   return (
-    <main className="space-y-6 px-4 py-8">
-      <header className="mx-auto max-w-[40rem] space-y-1">
-        <h1 className="font-title text-2xl font-bold">Note review</h1>
-        {state.data && (
-          <p className="text-sm text-fg-muted">
-            Reviewing as {PERSON[reviewer]}. {state.data.writer === "claude" ? "Claude writes the notes." : "The pipeline writes the notes."}{" "}
-            {state.data.approvalRequired ? "Notes wait for approval before they go up." : "Notes go up at once."}
-          </p>
-        )}
-        {state.isError && <p className="text-sm text-negative">{state.error.message}</p>}
-        {state.isLoading && <p className="text-sm text-fg-muted">Loading…</p>}
-      </header>
-      <Section title="Waiting for approval" drafts={drafts.filter((d) => d.status === "awaiting_approval")} reviewer={reviewer} />
-      <Section title="Posted, not reviewed yet" drafts={posted.filter((d) => !d.reviewedBy)} reviewer={reviewer} empty="Every posted note has been reviewed." />
-      <Section title="Approved" drafts={posted.filter((d) => d.reviewedBy)} reviewer={reviewer} />
-      <Section title="Rejected" drafts={drafts.filter((d) => d.status === "rejected")} reviewer={reviewer} />
-      <Section title="Looked at, no note" drafts={drafts.filter((d) => d.status === "not_a_note")} reviewer={reviewer} />
-    </main>
+    <>
+      <TopBar pages={pages} current={page.id} onSelect={select} />
+      <main className="space-y-6 px-4 py-6">
+        <header className="mx-auto max-w-[40rem] space-y-1">
+          <h1 className="font-title text-2xl font-bold">{page.title}</h1>
+          {state.data && (
+            <p className="text-sm text-fg-muted">
+              Reviewing as {PERSON[reviewer]}. {state.data.writer === "claude" ? "Claude writes the notes." : "The pipeline writes the notes."}{" "}
+              {state.data.approvalRequired ? "Notes wait for approval before they go up." : "Notes go up at once."}
+            </p>
+          )}
+          {state.isError && <p className="text-sm text-negative">{state.error.message}</p>}
+          {state.isLoading && <p className="text-sm text-fg-muted">Loading…</p>}
+        </header>
+        {state.data && page.drafts.length === 0 && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">{page.empty}</p>}
+        {page.drafts.map((d) => (
+          <DraftCard key={d.id} draft={d} reviewer={reviewer} />
+        ))}
+      </main>
+    </>
   );
 }
