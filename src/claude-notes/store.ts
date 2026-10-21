@@ -320,13 +320,16 @@ export interface QueueItem {
   full_text: string | null;
 }
 
-/** Queued items Claude has not handed back, highest tier first. */
+/** Queued items Claude has neither taken nor handed back, highest tier first.
+ *  An item Claude is working on stays queued until it is finished, so the
+ *  take is what tells it apart. */
 export async function waitingItems(): Promise<QueueItem[]> {
   const handedBack = new Set(unwrap(await db().from("everything_claude_handbacks").select("item_id")).map((h) => h.item_id));
+  const taken = new Set(unwrap(await db().from("everything_claude_events").select("item_id").eq("type", "item_taken")).map((e) => e.item_id));
   const queued = unwrap(
     await db().from("everything_items").select("id, url, title, priority, status, full_text").eq("status", "queued").order("priority", { ascending: false }).order("created_at"),
   );
-  return queued.filter((item) => !handedBack.has(item.id));
+  return queued.filter((item) => !handedBack.has(item.id) && !taken.has(item.id));
 }
 
 export async function readItem(itemId: string): Promise<QueueItem & { project: { name: string; slug: string } | null; published_at: string | null }> {
