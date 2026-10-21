@@ -18,7 +18,8 @@ import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary, updateItemMeta } from "./db";
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
-import { bodyText, processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
+import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
+import { requestItemText } from "../service/client";
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
@@ -121,13 +122,19 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
   }
 }
 
-/** Reads an item's text the way processing does and stores it, without
- *  checking anything. The Claude note writer (GOO-507) calls this before its
- *  agents read a post. */
+/** Reads an item's text the way processing does, without checking anything.
+ *  The Claude note writer (GOO-507) needs it before its agents read a post. */
+export async function readItemText(item: EverythingItem): Promise<{ title: string; publishedAt: string | null; text: string }> {
+  const content = await fetchContent(item);
+  return { title: content.title, publishedAt: content.publishedAt?.slice(0, 10) ?? null, text: bodyText(content) };
+}
+
+/** Stores an item's text. A video's captions need the services machine's
+ *  proxy, so videos are read there, and every other page is read here. */
 export async function fetchAndStoreItemText(itemId: string): Promise<void> {
   const item = await fetchItem(itemId);
-  const content = await fetchContent(item);
-  await updateItemMeta(item.id, { title: content.title, published_at: content.publishedAt?.slice(0, 10) ?? null, full_text: bodyText(content) });
+  const read = item.source === "youtube" ? await requestItemText({ priority: workPriorityOf(item), item }) : await readItemText(item);
+  await updateItemMeta(item.id, { title: read.title, published_at: read.publishedAt, full_text: read.text });
 }
 
 /** Names the tier an item is waiting at, for the queue listing. */

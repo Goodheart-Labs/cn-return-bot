@@ -50,7 +50,7 @@ const CHECK_REQUEST_CONCURRENCY = 8;
 
 /** A page someone asked for and is waiting on is served before anything from
  *  the backlog. Everything else this file processes is backlog. */
-function workPriorityOf(item: EverythingItem): SpendFor {
+export function workPriorityOf(item: EverythingItem): SpendFor {
   return item.priority >= QUEUE_PRIORITY.requested ? "reader" : "feed";
 }
 
