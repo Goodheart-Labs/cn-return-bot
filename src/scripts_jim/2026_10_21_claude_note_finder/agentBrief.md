@@ -31,7 +31,11 @@ Work data lives in `~/.local/share/claude-note-finder/`:
 1. Read the examples file and the post around the passage.
 2. Research the passage on the web. Decide whether a note is needed.
 3. If it is, write the note. Rules for the note:
-   - At most about 3 short sentences, neutral, no "the author", no hedging filler.
+   - Lead with the correction itself in one plain sentence, for example "Quine's 1940
+     system was a reworking of New Foundations (NF), not ZFC." Add a second sentence
+     only when a reader needs it to understand the correction. Jim cuts explanations
+     of how something was found or who reported it when.
+   - Neutral, no "the author", no hedging filler.
    - It says what is actually the case, not just that something is wrong.
    - No links in the note text. Sources go in the sources list.
    - Every sentence must be supported by at least one source.
