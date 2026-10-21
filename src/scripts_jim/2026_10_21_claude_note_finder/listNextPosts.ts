@@ -1,13 +1,10 @@
-// Lists the posts for the next note-finding round (GOO-504): every feed post the
-// prod pipeline fully checked after the outage posts got their attempts back,
-// that it took because of its creator's visits. Reader requests (tier 2) and
-// posts of creators holding priority (tier 1) are left out, and so are the
-// posts Nathan already wrote notes on.
+// Lists the posts for the next note-finding round (GOO-504): every post the prod
+// pipeline fully checked after the outage posts got their attempts back, from
+// every queue tier, except the posts Nathan already wrote notes on.
 //
 // Usage: bun run src/scripts_jim/2026_10_21_claude_note_finder/listNextPosts.ts [--json]
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import { QUEUE_PRIORITY } from "../../everything/db";
 
 /** Migration 127 gave the posts that failed while the OpenRouter credits were
  *  gone (2026-10-17 to 2026-10-19) their attempts back. It shipped with PR #609,
@@ -23,7 +20,6 @@ const { data: items, error } = await db
   .select("id, url, title, processed_at, project:everything_projects(slug)")
   .eq("status", "done")
   .eq("checked_scope", "page")
-  .eq("priority", QUEUE_PRIORITY.backlog)
   .gte("processed_at", RETRIES_RESET_AT)
   .order("processed_at")
   .limit(MAX_ITEMS);
