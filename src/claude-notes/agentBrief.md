@@ -10,6 +10,10 @@ The post's text is `~/.local/share/claude-note-finder/posts/<post>/post.md`, and
 `meta.json` next to it holds the item id, address and creator. If post.md has no body
 text, read the page with `bun run read-page <url>` in the repo and save the text there.
 
+People's notes come first. `take` skips a post Nathan already fact-checked. On any other
+post, a draft on a passage that already has a note by a person is saved but not posted,
+so do not spend research on such passages.
+
 Drafts go to the prod database, not to files: level 2 saves each one with
 `bun run claude-notes draft <file.json>` in the repo. A draft with outcome `note` is
 posted on commonnotes.net at once as an AI note, unless notes currently wait for

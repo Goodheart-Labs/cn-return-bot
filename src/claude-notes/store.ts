@@ -191,9 +191,48 @@ async function removeClaudeNote(noteId: string) {
 // Drafts
 // ---------------------------------------------------------------------------
 
+/** Two passages count as the same place when one contains the other or they
+ *  share this many characters in a row. */
+const SHARED_PASSAGE_CHARS = 40;
+
+const normalizedPassage = (text: string) => text.toLowerCase().replace(/\s+/g, " ").trim();
+
+export function passagesOverlap(a: string, b: string): boolean {
+  const [x, y] = [normalizedPassage(a), normalizedPassage(b)];
+  if (!x || !y) return false;
+  if (x.includes(y) || y.includes(x)) return true;
+  const [shorter, longer] = x.length <= y.length ? [x, y] : [y, x];
+  for (let i = 0; i + SHARED_PASSAGE_CHARS <= shorter.length; i += SHARED_PASSAGE_CHARS / 2) {
+    if (longer.includes(shorter.slice(i, i + SHARED_PASSAGE_CHARS))) return true;
+  }
+  return false;
+}
+
+/** A note a person wrote on the same passage of this post, if there is one.
+ *  Claude never posts a second note where Jim, Nathan or a reader already
+ *  wrote one. */
+async function personNoteOnPassage(itemId: string, passage: string): Promise<{ note: string; author_name: string | null } | null> {
+  const claims = unwrap(
+    await db().from("everything_claims").select("context_quote, claim, everything_notes(note, author_id, author_name)").eq("item_id", itemId),
+  );
+  for (const c of claims) {
+    const personNote = (c.everything_notes ?? []).find((n) => n.author_id !== null);
+    if (personNote && passagesOverlap(c.context_quote ?? c.claim, passage)) return personNote;
+  }
+  return null;
+}
+
 /** Saves what a note-finding agent found on one passage. A note is posted as
  *  an AI note at once, unless notes currently wait for approval. */
 export async function addDraft(draft: NewDraft): Promise<DraftRow> {
+  const covering = draft.outcome === "note" ? await personNoteOnPassage(draft.itemId, draft.passage) : null;
+  if (covering) {
+    draft = {
+      ...draft,
+      outcome: "no_note_needed",
+      reasoning: `Not posted, because ${covering.author_name ?? "a person"} already wrote a note on this passage: "${covering.note}" ${draft.reasoning}`,
+    };
+  }
   const { approvalRequired } = await readSettings();
   const status = draft.outcome !== "note" ? "not_a_note" : approvalRequired ? "awaiting_approval" : "posted";
   const row = unwrap(
@@ -403,6 +442,13 @@ export async function readItemTexts(itemIds: string[]) {
     }
   }
   return new Map(itemIds.map((id) => [id, itemTextCache.get(id)!]));
+}
+
+/** Whether Nathan already wrote notes on this post. Jim asked that such posts
+ *  be skipped as a whole: Nathan fact-checked them by hand. */
+export async function nathanNotedItem(itemId: string): Promise<boolean> {
+  const claims = unwrap(await db().from("everything_claims").select("everything_notes(author_id)").eq("item_id", itemId));
+  return claims.some((c) => (c.everything_notes ?? []).some((n) => n.author_id === ACCOUNTS.nathan.id));
 }
 
 /** Gives an item back to the pipeline, which then processes it as before. */

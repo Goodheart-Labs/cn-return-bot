@@ -35,6 +35,7 @@ import {
   logEvent,
   type NewDraft,
   isVideo,
+  nathanNotedItem,
   pipelineNotes,
   postDir,
   readItem,
@@ -62,7 +63,16 @@ const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 /** Writes the post's text where the agents read it. A post without stored
  *  text, such as a new video or a requested page, is read first the way the
  *  pipeline reads it. If that fails, the item should be handed back. */
+/** Nathan's own fact-checks are not redone. */
+const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
+
 async function take(itemId: string) {
+  if (await nathanNotedItem(itemId)) {
+    await logEvent({ actor: "claude", type: "item_skipped", itemId, data: { reason: NATHAN_SKIP_REASON } });
+    await finishItem(itemId, { skipped: true, reason: NATHAN_SKIP_REASON });
+    console.log(`SKIPPED: ${NATHAN_SKIP_REASON}. The item is marked checked.`);
+    return;
+  }
   const before = await readItem(itemId);
   // A video is always read, even with stored text, because its caption cues
   // are what give each note its time in the video.
