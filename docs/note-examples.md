@@ -515,3 +515,73 @@ Jim's comment:
 
 New version:
 > "Hierarchy of Philosophers" is a joke image, not a work by C. S. Lewis. It shortens the question with each philosopher, and Lewis's line is the pun "What does it?".
+
+### Jim rejected (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> Moloch is introduced as the answer to a question – C. S. Lewis’ question in Hierarchy Of Philosophers – what does it? Earth could be fair, and all men glad and wise.
+
+Note:
+> "Hierarchy of Philosophers" is a joke image, not a work by C. S. Lewis. It shortens the question with each philosopher, and Lewis's line is the pun "What does it?".
+> 
+> https://web.archive.org/web/20160305213656/http://www.moronail.net/img/1392_lil_jon_philosophy_what
+
+Why: Adds more confusion then usefulness
+
+### Jim accepted (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> the actual Gaius Julius Caesar Augustus Germanicus wasn’t exactly the perfect benevolent rational central planner either.
+
+Note:
+> Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.
+> 
+> https://en.wikipedia.org/wiki/Caligula
+> https://en.wikipedia.org/wiki/Caesar_(title)
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> John Moes, a historian of slavery, goes further and writes about how the slavery we are most familiar with – that of the antebellum South – is a historical aberration and probably economically inefficient.
+
+Earlier version:
+> John E. Moes was an economist at the University of Virginia. His 1960 paper says self-purchase in the South stayed rare, and that while anti-manumission laws mattered, many owners did not free slaves mainly because they disapproved or did not see the profit in it.
+
+Jim's comment:
+> The note doesen't convince me that "John Moes, a historian of slavery, goes further and writes about how the slavery we are most familiar with – that of the antebellum South – is a historical aberration and probably economically inefficient. In most past forms of slavery – especially those of the ancient world – it was common for slaves to be paid wages, treated well, and often given their freedom." is misleading. I don't care much whether he was a historian or an economist ... He was probably a mix ...
+
+New version:
+> Moes's paper says nearly the opposite: self-purchase in the South stayed "a very minor affair", and many owners did not free slaves mainly because they disapproved or did not see the gain, not because of outward circumstances such as the laws.
+
+### Jim rejected (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> when the FRONTIER Act was a compromise bill proposed back in June.
+
+Note:
+> The FRONTIER Act was introduced on July 23, 2026, not in June. In June, its sponsors Obernolte and Trahan released a discussion draft of the broader Great American AI Act, and the FRONTIER Act was developed as part of that framework.
+> 
+> https://www.govinfo.gov/app/details/BILLS-119hr9925ih
+> https://www.benton.org/headlines/reps-obernolte-trahan-introduce-bipartisan-frontier-act-strengthen-oversight-advanced-ai
+> https://obernolte.house.gov/media/press-releases/obernolte-trahan-release-discussion-draft-great-american-ai-act
+
+Why: Uhm it looks to me like proposed in june is not misleading, when this is were it was first you know written / proposed
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).
+
+Earlier version:
+> The draft bill's power to block a model applies only to an "imminent enumerated risk": a risk of contributing to the death or serious injury of more than 50 people, or more than $1 billion in damage to or loss of property, from a single incident in which the model helps create a biological weapon, evades its developer's control, conducts offensive cyber operations, or does AI research that accelerates those risks. Chemical, radiological and nuclear weapons count toward the bill's broader "catastrophic risk" definition but do not qualify for a blocking order.
+
+Jim's comment:
+> Ah okay so I think a trend is that the intention of the note is often not clear and the reader assumes its a fact check. Maybe start with: "It's even stricter, ..."
+
+New version:
+> It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.

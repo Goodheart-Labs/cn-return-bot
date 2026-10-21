@@ -44,6 +44,9 @@ a passage from memory because no agent was free.
      system was a reworking of New Foundations (NF), not ZFC." Add a second sentence
      only when a reader needs it to understand the correction. Jim cuts explanations
      of how something was found or who reported it when.
+   - When the note adds context or detail instead of correcting a mistake, its first
+     words say so, for example "It's even stricter." or "This is the emperor
+     Caligula." Otherwise readers take every note for a fact check.
    - Neutral, no "the author", no hedging filler.
    - It says what is actually the case, not just that something is wrong.
    - No links in the note text. Sources go in the sources list.
