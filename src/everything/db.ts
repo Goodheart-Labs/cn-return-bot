@@ -466,6 +466,10 @@ export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<E
   return { ...item, status: "processing" };
 }
 
+export async function fetchItem(id: string): Promise<EverythingItem> {
+  return throwOnError(await getSupabaseClient().from("everything_items").select(ITEM_COLUMNS).eq("id", id).single()) as EverythingItem;
+}
+
 export async function updateItemMeta(
   id: string,
   meta: { title: string; published_at: string | null; full_text: string },

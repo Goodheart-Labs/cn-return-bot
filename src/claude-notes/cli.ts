@@ -15,7 +15,7 @@
  *   hand-back <item id> <reason>
  *   skip <item id> <reason>       records that a post was judged not worth checking
  *   messages                      reviewer messages still waiting for an answer
- *   watch                         waits until a reviewer message is waiting, prints it and exits
+ *   watch                         waits for reviewer messages, queued items or a due digest, prints it and exits
  *   answer <answer.json>          { draftId, reply, note?, sources?, passage? }
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of Jim's plan
@@ -44,6 +44,7 @@ import {
   withdraw,
   type Writer,
 } from "./store";
+import { fetchAndStoreItemText } from "../everything/worker";
 import { readUsage } from "./usage";
 
 /** Where `take` writes a post's text for the note-finding agents. */
@@ -62,7 +63,11 @@ function postDirName(url: string): string {
   return url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 80).replace(/-$/, "");
 }
 
+/** Writes the post's text where the agents read it. A post without stored
+ *  text, such as a new video or a requested page, is read first the way the
+ *  pipeline reads it. If that fails, the item should be handed back. */
 async function take(itemId: string) {
+  if (!(await readItem(itemId)).full_text) await fetchAndStoreItemText(itemId);
   const item = await readItem(itemId);
   const dir = path.join(POSTS_DIR, postDirName(item.url));
   mkdirSync(dir, { recursive: true });
@@ -70,7 +75,7 @@ async function take(itemId: string) {
   writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
   await logEvent({ actor: "claude", type: "item_taken", itemId });
-  console.log(item.full_text ? dir : `${dir}\nThis item has no stored text yet. Read the page with: bun run read-page ${item.url}`);
+  console.log(dir);
 }
 
 function parseSettingsArgs(list: string[]): { change: { writer?: Writer; approvalRequired?: boolean }; by: Actor } {
@@ -93,16 +98,25 @@ async function answer(file: string) {
   console.log(a.note ? "Answered and rewrote the note" : "Answered");
 }
 
-/** How often `watch` looks for new reviewer messages. */
-const WATCH_POLL_MS = 10_000;
+/** How often `watch` looks for work. */
+const WATCH_POLL_MS = 30_000;
+/** `watch` also ends after this long without work, so Claude posts its digest
+ *  to Slack every few hours. */
+const DIGEST_EVERY_MS = 3 * 60 * 60 * 1000;
 
-/** Runs until a reviewer message waits for an answer, prints the waiting
- *  messages and exits. Claude runs it as a background task, whose end wakes
- *  Claude up. */
+/** Runs until there is something to do, prints what and exits: reviewer
+ *  messages waiting for an answer, queued items while Claude writes the notes,
+ *  or a digest that is due. Claude runs it as a background task, whose end
+ *  wakes Claude up. */
 async function watch() {
+  const startedAt = Date.now();
   for (;;) {
-    const waiting = await unansweredMessages();
-    if (waiting.length > 0) return print(waiting.map((m) => ({ draftId: m.draft_id, from: m.actor, text: (m.data as { text: string }).text })));
+    const messages = await unansweredMessages();
+    if (messages.length > 0) return print({ wake: "messages", messages: messages.map((m) => ({ draftId: m.draft_id, from: m.actor, text: (m.data as { text: string }).text })) });
+    const { writer } = await readSettings();
+    const items = writer === "claude" ? await waitingItems() : [];
+    if (items.length > 0) return print({ wake: "queue", items: items.map(({ full_text, ...item }) => item) });
+    if (Date.now() - startedAt > DIGEST_EVERY_MS) return print({ wake: "digest" });
     await Bun.sleep(WATCH_POLL_MS);
   }
 }

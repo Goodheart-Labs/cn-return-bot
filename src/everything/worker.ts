@@ -16,9 +16,9 @@
 import "dotenv/config";
 import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary } from "./db";
+import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary, updateItemMeta } from "./db";
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
-import { processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
+import { bodyText, processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
@@ -119,6 +119,15 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
     default:
       return fetchWebContent(item);
   }
+}
+
+/** Reads an item's text the way processing does and stores it, without
+ *  checking anything. The Claude note writer (GOO-507) calls this before its
+ *  agents read a post. */
+export async function fetchAndStoreItemText(itemId: string): Promise<void> {
+  const item = await fetchItem(itemId);
+  const content = await fetchContent(item);
+  await updateItemMeta(item.id, { title: content.title, published_at: content.publishedAt?.slice(0, 10) ?? null, full_text: bodyText(content) });
 }
 
 /** Names the tier an item is waiting at, for the queue listing. */
