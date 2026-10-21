@@ -19,8 +19,8 @@ const SLIDERS: { key: keyof NoteFilters; label: string }[] = [
  *  visible steps. */
 const SMALLEST_SLIDER_END = 10;
 
-/** A Filters button that opens a popover with a choice of author and one
- *  minimum slider per filter.
+/** A Filters button that opens a popover with one minimum slider per filter,
+ *  and a choice of author when `authors` is given.
  *  A second click on the button, a press outside the popover, or Escape closes
  *  it. The page does not close it on scroll, because filtering changes the
  *  feed's length and the page can scroll by itself while a slider is dragged.
@@ -34,8 +34,9 @@ export function NoteFiltersButton({ filters, onChange, author, onAuthorChange, a
   onChange: (filters: NoteFilters) => void;
   author: AuthorFilter;
   onAuthorChange: (author: AuthorFilter) => void;
-  /** The people who wrote notes, offered as authors to pick. */
-  authors: NoteAuthor[];
+  /** The people who wrote notes, offered as authors to pick. Without it the
+   *  popover has no author choice. */
+  authors?: NoteAuthor[];
   /** The largest value of each filter among all notes, before filtering. */
   largest: NoteFilters;
   matchingNotes: number;
@@ -64,17 +65,19 @@ export function NoteFiltersButton({ filters, onChange, author, onAuthorChange, a
       </Button>
       {open && (
         <div role="dialog" aria-label="Filters" className={cn(cardVariants({ elevation: "floating" }), "absolute inset-x-0 top-full z-20 mt-2 space-y-4 p-4 sm:left-auto sm:w-72")}>
-          <div className="space-y-1">
-            <label htmlFor={authorSelectId} className="block text-sm font-medium text-fg-secondary">Written by</label>
-            <Select id={authorSelectId} className="w-full" value={author} onChange={(event) => onAuthorChange(event.currentTarget.value as AuthorFilter)}>
-              <option value="anyone">Anyone</option>
-              <option value="ai">The AI</option>
-              <option value="people">People</option>
-              {authors.map(({ id, name, noteCount }) => (
-                <option key={id} value={personFilter(id)}>{`${name} (${noteCount})`}</option>
-              ))}
-            </Select>
-          </div>
+          {authors && (
+            <div className="space-y-1">
+              <label htmlFor={authorSelectId} className="block text-sm font-medium text-fg-secondary">Written by</label>
+              <Select id={authorSelectId} className="w-full" value={author} onChange={(event) => onAuthorChange(event.currentTarget.value as AuthorFilter)}>
+                <option value="anyone">Anyone</option>
+                <option value="ai">The AI</option>
+                <option value="people">People</option>
+                {authors.map(({ id, name, noteCount }) => (
+                  <option key={id} value={personFilter(id)}>{`${name} (${noteCount})`}</option>
+                ))}
+              </Select>
+            </div>
+          )}
           {SLIDERS.map(({ key, label }) => (
             <Slider
               key={key}

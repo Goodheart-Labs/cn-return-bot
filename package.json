@@ -115,6 +115,8 @@
     "everything-worker": "bun run src/everything/worker.ts",
     "minisite-create": "bun run src/everything/minisites/createMinisite.ts",
     "commonnotes": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort --mode prod-backend",
+    "commonnotes-review": "cd src/everything-web && VITE_CN_REVIEW_TOOLS=1 bunx vite --port 8007 --host 127.0.0.1 --strictPort --mode prod-backend",
+    "commonnotes-review-rerun": "cd src/everything-web && VITE_CN_REVIEW_TOOLS=1 bunx vite --port 8008 --host 127.0.0.1 --strictPort --mode local-rerun",
     "commonnotes-local": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort",
     "commonnotes-dashboard": "lsof -ti tcp:8004 -sTCP:LISTEN | xargs kill 2>/dev/null; cd src/analytics-dashboard && bunx vite --port 8004 --host 127.0.0.1 --strictPort --mode prod-backend",
     "commonnotes-dashboard-local": "lsof -ti tcp:8004 -sTCP:LISTEN | xargs kill 2>/dev/null; cd src/analytics-dashboard && bunx vite --port 8004 --host 127.0.0.1 --strictPort",

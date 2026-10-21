@@ -45,6 +45,11 @@ const ORDER_KEY = "cn:allNotesOrder";
 /** The filters the reader set last time, remembered on this device. */
 const FILTERS_KEY = "cn:allNotesFilters";
 
+/** The review tools are for the team's own local review servers
+ *  (`bun run commonnotes-review`) and stay off on the public site. They add
+ *  the author filter and show each note's post address. */
+const REVIEW_TOOLS = import.meta.env.VITE_CN_REVIEW_TOOLS === "1";
+
 /** The author the reader picked last time, remembered on this device. */
 const AUTHOR_KEY = "cn:allNotesAuthor";
 
@@ -121,8 +126,9 @@ function useGrowingCount(resetKey: string): [number, (sentinel: HTMLDivElement |
 
 /** The creator a note belongs to, at the top of its card. It links to the
  *  creator's own page of notes. Beside it stands how many readers saw the notes
- *  on the post. */
-function CreatorByline({ project, views, navigate }: { project: FeedProjectRow; views: number; navigate: (route: Route) => void }) {
+ *  on the post. With the review tools on, the post's address follows, so a
+ *  reviewer can open the post with the extension. */
+function CreatorByline({ project, views, postUrl, navigate }: { project: FeedProjectRow; views: number; postUrl?: string; navigate: (route: Route) => void }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <RouteLink
@@ -136,15 +142,20 @@ function CreatorByline({ project, views, navigate }: { project: FeedProjectRow; 
       <span className="text-sm text-fg-muted" title="Readers outside our team who were shown the notes on this post">
         {views === 1 ? "1 view" : `${views} views`}
       </span>
+      {postUrl && (
+        <a href={postUrl} target="_blank" rel="noreferrer" className="min-w-0 basis-full break-all text-sm text-fg-muted underline hover:text-fg">
+          {postUrl}
+        </a>
+      )}
     </div>
   );
 }
 
 /** Every note of every project in one feed. The reader picks the order: the
  *  newest notes first, the mixed order every project page uses, or the most
- *  helpful first. A filter can keep only the AI's notes, only people's notes,
- *  or one person's notes. Other filters hide notes below a minimum of views or
- *  votes. By default only notes on posts that at least 5 readers saw are
+ *  helpful first. Filters hide notes below a minimum of views or votes. With
+ *  the review tools on, a filter can also keep only the AI's notes, only
+ *  people's notes, or one person's notes. By default only notes on posts that at least 5 readers saw are
  *  shown. Each card names its creator. */
 export function AllNotesPage({ navigate }: { navigate: (route: Route) => void }) {
   const projectsQuery = useProjects();
@@ -152,7 +163,8 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   const viewersQuery = useItemNoteViewers();
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "recent");
   const [filters, setFilters] = useStoredValue(FILTERS_KEY, parseFilters, JSON.stringify);
-  const [author, setAuthor] = useStoredValue(AUTHOR_KEY, parseAuthor, String);
+  const [storedAuthor, setAuthor] = useStoredValue(AUTHOR_KEY, parseAuthor, String);
+  const author: AuthorFilter = REVIEW_TOOLS ? storedAuthor : "anyone";
   const notes = noteSet?.notes;
   const byItem = useMemo(() => notesByItem(notes?.values() ?? []), [notes]);
   const improvements = useMemo(() => improvementsByOriginal(notes?.values() ?? []), [notes]);
@@ -191,7 +203,7 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
         onChange={setFilters}
         author={author}
         onAuthorChange={setAuthor}
-        authors={noteAuthors(ordered)}
+        authors={REVIEW_TOOLS ? noteAuthors(ordered) : undefined}
         largest={largestValues(ordered, viewsOf, rankTally)}
         matchingNotes={filtered.length}
       />
@@ -203,7 +215,7 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
         <FeedNoteCard
           key={note.id}
           note={note}
-          byline={project && <CreatorByline project={project} views={viewsOf(note)} navigate={navigate} />}
+          byline={project && <CreatorByline project={project} views={viewsOf(note)} postUrl={REVIEW_TOOLS ? post?.url : undefined} navigate={navigate} />}
           post={post}
           improvements={improvements.get(note.id) ?? NO_NOTES}
           nnnEntries={entries.get(note.claim_id) ?? NO_ENTRIES}
