@@ -793,3 +793,57 @@ Note:
 > 
 > https://www.stheadline.com/zh-hans/realtime-china/3598195/
 > https://news.10jqka.com.cn/20260608/c677286196.shtml
+
+### Jim rejected (2026-10-21)
+Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
+
+Passage:
+> Anthropic's Mythos and Project Glasswing were both technically out of scope (since those are internal deployments, not yet deployed in the EU market)
+
+Note:
+> Mythos Preview was not an internal deployment. From April 2026, Project Glasswing gave it to outside companies such as AWS, Apple and Microsoft, and in June Anthropic extended access to about 150 more organisations in over 15 countries, reportedly including France, Germany and Italy.
+> 
+> https://www.anthropic.com/glasswing
+> https://www.govinfosecurity.com/anthropic-expands-mythos-to-global-critical-infrastructure-a-31836
+
+Why: Mhhh Mythos was at some point definitely internal only. And for project glasswing I assume that the author knows what the project is and just knows more to be able ot say it still coutns as internal deployment
+
+### Jim rejected (2026-10-21)
+Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
+
+Passage:
+> appoints a Prime Minister (who usually isn't even a member of parliament)
+
+Note:
+> A sitting French Prime Minister is never a member of parliament: Article 23 of the constitution makes government office incompatible with a parliamentary seat.
+> 
+> https://www.conseil-constitutionnel.fr/en/constitution-of-4-october-1958
+
+### Jim rejected (2026-10-21)
+Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
+
+Passage:
+> Post-Mythos, the US response was to block Claude Fable's deployment in Europe.
+
+Note:
+> The order was not limited to Europe. On June 12 the Commerce Department barred every foreign national, inside or outside the US, from using Fable 5 and Mythos 5, and it lifted the order on June 30.
+> 
+> https://news.bgov.com/artificial-intelligence/anthropic-says-us-limits-foreign-access-to-fable-5-mythos-5
+> https://thedeepdive.ca/commerce-department-lifts-export-controls-on-anthropics-fable-5-mythos-5/
+
+Why: Ah thats fine. The effect on europe was clearly the biggest
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> 40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months
+
+Earlier version:
+> The cited AIPN tracker shows the count doubling about once a year, not every 5.5 months: its dated quotes go from 5 current members by mid-2023 to 39 in June 2026. The tracker has since risen to 74.
+
+Jim's comment:
+> Be more clear. The first sentence doesen't always have to be a negation of the statement. Say he meant doubling in the last 5.5 months. slower before
+
+New version:
+> The tracker the post cites shows the count doubling about once a year: about 5 members by mid-2023, 11 by mid-2024, 22 by mid-2025 and 40 by June 2026.
