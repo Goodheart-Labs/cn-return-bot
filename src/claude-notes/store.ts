@@ -5,11 +5,16 @@
  * all see the same state. Everything here runs with the service key, on the
  * devbox or in a reviewer's local dashboard server, never in a browser. */
 
+import { existsSync, readFileSync } from "fs";
+import { homedir } from "os";
 import * as path from "path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { config as loadDotenv } from "dotenv";
 import { ENV_DIR } from "../cnEnv";
 import type { Database, Json } from "../everything-core/database.types";
+import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
+import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 
 export type Actor = "jim" | "nathan" | "claude";
 export type PostedAs = "ai" | "jim" | "nathan";
@@ -105,10 +110,42 @@ async function itemUrl(itemId: string): Promise<string> {
   return unwrap(await db().from("everything_items").select("url").eq("id", itemId).single()).url;
 }
 
+/** Where `take` writes a post's text, and a video's caption cues, for the
+ *  note-finding agents. */
+const POSTS_DIR = path.join(homedir(), ".local/share/claude-note-finder/posts");
+
+export function postDir(url: string): string {
+  return path.join(POSTS_DIR, url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 80).replace(/-$/, ""));
+}
+
+export const isVideo = (url: string) => extractYoutubeVideoId(url) !== null;
+
+/** Where a claim sits in a video: its seconds and a link that starts the
+ *  video there. The extension pins a video's notes on the player by these. */
+interface VideoTiming {
+  start_seconds: number | null;
+  end_seconds: number | null;
+  context_url: string;
+}
+
+/** Finds the passage in the video's caption cues, which `take` saved next to
+ *  the post's text. Null when the item is no video or no cues are saved, for
+ *  example on a reviewer's own machine. */
+function videoTiming(url: string, passage: string): VideoTiming | null {
+  const videoId = extractYoutubeVideoId(url);
+  const cuesPath = path.join(postDir(url), "cues.json");
+  if (!videoId || !existsSync(cuesPath)) return null;
+  const cues: SubtitleCue[] = JSON.parse(readFileSync(cuesPath, "utf8"));
+  const { start, end } = contextTimeSpan(passage, cues);
+  if (start === undefined) return null;
+  return { start_seconds: Math.floor(start), end_seconds: end === undefined ? null : Math.ceil(end), context_url: buildVideoLink(videoId, start) };
+}
+
 /** Creates a claim on the draft's passage and posts the note on it, with one
  *  source row per supporting quote. Returns the new note's id. */
-async function postNote(draft: DraftRow, postedAs: PostedAs): Promise<string> {
+async function postNote(draft: DraftRow, postedAs: PostedAs, timing: VideoTiming | null): Promise<string> {
   const account = postedAs === "ai" ? null : ACCOUNTS[postedAs];
+  const url = await itemUrl(draft.item_id);
   const claim = unwrap(
     await db()
       .from("everything_claims")
@@ -117,7 +154,8 @@ async function postNote(draft: DraftRow, postedAs: PostedAs): Promise<string> {
         claim: draft.passage.slice(0, CLAIM_PREVIEW_CHARS),
         judgement: CLAUDE_JUDGEMENT,
         context_quote: draft.passage,
-        context_url: await itemUrl(draft.item_id),
+        context_url: url,
+        ...(timing ?? videoTiming(url, draft.passage)),
         status: "note",
         created_by: account?.id ?? null,
       })
@@ -134,6 +172,12 @@ async function postNote(draft: DraftRow, postedAs: PostedAs): Promise<string> {
   const sources = (draft.sources as unknown as DraftSource[]).map((s, i) => ({ note_id: note.id, url: s.url, quote: s.quote, explanation: s.explanation, sort_order: i }));
   if (sources.length > 0) check(await db().from("everything_note_sources").insert(sources));
   return note.id;
+}
+
+async function claimTiming(noteId: string): Promise<VideoTiming | null> {
+  const note = unwrap(await db().from("everything_notes").select("claim:everything_claims(start_seconds, end_seconds, context_url)").eq("id", noteId).single());
+  const claim = note.claim as unknown as VideoTiming | null;
+  return claim?.start_seconds === null || !claim ? null : claim;
 }
 
 /** Removes a note the Claude note writer posted, together with the claim it
@@ -174,8 +218,8 @@ export async function addDraft(draft: NewDraft): Promise<DraftRow> {
 }
 
 /** Posts a draft's note on commonnotes.net and records it as posted. */
-export async function publish(draft: DraftRow, postedAs: PostedAs, actor: Actor): Promise<DraftRow> {
-  const noteId = await postNote(draft, postedAs);
+export async function publish(draft: DraftRow, postedAs: PostedAs, actor: Actor, timing: VideoTiming | null = null): Promise<DraftRow> {
+  const noteId = await postNote(draft, postedAs, timing);
   const row = unwrap(
     await db()
       .from("everything_claude_drafts")
@@ -262,8 +306,11 @@ export async function rewrite(
     data: { reason: change.reason, previous_note: draft.note, previous_sources: draft.sources, previous_passage: draft.passage, note: change.note },
   });
   if (draft.status !== "posted" || !draft.note_id) return updated;
+  // A rewrite keeps the old claim's place in a video, so it also works on a
+  // reviewer's machine, which has no caption cues. A new passage is placed anew.
+  const timing = change.passage ? null : await claimTiming(draft.note_id);
   await removeClaudeNote(draft.note_id);
-  return publish(updated, change.postedAs ?? (draft.posted_as as PostedAs), change.actor);
+  return publish(updated, change.postedAs ?? (draft.posted_as as PostedAs), change.actor, timing);
 }
 
 /** Claude takes back a note it no longer stands behind. */
@@ -320,13 +367,16 @@ export interface QueueItem {
   full_text: string | null;
 }
 
-/** Queued items Claude has not handed back, highest tier first. */
+/** Queued items Claude has neither taken nor handed back, highest tier first.
+ *  An item Claude is working on stays queued until it is finished, so the
+ *  take is what tells it apart. */
 export async function waitingItems(): Promise<QueueItem[]> {
   const handedBack = new Set(unwrap(await db().from("everything_claude_handbacks").select("item_id")).map((h) => h.item_id));
+  const taken = new Set(unwrap(await db().from("everything_claude_events").select("item_id").eq("type", "item_taken")).map((e) => e.item_id));
   const queued = unwrap(
     await db().from("everything_items").select("id, url, title, priority, status, full_text").eq("status", "queued").order("priority", { ascending: false }).order("created_at"),
   );
-  return queued.filter((item) => !handedBack.has(item.id));
+  return queued.filter((item) => !handedBack.has(item.id) && !taken.has(item.id));
 }
 
 export async function readItem(itemId: string): Promise<QueueItem & { project: { name: string; slug: string } | null; published_at: string | null }> {

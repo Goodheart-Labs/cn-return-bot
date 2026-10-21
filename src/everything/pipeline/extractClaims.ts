@@ -184,7 +184,7 @@ export async function runExtraction(content: string, hasNextChunk = false): Prom
   return { claims: claimsOfPassages(passages, bodyOfChunkMessage(content)), carry };
 }
 
-function buildVideoLink(videoId: string, seconds: number): string {
+export function buildVideoLink(videoId: string, seconds: number): string {
   return `https://www.youtube.com/watch?v=${videoId}&t=${Math.max(0, Math.floor(seconds))}s`;
 }
 
