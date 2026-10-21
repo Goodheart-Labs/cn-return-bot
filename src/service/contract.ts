@@ -13,6 +13,7 @@
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
+import type { EverythingItem } from "../everything/db";
 import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
@@ -21,6 +22,7 @@ export const CHECK_CLAIM_PATH = "/check-claim";
 export const CHECK_TWEET_PATH = "/check-tweet";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
 export const RATE_CLAIMS_PATH = "/rate-claims";
+export const ITEM_TEXT_PATH = "/item-text";
 export const HEALTH_PATH = "/health";
 
 /** Callers prove themselves with a shared secret in this header. The services
@@ -238,4 +240,19 @@ export interface HealthResponse {
  *  record the failure against the claim and move on. */
 export interface ServiceErrorResponse {
   error: string;
+}
+
+/** Reads one Common Notes item's text the way processing does, for the Claude
+ *  note writer on the devbox (GOO-507). The services machine has the
+ *  residential proxy and the PO token server that YouTube captions need, and
+ *  the devbox has neither. Nothing is written; the caller stores the text. */
+export interface ItemTextRequest {
+  priority: WorkPriority;
+  item: EverythingItem;
+}
+
+export interface ItemTextResponse {
+  title: string;
+  publishedAt: string | null;
+  text: string;
 }

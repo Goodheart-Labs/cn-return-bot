@@ -22,8 +22,7 @@ import {
   type HealthResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
-  type ServiceErrorResponse,
-} from "./contract";
+  type ServiceErrorResponse, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse } from "./contract";
 
 /** How long a caller waits for an answer. A check takes about a minute and a
  *  half of its own, and it may queue behind other work first, so this is a
@@ -59,6 +58,10 @@ export async function requestClaimExtraction(body: ExtractClaimsRequest): Promis
 
 export async function requestClaimRating(body: RateClaimsRequest): Promise<RateClaimsResponse> {
   return call<RateClaimsResponse>(serviceUrl("EXTRACTION_URL"), RATE_CLAIMS_PATH, body);
+}
+
+export async function requestItemText(body: ItemTextRequest): Promise<ItemTextResponse> {
+  return call<ItemTextResponse>(serviceUrl("EXTRACTION_URL"), ITEM_TEXT_PATH, body);
 }
 
 export async function fetchClaimCheckHealth(): Promise<HealthResponse> {

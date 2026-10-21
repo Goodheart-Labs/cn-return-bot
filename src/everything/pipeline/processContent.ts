@@ -50,7 +50,7 @@ const CHECK_REQUEST_CONCURRENCY = 8;
 
 /** A page someone asked for and is waiting on is served before anything from
  *  the backlog. Everything else this file processes is backlog. */
-function workPriorityOf(item: EverythingItem): SpendFor {
+export function workPriorityOf(item: EverythingItem): SpendFor {
   return item.priority >= QUEUE_PRIORITY.requested ? "reader" : "feed";
 }
 
@@ -136,7 +136,7 @@ async function checkAndRecordClaim(
 }
 
 /** The item's body text. This is what the public write-note flow searches. */
-function bodyText(content: FetchedContent): string {
+export function bodyText(content: FetchedContent): string {
   return content.kind === "youtube" ? content.cues.map((c) => c.text).join("\n") : content.text;
 }
 

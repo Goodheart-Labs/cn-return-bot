@@ -1,6 +1,6 @@
 # What makes a good Common Note
 
-This file collects judged examples of notes on our Common Notes items. Agents that look for noteworthy passages and write notes read it first. The parts above "## Jim's review decisions" are generated from prod by `src/scripts_jim/2026_10_21_claude_note_finder/buildNoteExamples.ts`. Do not edit them by hand.
+This file collects judged examples of notes on our Common Notes items. Agents that look for noteworthy passages and write notes read it first. It is generated from prod by `bun run claude-notes examples` (`src/claude-notes/buildExamples.ts`). Do not edit it by hand.
 
 A good note points out something a careful reader would want to know: a small factual mistake, missing context that makes a passage easy to misread, or a claim that is wrong or misleading. It is short, neutral, and every sentence is backed by a cited source.
 
@@ -272,6 +272,366 @@ Note:
 > https://www.koreatimes.co.kr/amp/southkorea/defense/20250530/us-pulls-patriot-missile-unit-from-korea-to-middle-east-without-prior-consultation
 
 
+### Good example 22
+Post: [Labs’ current alignment plans seem terrible](https://www.lesswrong.com/posts/xyg3ecpFNuGr5q8Zq/labs-current-alignment-plans-seem-terrible)
+
+Passage:
+> This feels related to big(Θ) and big(O) notation in theoretical computer science, where you describe an algorithm’s runtime under average- and worst-case conditions.
+
+Note:
+> Big-Θ and big-O don't stand for average and worst case. Big-O is an upper bound on growth and big-Θ a bound from above and below. Average and worst case are separate analyses: quicksort is O(n log n) on average and O(n²) in the worst case.
+> 
+> https://en.wikipedia.org/wiki/Big_O_notation
+> https://en.wikipedia.org/wiki/Best,_worst_and_average_case
+
+
+### Good example 23
+Post: [If God is real why is there so much suffering in the animal kingdom?](https://www.lesswrong.com/posts/HohwgwEwfS6KR8PYp/if-god-is-real-why-is-there-so-much-suffering-in-the-animal)
+
+Passage:
+> While these scales can be used for a variety of emotions, anger is perhaps the most important one as it can serve us as a warning not to approach or antagonize an animal that might attack.
+
+Note:
+> Grimace scales were developed to assess pain, not anger. Krause and Nawroth's article defines a grimace scale as a method of "pain assessment for non-human animals".
+> 
+> https://kids.frontiersin.org/articles/10.3389/frym.2021.622811
+> https://nc3rs.org.uk/3rs-resources/grimace-scales
+
+
+### Good example 24
+Post: [Arguments About AI Consciousness Remain Highly Motivated and At Best Overconfident](https://thezvi.substack.com/p/arguments-about-ai-consciousness-b99)
+
+Passage:
+> This was the consensus of my Twitter followers a year ago, with a majority of 64% saying current AIs were probably not moral patients, but 74% being uncertain, whereas 80% expected AIs to probably be moral patients within their lifetimes.
+
+Note:
+> These figures are close to the Oct 12, 2026 polls pictured just below this paragraph, not last year's. In Zvi's August 2025 polls, 85% said current AIs were probably or definitely not moral patients, and 75% expected one within their lifetime.
+> 
+> https://thezvi.substack.com/p/arguments-about-ai-consciousness
+> https://thezvi.substack.com/p/arguments-about-ai-consciousness-b99
+
+
+### Good example 25
+Post: [Anthropic Does Not Understand Why Its Draft Bill Was Unacceptable and Troubling](https://thezvi.substack.com/p/anthropic-does-not-understand-why)
+
+Passage:
+> Eight states suing OpenAI are asking to enjoin against any further testing of advanced AI models until there are adequate safeguards, and also against creation of models capable of recursive self-improvement ‘until they can ensure that such models will be aligned with human values.’
+
+Note:
+> Only Arkansas, of the eight states, asked to bar self-improving models; the quoted words are from its complaint. Arkansas and Iowa asked to halt testing until safeguards are verified; Arizona, Idaho and Montana asked to allow it only in a secured environment.
+> 
+> https://media.ark.org/ag/2026-10-14-Filed-Complaint-Case-No.-23cv-26-2984.pdf
+> https://www.iowaattorneygeneral.gov/media/cms/261014_Petition_EC459B522F957.pdf
+> https://www.justsecurity.org/wp-content/uploads/2026/10/Arizona.pdf
+> https://www.ag.idaho.gov/content/uploads/2026/10/OpenAI-2026-10-14-Complaint.pdf
+> https://www.justsecurity.org/wp-content/uploads/2026/10/Montana.pdf
+> https://www.justsecurity.org/160981/eight-states-sue-openai-chatgpt-safety/
+
+
+### Good example 26
+Post: [The Fermi Paradox Just Got Much Worse](https://www.youtube.com/watch?v=s-MgHZ_oGl0)
+
+Passage:
+> But in a new paper, a physicist now argues quite convincingly I think that this is wrong.
+
+Note:
+> The paper's author, Sergey Ivliev, is not a physicist. His bio in the paper says he "holds a Ph.D. in Mathematical Economics", and the video's description carries a correction: "The author is not a physicist, but has a PhD in economics."
+> 
+> https://arxiv.org/pdf/2606.13914
+> https://www.youtube.com/watch?v=s-MgHZ_oGl0
+
+
+### Good example 27
+Post: [AI #189: New Math](https://thezvi.substack.com/p/ai-189-new-math)
+
+Passage:
+> Police charged a man in Singapore for posting an AI image of a crocodile in a reservoir, calling it ‘communicating a false message and obstructing the course of justice.’
+
+Note:
+> The obstruction of justice charge was for allegedly deleting the image and the app used to make it, not for posting it.
+> 
+> https://www.bbc.com/news/articles/c6grveg7d9zro
+
+
+### Good example 28
+Post: [AI #189: New Math](https://thezvi.substack.com/p/ai-189-new-math)
+
+Passage:
+> This being complete amateur hour is exactly how the hacker was so easily caught, and how we fully understand what happened.
+
+Note:
+> The attacker's identity is unconfirmed. CrowdStrike says details in a résumé prompt likely belong to the attacker but "cannot definitively" be tied to them. The suspected man has denied involvement, and on Oct 13 Korean police were still working to trace the hackers.
+> 
+> https://www.crowdstrike.com/en-us/blog/unknown-threat-actor-uses-artex-to-target-south-korean-finance/
+> https://www.koreatimes.co.kr/southkorea/law-crime/20261013/police-working-with-fbi-to-trace-hackers-behind-recent-cyberattacks
+
+
+### Good example 29
+Post: [Your Book Review: Storm Of Steel](https://www.astralcodexten.com/p/your-book-review-storm-of-steel)
+
+Passage:
+> he wrote in On Pain in 1934:
+
+Note:
+> Misattributed: the quoted passage is by Oswald Spengler, not from Jünger's On Pain. The Choice of Achilles, "Optimism is cowardice" and the Roman soldier at Pompeii all come from Spengler's Man and Technics (1931).
+> 
+> https://en.wikiquote.org/wiki/Oswald_Spengler
+> https://archive.org/stream/in.ernet.dli.2015.53913/2015.53913.Man-And-Technics-1932_djvu.txt
+
+
+### Good example 30
+Post: [Jensen Huang: The Mindset That Built NVIDIA](https://www.youtube.com/watch?v=I4B37S1dyQQ)
+
+Passage:
+> The task of reading radiology scans has been automated, but the number of radiology jobs has increased some 20% in the last several years, even though AI's taken over the whole field.
+
+Note:
+> AI has not taken over reading radiology scans. A 2025 analysis found AI "is often limited to assistive use on a small subset of scans in any given practice." Under FDA rules, assistive tools "require a licensed physician to read the scan and sign the chart."
+> 
+> https://worksinprogress.co/issue/the-algorithm-will-see-you-now/
+
+
+### Good example 31
+Post: [Jensen Huang: The Mindset That Built NVIDIA](https://www.youtube.com/watch?v=I4B37S1dyQQ)
+
+Passage:
+> a chip designer would design a chip with maybe a thousand transistors, and that would be a very large chip.
+
+Note:
+> When Huang graduated in 1984, a large chip had far more than a thousand transistors. Intel's 80286 processor, introduced in 1982, used about 134,000.
+> 
+> https://en.wikipedia.org/wiki/Intel_80286
+> https://en.wikipedia.org/wiki/Jensen_Huang
+
+
+### Good example 32
+Post: [Childhood and Education #21: Grades and Standards](https://thezvi.substack.com/p/childhood-and-education-21-grades)
+
+Passage:
+> used SAT to admit to elite colleges, share of admits from top 1% income falls 15.8% → 9.9%
+
+Note:
+> The 15.8% to 9.9% drop isn't from SAT-only admissions: it removes legacy, non-academic-rating and athlete advantages. The paper's closest scenario, where attendance doesn't vary with parental income at equal test scores, cuts the top 1% share to 7.2%.
+> 
+> https://opportunityinsights.org/wp-content/uploads/2023/07/CollegeAdmissions_Paper.pdf
+
+
+### Good example 33
+Post: [GERMANY IS OVER](https://www.youtube.com/watch?v=n-gYFcVx-8Y)
+
+Passage:
+> Already in the 1970s governments began to subsidize the pension funds with tax revenue
+
+Note:
+> Tax subsidies didn't start in the 1970s. Federal subsidies, paid from taxes, already covered 27.4% of German pension insurance spending in 1957, more than in 1970 (15.0%).
+> 
+> https://www.bpb.de/themen/soziale-lage/rentenpolitik/289783/bundeszuschuesse/
+> https://www.deutsche-rentenversicherung.de/SharedDocs/Downloads/DE/Statistiken-und-Berichte/statistikpublikationen/rv_in_zeitreihen.pdf?__blob=publicationFile
+
+
+### Good example 34
+Post: [Iran](https://www.youtube.com/watch?v=YSLWEsv-8MM)
+
+Passage:
+> who is the son of the former crown prince of the Palavi dynasty
+
+Note:
+> Reza Pahlavi is himself Iran's former crown prince: he was heir when the monarchy fell in 1979. His father, Mohammad Reza Pahlavi, was the last Shah of Iran.
+> 
+> https://en.wikipedia.org/wiki/Reza_Pahlavi
+
+
+### Good example 35
+Post: [Sarah Paine — The war for India (Lecture & interview)](https://www.youtube.com/watch?v=LbkO84MsmyM)
+
+Passage:
+> which the United States did. It brokered this Indus Waters Treaty of 1960.
+
+Note:
+> The World Bank, not the US, brokered the treaty, after nine years of talks it initiated, and also signed it. The US helped pay: it committed up to $517 million, half the $1,033 million estimated cost of the new canals and dams.
+> 
+> https://www.worldbank.org/en/region/sar/brief/fact-sheet-the-indus-waters-treaty-1960-and-the-world-bank
+> https://history.state.gov/historicaldocuments/frus1958-60v15/d78
+
+
+### Good example 36
+Post: [Sarah Paine — The war for India (Lecture & interview)](https://www.youtube.com/watch?v=LbkO84MsmyM)
+
+Passage:
+> And this treaty has been, it's been operating some of these dams ever since to the enormous benefit of both countries.
+
+Note:
+> India suspended the treaty on 23 April 2025, after this lecture, following a terrorist attack near Pahalgam in Kashmir. In August 2026 India rejected a Hague court ruling ordering it to uphold the treaty.
+> 
+> https://en.wikipedia.org/wiki/Indus_Waters_Treaty
+> https://www.aljazeera.com/news/2026/8/31/india-rejects-hague-court-order-to-restore-indus-waters-pact-with-pakistan
+
+
+### Good example 37
+Post: [Sarah Paine — The war for India (Lecture & interview)](https://www.youtube.com/watch?v=LbkO84MsmyM)
+
+Passage:
+> Let's just let that door stay shut for a few days. And then when it starts stinking, well, no, perfect. So that's how he dies.
+
+Note:
+> Stalin wasn't left behind a shut door for days. His guests left at about 5 a.m. on 1 March 1953, and his staff found him alive on the floor that same day. Doctors were called the next morning, and he died on 5 March.
+> 
+> https://en.wikipedia.org/wiki/Joseph_Stalin
+> https://en.wikipedia.org/wiki/Death_and_state_funeral_of_Joseph_Stalin
+
+
+### Good example 38
+Post: [AI #188: Gemini Dot Argon](https://www.lesswrong.com/posts/S2EAn9v4BwRdptsom/ai-188-gemini-dot-argon)
+
+Passage:
+> to use Gemini Flash instead of Pro and GPT Instant instead of Thinking whenever possible, and to ‘use as few prompts as possible,’ because of environmental concerns.
+
+Note:
+> Outdated: the guidance was updated on 25 September and no longer recommends smaller models or fewer prompts. The UK's AI minister said: "This advice has been updated."
+> 
+> https://ai.gov.uk/knowledge-hub/how-to/ethics/
+> https://www.cityam.com/ai-minister-updates-guidance-after-dont-thank-chatgpt-advice-to-civil-servants/
+
+
+### Good example 39
+Post: [AI #188: Gemini Dot Argon - by Zvi Mowshowitz](https://thezvi.substack.com/p/ai-188-gemini-dot-argon)
+
+Passage:
+> to use Gemini Flash instead of Pro and GPT Instant instead of Thinking whenever possible, and to ‘use as few prompts as possible,’ because of environmental concerns.
+
+Note:
+> Outdated: the guidance was updated on 25 September and no longer recommends smaller models or fewer prompts. The UK's AI minister said: "This advice has been updated."
+> 
+> https://ai.gov.uk/knowledge-hub/how-to/ethics/
+> https://www.cityam.com/ai-minister-updates-guidance-after-dont-thank-chatgpt-advice-to-civil-servants/
+
+
+### Good example 40
+Post: [Can a superintelligence do THAT?](https://www.lesswrong.com/posts/hXozGp2rsbZgXnH3o/can-a-superintelligence-do-that)
+
+Passage:
+> An Internet attacker can modify a video camera to point to one place instead of scanning across, and measure the device's power LED intensity millions of times per second!
+
+Note:
+> The paper reports about 60,000 measurements per second, not millions. Filming the LED so it filled the frame let the rolling shutter raise the sampling rate from 60 per second "to the rolling shutter speed (60K measurements per second in the iPhone 13 Pro Max)."
+> 
+> https://eprint.iacr.org/2023/923
+
+
+### Good example 41
+Post: [AI #187: Coming Into Play](https://thezvi.substack.com/p/ai-187-coming-into-play)
+
+Passage:
+> Mistral, of course, denies there was any hack.
+
+Note:
+> TeamPCP's claim and its $25,000 listing for ~5GB of code date from May 2026. Mistral confirmed that breach, saying hackers compromised a codebase management system and accessed only non-core repositories. In September it denied a new forum account's claim of a second hack.
+> 
+> https://hackread.com/teampcp-mistral-ai-repositories-mini-shai-hulud-attack/
+> https://www.techradar.com/pro/security/mistral-denies-a-fresh-security-breach-but-the-code-on-sale-looks-a-lot-like-mays-leak
+
+
+### Good example 42
+Post: [What Also Happened: #NotOnlyHuggingFace](https://thezvi.substack.com/p/what-also-happened-notonlyhuggingface)
+
+Passage:
+> Whereas it is less concerning when the model URL hacks into unindexed data or can find other things that were not intended to be found, via various forms of search. That is the type of thing that happened in Australia, and thus it should be less concerning.
+
+Note:
+> Not just search. OpenAI says its model gained "non-public access" to Services Australia's Medicare statistics portal and "ran commands, retrieved internal files, credentials and aggregate statistics, and wrote files", though no patient records were accessed.
+> 
+> https://openai.com/index/how-we-will-do-better-for-australia/
+
+
+### Good example 43
+Post: [What Also Happened: #NotOnlyHuggingFace](https://thezvi.substack.com/p/what-also-happened-notonlyhuggingface)
+
+Passage:
+> Thus, the Australian government now has 20 MPs calling for urgent action
+
+Note:
+> These are 21 members of Western Australia's state parliament who wrote to the Prime Minister, not federal MPs or members of the Australian government.
+> 
+> https://x.com/liamstaltari/status/2103084832964452778
+
+
+### Good example 44
+Post: [Your Book Review: We Present Television](https://www.astralcodexten.com/p/your-book-review-we-present-television)
+
+Passage:
+> was shot directly on 35mm film precisely because, a decade on, audiences on the West coast would no longer put up with the poor quality of East coast Kinescope tapings of major programs being shuttled across the country to them.
+
+Note:
+> Backwards: Ball and Arnaz insisted on making the show in Los Angeles, and CBS and sponsor Philip Morris didn't want "the lucrative New York and East Coast market" seeing it on kinescopes, as the rest of the country saw other shows. Filming was the compromise.
+> 
+> https://www.dga.org/craft/dgaq/issues/0307-july-2003/i-love-lucy
+> https://www.americanheritage.com/what-desi-wrought
+
+
+### Good example 45
+Post: [You Heard of "Bayesians Don't Predictably Update" Because of Robin Hanson](https://www.lesswrong.com/posts/PQLbSaA48Gr7H6NzT/you-heard-of-bayesians-don-t-predictably-update-because-of)
+
+Passage:
+> Fama's 1965 thesis named the idea the Efficient Markets Hypothesis and organized it into weaker and stronger forms.
+
+Note:
+> Fama set out the weak, semi-strong and strong forms in his 1970 review, not his 1965 thesis. That review says: "The distinction between weak and strong form tests was first suggested by Harry Roberts."
+> 
+> https://www.jstor.org/stable/2325486
+> https://en.wikipedia.org/wiki/Efficient-market_hypothesis
+
+
+### Good example 46
+Post: [Toward liberal environmentalism](https://blog.andymasley.com/p/toward-environmental-liberalism)
+
+Passage:
+> the water cost of the non-AI American internet equals the household water use of about
+
+Note:
+> About 10x too high. The linked source gives 174 billion gallons (about 660 billion litres) a year. At the UNU report's rate, 9.3 trillion litres for the basic domestic water needs of 1.3 billion people, that is about 90 million people, not 900 million.
+> 
+> https://watercalculator.org/footprint/data-centers-water-use/
+> https://unu.edu/inweh/news/environmental-cost-of-AIs-Enrgy-use-carbon-water-and-land-footprints
+
+
+### Good example 47
+Post: [We've saved the world before: what the ozone hole teaches us about AI](https://www.lesswrong.com/posts/zxXPEtSSSEdwpjopb/we-ve-saved-the-world-before-what-the-ozone-hole-teaches-us)
+
+Passage:
+> comprising a small fraction of all CFC usage, to be fair, but substantial nonetheless.
+
+Note:
+> Before the US ban, aerosols were about half of US CFC use, not a small fraction. Nature reported that the ban "led to a 50% drop in the use of CFCs," and that similar bans elsewhere would cut world CFC releases by "between one third and one half."
+> 
+> https://www.nature.com/articles/283002a0.pdf
+> https://www.cpsc.gov/Newsroom/News-Releases/1977/CPSCFDAEPA-Announce-Phase-Out-Of-Chlorofluorocarbons
+
+
+### Good example 48
+Post: [The First American Bill to Ban Superintelligent AI Is Here](https://www.lesswrong.com/posts/ZprfxCZthEir5WNev/the-first-american-bill-to-ban-superintelligent-ai-is-here)
+
+Passage:
+> We appreciate the choice to define superintelligent AI by its capability to overpower the federal government.
+
+Note:
+> The bill's definition is broader: superintelligence is an AI that "exceeds human cognitive performance and capabilities across most domains or tasks," or one able to destroy or disempower humanity, "including by overthrowing or undermining the Federal Government."
+> 
+> https://www.govinfo.gov/content/pkg/BILLS-119s5493is/html/BILLS-119s5493is.htm
+
+
+### Good example 49
+Post: [Swarm Scaling](https://www.lesswrong.com/posts/6cb7qd3RSkgnviCpf/swarm-scaling)
+
+Passage:
+> It took them just 88 hours to do so, in which time they sent 5 million messages to each other and used 300 billion tokens.
+
+Note:
+> The messages and tokens are OpenAI's totals for all the problems its agents attempted. For Navier–Stokes alone, it says they sent 2.7 million messages and used about 130 billion output tokens. The cost estimate the post links to is also for the whole effort.
+> 
+> https://web.archive.org/web/20260921191308/https://openai.com/index/navier-stokes-solution/
+> https://techcrunch.com/2026/09/08/openai-fought-dirty-on-career-making-math-problem-says-nyu-mathematician/
+
+
 ## Nathan's votes on other notes
 
 ### Nathan rated Not helpful (note by a person)
@@ -362,144 +722,9 @@ Note:
 > Zvi is quoting someone else. And not sure this is wrong enough to therefore it's own correction.
 
 
-## Jim's review decisions
+## Jim's and Nathan's review decisions
 
-The review dashboard appends each note Jim accepts or rejects here, newest last.
-
-Jim's rewrites of first drafts, and one rewrite made after his feedback, come first. They show the length and directness he wants: the correction in one plain sentence, details only when a reader needs them.
-
-### Jim rewrote the note (2026-10-21)
-Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
-
-Passage:
-> Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug
-
-First draft:
-> Kumar's repository presented a disproof of the Collatz conjecture, not a proof. Its main result states that some positive number never reaches 1. Kiran Gopinathan reduced it to a proof of False and reported the kernel bug on July 28, three days after the repository was published.
-
-Jim's version:
-> Typo, the repository presented a disproof, not a proof.
-
-Why: Not so explainy.
-
-### Jim rewrote the note (2026-10-21)
-Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
-
-Passage:
-> Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)
-
-First draft:
-> Quine's 1940 system was not a reworking of ZFC. It was ML, from his book Mathematical Logic, which added classes to New Foundations (NF), his own set theory from 1937. Rosser derived the Burali-Forti paradox in the 1940 version in 1942; the result concerns ML, not NF.
-
-Jim's version:
-> Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.
-
-Why: Start with the correction itself. The details are not needed.
-
-### Rewritten after Jim's feedback (2026-10-21)
-Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
-
-Passage:
-> Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.
-
-First draft:
-> The error, reported in Carneiro's March 2024 Lean4Lean paper, was in a technical lemma behind two other results, unique typing and definitional inversion, which were downgraded to conjectures. The paper says the consistency (soundness) proof is not impacted, because the set-theoretic model can be built without unique typing.
-
-Rewritten version:
-> The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.
-
-Why: Hard to understand. Say plainly what the flaw did and did not break.
-
-### Jim accepted (2026-10-21)
-Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
-
-Passage:
-> Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug
-
-Note:
-> Typo, the repository presented a disproof, not a proof.
-
-https://github.com/xrchz/CollatzLean
-https://leodemoura.github.io/blog/2026-8-1-postmortem-for-kernel-soundness-bug-14576/
-https://www.openwall.com/lists/oss-security/2026/08/02/1
-
-### Jim accepted (2026-10-21)
-Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
-
-Passage:
-> This search uncovered six new soundness bugs
-
-Note:
-> Only four of the six were bugs in the kernel's own code. The other two were in the Lean runtime: an overflow of the reference counter in Lean's own code (#14838), and Lean's Linux builds using GMP 6.1.2, an old version with a known bug (#14833).
-
-https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/
-https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/
-https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/
-
-### Jim accepted (2026-10-21)
-Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
-
-Passage:
-> Lean4's type theory is experimental, not publicly exposited outside of its C++ library documentation
-
-Note:
-> Lean 4's kernel type theory is publicly described outside its C++ code. The open book "Type Checking in Lean 4" documents Lean's kernel language for people who want to write their own external type checkers. Mario Carneiro's 2024 Lean4Lean paper presents a second complete Lean 4 typechecker, written in Lean, and takes first steps to formalize the type theory abstractly.
-
-https://ammkrn.github.io/type_checking_in_lean4/
-https://arxiv.org/abs/2403.14064v2
-https://arxiv.org/abs/2403.14064v2
-
-### Jim accepted (2026-10-21)
-Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
-
-Passage:
-> Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)
-
-Note:
-> Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.
-
-https://plato.stanford.edu/entries/quine-nf/
-https://en.wikipedia.org/wiki/New_Foundations
-https://www.cambridge.org/core/journals/journal-of-symbolic-logic/article/buraliforti-paradox/01B4F184BDBDB8F5C29A2D10ECF83907
-
-### Jim accepted (2026-10-21)
-Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
-
-Passage:
-> Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.
-
-Note:
-> The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.
-
-https://arxiv.org/html/2403.14064v3
-https://arxiv.org/html/2403.14064v3
-
-### Jim accepted (2026-10-21)
-Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
-
-Passage:
-> But the government still manages to spend somewhere around (depending on how you calculate it) $100 billion dollars a year on it – which for example is three times the amount they spend on health care for the needy.
-
-Note:
-> Federal spending on health care for low-income people is far larger than corporate welfare, not a third of it. Federal Medicaid spending alone was $265 billion in fiscal 2013, more than two and a half times Cato's estimate of almost $100 billion a year in corporate welfare.
-
-https://web.archive.org/web/2014id_/http://www.cato.org/publications/policy-analysis/corporate-welfare-federal-budget
-https://web.archive.org/web/2026id_/https://www.medicaid.gov/medicaid/downloads/medicaid-actuarial-report-2014.pdf
-
-### Rewritten after Jim's comment (2026-10-21)
-Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
-
-Passage:
-> the actual Gaius Julius Caesar Augustus Germanicus wasn’t exactly the perfect benevolent rational central planner either.
-
-Earlier version:
-> Gaius Julius Caesar Augustus Germanicus is the emperor Caligula, not Julius Caesar. Caesars Palace is named for no single Caesar: "Caesars" is plural, because every guest is meant to feel like a Caesar.
-
-Jim's comment:
-> Mhh this note reads like it wants to contradict. But the pupose is to explain/add context which is good. Maybe say: "Gaius Julius Caesar Augustus Germanicus also named Caligula should not be could be confused with Julius Caesar." maybe add a bit of explanation like.
-
-New version:
-> Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.
+Every approval and rejection in the review dashboard, and every rewrite a reviewer's message led to, oldest first. The rewrites show the length and directness Jim and Nathan want.
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
@@ -524,12 +749,25 @@ Passage:
 
 Note:
 > "Hierarchy of Philosophers" is a joke image, not a work by C. S. Lewis. It shortens the question with each philosopher, and Lewis's line is the pun "What does it?".
-> 
-> https://web.archive.org/web/20160305213656/http://www.moronail.net/img/1392_lil_jon_philosophy_what
 
-Why: Adds more confusion then usefulness
+Jim's reason: Adds more confusion then usefulness
 
-### Jim accepted (2026-10-21)
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> the actual Gaius Julius Caesar Augustus Germanicus wasn’t exactly the perfect benevolent rational central planner either.
+
+Earlier version:
+> Gaius Julius Caesar Augustus Germanicus is the emperor Caligula, not Julius Caesar. Caesars Palace is named for no single Caesar: "Caesars" is plural, because every guest is meant to feel like a Caesar.
+
+Jim's comment:
+> Mhh this note reads like it wants to contradict. But the pupose is to explain/add context which is good. Maybe say: "Gaius Julius Caesar Augustus Germanicus also named Caligula should not be could be confused with Julius Caesar." maybe add a bit of explanation like.
+
+New version:
+> Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.
+
+### Jim approved (2026-10-21)
 Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
 
 Passage:
@@ -537,97 +775,32 @@ Passage:
 
 Note:
 > Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.
-> 
-> https://en.wikipedia.org/wiki/Caligula
-> https://en.wikipedia.org/wiki/Caesar_(title)
+
+
+### Jim approved (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> But the government still manages to spend somewhere around (depending on how you calculate it) $100 billion dollars a year on it – which for example is three times the amount they spend on health care for the needy.
+
+Note:
+> Federal spending on health care for low-income people is far larger than corporate welfare, not a third of it. Federal Medicaid spending alone was $265 billion in fiscal 2013, more than two and a half times Cato's estimate of almost $100 billion a year in corporate welfare.
+
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
 
 Passage:
-> John Moes, a historian of slavery, goes further and writes about how the slavery we are most familiar with – that of the antebellum South – is a historical aberration and probably economically inefficient.
+> The reason they stuck with the whips-and-chains method owed less to economic considerations and more to racist government officials cracking down on lucrative but not-exactly-white-supremacy-promoting attempts to free slaves and have them go into business.
 
 Earlier version:
 > John E. Moes was an economist at the University of Virginia. His 1960 paper says self-purchase in the South stayed rare, and that while anti-manumission laws mattered, many owners did not free slaves mainly because they disapproved or did not see the profit in it.
 
 Jim's comment:
-> The note doesen't convince me that "John Moes, a historian of slavery, goes further and writes about how the slavery we are most familiar with – that of the antebellum South – is a historical aberration and probably economically inefficient. In most past forms of slavery – especially those of the ancient world – it was common for slaves to be paid wages, treated well, and often given their freedom." is misleading. I don't care much whether he was a historian or an economist ... He was probably a mix ...
+> Okay, but can you still improve the language please
 
 New version:
 > Moes's paper says nearly the opposite: self-purchase in the South stayed "a very minor affair", and many owners did not free slaves mainly because they disapproved or did not see the gain, not because of outward circumstances such as the laws.
-
-### Jim rejected (2026-10-21)
-Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
-
-Passage:
-> when the FRONTIER Act was a compromise bill proposed back in June.
-
-Note:
-> The FRONTIER Act was introduced on July 23, 2026, not in June. In June, its sponsors Obernolte and Trahan released a discussion draft of the broader Great American AI Act, and the FRONTIER Act was developed as part of that framework.
-> 
-> https://www.govinfo.gov/app/details/BILLS-119hr9925ih
-> https://www.benton.org/headlines/reps-obernolte-trahan-introduce-bipartisan-frontier-act-strengthen-oversight-advanced-ai
-> https://obernolte.house.gov/media/press-releases/obernolte-trahan-release-discussion-draft-great-american-ai-act
-
-Why: Uhm it looks to me like proposed in june is not misleading, when this is were it was first you know written / proposed
-
-### Rewritten after Jim's comment (2026-10-21)
-Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
-
-Passage:
-> First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).
-
-Earlier version:
-> The draft bill's power to block a model applies only to an "imminent enumerated risk": a risk of contributing to the death or serious injury of more than 50 people, or more than $1 billion in damage to or loss of property, from a single incident in which the model helps create a biological weapon, evades its developer's control, conducts offensive cyber operations, or does AI research that accelerates those risks. Chemical, radiological and nuclear weapons count toward the bill's broader "catastrophic risk" definition but do not qualify for a blocking order.
-
-Jim's comment:
-> Ah okay so I think a trend is that the intention of the note is often not clear and the reader assumes its a fact check. Maybe start with: "It's even stricter, ..."
-
-New version:
-> It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.
-
-### Jim accepted (2026-10-21)
-Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
-
-Passage:
-> China’s Baidu has ~2000 cars under “Apollo Go” in 6 cities.
-
-Note:
-> Baidu reported in August 2026 that Apollo Go's global footprint had reached 28 cities, not 6.
-> 
-> https://www.nasdaq.com/press-release/baidu-announces-second-quarter-2026-results-2026-08-18
-
-### Jim rejected (2026-10-21)
-Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
-
-Passage:
-> Most outrageously, it has a provision that looks like its intended to stops states from enforcing laws or judicial decrees that “suspend the development, deployment, or internal use of an AI model” to protect their citizens from imminent catastrophic harms.
-
-Note:
-> As drafted, the bill's preemption clause, Section 14(b), applies only to state rules on disclosure, outside evaluation and incident reporting, not to state suspensions of models. Model suspension is defined as a "covered function" in Section 14(a)(4) but is not listed in that clause.
-> 
-> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
-> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
-> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
-
-Why: Zvi is generally correct here
-
-### Jim rejected (2026-10-21)
-Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
-
-Passage:
-> First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).
-
-Note:
-> It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.
-> 
-> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
-> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
-> https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing
-> https://www.insurancejournal.com/news/national/2026/10/19/889292.htm
-> https://www.thestar.com.my/tech/tech-news/2026/10/17/anthropic-quietly-pitches-its-own-ai-safety-bill-to-lawmakers-politico-reports
-
-Why: I find the note to be pedantic (those four risks are the ones we care about ...)
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
@@ -644,7 +817,7 @@ Jim's comment:
 New version:
 > Moes saw the cause differently. In his paper the laws were not the main reason: many owners did not free their slaves mostly because they disapproved of it or did not see the gain in it.
 
-### Jim accepted (2026-10-21)
+### Jim approved (2026-10-21)
 Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
 
 Passage:
@@ -652,22 +825,65 @@ Passage:
 
 Note:
 > Moes saw the cause differently. In his paper the laws were not the main reason: many owners did not free their slaves mostly because they disapproved of it or did not see the gain in it.
-> 
-> https://slatestarcodex.com/Stuff/manumission.pdf
+
 
 ### Jim rejected (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> when the FRONTIER Act was a compromise bill proposed back in June.
+
+Note:
+> The FRONTIER Act was introduced on July 23, 2026, not in June. In June, its sponsors Obernolte and Trahan released a discussion draft of the broader Great American AI Act, and the FRONTIER Act was developed as part of that framework.
+
+Jim's reason: Uhm it looks to me like proposed in june is not misleading, when this is were it was first you know written / proposed
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).
+
+Earlier version:
+> The draft bill's power to block a model applies only to an "imminent enumerated risk": a risk of contributing to the death or serious injury of more than 50 people, or more than $1 billion in damage to or loss of property, from a single incident in which the model helps create a biological weapon, evades its developer's control, conducts offensive cyber operations, or does AI research that accelerates those risks. Chemical, radiological and nuclear weapons count toward the bill's broader "catastrophic risk" definition but do not qualify for a blocking order.
+
+Jim's comment:
+> Ah okay so I think a trend is that the intention of the note is often not clear and the reader assumes its a fact check. Maybe start with: "It's even stricter, ..."
+
+New version:
+> It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.
+
+### Jim rejected (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).
+
+Note:
+> It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.
+
+Jim's reason: I find the note to be pedantic (those four risks are the ones we care about ...)
+
+### Jim rejected (2026-10-21)
+Post: [Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling](https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory)
+
+Passage:
+> Most outrageously, it has a provision that looks like its intended to stops states from enforcing laws or judicial decrees that “suspend the development, deployment, or internal use of an AI model” to protect their citizens from imminent catastrophic harms.
+
+Note:
+> As drafted, the bill's preemption clause, Section 14(b), applies only to state rules on disclosure, outside evaluation and incident reporting, not to state suspensions of models. Model suspension is defined as a "covered function" in Section 14(a)(4) but is not listed in that clause.
+
+Jim's reason: Zvi is generally correct here
+
+### Jim approved (2026-10-21)
 Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
 
 Passage:
-> when the piece does actually disclose this as the lede of the article.
+> China’s Baidu has ~2000 cars under “Apollo Go” in 6 cities.
 
 Note:
-> The disclosure is not the lede. It comes at the end of the introduction, after the list of participants, where Asterisk's editor-in-chief writes that Asterisk "receives funding from Coefficient Giving, as do some of these sources or their organizations."
-> 
-> https://nymag.com/intelligencer/article/ai-researchers-quit-openai-anthropic.html
-> https://nymag.com/intelligencer/article/ai-researchers-quit-openai-anthropic.html
+> Baidu reported in August 2026 that Apollo Go's global footprint had reached 28 cities, not 6.
 
-Why: too pedantic
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
@@ -684,6 +900,16 @@ Jim's comment:
 New version:
 > For context: no law required this. Airlines promise meals and hotels in their own service plans for delays they cause, and the new rule moves ten causes, such as unscheduled maintenance, out of that category.
 
+### Jim approved (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Airlines will no longer be required to provide compensation for lodging, meals and other assistance when flights are delayed or canceled due to certain causes now classified as ‘uncontrollable.’
+
+Note:
+> For context: no law required this. Airlines promise meals and hotels in their own service plans for delays they cause, and the new rule moves ten causes, such as unscheduled maintenance, out of that category.
+
+
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
 
@@ -699,20 +925,7 @@ Jim's comment:
 New version:
 > The deal does not commit the city to paying the drivers or buying the horses. The bill says only that the city should "consider" compensating carriage owners. It also requires a job-transition plan for drivers by April 2027, and owners keep their horses but may not sell them for slaughter or to another carriage business.
 
-### Jim accepted (2026-10-21)
-Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
-
-Passage:
-> Airlines will no longer be required to provide compensation for lodging, meals and other assistance when flights are delayed or canceled due to certain causes now classified as ‘uncontrollable.’
-
-Note:
-> For context: no law required this. Airlines promise meals and hotels in their own service plans for delays they cause, and the new rule moves ten causes, such as unscheduled maintenance, out of that category.
-> 
-> https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html
-> https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html
-> https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html
-
-### Jim accepted (2026-10-21)
+### Jim approved (2026-10-21)
 Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
 
 Passage:
@@ -720,16 +933,24 @@ Passage:
 
 Note:
 > The deal does not commit the city to paying the drivers or buying the horses. The bill says only that the city should "consider" compensating carriage owners. It also requires a job-transition plan for drivers by April 2027, and owners keep their horses but may not sell them for slaughter or to another carriage business.
-> 
-> https://www.cbsnews.com/newyork/news/nyc-horse-carriage-ban/
-> https://www.cnn.com/2026/10/13/us/nyc-horse-carriage-ban
-> https://www.foxnews.com/politics/mamdani-praised-move-dismantle-controversial-nyc-industry-insiders-say-theres-more-story
+
+
+### Jim rejected (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> when the piece does actually disclose this as the lede of the article.
+
+Note:
+> The disclosure is not the lede. It comes at the end of the introduction, after the list of participants, where Asterisk's editor-in-chief writes that Asterisk "receives funding from Coefficient Giving, as do some of these sources or their organizations."
+
+Jim's reason: too pedantic
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
 
 Passage:
-> Texting more often is associated with higher life satisfaction.
+> Texting more often is associated with higher life satisfaction. Tyler Cowen asks ‘should you text more?’ and my response would be ‘yes, but only insofar as you should have more friends that you want to text.’
 
 Earlier version:
 > These associations compare different people. When the study followed the same 1,966 adults over time, it found very little credible evidence that using any of these technologies more often changed their later life satisfaction.
@@ -740,7 +961,17 @@ Jim's comment:
 New version:
 > Some evidence for this: when the study followed the same 1,966 adults over time, it found very little evidence that texting or other technology use more often changed their later life satisfaction. The link comes from comparing different people.
 
-### Jim accepted (2026-10-21)
+### Jim approved (2026-10-21)
+Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
+
+Passage:
+> Texting more often is associated with higher life satisfaction. Tyler Cowen asks ‘should you text more?’ and my response would be ‘yes, but only insofar as you should have more friends that you want to text.’
+
+Note:
+> Some evidence for this: when the study followed the same 1,966 adults over time, it found very little evidence that texting or other technology use more often changed their later life satisfaction. The link comes from comparing different people.
+
+
+### Jim approved (2026-10-21)
 Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
 
 Passage:
@@ -748,11 +979,7 @@ Passage:
 
 Note:
 > The 200 data-center accounts were a campaign OpenAI had already reported in June. Their posts were from December 2025 and January 2026, two or three per account, and got little or no engagement.
-> 
-> https://san.com/cc/how-x-turned-old-bot-data-into-a-story-about-a-national-threat-from-china/
-> https://thenextweb.com/news/x-chinese-bots-data-centre-backlash-no-engagement
-> https://thenextweb.com/news/x-chinese-bots-data-centre-backlash-no-engagement
-> https://cdn.openai.com/pdf/96b559fa-c165-4575-805d-e636909e2f78/June-2026-Threat-Report.pdf
+
 
 ### Jim rejected (2026-10-21)
 Post: [China's growth machines - Works in Progress Magazine](https://worksinprogress.co/issue/chinas-growth-machine/)
@@ -762,27 +989,10 @@ Passage:
 
 Note:
 > The Hefei line was a sixth-generation line, the first of that size in mainland China, not the world's most advanced. Sharp had already opened the world's first tenth-generation plant in October 2009, before the Hefei line reached mass production in 2010.
-> 
-> https://eu.36kr.com/en/p/3946260281785736
-> https://ceedi.com.cn/gtdzyen/zxzx/webinfo/2021/06/162434980356849329.htm
-> https://global.sharp/corporate/news/091001.html
 
-Why: idk. seems pedantic. not sure though
+Jim's reason: idk. seems pedantic. not sure though
 
-### Jim accepted (2026-10-21)
-Post: [Monthly Roundup #47: October 2026](https://thezvi.substack.com/p/monthly-roundup-47-october-2026)
-
-Passage:
-> Texting more often is associated with higher life satisfaction. Tyler Cowen asks ‘should you text more?’ and my response would be ‘yes, but only insofar as you should have more friends that you want to text.’
-
-Note:
-> Some evidence for this: when the study followed the same 1,966 adults over time, it found very little evidence that texting or other technology use more often changed their later life satisfaction. The link comes from comparing different people.
-> 
-> https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372
-> https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372
-> https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372
-
-### Jim accepted (2026-10-21)
+### Jim approved (2026-10-21)
 Post: [China's growth machines - Works in Progress Magazine](https://worksinprogress.co/issue/chinas-growth-machine/)
 
 Passage:
@@ -790,23 +1000,17 @@ Passage:
 
 Note:
 > Hefei's state-owned investors held about 37 percent of CXMT before its July 2026 IPO and about 33 percent after it, not 24 percent.
-> 
-> https://www.stheadline.com/zh-hans/realtime-china/3598195/
-> https://news.10jqka.com.cn/20260608/c677286196.shtml
 
-### Jim rejected (2026-10-21)
+
+### Jim approved (2026-10-21)
 Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
 
 Passage:
-> Anthropic's Mythos and Project Glasswing were both technically out of scope (since those are internal deployments, not yet deployed in the EU market)
+> appoints a Prime Minister (who usually isn't even a member of parliament)
 
 Note:
-> Mythos Preview was not an internal deployment. From April 2026, Project Glasswing gave it to outside companies such as AWS, Apple and Microsoft, and in June Anthropic extended access to about 150 more organisations in over 15 countries, reportedly including France, Germany and Italy.
-> 
-> https://www.anthropic.com/glasswing
-> https://www.govinfosecurity.com/anthropic-expands-mythos-to-global-critical-infrastructure-a-31836
+> A sitting French Prime Minister is never a member of parliament: Article 23 of the constitution makes government office incompatible with a parliamentary seat.
 
-Why: Mhhh Mythos was at some point definitely internal only. And for project glasswing I assume that the author knows what the project is and just knows more to be able ot say it still coutns as internal deployment
 
 ### Jim rejected (2026-10-21)
 Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
@@ -816,8 +1020,18 @@ Passage:
 
 Note:
 > A sitting French Prime Minister is never a member of parliament: Article 23 of the constitution makes government office incompatible with a parliamentary seat.
-> 
-> https://www.conseil-constitutionnel.fr/en/constitution-of-4-october-1958
+
+
+### Jim rejected (2026-10-21)
+Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
+
+Passage:
+> Anthropic's Mythos and Project Glasswing were both technically out of scope (since those are internal deployments, not yet deployed in the EU market)
+
+Note:
+> Mythos Preview was not an internal deployment. From April 2026, Project Glasswing gave it to outside companies such as AWS, Apple and Microsoft, and in June Anthropic extended access to about 150 more organisations in over 15 countries, reportedly including France, Germany and Italy.
+
+Jim's reason: Mhhh Mythos was at some point definitely internal only. And for project glasswing I assume that the author knows what the project is and just knows more to be able ot say it still coutns as internal deployment
 
 ### Jim rejected (2026-10-21)
 Post: [The Invisible Side of AI Governance](https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance)
@@ -827,11 +1041,8 @@ Passage:
 
 Note:
 > The order was not limited to Europe. On June 12 the Commerce Department barred every foreign national, inside or outside the US, from using Fable 5 and Mythos 5, and it lifted the order on June 30.
-> 
-> https://news.bgov.com/artificial-intelligence/anthropic-says-us-limits-foreign-access-to-fable-5-mythos-5
-> https://thedeepdive.ca/commerce-department-lifts-export-controls-on-anthropics-fable-5-mythos-5/
 
-Why: Ah thats fine. The effect on europe was clearly the biggest
+Jim's reason: Ah thats fine. The effect on europe was clearly the biggest
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
@@ -843,7 +1054,7 @@ Earlier version:
 > The cited AIPN tracker shows the count doubling about once a year, not every 5.5 months: its dated quotes go from 5 current members by mid-2023 to 39 in June 2026. The tracker has since risen to 74.
 
 Jim's comment:
-> Be more clear. The first sentence doesen't always have to be a negation of the statement. Say he meant doubling in the last 5.5 months. slower before
+> I feel like you should say that the doubling rate is now as high as the article says or at least roughly and also "to about 40" Whhhheeeeeen, this makes the note super random and confused
 
 New version:
 > The tracker the post cites shows the count doubling about once a year: about 5 members by mid-2023, 11 by mid-2024, 22 by mid-2025 and 40 by June 2026.
@@ -858,24 +1069,10 @@ Earlier version:
 > The tracker the post cites shows the count doubling about once a year: about 5 members by mid-2023, 11 by mid-2024, 22 by mid-2025 and 40 by June 2026.
 
 Jim's comment:
-> I don't get it.  june is 40 and a few montsh later its almost double at 74. That seems important!
+> I feel like you should say that the doubling rate is now as high as the article says or at least roughly and also "to about 40" Whhhheeeeeen, this makes the note super random and confused
 
 New version:
 > For context: by the cited tracker's dates, the count doubled about once a year before this post, from about 5 members in mid-2023 to about 40. It then jumped to 74 by October 2026, with 29 members speaking up for the first time in September.
-
-### Jim rejected (2026-10-21)
-Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
-
-Passage:
-> In most other fields, the safety regime arrived primarily after a disaster: aviation after a string of crashes, nuclear after Three Mile Island.
-
-Note:
-> The US had a nuclear safety regulator before Three Mile Island: the Nuclear Regulatory Commission began operating in 1975, four years before the 1979 accident. The accident led to new regulations within that regime.
-> 
-> https://en.wikipedia.org/wiki/Nuclear_Regulatory_Commission
-> https://en.wikipedia.org/wiki/Three_Mile_Island_accident
-
-Why: regulatory commision doesen't necessarily mean safety regime
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
@@ -892,6 +1089,27 @@ Jim's comment:
 New version:
 > For context: the tracker the post cites counted about 5 members in mid-2023 and 40 in June 2026, roughly one doubling a year. Since then the pace has matched the post's 5.5 months: 74 members by October 2026.
 
+### Jim approved (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> 40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months
+
+Note:
+> For context: the tracker the post cites counted about 5 members in mid-2023 and 40 in June 2026, roughly one doubling a year. Since then the pace has matched the post's 5.5 months: 74 members by October 2026.
+
+
+### Jim rejected (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> In most other fields, the safety regime arrived primarily after a disaster: aviation after a string of crashes, nuclear after Three Mile Island.
+
+Note:
+> The US had a nuclear safety regulator before Three Mile Island: the Nuclear Regulatory Commission began operating in 1975, four years before the 1979 accident. The accident led to new regulations within that regime.
+
+Jim's reason: regulatory commision doesen't necessarily mean safety regime
+
 ### Jim rejected (2026-10-21)
 Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
 
@@ -900,25 +1118,8 @@ Passage:
 
 Note:
 > Bloomberg reported a security firm's findings that one attacker used Claude to break into several Mexican agencies, including the tax authority (SAT) and the electoral institute (INE). SAT and INE denied that their systems were breached.
-> 
-> https://news.bloomberglaw.com/esg/hacker-used-anthropics-claude-to-steal-sensitive-mexican-data
-> https://gigazine.net/gsc_news/en/20260226-hacker-claude
-> https://www.nmas.com.mx/seguridad/hackeo-sat-ine-chatbot-ia-claude-autoridades-mexico-responden/
-> https://www.cnnchile.com/bits/gobierno-de-mexico-descarta-haber-sufrido-hackeo-masivo-tras-reportes-de-un-ataque-gracias-a-ia/
 
-Why: This context doesen't seem necessary. idk. the statement is true and the specifics don't seem that interesting and he didn't choose to mention them
-
-### Jim accepted (2026-10-21)
-Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
-
-Passage:
-> 40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months
-
-Note:
-> For context: the tracker the post cites counted about 5 members in mid-2023 and 40 in June 2026, roughly one doubling a year. Since then the pace has matched the post's 5.5 months: 74 members by October 2026.
-> 
-> https://web.archive.org/web/20260606223706/https://theaipn.org/issue/quotes/
-> https://theaipn.org/issue/quotes/
+Jim's reason: This context doesen't seem necessary. idk. the statement is true and the specifics don't seem that interesting and he didn't choose to mention them
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
@@ -930,22 +1131,10 @@ Earlier version:
 > Officials told the New York Times that in the NSA's tightly controlled test, Anthropic's Mythos identified vulnerabilities but did not exploit them. The "almost all of our classified systems" line came from Sen. Mark Warner, relaying NSA chief Gen. Joshua Rudd.
 
 Jim's comment:
-> "Officials told the New York Times that in the NSA's tightly controlled test, Anthropic's Mythos identified vulnerabilities but did not exploit them. The "almost all of our classified systems" line came from Sen. Mark Warner, relaying NSA chief Gen. Joshua Rudd." Not sure how to call it, but you are not consice enough, you are speak like a politician, you have to mention that this was tightly controlled. Bruh but people assume that ... Just say the model indentified vulnerabilities in ... this does not mean the model could have exploited them  or something. You are better at writing then me
+> ", officials told the New York Times" not needed
 
 New version:
 > The model found vulnerabilities in the NSA's systems but did not exploit them, officials told the New York Times. So it did not actually break into them.
-
-### Jim accepted (2026-10-21)
-Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
-
-Passage:
-> yet AI does not appear at all in Pew's 24-item ranking of top national problems (Feb 2025)
-
-Note:
-> Pew's February 2025 list of 24 national problems did include AI: 27% called "the use of artificial intelligence (AI)" a very big problem, 23rd of the 24 items.
-> 
-> https://www.pewresearch.org/wp-content/uploads/sites/20/2025/02/PP_2025.2.20_national-problems_topline.pdf
-> https://www.pewresearch.org/politics/2025/02/20/americans-continue-to-view-several-economic-issues-as-top-national-problems/
 
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
@@ -962,6 +1151,26 @@ Jim's comment:
 New version:
 > The model found vulnerabilities in the NSA's systems but did not exploit them. So it did not actually break into them.
 
+### Jim approved (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> It seems that, in an authorized red-team test, a frontier model reportedly compromised most of the NSA's classified systems within hours (NYT).
+
+Note:
+> The model found vulnerabilities in the NSA's systems but did not exploit them. So it did not actually break into them.
+
+
+### Jim approved (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> yet AI does not appear at all in Pew's 24-item ranking of top national problems (Feb 2025)
+
+Note:
+> Pew's February 2025 list of 24 national problems did include AI: 27% called "the use of artificial intelligence (AI)" a very big problem, 23rd of the 24 items.
+
+
 ### Rewritten after Jim's comment (2026-10-21)
 Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
 
@@ -976,3 +1185,108 @@ Jim's comment:
 
 New version:
 > For context: there is a partial step. Since April 2025, NIH-funded researchers may only buy synthetic DNA from providers that follow the federal screening framework. No federal law requires all providers to screen orders.
+
+### Jim approved (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> DNA Screening is a reasonable, long-advocated measure that was even mentioned in the American AI Action Plan, but is still not mandated.
+
+Note:
+> For context: there is a partial step. Since April 2025, NIH-funded researchers may only buy synthetic DNA from providers that follow the federal screening framework. No federal law requires all providers to screen orders.
+
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug
+
+Earlier version:
+> Kumar's repository presented a disproof of the Collatz conjecture, not a proof. Its main result states that some positive number never reaches 1. Kiran Gopinathan reduced it to a proof of False and reported the kernel bug on July 28, three days after the repository was published.
+
+Jim's comment:
+> Update the note to not be so explainy. Just say: "Typo, the repository presented a disproof, not a proof"
+
+New version:
+> Typo, the repository presented a disproof, not a proof.
+
+### Jim approved (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug
+
+Note:
+> Typo, the repository presented a disproof, not a proof.
+
+
+### Jim approved (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> This search uncovered six new soundness bugs
+
+Note:
+> Only four of the six were bugs in the kernel's own code. The other two were in the Lean runtime: an overflow of the reference counter in Lean's own code (#14838), and Lean's Linux builds using GMP 6.1.2, an old version with a known bug (#14833).
+
+
+### Jim approved (2026-10-21)
+Post: [Don't trust Lean4 alone](https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone)
+
+Passage:
+> Lean4's type theory is experimental, not publicly exposited outside of its C++ library documentation
+
+Note:
+> Lean 4's kernel type theory is publicly described outside its C++ code. The open book "Type Checking in Lean 4" documents Lean's kernel language for people who want to write their own external type checkers. Mario Carneiro's 2024 Lean4Lean paper presents a second complete Lean 4 typechecker, written in Lean, and takes first steps to formalize the type theory abstractly.
+
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)
+
+Earlier version:
+> Quine's 1940 system was not a reworking of ZFC. It was ML, from his book Mathematical Logic, which added classes to New Foundations (NF), his own set theory from 1937. Rosser derived the Burali-Forti paradox in the 1940 version in 1942; the result concerns ML, not NF.
+
+Jim's comment:
+> I don't like the language in this one, why not start with "Quine's 1940 system was a reworking of New Foundations (NF), not ZFC." (maybe add a sentence for details but not sure if this is needed. I don't thingk so).
+
+New version:
+> Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.
+
+### Jim approved (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)
+
+Note:
+> Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.
+
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.
+
+Earlier version:
+> The error, reported in Carneiro's March 2024 Lean4Lean paper, was in a technical lemma behind two other results, unique typing and definitional inversion, which were downgraded to conjectures. The paper says the consistency (soundness) proof is not impacted, because the set-theoretic model can be built without unique typing.
+
+Jim's comment:
+> This note is a bit hard to understand. From the source details it looks like the flaw destroyed his correctness proof but not the soundness proof idk. what this means though.
+
+New version:
+> The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.
+
+### Jim approved (2026-10-21)
+Post: [A critical look at Lean4](https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1)
+
+Passage:
+> Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.
+
+Note:
+> The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.
+
