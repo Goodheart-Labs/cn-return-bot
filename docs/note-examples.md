@@ -961,3 +961,18 @@ Jim's comment:
 
 New version:
 > The model found vulnerabilities in the NSA's systems but did not exploit them. So it did not actually break into them.
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [The current bottleneck is political will, not research](https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research)
+
+Passage:
+> DNA Screening is a reasonable, long-advocated measure that was even mentioned in the American AI Action Plan, but is still not mandated.
+
+Earlier version:
+> Partly mandated: since April 2025, NIH funds may only be used to buy synthetic DNA from providers that follow the federal screening framework. No federal law requires providers to screen orders, and bills to mandate it have not passed.
+
+Jim's comment:
+> Okay this is useful context. Bug again. Make intention clear. This is not a factcheck. Say idk. For context: theres improvements in this direction ... or somethign like that
+
+New version:
+> For context: there is a partial step. Since April 2025, NIH-funded researchers may only buy synthetic DNA from providers that follow the federal screening framework. No federal law requires all providers to screen orders.

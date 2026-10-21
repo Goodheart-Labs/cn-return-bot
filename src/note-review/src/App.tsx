@@ -256,6 +256,7 @@ function SkippedPassage({ draft }: { draft: Draft }) {
       <p className="text-sm text-fg-secondary">
         <span className="font-medium">{OUTCOME_LABELS[draft.outcome as Exclude<Draft["outcome"], "note">]}.</span> {draft.reasoning}
       </p>
+      <EarlierVersions draft={draft} />
       <Chat draft={draft} />
     </CardWithContext>
   );

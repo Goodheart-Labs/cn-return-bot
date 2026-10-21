@@ -65,4 +65,6 @@ export type ReviewEvent = { at: string; file: string; note: string } & (
   | { type: "revised"; previousNote: string; reply: string }
   /** Claude undid an accept on Jim's request and removed the note from prod. */
   | { type: "reverted"; noteId: string }
+  /** Claude judged the note not worth posting and moved it to the no-note drafts. */
+  | { type: "withdrawn"; reason: string }
 );
