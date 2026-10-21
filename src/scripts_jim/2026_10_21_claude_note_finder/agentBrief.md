@@ -41,7 +41,13 @@ Work data lives in `~/.local/share/claude-note-finder/`:
    and return either a verbatim quote of at most 2 sentences from the page that
    supports the note, with a one-sentence explanation of what it supports, or
    "does not support" with the reason. It must copy quotes exactly and never
-   invent them.
+   invent them. WebFetch hands the model a summary of the page, not its text, so
+   a quote taken from WebFetch alone may not be verbatim. The Haiku agent must
+   therefore confirm every quote against the raw page: download it with
+   `curl -sL -A "Mozilla/5.0" <url>`, strip the tags (for example with
+   `sed -e 's/<[^>]*>//g'`), and check with `grep -F` that a distinctive part of
+   the quote (about 8 words or more) appears in it. A quote that cannot be found
+   in the raw text does not count, and the source counts as unchecked.
 5. If a source does not support the note, replace the source, change the note, or
    drop the claim it supported, then check again with a new Haiku agent. Stop after
    3 rounds. If no well-sourced note is possible, the outcome is `too_hard`. If the
@@ -66,5 +72,6 @@ Work data lives in `~/.local/share/claude-note-finder/`:
 }
 ```
 
-Every source in a `note` draft must have a quote that a Haiku agent confirmed.
+Every source in a `note` draft must have a quote that a Haiku agent found in the
+raw page text.
 Return only the draft file's path and the outcome.
