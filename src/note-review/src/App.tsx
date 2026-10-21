@@ -7,6 +7,7 @@ import { queryClient } from "@cn/features/query/queryClient";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
 import { Textarea } from "@cn/ui/Field";
 import { Quote } from "@cn/ui/typography";
 import type { PostedAs, Reviewer, ReviewDraft, ReviewState } from "./draft";
@@ -323,17 +324,85 @@ function initialPageId(): string {
   return window.location.hash.slice(1) || "unreviewed";
 }
 
-function TopBar({ pages, current, onSelect }: { pages: Page[]; current: string; onSelect: (id: string) => void }) {
+/** Pages whose drafts wait for a reviewer get a highlighted count. */
+const NEEDS_REVIEWER = new Set(["unreviewed", "waiting"]);
+
+function Tab({ page, active, onSelect }: { page: Page; active: boolean; onSelect: () => void }) {
+  const count = page.drafts.length;
+  const highlighted = NEEDS_REVIEWER.has(page.id) && count > 0;
   return (
-    <nav className="sticky top-0 z-10 border-b border-line bg-canvas" aria-label="Sections">
-      <div className="mx-auto flex max-w-[40rem] flex-wrap gap-1 py-2 xl:max-w-none xl:justify-center">
-        {pages.map((p) => (
-          <Button key={p.id} variant={p.id === current ? "primary" : "quiet"} aria-current={p.id === current ? "page" : undefined} onClick={() => onSelect(p.id)}>
-            {p.title} ({p.drafts.length})
-          </Button>
-        ))}
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onSelect}
+      className={cn(
+        "relative flex shrink-0 items-center gap-2 px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus",
+        "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full",
+        active ? "text-fg after:bg-primary" : "text-fg-muted hover:text-fg after:bg-transparent",
+      )}
+    >
+      {page.title}
+      <span
+        className={cn(
+          "min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs tabular-nums",
+          highlighted ? "bg-caution-soft text-caution" : active ? "bg-tint text-link" : "bg-surface-muted text-fg-secondary",
+        )}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
+/** Turns the approval step on or off for every reviewer. While it is on,
+ *  Claude's new notes wait on the "Waiting for approval" page. */
+function ApprovalSwitch({ approvalRequired }: { approvalRequired: boolean }) {
+  const client = useQueryClient();
+  const toggle = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/drafts/settings", { method: "POST", body: JSON.stringify({ approvalRequired: !approvalRequired }) });
+      if (!response.ok) throw new Error((await response.json()).error);
+    },
+    onSettled: () => client.invalidateQueries({ queryKey: STATE_KEY }),
+  });
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={approvalRequired}
+      disabled={toggle.isPending}
+      onClick={() => toggle.mutate()}
+      title={approvalRequired ? "New notes wait for approval. Click to post them at once" : "New notes go up at once. Click to make them wait for approval"}
+      className="flex items-center gap-2 rounded-full border border-line px-2 py-0.5 hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      <span className={cn("relative h-3.5 w-6 rounded-full transition-colors", approvalRequired ? "bg-primary" : "bg-line-strong")}>
+        <span className={cn("absolute top-0.5 h-2.5 w-2.5 rounded-full bg-surface transition-all", approvalRequired ? "left-3" : "left-0.5")} />
+      </span>
+      Approval before posting
+    </button>
+  );
+}
+
+function TopBar({ pages, current, onSelect, state }: { pages: Page[]; current: string; onSelect: (id: string) => void; state?: ReviewState }) {
+  return (
+    <header className="sticky top-0 z-10 border-b border-line bg-surface">
+      <div className="mx-auto flex max-w-[90rem] flex-wrap items-stretch gap-x-6 px-4">
+        <span className="flex items-center py-3 font-title text-lg font-bold">Note review</span>
+        <nav role="tablist" aria-label="Sections" className="-mb-px flex min-w-0 overflow-x-auto">
+          {pages.map((p) => (
+            <Tab key={p.id} page={p} active={p.id === current} onSelect={() => onSelect(p.id)} />
+          ))}
+        </nav>
+        {state && (
+          <div className="ml-auto flex items-center gap-2 py-3 text-xs text-fg-muted">
+            <span>Reviewing as {PERSON[state.reviewer]}</span>
+            <span className="rounded-full border border-line px-2 py-0.5">{state.writer === "claude" ? "Claude writes" : "Pipeline writes"}</span>
+            <ApprovalSwitch approvalRequired={state.approvalRequired} />
+          </div>
+        )}
       </div>
-    </nav>
+    </header>
   );
 }
 
@@ -355,20 +424,11 @@ export function App() {
   };
   return (
     <>
-      <TopBar pages={pages} current={page.id} onSelect={select} />
+      <TopBar pages={pages} current={page.id} onSelect={select} state={state.data} />
       <main className="space-y-6 px-4 py-6">
-        <header className="mx-auto max-w-[40rem] space-y-1">
-          <h1 className="font-title text-2xl font-bold">{page.title}</h1>
-          {state.data && (
-            <p className="text-sm text-fg-muted">
-              Reviewing as {PERSON[reviewer]}. {state.data.writer === "claude" ? "Claude writes the notes." : "The pipeline writes the notes."}{" "}
-              {state.data.approvalRequired ? "Notes wait for approval before they go up." : "Notes go up at once."}
-            </p>
-          )}
-          {state.isError && <p className="text-sm text-negative">{state.error.message}</p>}
-          {state.isLoading && <p className="text-sm text-fg-muted">Loading…</p>}
-        </header>
-        {state.data && page.drafts.length === 0 && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">{page.empty}</p>}
+        {state.isError && <p className="mx-auto max-w-[40rem] text-sm text-negative">{state.error.message}</p>}
+        {state.isLoading && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>}
+        {state.data && page.drafts.length === 0 && <p className="mx-auto max-w-[40rem] py-12 text-center text-sm text-fg-muted">{page.empty}</p>}
         {page.drafts.map((d) => (
           <DraftCard key={d.id} draft={d} reviewer={reviewer} />
         ))}

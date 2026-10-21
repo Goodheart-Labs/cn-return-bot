@@ -7,7 +7,7 @@
 
 import type { IncomingMessage, ServerResponse } from "http";
 import type { Plugin } from "vite";
-import { addMessage, approve, type DraftRow, eventsOfDrafts, type EventRow, listDrafts, readItemTexts, readSettings, reject, rewrite } from "../claude-notes/store";
+import { addMessage, approve, changeSettings, type DraftRow, eventsOfDrafts, type EventRow, listDrafts, readItemTexts, readSettings, reject, rewrite } from "../claude-notes/store";
 import type { DraftSource, PostedAs, Reviewer, ReviewDraft, ReviewState } from "./src/draft";
 
 /** A paragraph longer than this, such as a whole video transcript, is cut to a
@@ -109,7 +109,8 @@ async function act(draftId: string, action: string, body: Record<string, string>
 
 /** GET /api/drafts returns the review state. POST /api/drafts/<id>/approve,
  *  /reject { reason }, /rewrite { note, postedAs } and /message { text }
- *  record the reviewer's step. */
+ *  record the reviewer's step. POST /api/drafts/settings { approvalRequired }
+ *  turns the approval step on or off. */
 export const draftsApi: Plugin = {
   name: "note-review-drafts-api",
   configureServer(server) {
@@ -117,6 +118,11 @@ export const draftsApi: Plugin = {
       const [draftId, action] = new URL(req.url ?? "/", "http://localhost").pathname.split("/").filter(Boolean);
       const handle = async () => {
         if (req.method === "GET" && !draftId) return send(res, 200, await reviewState());
+        if (req.method === "POST" && draftId === "settings") {
+          const { approvalRequired } = await readJson(req);
+          await changeSettings(reviewer(), { approvalRequired: Boolean(approvalRequired) });
+          return send(res, 200, {});
+        }
         if (req.method === "POST" && draftId && action) {
           await act(draftId, action, await readJson(req));
           return send(res, 200, {});
