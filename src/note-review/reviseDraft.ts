@@ -4,7 +4,8 @@
  * changed note is added to docs/note-examples.md as a before-and-after pair.
  *
  * Usage: bun run src/note-review/reviseDraft.ts <draft file name> <answer.json>
- * where answer.json is { "reply": "...", "note"?: "...", "sources"?: [...] }. */
+ * where answer.json is { "reply": "...", "note"?: "...", "sources"?: [...],
+ * "passage"?: "..." }. A new passage moves the note to other words of the post. */
 
 import { readFileSync } from "fs";
 import { appendExample, logReviewEvent, readDraft, writeDraft } from "./draftStore";
@@ -12,7 +13,7 @@ import type { DraftSource } from "./src/draft";
 
 const [file, answerPath] = process.argv.slice(2);
 if (!file || !answerPath) throw new Error("Usage: reviseDraft.ts <draft file name> <answer.json>");
-const answer: { reply: string; note?: string; sources?: DraftSource[] } = JSON.parse(readFileSync(answerPath, "utf8"));
+const answer: { reply: string; note?: string; sources?: DraftSource[]; passage?: string } = JSON.parse(readFileSync(answerPath, "utf8"));
 if (!answer.reply) throw new Error("The answer needs a reply");
 
 const draft = readDraft(file);
@@ -30,6 +31,7 @@ writeDraft({
   ...(changed && {
     note: answer.note,
     sources: answer.sources ?? draft.sources,
+    passage: answer.passage ?? draft.passage,
     revisions: [...(draft.revisions ?? []), { at, previousNote: draft.note, previousSources: draft.sources, reason: open.comment }],
   }),
 });
