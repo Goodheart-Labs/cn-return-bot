@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { NoteRow } from "@cn/core/types";
-import { arrangeFeed, contentOrder, DEFAULT_NOTE_FILTERS, feedLength, filterNotes, firstNotes, mergeFeedNotes, notesByItem, rankFeed, tallyOf, type FeedSection } from "./feed";
+import { arrangeFeed, contentOrder, DEFAULT_NOTE_FILTERS, feedLength, filterNotes, firstNotes, matchesAuthor, mergeFeedNotes, noteAuthors, notesByItem, personFilter, rankFeed, tallyOf, type FeedSection } from "./feed";
 
 describe("mergeFeedNotes", () => {
   test("leads with three helpful notes, then alternates starting with needs-ratings", () => {
@@ -212,5 +212,27 @@ describe("filterNotes", () => {
     const frozen = () => ({ helpful_count: 0, somewhat_helpful_count: 0, not_helpful_count: 0 });
     expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0 }, viewsOf, frozen)).toEqual([voted]);
     expect(filterNotes([voted], { ...DEFAULT_NOTE_FILTERS, views: 0, votes: 1 }, viewsOf, frozen)).toEqual([]);
+  });
+});
+
+describe("author filter", () => {
+  const ai = note("ai");
+  const nathanOld = note("n1", {}, { author_id: "nathan", author_name: "Nathan", created_at: "2026-10-01T00:00:00Z" });
+  const nathanNew = note("n2", {}, { author_id: "nathan", author_name: "NathanpmYoung", created_at: "2026-10-21T00:00:00Z" });
+  const other = note("o1", {}, { author_id: "other", author_name: null });
+  const all = [ai, nathanOld, nathanNew, other];
+
+  test("keeps the notes of the chosen kind of author or person", () => {
+    expect(all.filter((n) => matchesAuthor(n, "anyone")).map((n) => n.id)).toEqual(["ai", "n1", "n2", "o1"]);
+    expect(all.filter((n) => matchesAuthor(n, "ai")).map((n) => n.id)).toEqual(["ai"]);
+    expect(all.filter((n) => matchesAuthor(n, "people")).map((n) => n.id)).toEqual(["n1", "n2", "o1"]);
+    expect(all.filter((n) => matchesAuthor(n, personFilter("nathan"))).map((n) => n.id)).toEqual(["n1", "n2"]);
+  });
+
+  test("lists each person once, under the name on their newest note, most notes first", () => {
+    expect(noteAuthors(all)).toEqual([
+      { id: "nathan", name: "NathanpmYoung", noteCount: 2 },
+      { id: "other", name: "Anonymous", noteCount: 1 },
+    ]);
   });
 });

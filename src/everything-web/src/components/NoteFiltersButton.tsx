@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
+import { Select } from "@cn/ui/Field";
 import { Slider } from "@cn/ui/Slider";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
-import { DEFAULT_NOTE_FILTERS, type NoteFilters } from "../lib/feed";
+import { DEFAULT_NOTE_FILTERS, personFilter, type AuthorFilter, type NoteAuthor, type NoteFilters } from "../lib/feed";
 
 const SLIDERS: { key: keyof NoteFilters; label: string }[] = [
   { key: "views", label: "Views" },
@@ -18,17 +19,23 @@ const SLIDERS: { key: keyof NoteFilters; label: string }[] = [
  *  visible steps. */
 const SMALLEST_SLIDER_END = 10;
 
-/** A Filters button that opens a popover with one minimum slider per filter.
+/** A Filters button that opens a popover with a choice of author and one
+ *  minimum slider per filter.
  *  A second click on the button, a press outside the popover, or Escape closes
  *  it. The page does not close it on scroll, because filtering changes the
  *  feed's length and the page can scroll by itself while a slider is dragged.
- *  The button counts the filters that are above zero.
+ *  The button counts the filters that are above zero, and the author choice
+ *  when it is not "Anyone".
  *  The popover hangs below the nearest positioned ancestor, which the page
  *  picks. On a phone it spans that ancestor's whole width, because the button
  *  may have wrapped to the left edge. On a wider screen it sits at the right. */
-export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }: {
+export function NoteFiltersButton({ filters, onChange, author, onAuthorChange, authors, largest, matchingNotes }: {
   filters: NoteFilters;
   onChange: (filters: NoteFilters) => void;
+  author: AuthorFilter;
+  onAuthorChange: (author: AuthorFilter) => void;
+  /** The people who wrote notes, offered as authors to pick. */
+  authors: NoteAuthor[];
   /** The largest value of each filter among all notes, before filtering. */
   largest: NoteFilters;
   matchingNotes: number;
@@ -47,7 +54,8 @@ export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }:
     document.addEventListener("keydown", closeOnEscape);
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, [open]);
-  const activeCount = SLIDERS.filter(({ key }) => filters[key] > 0).length;
+  const authorSelectId = useId();
+  const activeCount = SLIDERS.filter(({ key }) => filters[key] > 0).length + (author === "anyone" ? 0 : 1);
 
   return (
     <div ref={ref}>
@@ -56,6 +64,17 @@ export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }:
       </Button>
       {open && (
         <div role="dialog" aria-label="Filters" className={cn(cardVariants({ elevation: "floating" }), "absolute inset-x-0 top-full z-20 mt-2 space-y-4 p-4 sm:left-auto sm:w-72")}>
+          <div className="space-y-1">
+            <label htmlFor={authorSelectId} className="block text-sm font-medium text-fg-secondary">Written by</label>
+            <Select id={authorSelectId} className="w-full" value={author} onChange={(event) => onAuthorChange(event.currentTarget.value as AuthorFilter)}>
+              <option value="anyone">Anyone</option>
+              <option value="ai">The AI</option>
+              <option value="people">People</option>
+              {authors.map(({ id, name, noteCount }) => (
+                <option key={id} value={personFilter(id)}>{`${name} (${noteCount})`}</option>
+              ))}
+            </Select>
+          </div>
           {SLIDERS.map(({ key, label }) => (
             <Slider
               key={key}
@@ -70,7 +89,15 @@ export function NoteFiltersButton({ filters, onChange, largest, matchingNotes }:
           ))}
           <div className="flex items-baseline justify-between text-sm">
             <span className="text-fg-muted">{matchingNotes === 1 ? "1 note" : `${matchingNotes} notes`}</span>
-            <Button variant="link" onClick={() => onChange(DEFAULT_NOTE_FILTERS)}>Reset</Button>
+            <Button
+              variant="link"
+              onClick={() => {
+                onChange(DEFAULT_NOTE_FILTERS);
+                onAuthorChange("anyone");
+              }}
+            >
+              Reset
+            </Button>
           </div>
         </div>
       )}

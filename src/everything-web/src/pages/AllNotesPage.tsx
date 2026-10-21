@@ -18,7 +18,10 @@ import {
   filterValues,
   improvementsByOriginal,
   itemsWithNotes,
+  matchesAuthor,
+  noteAuthors,
   notesByItem,
+  type AuthorFilter,
   type FeedOrder,
   type NoteFilters,
   type RankTally,
@@ -41,6 +44,16 @@ const ORDER_KEY = "cn:allNotesOrder";
 
 /** The filters the reader set last time, remembered on this device. */
 const FILTERS_KEY = "cn:allNotesFilters";
+
+/** The author the reader picked last time, remembered on this device. */
+const AUTHOR_KEY = "cn:allNotesAuthor";
+
+/** Reads the remembered author. Anything that is not one of the author
+ *  choices reads as "anyone". */
+function parseAuthor(stored: string | null): AuthorFilter {
+  if (stored === "ai" || stored === "people" || stored?.startsWith("person:")) return stored as AuthorFilter;
+  return "anyone";
+}
 
 /** Reads the remembered filters. A filter that is missing, or is not a whole
  *  number of at least zero, gets its default. */
@@ -129,22 +142,24 @@ function CreatorByline({ project, views, navigate }: { project: FeedProjectRow; 
 
 /** Every note of every project in one feed. The reader picks the order: the
  *  newest notes first, the mixed order every project page uses, or the most
- *  helpful first. Filters hide notes below a minimum of views or votes, and by
- *  default only notes on posts that at least 5 readers saw are shown. Each card
- *  names its creator. */
+ *  helpful first. A filter can keep only the AI's notes, only people's notes,
+ *  or one person's notes. Other filters hide notes below a minimum of views or
+ *  votes. By default only notes on posts that at least 5 readers saw are
+ *  shown. Each card names its creator. */
 export function AllNotesPage({ navigate }: { navigate: (route: Route) => void }) {
   const projectsQuery = useProjects();
   const { items, noteSet, failed, retry } = useAllNotesFeed();
   const viewersQuery = useItemNoteViewers();
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "recent");
   const [filters, setFilters] = useStoredValue(FILTERS_KEY, parseFilters, JSON.stringify);
+  const [author, setAuthor] = useStoredValue(AUTHOR_KEY, parseAuthor, String);
   const notes = noteSet?.notes;
   const byItem = useMemo(() => notesByItem(notes?.values() ?? []), [notes]);
   const improvements = useMemo(() => improvementsByOriginal(notes?.values() ?? []), [notes]);
   const entries = useMemo(() => entriesByClaim(noteSet?.nnn.values() ?? []), [noteSet]);
   const projectsById = useMemo(() => new Map((projectsQuery.data ?? []).map((p) => [p.id, p])), [projectsQuery.data]);
   const rankTally = useFrozenTallies(notes?.values() ?? []);
-  const [shownCount, setSentinel] = useGrowingCount(`${order} ${JSON.stringify(filters)}`);
+  const [shownCount, setSentinel] = useGrowingCount(`${order} ${author} ${JSON.stringify(filters)}`);
   const viewsOf = (note: NoteRow) => viewersQuery.data?.get(note.claim.item_id) ?? 0;
 
   let feed: ReactNode;
@@ -168,10 +183,18 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
     feed = <p className="text-sm text-fg-muted">Loading…</p>;
   } else {
     const ordered = contentOrder(itemsWithNotes(items.values(), byItem), byItem, noteSet.notes);
-    const filtered = filterNotes(ordered, filters, viewsOf, rankTally);
+    const filtered = filterNotes(ordered.filter((note) => matchesAuthor(note, author)), filters, viewsOf, rankTally);
     const sections = arrangeFeed(filtered, order, rankTally, new Date());
     filtersButton = (
-      <NoteFiltersButton filters={filters} onChange={setFilters} largest={largestValues(ordered, viewsOf, rankTally)} matchingNotes={filtered.length} />
+      <NoteFiltersButton
+        filters={filters}
+        onChange={setFilters}
+        author={author}
+        onAuthorChange={setAuthor}
+        authors={noteAuthors(ordered)}
+        largest={largestValues(ordered, viewsOf, rankTally)}
+        matchingNotes={filtered.length}
+      />
     );
     const renderCard = (note: NoteRow) => {
       const post = items.get(note.claim.item_id);

@@ -274,3 +274,41 @@ export function filterNotes(notes: NoteRow[], filters: NoteFilters, viewsOf: (no
     return keys.every((key) => values[key] >= filters[key]);
   });
 }
+
+/** Whose notes the All notes feed shows: everyone's, only the AI's, only
+ *  people's, or the notes of one person, named by their author id. */
+export type AuthorFilter = "anyone" | "ai" | "people" | `person:${string}`;
+
+export const personFilter = (authorId: string): AuthorFilter => `person:${authorId}`;
+
+export function matchesAuthor(note: NoteRow, filter: AuthorFilter): boolean {
+  if (filter === "anyone") return true;
+  if (filter === "ai") return note.author_id === null;
+  if (filter === "people") return note.author_id !== null;
+  return filter === personFilter(note.author_id ?? "");
+}
+
+export interface NoteAuthor {
+  id: string;
+  name: string;
+  noteCount: number;
+}
+
+/** Every person who wrote one of the notes, with the name on their newest
+ *  note, most notes first. A note posted without a name counts as anonymous. */
+export function noteAuthors(notes: Iterable<NoteRow>): NoteAuthor[] {
+  const byId = new Map<string, NoteAuthor & { newest: string }>();
+  for (const note of notes) {
+    if (!note.author_id) continue;
+    const author = byId.get(note.author_id) ?? { id: note.author_id, name: "Anonymous", noteCount: 0, newest: "" };
+    author.noteCount++;
+    if (note.created_at > author.newest) {
+      author.newest = note.created_at;
+      author.name = note.author_name ?? "Anonymous";
+    }
+    byId.set(note.author_id, author);
+  }
+  return [...byId.values()]
+    .sort((a, b) => b.noteCount - a.noteCount || a.name.localeCompare(b.name))
+    .map(({ id, name, noteCount }) => ({ id, name, noteCount }));
+}

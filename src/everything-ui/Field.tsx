@@ -8,6 +8,11 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
   return <input className={cn(FIELD, className)} {...props} />;
 }
 
+/** A drop-down list of choices, styled like the text fields. */
+export function Select({ className, ...props }: ComponentProps<"select">) {
+  return <select className={cn(FIELD, className)} {...props} />;
+}
+
 /** A phone keyboard has no Shift key to hold, so on a touch screen Enter
  *  starts a new line and the send button sends, as in most chat apps. */
 const TOUCH_SCREEN = "(pointer: coarse)";
