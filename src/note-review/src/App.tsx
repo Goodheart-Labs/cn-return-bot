@@ -11,8 +11,8 @@ import { Quote } from "@cn/ui/typography";
 import type { Draft } from "./draft";
 
 const DRAFTS_KEY = ["drafts"] as const;
-/** How often the page looks for drafts the agents finished in the meantime. */
-const REFRESH_MS = 30_000;
+/** How often the page looks for new drafts and for Claude's answers to comments. */
+const REFRESH_MS = 10_000;
 
 const KIND_LABELS: Record<Draft["kind"], string> = {
   small_mistake: "Small mistake",
@@ -44,8 +44,10 @@ async function fetchDrafts(): Promise<Draft[]> {
   return drafts;
 }
 
-async function postDecision(file: string, action: "accept" | "reject", reason?: string) {
-  const response = await fetch(`/api/drafts/${file}/${action}`, { method: "POST", body: JSON.stringify({ reason }) });
+type Action = { action: "accept" } | { action: "reject"; reason: string } | { action: "comment"; comment: string };
+
+async function postAction(file: string, { action, ...body }: Action) {
+  const response = await fetch(`/api/drafts/${file}/${action}`, { method: "POST", body: JSON.stringify(body) });
   if (!response.ok) throw new Error((await response.json()).error);
 }
 
@@ -97,10 +99,14 @@ function DraftHeader({ draft }: { draft: Draft }) {
 
 function Decision({ draft }: { draft: Draft }) {
   const queryClient = useQueryClient();
-  const [rejecting, setRejecting] = useState(false);
-  const [reason, setReason] = useState("");
-  const decide = useMutation({
-    mutationFn: ({ action, reason }: { action: "accept" | "reject"; reason?: string }) => postDecision(draft.file, action, reason),
+  const [writing, setWriting] = useState<"reject" | "comment" | null>(null);
+  const [text, setText] = useState("");
+  const act = useMutation({
+    mutationFn: (action: Action) => postAction(draft.file, action),
+    onSuccess: () => {
+      setWriting(null);
+      setText("");
+    },
     onSettled: () => queryClient.invalidateQueries({ queryKey: DRAFTS_KEY }),
   });
   if (draft.review) {
@@ -111,34 +117,78 @@ function Decision({ draft }: { draft: Draft }) {
       </p>
     );
   }
+  const send = () => act.mutate(writing === "reject" ? { action: "reject", reason: text } : { action: "comment", comment: text });
   return (
     <div className="space-y-2">
-      {rejecting && (
-        <Textarea className="w-full" rows={2} autoFocus placeholder="Why is this note not good? This goes to the agents as a lesson." value={reason} onChange={(e) => setReason(e.currentTarget.value)} />
+      {writing && (
+        <Textarea
+          className="w-full"
+          rows={3}
+          autoFocus
+          placeholder={writing === "reject" ? "Why is this note not good? This goes to the agents as a lesson." : "What should change? Claude reads this and updates the note."}
+          value={text}
+          onChange={(e) => setText(e.currentTarget.value)}
+        />
       )}
       <div className="flex flex-wrap items-center gap-2">
-        {!rejecting && (
-          <Button disabled={decide.isPending} onClick={() => decide.mutate({ action: "accept" })}>
-            Accept and post as JimMaar1
-          </Button>
-        )}
-        {rejecting ? (
+        {writing ? (
           <>
-            <Button disabled={decide.isPending} onClick={() => decide.mutate({ action: "reject", reason })}>
-              Reject
+            <Button disabled={act.isPending || (writing === "comment" && !text.trim())} onClick={send}>
+              {writing === "reject" ? "Reject" : "Send to Claude"}
             </Button>
-            <Button variant="quiet" onClick={() => setRejecting(false)}>
+            <Button variant="quiet" onClick={() => setWriting(null)}>
               Cancel
             </Button>
           </>
         ) : (
-          <Button variant="secondary" disabled={decide.isPending} onClick={() => setRejecting(true)}>
-            Reject
-          </Button>
+          <>
+            <Button disabled={act.isPending} onClick={() => act.mutate({ action: "accept" })}>
+              Accept and post as JimMaar1
+            </Button>
+            <Button variant="secondary" disabled={act.isPending} onClick={() => setWriting("comment")}>
+              Suggest a change
+            </Button>
+            <Button variant="secondary" disabled={act.isPending} onClick={() => setWriting("reject")}>
+              Reject
+            </Button>
+          </>
         )}
-        {decide.isError && <span className="text-sm text-negative">{decide.error.message}</span>}
+        {act.isError && <span className="text-sm text-negative">{act.error.message}</span>}
       </div>
     </div>
+  );
+}
+
+/** Jim's comments on the note and Claude's answers, oldest first. */
+function Conversation({ draft }: { draft: Draft }) {
+  if (!draft.feedback?.length) return null;
+  return (
+    <div className="space-y-2 text-sm">
+      {draft.feedback.map((f) => (
+        <div key={f.at} className="space-y-1">
+          <p>
+            <span className="font-medium">You:</span> {f.comment}
+          </p>
+          <p className="text-fg-secondary">
+            <span className="font-medium">Claude:</span> {f.answer ? f.answer.reply : <span className="text-fg-muted">Working on it. The page updates when Claude answers.</span>}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EarlierVersions({ draft }: { draft: Draft }) {
+  if (!draft.revisions?.length) return null;
+  return (
+    <details className="text-sm text-fg-secondary">
+      <summary className="cursor-pointer text-fg-muted">Earlier versions ({draft.revisions.length})</summary>
+      {draft.revisions.map((r) => (
+        <Quote key={r.at} className="mt-2 text-sm">
+          {r.previousNote}
+        </Quote>
+      ))}
+    </details>
   );
 }
 
@@ -151,6 +201,8 @@ function DraftCard({ draft }: { draft: Draft }) {
         <summary className="cursor-pointer text-fg-muted">The agent's reasoning</summary>
         <p className="mt-1">{draft.reasoning}</p>
       </details>
+      <EarlierVersions draft={draft} />
+      <Conversation draft={draft} />
       <Decision draft={draft} />
     </Card>
   );
@@ -184,7 +236,7 @@ export function App() {
       {drafts.isLoading && <p className="text-sm text-fg-muted">Loading…</p>}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Waiting for you ({waiting.length})</h2>
-        {waiting.length === 0 && <p className="text-sm text-fg-muted">No notes are waiting. The page checks for new ones every 30 seconds.</p>}
+        {waiting.length === 0 && <p className="text-sm text-fg-muted">No notes are waiting. The page checks for new ones every 10 seconds.</p>}
         {waiting.map((d) => <DraftCard key={d.file} draft={d} />)}
       </section>
       {decided.length > 0 && (

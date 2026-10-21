@@ -14,9 +14,20 @@ export interface Draft {
   outcome: "note" | "no_note_needed" | "too_hard";
   note: string;
   reasoning: string;
-  sources: { url: string; quote: string; explanation: string }[];
+  sources: DraftSource[];
   verificationRounds: number;
   review?: DraftReview;
+  /** Jim's comments on the note, oldest first, each with Claude's answer once
+   *  Claude has worked on it. */
+  feedback?: DraftFeedback[];
+  /** Every earlier version of the note, oldest first. */
+  revisions?: DraftRevision[];
+}
+
+export interface DraftSource {
+  url: string;
+  quote: string;
+  explanation: string;
 }
 
 export interface DraftReview {
@@ -26,3 +37,28 @@ export interface DraftReview {
   /** The prod note an accepted draft became. */
   noteId?: string;
 }
+
+export interface DraftFeedback {
+  at: string;
+  comment: string;
+  /** The note text Jim was looking at when he wrote the comment. */
+  noteAtTheTime: string;
+  answer?: { at: string; reply: string };
+}
+
+export interface DraftRevision {
+  at: string;
+  previousNote: string;
+  previousSources: DraftSource[];
+  /** Why the note changed, usually the comment it answers. */
+  reason: string;
+}
+
+/** One line of the review log, which keeps every decision and change on every
+ *  draft in the order it happened. */
+export type ReviewEvent = { at: string; file: string; note: string } & (
+  | { type: "accepted"; noteId: string }
+  | { type: "rejected"; reason?: string }
+  | { type: "feedback"; comment: string }
+  | { type: "revised"; previousNote: string; reply: string }
+);
