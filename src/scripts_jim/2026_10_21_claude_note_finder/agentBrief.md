@@ -26,6 +26,15 @@ Work data lives in `~/.local/share/claude-note-finder/`:
    pick a number themselves overwrite each other's files.
 4. When all are done, report one line per passage: its outcome and the draft file.
 
+Several level-1 agents run at the same time and share one scratchpad folder. Name
+every scratch file after your post folder, for example `<post>-level2.txt`, never a
+generic name such as `common.txt`, or another agent overwrites it.
+
+The session allows 20 agents at once, shared by everyone. When a level-2 agent cannot
+start, give one level-2 agent a group of passages to work through one after another.
+Each passage still gets its own research, draft number and Haiku check. Never judge
+a passage from memory because no agent was free.
+
 ## Level 2: one Opus agent per passage
 
 1. Read the examples file and the post around the passage.
