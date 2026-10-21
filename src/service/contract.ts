@@ -14,6 +14,7 @@
 
 import type { Post } from "../api/fetchEligiblePosts";
 import type { EverythingItem } from "../everything/db";
+import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
@@ -255,4 +256,6 @@ export interface ItemTextResponse {
   title: string;
   publishedAt: string | null;
   text: string;
+  /** A video's caption cues, which give each passage its time in the video. */
+  cues?: SubtitleCue[];
 }

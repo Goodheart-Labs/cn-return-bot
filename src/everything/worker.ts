@@ -20,6 +20,7 @@ import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fi
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
+import type { ItemTextResponse } from "../service/contract";
 import { fetchForumPost } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
@@ -124,17 +125,21 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
 
 /** Reads an item's text the way processing does, without checking anything.
  *  The Claude note writer (GOO-507) needs it before its agents read a post. */
-export async function readItemText(item: EverythingItem): Promise<{ title: string; publishedAt: string | null; text: string }> {
+export async function readItemText(item: EverythingItem): Promise<ItemTextResponse> {
   const content = await fetchContent(item);
-  return { title: content.title, publishedAt: content.publishedAt?.slice(0, 10) ?? null, text: bodyText(content) };
+  const cues = "cues" in content ? content.cues : undefined;
+  return { title: content.title, publishedAt: content.publishedAt?.slice(0, 10) ?? null, text: bodyText(content), ...(cues && { cues }) };
 }
 
-/** Stores an item's text. A video's captions need the services machine's
- *  proxy, so videos are read there, and every other page is read here. */
-export async function fetchAndStoreItemText(itemId: string): Promise<void> {
+/** Reads an item's text and, unless `keepText`, stores it. A video's captions
+ *  need the services machine's proxy, so videos are read there, and every
+ *  other page is read here. A video is read without its stored text, so the
+ *  answer always carries its cues. */
+export async function fetchAndStoreItemText(itemId: string, options: { keepText: boolean }): Promise<ItemTextResponse> {
   const item = await fetchItem(itemId);
-  const read = item.source === "youtube" ? await requestItemText({ priority: workPriorityOf(item), item }) : await readItemText(item);
-  await updateItemMeta(item.id, { title: read.title, published_at: read.publishedAt, full_text: read.text });
+  const read = item.source === "youtube" ? await requestItemText({ priority: workPriorityOf(item), item: { ...item, full_text: null } }) : await readItemText(item);
+  if (!options.keepText) await updateItemMeta(item.id, { title: read.title, published_at: read.publishedAt, full_text: read.text });
+  return read;
 }
 
 /** Names the tier an item is waiting at, for the queue listing. */

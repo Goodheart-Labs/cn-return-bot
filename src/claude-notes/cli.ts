@@ -22,7 +22,6 @@
  *   examples                      regenerates docs/note-examples.md from prod */
 
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { homedir } from "os";
 import * as path from "path";
 import {
   addDraft,
@@ -35,7 +34,9 @@ import {
   keepPipelineNote,
   logEvent,
   type NewDraft,
+  isVideo,
   pipelineNotes,
+  postDir,
   readItem,
   readSettings,
   rewrite,
@@ -47,8 +48,6 @@ import {
 import { fetchAndStoreItemText } from "../everything/worker";
 import { readUsage } from "./usage";
 
-/** Where `take` writes a post's text for the note-finding agents. */
-const POSTS_DIR = path.join(homedir(), ".local/share/claude-note-finder/posts");
 
 const [command, ...args] = process.argv.slice(2);
 function arg(index: number): string {
@@ -59,18 +58,19 @@ function arg(index: number): string {
 const readJson = (file: string) => JSON.parse(readFileSync(file, "utf8"));
 const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 
-function postDirName(url: string): string {
-  return url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 80).replace(/-$/, "");
-}
 
 /** Writes the post's text where the agents read it. A post without stored
  *  text, such as a new video or a requested page, is read first the way the
  *  pipeline reads it. If that fails, the item should be handed back. */
 async function take(itemId: string) {
-  if (!(await readItem(itemId)).full_text) await fetchAndStoreItemText(itemId);
+  const before = await readItem(itemId);
+  // A video is always read, even with stored text, because its caption cues
+  // are what give each note its time in the video.
+  const read = before.full_text && !isVideo(before.url) ? null : await fetchAndStoreItemText(itemId, { keepText: Boolean(before.full_text) });
   const item = await readItem(itemId);
-  const dir = path.join(POSTS_DIR, postDirName(item.url));
+  const dir = postDir(item.url);
   mkdirSync(dir, { recursive: true });
+  if (read?.cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(read.cues));
   const creator = item.project?.name ?? "unknown";
   writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
