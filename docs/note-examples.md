@@ -473,3 +473,30 @@ Note:
 
 https://arxiv.org/html/2403.14064v3
 https://arxiv.org/html/2403.14064v3
+
+### Jim accepted (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> But the government still manages to spend somewhere around (depending on how you calculate it) $100 billion dollars a year on it – which for example is three times the amount they spend on health care for the needy.
+
+Note:
+> Federal spending on health care for low-income people is far larger than corporate welfare, not a third of it. Federal Medicaid spending alone was $265 billion in fiscal 2013, more than two and a half times Cato's estimate of almost $100 billion a year in corporate welfare.
+
+https://web.archive.org/web/2014id_/http://www.cato.org/publications/policy-analysis/corporate-welfare-federal-budget
+https://web.archive.org/web/2026id_/https://www.medicaid.gov/medicaid/downloads/medicaid-actuarial-report-2014.pdf
+
+### Rewritten after Jim's comment (2026-10-21)
+Post: [Meditations On Moloch | Slate Star Codex](https://slatestarcodex.com/2014/07/30/meditations-on-moloch/)
+
+Passage:
+> the actual Gaius Julius Caesar Augustus Germanicus wasn’t exactly the perfect benevolent rational central planner either.
+
+Earlier version:
+> Gaius Julius Caesar Augustus Germanicus is the emperor Caligula, not Julius Caesar. Caesars Palace is named for no single Caesar: "Caesars" is plural, because every guest is meant to feel like a Caesar.
+
+Jim's comment:
+> Mhh this note reads like it wants to contradict. But the pupose is to explain/add context which is good. Maybe say: "Gaius Julius Caesar Augustus Germanicus also named Caligula should not be could be confused with Julius Caesar." maybe add a bit of explanation like.
+
+New version:
+> Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.
