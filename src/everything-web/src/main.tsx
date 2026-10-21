@@ -5,7 +5,7 @@ import { queryClient } from "@cn/features/query/queryClient";
 import { App } from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { OverscrollColor } from "./components/OverscrollColor";
-import { SystemTheme } from "./components/SystemTheme";
+import { SystemTheme } from "@cn/ui/SystemTheme";
 import { initAnalytics } from "./lib/analytics";
 import { upgradeLegacyAddress } from "./lib/routing";
 import "./index.css";
