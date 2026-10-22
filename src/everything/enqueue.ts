@@ -33,6 +33,7 @@
 import "dotenv/config";
 import * as fs from "fs";
 import * as path from "path";
+import { canonicalizePageUrl } from "../everything-core/pageUrls";
 import { enqueueItems, resolveProjectId, syntheticDocUrl, type EnqueueRow } from "./db";
 import { fetchAuthorPosts, parseAuthorFeedUrl, parsePostUrl } from "./sources/lesswrong";
 import { fetchLatestFreePosts, parseProfileHandle } from "./sources/substack";
@@ -166,7 +167,9 @@ async function main() {
   const rows: EnqueueRow[] = liveItems.map((r) => ({ ...r, project_id: projectId }));
   for (const d of docs) {
     const text = fs.readFileSync(d.file, "utf8");
-    const url = d.url ?? syntheticDocUrl(projectSlug, path.basename(d.file));
+    // The extension finds an item by the cleaned address of the page it is on,
+    // so a document's source link is stored cleaned the same way.
+    const url = d.url ? canonicalizePageUrl(d.url, null) : syntheticDocUrl(projectSlug, path.basename(d.file));
     rows.push(docRow(projectId, url, text, titleFromDoc(text, d.file)));
   }
   if (manifestDir) rows.push(...manifestRows(projectId, manifestDir));
