@@ -25,7 +25,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 import {
   addDraft,
-  addMessage,
+  answerMessage,
   type Actor,
   changeSettings,
   deletePipelineNote,
@@ -103,8 +103,8 @@ function parseSettingsArgs(list: string[]): { change: { writer?: Writer; approva
 
 async function answer(file: string) {
   const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; passage?: string; reason?: string } = readJson(file);
-  if (a.note) await rewrite(a.draftId, { actor: "claude", note: a.note, sources: a.sources, passage: a.passage, reason: a.reason ?? a.reply });
-  await addMessage(a.draftId, "claude", a.reply);
+  if (a.note) await rewrite(a.draftId, { note: a.note, sources: a.sources, passage: a.passage, reason: a.reason ?? a.reply });
+  await answerMessage(a.draftId, a.reply);
   console.log(a.note ? "Answered and rewrote the note" : "Answered");
 }
 

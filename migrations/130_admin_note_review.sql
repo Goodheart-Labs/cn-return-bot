@@ -84,7 +84,7 @@ $$;
 -- source row per supporting quote, and records the draft as posted. An AI note
 -- has no author. A person's note names their account, and the database's own
 -- triggers then fill in their display name and cast their Helpful vote.
-create function everything_claude_publish(p_draft uuid, p_posted_as text, p_author uuid, p_actor text) returns uuid
+create function everything_claude_publish(p_draft uuid, p_posted_as text, p_actor text, p_author uuid default null) returns uuid
 language plpgsql security definer set search_path = public as $$
 declare
   d everything_claude_drafts;
@@ -156,7 +156,7 @@ begin
     raise exception 'Only a posted note or one waiting for approval can be approved';
   end if;
   if d.status = 'awaiting_approval' then
-    perform everything_claude_publish(d.id, 'ai', null, v_actor);
+    perform everything_claude_publish(d.id, 'ai', v_actor);
   end if;
   update everything_claude_drafts
      set reviewed_by = v_actor, reviewed_at = now(), updated_at = now()
@@ -255,7 +255,7 @@ begin
     select author_id into v_author from everything_notes where id = d.note_id;
   end if;
   perform everything_claude_remove_note(d.note_id);
-  return everything_claude_publish(d.id, v_posted_as, v_author, v_actor);
+  return everything_claude_publish(d.id, v_posted_as, v_actor, v_author);
 end;
 $$;
 
@@ -364,6 +364,7 @@ create type everything_claude_review_draft as (
   post_url text,
   post_title text,
   creator text,
+  creator_slug text,
   -- [{ at, actor, text }], oldest first.
   messages jsonb,
   -- [{ at, note, reason }], oldest first.
@@ -376,7 +377,7 @@ create function everything_claude_review_rows(p_ids uuid[]) returns setof everyt
 language sql stable security definer set search_path = public as $$
   select d.id, d.item_id, d.passage, d.claim, d.kind, d.outcome, d.note, d.reasoning, d.sources,
          d.status, d.note_id, d.posted_as, d.reviewed_by, d.reviewed_at, d.created_at, d.context_paragraph,
-         i.url, i.title, p.name,
+         i.url, i.title, p.name, p.slug,
          coalesce((
            select jsonb_agg(jsonb_build_object('at', e.at, 'actor', e.actor, 'text', coalesce(e.data ->> 'text', '')) order by e.id)
              from everything_claude_events e
@@ -462,7 +463,7 @@ $$;
 
 revoke all on function
   everything_claude_actor(text),
-  everything_claude_publish(uuid, text, uuid, text),
+  everything_claude_publish(uuid, text, text, uuid),
   everything_claude_remove_note(uuid),
   everything_claude_approve(uuid, text),
   everything_claude_reject(uuid, text, text),
@@ -488,7 +489,7 @@ grant execute on function
 to authenticated, service_role;
 
 grant execute on function
-  everything_claude_publish(uuid, text, uuid, text),
+  everything_claude_publish(uuid, text, text, uuid),
   everything_claude_remove_note(uuid),
   everything_claude_withdraw(uuid, text, text)
 to service_role;

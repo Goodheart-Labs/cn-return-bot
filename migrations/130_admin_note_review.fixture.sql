@@ -50,7 +50,7 @@ language sql stable security definer set search_path = public as $$
   );
 $$;
 
-create table everything_projects (id uuid primary key default gen_random_uuid(), name text not null);
+create table everything_projects (id uuid primary key default gen_random_uuid(), name text not null, slug text not null);
 create table everything_items (
   id uuid primary key default gen_random_uuid(),
   project_id uuid references everything_projects (id),

@@ -2,7 +2,7 @@
 // read first (GOO-504, GOO-507). Everything comes from prod: Nathan's Claude
 // Code notes, which Jim judged very good, Nathan's votes on other notes, and
 // every decision Jim and Nathan made on the Claude note writer's notes in the
-// review dashboard, with the rewrites their messages led to.
+// review page, with the rewrites their messages led to.
 //
 // Usage: bun run claude-notes examples
 
@@ -175,7 +175,7 @@ ${notNeeded.join("\n\n")}
 
 ${REVIEW_HEADING}
 
-Every approval and rejection in the review dashboard, and every rewrite a reviewer's message led to, oldest first. The rewrites show the length and directness Jim and Nathan want.
+Every approval and rejection in the review page, and every rewrite a reviewer's message led to, oldest first. The rewrites show the length and directness Jim and Nathan want.
 
 ${decisions.join("\n\n")}
 `;
