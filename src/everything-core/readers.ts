@@ -11,6 +11,29 @@ import { normalizeFeedUrl } from "./pageUrls";
  *  to the database rather than the database holding a copy. */
 export const LAST_POSTS_PER_CREATOR = 10;
 
+/** The lowest score at which the walk takes a creator on visits alone. A
+ *  prioritised creator is walked whatever their visits, because someone asked
+ *  for them. It lives here for the same reason as LAST_POSTS_PER_CREATOR: the
+ *  analytics dashboard lists the creators the walk would take. */
+export const MIN_SCORE_TO_WALK = 1.5;
+
+/** What the walk's order looks at in a creator. */
+export interface WalkOrderKey {
+  prioritized: boolean;
+  feed_url: string;
+  score: { visitors_per_post: number; people: number };
+}
+
+/** The walk's order: prioritised creators first, then the highest score.
+ *  Among equal scores, the creator more different people visited goes first.
+ *  The order ends on the feed address, so a tie sorts the same way on every
+ *  run rather than depending on how the database returned the rows. */
+export const byWalkOrder = (a: WalkOrderKey, b: WalkOrderKey): number =>
+  Number(b.prioritized) - Number(a.prioritized) ||
+  b.score.visitors_per_post - a.score.visitors_per_post ||
+  b.score.people - a.score.people ||
+  a.feed_url.localeCompare(b.feed_url);
+
 /** The value a visit row carries instead of an identifier: one per browser and
  *  per creator (GOO-135).
  *

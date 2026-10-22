@@ -2459,6 +2459,23 @@ export type Database = {
         Args: { creator_feed_url: string }
         Returns: string
       }
+      everything_creator_ranking: {
+        Args: { last_posts: number; min_score: number }
+        Returns: {
+          delay_posts: number
+          extension_voters: number
+          feed_url: string
+          median_delay_hours: number
+          people: number
+          priority_until: string
+          project_name: string
+          project_slug: string
+          score_posts: number
+          visitors_per_post: number
+          vote_posts: number
+          vote_visitors: number
+        }[]
+      }
       everything_creator_visit_score: {
         Args: { creator_key: string; last_posts: number }
         Returns: {
