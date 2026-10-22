@@ -26,6 +26,15 @@ test("a *.substack.com post loses every query parameter, a custom-domain post on
   );
 });
 
+test("a custom-domain post loses its whole query when Substack's own parameters show it is a Substack post", () => {
+  expect(
+    canonicalizePageUrl(
+      "https://www.astralcodexten.com/p/against-against-handover?publication_id=89120&post_id=206469842&isFreemail=true&r=1c0bzf&triedRedirect=true",
+      null,
+    ),
+  ).toBe("https://www.astralcodexten.com/p/against-against-handover");
+});
+
 test("query parameters that select content are kept", () => {
   expect(canonicalizePageUrl("https://example.com/watch?v=abc&utm_source=x", null)).toBe("https://example.com/watch?v=abc");
 });

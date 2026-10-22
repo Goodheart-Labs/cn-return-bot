@@ -23,10 +23,21 @@ function isSubstackHostPost(url: URL): boolean {
   return /(^|\.)substack\.com$/.test(url.hostname) && url.pathname.startsWith("/p/");
 }
 
+/** Parameters only Substack adds, for example to the links in its emails. A
+ *  post on a newsletter's own domain that carries one of them is a Substack
+ *  post, so its whole query can go, like on a *.substack.com host. Without
+ *  them a custom domain keeps parameters such as r, which may mean something on
+ *  another site. */
+const SUBSTACK_ONLY_PARAMS = ["publication_id", "post_id", "isFreemail", "triedRedirect"];
+
+function isCustomDomainSubstackPost(url: URL): boolean {
+  return url.pathname.startsWith("/p/") && SUBSTACK_ONLY_PARAMS.some((key) => url.searchParams.has(key));
+}
+
 /** Canonicalizes a page URL so it can be looked up in `everything_items.url`,
  *  with the page's canonical link passed in as a plain string. Callers that
  *  hold a Document use normalizePageUrl instead. The hash and any tracking
- *  parameters are dropped, and a *.substack.com post loses its whole query. */
+ *  parameters are dropped, and a Substack post loses its whole query. */
 export function canonicalizePageUrl(href: string, canonical: string | null): string {
   let url = new URL(href);
   if (canonical) {
@@ -40,7 +51,7 @@ export function canonicalizePageUrl(href: string, canonical: string | null): str
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
-  if (isSubstackHostPost(url)) {
+  if (isSubstackHostPost(url) || isCustomDomainSubstackPost(url)) {
     url.search = "";
     return url.toString();
   }
