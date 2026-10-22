@@ -1,12 +1,12 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { moveBestNote, positionBetween, removeBestNote, type BestNoteRow } from "@cn/core/bestNotes";
+import { moveBestNote, removeBestNote, type BestNoteRow } from "@cn/core/bestNotes";
 import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { IconButton } from "@cn/ui/IconButton";
-import { ArrowDownIcon, ArrowUpIcon, ToTopIcon, TrashIcon, TrophyIcon } from "@cn/ui/icons";
+import { TrashIcon, TrophyIcon } from "@cn/ui/icons";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { BackToProjects } from "../components/BackToProjects";
 import { FeedNoteCard } from "../components/FeedNoteCard";
@@ -17,6 +17,7 @@ import { useBestNotesFeed, useProjects } from "../lib/feedQueries";
 import { noteUrl, type Route } from "../lib/routing";
 import { useGrowingCount } from "../lib/useGrowingCount";
 import { useIsAdmin } from "../lib/useIsAdmin";
+import { BestNotesReorder } from "./BestNotesReorder";
 
 const NO_NOTES: NoteRow[] = [];
 const NO_ENTRIES: NnnRow[] = [];
@@ -89,61 +90,31 @@ function CreatorList({ creators, total, selected, navigate }: {
   );
 }
 
-/** The admin's buttons on a card: move to the top, move up, move down, and
- *  take the note off the list. The neighbours are the notes on screen, so in a
- *  list narrowed to one creator a note moves past that creator's neighbouring
- *  note. */
-function AdminControls({ noteId, first, previous, next, list, onError }: {
-  noteId: string;
-  first: BestNoteRow | undefined;
-  previous: BestNoteRow | undefined;
-  next: BestNoteRow | undefined;
-  list: BestNoteRow[];
-  onError: (message: string) => void;
-}) {
+/** Changes the best notes list for an admin. It changes the cached list at
+ *  once, so the page updates without waiting for the server, and loads the
+ *  list again if the server refused. */
+function useListChange(onError: (message: string) => void) {
   const client = useQueryClient();
-  const neighbourPosition = (target: BestNoteRow, offset: number) => list[list.findIndex((row) => row.note_id === target.note_id) + offset]?.position;
-  /** Changes the cached list at once, so the card jumps without waiting for
-   *  the server, and loads the list again if the server refused. */
-  const change = (update: (rows: BestNoteRow[]) => BestNoteRow[], write: () => Promise<void>) => {
+  return (update: (rows: BestNoteRow[]) => BestNoteRow[], write: () => Promise<void>) => {
     client.setQueryData<BestNoteRow[]>(queryKeys.bestNotes, (rows) => rows && update(rows));
     write().catch((err: Error) => {
       onError(err.message);
       void client.invalidateQueries({ queryKey: queryKeys.bestNotes });
     });
   };
-  const moveTo = (position: number) =>
-    change(
-      (rows) => rows.map((row) => (row.note_id === noteId ? { ...row, position } : row)).sort((a, b) => a.position - b.position),
-      () => moveBestNote(noteId, position),
-    );
-  const moveBefore = (target: BestNoteRow) => moveTo(positionBetween(neighbourPosition(target, -1), target.position));
-  const moveAfter = (target: BestNoteRow) => moveTo(positionBetween(target.position, neighbourPosition(target, 1)));
+}
+
+/** The admin's button on a card that takes the note off the list. */
+function RemoveButton({ noteId, onError }: { noteId: string; onError: (message: string) => void }) {
+  const change = useListChange(onError);
   const remove = () => {
     if (!window.confirm("Take this note off the best notes list? The note stays on the site.")) return;
     change((rows) => rows.filter((row) => row.note_id !== noteId), () => removeBestNote(noteId));
   };
   return (
-    <span className="ml-auto flex items-center gap-0.5">
-      {first && previous && (
-        <>
-          <IconButton label="Move to the top" onClick={() => moveBefore(first)}>
-            <ToTopIcon size={15} aria-hidden />
-          </IconButton>
-          <IconButton label="Move up" onClick={() => moveBefore(previous)}>
-            <ArrowUpIcon size={15} aria-hidden />
-          </IconButton>
-        </>
-      )}
-      {next && (
-        <IconButton label="Move down" onClick={() => moveAfter(next)}>
-          <ArrowDownIcon size={15} aria-hidden />
-        </IconButton>
-      )}
-      <IconButton label="Take off the list" onClick={remove}>
-        <TrashIcon size={15} aria-hidden />
-      </IconButton>
-    </span>
+    <IconButton label="Take off the list" onClick={remove} className="ml-auto">
+      <TrashIcon size={15} aria-hidden />
+    </IconButton>
   );
 }
 
@@ -170,13 +141,16 @@ function Byline({ rank, project, controls, navigate }: { rank: number; project: 
 
 /** The best notes, in the order the team ranked them: the notes a reader or
  *  the author would be most glad to have seen. A sidebar narrows the list to
- *  one creator, whose slug then sits in the address. Admins reorder the list
- *  and take notes off it from each card. */
+ *  one creator, whose slug then sits in the address. Admins take notes off it
+ *  from each card, and the Reorder button switches to drag mode, where
+ *  every note is a one-line row they drag into place. */
 export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string | null; navigate: (route: Route) => void }) {
   const projectsQuery = useProjects();
   const { list, noteSet, items, failed, retry } = useBestNotesFeed();
   const admin = useIsAdmin();
   const [error, setError] = useState<string | null>(null);
+  const [reordering, setReordering] = useState(false);
+  const change = useListChange(setError);
   const notes = noteSet?.notes;
   const improvements = useMemo(() => improvementsByOriginal(notes?.values() ?? []), [notes]);
   const entries = useMemo(() => entriesByClaim(noteSet?.nnn.values() ?? []), [noteSet]);
@@ -215,6 +189,20 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
     );
   } else if (!list || !notes || !items || !projectsQuery.data) {
     feed = <p className="text-sm text-fg-muted">Loading…</p>;
+  } else if (reordering) {
+    feed = (
+      <BestNotesReorder
+        key={projectSlug}
+        entries={shown}
+        list={list}
+        onMove={(noteId, position) =>
+          change(
+            (rows) => rows.map((row) => (row.note_id === noteId ? { ...row, position } : row)).sort((a, b) => a.position - b.position),
+            () => moveBestNote(noteId, position),
+          )
+        }
+      />
+    );
   } else if (shown.length === 0) {
     feed = <p className="text-sm text-fg-secondary">No notes from this creator are on the list yet.</p>;
   } else {
@@ -229,18 +217,7 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
                 rank={index + 1}
                 project={project}
                 navigate={navigate}
-                controls={
-                  admin && (
-                    <AdminControls
-                      noteId={note.id}
-                      first={shown[0]?.row}
-                      previous={shown[index - 1]?.row}
-                      next={shown[index + 1]?.row}
-                      list={list}
-                      onError={setError}
-                    />
-                  )
-                }
+                controls={admin && <RemoveButton noteId={note.id} onError={setError} />}
               />
             }
             post={post}
@@ -277,10 +254,17 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
           <div className="md:hidden">
             <BackToProjects navigate={navigate} />
           </div>
-          <h1 className="flex items-center gap-2 font-title text-2xl font-bold text-fg">
-            <TrophyIcon size={24} aria-hidden className="text-fg-secondary" />
-            Best notes{selectedProject && <span className="font-normal text-fg-secondary">on {selectedProject.name}</span>}
-          </h1>
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <h1 className="flex items-center gap-2 font-title text-2xl font-bold text-fg">
+              <TrophyIcon size={24} aria-hidden className="text-fg-secondary" />
+              Best notes{selectedProject && <span className="font-normal text-fg-secondary">on {selectedProject.name}</span>}
+            </h1>
+            {admin && ranked.length > 1 && (
+              <Button variant={reordering ? "primary" : "secondary"} onClick={() => setReordering(!reordering)}>
+                {reordering ? "Done" : "Reorder"}
+              </Button>
+            )}
+          </div>
           <p className="text-base text-fg-muted">The notes we are proudest of: the ones a reader, or the author, would be most glad to have seen.</p>
           {ranked.length > 0 && (
             <label className="block text-sm text-fg-secondary md:hidden">

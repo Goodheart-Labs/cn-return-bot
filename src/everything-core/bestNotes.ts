@@ -31,6 +31,24 @@ export function positionBetween(before: number | undefined, after: number | unde
   return 0;
 }
 
+/** The position that puts a moved note right below the note now shown above
+ *  it, or right above the note shown below it when it went to the top of what
+ *  is shown. In a list narrowed to one creator the notes of other creators
+ *  between them keep their places. `list` is the whole list, best first. */
+export function positionAfterMove(list: BestNoteRow[], movedId: string, above: string | undefined, below: string | undefined): number {
+  const others = list.filter((row) => row.note_id !== movedId);
+  const indexOf = (noteId: string) => others.findIndex((row) => row.note_id === noteId);
+  if (above !== undefined) {
+    const i = indexOf(above);
+    return positionBetween(others[i]?.position, others[i + 1]?.position);
+  }
+  if (below !== undefined) {
+    const i = indexOf(below);
+    return positionBetween(others[i - 1]?.position, others[i]?.position);
+  }
+  return positionBetween(undefined, undefined);
+}
+
 /** The whole list, best note first. */
 export async function fetchBestNotes(): Promise<BestNoteRow[]> {
   const rows = await fetchAllRows<BestNoteRow>(() => supabase.from("everything_best_notes").select("note_id, position"), "note_id", {
