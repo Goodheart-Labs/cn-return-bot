@@ -66,6 +66,11 @@ a passage from memory because no agent was free.
    - When the note adds context or detail instead of correcting a mistake, its first
      words say so, for example "It's even stricter." or "This is the emperor
      Caligula." Otherwise readers take every note for a fact check.
+   - Use "For context:" only for real context. When the post is unclear in a way
+     that gives readers a wrong picture, the note is a correction and must not
+     start with "For context:".
+   - Make clear which words of the passage the note corrects. A note that only
+     lists dates or numbers leaves readers to work out what was wrong.
    - Do not open every note with a negation ("X, not Y"). Often it is clearer to state
      what the source shows, with its numbers, and let the reader see the difference.
    - Neutral, no "the author", no hedging filler.
