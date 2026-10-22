@@ -51,6 +51,10 @@ import { readUsage } from "./usage";
 
 
 const [command, ...args] = process.argv.slice(2);
+// Many commands write to prod, so a flag such as --help must not run one.
+// No command takes flags, so any argument that looks like one stops the CLI.
+const flag = args.find((a) => a.startsWith("--"));
+if (flag) throw new Error(`${command} takes no flags, got ${flag}. See the usage at the top of src/claude-notes/cli.ts`);
 function arg(index: number): string {
   const value = args[index];
   if (!value) throw new Error(`${command} needs more arguments. See the usage at the top of src/claude-notes/cli.ts`);
