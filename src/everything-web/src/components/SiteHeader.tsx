@@ -25,7 +25,7 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           <img src={logoUrl} alt="" width={26} height={26} />
           Common Notes
         </RouteLink>
-        <nav aria-label="Main" className="order-last flex w-full items-center gap-5 sm:order-none sm:w-auto">
+        <nav aria-label="Main" className="order-last flex w-full flex-wrap items-center gap-x-5 gap-y-1 sm:order-none sm:w-auto">
           <RouteLink to={HOME} navigate={navigate} current={route.view === "home"} className={navLink}>
             Home
           </RouteLink>

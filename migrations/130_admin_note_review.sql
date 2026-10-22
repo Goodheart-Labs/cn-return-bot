@@ -365,6 +365,8 @@ create type everything_claude_review_draft as (
   post_title text,
   creator text,
   creator_slug text,
+  -- The reason of the last rejection, if the note was rejected.
+  rejection_reason text,
   -- [{ at, actor, text }], oldest first.
   messages jsonb,
   -- [{ at, note, reason }], oldest first.
@@ -378,6 +380,8 @@ language sql stable security definer set search_path = public as $$
   select d.id, d.item_id, d.passage, d.claim, d.kind, d.outcome, d.note, d.reasoning, d.sources,
          d.status, d.note_id, d.posted_as, d.reviewed_by, d.reviewed_at, d.created_at, d.context_paragraph,
          i.url, i.title, p.name, p.slug,
+         (select e.data ->> 'reason' from everything_claude_events e
+           where e.draft_id = d.id and e.type = 'rejected' order by e.id desc limit 1),
          coalesce((
            select jsonb_agg(jsonb_build_object('at', e.at, 'actor', e.actor, 'text', coalesce(e.data ->> 'text', '')) order by e.id)
              from everything_claude_events e

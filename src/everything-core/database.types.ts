@@ -2775,6 +2775,7 @@ export type Database = {
         post_title: string | null
         creator: string | null
         creator_slug: string | null
+        rejection_reason: string | null
         messages: Json | null
         earlier_versions: Json | null
       }

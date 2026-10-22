@@ -47,6 +47,8 @@ export interface ReviewDraft {
   /** The post, and the creator's project on the website. */
   post: { url: string; title: string; creator: string; creatorSlug: string | null };
   messages: { at: string; actor: Reviewer | "claude"; text: string }[];
+  /** Why the last reviewer who rejected the note did so. */
+  rejectionReason: string | null;
   /** Earlier texts of the note, oldest first. */
   earlierVersions: { at: string; note: string; reason: string }[];
 }
@@ -84,6 +86,7 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     contextParagraph: row.context_paragraph,
     post: { url: row.post_url!, title: row.post_title ?? row.post_url!, creator: row.creator ?? "", creatorSlug: row.creator_slug },
     messages: row.messages as unknown as ReviewDraft["messages"],
+    rejectionReason: row.rejection_reason || null,
     earlierVersions: row.earlier_versions as unknown as ReviewDraft["earlierVersions"],
   };
 }

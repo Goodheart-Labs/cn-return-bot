@@ -116,7 +116,7 @@ function useReviewStep(draft: ReviewDraft, section: ReviewSection, onDone?: () =
       } else if (step.step === "reject") {
         await rejectDraft(draft.id, step.reason);
       } else if (step.step === "rewrite") {
-        const noteId = await rewriteDraft(draft.id, { note: step.note, postedAs: step.postedAs, reason: `${displayName(session!)} rewrote it on the review page` });
+        const noteId = await rewriteDraft(draft.id, { note: step.note, postedAs: step.postedAs, reason: "Rewritten on the review page" });
         // A note posted under the admin's own account gets their automatic
         // Helpful vote from the database, and its donation is minted here,
         // as for any note written on the website.
@@ -127,6 +127,9 @@ function useReviewStep(draft: ReviewDraft, section: ReviewSection, onDone?: () =
     },
     onSuccess: async (_result, step) => {
       onDone?.();
+      // A note posted under the admin's account carries their automatic vote,
+      // which the cached list of their own votes does not know yet.
+      if (step.step === "rewrite" && step.postedAs === "me") await client.invalidateQueries({ queryKey: queryKeys.ownVotes });
       if (step.step === "approve" || step.step === "reject") {
         dropDraft(client, section, draft.id);
         client.removeQueries({ queryKey: ["noteReview", "section"], predicate: (q) => q.queryKey[2] !== section });
@@ -273,6 +276,17 @@ function Actions({ draft, section }: { draft: ReviewDraft; section: ReviewSectio
   );
 }
 
+/** A rejected note is deleted from the site, so it shows as plain text with
+ *  the reviewer's reason. */
+function RejectedNote({ draft }: { draft: ReviewDraft }) {
+  return (
+    <div className="space-y-2 text-sm">
+      <p className="whitespace-pre-wrap border-l-2 border-line pl-3 text-fg-secondary">{draft.note}</p>
+      <p className="text-xs text-fg-muted">{draft.rejectionReason ? `Reason: ${draft.rejectionReason}` : "No reason given."}</p>
+    </div>
+  );
+}
+
 /** One passage the Claude note writer's agents looked at, on the website's
  *  own card: the passage in its post, then the note with its live votes while
  *  it is on the site, then the agent's reasoning, the chat with Claude and the
@@ -290,6 +304,8 @@ export function ReviewCard({ draft, liveNote, section }: { draft: ReviewDraft; l
       <div className="space-y-4">
         {!isNote(draft) ? (
           <p className="text-sm text-fg-secondary">{draft.reasoning}</p>
+        ) : draft.status === "rejected" ? (
+          <RejectedNote draft={draft} />
         ) : liveNote ? (
           <Note note={liveNote} shareUrl={shareUrl} />
         ) : (

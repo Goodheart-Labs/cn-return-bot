@@ -64,7 +64,9 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
       )}
       <Card ref={cardColRef} className="p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
         {byline && <div className="mb-3">{byline}</div>}
-        <div className="mb-4">
+        {/* A passage can hold a long unbroken address, which must wrap
+            inside the card instead of pushing the page wider. */}
+        <div className="mb-4 [overflow-wrap:anywhere]">
           {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
           {paragraph && (
             <Button variant="link" className="xl:hidden text-xs mb-2" onClick={() => setCtxOpen((o) => !o)}>

@@ -209,6 +209,7 @@ begin
   r := r || jsonb_build_object(
     'reject_deletes_the_note', not exists (select 1 from everything_notes where id = note3) and not exists (select 1 from everything_claims where item_id = video),
     'reject_records_jim', (select status = 'rejected' and reviewed_by = 'jim' and note_id is null from everything_claude_drafts where id = posted),
+    'rejected_row_carries_the_reason', (select rejection_reason = 'Not good' from everything_claude_review_rows(array[posted])),
     'summary_follows', s.unreviewed = 25 and s.waiting = 0 and s.approved = 1 and s.rejected = 1,
     'admins_know_their_reviewer', (select count(*) = 3 from everything_admins where reviewer is not null)
   );
