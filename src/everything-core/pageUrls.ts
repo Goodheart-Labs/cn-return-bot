@@ -30,18 +30,22 @@ function isSubstackHostPost(url: URL): boolean {
  *  another site. */
 const SUBSTACK_ONLY_PARAMS = ["publication_id", "post_id", "isFreemail", "triedRedirect"];
 
-/** Sites that serve every page on two hosts. Which host a page names as its
- *  canonical one depends on where the reader is: the BBC tells a reader in
- *  Britain bbc.co.uk and everyone else bbc.com. So every host of such a site is
- *  stored as one. */
-const SAME_SITE_HOSTS: Record<string, string> = {
-  "bbc.co.uk": "www.bbc.com",
-  "www.bbc.co.uk": "www.bbc.com",
-  "bbc.com": "www.bbc.com",
-};
+/** The BBC serves its news and sport articles on two hosts, and which one a
+ *  page names as canonical depends on where the reader is: a reader in Britain
+ *  is told bbc.co.uk and everyone else bbc.com. So these articles are stored
+ *  under www.bbc.com. Only exact host names count, and only these sections,
+ *  because bbc.co.uk also hosts UK-only sections such as iPlayer and Sounds
+ *  that bbc.com does not serve. */
+const BBC_HOSTS = ["bbc.co.uk", "www.bbc.co.uk", "bbc.com", "www.bbc.com"];
+const BBC_SHARED_SECTIONS = /^\/(news|sport)\//;
+const BBC_STORED_HOST = "www.bbc.com";
+
+function isBbcArticle(url: URL): boolean {
+  return BBC_HOSTS.includes(url.hostname) && BBC_SHARED_SECTIONS.test(url.pathname);
+}
 
 function isCustomDomainSubstackPost(url: URL): boolean {
-  return url.pathname.startsWith("/p/") && SUBSTACK_ONLY_PARAMS.some((key) => url.searchParams.has(key));
+  return /^\/p\/[^/]+/.test(url.pathname) && SUBSTACK_ONLY_PARAMS.some((key) => url.searchParams.has(key));
 }
 
 /** Canonicalizes a page URL so it can be looked up in `everything_items.url`,
@@ -61,7 +65,7 @@ export function canonicalizePageUrl(href: string, canonical: string | null): str
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
-  url.hostname = SAME_SITE_HOSTS[url.hostname] ?? url.hostname;
+  if (isBbcArticle(url)) url.hostname = BBC_STORED_HOST;
   if (isSubstackHostPost(url) || isCustomDomainSubstackPost(url)) {
     url.search = "";
     return url.toString();
