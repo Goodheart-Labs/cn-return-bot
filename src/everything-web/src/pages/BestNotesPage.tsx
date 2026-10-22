@@ -15,6 +15,7 @@ import { RouteLink } from "../components/RouteLink";
 import { entriesByClaim, improvementsByOriginal } from "../lib/feed";
 import { useBestNotesFeed, useProjects } from "../lib/feedQueries";
 import { noteUrl, type Route } from "../lib/routing";
+import { useGrowingCount } from "../lib/useGrowingCount";
 import { useIsAdmin } from "../lib/useIsAdmin";
 
 const NO_NOTES: NoteRow[] = [];
@@ -31,16 +32,30 @@ interface BestNote {
   project: FeedProjectRow | undefined;
 }
 
-/** The creators with notes on the list, the most notes first, with "All
- *  creators" on top. Each entry links to the list narrowed to that creator, so
- *  the narrowed list can be shared. */
-function CreatorList({ notes, selected, navigate }: { notes: BestNote[]; selected: string | null; navigate: (route: Route) => void }) {
-  const creators = new Map<string, { project: FeedProjectRow; count: number }>();
+/** One creator with notes on the list, and how many. */
+interface CreatorCount {
+  project: FeedProjectRow;
+  count: number;
+}
+
+/** The creators with notes on the list, the most notes first. */
+function countCreators(notes: BestNote[]): CreatorCount[] {
+  const counts = new Map<string, CreatorCount>();
   for (const { project } of notes) {
-    if (!project) continue;
-    const entry = creators.get(project.slug) ?? { project, count: 0 };
-    creators.set(project.slug, { ...entry, count: entry.count + 1 });
+    if (project) counts.set(project.slug, { project, count: (counts.get(project.slug)?.count ?? 0) + 1 });
   }
+  return [...counts.values()].sort((a, b) => b.count - a.count || a.project.name.localeCompare(b.project.name));
+}
+
+/** The sidebar: "All creators" on top, then each creator with notes on the
+ *  list. Each entry links to the list narrowed to that creator, so the
+ *  narrowed list can be shared. */
+function CreatorList({ creators, total, selected, navigate }: {
+  creators: CreatorCount[];
+  total: number;
+  selected: string | null;
+  navigate: (route: Route) => void;
+}) {
   const entryClass = (active: boolean) =>
     cn(
       "flex items-center gap-2 rounded-control px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
@@ -52,12 +67,10 @@ function CreatorList({ notes, selected, navigate }: { notes: BestNote[]; selecte
         <li>
           <RouteLink to={{ view: "bestNotes", project: null }} navigate={navigate} current={selected === null} className={entryClass(selected === null)}>
             <span className="flex-1 font-semibold">All creators</span>
-            <span className="text-xs text-fg-muted">{noteCount(notes.length)}</span>
+            <span className="text-xs text-fg-muted">{noteCount(total)}</span>
           </RouteLink>
         </li>
-        {[...creators.values()]
-          .sort((a, b) => b.count - a.count || a.project.name.localeCompare(b.project.name))
-          .map(({ project, count }) => (
+        {creators.map(({ project, count }) => (
             <li key={project.slug}>
               <RouteLink
                 to={{ view: "bestNotes", project: project.slug }}
@@ -181,6 +194,8 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
     }
   }
   const shown = projectSlug ? ranked.filter((entry) => entry.project?.slug === projectSlug) : ranked;
+  const creators = countCreators(ranked);
+  const [shownCount, setSentinel] = useGrowingCount(projectSlug ?? "");
   const selectedProject = projectsQuery.data?.find((p) => p.slug === projectSlug);
 
   let feed: ReactNode;
@@ -205,7 +220,7 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
   } else {
     feed = (
       <div className="space-y-6">
-        {shown.map(({ note, post, project }, index) => (
+        {shown.slice(0, shownCount).map(({ note, post, project }, index) => (
           <FeedNoteCard
             key={note.id}
             note={note}
@@ -234,6 +249,7 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
             shareUrl={project ? noteUrl(project.slug, note.id) : window.location.href}
           />
         ))}
+        {shownCount < shown.length && <div ref={setSentinel} aria-hidden="true" />}
       </div>
     );
   }
@@ -252,7 +268,7 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
           <div className="px-3">
             <BackToProjects navigate={navigate} />
           </div>
-          <CreatorList notes={ranked} selected={projectSlug} navigate={navigate} />
+          <CreatorList creators={creators} total={ranked.length} selected={projectSlug} navigate={navigate} />
         </div>
       </ResizablePanel>
 
@@ -274,10 +290,10 @@ export function BestNotesPage({ projectSlug, navigate }: { projectSlug: string |
                 onChange={(e) => navigate({ view: "bestNotes", project: e.target.value || null })}
                 className="w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-base text-fg"
               >
-                <option value="">All creators</option>
-                {[...new Map(ranked.flatMap(({ project }) => (project ? [[project.slug, project.name]] : []))).entries()].map(([slug, name]) => (
-                  <option key={slug} value={slug}>
-                    {name}
+                <option value="">All creators ({ranked.length})</option>
+                {creators.map(({ project, count }) => (
+                  <option key={project.slug} value={project.slug}>
+                    {project.name} ({count})
                   </option>
                 ))}
               </select>
