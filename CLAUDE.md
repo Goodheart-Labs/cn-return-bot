@@ -112,7 +112,7 @@ An item stranded in `processing` by a killed run is resumed, not lost. Every cla
 
 ### Data model
 
-`everything_projects → everything_items → everything_claims → everything_notes`, plus `everything_note_sources` (one row per supporting quote), `everything_votes` (retracting deletes the row; `everything_vote_history` keeps every cast, change and retraction of all three vote tables, migration 115), `everything_note_not_needed` and its votes, `everything_note_requests` (reader requests, which the intake service turns into tier-2 items within seconds), `everything_donations`, `everything_events`, `everything_link_visits` (visits), `everything_pipeline_runs` (one row per LLM step with its cost), `everything_passage_highlights` and `everything_passage_questions`, the walk's caches `everything_top_posts` and `everything_youtube_channels`, `everything_slack_announcements` (what the retired cn-notify service posted to Slack until 2026-10-16), and `everything_minisites` with `everything_minisite_jobs` (pages an admin asked the intake service to read for a new minisite, and fact-check wake-ups). A claim stores the highlighted `context_quote`, the wider `context_paragraph`, and `image_urls` when it rests on an image (then `context_quote` may be null). `everything_items.full_text` is the item's body.
+`everything_projects → everything_items → everything_claims → everything_notes`, plus `everything_note_sources` (one row per supporting quote), `everything_votes` (retracting deletes the row; `everything_vote_history` keeps every cast, change and retraction of all three vote tables, migration 115), `everything_note_not_needed` and its votes, `everything_note_requests` (reader requests, which the intake service turns into tier-2 items within seconds), `everything_donations`, `everything_events`, `everything_link_visits` (visits), `everything_pipeline_runs` (one row per LLM step with its cost), `everything_passage_highlights` and `everything_passage_questions`, the walk's caches `everything_top_posts` and `everything_youtube_channels`, `everything_slack_announcements` (what the retired cn-notify service posted to Slack until 2026-10-16), and `everything_best_notes` (the best notes list on /notes/best), and `everything_minisites` with `everything_minisite_jobs` (pages an admin asked the intake service to read for a new minisite, and fact-check wake-ups). A claim stores the highlighted `context_quote`, the wider `context_paragraph`, and `image_urls` when it rests on an image (then `context_quote` may be null). `everything_items.full_text` is the item's body.
 
 The website ships the anon key, so the anon role is locked out of every table except what the public site and the extension need. After a migration, regenerate the frontend's types with `bun run gen-db-types`.
 
@@ -203,7 +203,15 @@ A standing Claude session on the devbox, `cn-return-bot--sandbox-daily-good-note
 bun run candidate-notes [--days N | --since <ISO>] [--posted <file>] [--json]
 ```
 
-It lists every note that was rated helpful, got a Helpful or Somewhat helpful vote, was written by a person, or is new on an important creator in the window (`src/postable-notes/candidates.ts`). It replaced the `cn-notify` service, which posted those four kinds of note to four Slack channels, and the `Trending Posts` workflow. The tables they used to remember what they posted, `everything_slack_announcements` and `trending_posts`, are no longer written.
+It lists every note that was rated helpful, got a Helpful or Somewhat helpful vote, was written by a person, or is new on an important creator in the window (`src/postable-notes/candidates.ts`).
+
+The job also keeps the best notes list, which commonnotes.net/notes/best shows in its order, with a sidebar that narrows it to one creator (/notes/best/<slug>). The list is `everything_best_notes` (migration 130): a note id and a `position`, smallest first. Admins reorder the list and take notes off it on the page. The job adds notes with:
+
+```bash
+bun run best-notes list                       # the list, best first, with ranks
+bun run best-notes add <noteId>... [--at N]   # put notes on the list at rank N (default: the end)
+bun run best-notes move <noteId> --at N
+``` It replaced the `cn-notify` service, which posted those four kinds of note to four Slack channels, and the `Trending Posts` workflow. The tables they used to remember what they posted, `everything_slack_announcements` and `trending_posts`, are no longer written.
 
 ## Database
 

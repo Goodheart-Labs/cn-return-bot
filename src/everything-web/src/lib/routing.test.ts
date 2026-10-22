@@ -10,6 +10,8 @@ const ROUTES: [string, Route][] = [
   ["/install", { view: "home", section: "install" }],
   ["/notes", { view: "notes", project: null, item: null, note: null }],
   ["/notes/all", { view: "allNotes" }],
+  ["/notes/best", { view: "bestNotes", project: null }],
+  ["/notes/best/zvi", { view: "bestNotes", project: "zvi" }],
   ["/notes/zvi", { view: "notes", project: "zvi", item: null, note: null }],
   ["/notes/zvi/item-1", { view: "notes", project: "zvi", item: "item-1", note: null }],
   ["/notes/zvi?note=n-1", { view: "notes", project: "zvi", item: null, note: "n-1" }],

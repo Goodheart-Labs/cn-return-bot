@@ -1,12 +1,13 @@
+import type { ReactNode } from "react";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedProjectRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
-import { ExternalLinkIcon, NoteStackIcon } from "@cn/ui/icons";
+import { ExternalLinkIcon, NoteStackIcon, TrophyIcon } from "@cn/ui/icons";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
 import { useProjects } from "../lib/feedQueries";
-import { ALL_NOTES, type Route } from "../lib/routing";
+import { ALL_NOTES, BEST_NOTES, type Route } from "../lib/routing";
 import { useStoredChoice } from "../lib/useStoredValue";
 
 type Order = "votes" | "name";
@@ -31,14 +32,20 @@ const CARD = "relative flex items-center gap-4 rounded-card border border-line b
 const CARD_LINK =
   "line-clamp-2 after:absolute after:inset-0 after:rounded-card focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-focus";
 
-/** How large the cards' pictures are, and how much of the circle the All
- *  creators card's icon fills. */
+/** How large the cards' pictures are, and how much of the circle the icon of
+ *  a feed card fills. */
 const AVATAR_SIZE = 56;
 const ICON_SCALE = 0.5;
 
-/** The first card of the grid. It leads to every note of every creator in one
- *  feed, and it counts all of them. */
-function AllCreatorsCard({ noteTotal, navigate }: { noteTotal: number; navigate: (route: Route) => void }) {
+/** One of the first cards of the grid, which lead to feeds across all
+ *  creators: the best notes, and every note. */
+function FeedCard({ icon, title, detail, to, navigate }: {
+  icon: ReactNode;
+  title: string;
+  detail: string;
+  to: Route;
+  navigate: (route: Route) => void;
+}) {
   return (
     <li className={CARD}>
       <span
@@ -46,15 +53,15 @@ function AllCreatorsCard({ noteTotal, navigate }: { noteTotal: number; navigate:
         className="grid shrink-0 place-items-center rounded-full border border-line bg-surface-muted text-fg-secondary"
         style={{ width: AVATAR_SIZE, height: AVATAR_SIZE }}
       >
-        <NoteStackIcon size={AVATAR_SIZE * ICON_SCALE} />
+        {icon}
       </span>
       <div className="min-w-0 flex-1">
         <h2 className="font-title text-lg font-bold leading-snug text-fg">
-          <RouteLink to={ALL_NOTES} navigate={navigate} className={CARD_LINK}>
-            All creators
+          <RouteLink to={to} navigate={navigate} className={CARD_LINK}>
+            {title}
           </RouteLink>
         </h2>
-        <p className="mt-1 text-sm text-fg-muted">{noteCount(noteTotal)}</p>
+        <p className="mt-1 text-sm text-fg-muted">{detail}</p>
       </div>
     </li>
   );
@@ -93,8 +100,9 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
 }
 
 /** Every project with notes: the creator's picture, how many notes it has, a
- *  link to its notes here, and a link to the creator's own page. The first
- *  card, whatever the order, leads to the notes of every project in one feed. */
+ *  link to its notes here, and a link to the creator's own page. Whatever the
+ *  order, the first two cards lead to the best notes and to the notes of every
+ *  project in one feed. */
 export function ProjectsPage({ navigate }: { navigate: (route: Route) => void }) {
   const projects = useProjects();
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "votes");
@@ -121,7 +129,14 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
         <p className="mt-8 text-sm text-fg-muted">Loading…</p>
       ) : (
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <AllCreatorsCard noteTotal={withNotes.reduce((total, p) => total + p.note_count, 0)} navigate={navigate} />
+          <FeedCard icon={<TrophyIcon size={AVATAR_SIZE * ICON_SCALE} />} title="Best notes" detail="The notes we are proudest of" to={BEST_NOTES} navigate={navigate} />
+          <FeedCard
+            icon={<NoteStackIcon size={AVATAR_SIZE * ICON_SCALE} />}
+            title="All creators"
+            detail={noteCount(withNotes.reduce((total, p) => total + p.note_count, 0))}
+            to={ALL_NOTES}
+            navigate={navigate}
+          />
           {shown.map((project) => (
             <ProjectCard key={project.id} project={project} navigate={navigate} />
           ))}

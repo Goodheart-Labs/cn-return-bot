@@ -113,6 +113,32 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_best_notes: {
+        Row: {
+          added_at: string
+          note_id: string
+          position: number
+        }
+        Insert: {
+          added_at?: string
+          note_id: string
+          position: number
+        }
+        Update: {
+          added_at?: string
+          note_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_best_notes_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_claims: {
         Row: {
           claim: string

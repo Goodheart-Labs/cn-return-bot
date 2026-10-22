@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import { fetchProjects } from "@cn/core/creators";
-import { fetchItemNoteViewers, fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
-import { fetchAllNnn, fetchProjectNnn } from "@cn/core/noteNotNeeded";
-import { fetchAllNotes, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
+import { fetchBestNotes } from "@cn/core/bestNotes";
+import { fetchItemNoteViewers, fetchItemsByIds, fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
+import { fetchAllNnn, fetchNnnForClaims, fetchProjectNnn } from "@cn/core/noteNotNeeded";
+import { fetchAllNotes, fetchNotesByIds, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
 import { subscribeToProjectChanges } from "@cn/core/projectRealtime";
 import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
 import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
@@ -77,6 +78,35 @@ export const useAllNotesFeed = () =>
     fetchNnn: fetchAllNnn,
     enabled: true,
   });
+
+/** The best notes list in its order, the notes on it with their
+ *  note-not-needed entries, and the posts they are on. Each step waits for the
+ *  one before, because it needs its ids. The notes are a NoteSet under the
+ *  `noteSet` prefix, so a vote shows up here as everywhere else. */
+export function useBestNotesFeed() {
+  const list = useQuery({ queryKey: queryKeys.bestNotes, queryFn: fetchBestNotes });
+  const noteSet = useQuery({
+    queryKey: queryKeys.bestNoteSet,
+    queryFn: async () => {
+      const notes = await fetchNotesByIds(list.data!.map((row) => row.note_id));
+      return noteSetOf(notes, await fetchNnnForClaims(notes.map((note) => note.claim_id)));
+    },
+    enabled: !!list.data,
+  });
+  const items = useQuery({
+    queryKey: queryKeys.bestNoteItems,
+    queryFn: () => fetchItemsByIds([...new Set([...noteSet.data!.notes.values()].map((note) => note.claim.item_id))]),
+    enabled: !!noteSet.data,
+    select: (rows) => new Map(rows.map((r) => [r.id, r])),
+  });
+  return {
+    list: list.data,
+    noteSet: noteSet.data,
+    items: items.data,
+    failed: list.isError || noteSet.isError || items.isError,
+    retry: () => void Promise.all([list.refetch(), noteSet.refetch(), items.refetch()]),
+  };
+}
 
 /** How many devices outside the team saw each item's notes, which the All
  *  notes page filters by. */

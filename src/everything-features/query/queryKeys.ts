@@ -13,6 +13,12 @@ export const queryKeys = {
   itemNoteSet: (itemId: string) => ["noteSet", "item", itemId] as const,
   /** Every visible note on the site, for the website's All notes page. */
   allNoteSet: ["noteSet", "all"] as const,
+  /** The notes on the best notes list, for the website's Best notes page. */
+  bestNoteSet: ["noteSet", "best"] as const,
+  /** The best notes list itself: which notes, in which order. */
+  bestNotes: ["bestNotes"] as const,
+  /** The posts the best notes are on. */
+  bestNoteItems: ["bestNoteItems"] as const,
   projects: ["projects"] as const,
   projectItems: (projectId: string) => ["projectItems", projectId] as const,
   itemsWithNotes: ["itemsWithNotes"] as const,

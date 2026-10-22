@@ -26,7 +26,7 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           <RouteLink to={HOME} navigate={navigate} current={route.view === "home"} className={navLink}>
             Home
           </RouteLink>
-          <RouteLink to={NOTES} navigate={navigate} current={route.view === "notes" || route.view === "allNotes"} className={navLink}>
+          <RouteLink to={NOTES} navigate={navigate} current={route.view === "notes" || route.view === "allNotes" || route.view === "bestNotes"} className={navLink}>
             Notes
           </RouteLink>
           <RouteLink to={MINISITES} navigate={navigate} current={route.view === "minisites" || route.view === "newMinisite"} className={navLink}>

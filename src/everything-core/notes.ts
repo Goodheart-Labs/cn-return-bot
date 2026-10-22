@@ -1,5 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
-import { fetchAllRows } from "./paging";
+import { fetchAllRows, fetchInBatches } from "./paging";
 import { supabase } from "./supabase";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
@@ -72,6 +72,12 @@ export async function fetchProjectNotes(projectId: string): Promise<NoteRow[]> {
 /** Every visible note on the site, from every project. */
 export async function fetchAllNotes(): Promise<NoteRow[]> {
   const notes = await fetchAllRows<RawNote>(() => noteQuery().neq("status", "hidden"), "id", { label: "allNotes" });
+  return notes.map(toNoteRow);
+}
+
+/** The visible notes among the given ids, in no particular order. */
+export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
+  const notes = await fetchInBatches<RawNote>((chunk) => noteQuery().in("id", chunk).neq("status", "hidden"), ids, "id", { label: "notesByIds" });
   return notes.map(toNoteRow);
 }
 
