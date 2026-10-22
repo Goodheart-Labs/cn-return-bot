@@ -1,7 +1,8 @@
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { HOME, INSTALL, MINISITES, NOTES, type Route } from "../lib/routing";
+import { HOME, INSTALL, MINISITES, NOTE_REVIEW, NOTES, type Route } from "../lib/routing";
+import { useIsAdmin } from "../lib/useIsAdmin";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
 
@@ -10,8 +11,10 @@ const navLink =
 
 /** The bar at the top of every page. The name and the four pages sit on the
  *  left, signing in and getting the extension on the right. Getting the
- *  extension leads to the homepage's install section. */
+ *  extension leads to the homepage's install section. Admins also get a link
+ *  to the note review. */
 export function SiteHeader({ route, navigate, onSignIn }: { route: Route; navigate: (route: Route) => void; onSignIn: () => void }) {
+  const admin = useIsAdmin();
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-surface">
       {/* On a phone the tabs take a second row, because they do not fit
@@ -35,6 +38,11 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           <RouteLink to={{ view: "leaderboard" }} navigate={navigate} current={route.view === "leaderboard"} className={navLink}>
             Leaderboard
           </RouteLink>
+          {admin && (
+            <RouteLink to={NOTE_REVIEW} navigate={navigate} current={route.view === "noteReview"} className={navLink}>
+              Review
+            </RouteLink>
+          )}
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <AuthCorner onSignIn={onSignIn} />

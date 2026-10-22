@@ -1,5 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
-import { fetchAllRows } from "./paging";
+import { fetchAllRows, fetchInBatches } from "./paging";
 import { supabase } from "./supabase";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
@@ -48,6 +48,13 @@ export async function fetchNote(id: string): Promise<NoteRow | null> {
   const { data, error } = await noteQuery().eq("id", id).maybeSingle();
   if (error) throw error;
   return data && toNoteRow(data);
+}
+
+/** The notes with these ids. The admins' review page reads the live notes of
+ *  the drafts it shows this way. */
+export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
+  const notes = await fetchInBatches<RawNote>((chunk) => noteQuery().in("id", chunk), ids, "id", { label: "notesById" });
+  return notes.map(toNoteRow);
 }
 
 /** Every visible note on one item. The extension shows one page at a time and
