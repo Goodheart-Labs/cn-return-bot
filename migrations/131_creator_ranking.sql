@@ -18,10 +18,14 @@
 --    of processed_at minus published_at, over the creator's most recently
 --    published posts that were checked as a whole page. published_at is a day
 --    without a time, so it is read as midnight UTC, and the delay is only
---    accurate to about a day. The walk also checks a creator's most popular
---    posts of all time, which can be years old. Their delay says how old they
---    are, not how fast we are, so posts in the creator's cached top list
---    (everything_top_posts) are left out.
+--    accurate to about a day. Only new posts count, meaning posts published
+--    on or after the day we first saw any post of the creator. Two kinds of
+--    post are older, and their delay says how old they are, not how fast we
+--    are. The first walk of a creator catches up on their 5 newest posts,
+--    which can be months old for someone who posts rarely. The walk also
+--    checks a creator's most popular posts of all time, and a creator's old
+--    post can become popular later. Posts in the creator's cached top list
+--    (everything_top_posts) are left out for that second reason.
 --
 -- 3. How often a visitor votes. Visits and votes cannot be matched person to
 --    person: a visit carries a reader hash made on the device, a vote carries
@@ -81,11 +85,18 @@ as $$
     where p.priority_until > now()
        or (s.visitors_per_post >= min_score and s.posts >= min_posts)
   ),
+  followed_since as (
+    select w.creator_key, (min(i.created_at) at time zone 'UTC')::date as first_seen_day
+    from walked w
+    join everything_items i on i.project_id = w.project_id
+    group by w.creator_key
+  ),
   delay as (
     select w.creator_key,
            count(*) as posts,
            percentile_cont(0.5) within group (order by extract(epoch from d.processed_at - (d.published_at::timestamp at time zone 'UTC')) / 3600) as median_hours
     from walked w
+    join followed_since f using (creator_key)
     cross join lateral (
       select i.published_at, i.processed_at
       from everything_items i
@@ -94,6 +105,7 @@ as $$
         and i.checked_scope = 'page'
         and i.published_at is not null
         and i.processed_at is not null
+        and i.published_at >= f.first_seen_day
         and not exists (select 1 from everything_top_posts t where t.url = i.url)
       order by i.published_at desc, i.processed_at desc
       limit last_posts
@@ -157,7 +169,7 @@ as $$
 $$;
 
 comment on function everything_creator_ranking(int, float8, int) is
-  'The creators the auto-enqueue walk would go through now: open priority, or a score of at least min_score over at least min_posts visited posts. Per creator: the score, the median hours from publication to the end of processing over their last_posts most recently published checked posts outside their top list, and extension voters and visitors summed over their last_posts most recently visited posts with notes (GOO-531).';
+  'The creators the auto-enqueue walk would go through now: open priority, or a score of at least min_score over at least min_posts visited posts. Per creator: the score, the median hours from publication to the end of processing over their last_posts most recently published checked posts published on or after the day we first saw the creator and outside their top list, and extension voters and visitors summed over their last_posts most recently visited posts with notes (GOO-531).';
 
 revoke execute on function everything_creator_ranking(int, float8, int) from public;
 grant execute on function everything_creator_ranking(int, float8, int) to anon, authenticated, service_role;

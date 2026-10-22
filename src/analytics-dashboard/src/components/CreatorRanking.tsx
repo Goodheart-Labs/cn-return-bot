@@ -13,7 +13,7 @@ const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "Score", title: `Average number of different people per post, over the creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts` },
   {
     label: "Median delay",
-    title: `Median time from the publish day to the end of processing, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published checked posts`,
+    title: `Median time from the publish day to the end of processing, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published new posts we checked`,
   },
   {
     label: "Vote rate",
@@ -147,8 +147,8 @@ export function CreatorRanking() {
         )}
         <span>
           This is the order the next walk will go through, computed now. The median delay runs from the day a post was published to
-          the end of its check. It leaves out a creator's most popular posts of all time, which the walk also checks, because those
-          can be years old. The vote rate divides the people who voted in the extension on a post's notes by the people who opened
+          the end of its check. It counts only new posts, published on or after the day we first saw any post of the creator. So it
+          leaves out the older posts the first walk catches up on, and the most popular posts of all time. The vote rate divides the people who voted in the extension on a post's notes by the people who opened
           the post after its first note appeared. Votes by admins are left out. The two sides cannot be matched person to person, so
           a rate is a ratio of counts.
         </span>
