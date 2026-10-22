@@ -12,6 +12,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { config as loadDotenv } from "dotenv";
 import { ENV_DIR } from "../cnEnv";
 import type { Database, Json } from "../everything-core/database.types";
+import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
@@ -375,19 +376,22 @@ export async function addMessage(draftId: string, actor: Actor, text: string) {
 }
 
 export async function listDrafts(): Promise<DraftRow[]> {
-  return unwrap(await db().from("everything_claude_drafts").select("*").order("created_at"));
+  const rows = await fetchAllRows<DraftRow>(() => db().from("everything_claude_drafts").select("*"), "id", { label: "claude drafts" });
+  return rows.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
 /** Every logged step that belongs to one of the given drafts, oldest first. */
 export async function eventsOfDrafts(draftIds: string[]): Promise<EventRow[]> {
-  if (draftIds.length === 0) return [];
-  return unwrap(await db().from("everything_claude_events").select("*").in("draft_id", draftIds).order("id"));
+  const rows = await fetchInBatches<EventRow>((chunk) => db().from("everything_claude_events").select("*").in("draft_id", chunk), draftIds, "id", { label: "claude draft events" });
+  return rows.sort((a, b) => a.id - b.id);
 }
 
 /** Reviewer messages Claude has not answered yet, oldest first. A message is
  *  answered once an answer to the same draft was logged after it. */
 export async function unansweredMessages(): Promise<EventRow[]> {
-  const rows = unwrap(await db().from("everything_claude_events").select("*").in("type", ["message", "answer"]).order("id"));
+  const rows = (
+    await fetchAllRows<EventRow>(() => db().from("everything_claude_events").select("*").in("type", ["message", "answer"]), "id", { label: "claude chat events" })
+  ).sort((a, b) => a.id - b.id);
   const lastAnswer = new Map<string, number>();
   for (const r of rows) if (r.type === "answer" && r.draft_id) lastAnswer.set(r.draft_id, r.id);
   return rows.filter((r) => r.type === "message" && r.draft_id && r.id > (lastAnswer.get(r.draft_id) ?? 0));
@@ -410,8 +414,12 @@ export interface QueueItem {
  *  An item Claude is working on stays queued until it is finished, so the
  *  take is what tells it apart. */
 export async function waitingItems(): Promise<QueueItem[]> {
-  const handedBack = new Set(unwrap(await db().from("everything_claude_handbacks").select("item_id")).map((h) => h.item_id));
-  const taken = new Set(unwrap(await db().from("everything_claude_events").select("item_id").eq("type", "item_taken")).map((e) => e.item_id));
+  const [handbacks, takes] = await Promise.all([
+    fetchAllRows<{ item_id: string }>(() => db().from("everything_claude_handbacks").select("item_id"), "item_id", { label: "claude handbacks" }),
+    fetchAllRows<{ id: number; item_id: string }>(() => db().from("everything_claude_events").select("id, item_id").eq("type", "item_taken"), "id", { label: "claude takes" }),
+  ]);
+  const handedBack = new Set(handbacks.map((h) => h.item_id));
+  const taken = new Set(takes.map((e) => e.item_id));
   const queued = unwrap(
     await db().from("everything_items").select("id, url, title, priority, status, full_text").eq("status", "queued").order("priority", { ascending: false }).order("created_at"),
   );
@@ -424,23 +432,19 @@ export async function readItem(itemId: string): Promise<QueueItem & { project: {
   ) as never;
 }
 
-/** How many item ids go into one `in` filter, so the request URL stays short. */
-const IDS_PER_REQUEST = 100;
 const itemTextCache = new Map<string, { url: string; title: string | null; creator: string; fullText: string | null }>();
 
 /** The address, title, creator and text of each item. A post's text does not
  *  change once it is checked, so the dashboard's server reads each item once. */
 export async function readItemTexts(itemIds: string[]) {
   const missing = itemIds.filter((id) => !itemTextCache.has(id));
-  for (let i = 0; i < missing.length; i += IDS_PER_REQUEST) {
-    const rows = unwrap(
-      await db().from("everything_items").select("id, url, title, full_text, project:everything_projects(name)").in("id", missing.slice(i, i + IDS_PER_REQUEST)),
-    );
-    for (const r of rows) {
-      const project = r.project as unknown as { name: string } | null;
-      itemTextCache.set(r.id, { url: r.url, title: r.title, creator: project?.name ?? "", fullText: r.full_text });
-    }
-  }
+  const rows = await fetchInBatches<{ id: string; url: string; title: string | null; full_text: string | null; project: { name: string } | null }>(
+    (chunk) => db().from("everything_items").select("id, url, title, full_text, project:everything_projects(name)").in("id", chunk),
+    missing,
+    "id",
+    { label: "claude draft items" },
+  );
+  for (const r of rows) itemTextCache.set(r.id, { url: r.url, title: r.title, creator: r.project?.name ?? "", fullText: r.full_text });
   return new Map(itemIds.map((id) => [id, itemTextCache.get(id)!]));
 }
 
