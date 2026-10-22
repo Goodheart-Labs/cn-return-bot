@@ -17,6 +17,11 @@ export const LAST_POSTS_PER_CREATOR = 10;
  *  analytics dashboard lists the creators the walk would take. */
 export const MIN_SCORE_TO_WALK = 1.5;
 
+/** How many of a creator's posts must have been visited before their score
+ *  counts. A single post that a few people opened, often one shared link, says
+ *  little about how widely the creator is read. */
+export const MIN_VISITED_POSTS_TO_WALK = 2;
+
 /** What the walk's order looks at in a creator. */
 export interface WalkOrderKey {
   prioritized: boolean;

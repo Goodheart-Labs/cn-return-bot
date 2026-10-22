@@ -2460,7 +2460,7 @@ export type Database = {
         Returns: string
       }
       everything_creator_ranking: {
-        Args: { last_posts: number; min_score: number }
+        Args: { last_posts: number; min_posts: number; min_score: number }
         Returns: {
           delay_posts: number
           extension_voters: number

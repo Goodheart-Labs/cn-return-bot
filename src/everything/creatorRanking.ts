@@ -43,7 +43,7 @@
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
-import { byWalkOrder, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK } from "../everything-core/readers";
+import { byWalkOrder, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -115,7 +115,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK) continue;
+    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.

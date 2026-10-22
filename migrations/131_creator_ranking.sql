@@ -2,7 +2,8 @@
 --
 -- The walk is the step of each feed run that picks the next post to check. It
 -- goes down a ranked list of creators: those holding priority first, then
--- everyone whose score is at least the walk's minimum, highest score first
+-- everyone whose score is at least the walk's minimum over at least the walk's
+-- minimum number of visited posts, highest score first
 -- (rankCreators in src/everything/creatorRanking.ts). The list is computed
 -- fresh on every run, so computing it now shows what the next walk will see.
 --
@@ -33,17 +34,19 @@
 --    because only the extension records visits, so website voters are mostly
 --    not among the visitors. Votes by admins are left out too.
 --
--- The walk's minimum score lives in the code (MIN_SCORE_TO_WALK in
--- src/everything-core/readers.ts) and is passed in, as last_posts already is.
+-- The walk's minimum score and minimum number of visited posts live in the
+-- code (MIN_SCORE_TO_WALK and MIN_VISITED_POSTS_TO_WALK in
+-- src/everything-core/readers.ts) and are passed in, as last_posts already is.
 -- The rows come back unordered. The dashboard sorts them with the walk's own
 -- comparator, so the order rule exists only once.
 --
--- On 2026-10-22 production had 147 such creators and the call took 280 ms.
+-- On 2026-10-22 production had 147 such creators before the minimum number of
+-- posts (GOO-536) existed, and the call took 280 ms.
 --
 -- The anon key cannot read visits, votes or the top-post cache, so this runs
 -- with its owner's rights and returns only counts per creator.
 
-create function everything_creator_ranking(last_posts int, min_score float8)
+create function everything_creator_ranking(last_posts int, min_score float8, min_posts int)
 returns table (
   feed_url text,
   project_slug text,
@@ -76,7 +79,7 @@ as $$
     from (select * from everything_projects where feed_url is not null) p
     full join score s on s.creator_key = lower(rtrim(p.feed_url, '/'))
     where p.priority_until > now()
-       or s.visitors_per_post >= min_score
+       or (s.visitors_per_post >= min_score and s.posts >= min_posts)
   ),
   delay as (
     select w.creator_key,
@@ -153,8 +156,8 @@ as $$
   left join votes vo using (creator_key);
 $$;
 
-comment on function everything_creator_ranking(int, float8) is
-  'The creators the auto-enqueue walk would go through now: open priority or a score of at least min_score. Per creator: the score, the median hours from publication to the end of processing over their last_posts most recently published checked posts outside their top list, and extension voters and visitors summed over their last_posts most recently visited posts with notes (GOO-531).';
+comment on function everything_creator_ranking(int, float8, int) is
+  'The creators the auto-enqueue walk would go through now: open priority, or a score of at least min_score over at least min_posts visited posts. Per creator: the score, the median hours from publication to the end of processing over their last_posts most recently published checked posts outside their top list, and extension voters and visitors summed over their last_posts most recently visited posts with notes (GOO-531).';
 
-revoke execute on function everything_creator_ranking(int, float8) from public;
-grant execute on function everything_creator_ranking(int, float8) to anon, authenticated, service_role;
+revoke execute on function everything_creator_ranking(int, float8, int) from public;
+grant execute on function everything_creator_ranking(int, float8, int) to anon, authenticated, service_role;

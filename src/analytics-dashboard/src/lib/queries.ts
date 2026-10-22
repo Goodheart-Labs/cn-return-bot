@@ -2,7 +2,7 @@ import type { Database } from "../../../everything-core/database.types";
 import { supabase } from "../../../everything-core/supabase";
 
 type RpcName = keyof Database["public"]["Functions"];
-import { LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK } from "../../../everything-core/readers";
+import { LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../../../everything-core/readers";
 import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
@@ -254,5 +254,6 @@ export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
   return rpcAllRows<CreatorRankingRow>("everything_creator_ranking", {
     last_posts: LAST_POSTS_PER_CREATOR,
     min_score: MIN_SCORE_TO_WALK,
+    min_posts: MIN_VISITED_POSTS_TO_WALK,
   });
 }

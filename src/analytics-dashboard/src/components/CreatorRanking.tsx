@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCreatorRanking, type CreatorRankingRow } from "../lib/queries";
-import { byWalkOrder, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK } from "../../../everything-core/readers";
+import { byWalkOrder, LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
 
 const CREATORS_PER_STEP = 25;
 const HOURS_SHOWN_AS_HOURS = 48;
@@ -9,7 +9,7 @@ const LABEL_COLOR = "#6b7280";
 
 const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "#", title: "The creator's place in the walk's order" },
-  { label: "Creator", title: "The creator, and why the walk takes them" },
+  { label: "Creator", title: "The creator, and until when they hold priority" },
   { label: "Score", title: `Average number of different people per post, over the creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts` },
   {
     label: "Median delay",
@@ -47,11 +47,11 @@ function CreatorCell({ row }: { row: CreatorRankingRow }) {
       <a href={row.feed_url} target="_blank" rel="noreferrer" style={{ color: "#111827" }}>
         {row.project_name ?? row.feed_url.replace(/^https?:\/\/(www\.)?/, "")}
       </a>
-      <div style={subline}>
-        {row.priority_until
-          ? `Priority until ${new Date(row.priority_until).toLocaleDateString(undefined, { day: "numeric", month: "short" })}`
-          : `Score of ${MIN_SCORE_TO_WALK} or more`}
-      </div>
+      {row.priority_until && (
+        <div style={subline}>
+          Priority until {new Date(row.priority_until).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+        </div>
+      )}
     </td>
   );
 }
