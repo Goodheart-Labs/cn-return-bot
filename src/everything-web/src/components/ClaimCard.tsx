@@ -45,7 +45,7 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
   return (
     <div id={id} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
       {paragraph && (
-        <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
+        <div className="hidden min-w-0 [overflow-wrap:anywhere] xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
         </div>
       )}
@@ -56,7 +56,7 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
           aria-hidden={!ctxOpen}
         >
           <div className="overflow-hidden min-h-0">
-            <div className="mb-2">
+            <div className="mb-2 [overflow-wrap:anywhere]">
               <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} bare />
             </div>
           </div>
