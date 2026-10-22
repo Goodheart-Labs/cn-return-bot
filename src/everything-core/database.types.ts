@@ -116,6 +116,32 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_best_notes: {
+        Row: {
+          added_at: string
+          note_id: string
+          position: number
+        }
+        Insert: {
+          added_at?: string
+          note_id: string
+          position: number
+        }
+        Update: {
+          added_at?: string
+          note_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_best_notes_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_claims: {
         Row: {
           claim: string
@@ -2567,6 +2593,23 @@ export type Database = {
       everything_creator_project: {
         Args: { creator_feed_url: string }
         Returns: string
+      }
+      everything_creator_ranking: {
+        Args: { last_posts: number; min_score: number }
+        Returns: {
+          delay_posts: number
+          extension_voters: number
+          feed_url: string
+          median_delay_hours: number
+          people: number
+          priority_until: string
+          project_name: string
+          project_slug: string
+          score_posts: number
+          visitors_per_post: number
+          vote_posts: number
+          vote_visitors: number
+        }[]
       }
       everything_creator_visit_score: {
         Args: { creator_key: string; last_posts: number }
