@@ -35,6 +35,13 @@ test("a custom-domain post loses its whole query when Substack's own parameters 
   ).toBe("https://www.astralcodexten.com/p/against-against-handover");
 });
 
+test("a BBC article has one address, whichever host the reader was sent to", () => {
+  const stored = "https://www.bbc.com/news/articles/cw98z6qlyvg3o";
+  expect(canonicalizePageUrl("https://www.bbc.co.uk/news/articles/cw98z6qlyvg3o", null)).toBe(stored);
+  expect(canonicalizePageUrl("https://www.bbc.co.uk/news/articles/cw98z6qlyvg3o", "https://www.bbc.co.uk/news/articles/cw98z6qlyvg3o")).toBe(stored);
+  expect(canonicalizePageUrl("https://www.bbc.com/news/articles/cw98z6qlyvg3o", null)).toBe(stored);
+});
+
 test("query parameters that select content are kept", () => {
   expect(canonicalizePageUrl("https://example.com/watch?v=abc&utm_source=x", null)).toBe("https://example.com/watch?v=abc");
 });

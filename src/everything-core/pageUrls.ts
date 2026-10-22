@@ -30,6 +30,16 @@ function isSubstackHostPost(url: URL): boolean {
  *  another site. */
 const SUBSTACK_ONLY_PARAMS = ["publication_id", "post_id", "isFreemail", "triedRedirect"];
 
+/** Sites that serve every page on two hosts. Which host a page names as its
+ *  canonical one depends on where the reader is: the BBC tells a reader in
+ *  Britain bbc.co.uk and everyone else bbc.com. So every host of such a site is
+ *  stored as one. */
+const SAME_SITE_HOSTS: Record<string, string> = {
+  "bbc.co.uk": "www.bbc.com",
+  "www.bbc.co.uk": "www.bbc.com",
+  "bbc.com": "www.bbc.com",
+};
+
 function isCustomDomainSubstackPost(url: URL): boolean {
   return url.pathname.startsWith("/p/") && SUBSTACK_ONLY_PARAMS.some((key) => url.searchParams.has(key));
 }
@@ -51,6 +61,7 @@ export function canonicalizePageUrl(href: string, canonical: string | null): str
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
+  url.hostname = SAME_SITE_HOSTS[url.hostname] ?? url.hostname;
   if (isSubstackHostPost(url) || isCustomDomainSubstackPost(url)) {
     url.search = "";
     return url.toString();
