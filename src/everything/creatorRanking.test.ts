@@ -48,6 +48,14 @@ describe("rankCreators, score", () => {
     expect(await rankedSlugs()).toEqual(["enough"]);
   });
 
+  test("a creator needs at least 2 visited posts, however many people opened the one", async () => {
+    dbState.creatorVisitScores = [
+      visited("https://onepost.substack.com", { perPost: 3, posts: 1, people: 3 }),
+      visited("https://twoposts.substack.com", { perPost: 1.5, posts: 2, people: 2 }),
+    ];
+    expect(await rankedSlugs()).toEqual(["twoposts"]);
+  });
+
   test("a prioritized creator is walked with a low score", async () => {
     dbState.creatorProjects = [creator("pressed", { priority_until: inDays(3) })];
     dbState.creatorVisitScores = [visited("https://pressed.substack.com", { perPost: 1, posts: 10 })];

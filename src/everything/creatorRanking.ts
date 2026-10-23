@@ -75,6 +75,11 @@ const isOpen = (priorityUntil: string | null): boolean =>
  *  for them. */
 const MIN_SCORE_TO_WALK = 1.5;
 
+/** How many of a creator's posts must have been visited before their score
+ *  counts. A single post that a few people opened, often one shared link, says
+ *  little about how widely the creator is read. */
+const MIN_VISITED_POSTS_TO_WALK = 2;
+
 const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, people: 0 };
 
 /** Prioritised creators first, then the highest score. Among equal scores,
@@ -130,7 +135,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK) continue;
+    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
