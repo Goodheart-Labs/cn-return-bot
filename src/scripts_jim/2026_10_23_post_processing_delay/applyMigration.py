@@ -2,10 +2,12 @@
 # dependencies = []
 # ///
 """Applies one migration file to production through Supabase's management
-API, which runs the whole file as one transaction (GOO-549). It refuses when
-the column the migration adds already exists, so a migration never runs twice.
+API, which runs the whole file as one transaction (GOO-549). The second
+argument is a query that returns a row when the migration was applied before,
+so a migration never runs twice.
 
-    python3 applyMigration.py migrations/133_first_checked_at.sql first_checked_at
+    python3 applyMigration.py migrations/133_first_checked_at.sql \
+      "select 1 from information_schema.columns where table_name = 'everything_items' and column_name = 'first_checked_at'"
 """
 import json, sys, urllib.request
 from pathlib import Path
@@ -21,8 +23,10 @@ def query(sql: str):
     )
     return json.load(urllib.request.urlopen(request))
 
-migration, new_column = sys.argv[1], sys.argv[2]
-if query(f"select 1 from information_schema.columns where table_name = 'everything_items' and column_name = '{new_column}'"):
-    raise SystemExit(f"{new_column} already exists, so {migration} was applied before")
+migration, applied_before = sys.argv[1], sys.argv[2]
+if query(applied_before):
+    raise SystemExit(f"{migration} was applied before")
 query((REPO / migration).read_text())
-print(query("select count(*) filter (where first_checked_at is not null) as with_first_check, count(*) filter (where first_checked_at < processed_at - interval '1 hour') as rechecked_later from everything_items where status = 'done' and checked_scope = 'page'"))
+# PostgREST, which answers the website's calls, caches the list of functions.
+query("notify pgrst, 'reload schema';")
+print(f"applied {migration}")

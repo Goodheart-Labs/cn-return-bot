@@ -49,7 +49,7 @@
 import "dotenv/config";
 import { extractYoutubeVideoId, normalizeFeedUrl } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { creatorScore, IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
+import { IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
 import {
   countYoutubeNotifications,
   enqueueItems,
@@ -507,7 +507,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
           String(feedIndex + 1),
           feed.project,
           creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "attention",
-          creatorScore(creator.score).toFixed(2),
+          creator.walkScore.toFixed(2),
           String(creator.score.posts),
           String(creator.score.people),
           listingSource(feed, listing),

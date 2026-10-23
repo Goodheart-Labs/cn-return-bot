@@ -38,12 +38,17 @@ function formatDelay(hours: number): string {
 
 const postCount = (n: number) => (n === 1 ? "1 post" : `${n} posts`);
 
+/** The same score the walk ranks on, with the average the database computed. */
+const walkScore = (row: CreatorRankingRow) =>
+  creatorScore({ visitors_per_post: row.visitors_per_post ?? 0, posts: row.score_posts ?? 0 }, row.average_readers_per_post);
+
 /** The walk's comparator needs the score of a prioritised creator nobody
  *  visited as zero, the same value the walk itself uses for them. */
 const walkOrderKey = (row: CreatorRankingRow) => ({
   prioritized: row.priority_until !== null,
   feed_url: row.feed_url,
-  score: { visitors_per_post: row.visitors_per_post ?? 0, posts: row.score_posts ?? 0, people: row.people ?? 0 },
+  walkScore: walkScore(row),
+  score: { people: row.people ?? 0 },
 });
 
 function CreatorCell({ row }: { row: CreatorRankingRow }) {
@@ -65,7 +70,7 @@ function ScoreCell({ row }: { row: CreatorRankingRow }) {
   if (row.visitors_per_post === null || row.score_posts === null) return <td style={numberCell}>—</td>;
   return (
     <td style={numberCell}>
-      {creatorScore({ visitors_per_post: row.visitors_per_post, posts: row.score_posts }).toFixed(2)}
+      {walkScore(row).toFixed(2)}
       <div style={subline}>
         {row.visitors_per_post.toFixed(2)} per post, {postCount(row.score_posts)}
       </div>

@@ -2603,13 +2603,13 @@ export type Database = {
       everything_creator_ranking: {
         Args: {
           average_posts: number
-          average_readers: number
           last_posts: number
           min_posts: number
           min_score: number
           unread_posts: number
         }
         Returns: {
+          average_readers_per_post: number
           delay_posts: number
           extension_voters: number
           feed_url: string

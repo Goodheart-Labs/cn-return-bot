@@ -3,7 +3,6 @@ import { supabase } from "../../../everything-core/supabase";
 
 type RpcName = keyof Database["public"]["Functions"];
 import {
-  AVERAGE_READERS_PER_POST,
   IMAGINED_AVERAGE_POSTS,
   IMAGINED_UNREAD_POSTS,
   LAST_POSTS_PER_CREATOR,
@@ -238,7 +237,7 @@ export function fetchSpendByHour(days: number): Promise<SpendHourRow[]> {
   return rpcAllRows<SpendHourRow>("everything_spend_by_hour", { window_days: days });
 }
 
-// --- The walk's ranking of creators (migration 131) ---
+// --- The walk's ranking of creators (migrations 131 to 134) ---
 
 export interface CreatorRankingRow {
   feed_url: string;
@@ -261,6 +260,9 @@ export interface CreatorRankingRow {
   vote_posts: number | null;
   vote_visitors: number | null;
   extension_voters: number | null;
+  /** The average readers per post over all visited creators, the same in
+   *  every row. The score's imagined average posts have this many readers. */
+  average_readers_per_post: number;
 }
 
 export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
@@ -270,6 +272,5 @@ export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
     min_posts: MIN_VISITED_POSTS_TO_WALK,
     unread_posts: IMAGINED_UNREAD_POSTS,
     average_posts: IMAGINED_AVERAGE_POSTS,
-    average_readers: AVERAGE_READERS_PER_POST,
   });
 }

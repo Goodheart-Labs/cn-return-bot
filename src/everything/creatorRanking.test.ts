@@ -38,11 +38,19 @@ const visited = (feedUrl: string, score: { perPost?: number; posts?: number; peo
 
 const rankedSlugs = async () => (await rankCreators()).map((c) => c.project_slug);
 
+/** Creators with one reader on each of 10 posts, as most visited creators
+ *  have. They set the average readers per post that the score's imagined posts
+ *  use. Their own score stays below the walk's minimum. */
+const typicalCreators = (count: number) =>
+  Array.from({ length: count }, (_, i) => visited(`https://typical${i}.substack.com`, { perPost: 1, posts: 10, people: 1 }));
+
 describe("rankCreators, score", () => {
-  // The score counts 2 imagined posts nobody read and 3 with 1.07 readers.
-  // Over 10 real posts, 1.15 people per post scores 0.98 and 1.2 scores 1.01.
+  // The score counts 2 imagined posts nobody read and 3 with the average
+  // readers per post, here (10 + 11.5 + 12 + 400) / 430 = 1.008. Over 10 real
+  // posts, 1.15 people per post scores 0.97 and 1.2 scores 1.002.
   test("a creator needs a score of at least 1", async () => {
     dbState.creatorVisitScores = [
+      ...typicalCreators(40),
       visited("https://onereader.substack.com", { perPost: 1, posts: 10, people: 1 }),
       visited("https://almost.substack.com", { perPost: 1.15, posts: 10, people: 4 }),
       visited("https://enough.substack.com", { perPost: 1.2, posts: 10, people: 4 }),
@@ -60,12 +68,23 @@ describe("rankCreators, score", () => {
 
   test("the imagined posts pull a creator with few posts down more than one with many", async () => {
     // joec and Astral Codex Ten on 2026-10-23. The plain average put joec
-    // first; with the imagined posts it is 2.65 against 2.81.
+    // first; with the imagined posts it is 2.67 against 2.82.
     dbState.creatorVisitScores = [
+      ...typicalCreators(40),
       visited("https://joec.substack.com", { perPost: 6, posts: 3, people: 11 }),
       visited("https://acx.substack.com", { perPost: 3.9, posts: 10, people: 32 }),
     ];
     expect(await rankedSlugs()).toEqual(["acx", "joec"]);
+  });
+
+  test("the imagined average posts take the average readers per post of every visited creator", async () => {
+    // (3 * 10 + 1 * 30) / 40 = 1.5 readers per post, so a creator with 3 per
+    // post over 10 posts scores (30 + 3 * 1.5) / 15 = 2.3.
+    dbState.creatorVisitScores = [
+      visited("https://popular.substack.com", { perPost: 3, posts: 10, people: 9 }),
+      visited("https://quiet.substack.com", { perPost: 1, posts: 30, people: 1 }),
+    ];
+    expect((await rankCreators())[0]!.walkScore).toBeCloseTo(2.3);
   });
 
   test("a prioritized creator is walked with a low score", async () => {

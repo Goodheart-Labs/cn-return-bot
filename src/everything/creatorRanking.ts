@@ -34,8 +34,8 @@
  * person to each video.
  *
  * Since 2026-10-23 the score also counts imagined posts: 2 that nobody read
- * and 3 with the average number of readers (creatorScore in
- * everything-core/readers.ts, GOO-549). Before, a creator with two or three
+ * and 3 with the average number of readers per post over all visited creators,
+ * computed on every run (creatorScore in everything-core/readers.ts, GOO-549). Before, a creator with two or three
  * visited posts could top the walk on one shared link. On that day the plain
  * average ranked joec, with 5.67 readers per post over 3 posts, above Astral
  * Codex Ten, with 3.9 over 10. The imagined posts weigh little against 10 real
@@ -52,7 +52,14 @@
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
-import { byWalkOrder, creatorScore, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../everything-core/readers";
+import {
+  averageReadersPerPost,
+  byWalkOrder,
+  creatorScore,
+  LAST_POSTS_PER_CREATOR,
+  MIN_SCORE_TO_WALK,
+  MIN_VISITED_POSTS_TO_WALK,
+} from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -67,9 +74,11 @@ export interface RankedCreator {
   /** When the priority window runs out, for the run log. Null when the creator
    *  is walked on attention alone. */
   priorityUntil: string | null;
-  /** The creator's score and what it is made of. All zero for a prioritised
-   *  creator nobody has visited. */
+  /** What the creator's score is made of. All zero for a prioritised creator
+   *  nobody has visited. */
   score: Omit<CreatorVisitScore, "feed_url">;
+  /** The score the walk ranks on (creatorScore). */
+  walkScore: number;
   /** When this creator's top posts were last recomputed (GOO-81). */
   top_posts_refreshed_at: string | null;
   /** When a refresh was last tried and failed (migration 101). */
@@ -92,6 +101,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   // has to be found from a project row too, and a project stores whatever
   // casing it was created with.
   const scoreByUrl = new Map(scores.map(({ feed_url, ...score }) => [normalizeFeedUrl(feed_url), { feed_url, score }]));
+  const averageReaders = averageReadersPerPost(scores);
 
   // Known creators are indexed by feed URL rather than by slug. The URL is the
   // key everything shares, and it is what keeps a creator walked on attention
@@ -117,6 +127,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       prioritized: true,
       priorityUntil: p.priority_until,
       score: visited?.score ?? NO_VISITS,
+      walkScore: creatorScore(visited?.score ?? NO_VISITS, averageReaders),
       top_posts_refreshed_at: p.top_posts_refreshed_at,
       top_posts_attempted_at: p.top_posts_attempted_at,
     });
@@ -124,7 +135,8 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key) || creatorScore(visited.score) < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
+    const walkScore = creatorScore(visited.score, averageReaders);
+    if (alreadyRanked.has(key) || walkScore < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
@@ -142,6 +154,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       prioritized: false,
       priorityUntil: null,
       score: visited.score,
+      walkScore,
       // A creator with no project yet has no refresh stamp, so their top posts
       // are computed the first time they are walked.
       top_posts_refreshed_at: known?.top_posts_refreshed_at ?? null,

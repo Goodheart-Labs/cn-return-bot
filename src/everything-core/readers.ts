@@ -18,16 +18,10 @@ export const LAST_POSTS_PER_CREATOR = 10;
  *  score toward 0. */
 export const IMAGINED_UNREAD_POSTS = 2;
 
-/** And this many imagined posts with the average number of readers. Together
- *  they pull a creator with few posts toward a typical creator. A creator with
- *  10 real posts barely moves. */
+/** And this many imagined posts with the average number of readers per post
+ *  (averageReadersPerPost). Together they pull a creator with few posts toward
+ *  a typical creator. A creator with 10 real posts barely moves. */
 export const IMAGINED_AVERAGE_POSTS = 3;
-
-/** The average number of different people per visited post, over every
- *  visited creator's recent posts. It was 1.07 over 8,740 posts on 2026-10-23.
- *  It is fixed here rather than computed on every run, because it barely
- *  changes and the dashboard asks about one creator at a time. */
-export const AVERAGE_READERS_PER_POST = 1.07;
 
 /** The lowest score at which the walk takes a creator on visits alone. A
  *  prioritised creator is walked whatever their visits, because someone asked
@@ -48,19 +42,32 @@ export interface CreatorVisits {
   posts: number;
 }
 
+/** The average number of different people per visited post, over every
+ *  visited creator, weighted by their visited posts. It was 1.07 over 8,740
+ *  posts on 2026-10-23. The walk computes it from the creators it ranks, and
+ *  everything_creator_ranking (migration 134) computes it the same way in the
+ *  database. */
+export function averageReadersPerPost(creators: CreatorVisits[]): number {
+  const posts = creators.reduce((sum, c) => sum + c.posts, 0);
+  if (posts === 0) return 0;
+  return creators.reduce((sum, c) => sum + c.visitors_per_post * c.posts, 0) / posts;
+}
+
 /** A creator's score: the average number of different people per post, with
  *  the imagined posts counted as if they were real. The walk ranks on it and
  *  the dashboard shows it. The database applies the same formula in
- *  everything_creator_ranking (migration 132), with these constants passed in. */
-export const creatorScore = (visits: CreatorVisits): number =>
-  (visits.visitors_per_post * visits.posts + IMAGINED_AVERAGE_POSTS * AVERAGE_READERS_PER_POST) /
+ *  everything_creator_ranking (migration 134), with these constants passed in. */
+export const creatorScore = (visits: CreatorVisits, averageReaders: number): number =>
+  (visits.visitors_per_post * visits.posts + IMAGINED_AVERAGE_POSTS * averageReaders) /
   (visits.posts + IMAGINED_AVERAGE_POSTS + IMAGINED_UNREAD_POSTS);
 
 /** What the walk's order looks at in a creator. */
 export interface WalkOrderKey {
   prioritized: boolean;
   feed_url: string;
-  score: CreatorVisits & { people: number };
+  /** The creator's score (creatorScore). */
+  walkScore: number;
+  score: { people: number };
 }
 
 /** The walk's order: prioritised creators first, then the highest score.
@@ -69,7 +76,7 @@ export interface WalkOrderKey {
  *  run rather than depending on how the database returned the rows. */
 export const byWalkOrder = (a: WalkOrderKey, b: WalkOrderKey): number =>
   Number(b.prioritized) - Number(a.prioritized) ||
-  creatorScore(b.score) - creatorScore(a.score) ||
+  b.walkScore - a.walkScore ||
   b.score.people - a.score.people ||
   a.feed_url.localeCompare(b.feed_url);
 
