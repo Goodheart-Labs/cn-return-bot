@@ -474,6 +474,7 @@ export type Database = {
           checked_scope: string | null
           created_at: string
           error: string | null
+          first_checked_at: string | null
           full_text: string | null
           id: string
           priority: number
@@ -481,6 +482,7 @@ export type Database = {
           progress: Json | null
           project_id: string | null
           published_at: string | null
+          published_time: string | null
           request_steer: string | null
           retries: number
           skip_reason: string | null
@@ -494,6 +496,7 @@ export type Database = {
           checked_scope?: string | null
           created_at?: string
           error?: string | null
+          first_checked_at?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -501,6 +504,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          published_time?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -514,6 +518,7 @@ export type Database = {
           checked_scope?: string | null
           created_at?: string
           error?: string | null
+          first_checked_at?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -521,6 +526,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          published_time?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -2385,6 +2391,15 @@ export type Database = {
       }
     }
     Views: {
+      everything_creator_visits: {
+        Row: {
+          feed_url: string | null
+          people: number | null
+          posts: number | null
+          visitors_per_post: number | null
+        }
+        Relationships: []
+      }
       everything_follow_requests: {
         Row: {
           created_at: string | null
@@ -2595,8 +2610,15 @@ export type Database = {
         Returns: string
       }
       everything_creator_ranking: {
-        Args: { last_posts: number; min_posts: number; min_score: number }
+        Args: {
+          average_posts: number
+          last_posts: number
+          min_posts: number
+          min_score: number
+          unread_posts: number
+        }
         Returns: {
+          average_readers_per_post: number
           delay_posts: number
           extension_voters: number
           feed_url: string

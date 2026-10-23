@@ -170,6 +170,10 @@ export const FETCH_PAGE_PATH = "/fetch-page";
  *  HTML is parsed inside the sandbox and never in a service that holds keys. */
 export const READ_PAGE_PATH = "/read-page";
 export const FETCH_IMAGE_PATH = "/fetch-image";
+/** A Substack publication's RSS feed. Substack refuses GitHub's machines but
+ *  serves this one, so the feed run asks the extraction service for it, and
+ *  the service asks the fetcher. Both use this path. */
+export const SUBSTACK_FEED_PATH = "/substack-feed";
 
 /** The environment variable that names the fetcher's Unix socket. The fetcher
  *  listens on it. In any other process it means: do not fetch outside pages
@@ -191,6 +195,10 @@ export interface FetchUrlRequest {
 export type FetchedPageHtml =
   | { ok: true; html: string; fetchedUrl: string }
   | { ok: false; reason: string };
+
+export interface SubstackFeedXml {
+  xml: string;
+}
 
 /** A JSON answer from one plain request, without the ladder's fallbacks. */
 export type FetchedJson =

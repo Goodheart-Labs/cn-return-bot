@@ -7,13 +7,15 @@
  *   - <sub>.substack.com/feed                            → the latest posts with their bodies
  *
  * Substack's API refuses datacenter IPs, so the archive and post calls go
- * through the residential proxy (fetchJsonViaResidentialProxy). The RSS relay is
- * no help there: it only serves /feed, and Substack rate-limits Cloudflare
- * Workers on the API endpoints. Proxy traffic is paid per gigabyte, which is
- * fine at this volume: the top-post refresh makes one archive call per
- * publication per week, and one body call per enqueued top post.
+ * through the residential proxy (fetchJsonViaResidentialProxy). Proxy traffic
+ * is paid per gigabyte, which is fine at this volume: the top-post refresh
+ * makes one archive call per publication per week, and one body call per
+ * enqueued top post. The RSS feed is the one endpoint Substack serves to our
+ * services machine, but it still refuses GitHub's machines (see fetchFeedXml).
  */
 
+import { callFetchService, requestSubstackFeed } from "../../service/client";
+import { FETCH_SERVICE_SOCKET_VARIABLE, SUBSTACK_FEED_PATH, type SubstackFeedXml } from "../../service/contract";
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
 import { fetchJsonViaResidentialProxy } from "../../pipeline/utils/residentialProxy";
 import type { FetchedContent } from "../types";
@@ -129,17 +131,33 @@ export interface FeedPost {
 
 const PAYWALL_TRAILER = /<a href="[^"]*">\s*Read more\s*<\/a>\s*<\/p>\s*$/;
 
-/** Substack answers a datacenter IP with a 403, so in CI the RSS fetch goes
- *  through our Cloudflare Worker relay in src/everything/substack-proxy-worker.
- *  Substack serves that relay's traffic reliably. On a local machine the proxy
- *  environment variables are unset and we fetch Substack directly. */
-function feedRequest(feedUrl: string): { url: string; headers?: Record<string, string> } {
-  const proxyUrl = process.env.SUBSTACK_PROXY_URL;
-  if (!proxyUrl) return { url: feedUrl };
-  return {
-    url: `${proxyUrl}?url=${encodeURIComponent(feedUrl)}`,
-    headers: { "X-Proxy-Key": process.env.SUBSTACK_PROXY_KEY ?? "" },
-  };
+/** Only a publication's own feed may be fetched through the services machine,
+ *  so the route cannot be used to fetch any other address. */
+const SUBSTACK_FEED_URL = /^https:\/\/[\w-]+\.substack\.com\/feed$/;
+
+/** Fetches a feed from where this process runs. The fetcher on the services
+ *  machine calls this, and so does a local run. */
+export async function fetchFeedXmlDirectly(feedUrl: string): Promise<SubstackFeedXml> {
+  if (!SUBSTACK_FEED_URL.test(feedUrl)) throw new Error(`Not a Substack feed URL: ${feedUrl}`);
+  const res = await fetch(feedUrl);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${feedUrl}`);
+  return { xml: await res.text() };
+}
+
+/** Substack answers GitHub's machines with a 403, so a GitHub Actions run asks
+ *  the extraction service on the services machine for the feed. On that
+ *  machine only the sandboxed fetcher reaches outside addresses, so the
+ *  service asks the fetcher. A local run fetches Substack directly.
+ *
+ *  Until 2026-10-23 GitHub runs read feeds through a Cloudflare Worker that
+ *  kept a cached copy of each feed. On Cloudflare's free plan it could keep
+ *  only about 13 feeds fresh, and its copies were often hours old. Zvi's post
+ *  of 21 October waited 7 hours before the walk saw it (GOO-549). */
+export async function fetchFeedXml(feedUrl: string): Promise<SubstackFeedXml> {
+  if (process.env.GITHUB_ACTIONS) return requestSubstackFeed({ url: feedUrl });
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  if (socket) return callFetchService<SubstackFeedXml>(socket, SUBSTACK_FEED_PATH, { url: feedUrl });
+  return fetchFeedXmlDirectly(feedUrl);
 }
 
 const cdataUnwrap = (raw: string): string =>
@@ -155,12 +173,6 @@ function tagContent(item: string, tag: string): string {
   return item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1] ?? "";
 }
 
-/** The proxy serves feeds from a cache it refreshes in the background. A cache
- *  older than this means the proxy's own fetches of Substack have been failing
- *  for a long time. We then fail loudly instead of quietly reading frozen data
- *  forever. */
-const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
-
 export interface SubstackFeed {
   /** The publication's display name, from the feed's channel title. */
   title?: string;
@@ -175,14 +187,7 @@ export interface SubstackFeed {
  *  endpoint the automated pipeline uses. Feed-reader traffic is the one kind
  *  Substack serves to a non-residential IP. */
 export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFeed> {
-  const { url, headers } = feedRequest(`${publicationUrl.replace(/\/$/, "")}/feed`);
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
-  const cacheAgeSeconds = Number(res.headers.get("X-Cache-Age-Seconds") ?? 0);
-  if (cacheAgeSeconds > MAX_PROXY_CACHE_AGE_SECONDS) {
-    throw new Error(`Proxy cache for ${url} is ${Math.round(cacheAgeSeconds / 3600)}h old — its Substack fetches must be failing`);
-  }
-  const xml = await res.text();
+  const { xml } = await fetchFeedXml(`${publicationUrl.replace(/\/$/, "")}/feed`);
   // The channel's own title is the first <title> before any <item>. The items
   // carry <title> tags too, so the channel block is cut out first.
   const channelXml = xml.split("<item>")[0]!;

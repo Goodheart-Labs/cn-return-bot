@@ -197,6 +197,7 @@ so the live list is recorded here (checked on 2026-10-01):
 | `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `cleanup-cron-history` | `17 3 * * *` | Deletes pg_cron's own history older than 7 days. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `refresh-review-dashboard-base` | `0 * * * *` | Refreshes the review dashboard's cached table. | [migrations/080](../migrations/080_slow_review_dashboard_refresh.sql) |
+| `refresh-creator-visits` | `23 3 * * *` | Once a day, recounts every visited creator's visit numbers into `everything_creator_visits`, which the walk and the creator ranking read. Added on 2026-10-23. | [migrations/135](../migrations/135_creator_visits_daily.sql) |
 
 Both dispatch jobs read `github_dispatch_pat` from Vault. To pause one job
 without removing it, run `select cron.alter_job(job_id := <jobid>, active := false);`.
@@ -245,7 +246,6 @@ hides it in logs. The names below were checked against the live repository on
 | Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Create Notes Routine and Everything Priority Feeds. |
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
 | YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine. |
-| Substack relay | `SUBSTACK_PROXY_URL`, `SUBSTACK_PROXY_KEY` | Everything Priority Feeds. |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
@@ -278,7 +278,7 @@ its addresses now redirect to the same page on commonnotes.net.
 ## Cloudflare
 
 Cloudflare runs the DNS for `commonnotes.net`, hosts the website on that
-domain, and runs the Substack relay. The domain's name servers are
+domain, and still runs the retired Substack relay. The domain's name servers are
 Cloudflare's (checked on 2026-10-01).
 
 ### Cloudflare Pages: commonnotes.net
@@ -306,28 +306,19 @@ so the file must stay on the deployed site. The verification is what lets the
 Chrome Web Store listing name commonnotes.net as its "Official URL" with a
 verified badge.
 
-### The Substack relay Worker
+### The retired Substack relay Worker
 
 A Cloudflare Worker is a small program that Cloudflare runs on its own
-servers. Ours is named `substack-feed-proxy`. It fetches Substack RSS feeds for
-the pipeline, because Substack refuses requests from GitHub's machines. The
-code and its deploy steps are in
-[src/everything/substack-proxy-worker/](../src/everything/substack-proxy-worker/README.md).
-It runs on Jim's Cloudflare account, on the free plan.
+servers. Ours is named `substack-feed-proxy`, on Jim's Cloudflare account on
+the free plan. Until 2026-10-23 it fetched Substack RSS feeds for the feed
+run, because Substack refuses requests from GitHub's machines. On the free
+plan it kept only about 13 feeds fresh, and its copies were often hours old
+(GOO-549). Since then the feed run asks the extraction service on the
+services machine for each feed, and its code was deleted.
 
-Settings that live only in Cloudflare:
-
-- The Worker secret `PROXY_KEY`, set with `bunx wrangler secret put PROXY_KEY`.
-  It must hold the same value as the GitHub secret `SUBSTACK_PROXY_KEY`.
-- The Worker's address, which goes into the GitHub secret `SUBSTACK_PROXY_URL`.
-- The KV namespace `FEEDS`. KV is Cloudflare's key-value storage. Its id is in
-  [wrangler.toml](../src/everything/substack-proxy-worker/wrangler.toml).
-
-The free plan allows 1,000 KV writes a day, which is enough for about 13
-feeds. The README explains what to change when that runs out.
-
-A person deploys the Worker by hand with `bunx wrangler deploy`. No workflow
-deploys it.
+These are still left over and can be deleted by hand: the Worker
+`substack-feed-proxy` with its KV namespace `FEEDS` in Cloudflare, and the
+GitHub secrets `SUBSTACK_PROXY_URL` and `SUBSTACK_PROXY_KEY`.
 
 ## Google
 

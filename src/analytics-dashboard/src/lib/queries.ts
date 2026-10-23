@@ -2,7 +2,13 @@ import type { Database } from "../../../everything-core/database.types";
 import { supabase } from "../../../everything-core/supabase";
 
 type RpcName = keyof Database["public"]["Functions"];
-import { LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../../../everything-core/readers";
+import {
+  IMAGINED_AVERAGE_POSTS,
+  IMAGINED_UNREAD_POSTS,
+  LAST_POSTS_PER_CREATOR,
+  MIN_SCORE_TO_WALK,
+  MIN_VISITED_POSTS_TO_WALK,
+} from "../../../everything-core/readers";
 import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
@@ -195,8 +201,7 @@ export interface RecentPostRow {
   published_at: string | null;
   /** When the pipeline finished the post. */
   processed_at: string;
-  /** The author's score, the number the pipeline walks authors on: the
-   *  average number of different people per post, over the author's
+  /** The average number of different people per post, over the author's
    *  LAST_POSTS_PER_CREATOR most recently visited posts. A visit carries a
    *  person only since migration 089, so older reading is missing. Null when
    *  the post's project has no feed, or nobody visited the author. */
@@ -206,8 +211,8 @@ export interface RecentPostRow {
   notes: number;
 }
 
-/** The author score is the one the pipeline walks creators on, so the table
- *  shows the same attention that decided which posts got checked. */
+/** The table shows the readers per post that the walk's score is made from,
+ *  so it shows the attention that decided which posts got checked. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
   return rpcAllRows<RecentPostRow>("everything_recent_posts", {
     max_posts: maxPosts,
@@ -232,7 +237,7 @@ export function fetchSpendByHour(days: number): Promise<SpendHourRow[]> {
   return rpcAllRows<SpendHourRow>("everything_spend_by_hour", { window_days: days });
 }
 
-// --- The walk's ranking of creators (migration 131) ---
+// --- The walk's ranking of creators (migrations 131 to 134) ---
 
 export interface CreatorRankingRow {
   feed_url: string;
@@ -241,19 +246,23 @@ export interface CreatorRankingRow {
   project_name: string | null;
   /** Set only while the creator's priority is open. */
   priority_until: string | null;
-  /** Null for a prioritised creator nobody has visited. */
+  /** The plain average of different people per post, without the imagined
+   *  posts of creatorScore. Null for a prioritised creator nobody has visited. */
   visitors_per_post: number | null;
   score_posts: number | null;
   people: number | null;
   /** How many posts the median delay covers. Null when none qualified. */
   delay_posts: number | null;
-  /** Median hours from the publish day to the end of processing. */
+  /** Median hours from the exact publication time to the end of the first check. */
   median_delay_hours: number | null;
   /** How many posts with notes the vote counts cover. Null when none had a
    *  visit after their first note. */
   vote_posts: number | null;
   vote_visitors: number | null;
   extension_voters: number | null;
+  /** The average readers per post over all visited creators, the same in
+   *  every row. The score's imagined average posts have this many readers. */
+  average_readers_per_post: number;
 }
 
 export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
@@ -261,5 +270,7 @@ export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
     last_posts: LAST_POSTS_PER_CREATOR,
     min_score: MIN_SCORE_TO_WALK,
     min_posts: MIN_VISITED_POSTS_TO_WALK,
+    unread_posts: IMAGINED_UNREAD_POSTS,
+    average_posts: IMAGINED_AVERAGE_POSTS,
   });
 }

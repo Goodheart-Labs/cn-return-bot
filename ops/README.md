@@ -90,10 +90,6 @@ YOUTUBE_DATA_V3_API_KEY=
 # is the IP, not the client: enabling a JavaScript runtime changes nothing, and
 # a netcup VPS that reached YouTube directly in July is now refused as well.
 YTDLP_PROXY_URL=
-# Substack does not need its relay here. The same measurement fetched two RSS
-# feeds and the api/v1 archive endpoint directly, all 200. Leave these unset.
-#SUBSTACK_PROXY_URL=
-#SUBSTACK_PROXY_KEY=
 
 # Optional knobs, with their defaults
 #CLAIM_CHECK_PORT=8787
