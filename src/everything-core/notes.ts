@@ -1,5 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
-import { fetchAllRows, fetchInBatches } from "./paging";
+import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
@@ -47,7 +47,7 @@ export async function fetchNote(id: string): Promise<NoteRow | null> {
 /** The notes with these ids. Every paged list of notes on the website reads
  *  the notes of its page this way. */
 export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
-  const notes = await fetchInBatches<RawNote>((chunk) => noteQuery().in("id", chunk), ids, "id", { label: "notesById" });
+  const notes = await fetchByIds<RawNote>((chunk) => noteQuery().in("id", chunk), ids, { label: "notesById" });
   return notes.map(toNoteRow);
 }
 

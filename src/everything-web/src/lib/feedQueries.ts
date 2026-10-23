@@ -108,8 +108,8 @@ export function useNoteFeed(scope: FeedScope, order: FeedOrder, filters: NoteFil
 }
 
 /** How many visible notes the scope holds, without any filter. */
-export const useNoteCount = (scope: FeedScope) =>
-  useQuery({ queryKey: queryKeys.noteCount(scope), queryFn: async () => (await fetchFeedSummary(scope, NO_FILTERS, new Date(), [])).matching });
+export const useNoteCount = (scope: FeedScope, enabled = true) =>
+  useQuery({ queryKey: queryKeys.noteCount(scope), queryFn: async () => (await fetchFeedSummary(scope, NO_FILTERS, new Date(), [])).matching, enabled });
 
 /** The note a shared link points at, with what its card renders. Its project
  *  page shows it first, because the feed may hold it on a page far below. */

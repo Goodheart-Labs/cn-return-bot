@@ -29,7 +29,9 @@
 -- the three functions below are a line-by-line port of
 -- src/everything-core/incompleteBeta.ts. The constants must stay equal to the
 -- ones in noteBelief.ts and noteScore.ts, and noteBelief.sql.test.ts checks
--- that they do.
+-- that they do. The calls between them name the schema, because a restore
+-- from a backup runs with an empty search path, and it computes the stored
+-- columns below with these functions.
 
 create function everything_log_gamma(x float8) returns float8
 language plpgsql immutable parallel safe as $$
@@ -43,7 +45,7 @@ declare
 begin
   -- The reflection formula keeps the series in its convergent range.
   if x < 0.5 then
-    return ln(pi() / sin(pi() * x)) - everything_log_gamma(1 - x);
+    return ln(pi() / sin(pi() * x)) - public.everything_log_gamma(1 - x);
   end if;
   for i in 1..8 loop
     series := series + coefficients[i] / (z + i);
@@ -104,12 +106,12 @@ declare
 begin
   if x <= 0 then return 0; end if;
   if x >= 1 then return 1; end if;
-  front := exp(everything_log_gamma(a + b) - everything_log_gamma(a) - everything_log_gamma(b) + a * ln(x) + b * ln(1 - x));
+  front := exp(public.everything_log_gamma(a + b) - public.everything_log_gamma(a) - public.everything_log_gamma(b) + a * ln(x) + b * ln(1 - x));
   -- On the far side the mirrored fraction converges faster.
   if x < (a + 1) / (a + b + 2) then
-    return front * everything_beta_continued_fraction(a, b, x) / a;
+    return front * public.everything_beta_continued_fraction(a, b, x) / a;
   end if;
-  return 1 - front * everything_beta_continued_fraction(b, a, 1 - x) / b;
+  return 1 - front * public.everything_beta_continued_fraction(b, a, 1 - x) / b;
 end;
 $$;
 
@@ -118,10 +120,10 @@ $$;
 -- Helpful vote, and 0.4 is X's bar for a helpful note.
 create function everything_probability_helpful(helpful int, somewhat_helpful int, not_helpful int) returns float8
 language sql immutable parallel safe as $$
-  select 1 - everything_incomplete_beta(
-    1.6806912990301406 + helpful + 0.5 * somewhat_helpful,
-    3.3193087009698594 + not_helpful,
-    0.4);
+  select 1 - public.everything_incomplete_beta(
+    1.6806912990301406::float8 + helpful + 0.5 * somewhat_helpful,
+    3.3193087009698594::float8 + not_helpful,
+    0.4::float8);
 $$;
 
 -- A note's rating state from that chance, as noteStatus in
@@ -140,10 +142,10 @@ $$;
 -- Helpful vote, which is how the feed ranks the notes that need ratings.
 alter table everything_notes
   add column p_helpful float8 generated always as (
-    everything_probability_helpful(greatest(helpful_count - (author_id is not null)::int, 0), somewhat_helpful_count, not_helpful_count)
+    public.everything_probability_helpful(greatest(helpful_count - (author_id is not null)::int, 0), somewhat_helpful_count, not_helpful_count)
   ) stored,
   add column p_helpful_after_helpful float8 generated always as (
-    everything_probability_helpful(greatest(helpful_count - (author_id is not null)::int, 0) + 1, somewhat_helpful_count, not_helpful_count)
+    public.everything_probability_helpful(greatest(helpful_count - (author_id is not null)::int, 0) + 1, somewhat_helpful_count, not_helpful_count)
   ) stored;
 
 comment on column everything_notes.p_helpful is
@@ -188,15 +190,14 @@ create type everything_feed_scope as (
   voted_before timestamptz
 );
 
--- Every visible note in the scope that passes the filters, with what the feed
--- sorts and filters on. `band` is the note's rating state, or 'stale' when the
--- source text has changed since we quoted it. `content` is the note's place in
+-- One note as the feed sorts and filters it. `band` is the note's rating
+-- state, or 'stale' when the source text has changed since we quoted it. `content` is the note's place in
 -- its post, which breaks every tie: by the clip timestamp, then the age of the
 -- improvement chain the note belongs to, then originals before improvements,
 -- then the older note first. `views` counts the devices outside the team that
--- were shown the post's notes (migration 128).
-create function everything_feed_candidates(p_scope everything_feed_scope)
-returns table (
+-- were shown the post's notes (migration 128). `passes` says whether the
+-- note passes the reader's filters.
+create type everything_feed_candidate as (
   id uuid,
   item_id uuid,
   created_at timestamptz,
@@ -208,8 +209,14 @@ returns table (
   not_helpful_count int,
   views bigint,
   item_epoch float8,
-  content float8[]
-)
+  content float8[],
+  passes boolean
+);
+
+-- Every visible note in the scope. Each page and each summary computes this
+-- list once and reads it as often as it needs.
+create function everything_feed_candidates(p_scope everything_feed_scope)
+returns setof everything_feed_candidate
 language sql stable security definer set search_path = public as $$
   with recursive scoped as (
     select n.id, n.improved_from_note_id, n.created_at, n.p_helpful, n.p_helpful_after_helpful,
@@ -223,14 +230,19 @@ language sql stable security definer set search_path = public as $$
        and (p_scope.project_id is null or i.project_id = p_scope.project_id)
        and (p_scope.item_id is null or c.item_id = p_scope.item_id)
   ),
-  -- Walks every note up its improvement chain. The deepest step reached is
-  -- the chain's first note. The depth limit only guards against a cycle.
+  -- Walks every improvement up its chain of earlier notes. The deepest step
+  -- reached is the chain's first note. Only the few notes that improve
+  -- another one are walked, wherever they are, and each step looks the
+  -- earlier note up by its id. An improvement sits on the same claim as the
+  -- note it improves, so its chain never leaves the scope. A note that improves nothing is the first note of its own chain. A
+  -- hidden note ends the walk, as the browser's walk ended at a note it did
+  -- not have. The depth limit only guards against a cycle.
   ancestors (id, parent_id, ancestor_created_at, depth) as (
-    select s.id, s.improved_from_note_id, s.created_at, 0 from scoped s
+    select n.id, n.improved_from_note_id, n.created_at, 0 from everything_notes n where n.improved_from_note_id is not null and n.status <> 'hidden'
     union all
-    select a.id, s.improved_from_note_id, s.created_at, a.depth + 1
+    select a.id, p.improved_from_note_id, p.created_at, a.depth + 1
       from ancestors a
-      join scoped s on s.id = a.parent_id
+      join everything_notes p on p.id = a.parent_id and p.status <> 'hidden'
      where a.depth < 50
   ),
   roots as (
@@ -238,8 +250,15 @@ language sql stable security definer set search_path = public as $$
       from ancestors a
      order by a.id, a.depth desc
   ),
-  viewers as (
-    select v.item_id, v.viewers from everything_item_note_viewers() v
+  -- The extension writes the item id into a view event, so it is read as
+  -- text, and only a well-formed id is turned into one. Joining on ids rather
+  -- than text lets Postgres match the counts to the notes with a hash table
+  -- instead of sorting every note. The counts are computed once, before the
+  -- join, so the function never runs once per note.
+  viewers as materialized (
+    select v.item_id::uuid as item_id, v.viewers
+      from everything_item_note_viewers() v
+     where v.item_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
   )
   select s.id, s.item_id, s.created_at,
          case when s.stale then 'stale' else everything_note_status(s.p_helpful) end,
@@ -249,25 +268,25 @@ language sql stable security definer set search_path = public as $$
          coalesce(v.viewers, 0),
          extract(epoch from s.item_date)::float8,
          array[coalesce(s.start_seconds, 0)::float8,
-               extract(epoch from r.root_created_at)::float8,
+               extract(epoch from coalesce(r.root_created_at, s.created_at))::float8,
                (s.improved_from_note_id is not null)::int::float8,
-               extract(epoch from s.created_at)::float8]
+               extract(epoch from s.created_at)::float8],
+         coalesce(v.viewers, 0) >= coalesce(p_scope.min_views, 0)
+           and s.helpful_count + s.somewhat_helpful_count + s.not_helpful_count >= coalesce(p_scope.min_votes, 0)
+           and s.helpful_count >= coalesce(p_scope.min_helpful, 0)
+           and s.not_helpful_count >= coalesce(p_scope.min_not_helpful, 0)
+           -- A note the reader wrote counts as voted on, because posting a
+           -- note casts a Helpful vote on it.
+           and not (coalesce(p_scope.unvoted_only, false) and exists (
+             select 1 from everything_votes ev
+              where ev.note_id = s.id and ev.voter_id = auth.uid() and ev.created_at < coalesce(p_scope.voted_before, now())))
     from scoped s
-    join roots r on r.id = s.id
-    left join viewers v on v.item_id = s.item_id::text
-   where coalesce(v.viewers, 0) >= coalesce(p_scope.min_views, 0)
-     and s.helpful_count + s.somewhat_helpful_count + s.not_helpful_count >= coalesce(p_scope.min_votes, 0)
-     and s.helpful_count >= coalesce(p_scope.min_helpful, 0)
-     and s.not_helpful_count >= coalesce(p_scope.min_not_helpful, 0)
-     -- A note the reader wrote counts as voted on, because posting a note
-     -- casts a Helpful vote on it.
-     and not (coalesce(p_scope.unvoted_only, false) and exists (
-       select 1 from everything_votes ev
-        where ev.note_id = s.id and ev.voter_id = auth.uid() and ev.created_at < coalesce(p_scope.voted_before, now())));
+    left join roots r on r.id = s.id
+    left join viewers v on v.item_id = s.item_id;
 $$;
 
--- One stream of the feed: the notes of the given bands in one sort order,
--- starting right after the position `p_after`. Every sort order ends in the
+-- One stream of the feed: the notes of the given bands among `p_candidates`
+-- in one sort order, starting right after the position `p_after`. Every sort order ends in the
 -- post's date (newest first), the post's id and the note's place in the post,
 -- so the notes of one post stay together on a tie. The note's id comes last,
 -- which makes every position unique. Each order puts its values into one
@@ -279,7 +298,7 @@ $$;
 --   the oldest note first, because that is where a rating settles the most.
 -- * best: the chance of ending up helpful alone.
 -- * recent: the newest note first.
-create function everything_feed_stream(p_scope everything_feed_scope, p_bands text[], p_key text, p_after jsonb, p_limit int)
+create function everything_feed_stream(p_candidates everything_feed_candidate[], p_bands text[], p_key text, p_after jsonb, p_limit int)
 returns table (id uuid, item_id uuid, key float8[], content float8[], views bigint)
 language sql stable security definer set search_path = public as $$
   with keyed as (
@@ -290,7 +309,7 @@ language sql stable security definer set search_path = public as $$
              when 'best' then array[-c.p_helpful, -c.item_epoch]
              when 'recent' then array[-extract(epoch from c.created_at)::float8, -c.item_epoch]
            end as key
-      from everything_feed_candidates(p_scope) c
+      from unnest(p_candidates) c
      where c.band = any (p_bands)
   )
   select k.id, k.item_id, k.key, k.content, k.views
@@ -341,6 +360,7 @@ declare
   max_page_size constant int := 100;
   leading_helpful_notes constant int := 3;
   scope everything_feed_scope := row(p_project_id, p_item_id, p_min_views, p_min_votes, p_min_helpful, p_min_not_helpful, p_unvoted_only, p_voted_before);
+  candidates everything_feed_candidate[] := array(select c from everything_feed_candidates(scope) c where c.passes);
   bands text[] := case p_order
     when 'mixed' then array['main', 'unhelpful', 'stale']
     when 'recent' then array['all']
@@ -371,11 +391,11 @@ begin
       for r in
         with helpful as (
           select s.*, helpful_taken - 1 + row_number() over (order by s.key, s.item_id, s.content, s.id) as taken_index
-            from everything_feed_stream(scope, array['helpful'], 'helpful', helpful_after, remaining) s
+            from everything_feed_stream(candidates, array['helpful'], 'helpful', helpful_after, remaining) s
         ),
         needs as (
           select s.*, needs_taken - 1 + row_number() over (order by s.key, s.item_id, s.content, s.id) as taken_index
-            from everything_feed_stream(scope, array['needs_ratings'], 'needs_ratings', needs_after, remaining) s
+            from everything_feed_stream(candidates, array['needs_ratings'], 'needs_ratings', needs_after, remaining) s
         )
         select * from (
           select 'helpful' as stream, h.*,
@@ -401,7 +421,7 @@ begin
     else
       for r in
         select * from everything_feed_stream(
-          scope,
+          candidates,
           case band when 'unhelpful' then array['not_helpful'] when 'stale' then array['stale']
                     else array['helpful', 'needs_ratings', 'not_helpful', 'stale'] end,
           case when band in ('unhelpful', 'stale') then 'best' when p_order = 'recent' then 'recent' else 'helpful' end,
@@ -445,11 +465,11 @@ create function everything_note_feed_summary(
   p_since timestamptz[] default '{}'
 ) returns jsonb
 language sql stable security definer set search_path = public as $$
-  with matching as (
+  with everything_in_scope as materialized (
     select * from everything_feed_candidates(row(p_project_id, p_item_id, p_min_views, p_min_votes, p_min_helpful, p_min_not_helpful, p_unvoted_only, p_voted_before))
   ),
-  everything_in_scope as (
-    select * from everything_feed_candidates(row(p_project_id, p_item_id, 0, 0, 0, 0, false, null))
+  matching as (
+    select * from everything_in_scope where passes
   )
   select jsonb_build_object(
     'matching', (select count(*) from matching),
@@ -622,7 +642,7 @@ revoke all on function
   everything_probability_helpful(int, int, int),
   everything_note_status(float8),
   everything_feed_candidates(everything_feed_scope),
-  everything_feed_stream(everything_feed_scope, text[], text, jsonb, int),
+  everything_feed_stream(everything_feed_candidate[], text[], text, jsonb, int),
   everything_note_feed_page(uuid, uuid, text, int, int, int, int, boolean, timestamptz, jsonb, int),
   everything_note_feed_summary(uuid, uuid, int, int, int, int, boolean, timestamptz, timestamptz[]),
   everything_projects_page(text, numeric, text, uuid, int),

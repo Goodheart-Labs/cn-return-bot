@@ -132,7 +132,9 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
   const waitingForItem = !!itemId && itemQuery.isPending;
   const { list, summary } = useNoteFeed({ projectId: project.id, itemId: activeItem?.id ?? null }, "mixed", NO_FILTERS);
   const items = useProjectItems(project.id);
-  const total = useNoteCount({ projectId: project.id, itemId: null }).data;
+  // While the whole project shows, its feed's own summary has the count.
+  const projectCount = useNoteCount({ projectId: project.id, itemId: null }, !!activeItem).data;
+  const total = activeItem ? projectCount : summary.data?.matching;
   const shared = useSharedNote(noteId).data;
   const [writeOpen, setWriteOpen] = useState(false);
   useProjectRealtime(project.id);

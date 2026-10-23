@@ -1,7 +1,7 @@
 import { noteStatus } from "./noteScore";
 import { extractYoutubeVideoId } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
-import { fetchAllRows, fetchInBatches } from "./paging";
+import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
 import type { FeedItemRow, ItemRow, ProjectHeader } from "./types";
 
@@ -13,10 +13,9 @@ const FEED_ITEM_COLS = "id, project_id, url, title, published_at, created_at";
  *  projects they belong to. The body text in particular is the largest column
  *  we have, and the website never shows it. */
 export async function fetchItemsWithProjects(ids: string[]): Promise<{ items: FeedItemRow[]; projects: ProjectHeader[] }> {
-  const rows = await fetchInBatches<FeedItemRow & { project: ProjectHeader | null }>(
+  const rows = await fetchByIds<FeedItemRow & { project: ProjectHeader | null }>(
     (chunk) => supabase.from("everything_items").select(`${FEED_ITEM_COLS}, project:everything_projects(id, slug, name, feed_url, avatar_url)`).in("id", chunk),
     ids,
-    "id",
     { label: "itemsWithProjects" },
   );
   const projects = new Map(rows.flatMap(({ project }) => (project ? [[project.id, project] as const] : [])));
