@@ -28,6 +28,7 @@ export {
   RiCloseLargeFill as CloseIcon,
   RiPlayFill as PlayIcon,
   RiTrophyFill as TrophyIcon,
+  RiTwitterXFill as XLogoIcon,
 } from "@remixicon/react";
 
 /** Two notes lying on top of each other, the front one with two lines of

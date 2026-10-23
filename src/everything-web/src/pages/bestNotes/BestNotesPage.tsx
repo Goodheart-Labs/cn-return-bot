@@ -5,8 +5,10 @@ import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/type
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { Checkbox } from "@cn/ui/Field";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { FeedNoteCard } from "../../components/FeedNoteCard";
+import { FiltersPopover } from "../../components/FiltersPopover";
 import { ProjectAvatar } from "../../components/ProjectAvatar";
 import { RouteLink } from "../../components/RouteLink";
 import { entriesByClaim, improvementsByOriginal } from "../../lib/feed";
@@ -97,7 +99,7 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
           ))}
         </ul>
       </nav>
-      {creators.length > 1 && (
+      {creators.length > 0 && (
         <nav aria-label="Creators">
           <h2 className="mb-1 px-3 text-xs font-medium uppercase tracking-wide text-fg-muted">Creators</h2>
           <ul className="space-y-0.5">
@@ -131,8 +133,8 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
  *  its own ranking. Admins move the good ones to their own leaderboard, at the
  *  bottom or at a place they type, remove the rest with a reason, and comment
  *  on any note to explain its place. The leaderboard has a drag mode for
- *  reordering and a "Posted on X" mark on each note. Filters hide the notes
- *  already posted and the notes the admin already voted on. A sidebar switches between the sections and narrows a section
+ *  reordering and a "Posted on X" mark on each note. A Filters button hides
+ *  the notes already posted and the notes the admin already voted on. A sidebar switches between the sections and narrows a section
  *  to one creator, whose slug then sits in the address. Anyone who is not an
  *  admin sees only a short message, and the database refuses them both lists. */
 export function BestNotesPage({ section, projectSlug, navigate }: { section: CurationSection; projectSlug: string | null; navigate: (route: Route) => void }) {
@@ -266,32 +268,33 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
               ))}
             </select>
           </label>
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <h2 className="font-title text-2xl font-bold text-fg">
               {SECTION_TITLES[section]}
               {selectedProject && <span className="font-normal text-fg-secondary"> on {selectedProject.name}</span>}
             </h2>
-            {section === "leaderboard" && shown.length > 1 && (
-              <Button variant={reordering ? "primary" : "secondary"} onClick={() => setReordering(!reordering)}>
-                {reordering ? "Done" : "Reorder"}
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {section === "leaderboard" && shown.length > 1 && (
+                <Button variant={reordering ? "primary" : "secondary"} onClick={() => setReordering(!reordering)}>
+                  {reordering ? "Done" : "Reorder"}
+                </Button>
+              )}
+              {section !== "removed" && (
+                <FiltersPopover activeCount={Number(notPostedOnly) + Number(unvotedOnly)}>
+                  {section === "leaderboard" && (
+                    <Checkbox checked={notPostedOnly} onChange={setNotPostedOnly} className="text-sm font-medium text-fg-secondary">
+                      Only notes not posted on X yet
+                    </Checkbox>
+                  )}
+                  <Checkbox checked={unvotedOnly} onChange={setUnvotedOnly} className="text-sm font-medium text-fg-secondary">
+                    Only notes I haven't voted on
+                  </Checkbox>
+                  <p className="text-sm text-fg-muted">{shown.length === 1 ? "1 note" : `${shown.length} notes`}</p>
+                </FiltersPopover>
+              )}
+            </div>
           </div>
           <p className="text-sm text-fg-muted">{SECTION_INTROS[section]}</p>
-          {section !== "removed" && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-secondary">
-              {section === "leaderboard" && (
-                <label className="inline-flex items-center gap-1.5">
-                  <input type="checkbox" checked={notPostedOnly} onChange={(e) => setNotPostedOnly(e.target.checked)} />
-                  Not posted yet
-                </label>
-              )}
-              <label className="inline-flex items-center gap-1.5">
-                <input type="checkbox" checked={unvotedOnly} onChange={(e) => setUnvotedOnly(e.target.checked)} />
-                Not voted on by me
-              </label>
-            </div>
-          )}
           {error && <p className="text-sm text-negative">{error}</p>}
         </div>
         {feed}

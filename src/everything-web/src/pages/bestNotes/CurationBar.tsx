@@ -7,7 +7,6 @@ import {
   restoreRecommendation,
   returnToRecommendations,
   setComment,
-  setPosition,
   setPosted,
   type CuratedNoteRow,
   type CurationSection,
@@ -15,6 +14,9 @@ import {
 import type { FeedProjectRow } from "@cn/core/types";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
+import { IconButton } from "@cn/ui/IconButton";
+import { CloseIcon, SpeechBubbleIcon, TrophyIcon, XLogoIcon } from "@cn/ui/icons";
 import { ProjectAvatar } from "../../components/ProjectAvatar";
 import { RouteLink } from "../../components/RouteLink";
 import type { Route } from "../../lib/routing";
@@ -41,7 +43,7 @@ export function useCurationChange(onError: (message: string) => void) {
 }
 
 /** Which small form is open under a note's bar. */
-type Panel = "add" | "place" | "comment" | "remove" | null;
+type Panel = "add" | "takeOff" | "comment" | "remove" | null;
 
 const TEXTAREA = "w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 const NUMBER = "w-20 rounded-control border border-line-strong bg-surface px-2 py-1 text-sm text-fg tabular-nums";
@@ -105,19 +107,17 @@ function PlaceForm({ label, max, submit, onDone }: { label: string; max: number;
   );
 }
 
-const actionClass = "text-sm font-medium text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control";
-
-function Action({ onClick, children }: { onClick: () => void; children: ReactNode }) {
-  return (
-    <button type="button" onClick={onClick} className={actionClass}>
-      {children}
-    </button>
-  );
-}
+/** The action buttons are a little larger than the default icon button, so
+ *  they are easy to hit on a long page. */
+const ICON_BUTTON = "h-8 w-8";
 
 /** The top of a note's card on the curation page: its rank, its creator, the
- *  admin's actions for the section, and the comment or removal reason. One
- *  small form at a time opens below it. */
+ *  admin's actions for the section as symbols that name themselves on hover,
+ *  and the comment or removal reason. One small form at a time opens below it.
+ *  A recommendation has a trophy (add to our leaderboard), a speech bubble
+ *  (comment) and a red cross (remove, with a reason). A leaderboard note has
+ *  the X logo (mark as posted on X), the speech bubble, and a red cross that
+ *  offers to send the note back to the recommendations or remove it. */
 export function CurationBar({ section, rank, noteId, comment, posted, removedReason, project, leaderboard, navigate, onError }: {
   section: CurationSection;
   rank: number;
@@ -136,31 +136,49 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
   const change = useCurationChange(onError);
   const close = () => setPanel(null);
   const list = section === "leaderboard" ? "leaderboard" : "recommendations";
-  const othersOnLeaderboard = leaderboard.filter((row) => row.note_id !== noteId);
+
+  const toggle = (next: Panel) => setPanel(panel === next ? null : next);
+  const commentButton = (
+    <IconButton label={comment ? "Edit the comment" : "Comment on its place"} onClick={() => toggle("comment")} className={ICON_BUTTON}>
+      <SpeechBubbleIcon size={17} aria-hidden />
+    </IconButton>
+  );
 
   let actions: ReactNode;
   if (section === "recommendations") {
     actions = (
       <>
-        <Action onClick={() => setPanel(panel === "add" ? null : "add")}>Add to leaderboard</Action>
-        <Action onClick={() => setPanel(panel === "comment" ? null : "comment")}>Comment</Action>
-        <Action onClick={() => setPanel(panel === "remove" ? null : "remove")}>Remove</Action>
+        <IconButton label="Add to our leaderboard" onClick={() => toggle("add")} className={ICON_BUTTON}>
+          <TrophyIcon size={17} aria-hidden />
+        </IconButton>
+        {commentButton}
+        <IconButton label="Remove from the recommendations" onClick={() => toggle("remove")} className={cn(ICON_BUTTON, "text-negative hover:text-negative")}>
+          <CloseIcon size={17} aria-hidden />
+        </IconButton>
       </>
     );
   } else if (section === "leaderboard") {
     actions = (
       <>
-        <label className="inline-flex items-center gap-1.5 text-sm text-fg-secondary">
-          <input type="checkbox" checked={posted} onChange={(e) => void change(() => setPosted(noteId, e.target.checked))} />
-          Posted on X
-        </label>
-        <Action onClick={() => setPanel(panel === "place" ? null : "place")}>Move to place</Action>
-        <Action onClick={() => setPanel(panel === "comment" ? null : "comment")}>Comment</Action>
-        <Action onClick={() => void change(() => returnToRecommendations(noteId))}>Back to recommendations</Action>
+        <IconButton
+          label={posted ? "Posted on X. Click to unmark" : "Mark as posted on X"}
+          onClick={() => void change(() => setPosted(noteId, !posted))}
+          className={cn(ICON_BUTTON, posted ? "bg-tint text-fg hover:text-fg" : "")}
+        >
+          <XLogoIcon size={15} aria-hidden />
+        </IconButton>
+        {commentButton}
+        <IconButton label="Take off the leaderboard" onClick={() => toggle("takeOff")} className={cn(ICON_BUTTON, "text-negative hover:text-negative")}>
+          <CloseIcon size={17} aria-hidden />
+        </IconButton>
       </>
     );
   } else {
-    actions = <Action onClick={() => void change(() => restoreRecommendation(noteId))}>Restore</Action>;
+    actions = (
+      <Button variant="link" className="text-sm" onClick={() => void change(() => restoreRecommendation(noteId))}>
+        Restore
+      </Button>
+    );
   }
 
   let form: ReactNode = null;
@@ -173,14 +191,19 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
         <PlaceForm label="Add here" max={leaderboard.length + 1} submit={(r) => change(() => moveToLeaderboard(noteId, positionAtRank(leaderboard, r)))} onDone={close} />
       </div>
     );
-  } else if (panel === "place") {
+  } else if (panel === "takeOff") {
     form = (
-      <PlaceForm
-        label="Move"
-        max={leaderboard.length}
-        submit={(r) => change(() => setPosition("leaderboard", noteId, positionAtRank(othersOnLeaderboard, r)))}
-        onDone={close}
-      />
+      <div className="flex flex-wrap gap-2">
+        <Button variant="secondary" onClick={() => void change(() => returnToRecommendations(noteId))}>
+          Back to recommendations
+        </Button>
+        <Button variant="secondary" onClick={() => setPanel("remove")}>
+          Remove
+        </Button>
+        <Button variant="link" onClick={close}>
+          Cancel
+        </Button>
+      </div>
     );
   } else if (panel === "comment") {
     form = (
@@ -198,7 +221,14 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
         label="Remove"
         initial=""
         placeholder="Why remove it? (optional)"
-        submit={(text) => change(() => removeRecommendation(noteId, text))}
+        // A leaderboard note goes back among the recommendations first, so
+        // its removal and reason are recorded like any other.
+        submit={(text) =>
+          change(async () => {
+            if (section === "leaderboard") await returnToRecommendations(noteId);
+            await removeRecommendation(noteId, text);
+          })
+        }
         onDone={close}
       />
     );
@@ -218,7 +248,7 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
             {project.name}
           </RouteLink>
         )}
-        <span className="ml-auto flex flex-wrap items-center gap-x-3 gap-y-1">{actions}</span>
+        <span className="ml-auto flex items-center gap-1">{actions}</span>
       </div>
       {section !== "removed" && comment && panel !== "comment" && (
         <p className="rounded-control bg-surface-muted px-3 py-2 text-sm text-fg-secondary">
