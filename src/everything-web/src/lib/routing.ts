@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CURATION_SECTIONS, type CurationSection } from "@cn/core/bestNotes";
 import { REVIEW_SECTIONS, type ReviewSection } from "@cn/core/claudeReview";
 import { capturePageview } from "./analytics";
 
@@ -7,8 +8,6 @@ import { capturePageview } from "./analytics";
  *   /install              the homepage, scrolled to the install section
  *   /notes                the overview of all projects
  *   /notes/all            every note of every project in one feed
- *   /notes/best           the best notes, in the order the team ranked them
- *   /notes/best/<slug>    the best notes of one project
  *   /notes/<slug>         one project
  *   /notes/<slug>/<item>  one post or video of a project
  *   /minisites            every minisite
@@ -17,9 +16,13 @@ import { capturePageview } from "./analytics";
  *   /leaderboard          the rating leaderboard
  *   /admin/notes/<section> admins review the Claude note writer's notes, one
  *                         section at a time
+ *   /admin/best/<section>  admins curate the best notes: Claude's
+ *                         recommendations, their own leaderboard, or the
+ *                         removed recommendations
+ *   /admin/best/<section>/<slug>  the same, narrowed to one creator
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
- * The paths /notes/all and /notes/best win over projects with those slugs.
+ * The path /notes/all wins over a project whose slug is "all".
  * A link to one note adds ?note=<id> to its project's path. The static pages
  * /privacy/ and /terms/ sit beside the app.
  *
@@ -39,20 +42,21 @@ export type Route =
   | { view: "home"; section: "install" | null }
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
   | { view: "allNotes" }
-  | { view: "bestNotes"; project: string | null }
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" }
-  | { view: "noteReview"; section: ReviewSection };
+  | { view: "noteReview"; section: ReviewSection }
+  | { view: "bestNotes"; section: CurationSection; project: string | null };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
 export const ALL_NOTES: Route = { view: "allNotes" };
-export const BEST_NOTES: Route = { view: "bestNotes", project: null };
 export const MINISITES: Route = { view: "minisites", slug: null };
 export const NOTE_REVIEW: Route = { view: "noteReview", section: "unreviewed" };
+export const BEST_NOTES: Route = { view: "bestNotes", section: "recommendations", project: null };
 
+const isCurationSection = (value: string | undefined): value is CurationSection => (CURATION_SECTIONS as readonly (string | undefined)[]).includes(value);
 const isReviewSection = (value: string | undefined): value is ReviewSection => (REVIEW_SECTIONS as readonly (string | undefined)[]).includes(value);
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
@@ -72,13 +76,13 @@ function readLegacyRoute(q: URLSearchParams): Route {
 export function readRoute(pathname: string, search: string): Route {
   const q = new URLSearchParams(search);
   if (LEGACY_PARAMS.some((name) => q.has(name))) return readLegacyRoute(q);
-  const [page, project, item] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+  const [page, project, item, creator] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
+  if (page === "admin" && project === "best") return isCurationSection(item) ? { view: "bestNotes", section: item, project: creator ?? null } : BEST_NOTES;
   if (page === "admin" && project === "notes") return isReviewSection(item) ? { view: "noteReview", section: item } : NOTE_REVIEW;
   if (page === "notes" && project === "all") return ALL_NOTES;
-  if (page === "notes" && project === "best") return { view: "bestNotes", project: item ?? null };
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;
 }
@@ -87,9 +91,9 @@ export function readRoute(pathname: string, search: string): Route {
 export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
   if (route.view === "allNotes") return "/notes/all";
-  if (route.view === "bestNotes") return route.project ? `/notes/best/${encodeURIComponent(route.project)}` : "/notes/best";
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "noteReview") return `/admin/notes/${route.section}`;
+  if (route.view === "bestNotes") return `/admin/best/${route.section}` + (route.project ? `/${encodeURIComponent(route.project)}` : "");
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
   if (route.view === "home") return route.section ? `/${route.section}` : "/";
   const segments = ["notes", route.project, route.project && route.item].filter((segment) => !!segment) as string[];

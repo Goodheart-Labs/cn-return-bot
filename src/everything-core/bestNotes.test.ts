@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { positionAfterMove, positionsBetween } from "./bestNotes";
+import { positionAfterMove, positionAtRank, positionsBetween } from "./bestNotes";
 
 test("notes placed between two neighbours are spaced evenly between them", () => {
   expect(positionsBetween(1, 2, 1)).toEqual([1.5]);
@@ -27,4 +27,11 @@ test("a moved note lands right below the note now above it", () => {
 test("a note moved to the top of a narrowed list lands right above the note below it", () => {
   // Shown are only b and d; d moves above b, so it lands between a and b.
   expect(positionAfterMove(LIST, "d", undefined, "b")).toBe(1.5);
+});
+
+test("a note placed at a rank lands between the notes around that rank", () => {
+  expect(positionAtRank(LIST, 1)).toBe(0);
+  expect(positionAtRank(LIST, 2)).toBe(1.5);
+  expect(positionAtRank(LIST, 99)).toBe(5);
+  expect(positionAtRank([], 3)).toBe(0);
 });

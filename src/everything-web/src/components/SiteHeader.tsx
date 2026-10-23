@@ -1,7 +1,7 @@
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { HOME, INSTALL, MINISITES, NOTE_REVIEW, NOTES, type Route } from "../lib/routing";
+import { BEST_NOTES, HOME, INSTALL, MINISITES, NOTE_REVIEW, NOTES, type Route } from "../lib/routing";
 import { useIsAdmin } from "../lib/useIsAdmin";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
@@ -29,7 +29,7 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           <RouteLink to={HOME} navigate={navigate} current={route.view === "home"} className={navLink}>
             Home
           </RouteLink>
-          <RouteLink to={NOTES} navigate={navigate} current={route.view === "notes" || route.view === "allNotes" || route.view === "bestNotes"} className={navLink}>
+          <RouteLink to={NOTES} navigate={navigate} current={route.view === "notes" || route.view === "allNotes"} className={navLink}>
             Notes
           </RouteLink>
           <RouteLink to={MINISITES} navigate={navigate} current={route.view === "minisites" || route.view === "newMinisite"} className={navLink}>
@@ -39,9 +39,14 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
             Leaderboard
           </RouteLink>
           {admin && (
-            <RouteLink to={NOTE_REVIEW} navigate={navigate} current={route.view === "noteReview"} className={navLink}>
-              Review
-            </RouteLink>
+            <>
+              <RouteLink to={NOTE_REVIEW} navigate={navigate} current={route.view === "noteReview"} className={navLink}>
+                Review
+              </RouteLink>
+              <RouteLink to={BEST_NOTES} navigate={navigate} current={route.view === "bestNotes"} className={navLink}>
+                Best notes
+              </RouteLink>
+            </>
           )}
         </nav>
         <div className="ml-auto flex items-center gap-3">

@@ -96,7 +96,7 @@
     "noted-items": "bun run src/minisite-finder/notedItems.ts",
     "read-page": "bun run src/minisite-finder/readPage.ts",
     "candidate-notes": "bun run src/postable-notes/candidateNotes.ts",
-    "best-notes": "bun run src/postable-notes/bestNotes.ts",
+    "recommend-notes": "bun run src/postable-notes/recommendNotes.ts",
     "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
     "build-review": "cd src/review-dashboard && bunx vite build",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { NOTES, PROJECTS } from "../../../everything-storybook/fixtures";
+import { NOTES, PROJECTS } from "../../../../everything-storybook/fixtures";
 import { BestNotesReorder, type ReorderEntry } from "./BestNotesReorder";
 
 const ENTRY_COUNT = 60;
@@ -10,7 +10,7 @@ const ENTRIES: ReorderEntry[] = Array.from({ length: ENTRY_COUNT }, (_, i) => {
   const note = NOTES[i % NOTES.length]!;
   const id = `best-${i + 1}`;
   return {
-    row: { note_id: id, position: i },
+    row: { note_id: id, position: i, comment: null },
     note: { ...note, id, note: `Note ${i + 1}. ${note.note}` },
     project: PROJECTS[i % PROJECTS.length],
   };

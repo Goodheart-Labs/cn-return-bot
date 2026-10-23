@@ -4,14 +4,14 @@ import { AutoScroller, PointerActivationConstraints, PointerSensor } from "@dnd-
 import { arrayMove } from "@dnd-kit/helpers";
 import { DragDropProvider, DragOverlay, KeyboardSensor, useDragOperation, type DragEndEvent, type DragMoveEvent, type DragOverEvent } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { positionAfterMove, type BestNoteRow } from "@cn/core/bestNotes";
+import { positionAfterMove, type CuratedNoteRow } from "@cn/core/bestNotes";
 import type { FeedProjectRow, NoteRow } from "@cn/core/types";
 import { cn } from "@cn/ui/cn";
-import { ProjectAvatar } from "../components/ProjectAvatar";
+import { ProjectAvatar } from "../../components/ProjectAvatar";
 
 /** One note in drag mode: its row on the list, the note and its creator. */
 export interface ReorderEntry {
-  row: BestNoteRow;
+  row: CuratedNoteRow;
   note: NoteRow;
   project: FeedProjectRow | undefined;
 }
@@ -96,7 +96,7 @@ function Row({ entry, index }: { entry: ReorderEntry; index: number }) {
  *  note now shown above it. */
 export function BestNotesReorder({ entries, list, onMove }: {
   entries: ReorderEntry[];
-  list: BestNoteRow[];
+  list: CuratedNoteRow[];
   onMove: (noteId: string, position: number) => void;
 }) {
   const [order, setOrder] = useState(() => entries.map((entry) => entry.row.note_id));
