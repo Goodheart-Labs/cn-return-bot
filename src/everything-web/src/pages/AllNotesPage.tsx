@@ -1,38 +1,17 @@
-import { useMemo, type ReactNode } from "react";
-import type { FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
-import { Button } from "@cn/ui/Button";
+import { useState } from "react";
+import type { FeedOrder, NoteFilters, NoteMinimums } from "@cn/core/feedPages";
+import type { ProjectHeader } from "@cn/core/types";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
-import { FeedNoteCard } from "../components/FeedNoteCard";
-import { NoteFeed, useFrozenTallies } from "../components/NoteFeed";
+import { NoteFeed } from "../components/NoteFeed";
 import { NoteFiltersButton } from "../components/NoteFiltersButton";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
-import {
-  arrangeFeed,
-  contentOrder,
-  DEFAULT_NOTE_FILTERS,
-  entriesByClaim,
-  feedLength,
-  filterNotes,
-  improvementsByOriginal,
-  itemsWithNotes,
-  MINIMUM_KEYS,
-  minimumValues,
-  notesByItem,
-  type FeedOrder,
-  type NoteFilters,
-  type NoteMinimums,
-  type RankTally,
-} from "../lib/feed";
-import { useAllNotesFeed, useItemNoteViewers, useProjects } from "../lib/feedQueries";
+import { ageLabel, ageTotal, BAND_LABELS, bandTotal, DEFAULT_NOTE_FILTERS, MINIMUM_KEYS, spanStarts } from "../lib/feed";
+import { useNoteFeed } from "../lib/feedQueries";
 import { noteUrl, type Route } from "../lib/routing";
-import { useGrowingCount } from "../lib/useGrowingCount";
-import { useVotedNoteIds } from "../lib/useVotedNoteIds";
+import { useSettledValue } from "../lib/useSettledValue";
 import { useStoredChoice, useStoredValue } from "../lib/useStoredValue";
-
-const NO_NOTES: NoteRow[] = [];
-const NO_ENTRIES: NnnRow[] = [];
 
 const ORDERS: { id: FeedOrder; label: string }[] = [
   { id: "recent", label: "Newest" },
@@ -45,6 +24,9 @@ const ORDER_KEY = "cn:allNotesOrder";
 
 /** The filters the reader set last time, remembered on this device. */
 const FILTERS_KEY = "cn:allNotesFilters";
+
+/** The whole site, as the feed's scope. */
+const EVERY_PROJECT = { projectId: null, itemId: null };
 
 /** Reads the remembered filters. A minimum that is missing, or is not a whole
  *  number of at least zero, gets its default. So does a checkbox that is
@@ -62,20 +44,10 @@ function parseFilters(stored: string | null): NoteFilters {
   return { ...(Object.fromEntries(minimums) as NoteMinimums), unvotedOnly };
 }
 
-/** The largest value each minimum takes among the given notes. */
-function largestValues(notes: NoteRow[], viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally): NoteMinimums {
-  const largest = { views: 0, votes: 0, helpful: 0, notHelpful: 0 };
-  for (const note of notes) {
-    const values = minimumValues(note, viewsOf, rankTally(note));
-    for (const key of MINIMUM_KEYS) largest[key] = Math.max(largest[key], values[key]);
-  }
-  return largest;
-}
-
 /** The creator a note belongs to, at the top of its card. It links to the
  *  creator's own page of notes. Beside it stands how many readers saw the notes
  *  on the post. */
-function CreatorByline({ project, views, navigate }: { project: FeedProjectRow; views: number; navigate: (route: Route) => void }) {
+function CreatorByline({ project, views, navigate }: { project: ProjectHeader; views: number; navigate: (route: Route) => void }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <RouteLink
@@ -93,79 +65,20 @@ function CreatorByline({ project, views, navigate }: { project: FeedProjectRow; 
   );
 }
 
-/** Every note of every project in one feed. The reader picks the order: the
- *  newest notes first, the mixed order every project page uses, or the most
- *  helpful first. Filters hide notes the reader voted on and notes below a
- *  minimum of views or votes. By default the page shows only notes the reader
- *  has not voted on, on posts that at least 5 readers saw. Each card names its
- *  creator. */
+/** Every note of every project in one feed, loaded a page at a time as the
+ *  reader scrolls. The reader picks the order: the newest notes first, the
+ *  mixed order every project page uses, or the most helpful first. Filters
+ *  hide notes the reader voted on and notes below a minimum of views or votes.
+ *  By default the page shows only notes the reader has not voted on, on posts
+ *  that at least 5 readers saw. Each card names its creator. */
 export function AllNotesPage({ navigate }: { navigate: (route: Route) => void }) {
-  const projectsQuery = useProjects();
-  const { items, noteSet, failed, retry } = useAllNotesFeed();
-  const viewersQuery = useItemNoteViewers();
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "recent");
   const [filters, setFilters] = useStoredValue(FILTERS_KEY, parseFilters, JSON.stringify);
-  const notes = noteSet?.notes;
-  const byItem = useMemo(() => notesByItem(notes?.values() ?? []), [notes]);
-  const improvements = useMemo(() => improvementsByOriginal(notes?.values() ?? []), [notes]);
-  const entries = useMemo(() => entriesByClaim(noteSet?.nnn.values() ?? []), [noteSet]);
-  const projectsById = useMemo(() => new Map((projectsQuery.data ?? []).map((p) => [p.id, p])), [projectsQuery.data]);
-  const rankTally = useFrozenTallies(notes?.values() ?? []);
-  const feedKey = `${order} ${JSON.stringify(filters)}`;
-  const [shownCount, setSentinel] = useGrowingCount(feedKey);
-  const votedNoteIds = useVotedNoteIds(feedKey);
-  const viewsOf = (note: NoteRow) => viewersQuery.data?.get(note.claim.item_id) ?? 0;
-
-  let feed: ReactNode;
-  let filtersButton: ReactNode = null;
-  if (failed || projectsQuery.isError || viewersQuery.isError) {
-    feed = (
-      <div className="space-y-3">
-        <p className="text-sm text-fg-secondary">These notes could not be loaded. The connection to our server failed.</p>
-        <Button
-          onClick={() => {
-            retry();
-            void projectsQuery.refetch();
-            void viewersQuery.refetch();
-          }}
-        >
-          Try again
-        </Button>
-      </div>
-    );
-  } else if (!items || !noteSet || !projectsQuery.data || !viewersQuery.data || !votedNoteIds) {
-    feed = <p className="text-sm text-fg-muted">Loading…</p>;
-  } else {
-    const ordered = contentOrder(itemsWithNotes(items.values(), byItem), byItem, noteSet.notes);
-    const filtered = filterNotes(ordered, filters, viewsOf, rankTally, votedNoteIds);
-    const sections = arrangeFeed(filtered, order, rankTally, new Date());
-    filtersButton = (
-      <NoteFiltersButton filters={filters} onChange={setFilters} largest={largestValues(ordered, viewsOf, rankTally)} matchingNotes={filtered.length} />
-    );
-    const renderCard = (note: NoteRow) => {
-      const post = items.get(note.claim.item_id);
-      const project = post?.project_id ? projectsById.get(post.project_id) : undefined;
-      return (
-        <FeedNoteCard
-          key={note.id}
-          note={note}
-          byline={project && <CreatorByline project={project} views={viewsOf(note)} navigate={navigate} />}
-          post={post}
-          improvements={improvements.get(note.id) ?? NO_NOTES}
-          nnnEntries={entries.get(note.claim_id) ?? NO_ENTRIES}
-          shareUrl={project ? noteUrl(project.slug, note.id) : window.location.href}
-        />
-      );
-    };
-    feed = filtered.length === 0 ? (
-      <p className="text-sm text-fg-secondary">No notes match these filters.</p>
-    ) : (
-      <>
-        <NoteFeed sections={sections} limit={shownCount} renderCard={renderCard} />
-        {shownCount < feedLength(sections) && <div ref={setSentinel} aria-hidden="true" />}
-      </>
-    );
-  }
+  // The Newest order's dividers are drawn on the reader's calendar, from the
+  // moment the page opened.
+  const [starts] = useState(() => spanStarts(new Date()));
+  const { list, summary } = useNoteFeed(EVERY_PROJECT, order, useSettledValue(filters), order === "recent" ? starts : []);
+  const counts = summary.data;
 
   return (
     <main className="min-w-0 px-4 py-8 md:px-8">
@@ -175,11 +88,18 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
           <h1 className="font-title text-2xl font-bold text-fg">All notes</h1>
           <div className="flex flex-wrap items-center gap-2">
             <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
-            {filtersButton}
+            {counts && <NoteFiltersButton filters={filters} onChange={setFilters} largest={counts.largest} matchingNotes={counts.matching} />}
           </div>
         </div>
       </div>
-      {feed}
+      <NoteFeed
+        list={list}
+        labelOf={({ entry, note }) => (order === "recent" ? ageLabel(note.created_at, starts) : BAND_LABELS[entry.band])}
+        totalOf={(label) => (order === "recent" ? ageTotal(counts, label) : bandTotal(counts, label))}
+        byline={({ entry, project }) => project && <CreatorByline project={project} views={entry.views} navigate={navigate} />}
+        shareUrl={({ note, project }) => (project ? noteUrl(project.slug, note.id) : window.location.href)}
+        emptyText="No notes match these filters."
+      />
     </main>
   );
 }

@@ -14,13 +14,12 @@ function toRowChange(payload: RealtimePostgresChangesPayload<Row>): RowChange<Ro
     : { type: "upsert", row: payload.new };
 }
 
-/** Follows the changes that can touch one project's feed while a reader looks
- *  at it, and returns the function that stops following them. Items are
- *  filtered to the project on the server. Notes and note-not-needed entries
- *  carry no project column, so every change to them arrives here, and the
- *  caller drops the ones on rows it does not show. */
+/** Follows the changes that can touch the notes of one project's feed while a
+ *  reader looks at it, and returns the function that stops following them.
+ *  Notes and note-not-needed entries carry no project column, so every change
+ *  to them arrives here, and the caller drops the ones on rows it does not
+ *  show. */
 export function subscribeToProjectChanges(projectId: string, handlers: {
-  onItem: (change: RowChange<Row>) => void;
   onNote: (change: RowChange<Row>) => void;
   onNnn: (change: RowChange<Row>) => void;
 }): () => void {
@@ -29,8 +28,6 @@ export function subscribeToProjectChanges(projectId: string, handlers: {
   const nonce = Math.random().toString(36).slice(2);
   const channel = supabase
     .channel(`common-notes-${projectId}-${nonce}`)
-    .on("postgres_changes", { event: "*", schema: "public", table: "everything_items", filter: `project_id=eq.${projectId}` }, (p) =>
-      handlers.onItem(toRowChange(p as RealtimePostgresChangesPayload<Row>)))
     .on("postgres_changes", { event: "*", schema: "public", table: "everything_notes" }, (p) =>
       handlers.onNote(toRowChange(p as RealtimePostgresChangesPayload<Row>)))
     .on("postgres_changes", { event: "*", schema: "public", table: "everything_note_not_needed" }, (p) =>

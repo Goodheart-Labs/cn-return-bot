@@ -932,6 +932,8 @@ export type Database = {
           improved_from_note_id: string | null
           not_helpful_count: number
           note: string
+          p_helpful: number | null
+          p_helpful_after_helpful: number | null
           somewhat_helpful_count: number
           status: string
         }
@@ -2653,6 +2655,28 @@ export type Database = {
         Args: { creator_feed_url: string }
         Returns: string
       }
+      everything_curation_page: {
+        Args: {
+          p_after_key?: number
+          p_after_note_id?: string
+          p_limit?: number
+          p_not_posted_only?: boolean
+          p_project_slug?: string
+          p_section: string
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: {
+          comment: string
+          note_id: string
+          position: number
+          posted_at: string
+          removed_at: string
+          removed_reason: string
+          sort_key: number
+        }[]
+      }
+      everything_curation_summary: { Args: { p_section: string }; Returns: Json }
       everything_creator_ranking: {
         Args: {
           average_posts: number
@@ -2767,6 +2791,36 @@ export type Database = {
         Args: { p_note_id: string; p_position: number }
         Returns: undefined
       }
+      everything_note_feed_page: {
+        Args: {
+          p_after?: Json
+          p_item_id?: string
+          p_limit?: number
+          p_min_helpful?: number
+          p_min_not_helpful?: number
+          p_min_views?: number
+          p_min_votes?: number
+          p_order?: string
+          p_project_id?: string
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: Json
+      }
+      everything_note_feed_summary: {
+        Args: {
+          p_item_id?: string
+          p_min_helpful?: number
+          p_min_not_helpful?: number
+          p_min_views?: number
+          p_min_votes?: number
+          p_project_id?: string
+          p_since?: string[]
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: Json
+      }
       everything_pipeline_daily: {
         Args: never
         Returns: {
@@ -2777,8 +2831,43 @@ export type Database = {
           items_processed: number
         }[]
       }
+      everything_project_items_page: {
+        Args: {
+          p_before_date?: string
+          p_before_id?: string
+          p_limit?: number
+          p_project_id: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          note_count: number
+          project_id: string
+          published_at: string
+          title: string
+          url: string
+        }[]
+      }
       everything_projects_by_votes: {
         Args: never
+        Returns: {
+          avatar_url: string
+          feed_url: string
+          id: string
+          name: string
+          note_count: number
+          slug: string
+          vote_score: number
+        }[]
+      }
+      everything_projects_page: {
+        Args: {
+          p_after_id?: string
+          p_after_name?: string
+          p_after_score?: number
+          p_limit?: number
+          p_order?: string
+        }
         Returns: {
           avatar_url: string
           feed_url: string

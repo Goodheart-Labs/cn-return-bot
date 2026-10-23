@@ -10,7 +10,7 @@ import { clearVote, fetchMyVotes, type Vote } from "@cn/core/votes";
 import { useActingUser } from "../auth/useActingUser";
 import { useSession } from "../auth/useSession";
 import { mutationKeys, queryKeys } from "../query/queryKeys";
-import { updateNnnInNoteSets, updateNoteInNoteSets } from "./noteSet";
+import { upsertNnnInNoteSets, updateNoteInNoteSets } from "./noteSet";
 
 const NO_VOTES: ReadonlyMap<string, Vote> = new Map();
 
@@ -112,7 +112,7 @@ export function useVoteOnNnn(): (entry: NnnRow, vote: Vote) => Promise<void> {
     },
     onSettled: async (_result, _error, v) => {
       const fresh = await fetchNnnEntry(v.target.id);
-      if (fresh) updateNnnInNoteSets(client, fresh);
+      if (fresh) upsertNnnInNoteSets(client, fresh);
     },
   });
   return async (entry, vote) => {

@@ -72,7 +72,3 @@ export function noteTally(note: NoteTallyFields): VoteTally {
     notHelpful: note.not_helpful_count,
   };
 }
-
-/** Where the note's estimate would land if one more `vote` came in. */
-export const probabilityHelpfulAfter = (note: NoteRow, vote: Vote): number =>
-  probabilityHelpful(withVote(noteTally(note), vote));

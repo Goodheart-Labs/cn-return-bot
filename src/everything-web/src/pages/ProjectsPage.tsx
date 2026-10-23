@@ -1,26 +1,23 @@
+import type { ProjectOrder } from "@cn/core/creators";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedProjectRow } from "@cn/core/types";
-import { Button } from "@cn/ui/Button";
 import { ExternalLinkIcon, NoteStackIcon } from "@cn/ui/icons";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
+import { LoadFailed } from "@cn/features/query/LoadFailed";
+import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
-import { useProjects } from "../lib/feedQueries";
+import { useNoteCount, useProjectsList } from "../lib/feedQueries";
 import { ALL_NOTES, type Route } from "../lib/routing";
 import { useStoredChoice } from "../lib/useStoredValue";
 
-type Order = "votes" | "name";
-
-const ORDERS: { id: Order; label: string }[] = [
+const ORDERS: { id: ProjectOrder; label: string }[] = [
   { id: "votes", label: "Most votes" },
   { id: "name", label: "A to Z" },
 ];
 
 /** The order the reader picked last time, remembered on this device. */
 const ORDER_KEY = "cn:projectsOrder";
-
-/** The projects arrive ordered by the votes on their notes (migration 094). */
-const byName = (a: FeedProjectRow, b: FeedProjectRow) => a.name.localeCompare(b.name, "en", { sensitivity: "base" });
 
 const noteCount = (n: number) => `${n.toLocaleString("en-US")} ${n === 1 ? "note" : "notes"}`;
 
@@ -36,9 +33,13 @@ const CARD_LINK =
 const AVATAR_SIZE = 56;
 const ICON_SCALE = 0.5;
 
+/** The whole site, as the scope of a note count. */
+const EVERY_PROJECT = { projectId: null, itemId: null };
+
 /** The first card of the grid. It leads to every note of every creator in one
  *  feed, and it counts all of them. */
-function AllCreatorsCard({ noteTotal, navigate }: { noteTotal: number; navigate: (route: Route) => void }) {
+function AllCreatorsCard({ navigate }: { navigate: (route: Route) => void }) {
+  const noteTotal = useNoteCount(EVERY_PROJECT).data;
   return (
     <li className={CARD}>
       <span
@@ -54,7 +55,7 @@ function AllCreatorsCard({ noteTotal, navigate }: { noteTotal: number; navigate:
             All creators
           </RouteLink>
         </h2>
-        <p className="mt-1 text-sm text-fg-muted">{noteCount(noteTotal)}</p>
+        {noteTotal !== undefined && <p className="mt-1 text-sm text-fg-muted">{noteCount(noteTotal)}</p>}
       </div>
     </li>
   );
@@ -93,14 +94,13 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
 }
 
 /** Every project with notes: the creator's picture, how many notes it has, a
- *  link to its notes here, and a link to the creator's own page. The first
- *  card, whatever the order, leads to the notes of every project in one feed. */
+ *  link to its notes here, and a link to the creator's own page. The projects
+ *  load a page at a time as the reader scrolls, in the order the reader
+ *  picked. The first card, whatever the order, leads to the notes of every
+ *  project in one feed. */
 export function ProjectsPage({ navigate }: { navigate: (route: Route) => void }) {
-  const projects = useProjects();
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "votes");
-  // A project whose items have no notes yet has nothing to show here.
-  const withNotes = (projects.data ?? []).filter((p) => p.note_count > 0);
-  const shown = order === "name" ? [...withNotes].sort(byName) : withNotes;
+  const projects = useProjectsList(order);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
@@ -112,20 +112,20 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
         <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
       </div>
 
-      {projects.isError ? (
-        <div className="mt-8 space-y-3">
-          <p className="text-sm text-fg-secondary">The projects could not be loaded. The connection to our server failed.</p>
-          <Button onClick={() => void projects.refetch()}>Try again</Button>
-        </div>
-      ) : !projects.data ? (
+      {projects.failed ? (
+        <LoadFailed what="The projects" onRetry={projects.retry} className="mt-8" />
+      ) : !projects.pages ? (
         <p className="mt-8 text-sm text-fg-muted">Loading…</p>
       ) : (
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <AllCreatorsCard noteTotal={withNotes.reduce((total, p) => total + p.note_count, 0)} navigate={navigate} />
-          {shown.map((project) => (
-            <ProjectCard key={project.id} project={project} navigate={navigate} />
-          ))}
-        </ul>
+        <>
+          <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <AllCreatorsCard navigate={navigate} />
+            {projects.pages.flat().map((project) => (
+              <ProjectCard key={project.id} project={project} navigate={navigate} />
+            ))}
+          </ul>
+          <PagedListEnd list={projects} className="mt-4" />
+        </>
       )}
     </main>
   );

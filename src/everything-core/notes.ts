@@ -1,5 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
-import { fetchAllRows, fetchInBatches } from "./paging";
+import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
@@ -18,14 +18,8 @@ const CLAIM_COLS =
   "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds, image_urls";
 const SOURCES = "sources:everything_note_sources(url, sort_order), detailed:everything_note_sources(sort_order)";
 const NOTE_SELECT = `*, claim:everything_claims!inner(${CLAIM_COLS}), ${SOURCES}` as const;
-/** Filtering on a project means reaching through the claim to its item, so
- *  that item has to be embedded for PostgREST to accept
- *  `claim.item.project_id` as a filter. Only the join column is read. */
-const PROJECT_NOTE_SELECT = `*, claim:everything_claims!inner(${CLAIM_COLS}, item:everything_items!inner(project_id)), ${SOURCES}` as const;
 
 const noteQuery = () => supabase.from("everything_notes").select(NOTE_SELECT).not("detailed.quote", "is", null);
-const projectNoteQuery = () =>
-  supabase.from("everything_notes").select(PROJECT_NOTE_SELECT).not("detailed.quote", "is", null);
 
 type RawNote = QueryData<ReturnType<typeof noteQuery>>[number];
 
@@ -50,10 +44,10 @@ export async function fetchNote(id: string): Promise<NoteRow | null> {
   return data && toNoteRow(data);
 }
 
-/** The notes with these ids. The admins' review page reads the live notes of
- *  the drafts it shows this way. */
+/** The notes with these ids. Every paged list of notes on the website reads
+ *  the notes of its page this way. */
 export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
-  const notes = await fetchInBatches<RawNote>((chunk) => noteQuery().in("id", chunk), ids, "id", { label: "notesById" });
+  const notes = await fetchByIds<RawNote>((chunk) => noteQuery().in("id", chunk), ids, { label: "notesById" });
   return notes.map(toNoteRow);
 }
 
@@ -62,33 +56,6 @@ export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
 export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
   const notes = await fetchAllRows<RawNote>(() => noteQuery().eq("claim.item_id", itemId).neq("status", "hidden"), "id", { label: "itemNotes" });
   return notes.map(toNoteRow);
-}
-
-/** Every visible note in one project. The filter reaches from the note through
- *  its claim to that claim's item, so the database returns only this
- *  project's notes. */
-export async function fetchProjectNotes(projectId: string): Promise<NoteRow[]> {
-  const notes = await fetchAllRows<RawNote>(
-    () => projectNoteQuery().eq("claim.item.project_id", projectId).neq("status", "hidden"),
-    "id",
-    { label: "projectNotes" },
-  );
-  return notes.map(toNoteRow);
-}
-
-/** Every visible note on the site, from every project. */
-export async function fetchAllNotes(): Promise<NoteRow[]> {
-  const notes = await fetchAllRows<RawNote>(() => noteQuery().neq("status", "hidden"), "id", { label: "allNotes" });
-  return notes.map(toNoteRow);
-}
-
-/** One note of this project, by id. A note from another project comes back as
- *  null, which is what lets the website's realtime handler ignore changes on
- *  projects the reader is not looking at. */
-export async function fetchProjectNote(noteId: string, projectId: string): Promise<NoteRow | null> {
-  const { data, error } = await projectNoteQuery().eq("claim.item.project_id", projectId).eq("id", noteId).maybeSingle();
-  if (error) throw error;
-  return data && toNoteRow(data);
 }
 
 /** The quote and the explanation behind one note's "Source details"

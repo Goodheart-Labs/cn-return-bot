@@ -1,57 +1,58 @@
 import { noteStatus } from "./noteScore";
 import { extractYoutubeVideoId } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
-import { fetchAllRows, fetchInBatches } from "./paging";
+import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
-import type { FeedItemRow, ItemRow } from "./types";
+import type { FeedItemRow, ItemRow, ProjectHeader } from "./types";
 
 /* An item is one post, video or page: a row of everything_items. */
 
-/** One project's items, with the columns the website renders. The body text in
- *  particular is the largest column we have, and the website never shows it. */
-export async function fetchProjectItems(projectId: string): Promise<FeedItemRow[]> {
-  return fetchAllRows<FeedItemRow>(
-    () => supabase.from("everything_items").select("id, project_id, url, title, published_at, created_at").eq("project_id", projectId),
-    "id",
-    { label: "projectItems" },
-  );
-}
+const FEED_ITEM_COLS = "id, project_id, url, title, published_at, created_at";
 
-/** The items with the given ids, with the columns the website renders. */
-export async function fetchItemsByIds(ids: string[]): Promise<FeedItemRow[]> {
-  return fetchInBatches<FeedItemRow>(
-    (chunk) => supabase.from("everything_items").select("id, project_id, url, title, published_at, created_at").in("id", chunk),
+/** The items with the given ids, with the columns the website renders, and the
+ *  projects they belong to. The body text in particular is the largest column
+ *  we have, and the website never shows it. */
+export async function fetchItemsWithProjects(ids: string[]): Promise<{ items: FeedItemRow[]; projects: ProjectHeader[] }> {
+  const rows = await fetchByIds<FeedItemRow & { project: ProjectHeader | null }>(
+    (chunk) => supabase.from("everything_items").select(`${FEED_ITEM_COLS}, project:everything_projects(id, slug, name, feed_url, avatar_url)`).in("id", chunk),
     ids,
-    "id",
-    { label: "itemsByIds" },
+    { label: "itemsWithProjects" },
   );
+  const projects = new Map(rows.flatMap(({ project }) => (project ? [[project.id, project] as const] : [])));
+  return { items: rows.map(({ project: _project, ...item }) => item), projects: [...projects.values()] };
 }
 
-/** Every item that has at least one note, with the columns the website
- *  renders. The empty embed of the claims and their notes reads no columns. It
- *  only makes PostgREST keep the items that have a note, and it still returns
- *  each item once. */
-export async function fetchItemsWithNotes(): Promise<FeedItemRow[]> {
-  return fetchAllRows<FeedItemRow>(
-    () =>
-      supabase
-        .from("everything_items")
-        .select("id, project_id, url, title, published_at, created_at, everything_claims!inner(everything_notes!inner())"),
-    "id",
-    { label: "itemsWithNotes" },
-  );
+/** A project's post as its list of posts shows it, with how many visible
+ *  notes it has. */
+export type ProjectItemRow = FeedItemRow & { note_count: number };
+
+/** How many posts one page of a project's list holds. */
+export const PROJECT_ITEMS_PAGE_SIZE = 30;
+
+/** The date a project's list sorts a post by: the day it was published, or
+ *  the moment we first saw it when that day is unknown. */
+export const itemDate = (item: Pick<FeedItemRow, "published_at" | "created_at">) => item.published_at ?? item.created_at;
+
+/** One page of a project's posts that have notes, newest first, starting
+ *  after the post `after` (migration 139). */
+export async function fetchProjectItemsPage(projectId: string, after: ProjectItemRow | null): Promise<ProjectItemRow[]> {
+  const { data, error } = await supabase.rpc("everything_project_items_page", {
+    p_project_id: projectId,
+    p_before_date: after ? itemDate(after) : undefined,
+    p_before_id: after?.id,
+    p_limit: PROJECT_ITEMS_PAGE_SIZE,
+  });
+  if (error) throw error;
+  return data;
 }
 
-/** How many different devices outside the team the extension showed each
- *  item's notes on, keyed by item id. An item nobody outside the team has seen
- *  is absent. */
-export async function fetchItemNoteViewers(): Promise<Map<string, number>> {
-  const rows = await fetchAllRows<{ item_id: string; viewers: number }>(
-    () => supabase.rpc("everything_item_note_viewers"),
-    "item_id",
-    { label: "itemNoteViewers" },
-  );
-  return new Map(rows.map((row) => [row.item_id, row.viewers]));
+/** One item by id, with the columns the website renders. A project page that
+ *  names one item reads its title this way, because the item may sit on a page
+ *  of the list that has not loaded. */
+export async function fetchFeedItem(id: string): Promise<FeedItemRow | null> {
+  const { data, error } = await supabase.from("everything_items").select(FEED_ITEM_COLS).eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 /** An ItemRow plus the two extra fields the extension needs. `full_text` is the
