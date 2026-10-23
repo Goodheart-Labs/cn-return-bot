@@ -10,6 +10,10 @@ The post's text is `~/.local/share/claude-note-finder/posts/<post>/post.md`, and
 `meta.json` next to it holds the item id, address and creator. If post.md has no body
 text, read the page with `bun run read-page <url>` in the repo and save the text there.
 
+People's notes come first. `take` skips a post Nathan already fact-checked. On any other
+post, a draft on a passage that already has a note by a person is saved but not posted,
+so do not spend research on such passages.
+
 Drafts go to the prod database, not to files: level 2 saves each one with
 `bun run claude-notes draft <file.json>` in the repo. A draft with outcome `note` is
 posted on commonnotes.net at once as an AI note, unless notes currently wait for
@@ -62,6 +66,11 @@ a passage from memory because no agent was free.
    - When the note adds context or detail instead of correcting a mistake, its first
      words say so, for example "It's even stricter." or "This is the emperor
      Caligula." Otherwise readers take every note for a fact check.
+   - Use "For context:" only for real context. When the post is unclear in a way
+     that gives readers a wrong picture, the note is a correction and must not
+     start with "For context:".
+   - Make clear which words of the passage the note corrects. A note that only
+     lists dates or numbers leaves readers to work out what was wrong.
    - Do not open every note with a negation ("X, not Y"). Often it is clearer to state
      what the source shows, with its numbers, and let the reader see the difference.
    - Neutral, no "the author", no hedging filler.

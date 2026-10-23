@@ -26,6 +26,30 @@ test("a *.substack.com post loses every query parameter, a custom-domain post on
   );
 });
 
+test("a custom-domain post loses its whole query when Substack's own parameters show it is a Substack post", () => {
+  expect(
+    canonicalizePageUrl(
+      "https://www.astralcodexten.com/p/against-against-handover?publication_id=89120&post_id=206469842&isFreemail=true&r=1c0bzf&triedRedirect=true",
+      null,
+    ),
+  ).toBe("https://www.astralcodexten.com/p/against-against-handover");
+});
+
+test("a BBC article has one address, whichever host the reader was sent to", () => {
+  const stored = "https://www.bbc.com/news/articles/cw98z6qlyvg3o";
+  expect(canonicalizePageUrl("https://www.bbc.co.uk/news/articles/cw98z6qlyvg3o", null)).toBe(stored);
+  expect(canonicalizePageUrl("https://www.bbc.co.uk/news/articles/cw98z6qlyvg3o", "https://www.bbc.co.uk/news/articles/cw98z6qlyvg3o")).toBe(stored);
+  expect(canonicalizePageUrl("https://www.bbc.com/news/articles/cw98z6qlyvg3o", null)).toBe(stored);
+});
+
+test("only BBC news and sport pages on the BBC's own hosts change host", () => {
+  expect(canonicalizePageUrl("https://www.bbc.co.uk/iplayer/episode/m0012345", null)).toBe("https://www.bbc.co.uk/iplayer/episode/m0012345");
+  expect(canonicalizePageUrl("https://www.bbc.co.uk/sport/football/articles/c123", null)).toBe("https://www.bbc.com/sport/football/articles/c123");
+  expect(canonicalizePageUrl("https://news.bbc.co.uk/2/hi/uk_news/123.stm", null)).toBe("https://news.bbc.co.uk/2/hi/uk_news/123.stm");
+  expect(canonicalizePageUrl("https://www.notbbc.co.uk/news/x", null)).toBe("https://www.notbbc.co.uk/news/x");
+  expect(canonicalizePageUrl("https://example.com/news/bbc.co.uk", null)).toBe("https://example.com/news/bbc.co.uk");
+});
+
 test("query parameters that select content are kept", () => {
   expect(canonicalizePageUrl("https://example.com/watch?v=abc&utm_source=x", null)).toBe("https://example.com/watch?v=abc");
 });

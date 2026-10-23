@@ -25,7 +25,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 import {
   addDraft,
-  addMessage,
+  answerMessage,
   type Actor,
   changeSettings,
   deletePipelineNote,
@@ -35,6 +35,7 @@ import {
   logEvent,
   type NewDraft,
   isVideo,
+  nathanNotedItem,
   pipelineNotes,
   postDir,
   readItem,
@@ -50,6 +51,10 @@ import { readUsage } from "./usage";
 
 
 const [command, ...args] = process.argv.slice(2);
+// Many commands write to prod, so a flag such as --help must not run one.
+// No command takes flags, so any argument that looks like one stops the CLI.
+const flag = args.find((a) => a.startsWith("--"));
+if (flag) throw new Error(`${command} takes no flags, got ${flag}. See the usage at the top of src/claude-notes/cli.ts`);
 function arg(index: number): string {
   const value = args[index];
   if (!value) throw new Error(`${command} needs more arguments. See the usage at the top of src/claude-notes/cli.ts`);
@@ -62,7 +67,16 @@ const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 /** Writes the post's text where the agents read it. A post without stored
  *  text, such as a new video or a requested page, is read first the way the
  *  pipeline reads it. If that fails, the item should be handed back. */
+/** Nathan's own fact-checks are not redone. */
+const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
+
 async function take(itemId: string) {
+  if (await nathanNotedItem(itemId)) {
+    await logEvent({ actor: "claude", type: "item_skipped", itemId, data: { reason: NATHAN_SKIP_REASON } });
+    await finishItem(itemId, { skipped: true, reason: NATHAN_SKIP_REASON });
+    console.log(`SKIPPED: ${NATHAN_SKIP_REASON}. The item is marked checked.`);
+    return;
+  }
   const before = await readItem(itemId);
   // A video is always read, even with stored text, because its caption cues
   // are what give each note its time in the video.
@@ -93,8 +107,8 @@ function parseSettingsArgs(list: string[]): { change: { writer?: Writer; approva
 
 async function answer(file: string) {
   const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; passage?: string; reason?: string } = readJson(file);
-  if (a.note) await rewrite(a.draftId, { actor: "claude", note: a.note, sources: a.sources, passage: a.passage, reason: a.reason ?? a.reply });
-  await addMessage(a.draftId, "claude", a.reply);
+  if (a.note) await rewrite(a.draftId, { note: a.note, sources: a.sources, passage: a.passage, reason: a.reason ?? a.reply });
+  await answerMessage(a.draftId, a.reply);
   console.log(a.note ? "Answered and rewrote the note" : "Answered");
 }
 
