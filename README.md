@@ -24,14 +24,26 @@ bun run check
 `check` runs the TypeScript checks and unused-code analysis. The pre-commit hook
 also scans staged changes for secrets.
 
-To try the note pipeline without submitting to X:
+To research and draft notes for specific tweets on your computer:
 
 ```sh
-bun run src/local/tryoutNotes.ts <tweet-url-or-id>
+bun run draft-tweets <tweet-url-or-id> [more-tweets...]
+bun run draft-tweets --help
 ```
 
-This makes paid API calls and writes run results. See the script's flags for
-replaying saved inputs and forcing experiment variants.
+This uses the Signal bot's research and drafting process and the standard `X_*`
+credentials in your environment. The X app needs access to ordinary tweet lookups;
+Community Notes API access alone may not provide that. Configure `OPENROUTER_API_KEY`
+for research and `GEMINI_API_KEY` for media analysis. Install the bundled source
+verification browser with `bunx playwright install chromium`. The command prints
+complete drafts and saves research, warnings, and results
+under `output/local-drafts/`. It makes paid API calls, but does not submit notes,
+send Signal messages, upload results, or open your default browser. Use
+`--output-dir <directory>` to choose where results are saved.
+
+The experimental runner, `bun run src/local/tryoutNotes.ts <tweet-url-or-id>`,
+supports replaying saved inputs and forcing experiment variants. It also selects
+alternate credentials and uploads results to the review dashboard.
 
 Dashboard commands and builds are in [package.json](package.json).
 
@@ -55,7 +67,7 @@ the extension, and the scraper.
 [src/production/runPipeline.ts](src/production/runPipeline.ts) generates and submits
 notes. The [Create Notes workflow](.github/workflows/create-notes-routine-dynamic.yml)
 is dispatched by Supabase cron. Running the production entry point can submit
-real notes; use the tryout script for development.
+real notes; use `draft-tweets` for local research and drafting.
 
 Supabase migrations live in [migrations/](migrations/) and are applied separately.
 
