@@ -12,6 +12,7 @@ import type { SVGProps } from "react";
 export {
   RiArrowDownFill as ArrowDownIcon,
   RiArrowUpFill as ArrowUpIcon,
+  RiArrowUpDoubleFill as ToTopIcon,
   RiCheckFill as CheckIcon,
   RiArrowLeftSLine as PreviousIcon,
   RiArrowRightSLine as ChevronIcon,
@@ -26,6 +27,8 @@ export {
   RiDeleteBinFill as TrashIcon,
   RiCloseLargeFill as CloseIcon,
   RiPlayFill as PlayIcon,
+  RiTrophyFill as TrophyIcon,
+  RiTwitterXFill as XLogoIcon,
 } from "@remixicon/react";
 
 /** Two notes lying on top of each other, the front one with two lines of

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CURATION_SECTIONS, type CurationSection } from "@cn/core/bestNotes";
 import { REVIEW_SECTIONS, type ReviewSection } from "@cn/core/claudeReview";
 import { capturePageview } from "./analytics";
 
@@ -15,6 +16,10 @@ import { capturePageview } from "./analytics";
  *   /leaderboard          the rating leaderboard
  *   /admin/notes/<section> admins review the Claude note writer's notes, one
  *                         section at a time
+ *   /admin/best/<section>  admins curate the best notes: Claude's
+ *                         recommendations, their own leaderboard, or the
+ *                         removed recommendations
+ *   /admin/best/<section>/<slug>  the same, narrowed to one creator
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
  * The path /notes/all wins over a project whose slug is "all".
@@ -40,7 +45,8 @@ export type Route =
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" }
-  | { view: "noteReview"; section: ReviewSection };
+  | { view: "noteReview"; section: ReviewSection }
+  | { view: "bestNotes"; section: CurationSection; project: string | null };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
@@ -48,7 +54,9 @@ export const NOTES: Route = { view: "notes", project: null, item: null, note: nu
 export const ALL_NOTES: Route = { view: "allNotes" };
 export const MINISITES: Route = { view: "minisites", slug: null };
 export const NOTE_REVIEW: Route = { view: "noteReview", section: "unreviewed" };
+export const BEST_NOTES: Route = { view: "bestNotes", section: "recommendations", project: null };
 
+const isCurationSection = (value: string | undefined): value is CurationSection => (CURATION_SECTIONS as readonly (string | undefined)[]).includes(value);
 const isReviewSection = (value: string | undefined): value is ReviewSection => (REVIEW_SECTIONS as readonly (string | undefined)[]).includes(value);
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
@@ -68,10 +76,11 @@ function readLegacyRoute(q: URLSearchParams): Route {
 export function readRoute(pathname: string, search: string): Route {
   const q = new URLSearchParams(search);
   if (LEGACY_PARAMS.some((name) => q.has(name))) return readLegacyRoute(q);
-  const [page, project, item] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+  const [page, project, item, creator] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
+  if (page === "admin" && project === "best") return isCurationSection(item) ? { view: "bestNotes", section: item, project: creator ?? null } : BEST_NOTES;
   if (page === "admin" && project === "notes") return isReviewSection(item) ? { view: "noteReview", section: item } : NOTE_REVIEW;
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
@@ -84,6 +93,7 @@ export function routeHref(route: Route): string {
   if (route.view === "allNotes") return "/notes/all";
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "noteReview") return `/admin/notes/${route.section}`;
+  if (route.view === "bestNotes") return `/admin/best/${route.section}` + (route.project ? `/${encodeURIComponent(route.project)}` : "");
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
   if (route.view === "home") return route.section ? `/${route.section}` : "/";
   const segments = ["notes", route.project, route.project && route.item].filter((segment) => !!segment) as string[];

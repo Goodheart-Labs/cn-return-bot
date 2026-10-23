@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import { fetchProjects } from "@cn/core/creators";
-import { fetchItemNoteViewers, fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
-import { fetchAllNnn, fetchProjectNnn } from "@cn/core/noteNotNeeded";
-import { fetchAllNotes, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
+import { fetchCuratedList, fetchRemovedRecommendations, type CuratedNoteRow, type CurationSection, type RemovedRecommendation } from "@cn/core/bestNotes";
+import { fetchItemNoteViewers, fetchItemsByIds, fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
+import { fetchAllNnn, fetchNnnForClaims, fetchProjectNnn } from "@cn/core/noteNotNeeded";
+import { fetchAllNotes, fetchNotesByIds, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
 import { subscribeToProjectChanges } from "@cn/core/projectRealtime";
 import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
 import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
@@ -77,6 +78,48 @@ export const useAllNotesFeed = () =>
     fetchNnn: fetchAllNnn,
     enabled: true,
   });
+
+/** One section of the admins' best notes curation: its rows in order, the
+ *  notes on them with their note-not-needed entries, and the posts they are
+ *  on. Each step waits for the one before, because it needs its ids. The notes
+ *  are a NoteSet under the `noteSet` prefix, so a vote shows up here as
+ *  everywhere else. */
+export function useCurationFeed(section: CurationSection) {
+  const list = useQuery({
+    queryKey: section === "removed" ? queryKeys.removedRecommendations : queryKeys.curatedList(section),
+    queryFn: async (): Promise<CurationRow[]> => (section === "removed" ? fetchRemovedRecommendations() : fetchCuratedList(section)),
+  });
+  // Sorted, so reordering a list does not count as a change of its notes.
+  const noteIds = list.data?.map((row) => row.note_id).sort();
+  const noteSet = useQuery({
+    // The ids are part of the key, so a note moved in or out loads its note.
+    queryKey: [...queryKeys.curatedNoteSet(section), noteIds],
+    queryFn: async () => {
+      const notes = await fetchNotesByIds(noteIds!);
+      return noteSetOf(notes, await fetchNnnForClaims(notes.map((note) => note.claim_id)));
+    },
+    enabled: !!noteIds,
+    placeholderData: keepPreviousData,
+  });
+  const itemIds = noteSet.data && [...new Set([...noteSet.data.notes.values()].map((note) => note.claim.item_id))];
+  const items = useQuery({
+    queryKey: [...queryKeys.curatedItems(section), itemIds],
+    queryFn: () => fetchItemsByIds(itemIds!),
+    enabled: !!itemIds,
+    placeholderData: keepPreviousData,
+    select: (rows) => new Map(rows.map((r) => [r.id, r])),
+  });
+  return {
+    list: list.data,
+    noteSet: noteSet.data,
+    items: items.data,
+    failed: list.isError || noteSet.isError || items.isError,
+    retry: () => void Promise.all([list.refetch(), noteSet.refetch(), items.refetch()]),
+  };
+}
+
+/** A row of any curation section: a list entry, or a removed recommendation. */
+export type CurationRow = CuratedNoteRow | RemovedRecommendation;
 
 /** How many devices outside the team saw each item's notes, which the All
  *  notes page filters by. */
