@@ -2543,6 +2543,10 @@ export type Database = {
         Args: { p_actor?: string; p_draft: string }
         Returns: string
       }
+      everything_claude_unapprove: {
+        Args: { p_actor?: string; p_draft: string }
+        Returns: string
+      }
       everything_claude_change_settings: {
         Args: {
           p_actor?: string

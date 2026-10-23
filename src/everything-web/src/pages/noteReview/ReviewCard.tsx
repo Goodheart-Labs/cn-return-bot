@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { approveDraft, rejectDraft, rewriteDraft, sendDraftMessage, type Reviewer, type ReviewDraft, type ReviewSection } from "@cn/core/claudeReview";
+import { approveDraft, rejectDraft, rewriteDraft, sendDraftMessage, unapproveDraft, type Reviewer, type ReviewDraft, type ReviewSection } from "@cn/core/claudeReview";
 import { mintSelfVoteDonation } from "@cn/core/donations";
 import { fetchNote } from "@cn/core/notes";
 import { displayName } from "@cn/core/session";
@@ -92,6 +92,7 @@ function CardHeader({ draft }: { draft: ReviewDraft }) {
 
 type Step =
   | { step: "approve" }
+  | { step: "unapprove" }
   | { step: "reject"; reason: string }
   | { step: "rewrite"; note: string; postedAs?: "ai" | "me" }
   | { step: "message"; text: string };
@@ -113,6 +114,12 @@ function useReviewStep(draft: ReviewDraft, section: ReviewSection, onDone?: () =
         const note = await fetchNote(noteId);
         if (!note) throw new Error("The approved note could not be read back");
         await voteOnNote(note, HELPFUL);
+      } else if (step.step === "unapprove") {
+        // Approving cast the reviewer's Helpful vote; taking the approval back takes that vote back too.
+        const noteId = await unapproveDraft(draft.id);
+        if (myVotes.get(noteId) !== HELPFUL) return;
+        const note = await fetchNote(noteId);
+        if (note) await voteOnNote(note, HELPFUL);
       } else if (step.step === "reject") {
         await rejectDraft(draft.id, step.reason);
       } else if (step.step === "rewrite") {
@@ -130,7 +137,7 @@ function useReviewStep(draft: ReviewDraft, section: ReviewSection, onDone?: () =
       // A note posted under the admin's account carries their automatic vote,
       // which the cached list of their own votes does not know yet.
       if (step.step === "rewrite" && step.postedAs === "me") await client.invalidateQueries({ queryKey: queryKeys.ownVotes });
-      if (step.step === "approve" || step.step === "reject") {
+      if (step.step === "approve" || step.step === "unapprove" || step.step === "reject") {
         dropDraft(client, section, draft.id);
         client.removeQueries({ queryKey: ["noteReview", "section"], predicate: (q) => q.queryKey[2] !== section });
       } else {
@@ -260,10 +267,16 @@ function Actions({ draft, section }: { draft: ReviewDraft; section: ReviewSectio
   }
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {!draft.reviewedBy && (
-        <Button disabled={act.isPending} onClick={() => act.mutate({ step: "approve" })}>
+      {!draft.reviewedBy ? (
+        <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "approve" })}>
           {draft.status === "awaiting_approval" ? "Approve and post" : "Approve"}
         </Button>
+      ) : (
+        draft.status === "posted" && (
+          <Button variant="quiet" disabled={act.isPending} onClick={() => act.mutate({ step: "unapprove" })}>
+            Undo approval
+          </Button>
+        )
       )}
       <Button variant="secondary" disabled={act.isPending} onClick={() => setMode("rewrite")}>
         Rewrite
