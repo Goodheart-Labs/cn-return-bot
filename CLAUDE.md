@@ -166,7 +166,7 @@ Quote the push output and tell Jim the build id (HH:MM:SS). A freshly loaded pag
 
 For Safari, run `bun run build-ext-safari-dev`, then `cn-ext-push --safari <worktree>/src/everything-extension`, which builds the container app on the Mac. Safari loads the locally signed app only while "Allow unsigned extensions" is on, and Safari turns it off on every quit.
 
-To check a change visually on the devbox: `bun run src/everything-extension/scripts/preview.ts <url> <out.png>` opens the page in headless Chromium with the built extension and takes a screenshot. On machines without Chromium's system libraries, the libraries extracted into `~/.cache/cn-playwright-libs` are put on the library path by the launcher itself.
+To check a change visually on the devbox: `bun run src/everything-extension/scripts/preview.ts <url> <out.png>` opens the page in headless Chromium with the built extension and takes a screenshot. Chromium needs its system libraries installed, which `sudo npx playwright install-deps chromium` does; the devbox's `vps/migrate.sh` runs it.
 
 Things that are easy to get wrong:
 - **Host-page shortcuts**: every piece of UI the extension puts into a page mounts through `createOverlayUi` (`utils/overlayUi.ts`), which stops key events at the overlay's shadow root. Outside the shadow root a key typed in our text field looks to the page like a key pressed on the page itself, so YouTube's and Substack's single-key shortcuts would fire. ESLint forbids calling WXT's `createShadowRootUi` directly.
