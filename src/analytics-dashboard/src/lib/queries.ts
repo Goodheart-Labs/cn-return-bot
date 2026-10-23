@@ -107,7 +107,13 @@ export interface MetricSeriesRow {
   writers: TimesHistogram | null;
   notes_written: number | null;
   installs: number | null;
+  /** The installs split by browser, {"chrome": 12, "firefox": 3}. A browser
+   *  with no install in the bucket is missing. */
+  installs_by_browser: Record<string, number> | null;
 }
+
+/** A column that splits a count metric by browser. */
+export type BrowserSplitKey = "installs_by_browser";
 
 export type CountMetricKey = "active_devices" | "notes_seen" | "votes" | "notes_written" | "installs";
 export type HistogramMetricKey = "note_viewers" | "voters" | "writers";
