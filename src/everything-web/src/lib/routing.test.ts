@@ -19,6 +19,7 @@ const ROUTES: [string, Route][] = [
   ["/minisites", { view: "minisites", slug: null }],
   ["/minisites/new", { view: "newMinisite" }],
   ["/admin/notes/waiting", { view: "noteReview", section: "waiting" }],
+  ["/admin/dashboard", { view: "dashboard" }],
   ["/minisites/big-tent-or-small-tent", { view: "minisites", slug: "big-tent-or-small-tent" }],
 ];
 

@@ -1,7 +1,7 @@
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { BEST_NOTES, HOME, INSTALL, MINISITES, NOTE_REVIEW, NOTES, type Route } from "../lib/routing";
+import { BEST_NOTES, DASHBOARD, HOME, INSTALL, MINISITES, NOTE_REVIEW, NOTES, type Route } from "../lib/routing";
 import { useIsAdmin } from "../lib/useIsAdmin";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
@@ -11,8 +11,8 @@ const navLink =
 
 /** The bar at the top of every page. The name and the four pages sit on the
  *  left, signing in and getting the extension on the right. Getting the
- *  extension leads to the homepage's install section. Admins also get a link
- *  to the note review. */
+ *  extension leads to the homepage's install section. Admins also get links
+ *  to the note review, the best notes and the dashboard. */
 export function SiteHeader({ route, navigate, onSignIn }: { route: Route; navigate: (route: Route) => void; onSignIn: () => void }) {
   const admin = useIsAdmin();
   return (
@@ -45,6 +45,9 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
               </RouteLink>
               <RouteLink to={BEST_NOTES} navigate={navigate} current={route.view === "bestNotes"} className={navLink}>
                 Best notes
+              </RouteLink>
+              <RouteLink to={DASHBOARD} navigate={navigate} current={route.view === "dashboard"} className={navLink}>
+                Dashboard
               </RouteLink>
             </>
           )}
