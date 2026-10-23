@@ -474,6 +474,7 @@ export type Database = {
           checked_scope: string | null
           created_at: string
           error: string | null
+          first_checked_at: string | null
           full_text: string | null
           id: string
           priority: number
@@ -495,6 +496,7 @@ export type Database = {
           checked_scope?: string | null
           created_at?: string
           error?: string | null
+          first_checked_at?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -516,6 +518,7 @@ export type Database = {
           checked_scope?: string | null
           created_at?: string
           error?: string | null
+          first_checked_at?: string | null
           full_text?: string | null
           id?: string
           priority?: number

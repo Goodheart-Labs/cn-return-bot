@@ -17,7 +17,7 @@ const COLUMNS: readonly { label: string; title: string }[] = [
   },
   {
     label: "Median delay",
-    title: `Median time from publication to the end of processing, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published new posts we checked`,
+    title: `Median time from publication to the end of the first check, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published new posts we checked`,
   },
   {
     label: "Vote rate",
@@ -154,7 +154,7 @@ export function CreatorRanking() {
         )}
         <span>
           This is the order the next walk will go through, computed now. The median delay runs from the moment a post was published to
-          the end of its check. It counts only new posts, published after the walk first took a post of the creator. So it leaves
+          the end of its first check. A later re-check does not count. It counts only new posts, published after the walk first took a post of the creator. So it leaves
           out the older posts the first walk catches up on, and the most popular posts of all time. Posts taken before 23 October
           2026 count only when we could look up their exact publication time. The vote rate divides the people who voted in the extension on a post's notes by the people who opened
           the post after its first note appeared. Votes by admins are left out. The two sides cannot be matched person to person, so

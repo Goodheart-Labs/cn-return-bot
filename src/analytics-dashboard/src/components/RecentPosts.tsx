@@ -35,7 +35,7 @@ function daysAgo(day: string): string {
 const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "Post", title: "The post, and the project it belongs to" },
   { label: "Published", title: "When the author published it" },
-  { label: "Checked", title: "When the pipeline finished it" },
+  { label: "Last checked", title: "When the latest check of the post ended. A post can be checked again later, so this can be long after its first check." },
   { label: "Readers per post", title: `Average number of different people per post, over the author's ${LAST_POSTS_PER_CREATOR} most recently visited posts. The walk's score also counts imagined posts, see the creator ranking.` },
   { label: "Claims", title: "Claims extracted from the post" },
   { label: "Checked claims", title: "Claims that went through a fact-check" },

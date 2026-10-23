@@ -254,7 +254,7 @@ export interface CreatorRankingRow {
   people: number | null;
   /** How many posts the median delay covers. Null when none qualified. */
   delay_posts: number | null;
-  /** Median hours from the exact publication time to the end of processing. */
+  /** Median hours from the exact publication time to the end of the first check. */
   median_delay_hours: number | null;
   /** How many posts with notes the vote counts cover. Null when none had a
    *  visit after their first note. */
