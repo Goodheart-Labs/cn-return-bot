@@ -13,6 +13,12 @@ export const queryKeys = {
   itemNoteSet: (itemId: string) => ["noteSet", "item", itemId] as const,
   /** Every visible note on the site, for the website's All notes page. */
   allNoteSet: ["noteSet", "all"] as const,
+  /** The admins' curation of the best notes: one list in its order, the
+   *  removed recommendations, and the notes and posts each section shows. */
+  curatedList: (list: "recommendations" | "leaderboard") => ["curatedList", list] as const,
+  removedRecommendations: ["removedRecommendations"] as const,
+  curatedNoteSet: (section: string) => ["noteSet", "curated", section] as const,
+  curatedItems: (section: string) => ["curatedItems", section] as const,
   projects: ["projects"] as const,
   projectItems: (projectId: string) => ["projectItems", projectId] as const,
   itemsWithNotes: ["itemsWithNotes"] as const,

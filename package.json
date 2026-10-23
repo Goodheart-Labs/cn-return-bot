@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "@ai-sdk/xai": "^3.0.56",
+    "@dnd-kit/collision": "0.5.1",
+    "@dnd-kit/dom": "0.5.1",
+    "@dnd-kit/helpers": "0.5.1",
+    "@dnd-kit/react": "0.5.1",
     "@google/genai": "^2.0.0",
     "@mozilla/readability": "^0.6.0",
     "@remixicon/react": "^4.9.0",
@@ -92,6 +96,8 @@
     "noted-items": "bun run src/minisite-finder/notedItems.ts",
     "read-page": "bun run src/minisite-finder/readPage.ts",
     "candidate-notes": "bun run src/postable-notes/candidateNotes.ts",
+    "recommend-notes": "bun run src/postable-notes/recommendNotes.ts",
+    "curation-taste": "bun run src/postable-notes/curationTaste.ts",
     "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",
     "dev-review": "cd src/review-dashboard && bunx vite --port 8001",
     "build-review": "cd src/review-dashboard && bunx vite build",

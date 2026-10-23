@@ -119,18 +119,24 @@ export type Database = {
       everything_best_notes: {
         Row: {
           added_at: string
+          comment: string | null
           note_id: string
           position: number
+          posted_at: string | null
         }
         Insert: {
           added_at?: string
+          comment?: string | null
           note_id: string
           position: number
+          posted_at?: string | null
         }
         Update: {
           added_at?: string
+          comment?: string | null
           note_id?: string
           position?: number
+          posted_at?: string | null
         }
         Relationships: [
           {
@@ -769,6 +775,44 @@ export type Database = {
             columns: ["entry_id"]
             isOneToOne: false
             referencedRelation: "everything_note_not_needed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_note_recommendations: {
+        Row: {
+          added_at: string
+          comment: string | null
+          moved_at: string | null
+          note_id: string
+          position: number
+          removed_at: string | null
+          removed_reason: string | null
+        }
+        Insert: {
+          added_at?: string
+          comment?: string | null
+          moved_at?: string | null
+          note_id: string
+          position: number
+          removed_at?: string | null
+          removed_reason?: string | null
+        }
+        Update: {
+          added_at?: string
+          comment?: string | null
+          moved_at?: string | null
+          note_id?: string
+          position?: number
+          removed_at?: string | null
+          removed_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_note_recommendations_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
             referencedColumns: ["id"]
           },
         ]
@@ -2719,6 +2763,10 @@ export type Database = {
           writers: Json
         }[]
       }
+      everything_move_to_leaderboard: {
+        Args: { p_note_id: string; p_position: number }
+        Returns: undefined
+      }
       everything_pipeline_daily: {
         Args: never
         Returns: {
@@ -2765,6 +2813,10 @@ export type Database = {
           status: string
           status_reason: string
         }[]
+      }
+      everything_return_to_recommendations: {
+        Args: { p_note_id: string }
+        Returns: undefined
       }
       everything_set_feed_alarm: {
         Args: { next_at: string; reason: string }

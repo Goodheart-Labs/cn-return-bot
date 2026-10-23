@@ -1,7 +1,5 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import type { FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
-import { useLoadedMyVotes } from "@cn/features/notes/useVotes";
-import { useLoadMoreSentinel } from "@cn/features/query/useLoadMoreSentinel";
 import { Button } from "@cn/ui/Button";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
@@ -29,6 +27,8 @@ import {
 } from "../lib/feed";
 import { useAllNotesFeed, useItemNoteViewers, useProjects } from "../lib/feedQueries";
 import { noteUrl, type Route } from "../lib/routing";
+import { useGrowingCount } from "../lib/useGrowingCount";
+import { useVotedNoteIds } from "../lib/useVotedNoteIds";
 import { useStoredChoice, useStoredValue } from "../lib/useStoredValue";
 
 const NO_NOTES: NoteRow[] = [];
@@ -70,42 +70,6 @@ function largestValues(notes: NoteRow[], viewsOf: (note: NoteRow) => number, ran
     for (const key of MINIMUM_KEYS) largest[key] = Math.max(largest[key], values[key]);
   }
   return largest;
-}
-
-/** The ids of the notes the reader had voted on when the feed was last
- *  arranged. The page uses it to hide those notes. A vote cast after that
- *  moment does not hide its card, so the reader can still change the vote and
- *  read the donation notice. A new snapshot is taken when `resetKey` changes.
- *  It is undefined until the reader's votes have loaded for the first time. */
-function useVotedNoteIds(resetKey: string): ReadonlySet<string> | undefined {
-  const votes = useLoadedMyVotes();
-  const [snapshot, setSnapshot] = useState<{ key: string; ids: ReadonlySet<string> } | null>(null);
-  // Taking the snapshot during render is React's pattern for state derived
-  // from props: React re-renders straight away with the new snapshot.
-  if (votes && snapshot?.key !== resetKey) setSnapshot({ key: resetKey, ids: new Set(votes.keys()) });
-  return snapshot?.ids;
-}
-
-/** How many cards the page renders at first, and how many more it adds each
- *  time the reader scrolls near the end. Every YouTube card starts a video
- *  player, so rendering all notes of the site at once would make the page
- *  slow. */
-const CARDS_PER_STEP = 30;
-
-/** Returns how many cards to render and the element to put after the last
- *  one. When that element comes near the screen, the count grows by one step.
- *  The count starts over when `resetKey` changes. */
-function useGrowingCount(resetKey: string): [number, (sentinel: HTMLElement | null) => void] {
-  const [count, setCount] = useState(CARDS_PER_STEP);
-  const [countedFor, setCountedFor] = useState(resetKey);
-  // Resetting during render is React's pattern for state derived from props:
-  // React re-renders straight away with the new count.
-  if (countedFor !== resetKey) {
-    setCountedFor(resetKey);
-    setCount(CARDS_PER_STEP);
-  }
-  const growCount = useCallback(() => setCount((shown) => shown + CARDS_PER_STEP), []);
-  return [count, useLoadMoreSentinel(growCount, count)];
 }
 
 /** The creator a note belongs to, at the top of its card. It links to the

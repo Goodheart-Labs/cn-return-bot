@@ -1,7 +1,7 @@
 import { noteStatus } from "./noteScore";
 import { extractYoutubeVideoId } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
-import { fetchAllRows } from "./paging";
+import { fetchAllRows, fetchInBatches } from "./paging";
 import { supabase } from "./supabase";
 import type { FeedItemRow, ItemRow } from "./types";
 
@@ -14,6 +14,16 @@ export async function fetchProjectItems(projectId: string): Promise<FeedItemRow[
     () => supabase.from("everything_items").select("id, project_id, url, title, published_at, created_at").eq("project_id", projectId),
     "id",
     { label: "projectItems" },
+  );
+}
+
+/** The items with the given ids, with the columns the website renders. */
+export async function fetchItemsByIds(ids: string[]): Promise<FeedItemRow[]> {
+  return fetchInBatches<FeedItemRow>(
+    (chunk) => supabase.from("everything_items").select("id, project_id, url, title, published_at, created_at").in("id", chunk),
+    ids,
+    "id",
+    { label: "itemsByIds" },
   );
 }
 
