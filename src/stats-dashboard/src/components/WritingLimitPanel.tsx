@@ -99,7 +99,7 @@ function PseudocodeLine({
   const pad = "  ".repeat(indent);
   const cls = active ? "bg-yellow-100 text-gray-900" : "text-gray-500";
   return (
-    <div className={`whitespace-pre font-mono text-sm leading-6 ${cls}`}>
+    <div className={`whitespace-pre-wrap break-words font-mono text-sm leading-6 ${cls}`}>
       {pad}
       {children}
     </div>
