@@ -29,12 +29,6 @@ const SECTION_TITLES: Record<CurationSection, string> = {
   leaderboard: "Our leaderboard",
   removed: "Removed",
 };
-const SECTION_INTROS: Record<CurationSection, string> = {
-  recommendations:
-    "Claude's ranking of the notes a reader or the author would be most glad to have seen. Move the good ones to our leaderboard, and remove the rest with a reason.",
-  leaderboard: "Our own ranking, only of notes we moved here ourselves.",
-  removed: "Recommendations we removed, with the reason we gave. Restore puts a note back among the recommendations.",
-};
 const EMPTY_SECTION: Record<CurationSection, string> = {
   recommendations: "No recommendations are left.",
   leaderboard: "Nothing is on our leaderboard yet. Add notes from the AI recommendations.",
@@ -294,7 +288,6 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
               )}
             </div>
           </div>
-          <p className="text-sm text-fg-muted">{SECTION_INTROS[section]}</p>
           {error && <p className="text-sm text-negative">{error}</p>}
         </div>
         {feed}
