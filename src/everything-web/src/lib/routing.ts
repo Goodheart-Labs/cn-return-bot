@@ -20,6 +20,8 @@ import { capturePageview } from "./analytics";
  *                         recommendations, their own leaderboard, or the
  *                         removed recommendations
  *   /admin/best/<section>/<slug>  the same, narrowed to one creator
+ *   /admin/dashboard      admins see how the extension is used, the order of
+ *                         the next walk and the posts checked last
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
  * The path /notes/all wins over a project whose slug is "all".
@@ -46,7 +48,8 @@ export type Route =
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" }
   | { view: "noteReview"; section: ReviewSection }
-  | { view: "bestNotes"; section: CurationSection; project: string | null };
+  | { view: "bestNotes"; section: CurationSection; project: string | null }
+  | { view: "dashboard" };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
@@ -55,6 +58,7 @@ export const ALL_NOTES: Route = { view: "allNotes" };
 export const MINISITES: Route = { view: "minisites", slug: null };
 export const NOTE_REVIEW: Route = { view: "noteReview", section: "unreviewed" };
 export const BEST_NOTES: Route = { view: "bestNotes", section: "recommendations", project: null };
+export const DASHBOARD: Route = { view: "dashboard" };
 
 const isCurationSection = (value: string | undefined): value is CurationSection => (CURATION_SECTIONS as readonly (string | undefined)[]).includes(value);
 const isReviewSection = (value: string | undefined): value is ReviewSection => (REVIEW_SECTIONS as readonly (string | undefined)[]).includes(value);
@@ -81,6 +85,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
   if (page === "admin" && project === "best") return isCurationSection(item) ? { view: "bestNotes", section: item, project: creator ?? null } : BEST_NOTES;
+  if (page === "admin" && project === "dashboard") return DASHBOARD;
   if (page === "admin" && project === "notes") return isReviewSection(item) ? { view: "noteReview", section: item } : NOTE_REVIEW;
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
@@ -92,6 +97,7 @@ export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
   if (route.view === "allNotes") return "/notes/all";
   if (route.view === "newMinisite") return "/minisites/new";
+  if (route.view === "dashboard") return "/admin/dashboard";
   if (route.view === "noteReview") return `/admin/notes/${route.section}`;
   if (route.view === "bestNotes") return `/admin/best/${route.section}` + (route.project ? `/${encodeURIComponent(route.project)}` : "");
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AxisBottom, AxisLeft } from "@visx/axis";
+import { localPoint } from "@visx/event";
+import { GridRows } from "@visx/grid";
+import { Group } from "@visx/group";
 import { ParentSize } from "@visx/responsive";
 import { scaleLinear, scaleTime } from "@visx/scale";
 import { LinePath } from "@visx/shape";
-import { AxisBottom, AxisLeft } from "@visx/axis";
-import { GridRows } from "@visx/grid";
-import { Group } from "@visx/group";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
-import { localPoint } from "@visx/event";
 import { bisector } from "d3-array";
 import {
   fetchMetricSeries,
@@ -17,8 +18,15 @@ import {
   type Granularity,
   type HistogramMetricKey,
   type MetricSeriesRow,
-} from "../lib/queries";
-import { ToggleGroup } from "./ToggleGroup";
+} from "@cn/core/dashboard";
+import { queryKeys } from "@cn/features/query/queryKeys";
+import { cn } from "@cn/ui/cn";
+import { ChevronIcon } from "@cn/ui/icons";
+import { Menu, MenuItem } from "@cn/ui/Menu";
+import { SegmentedControl } from "@cn/ui/SegmentedControl";
+import { Slider } from "@cn/ui/Slider";
+import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { LoadState } from "./tableParts";
 
 /** A metric is either a plain count per bucket, or a count of people who did
  *  the thing at least n times, where n comes from the slider. The label of a
@@ -26,23 +34,14 @@ import { ToggleGroup } from "./ToggleGroup";
  *  threshold after it as a control. A count with `byBrowser` is drawn as one
  *  line for all browsers and one line per browser. */
 type Metric =
-  | { kind: "count"; key: CountMetricKey; label: string; qualifier?: string; byBrowser?: BrowserSplitKey }
+  | { kind: "count"; key: CountMetricKey; label: string; caveat?: string; byBrowser?: BrowserSplitKey }
   | { kind: "people"; key: HistogramMetricKey; label: string };
 
+const OWN_INSTALLS_CAVEAT = "Our own test installs are left out from version 0.4.1 on.";
+
 const METRICS: readonly Metric[] = [
-  {
-    kind: "count",
-    key: "active_devices",
-    label: "Number of browsers with the extension open",
-    qualifier: "our own test installs left out from version 0.4.1 on",
-  },
-  {
-    kind: "count",
-    key: "installs",
-    label: "Number of new extension installs",
-    qualifier: "our own test installs left out from version 0.4.1 on",
-    byBrowser: "installs_by_browser",
-  },
+  { kind: "count", key: "active_devices", label: "Number of browsers with the extension open", caveat: OWN_INSTALLS_CAVEAT },
+  { kind: "count", key: "installs", label: "Number of new extension installs", caveat: OWN_INSTALLS_CAVEAT, byBrowser: "installs_by_browser" },
   { kind: "people", key: "note_viewers", label: "Number of people who have seen a note" },
   { kind: "people", key: "voters", label: "Number of people who have voted" },
   { kind: "people", key: "writers", label: "Number of people who have written a note" },
@@ -67,28 +66,35 @@ interface Selection {
 
 const metricFor = (key: SelectionKey): Metric | null => METRICS.find((m) => m.key === key) ?? null;
 
-const GRANULARITIES: readonly { value: Granularity; label: string }[] = [
-  { value: "day", label: "Daily" },
-  { value: "week", label: "Weekly" },
-  { value: "month", label: "Monthly" },
+const GRANULARITIES: readonly { id: Granularity; label: string }[] = [
+  { id: "day", label: "Daily" },
+  { id: "week", label: "Weekly" },
+  { id: "month", label: "Monthly" },
 ];
 
-const CHART_HEIGHT = 280;
+const CHART_HEIGHT = 300;
 const MARGIN = { top: 16, right: 16, bottom: 36, left: 48 };
 /** Points get a dot while there are few enough of them to tell apart. */
 const MAX_POINTS_WITH_DOTS = 90;
-const LINE_COLOR = "#2563eb";
-const TOTAL_COLOR = "#111827";
-const AXIS_COLOR = "#d1d5db";
-const LABEL_COLOR = "#6b7280";
+/** Room for one tick label on the time axis. */
+const PIXELS_PER_TIME_TICK = 90;
+const VALUE_TICKS = 4;
+const TICK_FONT_SIZE = 11;
 
-/** The browsers a split metric draws, each in its own fixed colour. The
- *  colours passed the dataviz skill's palette check against the white
- *  background. Edge and other Chromium browsers run the Chrome build. */
+/* The chart draws with the design tokens, so dark mode swaps its colours as it
+ * swaps the rest of the page. */
+const LINE_COLOR = "var(--cn-primary)";
+const TOTAL_COLOR = "var(--cn-fg)";
+const AXIS_COLOR = "var(--cn-line-strong)";
+const LABEL_COLOR = "var(--cn-fg-muted)";
+const SURFACE_COLOR = "var(--cn-surface)";
+
+/** The browsers a split metric draws, each in its own fixed colour. Edge and
+ *  other Chromium browsers run the Chrome build. */
 const BROWSER_LINES = [
   { browser: "chrome", label: "Chrome", color: LINE_COLOR },
-  { browser: "firefox", label: "Firefox", color: "#eb6834" },
-  { browser: "safari", label: "Safari", color: "#1baf7a" },
+  { browser: "firefox", label: "Firefox", color: "var(--cn-caution-solid)" },
+  { browser: "safari", label: "Safari", color: "var(--cn-positive-solid)" },
 ] as const;
 
 interface Point {
@@ -96,7 +102,7 @@ interface Point {
   value: number | null;
 }
 
-/** One line of the graph. Every line has a point for every bucket. */
+/** One line of the chart. Every line has a point for every bucket. */
 interface Series {
   label: string;
   color: string;
@@ -153,7 +159,7 @@ const isoDay = (d: Date) => d.toISOString().slice(0, 10);
 
 function bucketLabel(date: Date, granularity: Granularity): string {
   if (granularity === "month") return date.toISOString().slice(0, 7);
-  if (granularity === "week") return `week of ${isoDay(date)}`;
+  if (granularity === "week") return `Week of ${isoDay(date)}`;
   return isoDay(date);
 }
 
@@ -164,7 +170,7 @@ const tickFormat = (granularity: Granularity) => (value: Date | { valueOf(): num
 
 const bisectDate = bisector<Point, Date>((p) => p.date).center;
 
-/** Counts print whole; a ratio of two metrics prints with two decimals. */
+/** Counts print whole. A ratio of two metrics prints with two decimals. */
 const formatValue = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: 2 });
 
 /** The lines themselves, sized to their container. Hover shows the bucket
@@ -201,67 +207,46 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
       tooltipTop: MARGIN.top + yScale(Math.max(...values.map((v) => v ?? 0))),
     });
   };
-  const hovered = tooltipData === undefined ? null : tooltipData;
+  const hovered = tooltipData ?? null;
 
   const defined = (p: Point) => p.value !== null;
   const showDots = points.length <= MAX_POINTS_WITH_DOTS;
+  const tickLabel = { fill: LABEL_COLOR, fontSize: TICK_FONT_SIZE };
 
   return (
-    <div style={{ position: "relative" }}>
-      <svg width={width} height={CHART_HEIGHT} style={{ display: "block" }}>
+    <div className="relative">
+      <svg width={width} height={CHART_HEIGHT} className="block">
         <Group left={MARGIN.left} top={MARGIN.top}>
-          <GridRows scale={yScale} width={innerWidth} stroke={AXIS_COLOR} strokeOpacity={0.5} numTicks={4} />
+          <GridRows scale={yScale} width={innerWidth} stroke={AXIS_COLOR} strokeOpacity={0.5} numTicks={VALUE_TICKS} />
           <AxisLeft
             scale={yScale}
-            numTicks={4}
+            numTicks={VALUE_TICKS}
             stroke={AXIS_COLOR}
             tickStroke={AXIS_COLOR}
             tickFormat={(v) => formatValue(Number(v))}
-            tickLabelProps={() => ({ fill: LABEL_COLOR, fontSize: 11, textAnchor: "end", dx: -4, dy: 4 })}
+            tickLabelProps={() => ({ ...tickLabel, textAnchor: "end", dx: -4, dy: 4 })}
           />
           <AxisBottom
             top={innerHeight}
             scale={xScale}
-            numTicks={Math.max(2, Math.floor(innerWidth / 90))}
+            numTicks={Math.max(2, Math.floor(innerWidth / PIXELS_PER_TIME_TICK))}
             stroke={AXIS_COLOR}
             tickStroke={AXIS_COLOR}
             tickFormat={tickFormat(granularity)}
-            tickLabelProps={() => ({ fill: LABEL_COLOR, fontSize: 11, textAnchor: "middle", dy: 4 })}
+            tickLabelProps={() => ({ ...tickLabel, textAnchor: "middle", dy: 4 })}
           />
           {hovered !== null && (
-            <line
-              x1={xScale(points[hovered]!.date)}
-              x2={xScale(points[hovered]!.date)}
-              y1={0}
-              y2={innerHeight}
-              stroke={AXIS_COLOR}
-            />
+            <line x1={xScale(points[hovered]!.date)} x2={xScale(points[hovered]!.date)} y1={0} y2={innerHeight} stroke={AXIS_COLOR} />
           )}
           {/* The first line is the total, so it is drawn last and stays on top
               where the browsers sit on the same values, mostly at zero. */}
-          {[...series].reverse().map((s) => (
+          {series.toReversed().map((s) => (
             <Group key={s.label}>
-              <LinePath
-                data={s.points}
-                defined={defined}
-                x={(p) => xScale(p.date)}
-                y={(p) => yScale(p.value ?? 0)}
-                stroke={s.color}
-                strokeWidth={2}
-              />
+              <LinePath data={s.points} defined={defined} x={(p) => xScale(p.date)} y={(p) => yScale(p.value ?? 0)} stroke={s.color} strokeWidth={2} />
               {showDots &&
-                s.points.filter(defined).map((p) => (
-                  <circle key={p.date.toISOString()} cx={xScale(p.date)} cy={yScale(p.value ?? 0)} r={3} fill={s.color} />
-                ))}
+                s.points.filter(defined).map((p) => <circle key={p.date.toISOString()} cx={xScale(p.date)} cy={yScale(p.value ?? 0)} r={3} fill={s.color} />)}
               {hovered !== null && s.points[hovered]?.value != null && (
-                <circle
-                  cx={xScale(s.points[hovered]!.date)}
-                  cy={yScale(s.points[hovered]!.value!)}
-                  r={5}
-                  fill="#fff"
-                  stroke={s.color}
-                  strokeWidth={2}
-                />
+                <circle cx={xScale(s.points[hovered]!.date)} cy={yScale(s.points[hovered]!.value!)} r={5} fill={SURFACE_COLOR} stroke={s.color} strokeWidth={2} />
               )}
             </Group>
           ))}
@@ -269,23 +254,24 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
         </Group>
       </svg>
       {hovered !== null && (
-        <TooltipWithBounds left={tooltipLeft} top={tooltipTop} style={{ position: "absolute", fontSize: 12, padding: "4px 8px", background: "#111827", color: "#fff", borderRadius: 4, pointerEvents: "none" }}>
-          {series.length === 1 ? (
-            <>
-              {bucketLabel(points[hovered]!.date, granularity)}: {formatValue(series[0]!.points[hovered]!.value ?? 0)}
-            </>
-          ) : (
-            <>
-              <div style={{ marginBottom: 2 }}>{bucketLabel(points[hovered]!.date, granularity)}</div>
-              {series.map((s) => (
-                <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 2, background: s.color, border: "1px solid #9ca3af" }} />
-                  <span style={{ flex: 1 }}>{s.label}</span>
-                  <span style={{ fontVariantNumeric: "tabular-nums" }}>{s.points[hovered]?.value == null ? "–" : formatValue(s.points[hovered]!.value!)}</span>
-                </div>
-              ))}
-            </>
-          )}
+        <TooltipWithBounds
+          left={tooltipLeft}
+          top={tooltipTop}
+          style={{ position: "absolute", pointerEvents: "none" }}
+          className="rounded-control bg-inverse px-2 py-1 text-xs text-on-inverse shadow-floating"
+        >
+          <div className={cn(series.length > 1 && "mb-0.5")}>
+            {bucketLabel(points[hovered]!.date, granularity)}
+            {series.length === 1 && `: ${formatValue(series[0]!.points[hovered]!.value ?? 0)}`}
+          </div>
+          {series.length > 1 &&
+            series.map((s) => (
+              <div key={s.label} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-sm" style={{ background: s.color }} />
+                <span className="flex-1">{s.label}</span>
+                <span className="tabular-nums">{s.points[hovered]?.value == null ? "–" : formatValue(s.points[hovered]!.value!)}</span>
+              </div>
+            ))}
         </TooltipWithBounds>
       )}
     </div>
@@ -296,10 +282,10 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
  *  legend, because the title names it. */
 function Legend({ series }: { series: Series[] }) {
   return (
-    <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 12, color: "#111827", marginBottom: 4 }}>
+    <div className="mb-1 flex flex-wrap gap-4 text-xs text-fg-secondary">
       {series.map((s) => (
-        <span key={s.label} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 14, height: 2, background: s.color, borderRadius: 1 }} />
+        <span key={s.label} className="inline-flex items-center gap-1.5">
+          <span className="h-0.5 w-3.5 rounded-full" style={{ background: s.color }} />
           {s.label}
         </span>
       ))}
@@ -307,12 +293,24 @@ function Legend({ series }: { series: Series[] }) {
   );
 }
 
-/** The words a choice shows in the picker: a people metric carries its
- *  current threshold, so the menu and the header read the same way. */
+/** The words a choice shows in the menu. A people metric carries its current
+ *  threshold, so the menu and the picker read the same way. */
 function selectionTitle(key: SelectionKey, times: number): string {
   const metric = metricFor(key);
   if (!metric) return "1";
   return metric.kind === "people" ? `${metric.label} at least ${timesLabel(times)}` : metric.label;
+}
+
+/** Closes an open menu on Escape, as the site's other popovers do. */
+function useCloseOnEscape(open: boolean, close: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") close();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, close]);
 }
 
 /** One line of the fraction, which is also its picker: a framed heading with
@@ -320,211 +318,139 @@ function selectionTitle(key: SelectionKey, times: number): string {
  *  denominator. A people metric renders its threshold as a nested control:
  *  clicking "once" opens the slider that changes n instead of opening the
  *  menu. */
-function MetricPicker({
-  selection,
-  allowOne,
-  onChange,
-}: {
-  selection: Selection;
-  allowOne: boolean;
-  onChange: (selection: Selection) => void;
-}) {
+function MetricPicker({ selection, allowOne, onChange }: { selection: Selection; allowOne: boolean; onChange: (selection: Selection) => void }) {
   const [open, setOpen] = useState(false);
   const container = useRef<HTMLDivElement>(null);
+  const close = () => setOpen(false);
+  useOutsidePress(container, open, close);
+  useCloseOnEscape(open, close);
   const metric = metricFor(selection.key);
   const keys: SelectionKey[] = [...(allowOne ? [ONE] : []), ...METRICS.map((m) => m.key)];
 
-  // A click anywhere outside the picker closes the menu, as does Escape.
-  useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (!container.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
-
   return (
-    <div ref={container} style={{ position: "relative", display: "inline-block" }}>
+    <div ref={container} className="relative inline-block">
       <div
         role="button"
         tabIndex={0}
         aria-haspopup="listbox"
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen((wasOpen) => !wasOpen)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            setOpen((o) => !o);
+            setOpen((wasOpen) => !wasOpen);
           }
         }}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "8px 12px",
-          border: `1px solid ${open ? LINE_COLOR : AXIS_COLOR}`,
-          borderRadius: 8,
-          background: "#fff",
-          cursor: "pointer",
-          fontSize: 15,
-          fontWeight: 600,
-          userSelect: "none",
-        }}
+        className={cn(
+          "inline-flex cursor-pointer select-none items-center gap-3 rounded-control border bg-surface px-3 py-2 text-left text-sm font-semibold text-fg hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+          open ? "border-primary" : "border-line-strong",
+        )}
       >
         <span>
           {metric?.kind === "people" ? (
             <>
               {metric.label} at least{" "}
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange({ ...selection, sliderOpen: !selection.sliderOpen });
                 }}
-                title="Click to change how many times"
-                style={{
-                  font: "inherit",
-                  color: LINE_COLOR,
-                  background: selection.sliderOpen ? "#dbeafe" : "none",
-                  border: "none",
-                  borderBottom: `1px dotted ${LINE_COLOR}`,
-                  borderRadius: 3,
-                  padding: "0 2px",
-                  cursor: "pointer",
-                }}
+                title="Change how many times"
+                className={cn(
+                  "rounded-sm border-b border-dotted border-link px-0.5 text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                  selection.sliderOpen && "bg-tint",
+                )}
               >
                 {timesLabel(selection.times)}
               </button>
             </>
           ) : (
-            <>
-              {selectionTitle(selection.key, selection.times)}
-              {metric?.kind === "count" && metric.qualifier && (
-                <span style={{ color: LABEL_COLOR, fontWeight: 400 }}> ({metric.qualifier})</span>
-              )}
-            </>
+            selectionTitle(selection.key, selection.times)
           )}
         </span>
-        <span aria-hidden style={{ color: LABEL_COLOR, fontSize: 12 }}>{open ? "▲" : "▼"}</span>
+        <ChevronIcon size={16} aria-hidden className={cn("shrink-0 text-fg-muted transition-transform", open ? "-rotate-90" : "rotate-90")} />
       </div>
       {open && (
-        <ul
-          role="listbox"
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            zIndex: 10,
-            margin: "4px 0 0",
-            padding: 4,
-            listStyle: "none",
-            minWidth: "100%",
-            whiteSpace: "nowrap",
-            background: "#fff",
-            border: `1px solid ${AXIS_COLOR}`,
-            borderRadius: 8,
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-          }}
-        >
+        <Menu className="absolute left-0 top-full z-10 mt-1 w-max min-w-full max-w-[calc(100vw-2rem)]">
           {keys.map((key) => (
-            <li key={key} role="option" aria-selected={key === selection.key}>
-              <button
-                onClick={() => {
-                  onChange({ ...selection, key, sliderOpen: false });
-                  setOpen(false);
-                }}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "left",
-                  padding: "6px 10px",
-                  border: "none",
-                  borderRadius: 6,
-                  background: key === selection.key ? "#eff6ff" : "none",
-                  color: "#111827",
-                  font: "inherit",
-                  fontSize: 14,
-                  fontWeight: key === selection.key ? 600 : 400,
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = key === selection.key ? "#eff6ff" : "none")}
-              >
-                {selectionTitle(key, selection.times)}
-              </button>
-            </li>
+            <MenuItem
+              key={key}
+              selected={key === selection.key}
+              onClick={() => {
+                onChange({ ...selection, key, sliderOpen: false });
+                close();
+              }}
+            >
+              {selectionTitle(key, selection.times)}
+            </MenuItem>
           ))}
-        </ul>
+        </Menu>
       )}
     </div>
   );
 }
 
-/** The slider behind a people metric's "at least n times". */
+/** The slider behind a people metric's "at least n times". The site's slider
+ *  starts at 0, so it holds n minus one. */
 function TimesSlider({ selection, onChange }: { selection: Selection; onChange: (selection: Selection) => void }) {
   return (
-    <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: LABEL_COLOR }}>
-      <input
-        type="range"
-        min={1}
-        max={HISTOGRAM_CAP}
-        value={selection.times}
-        onChange={(e) => onChange({ ...selection, times: Number(e.target.value) })}
-        style={{ width: 220 }}
+    <div className="w-64">
+      <Slider
+        label="At least"
+        value={selection.times - 1}
+        max={HISTOGRAM_CAP - 1}
+        formatValue={(value) => timesLabel(value + 1)}
+        onChange={(value) => onChange({ ...selection, times: value + 1 })}
       />
-      {HISTOGRAM_CAP} means {HISTOGRAM_CAP} or more times
-    </label>
+    </div>
   );
 }
 
-/** The Common Notes metrics section: the title is a fraction of two pickers.
- *  The top one picks the metric, the bottom one divides it by another metric
- *  or by 1, and a switch picks the bucket size. The series for each bucket
- *  size is fetched once and kept for the session; the pickers and sliders
- *  recompute the line from the cached rows without another request. */
-export function MetricsGraph() {
+/** The caption under the chart: since when the metric is recorded, what a
+ *  bucket is, and any caveat of the chosen metrics. */
+function Caption({ series, granularity, caveats }: { series: Series[]; granularity: Granularity; caveats: string[] }) {
+  const firstRecorded = series[0]!.points.find((p) => p.value !== null)?.date;
+  return (
+    <p className="mt-1 text-xs text-fg-muted">
+      {firstRecorded ? `Recorded since ${isoDay(firstRecorded)}. Earlier buckets are left blank.` : "Not recorded yet."} Buckets are UTC days
+      {granularity === "week" ? ", and weeks start on Monday" : ""}. {caveats.join(" ")}
+    </p>
+  );
+}
+
+/** The metrics section: the title is a fraction of two pickers. The top one
+ *  picks the metric, the bottom one divides it by another metric or by 1, and
+ *  a switch picks the bucket size. The series for each bucket size is fetched
+ *  once and kept in the query cache. The pickers and sliders recompute the
+ *  lines from the cached rows without another request. */
+export function MetricsChart() {
   const [numerator, setNumerator] = useState<Selection>({ key: DEFAULT_METRIC_KEY, times: 1, sliderOpen: false });
   const [denominator, setDenominator] = useState<Selection>({ key: ONE, times: 1, sliderOpen: false });
   const [granularity, setGranularity] = useState<Granularity>("day");
-  const [series, setSeries] = useState<Partial<Record<Granularity, MetricSeriesRow[]>>>({});
-  const [error, setError] = useState<string | null>(null);
+  const query = useQuery({ queryKey: queryKeys.dashboardMetricSeries(granularity), queryFn: () => fetchMetricSeries(granularity) });
 
-  useEffect(() => {
-    if (series[granularity]) return;
-    fetchMetricSeries(granularity)
-      .then((rows) => setSeries((cached) => ({ ...cached, [granularity]: rows })))
-      .catch((e: Error) => setError(e.message));
-  }, [granularity, series]);
-
-  const rows = series[granularity];
+  const rows = query.data;
   const lines = useMemo(() => seriesFor(rows ?? [], numerator, denominator), [rows, numerator, denominator]);
-  const firstRecorded = lines[0]!.points.find((p) => p.value !== null)?.date;
   const showSlider = (selection: Selection) => selection.sliderOpen && metricFor(selection.key)?.kind === "people";
+  const caveats = [...new Set([numerator, denominator].map((s) => metricFor(s.key)).flatMap((m) => (m?.kind === "count" && m.caveat ? [m.caveat] : [])))];
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
         {/* The fraction: numerator, a bar as wide as the wider picker, denominator. */}
-        <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+        <div className="inline-flex flex-col items-center gap-1.5">
           <MetricPicker selection={numerator} allowOne={false} onChange={setNumerator} />
           {showSlider(numerator) && <TimesSlider selection={numerator} onChange={setNumerator} />}
-          <div style={{ alignSelf: "stretch", borderTop: "2px solid #111827" }} />
+          <div className="self-stretch border-t-2 border-fg" />
           <MetricPicker selection={denominator} allowOne onChange={setDenominator} />
           {showSlider(denominator) && <TimesSlider selection={denominator} onChange={setDenominator} />}
         </div>
-        <ToggleGroup options={GRANULARITIES} value={granularity} onChange={setGranularity} />
+        <SegmentedControl label="Bucket size" options={GRANULARITIES} value={granularity} onChange={setGranularity} />
       </div>
 
-      {error && <p style={{ color: "#b91c1c" }}>Failed to load: {error}</p>}
-      {!error && !rows && <p style={{ color: LABEL_COLOR }}>Loading…</p>}
-      {rows && rows.length === 0 && <p style={{ color: LABEL_COLOR, fontSize: 13 }}>Nothing recorded yet.</p>}
+      {!rows && <LoadState error={query.error} onRetry={() => void query.refetch()} />}
+      {rows?.length === 0 && <p className="text-sm text-fg-muted">Nothing recorded yet.</p>}
       {rows && rows.length > 0 && (
         <>
           {lines.length > 1 && <Legend series={lines} />}
@@ -532,10 +458,7 @@ export function MetricsGraph() {
           <ParentSize debounceTime={50} style={{ height: CHART_HEIGHT }}>
             {({ width }) => width > 0 && <LineChart series={lines} granularity={granularity} width={width} />}
           </ParentSize>
-          <p style={{ color: LABEL_COLOR, fontSize: 12, margin: "4px 0 0" }}>
-            {firstRecorded ? `Recorded since ${isoDay(firstRecorded)}. Earlier buckets are left blank.` : "Not recorded yet."}
-            {" "}Buckets are UTC days{granularity === "week" ? ", weeks start on Monday" : ""}.
-          </p>
+          <Caption series={lines} granularity={granularity} caveats={caveats} />
         </>
       )}
     </div>

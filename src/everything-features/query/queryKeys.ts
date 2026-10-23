@@ -43,6 +43,11 @@ export const queryKeys = {
   /** The live notes of the drafts on screen. They sit under the noteSet
    *  prefix, so a vote on one of them updates it here too. */
   noteReviewNoteSet: (noteIds: string[]) => ["noteSet", "noteReview", ...noteIds] as const,
+  /** What the admins' dashboard reads: the metric series per bucket size,
+   *  the walk's ranking of creators and the recently checked posts. */
+  dashboardMetricSeries: (granularity: string) => ["dashboard", "metricSeries", granularity] as const,
+  dashboardCreatorRanking: ["dashboard", "creatorRanking"] as const,
+  dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

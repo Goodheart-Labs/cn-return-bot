@@ -35,5 +35,11 @@ export default defineConfig(({ command, mode }) => {
     /* Tailwind is wired inline instead of via a postcss.config file, whose
      * discovery depends on the working directory. */
     css: { postcss: { plugins: [tailwindcss({ config: path.resolve(__dirname, "tailwind.config.ts") })] } },
+    /* Jim opens the development server on his Mac through an SSH tunnel with
+     * a round trip of about 190 ms. Normally the development server sends
+     * every source file on its own, and one page needed 187 requests. In
+     * bundled mode it sends a handful of bundles instead, which saved about
+     * 3 seconds per page load (GOO-561). Vite marks the mode as experimental. */
+    experimental: { bundledDev: true },
   };
 });
