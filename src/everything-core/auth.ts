@@ -210,6 +210,11 @@ export async function signInWithTwitterInPopup(
   }
 }
 
+/** Signs out of this app only. supabase-js ends every session of the account
+ *  by default, on every device and every origin. A sign-out on a localhost dev
+ *  server then also signed the same person out of commonnotes.net and of the
+ *  extension, and those found out only at their next token refresh
+ *  (GOO-577). The "local" scope ends just the session stored here. */
 export function signOut() {
-  return supabase.auth.signOut();
+  return supabase.auth.signOut({ scope: "local" });
 }
