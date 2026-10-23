@@ -2,7 +2,7 @@
  * The simple bot's orchestrator.
  *
  * The pipeline is linear. It searches, then writes a note, then verifies the
- * note's sources.
+ * note's sources unless the bot config switches the verifier off.
  *
  * The search and write stages are wrapped in withWriterCache. When the
  * WRITER_CACHE directory already holds an entry for this tweet, the run is a
@@ -53,7 +53,7 @@ async function produceWriterOutput(post: Post, input: BotInput): Promise<WriterS
 
   const search = getBotConfig().search_cascade ? await runCascadingSearch(userMessage) : await runSearch(userMessage);
   if (!search.correctionNeeded) {
-    return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings } };
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: search.findings, searchResults: search.findings } };
   }
 
   // Information for the writer, not a gate: a post published within
@@ -76,7 +76,7 @@ async function writeNote(researched: Researched): Promise<Exclude<WriterStageRes
   // to the verifier, which sometimes accepted it by judging the findings, and
   // Common Notes then published notes with no text.
   if (note.noteText.trim() === "") {
-    return { kind: "early_exit", outcome: { type: "no_correction", reason: WRITER_EMPTY_NOTE_REASON } };
+    return { kind: "early_exit", outcome: { type: "no_correction", reason: WRITER_EMPTY_NOTE_REASON, searchResults: findings } };
   }
   return {
     kind: "writer_done",
@@ -126,6 +126,7 @@ async function runGates(
         type: "note",
         noteText,
         sources: verification.good_sources,
+        verified: true,
         searchResults: findings,
         // Keep only the evaluations for sources the published note carries.
         sourceEvaluations: verification.source_evaluations?.filter((e) => goodSet.has(e.url)),
@@ -150,10 +151,11 @@ async function runGates(
  *  note and the verifier's reasoning are kept in the log under second_round,
  *  because the second round writes over the search and writer entries. */
 async function runGatesWithSecondRound(stage: WriterDone): Promise<PipelineOutcome> {
-  // Common Notes does not check sources. The note goes on with every source the writer cited,
-  // and it has no quotes from the sources.
-  if (getBotConfig().commonnotes_pipeline) {
-    return { type: "note", noteText: stage.noteText, sources: stage.sources, searchResults: stage.findings };
+  // Common Notes does not check sources, and neither does a bot config that
+  // switches the verifier off. The note goes on with every source the writer
+  // cited, and it has no quotes from the sources.
+  if (getBotConfig().commonnotes_pipeline || !getBotConfig().source_verifier) {
+    return { type: "note", noteText: stage.noteText, sources: stage.sources, verified: false, searchResults: stage.findings };
   }
   const first = await runGates(stage);
   const config = getBotConfig();

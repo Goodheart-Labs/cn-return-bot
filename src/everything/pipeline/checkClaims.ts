@@ -41,6 +41,8 @@ import { claimCheckFields } from "./claimCheckFields";
 // Every claim takes the cascading research path: a cheap model researches
 // first, and a stronger one repeats the research only when the cheap one is
 // unsure. X posts keep the search_cascade A/B test.
+// X's evaluate_note is off, because a claim's post id is made up and X can only
+// refuse it.
 const FORCED_PICKS: Record<string, string> = {
   bot: "simple-bot",
   note_prefilter: "off",
@@ -52,6 +54,7 @@ const FORCED_PICKS: Record<string, string> = {
   media_description: "gemini3flash",
   verifier_citations: "on",
   verifier_claim_based: "classic",
+  eval_submit_threshold: "off",
 };
 
 export interface ClaimPostParams {
