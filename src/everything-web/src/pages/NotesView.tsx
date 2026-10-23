@@ -1,16 +1,17 @@
 import type { FeedProjectRow } from "@cn/core/types";
 import { useProjects } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
+import { AllNotesPage } from "./AllNotesPage";
 import { LeaderboardPage } from "./LeaderboardPage";
 import { ProjectPage } from "./ProjectPage";
 import { ProjectsPage } from "./ProjectsPage";
 
 const NO_PROJECTS: FeedProjectRow[] = [];
 
-type NotesRoute = Extract<Route, { view: "notes" | "leaderboard" }>;
+type NotesRoute = Extract<Route, { view: "notes" | "allNotes" | "leaderboard" }>;
 
-/** The notes part of the website: the overview of all projects, one
- *  project's notes, or the rating leaderboard. */
+/** The notes part of the website: the overview of all projects, every note
+ *  in one feed, one project's notes, or the rating leaderboard. */
 export function NotesView({ route, navigate }: { route: NotesRoute; navigate: (next: Route) => void }) {
   const projectsQuery = useProjects();
   const projects = projectsQuery.data ?? NO_PROJECTS;
@@ -23,6 +24,7 @@ export function NotesView({ route, navigate }: { route: NotesRoute; navigate: (n
       </main>
     );
   }
+  if (route.view === "allNotes") return <AllNotesPage navigate={navigate} />;
   if (!route.project) return <ProjectsPage navigate={navigate} />;
 
   const project = projects.find((p) => p.slug === route.project);

@@ -20,7 +20,24 @@ export interface ProgressItemRow {
   status: "queued" | "processing" | "done" | "error";
   checked_scope?: "page" | "paragraph" | null;
   progress: ItemProgressStage | null;
+  /** Why the item was finished without being checked, or null. */
+  skip_reason?: string | null;
 }
+
+/** The skip reasons of a YouTube video the pipeline could not read, with the
+ *  line the card shows for each (GOO-422). The pipeline writes exactly these
+ *  words into everything_items.skip_reason. Such an item is done, but nothing
+ *  was checked and no retry will come, so the card reports a failure with its
+ *  reason. */
+export const UNREADABLE_VIDEO_LINES = {
+  "no captions": "failed, no captions available",
+  "age-restricted": "failed, the video is age-restricted",
+} as const;
+
+export type UnreadableVideoReason = keyof typeof UNREADABLE_VIDEO_LINES;
+
+const isUnreadableVideoReason = (reason: string | null | undefined): reason is UnreadableVideoReason =>
+  !!reason && Object.hasOwn(UNREADABLE_VIDEO_LINES, reason);
 
 /** The narrow slice of an everything_claims row the progress card reads. */
 export interface ProgressClaimRow {
@@ -35,6 +52,16 @@ export interface RequestStatusRow {
   status_reason: string | null;
   item_id: string | null;
 }
+
+/** The status_reason of a request whose selected passage is checked on its
+ *  own, on a page that was already checked in full. The page's item stays done
+ *  throughout, so only the request row tells the card the check is running,
+ *  and whether it wrote a note. */
+export const PASSAGE_CHECK = {
+  running: "checking the selected passage",
+  note: "the selected passage got a note",
+  noNote: "the selected passage needs no note",
+} as const;
 
 /** Every state the card can display.
  *  - "saved" is a request the intake has not picked up yet.
@@ -56,6 +83,7 @@ export type RequestProgress =
   | { kind: "checking"; done: number; total: number; notes: number }
   | { kind: "done"; notes: number }
   | { kind: "failed" }
+  | { kind: "unreadable"; reason: UnreadableVideoReason }
   | { kind: "unavailable" };
 
 /** Whether a state can still change. The watcher tears itself down on a
@@ -63,7 +91,7 @@ export type RequestProgress =
  *  state is deliberately not terminal: the item is still queued and will run
  *  once the budget resets, so a revisit should keep watching it. */
 export function progressIsTerminal(progress: RequestProgress): boolean {
-  return progress.kind === "done" || progress.kind === "failed" || progress.kind === "unavailable";
+  return progress.kind === "done" || progress.kind === "failed" || progress.kind === "unreadable" || progress.kind === "unavailable";
 }
 
 /** A claim that has been through its check. A skipped claim never gets
@@ -113,6 +141,11 @@ export function deriveRequestProgress(
     return { kind: "extracting" };
   }
   if (item.status === "done") {
+    if (request?.status === "error") return { kind: "failed" };
+    if (isUnreadableVideoReason(item.skip_reason)) return { kind: "unreadable", reason: item.skip_reason };
+    if (request?.status_reason === PASSAGE_CHECK.running) return { kind: "checking", done: 0, total: 1, notes: 0 };
+    if (request?.status_reason === PASSAGE_CHECK.note) return { kind: "done", notes: 1 };
+    if (request?.status_reason === PASSAGE_CHECK.noNote) return { kind: "done", notes: 0 };
     return { kind: "done", notes: claims.filter((c) => c.status === "note").length };
   }
   // The item errored. The pipeline requeues errored requested items, so the
@@ -146,6 +179,8 @@ export function progressLines(progress: RequestProgress): string[] {
       return [progress.notes > 0 ? notesLine(progress.notes) : "checked, nothing to note"];
     case "failed":
       return ["failed, will retry"];
+    case "unreadable":
+      return [UNREADABLE_VIDEO_LINES[progress.reason]];
     case "unavailable":
       return ["live progress unavailable"];
   }

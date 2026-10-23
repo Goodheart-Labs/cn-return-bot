@@ -4,6 +4,8 @@ import { mountInlineNotes } from "../utils/mountInlineNotes";
 import { registerDevReloadHook } from "../utils/devReload";
 import { initUiAnalytics } from "../utils/analytics";
 import { listenForLiveRequests } from "../utils/requestLive";
+import { installMenuRows } from "../utils/menuRows";
+import { substackMenuSite } from "../utils/substackMenuRows";
 
 // These are the text sites the static manifest injects into. Keep the matches
 // below in sync with utils/staticSites.ts. Newsletters on custom domains and
@@ -16,6 +18,7 @@ export default defineContentScript({
     initUiAnalytics();
     registerDevReloadHook(ctx);
     listenForLiveRequests(ctx);
+    installMenuRows(ctx, substackMenuSite);
     await mountInlineNotes(ctx);
   },
 });

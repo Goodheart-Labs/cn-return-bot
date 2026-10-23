@@ -36,8 +36,6 @@
   ],
   "ignoreDependencies": [
     "@types/p-queue",
-    "papaparse",
-    "@types/papaparse",
     "react-json-view-lite",
     "exa-js",
     "@wxt-dev/module-react"

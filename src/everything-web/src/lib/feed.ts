@@ -97,12 +97,11 @@ export function mergeFeedNotes<T>(helpful: readonly T[], needRatings: readonly T
   return merged;
 }
 
-/** The feed's three bands. `leading` is the helpful notes mixed with the notes
- *  that need ratings. The other two sit below their own divider. */
-export interface FeedSections {
-  leading: NoteRow[];
-  unhelpful: NoteRow[];
-  staleSource: NoteRow[];
+/** One band of the feed. A band with a label sits below a divider that names
+ *  it. A band without one, such as the start of the mixed feed, has none. */
+export interface FeedSection {
+  label: string | null;
+  notes: NoteRow[];
 }
 
 interface RankInputs {
@@ -126,7 +125,7 @@ interface RankInputs {
  *  them, oldest first on a tie, because that is where a rating settles the
  *  most. Unhelpful and stale notes sort by that chance, best first. Content
  *  order breaks every remaining tie. */
-export function rankFeed(ordered: NoteRow[], rankTally: (note: NoteRow) => RankTally): FeedSections {
+export function rankFeed(ordered: NoteRow[], rankTally: (note: NoteRow) => RankTally): FeedSection[] {
   // Computing p evaluates a continued fraction, so each note's inputs are
   // derived once here rather than inside the comparators.
   const inputs = new Map<string, RankInputs>(
@@ -153,9 +152,138 @@ export function rankFeed(ordered: NoteRow[], rankTally: (note: NoteRow) => RankT
   const needRatings = withStatus("needs_ratings").sort(
     (a, b) => of(b).pAfterOneHelpful - of(a).pAfterOneHelpful || a.created_at.localeCompare(b.created_at) || byContent(a, b),
   );
+  return [
+    { label: null, notes: mergeFeedNotes(helpful, needRatings) },
+    { label: "Unhelpful notes", notes: withStatus("not_helpful").sort(bestFirst) },
+    { label: "Source has since changed", notes: ordered.filter(stale).sort(bestFirst) },
+  ];
+}
+
+/** The orders a reader can pick on the All notes page. `mixed` is the order
+ *  every project's own page uses. */
+export type FeedOrder = "mixed" | "recent" | "helpful";
+
+/** The spans of time the Newest order puts a divider between, newest first.
+ *  Each span starts at midnight in the reader's time zone, a whole number of
+ *  days back, and ends where the span before it starts. "Last 7 days" covers
+ *  today and the 6 days before it, so after Today and Yesterday it holds the
+ *  5 days before those. "Older" is everything before the last 365 days. */
+const AGE_SPANS: { label: string; daysBack: number }[] = [
+  { label: "Today", daysBack: 0 },
+  { label: "Yesterday", daysBack: 1 },
+  { label: "Last 7 days", daysBack: 6 },
+  { label: "Last 30 days", daysBack: 29 },
+  { label: "Last 365 days", daysBack: 364 },
+  { label: "Older", daysBack: Infinity },
+];
+
+/** Midnight at the start of the day `daysBack` days before `now`, in the
+ *  reader's time zone, as milliseconds. Infinitely many days back is the
+ *  start of time. */
+function startOfDay(now: Date, daysBack: number): number {
+  return Number.isFinite(daysBack) ? new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysBack).getTime() : -Infinity;
+}
+
+/** Splits notes that are already newest first into one band per span of time.
+ *  A span with no notes gets an empty band, which the feed does not render. */
+function sectionsByAge(newest: NoteRow[], now: Date): FeedSection[] {
+  const sections = AGE_SPANS.map(({ label }) => ({ label, notes: [] as NoteRow[] }));
+  const starts = AGE_SPANS.map(({ daysBack }) => startOfDay(now, daysBack));
+  for (const note of newest) {
+    const created = new Date(note.created_at).getTime();
+    sections[starts.findIndex((start) => created >= start)]!.notes.push(note);
+  }
+  return sections;
+}
+
+/** Every note, newest first. Content order breaks a tie. */
+function newestFirst(ordered: NoteRow[]): NoteRow[] {
+  return ordered.map((note, contentIndex) => ({ note, contentIndex }))
+    .sort((a, b) => b.note.created_at.localeCompare(a.note.created_at) || a.contentIndex - b.contentIndex)
+    .map(({ note }) => note);
+}
+
+/** Every note, by the chance it is rated helpful, best first. More votes break
+ *  a tie, then content order. Unhelpful notes and notes whose source changed
+ *  sort like any other note, so they have no band of their own. */
+function mostHelpfulFirst(ordered: NoteRow[], rankTally: (note: NoteRow) => RankTally): NoteRow[] {
+  return ordered.map((note, contentIndex) => {
+    const ranked = { ...note, ...rankTally(note) };
+    return { note, p: probabilityHelpful(noteTally(ranked)), votes: totalVotes(ranked), contentIndex };
+  })
+    .sort((a, b) => b.p - a.p || b.votes - a.votes || a.contentIndex - b.contentIndex)
+    .map(({ note }) => note);
+}
+
+/** Arranges notes that are already in content order in the order the reader
+ *  picked. Only the mixed order has the bands for unhelpful notes and notes
+ *  whose source changed. The newest order has a band per span of time, which
+ *  `now` places on the calendar. The most helpful order is one plain list. */
+export function arrangeFeed(ordered: NoteRow[], order: FeedOrder, rankTally: (note: NoteRow) => RankTally, now: Date): FeedSection[] {
+  if (order === "recent") return sectionsByAge(newestFirst(ordered), now);
+  if (order === "helpful") return [{ label: null, notes: mostHelpfulFirst(ordered, rankTally) }];
+  return rankFeed(ordered, rankTally);
+}
+
+/** The first `count` notes of the feed, taken from its bands in the order they
+ *  render. A page that renders a long feed in steps shows this much of it. */
+export function firstNotes(sections: FeedSection[], count: number): FeedSection[] {
+  let left = count;
+  return sections.map(({ label, notes }) => {
+    const taken = notes.slice(0, left);
+    left -= taken.length;
+    return { label, notes: taken };
+  });
+}
+
+/** How many notes the feed holds across its bands. */
+export const feedLength = (sections: FeedSection[]) => sections.reduce((sum, { notes }) => sum + notes.length, 0);
+
+/** The minimums a note must reach to stay in the All notes feed. `views`
+ *  belongs to the note's post: it counts the devices outside our team on which
+ *  the extension showed that post's notes. The three vote minimums count all
+ *  votes, Helpful votes and Not helpful votes. */
+export interface NoteMinimums {
+  views: number;
+  votes: number;
+  helpful: number;
+  notHelpful: number;
+}
+
+export const MINIMUM_KEYS: (keyof NoteMinimums)[] = ["views", "votes", "helpful", "notHelpful"];
+
+/** Everything that decides which notes stay in the All notes feed. With
+ *  `unvotedOnly`, the notes the reader has voted on are hidden. That includes
+ *  the notes they wrote, because posting a note casts a Helpful vote on it. */
+export interface NoteFilters extends NoteMinimums {
+  unvotedOnly: boolean;
+}
+
+/** Notes on posts that at least a few real readers saw come first by default,
+ *  because a vote on those improves what people actually read. Notes the reader
+ *  already voted on are hidden by default, so the feed shows what still needs
+ *  their vote. */
+export const DEFAULT_NOTE_FILTERS: NoteFilters = { views: 5, votes: 0, helpful: 0, notHelpful: 0, unvotedOnly: true };
+
+/** Each minimum's value for one note. */
+export function minimumValues(note: NoteRow, viewsOf: (note: NoteRow) => number, tally: RankTally): NoteMinimums {
   return {
-    leading: mergeFeedNotes(helpful, needRatings),
-    unhelpful: withStatus("not_helpful").sort(bestFirst),
-    staleSource: ordered.filter(stale).sort(bestFirst),
+    views: viewsOf(note),
+    votes: totalVotes(tally),
+    helpful: tally.helpful_count,
+    notHelpful: tally.not_helpful_count,
   };
+}
+
+/** The notes that pass every filter, in the order given. Votes are read from
+ *  `rankTally`, the counts a note had when it first appeared, so a card does
+ *  not vanish under a reader who just took back a vote. For the same reason
+ *  `votedNoteIds` should be the reader's votes at an earlier moment, not their
+ *  live votes. */
+export function filterNotes(notes: NoteRow[], filters: NoteFilters, viewsOf: (note: NoteRow) => number, rankTally: (note: NoteRow) => RankTally, votedNoteIds: ReadonlySet<string>): NoteRow[] {
+  return notes.filter((note) => {
+    if (filters.unvotedOnly && votedNoteIds.has(note.id)) return false;
+    const values = minimumValues(note, viewsOf, rankTally(note));
+    return MINIMUM_KEYS.every((key) => values[key] >= filters[key]);
+  });
 }

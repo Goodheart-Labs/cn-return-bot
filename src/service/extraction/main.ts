@@ -5,7 +5,7 @@
  *
  * It writes nothing, checks nothing, and decides nothing. Which claims are
  * worth checking is the caller's business, so every claim found comes back,
- * including the confidently-true ones and the speculation, and the ratings
+ * including the ones that are surely true, and the ratings
  * come back as judgements rather than as a filtered list.
  *
  *   bun run src/service/extraction/main.ts
@@ -14,12 +14,16 @@
 import "dotenv/config";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
 import { rateClaims } from "../../everything/pipeline/rateClaims";
+import { readItemText } from "../../everything/worker";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import {
   EXTRACT_CLAIMS_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
+  ITEM_TEXT_PATH,
   RATE_CLAIMS_PATH,
   type ExtractClaimsRequest,
+  type ItemTextRequest,
+  type ItemTextResponse,
   type ExtractClaimsResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
@@ -75,7 +79,7 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
     }
     const rating = await rateClaims({ text: body.text, introduction: body.introduction ?? null, claims: body.claims, source: body.source });
     console.log(
-      `[extraction] ${body.priority} rated ${rating.claims.length} claims ` +
+      `[extraction] ${body.priority} rated ${rating.claims.length} claims, ${rating.leftOutByFirstAnswer} asked again ` +
         `(${rating.webSearches} searches, $${rating.cost.cost.toFixed(2)})`,
     );
     return {
@@ -83,7 +87,22 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
       research: rating.research,
       webSearches: rating.webSearches,
       costUsd: rating.cost.cost,
+      answers: rating.answers,
+      leftOutByFirstAnswer: rating.leftOutByFirstAnswer,
     };
+  },
+};
+
+/** Reads one item's text for the Claude note writer on the devbox (GOO-507),
+ *  because only this machine can fetch YouTube captions. */
+const itemTextRoute: ServiceRoute<ItemTextRequest, ItemTextResponse> = {
+  path: ITEM_TEXT_PATH,
+  priorityOf: (body) => body.priority,
+  handle: async (body) => {
+    if (!body?.item?.url) throw new Error("Reading an item needs the item");
+    const read = await readItemText(body.item);
+    console.log(`[extraction] ${body.priority} read ${body.item.url}: ${read.text.length} characters`);
+    return read;
   },
 };
 
@@ -97,5 +116,5 @@ startService({
   port: numberFromEnv("EXTRACTION_PORT", DEFAULT_PORT),
   concurrency: numberFromEnv("EXTRACTION_CONCURRENCY", DEFAULT_CONCURRENCY),
   reservedForReader: RESERVED_FOR_READER,
-  routes: [extractClaimsRoute, rateClaimsRoute],
+  routes: [extractClaimsRoute, rateClaimsRoute, itemTextRoute],
 });

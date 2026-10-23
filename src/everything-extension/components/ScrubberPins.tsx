@@ -76,19 +76,21 @@ const PIN_TOOLTIP_CHARS = 120;
 function pinTitle(group: TimedGroup): string {
   const quote = group.claim.context_quote ?? group.claim.claim;
   const preview = quote.length > PIN_TOOLTIP_CHARS ? `${quote.slice(0, PIN_TOOLTIP_CHARS)}…` : quote;
-  return preview ? `Common Note: “${preview}”` : "Click to jump to this Common Note";
+  const hint = "Click to open, double-click to play from here";
+  return preview ? `Common Note: “${preview}”\n${hint}` : hint;
 }
 
 /** The pins are portalled into a strip of zero height that we append inside
  *  `.ytp-progress-bar`. The strip stays in the normal flow, so a position given
  *  in percent resolves against the bar however the bar itself is positioned. A
  *  MutationObserver puts the strip back whenever YouTube rebuilds its control
- *  DOM. Clicking a pin seeks the video to the start of that claim. */
+ *  DOM. The overlay decides what a click does, from the number of clicks in a
+ *  row. */
 export function ScrubberPins({ groups, video, player, onPinClick }: {
   groups: TimedGroup[];
   video: HTMLVideoElement;
   player: HTMLElement;
-  onPinClick: (group: TimedGroup) => void;
+  onPinClick: (group: TimedGroup, clicksInARow: number) => void;
 }) {
   const [strip, setStrip] = useState<HTMLElement | null>(null);
   const stripRef = useRef<HTMLElement | null>(null);
@@ -143,15 +145,17 @@ export function ScrubberPins({ groups, video, player, onPinClick }: {
         className="cn-scrub-pin"
         style={{ left: `${(group.startSeconds / duration) * 100}%`, background: "none", border: "none", padding: 0 }}
         title={pinTitle(group)}
-        aria-label={`Jump to this Common Note, ${statusLabel(group.status).toLowerCase()}`}
+        aria-label={`Open this Common Note, ${statusLabel(group.status).toLowerCase()}`}
         onClick={(e) => {
           // Keep the click off the bar underneath. A mousedown that leaked
           // through would start a scrub-drag to wherever the pointer sits.
           e.preventDefault();
           e.stopPropagation();
-          onPinClick(group);
+          onPinClick(group, e.detail);
         }}
         onMouseDown={(e) => e.stopPropagation()}
+        // YouTube's player toggles fullscreen on a double click.
+        onDoubleClick={(e) => e.stopPropagation()}
       >
         <PinGlyph dark={dark} status={group.status} />
       </button>

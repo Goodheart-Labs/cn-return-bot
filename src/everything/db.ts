@@ -12,9 +12,6 @@ import type { ItemSource, NoteSourceCitation } from "./types";
 /** The queue's priority tiers. The worker takes the highest tier first, and the
  *  newest published content within a tier. */
 export const QUEUE_PRIORITY = {
-  /** An errored item on a repeat attempt. It already had its turn once, so it
-   *  must never crowd out fresh content and drains last. */
-  retry: -1,
   /** A post by a creator we walk only because readers visited them. */
   backlog: 0,
   /** A post by a creator whose priority window is still open, because someone
@@ -41,9 +38,11 @@ export interface EverythingItem {
    *  item has been ingested this column also holds the text that the public
    *  write-note flow searches. */
   full_text: string | null;
+  /** How many repeat attempts this item has been given after failing. */
+  retries: number;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -338,44 +337,59 @@ export async function requeueItem(id: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
 }
 
-/** An errored item that still has repeat attempts left. */
+/** An errored item that still has repeat attempts left and has rested long
+ *  enough for the next one. `feed_url` is the feed of the item's creator, or
+ *  null when its project follows no feed. */
 export interface RetryableErrorItem {
   id: string;
   url: string;
+  title: string | null;
+  published_at: string | null;
   retries: number;
   priority: number;
+  feed_url: string | null;
 }
 
-/** Returns the errored items that have been requeued fewer than `maxRetries`
- *  times and whose last failure is at least `cooldownHours` old. The cool-down
- *  spaces the attempts out. Without it a failure whose cause lasts a while,
- *  say a broken proxy or an exhausted API key, would burn every retry within
- *  minutes and the item would be dead again before the cause clears. */
-export async function fetchRetryableErrorItems(maxRetries: number, cooldownHours: number): Promise<RetryableErrorItem[]> {
-  return throwOnError(
-    await getSupabaseClient()
-      .from("everything_items")
-      .select("id, url, retries, priority")
-      .eq("status", "error")
-      .lt("retries", maxRetries)
-      .lt("processed_at", new Date(Date.now() - cooldownHours * 3600_000).toISOString()),
-  ) as RetryableErrorItem[];
+/** Returns the errored items of one worker's tiers that are due another
+ *  attempt. `waitHours[n]` is how long an item that has been retried n times
+ *  waits after its last failure, so an item retried as often as the list is
+ *  long is never returned. The wait spaces the attempts out. Without it a
+ *  failure whose cause lasts a while, say a broken proxy or an exhausted API
+ *  key, would burn every retry within minutes and the item would be dead
+ *  again before the cause clears. */
+export async function fetchRetryableErrorItems(
+  waitHours: readonly number[],
+  tier: "requested" | "feed",
+): Promise<RetryableErrorItem[]> {
+  const due = waitHours.map((hours, retries) => {
+    const failedBefore = new Date(Date.now() - hours * 3600_000).toISOString();
+    return `and(retries.eq.${retries},processed_at.lt."${failedBefore}")`;
+  });
+  const rows = await fetchAllRows<Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null }>(
+    () => {
+      const query = getSupabaseClient()
+        .from("everything_items")
+        .select("id, url, title, published_at, retries, priority, everything_projects(feed_url)")
+        .eq("status", "error")
+        .or(due.join(","));
+      return tier === "requested"
+        ? query.gte("priority", QUEUE_PRIORITY.requested)
+        : query.lt("priority", QUEUE_PRIORITY.requested);
+    },
+    "id",
+    { label: "retryableErrorItems" },
+  );
+  return rows.map(({ everything_projects, ...item }) => ({ ...item, feed_url: everything_projects?.feed_url ?? null }));
 }
 
-/** Puts an errored item back in the queue for a repeat attempt and counts the
- *  attempt. The last error text stays on the row until the item finishes, so a
- *  waiting retry still shows why the item failed. A requested page keeps its
- *  tier, because a reader is waiting for it. Every other item drains at the
- *  retry tier, behind all fresh content. */
-export async function requeueErroredItem(item: RetryableErrorItem): Promise<void> {
+/** Puts an errored item back in the queue at the given tier for a repeat
+ *  attempt, and counts the attempt. The last error text stays on the row until
+ *  the item finishes, so a waiting retry still shows why the item failed. */
+export async function requeueErroredItem(item: RetryableErrorItem, priority: number): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({
-        status: "queued",
-        retries: item.retries + 1,
-        priority: item.priority >= QUEUE_PRIORITY.requested ? item.priority : QUEUE_PRIORITY.retry,
-      })
+      .update({ status: "queued", retries: item.retries + 1, priority })
       .eq("id", item.id),
   );
 }
@@ -404,6 +418,17 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
+/** While the Claude note writer writes the notes (migration 129, GOO-507),
+ *  the pipeline takes only the items Claude handed back to it, and this returns
+ *  their ids. It returns null while the pipeline writes the notes as before. */
+async function itemsLeftToThePipeline(): Promise<string[] | null> {
+  const db = getSupabaseClient();
+  const settings = throwOnError(await db.from("everything_claude_settings").select("writer").single()) as { writer: string };
+  if (settings.writer !== "claude") return null;
+  const handbacks = throwOnError(await db.from("everything_claude_handbacks").select("item_id")) as { item_id: string }[];
+  return handbacks.map((h) => h.item_id);
+}
+
 /** Moves the next queued item to `processing` and returns it. The highest
  *  priority tier wins, and within a tier the newest published content comes
  *  first. An item with no published date yet, which is typically a freshly
@@ -414,13 +439,16 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
  *  safe because each tier has exactly one worker: the intake service on the
  *  machine takes only the requested tier, and the Actions feed run takes only
  *  the tiers below it. Two workers exist, but they can never want the same
- *  row. */
+ *  row. While the Claude note writer is on, both take only what it handed
+ *  back, and Claude takes the rest. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
   let query = db
     .from("everything_items")
     .select(ITEM_COLUMNS)
     .eq("status", "queued");
+  const handedBack = await itemsLeftToThePipeline();
+  if (handedBack) query = query.in("id", handedBack);
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)
@@ -438,6 +466,10 @@ export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<E
   return { ...item, status: "processing" };
 }
 
+export async function fetchItem(id: string): Promise<EverythingItem> {
+  return throwOnError(await getSupabaseClient().from("everything_items").select(ITEM_COLUMNS).eq("id", id).single()) as EverythingItem;
+}
+
 export async function updateItemMeta(
   id: string,
   meta: { title: string; published_at: string | null; full_text: string },
@@ -445,9 +477,11 @@ export async function updateItemMeta(
   throwOnError(await getSupabaseClient().from("everything_items").update(meta).eq("id", id));
 }
 
-/** `skipReason` is why the intent gate declined the item, or null when it was
- *  processed. It is always written, so an item the gate once declined and a
- *  reader later promoted to a whole-page check loses its stale reason. */
+/** `skipReason` is why the item was finished without being checked, or null
+ *  when it was checked. Either the intent gate declined it, or it is a video
+ *  we cannot read ("no captions", "age-restricted"). It is always written, so
+ *  an item the gate once declined and a reader later promoted to a whole-page
+ *  check loses its stale reason. */
 export async function markItemDone(id: string, skipReason: string | null): Promise<void> {
   throwOnError(
     await getSupabaseClient()
@@ -544,15 +578,24 @@ const ITEM_RUN_ROW = {
  *  Extraction and rating each write one such row per item, and so does the
  *  cleanup of a reader request's captured text. Until these rows existed the
  *  cap silently undercounted by exactly that spend. */
-export async function insertItemRun(itemId: string, stage: keyof typeof ITEM_RUN_ROW, costUsd: number, spendFor: SpendFor): Promise<void> {
+export async function insertItemRun(
+  itemId: string,
+  stage: keyof typeof ITEM_RUN_ROW,
+  costUsd: number | null,
+  spendFor: SpendFor,
+  logs: Record<string, unknown> | null = null,
+): Promise<void> {
   throwOnError(
-    await getSupabaseClient().from("everything_pipeline_runs").insert({
-      ...ITEM_RUN_ROW[stage],
-      item_id: itemId,
-      claim_id: null,
-      cost: costUsd,
-      work_priority: spendFor,
-    }),
+    await getSupabaseClient().from("everything_pipeline_runs").insert(
+      stripNullChars({
+        ...ITEM_RUN_ROW[stage],
+        item_id: itemId,
+        claim_id: null,
+        cost: costUsd,
+        work_priority: spendFor,
+        logs,
+      }),
+    ),
   );
 }
 
@@ -912,7 +955,7 @@ function inWorkerOrder(a: { priority: number; published_at: string | null; creat
 }
 
 /** Every visited creator's score, counted in the database (see
- *  everything_creator_visit_scores, migration 119). `lastPosts` is how many of
+ *  everything_creator_visit_scores, migrations 119 and 123). `lastPosts` is how many of
  *  a creator's most recently visited posts the average covers. */
 export async function fetchCreatorVisitScores(lastPosts: number): Promise<CreatorVisitScore[]> {
   // One row per creator anyone visited, which passed 1,000 rows in September

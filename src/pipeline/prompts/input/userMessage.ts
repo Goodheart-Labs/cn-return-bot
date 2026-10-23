@@ -15,6 +15,7 @@ import type { AuthorNote, AuthorNoteHistory } from "../../input/authorHistory";
 import type { BotInput } from "../../input/createBotInput";
 import { getNoteRequest, type NoteRequest } from "../../input/noteRequest";
 import { getBotConfig } from "../../ab-testing/botConfig";
+import { isRealTweetId } from "../../utils/tweetId";
 
 type ReferenceKind = "quoted" | "retweeted";
 
@@ -60,21 +61,24 @@ export function buildUserMessage(params: {
 
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
   parts.push(`Current time: ${now.toISOString().split("T")[1]!.slice(0, 5)} UTC`);
-  parts.push(`Tweet posted: ${post.created_at}`);
-  // The timing machinery turns on how old the post is, and models are unreliable
-  // at timestamp arithmetic. So we work the age out here and hand them the
-  // number.
-  if (post.created_at) {
-    const ageMs = now.getTime() - Date.parse(post.created_at);
-    if (Number.isFinite(ageMs) && ageMs >= 0) {
-      parts.push(`Post age: ${(ageMs / 3_600_000).toFixed(1)} hours`);
+  // A claim from an article or a video is not a tweet, so it gets no tweet wording.
+  if (isRealTweetId(post.id)) {
+    parts.push(`Tweet posted: ${post.created_at}`);
+    // The timing machinery turns on how old the post is, and models are unreliable
+    // at timestamp arithmetic. So we work the age out here and hand them the
+    // number.
+    if (post.created_at) {
+      const ageMs = now.getTime() - Date.parse(post.created_at);
+      if (Number.isFinite(ageMs) && ageMs >= 0) {
+        parts.push(`Post age: ${(ageMs / 3_600_000).toFixed(1)} hours`);
+      }
     }
   }
   // Only a real numeric tweet id forms a valid URL. Synthetic posts would
   // produce a bogus link that confuses the model, so we leave the URL out for
   // them. The everything pipeline's claim ids are such synthetic posts, since
   // they are built as an item id followed by an index.
-  if (/^\d+$/.test(post.id)) parts.push(`Tweet URL: https://x.com/i/status/${post.id}`);
+  if (isRealTweetId(post.id)) parts.push(`Tweet URL: https://x.com/i/status/${post.id}`);
 
   const authorParts: string[] = [];
   if (post.author_name) authorParts.push(post.author_name);

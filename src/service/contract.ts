@@ -13,6 +13,8 @@
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
+import type { EverythingItem } from "../everything/db";
+import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
@@ -22,6 +24,7 @@ export const CHECK_CLAIM_PATH = "/check-claim";
 export const CHECK_TWEET_PATH = "/check-tweet";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
 export const RATE_CLAIMS_PATH = "/rate-claims";
+export const ITEM_TEXT_PATH = "/item-text";
 export const HEALTH_PATH = "/health";
 
 /** Callers prove themselves with a shared secret in this header. The services
@@ -123,7 +126,7 @@ export interface ExtractClaimsRequest {
 
 /** Either the gate declined the content, or every claim found, part by part,
  *  including the ones not worth checking. The caller decides what to do with
- *  them, using `shouldFactCheck` and `dropSpeculation`, so that the extraction
+ *  them, using `shouldFactCheck`, so that the extraction
  *  service stays a pure reader of text with no policy of its own. The one
  *  policy it applies is the gate, and only for backlog work: a page a reader
  *  asked for is never declined. */
@@ -152,11 +155,14 @@ export interface RateClaimsRequest {
 export interface RateClaimsResponse {
   /** The same claims back, each carrying its judgement. */
   claims: RatedClaim[];
-  /** What the model found, with its source URLs. The caller logs it; it is
-   *  stored nowhere else. */
+  /** What the model found, with its source URLs. The caller logs it. */
   research: string;
   webSearches: number;
   costUsd: number | null;
+  /** Every reply the model gave, which the caller stores on the rating row. */
+  answers: string[];
+  /** How many claims the first answer left out and the follow-up asked about. */
+  leftOutByFirstAnswer: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -177,7 +183,6 @@ export const FETCH_SERVICE_SOCKET_VARIABLE = "FETCH_SERVICE_SOCKET";
 
 export interface FetchPageRequest {
   url: string;
-  maxChars?: number;
 }
 
 export interface FetchUrlRequest {
@@ -240,4 +245,21 @@ export interface HealthResponse {
  *  record the failure against the claim and move on. */
 export interface ServiceErrorResponse {
   error: string;
+}
+
+/** Reads one Common Notes item's text the way processing does, for the Claude
+ *  note writer on the devbox (GOO-507). The services machine has the
+ *  residential proxy and the PO token server that YouTube captions need, and
+ *  the devbox has neither. Nothing is written; the caller stores the text. */
+export interface ItemTextRequest {
+  priority: WorkPriority;
+  item: EverythingItem;
+}
+
+export interface ItemTextResponse {
+  title: string;
+  publishedAt: string | null;
+  text: string;
+  /** A video's caption cues, which give each passage its time in the video. */
+  cues?: SubtitleCue[];
 }

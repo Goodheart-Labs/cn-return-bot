@@ -17,6 +17,33 @@ export async function fetchProjectItems(projectId: string): Promise<FeedItemRow[
   );
 }
 
+/** Every item that has at least one note, with the columns the website
+ *  renders. The empty embed of the claims and their notes reads no columns. It
+ *  only makes PostgREST keep the items that have a note, and it still returns
+ *  each item once. */
+export async function fetchItemsWithNotes(): Promise<FeedItemRow[]> {
+  return fetchAllRows<FeedItemRow>(
+    () =>
+      supabase
+        .from("everything_items")
+        .select("id, project_id, url, title, published_at, created_at, everything_claims!inner(everything_notes!inner())"),
+    "id",
+    { label: "itemsWithNotes" },
+  );
+}
+
+/** How many different devices outside the team the extension showed each
+ *  item's notes on, keyed by item id. An item nobody outside the team has seen
+ *  is absent. */
+export async function fetchItemNoteViewers(): Promise<Map<string, number>> {
+  const rows = await fetchAllRows<{ item_id: string; viewers: number }>(
+    () => supabase.rpc("everything_item_note_viewers"),
+    "item_id",
+    { label: "itemNoteViewers" },
+  );
+  return new Map(rows.map((row) => [row.item_id, row.viewers]));
+}
+
 /** An ItemRow plus the two extra fields the extension needs. `full_text` is the
  *  transcript or article body, which the write-note flow searches to check its
  *  anchor. `projectSlug` is what share links are built from. */

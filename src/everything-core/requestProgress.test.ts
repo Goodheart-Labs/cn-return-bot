@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   deriveRequestProgress,
+  PASSAGE_CHECK,
   progressIsTerminal,
   progressLines,
   type ProgressClaimRow,
@@ -111,8 +112,40 @@ describe("deriveRequestProgress", () => {
     expect(progress).toEqual({ kind: "done", notes: 1 });
   });
 
+  test("a done video we could not read is unreadable, with its reason", () => {
+    const progress = deriveRequestProgress(item({ status: "done", skip_reason: "no captions" }), [], null);
+    expect(progress).toEqual({ kind: "unreadable", reason: "no captions" });
+    expect(progressIsTerminal(progress)).toBe(true);
+    expect(progressLines(progress)).toEqual(["failed, no captions available"]);
+  });
+
+  test("any other skip reason on a done item still reads as done", () => {
+    expect(deriveRequestProgress(item({ status: "done", skip_reason: "a personal update" }), [], null)).toEqual({ kind: "done", notes: 0 });
+  });
+
   test("an errored item is failed", () => {
     expect(deriveRequestProgress(item({ status: "error" }), [], null)).toEqual({ kind: "failed" });
+  });
+});
+
+/* A passage checked on its own on an already-checked page: the item is done
+ * throughout, so the request row decides what the card shows. */
+describe("deriveRequestProgress for a passage on an already-checked page", () => {
+  const done = item({ status: "done" });
+  const pageNotes = [claim("note"), claim("note", "n2"), claim("note", "n3")];
+
+  test("a running check reads as checking one claim, not as the page's notes", () => {
+    const progress = deriveRequestProgress(done, pageNotes, request({ status: "enqueued", status_reason: PASSAGE_CHECK.running }));
+    expect(progress).toEqual({ kind: "checking", done: 0, total: 1, notes: 0 });
+  });
+
+  test("a finished check counts only the passage's note", () => {
+    expect(deriveRequestProgress(done, pageNotes, request({ status: "done", status_reason: PASSAGE_CHECK.note }))).toEqual({ kind: "done", notes: 1 });
+    expect(deriveRequestProgress(done, pageNotes, request({ status: "done", status_reason: PASSAGE_CHECK.noNote }))).toEqual({ kind: "done", notes: 0 });
+  });
+
+  test("a check that failed is failed, though the page itself is done", () => {
+    expect(deriveRequestProgress(done, pageNotes, request({ status: "error", status_reason: "Daily budget reached" }))).toEqual({ kind: "failed" });
   });
 });
 
@@ -158,6 +191,8 @@ describe("progressLines", () => {
       { kind: "checking", done: 1, total: 2, notes: 1 },
       { kind: "done", notes: 1 },
       { kind: "failed" },
+      { kind: "unreadable", reason: "no captions" },
+      { kind: "unreadable", reason: "age-restricted" },
       { kind: "unavailable" },
     ] as const;
     for (const state of states) {

@@ -74,10 +74,12 @@ export interface SourcedPost {
 }
 
 type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
+/** Returns which of the given tweet ids must be skipped. */
+type SkipLookup = (tweetIds: string[]) => Promise<Set<string>>;
 
 /**
  * Walk the feed ladder one tier at a time. For each tier this fetches the posts,
- * drops the ones already seen, computes each post's velocity, and keeps only the
+ * asks `findSkippedIds` which of them to drop, computes each post's velocity, and keeps only the
  * posts that clear the floor and are not already past the stale cutoff. It stops
  * as soon as `maxPosts` of them are pooled, and otherwise broadens to the next
  * tier. Filtering here rather than at submission means a slow or already-stale
@@ -99,7 +101,7 @@ type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
  */
 export async function collectFastPosts(
   maxPosts: number,
-  knownTweetIds: Set<string>,
+  findSkippedIds: SkipLookup,
   fetchFeed: FeedFetcher,
   asOfMs: number = Date.now(),
   scorer: Scorer | null = null,
@@ -121,9 +123,11 @@ export async function collectFastPosts(
       continue;
     }
 
-    const seenIds = new Set(allFresh.map((s) => s.post.id));
-    const fresh = posts
-      .filter((p) => !knownTweetIds.has(p.id) && !seenIds.has(p.id))
+    const earlierTierIds = new Set(allFresh.map((s) => s.post.id));
+    const unseen = posts.filter((p) => !earlierTierIds.has(p.id));
+    const skippedIds = await findSkippedIds(unseen.map((p) => p.id));
+    const fresh = unseen
+      .filter((p) => !skippedIds.has(p.id))
       .map((post) => ({ post, feedSize, velocity: velocityPerHour(post, asOfMs) }));
     allFresh.push(...fresh);
     const fastEnough = fresh.filter((s) => isAboveVelocityFloor(s.velocity));
@@ -170,28 +174,23 @@ export async function collectFastPosts(
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
   maxPosts: number,
-  prefetchedSkipPostIds?: Set<string>,
-  prefetchedKnownTweetIds?: Set<string>,
-  scorer: Scorer | null = null,
+  processedThisRun: ReadonlySet<string>,
+  scorer: Scorer | null,
 ): Promise<{ selected: SourcedPost[]; fresh: SourcedPost[] }> {
-  let skipPostIds = prefetchedSkipPostIds;
-  let knownTweetIds = prefetchedKnownTweetIds;
-
-  // Fetch whatever the caller did not pre-fetch. runPipeline pre-fetches both
-  // sets and shares them with the misinfo pre-pass, so the notes and
-  // pipeline_runs tables are not scanned twice in one run. Other callers let
-  // this branch do the fetching.
-  if (supabaseLogger && (!skipPostIds || !knownTweetIds)) {
-    const [skip, known] = await Promise.all([
-      supabaseLogger.getSkipTweetIds(),
-      supabaseLogger.getKnownTweetIds(),
+  // A post is skipped when a pre-pass already processed it in this run, when it
+  // is cooling down, or when it is already in the tweets table. The database is
+  // asked only about the posts the feed returned, one tier at a time. A failed
+  // read throws and ends the run. Carrying on without the answer would process
+  // tweets we already wrote notes for.
+  const findSkippedIds: SkipLookup = async (tweetIds) => {
+    const skipped = new Set(tweetIds.filter((id) => processedThisRun.has(id)));
+    if (!supabaseLogger) return skipped;
+    const [cooldown, known] = await Promise.all([
+      supabaseLogger.getCooldownTweetIds(tweetIds),
+      supabaseLogger.getKnownTweetIds(tweetIds),
     ]);
-    skipPostIds = skipPostIds ?? skip;
-    knownTweetIds = knownTweetIds ?? known;
-  }
-  skipPostIds = skipPostIds ?? new Set<string>();
-  knownTweetIds = knownTweetIds ?? new Set<string>();
-  console.log(`[generate] Skip: ${skipPostIds.size} cooldown, ${knownTweetIds.size} already in tweets table`);
+    return new Set([...skipped, ...cooldown, ...known]);
+  };
 
   // The insert into the tweets table and the selection log both happen in
   // generateCandidates, after topic curation. Curation can swap out a few posts,
@@ -199,8 +198,8 @@ async function fetchPosts(
   // and logged.
   return collectFastPosts(
     maxPosts,
-    knownTweetIds,
-    (feedSize) => fetchEligiblePosts(FEED_MAX_POSTS, skipPostIds!, FEED_MAX_PAGES, buildPostSelection(feedSize)),
+    findSkippedIds,
+    (feedSize) => fetchEligiblePosts(FEED_MAX_POSTS, FEED_MAX_PAGES, buildPostSelection(feedSize)),
     Date.now(),
     scorer,
   );
@@ -433,11 +432,9 @@ export interface GenerateCandidatesOptions {
   /** The soft deadline for starting new posts, passed through to processPosts.
    *  See ProcessPostsOptions.deadlineMs. */
   deadlineMs?: number;
-  /** These are pre-fetched by runPipeline and shared with the misinfo pre-pass,
-   *  so the notes, pipeline_runs and tweets tables are not scanned twice in one
-   *  run. A caller that leaves them out makes fetchPosts fetch them instead. */
-  skipPostIds?: Set<string>;
-  knownTweetIds?: Set<string>;
+  /** The tweets a pre-pass already processed in this run. The regular pass
+   *  skips them even when writing them to the tweets table failed. */
+  processedThisRun?: ReadonlySet<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
   /** Ranks fetched posts across tiers. Null keeps the tier-then-velocity ladder. */
   scorer?: Scorer | null;
@@ -451,7 +448,7 @@ export interface GenerateCandidatesOptions {
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, deadlineMs, skipPostIds, knownTweetIds, onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
+  { maxPosts, deadlineMs, processedThisRun = new Set(), onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -461,7 +458,7 @@ export async function generateCandidates(
   const activeBots = botProbs.filter((b) => b.probability > 0);
   console.log(`[generate] Bots: ${activeBots.map((b) => `${b.id} ${b.probability.toFixed(1)}%`).join(", ")}`);
 
-  const { selected, fresh } = await fetchPosts(supabaseLogger, maxPosts, skipPostIds, knownTweetIds, scorer);
+  const { selected, fresh } = await fetchPosts(supabaseLogger, maxPosts, processedThisRun, scorer);
   if (scorer) console.log(`[generate] Ranking policy ${scorer.name}: selected across tiers`);
 
   // Archive every new post the ladder surfaced into feed_tweets, including the

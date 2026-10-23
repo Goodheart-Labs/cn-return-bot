@@ -210,6 +210,10 @@ address is called.
 |---|---|---|
 | `youtube-websub` | `supabase functions deploy youtube-websub --no-verify-jwt` | `YOUTUBE_WEBSUB_SECRET` |
 
+It is the only deployed function, and `YOUTUBE_WEBSUB_SECRET` is the only
+function secret we set ourselves (checked 2026-10-12). Every deployed function
+must have its code in `supabase/functions/`.
+
 The flag `--no-verify-jwt` lets callers in without a Supabase sign-in token.
 A JWT is the signed token Supabase normally demands on every call. Google's
 notification service sends no such token, so the function checks Google's
@@ -237,13 +241,12 @@ hides it in logs. The names below were checked against the live repository on
 | Purpose | Secrets | Used by |
 |---|---|---|
 | Database | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY` | Most workflows. The anon key is the public key built into the website and the extension. |
-| X API for the notewriter account | `X_API_KEY`, `X_API_KEY_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET` | The note-writing, feedback, capture and probe workflows. |
-| Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Create Notes Routine and Everything Priority Feeds. Pangram is also used by the AI-detection workflow, and xAI by Trending Posts. |
+| X API for the notewriter account | `X_API_KEY`, `X_API_KEY_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET` | Create Notes Routine, Update Note Feedback and Writing Limit Probe. |
+| Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Create Notes Routine and Everything Priority Feeds. |
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
-| YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine and the timestamp backfill. |
+| YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine. |
 | Substack relay | `SUBSTACK_PROXY_URL`, `SUBSTACK_PROXY_KEY` | Everything Priority Feeds. |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
-| Slack | `SLACK_BOT_TOKEN` | `postSlackMessage` in `src/utils/slack.ts`, which posts as the bot "Claudy". Trending Posts uses it. See [ops/README.md](../ops/README.md). |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
 limited to that probe's own table. When it is unset, the probe falls back to
@@ -285,10 +288,10 @@ named `commonnotes`. Both `commonnotes.net` and `www.commonnotes.net` answer
 (checked on 2026-10-01). How the two addresses are attached to the project in
 the Cloudflare dashboard was not checked.
 
-The website on this domain changes only when someone deploys it by hand. Open
-the "Deploy Pages" workflow in GitHub Actions and press "Run workflow". Only a
-run started that way includes the Cloudflare step. Runs started by a merge or
-by the four-hourly timetable update GitHub Pages alone. The step is in
+Every merge to main deploys the website on this domain. So does a run of the
+"Deploy Pages" workflow started by hand in GitHub Actions with "Run workflow".
+The four-hourly run updates GitHub Pages alone. Until 2026-10-16 only a run
+started by hand deployed the website. The step is in
 [.github/workflows/deploy-pages.yml](../.github/workflows/deploy-pages.yml),
 and it needs the two Cloudflare secrets above. The API token must be allowed
 to edit Cloudflare Pages.

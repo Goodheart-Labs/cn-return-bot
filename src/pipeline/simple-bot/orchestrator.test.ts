@@ -4,6 +4,8 @@ import * as userMessage from "../prompts/input/userMessage";
 import * as verifier from "../verify/sourceVerifier";
 import { runSimpleBotPipeline } from "./orchestrator";
 import * as search from "./search";
+import * as secondRound from "./secondRound";
+import { UnfetchableSourcesError } from "../utils/errors";
 import * as timing from "./timingStage";
 import * as writer from "./writer";
 
@@ -61,5 +63,86 @@ describe("simple bot orchestrator", () => {
     arrange({ noteText: "", sources: [] }, { action: "inform", contextBlock: "\nTiming context" });
     await withBotConfig(DEFAULT_CONFIG, () => runSimpleBotPipeline(post, input));
     expect(writer.runWriter).toHaveBeenCalledWith("The post", "The findings", { timingContext: "\nTiming context" });
+  });
+
+  describe("the second research round", () => {
+    const rejected = { accepted: false, reasoning: "The Texas claim has no source.", good_sources: [], bad_sources: ["https://a.example"] } as any;
+    const accepted = { accepted: true, reasoning: "", good_sources: ["https://b.example"], bad_sources: [] } as any;
+    const secondRoundConfig = { ...DEFAULT_CONFIG, second_round: true, web_search: "native" as const };
+
+    function arrangeSecondRound(verdicts: unknown[], revision = { findings: "Revised findings", withdrew: false }) {
+      spies.push(spyOn(userMessage, "buildUserMessageFromInput").mockReturnValue("The post"));
+      spies.push(spyOn(search, "runSearch").mockResolvedValue({ findings: "The findings", correctionNeeded: true }));
+      spies.push(spyOn(timing, "runTimingStage").mockResolvedValue({ action: "pass" }));
+      const write = spyOn(writer, "runWriter").mockResolvedValueOnce({ noteText: "First note", sources: ["https://a.example"] }).mockResolvedValueOnce({ noteText: "Second note", sources: ["https://b.example"] });
+      const verify = spyOn(verifier, "verifySources");
+      for (const verdict of verdicts) {
+        if (verdict instanceof Error) verify.mockRejectedValueOnce(verdict);
+        else verify.mockResolvedValueOnce(verdict as any);
+      }
+      const revise = spyOn(secondRound, "reviseResearch").mockResolvedValue(revision);
+      spies.push(write, verify, revise);
+      return { write, verify, revise };
+    }
+
+    test("a rejected note gets a second round, and the revised note that the verifier accepts is the result", async () => {
+      const { write, verify, revise } = arrangeSecondRound([rejected, accepted]);
+      const outcome = await withBotConfig(secondRoundConfig, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("note");
+      expect(revise).toHaveBeenCalledTimes(1);
+      expect(revise.mock.calls[0]![0]).toMatchObject({ findings: "The findings", noteText: "First note", researchedBy: "full", verification: rejected });
+      expect(write.mock.calls[1]).toEqual(["The post", "Revised findings", { timingContext: undefined }]);
+      expect(verify.mock.calls.map((call) => call[0].turnNumber)).toEqual([1, 2]);
+    });
+
+    test("without the arm a rejected note stays rejected and nothing is revised", async () => {
+      const { revise } = arrangeSecondRound([rejected]);
+      const outcome = await withBotConfig(DEFAULT_CONFIG, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("verification_failed");
+      expect(revise).not.toHaveBeenCalled();
+    });
+
+    test("a post whose search provider cannot take a follow-up keeps the rejection", async () => {
+      const { revise } = arrangeSecondRound([rejected]);
+      const outcome = await withBotConfig({ ...secondRoundConfig, web_search: "serper" }, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("verification_failed");
+      expect(revise).not.toHaveBeenCalled();
+    });
+
+    test("Common Notes does not check sources, so the note goes on with every source the writer cited", async () => {
+      const { verify, revise } = arrangeSecondRound([rejected]);
+      const outcome = await withBotConfig({ ...secondRoundConfig, commonnotes_pipeline: true }, () => runSimpleBotPipeline(post, input));
+      expect(outcome).toMatchObject({ type: "note", noteText: "First note", sources: ["https://a.example"] });
+      expect(verify).not.toHaveBeenCalled();
+      expect(revise).not.toHaveBeenCalled();
+    });
+
+    test("an accepted first note needs no second round", async () => {
+      const { revise } = arrangeSecondRound([accepted]);
+      const outcome = await withBotConfig(secondRoundConfig, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("note");
+      expect(revise).not.toHaveBeenCalled();
+    });
+
+    test("a second round that is rejected again ends as rejected, with the second note", async () => {
+      arrangeSecondRound([rejected, rejected]);
+      const outcome: any = await withBotConfig(secondRoundConfig, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("verification_failed");
+      expect(outcome.noteText).toBe("Second note");
+    });
+
+    test("research that now says no note is needed ends the check as no correction", async () => {
+      const { write } = arrangeSecondRound([rejected], { findings: "On reflection the claim is fine.", withdrew: true });
+      const outcome: any = await withBotConfig(secondRoundConfig, () => runSimpleBotPipeline(post, input));
+      expect(outcome).toMatchObject({ type: "no_correction", reason: "On reflection the claim is fine." });
+      expect(write).toHaveBeenCalledTimes(1);
+    });
+
+    test("when no revised source can be opened, the first rejection stands", async () => {
+      arrangeSecondRound([rejected, new UnfetchableSourcesError("None of the 1 non-Twitter source(s) could be fetched")]);
+      const outcome: any = await withBotConfig(secondRoundConfig, () => runSimpleBotPipeline(post, input));
+      expect(outcome.type).toBe("verification_failed");
+      expect(outcome.noteText).toBe("First note");
+    });
   });
 });

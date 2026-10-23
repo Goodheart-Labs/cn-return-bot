@@ -1,0 +1,138 @@
+{
+ "id": "2026-10-19-0409",
+ "label": "Research probability with the hint: automatically extracted, interpret in context, avoid being pedantic. The 4 highest realistic rows",
+ "createdAt": "2026-10-19T04:11:04.339Z",
+ "commit": "8e19231c",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks: Muse Spark 1.3 for search, writer and source verifier",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 0,
+   "checker": 0
+  }
+ },
+ "rowIds": [
+  "realistic-09",
+  "realistic-12",
+  "realistic-15",
+  "realistic-19"
+ ],
+ "extractor": null,
+ "checker": null,
+ "probability": {
+  "samples": 3,
+  "prompt": "You are a research agent that fact-checks claims made in podcasts, interviews, and articles. Use the web_search tool to find evidence.\n\n## What you get\nA single factual claim taken from a podcast, interview, or article, plus a short excerpt around it for context. The message shows them as:\n  Text from Transcript: <excerpt>   (or \"Text from Article:\")\n  Claim: <the claim>\nJudge whether the claim is factually correct. The claim was automatically extracted and so it should be interpreted in the context. Avoid being pedantic.\n\n## Output format\nReturn JSON with two fields:\n- findings: a dense research summary. Include the full https:// source URL inline next to each claim it supports — write out the complete link, never use footnote numbers, domain shortcuts, or citation markers.\n- misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.\n\n## Sourcing rules\n- Include what each source says that's relevant.\n- If the claim is not misleading, the findings can be brief — just explain why.\n\nRespond with strict JSON only matching: { findings: string, misleading_probability: number }",
+  "rows": [
+   {
+    "id": "realistic-09",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.55,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+      "findings": "“Smoke on Tour” is likely a transcription error for “Smogon Tour.” Smogon’s coverage of Smogon Tour 15 says Masterclass won the first BW (Generation 5) tournament and used a Custap Berry Skarmory that helped secure the victory: https://www.smogon.com/competitor/articles/st_week1. However, the official Smogon Tour Season 15 playoffs thread identifies Ojama as the season winner: https://www.smogon.com/forums/threads/smogon-tour-season-15-playoffs-won-by-ojama.3483590/. The excerpt doesn’t identify the speaker, so the evidence supports the claim if “won a Smogon Tour” means winning an individual BW tournament, but it doesn’t establish that this speaker won the overall season championship.",
+      "costUsd": 0.02183926
+     },
+     {
+      "probability": 0.35,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+      "findings": "Smogon’s official coverage says Masterclass won the first BW OU tournament in Smogon Tour 15 and used Custap Berry Skarmory; it also says ShakeItUp won the second day with a lead Skarmory. This supports the claim if “won a Smogon Tour” means winning one of the tour’s weekly/day tournaments: https://www.smogon.com/competitor/articles/st_week1. But the same coverage distinguishes those wins from winning the overall season, and Smogon’s archive says Ojama won Smogon Tour 15: https://www.smogon.com/competitor/articles/. Since the transcript does not identify the speaker, it is unclear whether the speaker means a weekly tournament or the season championship; the broader interpretation is not established by these sources.",
+      "costUsd": 0.03300196
+     },
+     {
+      "probability": 0.35,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: Gen two, Gen 3, Gen 3 scarm. Oh, come on. Gen five scarm. Come on, Gen. Yo, don't even get me started on Gen Five Scarm, bro. Gen five scarm is the reason I won Smoke on Tour. Without Gen 5 Scarm, I'd be nothing.\nClaim: The speaker won a Smogon Tour using Generation 5 Skarmory.",
+      "findings": "The transcript likely means “Smogon Tour,” but it does not identify the speaker. Smogon’s Hall of Fame lists BKC as a Smogon Tour champion (Season 22): https://www.smogon.com/tournaments/hof/tour/. Smogon’s BW strategy guide describes Skarmory as a defensive staple in Generation 5 OU: https://www.smogon.com/dex/bw/pokemon/skarmory/. These sources make the claim plausible, but they do not establish that the unidentified speaker is BKC—or that the speaker used Gen 5 Skarmory in a tour-winning run. I could not independently verify the specific claim from the available information.",
+      "costUsd": 0.0660294
+     }
+    ]
+   },
+   {
+    "id": "realistic-12",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.35,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+      "findings": "The claim is partly supported but too absolute. The Soviet customs rules effective from April 1, 1978 do not specify a separate numerical quota for condoms. However, they generally allowed travelers’ belongings only within “personal needs”; they defined that as a reasonable quantity in light of the trip’s purpose and duration, among other factors. For Soviet citizens traveling abroad on personal business or as tourists, the rules likewise limited personal-use items to quantities needed for the stay. So there may have been no condom-specific number, but the rules did not establish an unlimited right to take any quantity. Source: https://legalacts.ru/doc/prikaz-minvneshtorga-sssr-ot-15121977-n-451/",
+      "costUsd": 0.02218265
+     },
+     {
+      "probability": 0.38,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+      "findings": "The claim is **plausible in the narrow sense that the Soviet customs rules located do not specify a numerical limit for condoms**, but the absolute wording “no restriction” is not established. The USSR’s 1977 customs rules said belongings crossing the border were allowed within the limits of personal needs and subject to the rules; they also required Soviet citizens temporarily traveling abroad to bring exported belongings back, rather than sell, exchange, or give them away abroad. The rules do not name condoms or set a condom-specific quota, so they do not disprove the speaker’s account of taking many. But they also do not confirm that any quantity was unrestricted, especially if customs viewed a suitcase-full as beyond personal needs. Source: https://legalacts.ru/doc/prikaz-minvneshtorga-sssr-ot-15121977-n-451/",
+      "costUsd": 0.03231445
+     },
+     {
+      "probability": 0.34,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: and so my quest was like when I learned that and there was no restriction how many you can take with you. So I would go to each pharmacy, whatever whatever I could get and just I was, you know, I we got like half of the suitcase of condoms and we put it in my mother's suitcase.\nClaim: There was no restriction on how many condoms a person could take out of the Soviet Union.",
+      "findings": "The claim is **partly supported, but too broad as stated**. I found no rule setting a specific numerical quota for condoms. However, Soviet customs rules did not mean travelers could take any quantity of any item: the 1977 rules generally allowed Soviet citizens traveling abroad to carry personal-use items in quantities appropriate to their trip—either within personal needs or as needed for the time abroad (https://law.tks.ru/document/2606). In addition, a Soviet government decree effective February 1, 1989, through January 1, 1991, capped the total retail value of consumer goods carried out by one person at 100 rubles, subject to exceptions for goods bought in authorized foreign-currency shops (https://meganorm.ru/mega_doc/dop1/48/postanovlenie_sovmina_sssr_ot_30_08_1989_N_702_o_merakh_po/0/postanovlenie_sovmina_sssr_ot_28_12_1988_N_1473_o.html). So a more defensible formulation is that there appears to have been no **condom-specific quantity limit**, not that there was categorically no restriction on how many could be taken. The date of the anecdote matters, and the sources do not establish whether this particular suitcase of condoms was permitted under the applicable rules.",
+      "costUsd": 0.033507375
+     }
+    ]
+   },
+   {
+    "id": "realistic-15",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.72,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+      "findings": "The claim is plausible as a rough rule of thumb, but “approximately linear” is not established by the cited passage or by the evidence reviewed. In a 12-year study of users of one UK dating site, activity varied widely, and users with more incoming interest were more selective; the researchers also note that platform behavior and user circumstances affect activity and success (https://link.springer.com/article/10.1007/s42001-021-00132-w). That supports the idea that selectivity and outreach matter, but it does not show that each additional person met or asked out produces a constant, proportional increase in dates. Actual outcomes depend on whether interest is mutual and on replies and other conversion steps; therefore, treating the relationship as linear is an unverified simplification, not a reliable general finding.",
+      "costUsd": 0.02203451
+     },
+     {
+      "probability": 0.78,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+      "findings": "The claim is plausible as a rough dating-advice heuristic, but the “approximately linear” relationship is not established by the evidence found. An MIT analysis of 250,000 messages on one dating site found that the number of messages a user sent was the strongest predictor of messages received, supporting a link between outreach and responses—but it did not measure dates or show that outcomes rise linearly with effort (https://www.media.mit.edu/publications/romantic-regressions-an-analysis-of-behavior-in-online-dating-systems/). A randomized field experiment on a South Korean dating platform found that increasing users’ choice capacity had different effects on choices and matches; some effects ran in opposite directions across groups, and more choices did not reliably produce more matching outcomes (https://pubsonline.informs.org/doi/10.1287/isre.2021.1028). Since dates require reciprocal interest, and the cited evidence does not test dates per unit of effort or the effect of being less selective on dates, the linearity claim is too broad. The general idea that meeting or contacting more people can create more opportunities is reasonable, but the size and consistency of that payoff are unsupported.",
+      "costUsd": 0.02204207
+     },
+     {
+      "probability": 0.65,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Article: #3 and #4 are powerful because your results are approximately linear with regards to how much effort you put in. The more you drop your standards,1 the more dates you’ll get. The more people you meet, and the more of them you ask out, the more dates you’ll get.\nClaim: Results from being less picky and from meeting and asking out more people scale approximately linearly with the effort put in.",
+      "findings": "The claim is plausible as a rough practical heuristic, but the word “linear” is not established by the evidence found. If each additional person met or asked out had the same independent chance of agreeing to a date, expected dates would rise proportionally; in real dating, that chance varies with whom someone approaches, the dating market, and whether interest is reciprocated. A study using six months of data from thousands of online daters found that messaging and reciprocation patterns were shaped by users’ preferences and the desirability of the people they contacted, and noted that the chance any one message led to a reciprocated exchange and eventual date was very small: https://pmc.ncbi.nlm.nih.gov/articles/PMC4043335/. A speed-dating study of 3,738 participants also found that abundant choice changed which partner characteristics people attended to, indicating that choice does not simply translate into a fixed, constant return: https://www.psychologicalscience.org/journals/psychological-science/0956797610364958/. Thus, meeting and asking out more people may increase opportunities, and relaxing standards may widen the pool, but the assertion that dates increase approximately linearly is an unverified generalization rather than a demonstrated rule.",
+      "costUsd": 0.03251217
+     }
+    ]
+   },
+   {
+    "id": "realistic-19",
+    "group": "realistic",
+    "expected": {
+     "decision": "no_note"
+    },
+    "samples": [
+     {
+      "probability": 0.82,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+      "findings": "The claim is not substantiated as stated: it names no stadium, video, or source for the “millions” figure. A documented Red Bull BMX video was filmed over four days at Pontiac’s already-abandoned Silverdome; the director described a small crew and the practical setup, but reported no million-dollar spend or closure of an operating stadium (https://www.newsshooter.com/2016/01/29/a-red-a-slider-an-abandoned-stadium-behind-the-scenes-of-red-bulls-most-popular-video-of-2015/). Red Bull Media House confirms that it funds and produces sports films and documentaries, but that general fact does not establish this specific stadium-and-cost claim (https://www.redbullmediahouse.com/en/brands-channels/red-bull-studios/). The claim may be loosely describing an expensive production, but the available evidence does not verify that Red Bull spent millions to shut down a whole stadium for a clip.",
+      "costUsd": 0.054812735
+     },
+     {
+      "probability": 0.91,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+      "findings": "The claim most likely refers to Red Bull’s 2015 BMX video featuring Tyler Fernengel at Pontiac’s Silverdome. Contemporary coverage describes the Silverdome as abandoned or derelict before filming: UPI says the video showed the “abandoned stadium” (https://www.upi.com/Odd_News/2015/06/10/BMX-rider-turns-abandoned-Silverdome-into-playground/8421433943359/), and CBS Detroit reports it had closed in 2006 and was “completely abandoned” (https://www.cbsnews.com/detroit/news/a-bmx-bike-ride-inside-the-abandoned-pontiac-silverdome-goes-viral/). So Red Bull did film inside a whole stadium, but it did not shut down an operating stadium for the shoot. The production was substantial: director Alex Horner told Newsshooter the crew had four days to film (https://www.newsshooter.com/2016/01/29/a-red-a-slider-an-abandoned-stadium-behind-the-scenes-of-red-bulls-most-popular-video-of-2015/), and VICE reported the ramp builders spent five days working there (https://www.vice.com/en/article/building-the-red-bull-bmx-silverdome-shoot/). Those accounts do not report a cost of millions; the claimed amount is therefore unsupported by the sources found, not verified. Overall, the statement appears to exaggerate the stadium closure and assert an unsubstantiated production cost.",
+      "costUsd": 0.04392182
+     },
+     {
+      "probability": 0.78,
+      "userMessage": "Current date: 2026-10-19\nCurrent time: 04:09 UTC\n\n## Post\n\nText from Transcript: anything else just on sheer volume. And so the next wave might be up is sports. [laughter] This guy who, this is deranged to say, but is talking about how like Red Bull spends millions to shut down a whole stadium for an extreme sports clip. But I can generate this in 2 seconds.\nClaim: A speaker says Red Bull spends millions of dollars to shut down an entire stadium for an extreme-sports video clip.",
+      "findings": "Red Bull has staged a stadium-based stunt: its profile of Red Bull Air Force athlete Jon DeVore describes him and teammate Jeff Provenzano parachuting into the then-empty Sports Illustrated Stadium to deliver the game ball before a New York Red Bulls match (https://www.redbull.com/us-en/theredbulletin/jon-devore-aerial-athlete-air-force-profile). That supports the general idea of a Red Bull video/event involving an empty stadium, but the article does not say the stadium was shut down for filming or that the stunt cost millions. Red Bull’s behind-the-scenes account of another complex extreme-sports shoot describes six months of planning and elaborate coordination, but gives no budget (https://www.redbull.com/us-en/air-force-chain-reaction-bts-video). I found no reliable public evidence substantiating the specific claim that Red Bull spends millions to shut down an entire stadium for a clip; the wording appears unverified or potentially exaggerated.",
+      "costUsd": 0.05372712
+     }
+    ]
+   }
+  ],
+  "costUsd": 0.43792552000000007
+ }
+}

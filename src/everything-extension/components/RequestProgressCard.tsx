@@ -4,6 +4,7 @@ import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { IconButton } from "@cn/ui/IconButton";
 import { CloseIcon } from "@cn/ui/icons";
+import { Spinner } from "@cn/ui/Spinner";
 import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 
 /** How long the finished card lingers before fading out on its own. An opened
@@ -30,20 +31,13 @@ function ProgressGlyph({ progress }: { progress: RequestProgress }) {
   if (progress.kind === "done") {
     return <span className="text-base font-semibold text-positive">✓</span>;
   }
-  if (progress.kind === "failed") {
+  if (progress.kind === "failed" || progress.kind === "unreadable") {
     return <span className="text-base font-semibold text-negative">!</span>;
   }
   if (progress.kind === "unavailable") {
     return <span className="text-base font-semibold text-fg-subtle">?</span>;
   }
-  // The unfilled part of the ring is transparent rather than grey, so a reader
-  // sees one turning arc instead of an arc drawn on top of a second circle.
-  return (
-    <span
-      aria-hidden
-      className="h-5 w-5 animate-spin rounded-full border-2 border-transparent border-t-link"
-    />
-  );
+  return <Spinner />;
 }
 
 /** The live-progress card for a note request. Collapsed it is nothing but a

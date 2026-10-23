@@ -1,5 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
-import { fetchAllRows } from "./paging";
+import { fetchAllRows, fetchInBatches } from "./paging";
 import { supabase } from "./supabase";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
@@ -50,6 +50,13 @@ export async function fetchNote(id: string): Promise<NoteRow | null> {
   return data && toNoteRow(data);
 }
 
+/** The notes with these ids. The admins' review page reads the live notes of
+ *  the drafts it shows this way. */
+export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
+  const notes = await fetchInBatches<RawNote>((chunk) => noteQuery().in("id", chunk), ids, "id", { label: "notesById" });
+  return notes.map(toNoteRow);
+}
+
 /** Every visible note on one item. The extension shows one page at a time and
  *  reads its notes this way. */
 export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
@@ -66,6 +73,12 @@ export async function fetchProjectNotes(projectId: string): Promise<NoteRow[]> {
     "id",
     { label: "projectNotes" },
   );
+  return notes.map(toNoteRow);
+}
+
+/** Every visible note on the site, from every project. */
+export async function fetchAllNotes(): Promise<NoteRow[]> {
+  const notes = await fetchAllRows<RawNote>(() => noteQuery().neq("status", "hidden"), "id", { label: "allNotes" });
   return notes.map(toNoteRow);
 }
 

@@ -1,0 +1,388 @@
+{
+ "id": "2026-10-20-0452",
+ "label": "Eliezer pivotal act row, writer prompt without the option to write no note, from the writer on",
+ "createdAt": "2026-10-20T04:54:00.469Z",
+ "commit": "7ac0c43c",
+ "settings": {
+  "extractorModel": "openai/gpt-6-luna",
+  "checkerModels": "the pipeline's forced picks, search step: cascading",
+  "commentsFetched": true,
+  "samples": {
+   "extractor": 0,
+   "checker": 3
+  }
+ },
+ "rowIds": [
+  "pivotal-act-terrorism"
+ ],
+ "extractor": null,
+ "checker": {
+  "samples": 3,
+  "passAt": 2,
+  "rows": [
+   {
+    "id": "pivotal-act-terrorism",
+    "group": "note-difficult",
+    "expected": {
+     "decision": "note",
+     "referenceNote": "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him."
+    },
+    "referenceNotes": [
+     "Yudkowsky has said that a pivotal act could be destroying all the GPUs, but he thinks there are probably much less destructive versions. He also thinks that murder is deeply wrong, so calling a pivotal act terrorism paints a wrong picture of him.",
+     "Yudkowsky has written how murder is wrong, even if one thinks it is justified for utilitarian reasons.\n\nhttps://www.lesswrong.com/posts/K9ZaZXDnL3SEmYZqB/ends-don-t-justify-means-among-humans"
+    ],
+    "samples": [
+     {
+      "quality": null,
+      "research": "The claim mischaracterizes Yudkowsky's concept. From my background knowledge (no search run): in Yudkowsky's writing (e.g., the 2022 'AGI Ruin: A List of Lethalities' and Arbital pages on 'pivotal act'), a 'pivotal act' is an action by an aligned, powerful AI system or its operators that substantially and permanently reduces existential risk, such as preventing other actors from building unaligned AGI. His standard example is using AGI to 'burn all GPUs' (more precisely, destroy rogue GPUs) in a targeted way. He explicitly says pivotal acts need not be violent and distinguishes them from ordinary, unilateral violence. Critics, however, argue that some examples would amount to illegal or coercive unilateral action, and some have called it terrorism-adjacent. He also did not say that 'anyone making AGI must' do them; he argued that merely being nice or hoping for coordination is insufficient, and that someone with a safe AGI would need to do something decisive. He has also said he doesn't advocate that people do this now, and he separately advocated for international treaties and airstrikes on rogue datacenters in his 2023 TIME op-ed, which is state enforcement, not terrorism. So 'acts of terrorism' is a contested, loaded characterization, and 'euphemism' and 'anyone making AGI must' overstate his position. The article does frame it as the author's belief ('I believe'), but the claim is still misleading.",
+      "draftNote": "Yudkowsky defines a “pivotal act” as an action that makes a large positive difference to the long-run future. AISafety.info says it involves powerful AI, and that a human attack on an AI lab typically would not qualify; terrorism is not the term’s definition.",
+      "sourceVerdict": "NO: THE ARBITAL SOURCE SUPPORTS THE DEFINITION AND SUPPORTS DISTINGUISHING THE TERM FROM A DEFINITION OF TERRORISM. THE AISAFETY.INFO PAGE CONTENT SHOWN CONTAINS ONLY THE PAGE HEADING AND SITE INFORMATION, NOT THE CLAIMS THAT PIVOTAL ACTS INVOLVE POWERFUL AI OR THAT HUMAN ATTACKS ON AI LABS TYPICALLY WOULD NOT QUALIFY. THOSE AISAFETY.INFO CLAIMS ARE THEREFORE UNSUPPORTED BY THE GOOD SOURCES.",
+      "checkCostUsd": 0.12287403559999999,
+      "judgeCostUsd": 0,
+      "outcome": {
+       "type": "no_note",
+       "reason": "check_failed"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
+       "writer": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do\n\n## Research findings\n\nThe claim is misleading. It overstates and mislabels what Yudkowsky means by 'pivotal act'. The article does frame it as the author's own belief ('I believe'), and critics do object to the concept.\n\n1. **Definition.** Yudkowsky's Arbital page defines 'pivotal act' as a guarded term for actions that make a large positive difference a billion years later (https://arbital.com/p/pivotal/). The page stresses that the term should not be stretched. A LessWrong post makes the same point and says the term has a specific meaning (https://www.lesswrong.com/posts/PKBXczqhry7iK3Ruw/pivotal-acts-means-something-specific). The definition does not mention terrorism. It is about changing the long-run outcome of the game.\n\n2. **It involves powerful AI, not human attacks.** AISafety.info says Yudkowsky coined the term and intended an act involving powerful AI. It says a human attack on an AI lab would typically not count under his definition (https://aisafety.info/questions/7580/). That conflicts with the idea that the term is a euphemism for human terrorist acts.\n\n3. **The 'burn all GPUs' example is hypothetical.** In 'AGI Ruin', Yudkowsky says he doesn't actually advocate burning all GPUs. He says the example is a rough overestimate of the power level required. He also says all known pivotal acts are outside the Overton Window (https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities). He describes the act as one that stops other actors from destroying the world, and he calls it 'burn all GPUs' only as an illustration (https://intelligence.org/2022/06/10/agi-ruin/).\n\n4. **'Anyone making AGI must' goes too far.** In 'AGI Ruin' he argues there are no 'pivotal weak acts'. He says mild measures won't stop another lab from destroying the world, while burning all GPUs would (https://www.greaterwrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities). Critics on the EA Forum read points 5 and 6 as implying that whoever first builds AGI must perform a drastic act. They disagree with that and say the AI safety community should consider other strategies (https://forum.effectivealtruism.org/posts/zzFbZyGP6iz8jLe9n/agi-ruin-a-list-of-lethalities). So the 'must' reading is a contested interpretation, not something Yudkowsky states as a duty of all AGI makers.\n\n5. **Critics do raise legitimacy concerns.** One critic says the concept makes the AI safety community seem 'supervillain-y' (same EA Forum link above). Another says the traditional pivotal act would suppress humanity (https://www.lesswrong.com/posts/JFNjbMXpJYqvgasaK/we-should-think-about-the-pivotal-act-again-here-s-a-better). Holly Elmore calls it a 'coup' (https://lironshapira.substack.com/p/holly-elmore-case-against-eliezer). Yudkowsky himself has said an unaligned-regulation-bypassing pivotal act would have to 'bypass regulators' (https://x.com/ESYudkowsky/status/1438198191296372740). These sources support calling the act unilateral, illegal or coercive. They do not support calling it 'terrorism' by definition, and they do not show it is a euphemism.\n\nI did not re-fetch the 2023 TIME op-ed or Yudkowsky's statements that pivotal acts need not be violent, so I'm not relying on them here."
+      },
+      "cascade": {
+       "probability": 0.68,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Yudkowsky defines a 'pivotal act' as preventing others from building unaligned AGI: \"We need to align the performance of some large task, a 'pivotal act' that prevents other people from building an unaligned AGI that destroys the world. While the number of actors with AGI is few or one, they must execute some 'pivotal act', strong enough to flip the gameboard, using an AGI powerful enough to do that\" https://intelligence.org/2022/06/10/agi-ruin/ . His stock example is \"burn all GPUs\" https://intelligence.org/2022/06/10/agi-ruin/ , elsewhere described as melting all GPUs globally or subtly changing GPUs so they can't be used for AGI https://forum.nunosempere.com/s/crosspost-ai-regulation-may-be-more-important-than-ai-alignment-for-existential-safety , and as nanomachines that hunt down and burn all GPUs https://manifold.markets/question/is-there-a-pivotal-weak-act . He explicitly acknowledges \"all known pivotal acts are currently outside the Overton Window\" https://intelligence.org/2022/06/10/agi-ruin/ . Crucially the act is framed as performed by/using a powerful aligned AGI, not as human builders personally committing violence, and summaries stress \"to avoid catastrophe, whoever builds AGI first will have to a) align it... c) do some pivotal act that prevents others from scaling it up\" https://lesswrong.com/posts/f4c5BUSfip之类 — i.e. first/few actors, conditional, via AGI. In his 2023 TIME moratorium proposal he advocated state action: participating countries should be willing to take military action such as \"destroy[ing] a rogue datacenter by airstrike\" to enforce a moratorium https://en.wikipedia.org/wiki/Eliezer_Yudkowsky . That is described as interstate military force / enforcement of international agreements, not non-state terrorism, and other descriptions of pivotal-act proposals include \"establish unbreakable international agreements, or develop other mechanisms that make uncontrolled AI development physically impossible\" https://github.com/centresecuriteia/aisafety_atlas_multilingual/blob/main/docs/chapters/03/10.md . Calling the whole category \"acts of terrorism\" that \"anyone making AGI must do\" therefore conflates AGI-executed disabling of compute and state-enforced moratorium with terrorism, overgeneralizes \"first/few under time-limit competition\" to \"anyone,\" and treats an openly-discussed extreme-power requirement as a euphemistic cover.",
+       "userMessage": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do"
+      },
+      "secondRound": {
+       "result": "verification_failed",
+       "first": {
+        "findings": "The claim mischaracterizes Yudkowsky's concept. From my background knowledge (no search run): in Yudkowsky's writing (e.g., the 2022 'AGI Ruin: A List of Lethalities' and Arbital pages on 'pivotal act'), a 'pivotal act' is an action by an aligned, powerful AI system or its operators that substantially and permanently reduces existential risk, such as preventing other actors from building unaligned AGI. His standard example is using AGI to 'burn all GPUs' (more precisely, destroy rogue GPUs) in a targeted way. He explicitly says pivotal acts need not be violent and distinguishes them from ordinary, unilateral violence. Critics, however, argue that some examples would amount to illegal or coercive unilateral action, and some have called it terrorism-adjacent. He also did not say that 'anyone making AGI must' do them; he argued that merely being nice or hoping for coordination is insufficient, and that someone with a safe AGI would need to do something decisive. He has also said he doesn't advocate that people do this now, and he separately advocated for international treaties and airstrikes on rogue datacenters in his 2023 TIME op-ed, which is state enforcement, not terrorism. So 'acts of terrorism' is a contested, loaded characterization, and 'euphemism' and 'anyone making AGI must' overstate his position. The article does frame it as the author's belief ('I believe'), but the claim is still misleading.",
+        "note": "Yudkowsky’s “pivotal act” refers to a decisive action intended to reduce existential risk; the research provided says it need not be violent and does not establish that he believes anyone making AGI must commit terrorism.",
+        "reasoning": "No sources were cited, so none of the note’s factual claims are supported by cited evidence. The note’s claims about what “pivotal act” means, that it need not be violent, and what Yudkowsky believes about people making AGI are unsupported by the cited sources.",
+        "sources": []
+       },
+       "revisedFindings": "The claim is misleading. It overstates and mislabels what Yudkowsky means by 'pivotal act'. The article does frame it as the author's own belief ('I believe'), and critics do object to the concept.\n\n1. **Definition.** Yudkowsky's Arbital page defines 'pivotal act' as a guarded term for actions that make a large positive difference a billion years later (https://arbital.com/p/pivotal/). The page stresses that the term should not be stretched. A LessWrong post makes the same point and says the term has a specific meaning (https://www.lesswrong.com/posts/PKBXczqhry7iK3Ruw/pivotal-acts-means-something-specific). The definition does not mention terrorism. It is about changing the long-run outcome of the game.\n\n2. **It involves powerful AI, not human attacks.** AISafety.info says Yudkowsky coined the term and intended an act involving powerful AI. It says a human attack on an AI lab would typically not count under his definition (https://aisafety.info/questions/7580/). That conflicts with the idea that the term is a euphemism for human terrorist acts.\n\n3. **The 'burn all GPUs' example is hypothetical.** In 'AGI Ruin', Yudkowsky says he doesn't actually advocate burning all GPUs. He says the example is a rough overestimate of the power level required. He also says all known pivotal acts are outside the Overton Window (https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities). He describes the act as one that stops other actors from destroying the world, and he calls it 'burn all GPUs' only as an illustration (https://intelligence.org/2022/06/10/agi-ruin/).\n\n4. **'Anyone making AGI must' goes too far.** In 'AGI Ruin' he argues there are no 'pivotal weak acts'. He says mild measures won't stop another lab from destroying the world, while burning all GPUs would (https://www.greaterwrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities). Critics on the EA Forum read points 5 and 6 as implying that whoever first builds AGI must perform a drastic act. They disagree with that and say the AI safety community should consider other strategies (https://forum.effectivealtruism.org/posts/zzFbZyGP6iz8jLe9n/agi-ruin-a-list-of-lethalities). So the 'must' reading is a contested interpretation, not something Yudkowsky states as a duty of all AGI makers.\n\n5. **Critics do raise legitimacy concerns.** One critic says the concept makes the AI safety community seem 'supervillain-y' (same EA Forum link above). Another says the traditional pivotal act would suppress humanity (https://www.lesswrong.com/posts/JFNjbMXpJYqvgasaK/we-should-think-about-the-pivotal-act-again-here-s-a-better). Holly Elmore calls it a 'coup' (https://lironshapira.substack.com/p/holly-elmore-case-against-eliezer). Yudkowsky himself has said an unaligned-regulation-bypassing pivotal act would have to 'bypass regulators' (https://x.com/ESYudkowsky/status/1438198191296372740). These sources support calling the act unilateral, illegal or coercive. They do not support calling it 'terrorism' by definition, and they do not show it is a euphemism.\n\nI did not re-fetch the 2023 TIME op-ed or Yudkowsky's statements that pivotal acts need not be violent, so I'm not relying on them here.",
+       "second": {
+        "note": "Yudkowsky defines a “pivotal act” as an action that makes a large positive difference to the long-run future. AISafety.info says it involves powerful AI, and that a human attack on an AI lab typically would not qualify; terrorism is not the term’s definition.",
+        "sources": [
+         "https://arbital.com/p/pivotal/",
+         "https://aisafety.info/questions/7580/"
+        ],
+        "error": null,
+        "verifierReasoning": "The Arbital source supports the definition and supports distinguishing the term from a definition of terrorism. The AISafety.info page content shown contains only the page heading and site information, not the claims that pivotal acts involve powerful AI or that human attacks on AI labs typically would not qualify. Those AISafety.info claims are therefore unsupported by the good sources.",
+        "fetches": null
+       }
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      },
+      "strongProbability": 0.8,
+      "strongMisleading": null,
+      "draftSources": [
+       "https://arbital.com/p/pivotal/",
+       "https://aisafety.info/questions/7580/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.0.json",
+       "logs/eval-2026-10-20-0452/pivotal-act-terrorism.0.json"
+      ],
+      "sourceChecks": [
+       {
+        "turn": 1,
+        "logFile": "logs/eval-2026-10-20-0452/pivotal-act-terrorism.0.json",
+        "output": {
+         "good_sources": [],
+         "bad_sources": [],
+         "source_evaluations": [],
+         "accepted": false,
+         "reasoning": "No sources were cited, so none of the note’s factual claims are supported by cited evidence. The note’s claims about what “pivotal act” means, that it need not be violent, and what Yudkowsky believes about people making AGI are unsupported by the cited sources."
+        },
+        "fetches": null,
+        "notRun": null
+       },
+       {
+        "turn": 2,
+        "logFile": "logs/eval-2026-10-20-0452/pivotal-act-terrorism.0.json",
+        "output": {
+         "good_sources": [
+          "https://arbital.com/p/pivotal/"
+         ],
+         "bad_sources": [
+          "https://aisafety.info/questions/7580/"
+         ],
+         "source_evaluations": [
+          {
+           "url": "https://arbital.com/p/pivotal/",
+           "citations": [
+            {
+             "quote": "The term 'pivotal act' in the context of [AI alignment theory](/w/ai-alignment) is a [guarded term](/w/guarded-definition) to refer to actions that will make a large positive difference a billion years later.",
+             "explanation": "Supports the note’s description of the term as an action making a large positive difference to the long-run future."
+            },
+            {
+             "quote": "'Usage has therefore shifted such that (as of late 2021) researchers use 'pivotal' and 'pivotal act' to refer to _good_ events that upset the current gameboard - events that decisively settle a [win](/w/value), or drastically increase the probability of a win.",
+             "explanation": "Further clarifies the term’s meaning; it does not define it as terrorism."
+            }
+           ],
+           "verdict": "good"
+          },
+          {
+           "url": "https://aisafety.info/questions/7580/",
+           "citations": [],
+           "verdict": "bad"
+          }
+         ],
+         "accepted": false,
+         "reasoning": "The Arbital source supports the definition and supports distinguishing the term from a definition of terrorism. The AISafety.info page content shown contains only the page heading and site information, not the claims that pivotal acts involve powerful AI or that human attacks on AI labs typically would not qualify. Those AISafety.info claims are therefore unsupported by the good sources."
+        },
+        "fetches": null,
+        "notRun": null
+       }
+      ]
+     },
+     {
+      "quality": {
+       "samePoint": true,
+       "reason": "The note addresses the same correction: it rejects portraying a pivotal act as terrorism that every AGI maker must perform, and clarifies that “burn all GPUs” is an illustrative example rather than an advocated action."
+      },
+      "research": "The claim mischaracterizes Yudkowsky's 'pivotal act' concept, based on my background knowledge. I did not run a search, so I have no source URL to give. Yudkowsky defined a pivotal act as an action, taken by a powerful AGI-enabled actor, that prevents other unaligned AGIs from being built and so lowers existential risk. His standard example is using an aligned AGI to 'burn all GPUs' (melt GPUs). He has said this example is deliberately extreme and illustrative. He has also said he does not advocate violence, and he has argued against illegal or violent unilateral action. He argues that pivotal acts would need to be carried out by AGI developers, but he has not said all AGI makers 'must' do them. Critics have said the concept implies unilateral, non-consensual, possibly illegal action by a private actor, and some have likened it to a coup or sabotage. Others argue it could resemble cyberattack or sabotage. Describing it as a 'euphemism for terrorism that anyone making AGI must do' is the author's own interpretation and an overstatement. The text does flag it as 'I believe', which softens it, but the claim presents it as Yudkowsky's own belief. Yudkowsky's idea is also not a requirement for everyone making AGI. In his later TIME op-ed he called for international treaties and enforcement, including airstrikes on rogue datacenters, which critics have called extreme. That is still a different thing from the pivotal-act concept and from terrorism by AGI builders.",
+      "draftNote": "Yudkowsky defines a “pivotal act” as preventing others from building an unaligned AGI that destroys the world. He calls “burn all GPUs” an illustrative stand-in, says he does not advocate it, and does not say every AGI maker must act.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.11733705200000001,
+      "judgeCostUsd": 0.0001137,
+      "outcome": {
+       "type": "note",
+       "note": "Yudkowsky defines a “pivotal act” as preventing others from building an unaligned AGI that destroys the world. He calls “burn all GPUs” an illustrative stand-in, says he does not advocate it, and does not say every AGI maker must act.",
+       "sources": [
+        {
+         "url": "https://intelligence.org/2022/06/10/agi-ruin/",
+         "quote": "We need to align the performance of some large task, a ‘pivotal act’ that prevents other people from building an unaligned AGI that destroys the world.",
+         "explanation": "This directly supports the note’s description of Yudkowsky’s meaning of “pivotal act.”"
+        },
+        {
+         "url": "https://intelligence.org/2022/06/10/agi-ruin/",
+         "quote": "The example I usually give is “burn all GPUs”.",
+         "explanation": "He presents burning GPUs as an example of a pivotal act."
+        },
+        {
+         "url": "https://intelligence.org/2022/06/10/agi-ruin/",
+         "quote": "This is not what I think you’d actually want to do with a powerful AGI",
+         "explanation": "This supports the note’s statement that he does not advocate burning all GPUs as the action to take."
+        },
+        {
+         "url": "https://intelligence.org/2022/06/10/agi-ruin/",
+         "quote": "I can say “Oh, well, I don’t actually advocate doing that; it’s just a mild overestimate for the rough power level of what you’d have to do, and the rough level of machine cognition required to do that, in order to prevent somebody else from destroying the world in six months or three years.”",
+         "explanation": "He explicitly says he does not advocate the example and describes it as an estimate of the power required."
+        },
+        {
+         "url": "https://intelligence.org/2022/06/10/agi-ruin/",
+         "quote": "While the number of actors with AGI is few or one, they must execute some “pivotal act”",
+         "explanation": "The passage describes a conditional need for a pivotal act while AGI is held by few actors or one; it does not state that every AGI maker must perform one."
+        }
+       ]
+      },
+      "verdict": "pass",
+      "prompts": {
+       "research": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
+       "writer": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do\n\n## Research findings\n\nThe claim is largely an overstatement. Yudkowsky's own writing does not treat 'pivotal act' as a euphemism for terrorism, and it does not say all AGI makers must carry one out. The concept does have a real, contestable core: critics read it as unilateral action that bypasses regulators.\n\n1. Definition. In 'AGI Ruin: A List of Lethalities', Yudkowsky describes a pivotal act as one that prevents other people from building an unaligned AGI that destroys the world. https://intelligence.org/2022/06/10/agi-ruin/ and https://www.alignmentforum.org/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities\n\n2. 'Burn all GPUs' is an illustration, not a recommendation. In the same post he says it is the example he usually gives. He adds that it is not what you would actually want to do with a powerful AGI. He also writes that he does not actually advocate it. He says it is a rough stand-in for the power level required. He adds that all known pivotal acts are currently outside the Overton Window. https://intelligence.org/2022/06/10/agi-ruin/ and https://www.alignmentforum.org/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities\n\n3. The act is done with powerful AI, not by humans attacking people. The AI Safety Info explainer says the term was coined by Yudkowsky for an act that uses powerful AI. It says a human attack on an AI lab would not count under his definition. It also says that in typical use the term now means a unilateral action aimed at reducing AI existential risk, such as destroying computing hardware. https://aisafety.info/questions/7580/\n\n4. Violence. Yudkowsky has said he means 'violence' to be individuals initiating force. https://www.greaterwrong.com/posts/eo8odvou4efc9syrv/eliezer-yudkowsky-s-letter-in-time-magazine In another tweet he says that nanobots switching off GPU clusters would not strike him as violence or coercion. He also says this is explicitly not what he thinks you should do. https://x.com/ESYudkowsky/status/1624091155154755584 His 2023 TIME piece proposed international treaties enforced by states, with airstrikes on rogue data centers as a last resort. That is a different idea from pivotal acts. https://datacentremagazine.com/articles/rogue-data-centres-may-need-to-be-destroyed-ai-researcher\n\n5. No 'must' for everyone. The sources I found do not say every AGI maker must perform a pivotal act. The 'AGI Ruin' framing is conditional: while few actors have AGI, some actor would need to execute such an act. https://intelligence.org/2022/06/10/agi-ruin/\n\n6. Where the author has a point. Yudkowsky tweeted that a pivotal act 'must bypass regulators'. https://x.com/ESYudkowsky/status/1438198191296372740 Critics such as Holly Elmore call the plan a 'coup'. https://lironshapira.substack.com/p/holly-elmore-case-against-eliezer Others say it would require suppressing humanity. https://forum.effectivealtruism.org/posts/HG6nnjBSradb9oso8/we-should-think-about-the-pivotal-act-again-here-s-a-better So the idea is plausibly read as unilateral and illegal. Calling it 'terrorism' is still the author's characterization. The claim attributes to Yudkowsky a euphemism and a requirement ('must') that he has not stated."
+      },
+      "cascade": {
+       "probability": 0.68,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Yudkowsky defines a 'pivotal act' as a large task performed by an aligned AGI that prevents others from building unaligned AGI: 'We need to align the performance of some large task, a pivotal act that prevents other people from building an unaligned AGI' and 'While the number of actors with AGI is few or one, they must execute some pivotal act, strong enough to flip the gameboard, using an AGI powerful enough to do that' https://intelligence.org/2022/06/10/agi-ruin/ . His standard example is 'burn all GPUs' https://intelligence.org/2022/06/10/agi-ruin/ , but he says this is not what you'd actually want to do and is a 'mild overestimate for the rough power level' to illustrate required cognition, adding 'all known pivotal acts are currently outside the Overton Window' https://intelligence.org/2022/06/10/agi-ruin/ . Separately in TIME (2023) he advocated state-enforced moratorium including 'be less scared of a shooting conflict between nations than of the moratorium being violated; be willing to destroy a rogue datacenter by airstrike' and prioritizing preventing AI extinction above preventing nuclear exchange https://forum.effectivealtruism.org/posts/LD8CpfiGsKhwKsmzd/pausing-ai-developments-isn-t-enough-we-need-to-shut-it-all , summarized as calling for 'indefinite worldwide moratorium on large training runs, a cap on computing power, and a willingness to enforce it, including by destroying a rogue data centre by airstrike' https://github.com/hakanotal/future-of-ai/blob/main/src/content/entities/yudkowsky-time-oped-2023.md . This supports that he endorses drastic preventive force and a must-do preventive act conditional on AGI development. It does not support 'terrorism': FBI defines terrorism as 'the unlawful use of force and violence against persons or property to intimidate or coerce a government, the civilian population, or any segment thereof, in furtherance of political or social objectives' https://www.fbi.gov/about-us/investigate/terrorism/terrorism-definition . Yudkowsky frames pivotal acts as AI-executed technical interventions and airstrikes as lawful state military action under multinational agreement, not unlawful subnational/clandestine violence, and he explicitly distances the GPU-burning example as illustrative rather than literal advocacy.",
+       "userMessage": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do"
+      },
+      "secondRound": {
+       "result": "note",
+       "first": {
+        "findings": "The claim mischaracterizes Yudkowsky's 'pivotal act' concept, based on my background knowledge. I did not run a search, so I have no source URL to give. Yudkowsky defined a pivotal act as an action, taken by a powerful AGI-enabled actor, that prevents other unaligned AGIs from being built and so lowers existential risk. His standard example is using an aligned AGI to 'burn all GPUs' (melt GPUs). He has said this example is deliberately extreme and illustrative. He has also said he does not advocate violence, and he has argued against illegal or violent unilateral action. He argues that pivotal acts would need to be carried out by AGI developers, but he has not said all AGI makers 'must' do them. Critics have said the concept implies unilateral, non-consensual, possibly illegal action by a private actor, and some have likened it to a coup or sabotage. Others argue it could resemble cyberattack or sabotage. Describing it as a 'euphemism for terrorism that anyone making AGI must do' is the author's own interpretation and an overstatement. The text does flag it as 'I believe', which softens it, but the claim presents it as Yudkowsky's own belief. Yudkowsky's idea is also not a requirement for everyone making AGI. In his later TIME op-ed he called for international treaties and enforcement, including airstrikes on rogue datacenters, which critics have called extreme. That is still a different thing from the pivotal-act concept and from terrorism by AGI builders.",
+        "note": "Yudkowsky’s “pivotal act” refers to an action by a powerful AGI-enabled actor intended to prevent other unaligned AGIs from being built. The research findings say he has not said that everyone making AGI must carry out such an act.",
+        "reasoning": "No sources were listed under “Note's cited sources.” Therefore, neither claim—that a pivotal act is intended to prevent other unaligned AGIs from being built, nor that Yudkowsky has not said everyone making AGI must carry one out—is supported by cited sources.",
+        "sources": []
+       },
+       "revisedFindings": "The claim is largely an overstatement. Yudkowsky's own writing does not treat 'pivotal act' as a euphemism for terrorism, and it does not say all AGI makers must carry one out. The concept does have a real, contestable core: critics read it as unilateral action that bypasses regulators.\n\n1. Definition. In 'AGI Ruin: A List of Lethalities', Yudkowsky describes a pivotal act as one that prevents other people from building an unaligned AGI that destroys the world. https://intelligence.org/2022/06/10/agi-ruin/ and https://www.alignmentforum.org/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities\n\n2. 'Burn all GPUs' is an illustration, not a recommendation. In the same post he says it is the example he usually gives. He adds that it is not what you would actually want to do with a powerful AGI. He also writes that he does not actually advocate it. He says it is a rough stand-in for the power level required. He adds that all known pivotal acts are currently outside the Overton Window. https://intelligence.org/2022/06/10/agi-ruin/ and https://www.alignmentforum.org/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities\n\n3. The act is done with powerful AI, not by humans attacking people. The AI Safety Info explainer says the term was coined by Yudkowsky for an act that uses powerful AI. It says a human attack on an AI lab would not count under his definition. It also says that in typical use the term now means a unilateral action aimed at reducing AI existential risk, such as destroying computing hardware. https://aisafety.info/questions/7580/\n\n4. Violence. Yudkowsky has said he means 'violence' to be individuals initiating force. https://www.greaterwrong.com/posts/eo8odvou4efc9syrv/eliezer-yudkowsky-s-letter-in-time-magazine In another tweet he says that nanobots switching off GPU clusters would not strike him as violence or coercion. He also says this is explicitly not what he thinks you should do. https://x.com/ESYudkowsky/status/1624091155154755584 His 2023 TIME piece proposed international treaties enforced by states, with airstrikes on rogue data centers as a last resort. That is a different idea from pivotal acts. https://datacentremagazine.com/articles/rogue-data-centres-may-need-to-be-destroyed-ai-researcher\n\n5. No 'must' for everyone. The sources I found do not say every AGI maker must perform a pivotal act. The 'AGI Ruin' framing is conditional: while few actors have AGI, some actor would need to execute such an act. https://intelligence.org/2022/06/10/agi-ruin/\n\n6. Where the author has a point. Yudkowsky tweeted that a pivotal act 'must bypass regulators'. https://x.com/ESYudkowsky/status/1438198191296372740 Critics such as Holly Elmore call the plan a 'coup'. https://lironshapira.substack.com/p/holly-elmore-case-against-eliezer Others say it would require suppressing humanity. https://forum.effectivealtruism.org/posts/HG6nnjBSradb9oso8/we-should-think-about-the-pivotal-act-again-here-s-a-better So the idea is plausibly read as unilateral and illegal. Calling it 'terrorism' is still the author's characterization. The claim attributes to Yudkowsky a euphemism and a requirement ('must') that he has not stated.",
+       "second": {
+        "note": "Yudkowsky defines a “pivotal act” as preventing others from building an unaligned AGI that destroys the world. He calls “burn all GPUs” an illustrative stand-in, says he does not advocate it, and does not say every AGI maker must act.",
+        "sources": [
+         "https://intelligence.org/2022/06/10/agi-ruin/"
+        ],
+        "error": null,
+        "verifierReasoning": "The cited source supports the definition of a pivotal act and the characterization of “burn all GPUs” as an illustrative example that Yudkowsky says he does not advocate. Its framing is conditional on the number of actors with AGI being few or one, rather than saying every AGI maker must act. All factual claims in the note are covered.",
+        "fetches": null
+       }
+      },
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      },
+      "strongProbability": 0.8,
+      "strongMisleading": null,
+      "draftSources": [
+       "https://intelligence.org/2022/06/10/agi-ruin/"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.1.json",
+       "logs/eval-2026-10-20-0452/pivotal-act-terrorism.1.json"
+      ],
+      "sourceChecks": [
+       {
+        "turn": 1,
+        "logFile": "logs/eval-2026-10-20-0452/pivotal-act-terrorism.1.json",
+        "output": {
+         "good_sources": [],
+         "bad_sources": [],
+         "source_evaluations": [],
+         "accepted": false,
+         "reasoning": "No sources were listed under “Note's cited sources.” Therefore, neither claim—that a pivotal act is intended to prevent other unaligned AGIs from being built, nor that Yudkowsky has not said everyone making AGI must carry one out—is supported by cited sources."
+        },
+        "fetches": null,
+        "notRun": null
+       },
+       {
+        "turn": 2,
+        "logFile": "logs/eval-2026-10-20-0452/pivotal-act-terrorism.1.json",
+        "output": {
+         "good_sources": [
+          "https://intelligence.org/2022/06/10/agi-ruin/"
+         ],
+         "bad_sources": [],
+         "source_evaluations": [
+          {
+           "url": "https://intelligence.org/2022/06/10/agi-ruin/",
+           "citations": [
+            {
+             "quote": "We need to align the performance of some large task, a ‘pivotal act’ that prevents other people from building an unaligned AGI that destroys the world.",
+             "explanation": "This directly supports the note’s description of Yudkowsky’s meaning of “pivotal act.”"
+            },
+            {
+             "quote": "The example I usually give is “burn all GPUs”.",
+             "explanation": "He presents burning GPUs as an example of a pivotal act."
+            },
+            {
+             "quote": "This is not what I think you’d actually want to do with a powerful AGI",
+             "explanation": "This supports the note’s statement that he does not advocate burning all GPUs as the action to take."
+            },
+            {
+             "quote": "I can say “Oh, well, I don’t actually advocate doing that; it’s just a mild overestimate for the rough power level of what you’d have to do, and the rough level of machine cognition required to do that, in order to prevent somebody else from destroying the world in six months or three years.”",
+             "explanation": "He explicitly says he does not advocate the example and describes it as an estimate of the power required."
+            },
+            {
+             "quote": "While the number of actors with AGI is few or one, they must execute some “pivotal act”",
+             "explanation": "The passage describes a conditional need for a pivotal act while AGI is held by few actors or one; it does not state that every AGI maker must perform one."
+            }
+           ],
+           "verdict": "good"
+          }
+         ],
+         "accepted": true,
+         "reasoning": "The cited source supports the definition of a pivotal act and the characterization of “burn all GPUs” as an illustrative example that Yudkowsky says he does not advocate. Its framing is conditional on the number of actors with AGI being few or one, rather than saying every AGI maker must act. All factual claims in the note are covered."
+        },
+        "fetches": null,
+        "notRun": null
+       }
+      ]
+     },
+     {
+      "quality": null,
+      "research": "The claim is misleading. In Yudkowsky's writing (e.g., the 2022 'AGI Ruin: A List of Lethalities' and related Arbital/LessWrong posts), a 'pivotal act' is defined as an action by an aligned AGI-wielding actor that substantially reduces the risk of other, unaligned AGI being built. His standard example is using an AGI to 'burn all GPUs' (melt GPUs), or to prevent other AGI from being built. He has said such acts should be non-violent and non-destructive where possible, and he argues against ordinary 'pivotal act' proposals involving killing people. Critics, including Yudkowsky himself in some posts, note that unilateral actions like this would be illegal or hostile, and that the term can sound like a euphemism. The idea has also been described as controversial and possibly coercive or illegal. But the claim has three problems. First, 'terrorism' is a loaded characterization, not his definition. Second, he does not say 'anyone making AGI must' do it. The idea is a hypothetical strategy for a careful, aligned-AGI-capable actor, not a duty on all AGI developers. Third, he has called for international treaties and enforcement, not terrorism, in his 2023 TIME op-ed. The article's phrasing is hedged with 'I believe', so it is an opinion, but the framing misrepresents his stated position. I did not run a search. This is based on my background knowledge, so I have no URLs I verified in this session. Relevant pages include https://arbital.com/p/pivotal/ and https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities.",
+      "draftNote": "Yudkowsky’s “pivotal act” refers to an action intended to reduce the risk of unaligned AGI being built, not a duty he assigns to every AGI developer. His writing discusses it as a strategy for an aligned-AGI-capable actor.",
+      "sourceVerdict": "YES",
+      "checkCostUsd": 0.0753042184,
+      "judgeCostUsd": 0.0004762,
+      "outcome": {
+       "type": "no_note",
+       "reason": "low_materiality_score"
+      },
+      "verdict": "fail",
+      "prompts": {
+       "research": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do",
+       "writer": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do\n\n## Research findings\n\nThe claim is misleading. In Yudkowsky's writing (e.g., the 2022 'AGI Ruin: A List of Lethalities' and related Arbital/LessWrong posts), a 'pivotal act' is defined as an action by an aligned AGI-wielding actor that substantially reduces the risk of other, unaligned AGI being built. His standard example is using an AGI to 'burn all GPUs' (melt GPUs), or to prevent other AGI from being built. He has said such acts should be non-violent and non-destructive where possible, and he argues against ordinary 'pivotal act' proposals involving killing people. Critics, including Yudkowsky himself in some posts, note that unilateral actions like this would be illegal or hostile, and that the term can sound like a euphemism. The idea has also been described as controversial and possibly coercive or illegal. But the claim has three problems. First, 'terrorism' is a loaded characterization, not his definition. Second, he does not say 'anyone making AGI must' do it. The idea is a hypothetical strategy for a careful, aligned-AGI-capable actor, not a duty on all AGI developers. Third, he has called for international treaties and enforcement, not terrorism, in his 2023 TIME op-ed. The article's phrasing is hedged with 'I believe', so it is an opinion, but the framing misrepresents his stated position. I did not run a search. This is based on my background knowledge, so I have no URLs I verified in this session. Relevant pages include https://arbital.com/p/pivotal/ and https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities."
+      },
+      "cascade": {
+       "probability": 0.75,
+       "decision": "escalate",
+       "answeredBy": "meta/muse-spark-1.3-contributor",
+       "findings": "Yudkowsky does define a 'pivotal act' as a large task that a first/early aligned AGI-builder must perform to stop others building unaligned AGI that destroys the world: \"We need to align the performance of some large task, a 'pivotal act' that prevents other people from building an unaligned AGI that destroys the world. While the number of actors with AGI is few or one, they must execute some 'pivotal act', strong enough to flip the gameboard, using an AGI powerful enough to do that.\" His illustrative example is \"burn all GPUs\" https://intelligence.org/2022/06/10/agi-ruin/ - summarized elsewhere as preventing other actors from building unaligned AGI that kills all humans, e.g. \"Releasing nanomachines that hunt down and burn all GPUs is a 'pivotal act'\" https://manifold.markets etc., and as \"something you can get the aligned superintelligent AI to do to prevent any other labs from building unaligned AI\" https://www.lesswrong.com/posts/Lpurs5qXDG8irSDXm/is-ai-alignment-enough . That supports the \"must do under certain circumstances to prevent competition/end of world\" part.\n\nCalling it \"acts of terrorism\" is inflammatory/misleading: Yudkowsky frames it as an AI-performed strategic/technological intervention (disabling compute, e.g. melt/burn GPUs, establish agreements, make uncontrolled development physically impossible https://github.com/centresecuriteia/aisafety_atlas_multilingual/blob/main/docs/chapters/03/10.md ), not unlawful anti-civilian violence for political intimidation. His separate human-enforcement proposal was for states to enforce a moratorium, including \"be willing to destroy a rogue datacenter by airstrike\" https://www.businessinsider.mx etc., reported as \"In his notorious TIME op-ed, 'Shut it All Down,' he argued that governments should 'be willing to destroy a rogue datacenter by airstrike.'\" https://www.techdirt.com/2025/08/15/the-ai-docs-falsehoods-and-false-balance/ - state military action, not \"terrorism,\" and conditional on violating a global shutdown/moratorium, not an unconditional duty of \"anyone making AGI.\" Yudkowsky explicitly says burn-all-GPUs is \"not what I think you'd actually want to do\" but \"a mild overestimate for the rough power level\" https://intelligence.org/2022/06/10/agi-ruin/ , undermining \"euphemism for terrorism\" claim.",
+       "userMessage": "Current date: 2026-10-20\nCurrent time: 03:48 UTC\n\n## Post\n\nText from Article: I believe that a ‘pivotal act’ is Yudkowsky’s euphemism for acts of terrorism that he believes anyone making AGI must do under certain circumstances to prevent competition and therefore the end of the world, and that many members of this enterprise will understand some offshoot of this idea and will understand such acts to be necessary in the course of pursuing their goals.\nClaim: acts of terrorism that he believes anyone making AGI must do"
+      },
+      "secondRound": null,
+      "models": {
+       "search": "anthropic/claude-sonnet-5.5",
+       "writer": "openai/gpt-6-luna",
+       "verifier": "openai/gpt-6-luna"
+      },
+      "strongProbability": 0.85,
+      "strongMisleading": null,
+      "draftSources": [
+       "https://arbital.com/p/pivotal/",
+       "https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities"
+      ],
+      "logFiles": [
+       "logs/eval-2026-10-20-0348/pivotal-act-terrorism.2.json",
+       "logs/eval-2026-10-20-0452/pivotal-act-terrorism.2.json"
+      ],
+      "sourceChecks": [
+       {
+        "turn": 1,
+        "logFile": "logs/eval-2026-10-20-0452/pivotal-act-terrorism.2.json",
+        "output": {
+         "good_sources": [
+          "https://arbital.com/p/pivotal/",
+          "https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities"
+         ],
+         "bad_sources": [],
+         "source_evaluations": [
+          {
+           "url": "https://arbital.com/p/pivotal/",
+           "citations": [
+            {
+             "quote": "Potential pivotal acts:\n\n*   human intelligence enhancement powerful enough that the best enhanced humans are qualitatively and significantly smarter than the smartest non-enhanced humans\n*   a limited [Task AGI](/w/task-directed-agi) that can:\n    *   upload humans and run them at speeds more comparable to those of an AI\n    *   prevent the origin of all hostile superintelligences (in the nice case, only temporarily and via strategies that cause only acceptable amounts of collateral damage)",
+             "explanation": "This describes pivotal acts as possible strategies, including using a limited AGI to prevent hostile superintelligences from arising."
+            },
+            {
+             "quote": "We can view the general problem of Limited AI as having the central question: **What is a pivotal act, such that an AI which does that thing and not some other things is therefore a whole lot safer to build?**",
+             "explanation": "The act is framed as something an AI could do to make building it safer, not as a duty imposed on every AGI developer."
+            }
+           ],
+           "verdict": "good"
+          },
+          {
+           "url": "https://www.lesswrong.com/posts/uMQ3cqWDPHhjtiesc/agi-ruin-a-list-of-lethalities",
+           "citations": [
+            {
+             "quote": "**6**.  **We need to align the performance of some large task, a 'pivotal act' that prevents other people from building an unaligned AGI that destroys the world.**",
+             "explanation": "This directly supports describing the pivotal act, in this context, as reducing the risk of unaligned AGI being built."
+            },
+            {
+             "quote": "While the number of actors with AGI is few or one, they must execute some \"pivotal act\", strong enough to flip the gameboard, using an AGI powerful enough to do that.",
+             "explanation": "The proposed strategy is conditional on an actor having an AGI capable of carrying it out; it is not stated as a duty for every AGI developer."
+            }
+           ],
+           "verdict": "good"
+          }
+         ],
+         "accepted": true,
+         "reasoning": "Both sources support the note. The Arbital page gives examples of pivotal acts, including a limited AGI preventing hostile superintelligences, and frames such an act as a strategy that could make an AI safer to build. Yudkowsky’s AGI Ruin post explicitly describes a pivotal act as preventing others from building an unaligned AGI and makes the proposal conditional on an actor having a sufficiently capable AGI. The note does not claim that pivotal acts are defined only this way in every context; no factual claim in it is unsupported."
+        },
+        "fetches": null,
+        "notRun": null
+       }
+      ]
+     }
+    ],
+    "passedIn": 1,
+    "verdict": "fail"
+   }
+  ],
+  "costUsd": {
+   "checks": 0.315515306,
+   "judge": 0.0005899
+  }
+ },
+ "probability": null
+}

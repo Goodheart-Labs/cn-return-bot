@@ -311,8 +311,11 @@ export function parseReaderText(source: string | null | undefined): ReaderBlock[
           break;
         }
       }
-      const parsed = items.map((item) => parseInline(item));
-      add({ kind: "list", ordered, start, items: parsed, text: parsed.map(runsText).join("\n") });
+      // One block per item, so notes on a long list sit beside their own item.
+      items.forEach((item, index) => {
+        const runs = parseInline(item);
+        add({ kind: "list", ordered, start: start + index, items: [runs], text: runsText(runs) });
+      });
       continue;
     }
 
@@ -334,20 +337,32 @@ export function parseReaderText(source: string | null | undefined): ReaderBlock[
  *  markup removed, images as [[IMAGE:url]] markers and footnotes as "[1] …".
  *  Embeds carry no words and are left out. */
 export function plainText(source: string): string {
-  return parseReaderText(source).map((block) => {
-    switch (block.kind) {
-      case "list":
-        return block.items.map((item, index) => `${block.ordered ? `${block.start + index}.` : "-"} ${runsText(item)}`).join("\n");
-      case "figure":
-        return [`[[IMAGE:${block.src}]]`, block.text].filter(Boolean).join("\n");
-      case "footnote":
-        return `[${block.label}] ${block.text}`;
-      case "embed":
-        return "";
-      default:
-        return block.text;
-    }
-  }).filter(Boolean).join("\n\n");
+  let text = "";
+  let previous: ReaderBlock | null = null;
+  for (const block of parseReaderText(source)) {
+    const words = blockPlainText(block);
+    if (!words) continue;
+    // Items of one list stay on consecutive lines, though each is its own block.
+    const sameList = block.kind === "list" && previous?.kind === "list" && previous.ordered === block.ordered;
+    text += text ? (sameList ? "\n" : "\n\n") + words : words;
+    previous = block;
+  }
+  return text;
+}
+
+function blockPlainText(block: ReaderBlock): string {
+  switch (block.kind) {
+    case "list":
+      return block.items.map((item, index) => `${block.ordered ? `${block.start + index}.` : "-"} ${runsText(item)}`).join("\n");
+    case "figure":
+      return [`[[IMAGE:${block.src}]]`, block.text].filter(Boolean).join("\n");
+    case "footnote":
+      return `[${block.label}] ${block.text}`;
+    case "embed":
+      return "";
+    default:
+      return block.text;
+  }
 }
 
 /** Leading paragraphs that only repeat the header (title, description or
@@ -466,31 +481,29 @@ export function anchorForSelection(block: Pick<ReaderBlock, "text">, selected: s
   return anchor;
 }
 
-/** A stretch of a block's text marked by a quote. */
-export interface QuoteMark { start: number; end: number; kind: string }
+/** A stretch of a block's text marked by a quote. `key` names the entry the
+ *  quote belongs to, so the mark and its margin card can find each other. */
+export interface QuoteMark { start: number; end: number; kind: string; key: string }
 
 /** Finds where each quote occurs in `text`, matching across any whitespace.
- *  Overlapping marks of the same kind merge into one. */
-export function findQuoteMarks(text: string, quotes: readonly { quote: string; kind: string }[]): QuoteMark[] {
+ *  Overlapping marks stay separate, so they can be drawn as layers. */
+export function findQuoteMarks(text: string, quotes: readonly { quote: string; kind: string; key: string }[]): QuoteMark[] {
   const spans: QuoteMark[] = [];
-  for (const { quote, kind } of quotes) {
+  for (const { quote, kind, key } of quotes) {
     if (!quote.trim()) continue;
     const pattern = quote.trim().split(/\s+/).map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("\\s+");
     for (const match of text.matchAll(new RegExp(pattern, "g"))) {
-      spans.push({ start: match.index, end: match.index + match[0].length, kind });
+      spans.push({ start: match.index, end: match.index + match[0].length, kind, key });
     }
   }
-  const merged: QuoteMark[] = [];
-  for (const span of spans.sort((a, b) => a.start - b.start)) {
-    const previous = merged.at(-1);
-    if (previous && previous.kind === span.kind && span.start <= previous.end) previous.end = Math.max(previous.end, span.end);
-    else merged.push({ ...span });
-  }
-  return merged;
+  return spans.sort((a, b) => a.start - b.start);
 }
 
-/** A run cut to a mark's boundaries, with the mark's kind when inside one. */
-export type MarkedRun = InlineRun & { mark?: string };
+/** A run cut to the marks' boundaries, with every mark that covers it,
+ *  longest first. */
+export type MarkedRun = InlineRun & { marks?: QuoteMark[] };
+
+const markLength = (mark: QuoteMark) => mark.end - mark.start;
 
 /** Splits runs at the boundaries of the marks, which are offsets into
  *  runsText(runs). Footnote references take no room. */
@@ -512,8 +525,8 @@ export function markRuns(runs: readonly InlineRun[], marks: readonly QuoteMark[]
     for (let p = 0; p < points.length - 1; p++) {
       const from = points[p]!;
       const to = points[p + 1]!;
-      const mark = marks.find((m) => m.start <= from && m.end >= to);
-      out.push({ ...run, text: run.text.slice(from - runStart, to - runStart), ...(mark ? { mark: mark.kind } : {}) });
+      const covering = marks.filter((m) => m.start <= from && m.end >= to).sort((a, b) => markLength(b) - markLength(a));
+      out.push({ ...run, text: run.text.slice(from - runStart, to - runStart), ...(covering.length ? { marks: covering } : {}) });
     }
   }
   return out;

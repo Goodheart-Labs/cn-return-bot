@@ -71,6 +71,37 @@ export interface BotConfig {
    */
   note_prefilter?: boolean;
   /**
+   * When this is true, the search step is a cascade. A cheap model researches
+   * first and gives its probability that the claim is misleading. At 0.9 or
+   * above the writer gets its findings straight away. Below 0.3 the run ends
+   * with no note. In between, a stronger model repeats the research, as the
+   * regular search step does. A run on this arm also skips the note-needed
+   * prefilter, which the cheap first step replaces. SEARCH_CASCADE_TEST sets it.
+   */
+  search_cascade?: boolean;
+  /**
+   * At or above this probability the cascade's cheap first step sends its
+   * findings straight to the writer. It defaults to 0.9. CASCADE_THRESHOLD_TEST
+   * sets it for X posts.
+   */
+  cascade_note_at_or_above?: number;
+  /**
+   * When this is true, a page that every free step of the fetch ladder failed
+   * on is read through Jina Reader, a paid service, as a last resort. It applies
+   * to the source verifier and the research loops of this run. JINA_FETCH_TEST
+   * sets it and it defaults to false.
+   */
+  jina_fetch?: boolean;
+  /**
+   * When this is true and the source verifier rejects the note, the research
+   * step gets one more turn. It is told what the verifier said, writes revised
+   * findings, and the writer and the verifier run again on them. The same
+   * research model does it as the first time: the quick model stays the quick
+   * model and the stronger model stays the stronger model. SECOND_ROUND_TEST
+   * sets it and it defaults to false.
+   */
+  second_round?: boolean;
+  /**
    * When this is true, a blocked-topic gate runs before everything else,
    * including the note-needed prefilter. One deepseek-v4-flash call checks the
    * post against BLOCKED_TOPICS. On a hit the run is skipped and recorded as
@@ -98,6 +129,14 @@ export interface BotConfig {
    *  applies, and when that is unset too, the model's own default.
    *  SIMPLE_BOT_WRITER_TEST sets it. */
   writer_reasoning_effort?: "low" | "medium" | "high";
+  /**
+   * What the search step answers. By default it answers with the yes or no
+   * field correction_needed. With "misleading" it uses the cascade's research
+   * prompt and answers with the yes or no field misleading: whether the claim
+   * is misleading in any way. The cascade's stronger search sets it for
+   * Common Notes claims only. X posts keep the default.
+   */
+  search_answer?: "correction_needed" | "misleading";
   /**
    * When this is set, it is passed through to OpenRouter as `temperature` for
    * every LLM call this bot makes. The note-needed prefilter pins it to 0, so

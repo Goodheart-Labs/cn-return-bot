@@ -6,8 +6,8 @@
  *
  *   1. They hold priority. Someone pressed the button in the extension, or ran
  *      everything-prioritize. That lasts seven days and then lapses.
- *   2. People with the extension opened at least two different posts of
- *      theirs, at any time.
+ *   2. Their score is at least 1.5: on average at least one and a half
+ *      different people with the extension opened each of their posts.
  *
  * Prioritised creators come first, then everyone else by their score. The walk
  * in autoEnqueue.ts goes down this list from the top and stops at the first
@@ -33,9 +33,11 @@
  * to a few people, and one person binge-watching a channel adds only about one
  * person to each video.
  *
- * A creator needs at least two visited posts to be walked on visits. One post
- * that a few people opened, perhaps because someone shared the link, says
- * little about the creator's next post.
+ * The score threshold replaced the rule that a creator needs two visited posts
+ * (Jim, 2026-10-18). Most visited creators score exactly 1, which means one
+ * person reads them. On 7 October that was 613 of 684 creators. Walking all of
+ * them meant the walk almost never ran out of posts, so retried items waited
+ * behind posts that a single reader had opened.
  */
 
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
@@ -68,9 +70,14 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
-/** How many different posts of a creator must have been opened before the
- *  creator is walked on visits alone. A prioritised creator is walked
- *  whatever their visits, because someone asked for them. */
+/** The lowest score at which a creator is walked on visits alone. A
+ *  prioritised creator is walked whatever their visits, because someone asked
+ *  for them. */
+const MIN_SCORE_TO_WALK = 1.5;
+
+/** How many of a creator's posts must have been visited before their score
+ *  counts. A single post that a few people opened, often one shared link, says
+ *  little about how widely the creator is read. */
 const MIN_VISITED_POSTS_TO_WALK = 2;
 
 const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, people: 0 };
@@ -128,7 +135,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key) || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
+    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.

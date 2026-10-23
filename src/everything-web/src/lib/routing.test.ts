@@ -9,12 +9,14 @@ const ROUTES: [string, Route][] = [
   ["/", { view: "home", section: null }],
   ["/install", { view: "home", section: "install" }],
   ["/notes", { view: "notes", project: null, item: null, note: null }],
+  ["/notes/all", { view: "allNotes" }],
   ["/notes/zvi", { view: "notes", project: "zvi", item: null, note: null }],
   ["/notes/zvi/item-1", { view: "notes", project: "zvi", item: "item-1", note: null }],
   ["/notes/zvi?note=n-1", { view: "notes", project: "zvi", item: null, note: "n-1" }],
   ["/leaderboard", { view: "leaderboard" }],
   ["/minisites", { view: "minisites", slug: null }],
   ["/minisites/new", { view: "newMinisite" }],
+  ["/admin/notes/waiting", { view: "noteReview", section: "waiting" }],
   ["/minisites/big-tent-or-small-tent", { view: "minisites", slug: "big-tent-or-small-tent" }],
 ];
 

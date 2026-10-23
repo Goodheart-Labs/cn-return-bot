@@ -120,7 +120,7 @@ async function createMenus() {
   });
   browser.contextMenus.create({
     id: REQUEST_MENU_ID,
-    title: "Request Common Notes on this",
+    title: "Check these words with Common Notes",
     contexts: ["selection"],
   });
   // The page-context item is the always-available request path, now that the
@@ -129,7 +129,7 @@ async function createMenus() {
   // request entries never appear together.
   browser.contextMenus.create({
     id: REQUEST_PAGE_MENU_ID,
-    title: "Request Common Notes on this page",
+    title: "Check this page with Common Notes",
     contexts: ["page"],
   });
 }
@@ -195,23 +195,29 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   const pageUrl = readerCanonical
     ? canonicalizePageUrl(readerCanonical, null)
     : canonicalizePageUrl(href, captured?.canonical ?? null);
-  // Only a page the pipeline has read in full refuses the request. The cached
-  // coverage list cannot tell a fully checked page from one that merely has an
-  // item row, so this is a live lookup. The click is about to send the page's
-  // address and text anyway, so the lookup costs nothing privacy-wise. A
-  // failed lookup submits regardless, because the consumer de-duplicates
-  // server-side.
-  try {
-    const item = await fetchItemForUrl(pageUrl);
-    if (isWholePageChecked(item)) {
-      await showRequestInfo(tab, "This page has already been checked.");
-      return;
+  // A request on selected words is always sent: a whole-page check can find no
+  // claim in a passage, or rate it true and skip it, so the passage is checked
+  // on its own.
+  const passage = selection.trim() || null;
+  // Otherwise only a page the pipeline has read in full refuses the request.
+  // The cached coverage list cannot tell a fully checked page from one that
+  // merely has an item row, so this is a live lookup. The click is about to
+  // send the page's address and text anyway, so the lookup costs nothing
+  // privacy-wise. A failed lookup submits regardless, because the consumer
+  // de-duplicates server-side.
+  if (!passage) {
+    try {
+      const item = await fetchItemForUrl(pageUrl);
+      if (isWholePageChecked(item)) {
+        await showRequestInfo(tab, "This page has already been checked.");
+        return;
+      }
+    } catch (err) {
+      console.warn("[common-notes] item lookup failed, submitting the request anyway:", err);
     }
-  } catch (err) {
-    console.warn("[common-notes] item lookup failed, submitting the request anyway:", err);
   }
   const authorFeed = await authorFeedStatusForTab(tab);
-  if (authorFeed.kind === "prioritized") {
+  if (!passage && authorFeed.kind === "prioritized") {
     const what = authorFeed.feed.kind === "youtuber" ? "video from this youtuber" : "post from this author";
     await showRequestInfo(tab, `We are already checking every new ${what} this week.`);
     return;
@@ -220,7 +226,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     const token = await submitNoteRequest({
       pageUrl,
       pageTitle: captured?.title ?? tab.title ?? "",
-      selection: selection.trim() || null,
+      selection: passage,
       pageText: captured?.text,
       creatorFeedUrl: authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null,
     });
@@ -237,7 +243,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
       const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-request-live", pageUrl, token }));
       if (!delivered) flashBadge(tab.id, "✓");
     } else {
-      await showRequestInfo(tab, "Requested. We'll check this page when it comes up in our queue.");
+      await showRequestInfo(tab, "Checking this page now.");
     }
   } catch (err) {
     console.warn("[common-notes] note request failed:", err);
@@ -391,6 +397,12 @@ export default defineBackground(() => {
       // background can inject the content script when none is running yet.
       const { tabId, pageUrl, token } = message as { tabId: number; pageUrl: string; token: string };
       sendToTabWithInjection(tabId, { type: "cn-request-live", pageUrl, token }).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === "cn-check-open-page" && sender.tab) {
+      // A three-dot menu row asks for the page its tab has open. That is the
+      // same request as the right-click menu's, so it takes the same path.
+      requestNoteOnSelection(sender.tab, "").then(() => sendResponse({ ok: true }));
       return true; // Keep the message channel open for the async reply.
     }
     if ((message as { type?: string })?.type === VISIT_MESSAGE_TYPE) {

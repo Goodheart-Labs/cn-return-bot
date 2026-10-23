@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import OpenAI from "openai";
-import { applyRatings, parseRatingOutput, rateClaims, shouldFactCheck } from "./rateClaims";
+import { JUDGEMENTS, RATING_SYSTEM_PROMPT, applyRatings, parseRatingOutput, rateClaims, shouldFactCheck } from "./rateClaims";
 
 // The OpenAI SDK's create method is replaced, so no test reaches OpenRouter while
 // our own client code still runs. Each request is kept so a test can check what
@@ -28,8 +28,6 @@ const claim = (text: string): ExtractedClaim => ({
   context: text,
   contextParagraph: text,
   imageUrls: [],
-  veryConfidentTrue: false,
-  speculation: false,
   anchor: { kind: "substack", url: "https://example.com/p/x" },
 });
 const claims = [claim("first"), claim("second"), claim("third")];
@@ -44,18 +42,18 @@ describe("applyRatings", () => {
     expect(rated.map((c) => c.judgement)).toEqual(["likely true", "certainly false", "uncertain"]);
   });
 
-  test("a claim the model left out is treated as uncertain", () => {
+  test("a claim the model left out is unrated", () => {
     const rated = applyRatings(claims, [{ claim: 1, rating: "likely true" }]);
-    expect(rated.map((c) => c.judgement)).toEqual(["likely true", "uncertain", "uncertain"]);
+    expect(rated.map((c) => c.judgement)).toEqual(["likely true", "unrated", "unrated"]);
   });
 
-  test("a rating outside the scale is treated as uncertain", () => {
+  test("a rating outside the scale is unrated", () => {
     const rated = applyRatings(claims, [
       { claim: 1, rating: "probably fine" },
       { claim: 2, rating: "likely true" },
       { claim: 3, rating: "likely true" },
     ]);
-    expect(rated[0]!.judgement).toBe("uncertain");
+    expect(rated[0]!.judgement).toBe("unrated");
   });
 
   test("a claim number that does not exist is ignored", () => {
@@ -64,7 +62,7 @@ describe("applyRatings", () => {
       { claim: 4, rating: "likely true" },
       { claim: 2, rating: "likely true" },
     ]);
-    expect(rated.map((c) => c.judgement)).toEqual(["uncertain", "likely true", "uncertain"]);
+    expect(rated.map((c) => c.judgement)).toEqual(["unrated", "likely true", "unrated"]);
   });
 });
 
@@ -101,6 +99,10 @@ describe("shouldFactCheck", () => {
   test("checks a judgement it does not recognize", () => {
     expect(shouldFactCheck("no idea")).toBe(true);
   });
+
+  test("does not check a claim the rater never rated", () => {
+    expect(shouldFactCheck("unrated")).toBe(false);
+  });
 });
 
 describe("rateClaims research call", () => {
@@ -127,5 +129,41 @@ describe("rateClaims research call", () => {
     expect(requests[1].tools).toBeUndefined();
     expect(result.cost.cost).toBeCloseTo(0.011, 10);
     expect(result.webSearches).toBe(3);
+  });
+
+  test("asks once more, in the same conversation, for the claims the first answer left out", async () => {
+    const first = `{"research":"found https://a.b","ratings":[{"claim":1,"rating":"likely true"},{"claim":3,"rating":"probably fine"}]}`;
+    nextReplies = [
+      { choices: [{ message: { content: first } }], usage: { cost: 0.01, server_tool_use_details: { web_search_requests: 2 } } },
+      {
+        choices: [{ message: { content: `{"research":"more","ratings":[{"claim":1,"rating":"certainly false"},{"claim":2,"rating":"likely false"}]}` } }],
+        usage: { cost: 0.002 },
+      },
+    ];
+    const result = await rateClaims({ text: "part", introduction: null, claims, source: "substack" });
+    expect(requests).toHaveLength(2);
+    expect(requests[1].tools).toEqual(requests[0].tools);
+    expect(requests[1].messages.at(-2)).toEqual({ role: "assistant", content: first });
+    expect(requests[1].messages.at(-1).content).toContain("You rated 1 of 3 claims. Rate the claims you left out: 2, 3.");
+    // Claim 1 keeps its first rating, claim 2 takes the follow-up's, and claim
+    // 3 is still unrated, so it is not checked.
+    expect(result.claims.map((c) => c.judgement)).toEqual(["likely true", "likely false", "unrated"]);
+    expect(result.leftOutByFirstAnswer).toBe(2);
+    expect(result.answers).toHaveLength(2);
+    expect(result.research).toBe("found https://a.b\n\nmore");
+    expect(result.cost.cost).toBeCloseTo(0.012, 10);
+  });
+
+  test("a complete first answer is not asked about again", async () => {
+    nextReplies = [{ choices: [{ message: { content: `{"research":"x","ratings":[{"claim":1,"rating":"uncertain"}]}` } }], usage: { cost: 0.01 } }];
+    const result = await rateClaims({ text: "part", introduction: null, claims: [claim("first")], source: "substack" });
+    expect(requests).toHaveLength(1);
+    expect(result.leftOutByFirstAnswer).toBe(0);
+  });
+});
+
+describe("RATING_SYSTEM_PROMPT", () => {
+  test("names every level of the scale the rating is parsed against", () => {
+    for (const judgement of JUDGEMENTS) expect(RATING_SYSTEM_PROMPT).toContain(judgement);
   });
 });

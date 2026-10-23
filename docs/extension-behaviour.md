@@ -38,13 +38,21 @@ Every note has one of three statuses: rated helpful, needs more ratings, or rate
 
 By default, helpful notes are open, notes that need ratings are collapsed, and not-helpful notes are dot only. One claim can hold several notes. It shows in the most prominent choice among its notes, so a claim with one open note is open. (`utils/settings.ts` `DEFAULT_NOTE_DISPLAY`, `utils/claimGroups.ts`, `components/NoteDisplayChoices.tsx`)
 
+### Overlapping quotes and pointing at a claim
+
+Two claims can quote overlapping words, for example one sentence and the whole paragraph around it. Each claim's words are tinted in their own see-through layer, so words covered by two claims look darker than words covered by one. Darkness stops growing after three overlapping claims, so the text stays readable. (`utils/passageHighlights.ts`, `assignLayers` in `utils/overlaps.ts`)
+
+When you point at a claim's marker with the mouse, reach it with the Tab key, point at its open card, or point at its tinted words, exactly that claim's words get a stronger tint. Over overlapping tints, the pointer picks the shortest quote, the same one a click would open. The card you opened last keeps its words strongly tinted while it is open. This shows which words a marker is about, even where several quotes overlap, and for a claim set to dot only, whose words otherwise have no tint.
+
+A click on tinted words opens the claim whose quote is shortest among those covering the clicked spot, because it is the most specific. The other claims there stay reachable through their own markers. A second click on the same spot closes the card again. (`components/InlineNotes.tsx`, `mostSpecific` in `utils/overlaps.ts`)
+
 ### Marker colours
 
 Each marker takes the colour of the best status among the notes on its passage. Green means helpful, blue means it needs more ratings, and red means not helpful. These are the same colours as the status dot on the note card. (`utils/claimGroups.ts`, `utils/markerPalette.ts`)
 
 ### Margin cards and the 200 px rule
 
-By default, markers sit in the right margin beside the text, and a card opens in the margin in its marker's place. This is the **margin style**. Overlapping cards are pushed down so they stack. A card that opens by itself only does so if, after that push, it sits at most 200 px below its passage. Further down it would sit beside unrelated text, so its claim keeps just its dot until you click it. A card that you opened is always shown. (`utils/marginCards.ts`, `components/InlineNotes.tsx`)
+By default, markers sit in the right margin beside the text, and a card opens in the margin next to its marker. This is the **margin style**. It follows the same rules as a minisite's margin (`flowMarginColumn`). Every claim has a **home**: the place its dot takes when every claim is a dot, level with its words or stacked just below the dot above it. By default every dot stays at its home. The card you open sits exactly at its home. A card above it that reaches into that place turns into a dot and stays one after you close yours, until you click it or reload the page. A card below an open card moves down below it. A card that opens by itself only does so if it lands at most 200 px below its home. Further down it would sit beside unrelated text, so its claim keeps just its dot until you click it. An open card covers the dot column, unless that would hide another claim's dot. Then it sits just right of the dots, so every dot stays visible. Clicking a dot that shows beside its open card closes the card, whoever opened it. Two advanced settings change this: "Move the dots below an open note down below it" makes dots move down below an open card as well, and "Where an open note sits" picks over the dots, beside them, or the default. Minisites always use the defaults. The column is computed again from the positions on screen whenever the page changes, so a page whose text loads bit by bit, such as Substack, simply gains entries as it loads. (`src/everything-core/marginCards.ts`, `components/InlineNotes.tsx`)
 
 When the window is too narrow for a 300 px card, or the page clips its margin, the extension falls back to the **classic style**: a badge at the end of the passage and a popover over the text. You can also pick the classic style in the settings. In the classic style an "open" note behaves like a collapsed one. (`components/InlineNotes.tsx`)
 
@@ -64,7 +72,9 @@ Notes refresh in place. A vote, a new note or a deletion anywhere on the page up
 
 ## YouTube
 
-On a covered video, small pins on the scrub bar mark each claim, coloured by status. A note card appears over the video while playback is inside the claim's part of the video. It fades out a little after playback leaves that part, unless you are interacting with it. Only claims set to open pop up on their own during playback. Any other claim shows its card when you click its pin or step to it with the "2 of 3" counter. (`components/YoutubeOverlay.tsx`, `components/ScrubberPins.tsx`)
+On a covered video, small pins on the scrub bar mark each claim, coloured by status. Claims set to open or collapsed pop up on their own: their card appears over the video while playback is inside the claim's part of the video, and fades out a little after playback leaves that part, unless you are interacting with it. A claim set to dot only, which is the default for not-helpful notes, gets only its pin.
+
+A click on a pin opens that claim's card without moving the video. A second click on the same pin closes it. The "2 of 3" counter and the popup's jump link open the next claim's card the same way. A card you opened like this stays up wherever playback goes, until you close it, click elsewhere on the page or open another one. While playback is outside the claim's part, the card's top bar shows the claim's start time as a button, such as "▶ 12:34", which moves the video there. A double click on a pin does the same at once. Once playback is inside the claim's part, the card behaves like one that popped up by itself. When two claims' parts overlap, the one you asked for wins. (`components/YoutubeOverlay.tsx`, `components/ScrubberPins.tsx`)
 
 The card can be dragged and resized like a desktop window, and the next card on the same video opens where you left the last one. Dismissing a card hides it only while playback stays in that claim's part. If you seek back into it, the card shows again. YouTube does not use the remembered closed-card list. (`components/YoutubeOverlay.tsx`, `components/FloatingWindow.tsx`)
 
@@ -84,10 +94,10 @@ The popup is the window that opens from the extension's toolbar button. It start
 
 Below the sentence, the popup can show two buttons.
 
-- **The request button** asks us to check this page. It shows only on content pages that we have not read in full. On YouTube, Substack and LessWrong it shows only on a video or a post, never on a channel page, inbox or profile. It never shows on search engines. On a page with no item it says "Request notes on this page". On a page that has an item only because a reader wrote a note or one paragraph was checked, it says "Check this page". If the page's creator is in their priority window, the button is replaced by a sentence such as "We're checking this author's new posts this week." (`utils/pageShape.ts`, `entrypoints/popup/App.tsx`)
+- **The request button**, "Check this page", asks us to check this page. It shows only on content pages that we have not read in full. On YouTube, Substack and LessWrong it shows only on a video or a post, never on a channel page, inbox or profile. It never shows on search engines. If the page's creator is in their priority window, the button is replaced by a sentence such as "We're checking this author's new posts this week." (`utils/pageShape.ts`, `entrypoints/popup/App.tsx`)
 - **The creator button**, for example "Check this author's new posts", gives the page's creator a 7-day priority window. It shows on any page that belongs to a creator whose window is closed, whether the page has notes or not. Creators are recognised on Substack publications including custom domains, Substack profiles, YouTube channels and watch pages, and LessWrong and Alignment Forum authors. (`utils/authorFeed.ts`, `utils/creatorTarget.ts`, `utils/prioritizedCreators.ts`)
 
-After you request a page, a small progress card appears in the page and follows the check until its notes are written. New notes appear on the page as they arrive, without a reload. The card comes back if you navigate away and return, for up to a day. The popup shows the same progress in text. (`utils/requestLive.ts`, `components/RequestProgressCard.tsx`, `utils/liveRequests.ts`)
+After you request a page, a small progress card appears in the page and follows the check until its notes are written. New notes appear on the page as they arrive, without a reload. The card comes back if you navigate away and return, for up to a day. The popup shows the same progress in text. When we cannot read a requested YouTube video, the card ends with an exclamation mark and says why: "failed, no captions available" or "failed, the video is age-restricted". It does not promise a retry, because none will come. A video less than a day old without captions is the exception: it shows "failed, will retry", because YouTube may still add automatic captions and the pipeline tries again. (`utils/requestLive.ts`, `components/RequestProgressCard.tsx`, `utils/liveRequests.ts`, `@cn/core/requestProgress.ts`)
 
 A request sends the page's text, which the extension reads on your device. This lets the pipeline check pages it cannot fetch itself. (`utils/pageCapture.ts`)
 
@@ -97,13 +107,24 @@ The popup's footer links to the settings page and unfolds the feedback links.
 
 The right-click menu (browsers call it the context menu) has three Common Notes entries, on every page:
 
-- **Request Common Notes on this**, over a selection. It asks us to check only the selected text.
-- **Request Common Notes on this page**, on a plain right-click.
+- **Check these words with Common Notes**, over a selection. It asks us to check only the selected text.
+- **Check this page with Common Notes**, on a plain right-click.
 - **Write a Common Note on this**, over a selection. It opens the note editor on the selected text.
 
-A request is not sent when it is not needed. If the page has already been read in full, a small card in the page says "This page has already been checked." If the page's creator is in their priority window, the card says we are already checking their new posts this week. A page that has an item only because of a reader's note or a checked paragraph still accepts the request. A sent request starts the progress card described above. On a page that cannot show a card, such as a browser settings page, the toolbar icon flashes a tick, or an exclamation mark when the request failed. (`entrypoints/background.ts` `requestNoteOnSelection`, `utils/requestInfo.ts`, `components/StatusOverlay.tsx`)
+A request for a whole page is not sent when it is not needed. If the page has already been read in full, a small card in the page says "This page has already been checked." If the page's creator is in their priority window, the card says we are already checking their new posts this week. A page that has an item only because of a reader's note or a checked paragraph still accepts the request. A request on selected words is always sent, because a whole-page check can find no claim in a passage, or rate it true and skip it. On a page already read in full, the selected words are checked on their own, and the progress card follows that one check. A sent request starts the progress card described above. On a page that cannot show a card, such as a browser settings page, the toolbar icon flashes a tick, or an exclamation mark when the request failed. (`entrypoints/background.ts` `requestNoteOnSelection`, `utils/requestInfo.ts`, `components/StatusOverlay.tsx`)
 
 Writing works on any website. On a page we do not cover, the click gives the extension temporary access to that tab (Chrome's **activeTab** permission), which lets it start the note editor there. The page's item is created only when you post. Once you post, the page becomes covered and your note appears straight away. (`utils/mountWriteAnywhere.tsx`, `ensureWebItem` in `src/everything-core/items.ts`)
+
+## Three-dot menus
+
+YouTube and Substack each have a three-dot menu on every video or post. The extension adds up to two rows at the top of these menus, above a divider:
+
+- **Check this video** or **Check this post** asks us to check that video or post, like the popup's button. It is left out when we have read the page in full, when you already asked for it, or when its creator's priority window is open.
+- **Check this youtuber's new videos** or **Check this author's new posts** gives the creator a 7-day priority window, like the popup's creator button. It is left out while the window is open, and when the card does not link its creator.
+
+The menus that get the rows are the menu on a video card in any YouTube listing, including search results and the cards beside a playing video, the menu under the playing video, the menu on a post in Substack's feed, and the menu in an open post's action bar. Substack Notes, YouTube Shorts, playlists and comments get no rows, because we do not check them. After a click the menu closes and a small card confirms the request, for example "Checking this video now." A row in the menu of the page you have open runs exactly the right-click menu's "Check this page with Common Notes", so the progress card follows the check. A row on a card in a listing sends only the page's address, because the extension cannot read a page that is not open. The rows take the site's own colours, fonts and icon alignment, and the arrow keys move through them together with the site's own rows. The approach is copied from Tidy Web, another Happy Squid extension, which adds its "Block channel" rows to the same menus. (`utils/menuRows.ts`, `utils/youtubeMenuRows.ts`, `utils/substackMenuRows.ts`)
+
+Substack newsletters on their own domain show the post menu only where the extension already runs, which is on sites that have notes.
 
 ## Privacy
 
@@ -157,9 +178,14 @@ Each entry says what we chose, why, and when. Please do not undo one of these wi
 - **Visits carry a per-creator reader hash, never one id per reader.** This lets us count readers per creator while keeping a person's reading across creators unlinkable. (GOO-135)
 - **Default display: helpful open, needs ratings collapsed, not helpful dot only.** This was Jim's call when the per-status choices replaced two checkboxes. Everyone started from the new defaults once. (GOO-239, 2026-09-29)
 - **A card opens by itself only within 200 px of its passage.** A card further away would sit beside unrelated text. (2026-09-29)
+- **The margin follows the minisite's rules.** The extension and the minisites share one layout function. By default dots stay beside their words and a card covers the dot column unless that would hide another dot, in which case it sits beside the dots. Two advanced settings let a reader make dots move down below an open card, and pick where the card sits. (Jim, GOO-443, 2026-10-16)
 - **A closed card stays closed on later visits**, and a card that opened by itself closes only through its close button. You see only one card you opened at a time. (2026-09-29 and 2026-10-01)
 - **Settings writes store only the keys you changed.** Writing the whole merged settings object kept the note-count card switched on for early installs after its default changed. (2026-09-29)
 - **Margin style is the default.** The note opens beside the text instead of on top of it. (GOO-66, 2026-08-31)
 - **You can vote and write without signing up**, through anonymous accounts (GOO-64). A browser that has signed in before must sign in again rather than get a second, anonymous account. (2026-08-31)
 - **Safari offers email sign-in only, and its access prompt has no button.** Safari cannot run the X login, and it ignores an extension's own request for site access. (2026-09-30)
+- **A YouTube pin opens its note without moving the video.** Before, a click on a pin moved the video to the claim, which lost the reader's place in the video when they only wanted to read the note. The card offers a button to move there instead, and a double click on the pin moves there at once. (Anton's feedback, GOO-447, 2026-10-19)
+- **The three-dot menus offer the same two requests as the popup**, with the popup's rules for when to leave them out. Anton suggested copying Tidy Web's menu rows, because a reader looks for actions on a video or post in its own menu. (GOO-447, 2026-10-19)
+- **On YouTube, collapsed notes pop up during playback like open ones.** By default that covers notes that need more ratings, which are most notes on videos. A video has no text beside it where a collapsed card could wait, so before this they only showed on a pin click. Not-helpful notes, set to dot only, keep just their pin. (Jim, GOO-447, 2026-10-19)
+- **The request button says "Check", not "Request".** "Request notes" sounded like we might get to it in a week, while a requested page is checked within minutes. (Anton's feedback, GOO-447, 2026-10-19)
 - **Development builds reload themselves.** A dev build checks every 30 seconds whether a newer build has landed on disk and reloads if so. This replaced a check that opened a probe tab in Jim's browser and pulled his laptop's focus to Chrome, which he asked to be rid of. (2026-08-25)

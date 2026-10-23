@@ -1,10 +1,11 @@
 import { browser } from "#imports";
+import { DEFAULT_MARGIN_OPTIONS, type CardPlacement } from "@cn/core/marginCards";
 import type { NoteStatus } from "@cn/core/noteScore";
 import { DEFAULT_PILL_PALETTE, type PillPalette } from "@cn/features/notes/pillPalette";
 
-// The pages the user has already asked us to cover with "Request notes on this
-// page". Reopening the popup on such a page shows the done state instead of creating
-// a second request. The list is a rolling window. Sync storage allows about 8KB per
+// The pages the user has already asked us to cover with "Check this page".
+// Reopening the popup on such a page shows the done state instead of creating a
+// second request. The list is a rolling window. Sync storage allows about 8KB per
 // key, so we only remember the most recent requests.
 //
 // Each page is remembered with the time it was asked for, and only while the
@@ -130,6 +131,12 @@ export type ExtensionSettings = {
   /** The note-count badges on listing thumbnails. */
   showThumbnailBadges: boolean;
   noteStyle: NoteStyle;
+  /** In the margin style, whether the dots below an open card move down
+   *  below it. See `MarginOptions` in core/marginCards.ts. */
+  dotsMakeRoom: boolean;
+  /** In the margin style, whether an open card covers the dot column, sits
+   *  beside it, or covers it unless that would hide another dot. */
+  cardPlacement: CardPlacement;
 };
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
@@ -137,6 +144,7 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   showThumbnailBadges: true,
   noteStyle: "margin",
   pillPalette: DEFAULT_PILL_PALETTE,
+  ...DEFAULT_MARGIN_OPTIONS,
 };
 
 export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {

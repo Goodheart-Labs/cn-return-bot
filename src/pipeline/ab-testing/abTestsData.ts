@@ -95,9 +95,10 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
     // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
-    // (GOO-303), and gave it back the same day once the block was lifted (GOO-322).
-    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 13 },
-    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 0 },
+    // (GOO-303) and gave it back once the block was lifted (GOO-322). Meta blocked us again on 2026-10-13,
+    // so Luna holds the share again.
+    { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 13 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -125,8 +126,8 @@ const MEDIA_DESCRIPTION_TEST: ABTest = {
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "gemini3flash", overrides: { media_model: "google/gemini-3-flash-preview"   }}, weight: 50 },
-    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 50 },
-    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 0 },
+    { variant: { name: "musespark13c", overrides: { media_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
+    { variant: { name: "gpt6luna",     overrides: { media_model: "openai/gpt-6-luna"               }}, weight: 50 },
   ],
 };
 
@@ -183,9 +184,44 @@ const TOPIC_FILTER_TEST: ABTest = {
   ],
 };
 
+// The cascade replaces the note-needed prefilter, so it has to run before it.
+// The "precheck" arm is the search step as it was before the cascade existed,
+// with the prefilter where one is configured.
+const SEARCH_CASCADE_TEST: ABTest = {
+  name: "search_cascade",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 20 },
+    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 80 },
+  ],
+};
+
+// How sure the cheap step must be to send its findings straight to the writer, for X posts. Common Notes keeps 0.9.
+const CASCADE_THRESHOLD_TEST: ABTest = {
+  name: "cascade_threshold",
+  prerequisites: { search_cascade: true, commonnotes_pipeline: false },
+  variants: [
+    { variant: { name: "0.8", overrides: { cascade_note_at_or_above: 0.8 } }, weight: 50 },
+    { variant: { name: "0.9", overrides: { cascade_note_at_or_above: 0.9 } }, weight: 50 },
+  ],
+};
+
+// One more research turn after the source verifier rejected a note. It is live on 20% of X posts. Common Notes
+// does not check sources, so it has no rejection to answer. A post whose search model cannot take a follow-up turn
+// keeps the rejection.
+const SECOND_ROUND_TEST: ABTest = {
+  name: "second_round",
+  prerequisites: { commonnotes_pipeline: false },
+  variants: [
+    { variant: { name: "off", overrides: { second_round: false } }, weight: 80 },
+    { variant: { name: "on",  overrides: { second_round: true  } }, weight: 20 },
+  ],
+};
+
 // Closed on deepseek (2026-08-06). Common Notes and discard audits still need off.
 const NOTE_PREFILTER_TEST: ABTest = {
   name: "note_prefilter",
+  prerequisites: { search_cascade: false },
   defaultVariant: "off",
   variants: [
     { variant: { name: "off",      overrides: { note_prefilter: false } }, weight: 0 },
@@ -219,6 +255,17 @@ const VERIFIER_CITATIONS_TEST: ABTest = {
   variants: [
     { variant: { name: "off", overrides: { verifier_citations: false } }, weight: 100 },
     { variant: { name: "on",  overrides: { verifier_citations: true  } }, weight: 0 },
+  ],
+};
+
+// Jina Reader reads the pages that every free fetch step failed on. It costs money, so it is off.
+// The arm is live only by force, for example in the claim checker evals. Turning it on for traffic is a change of weights.
+const JINA_FETCH_TEST: ABTest = {
+  name: "jina_fetch",
+  prerequisites: { botId: "simple-bot" },
+  variants: [
+    { variant: { name: "off", overrides: { jina_fetch: false } }, weight: 100 },
+    { variant: { name: "on",  overrides: { jina_fetch: true  } }, weight: 0 },
   ],
 };
 
@@ -324,10 +371,14 @@ export const AB_TESTS: ABTest[] = [
   MATERIALITY_TREATMENT_TEST,
   COMMONNOTES_PIPELINE_TEST,
   TOPIC_FILTER_TEST,
+  SEARCH_CASCADE_TEST,
+  CASCADE_THRESHOLD_TEST,
   NOTE_PREFILTER_TEST,
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
   VERIFIER_CITATIONS_TEST,
+  JINA_FETCH_TEST,
+  SECOND_ROUND_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
   FEED_SIZE_TEST,
   MISINFO_MONITORING_TEST,

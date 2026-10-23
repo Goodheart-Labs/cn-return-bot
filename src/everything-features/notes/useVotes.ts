@@ -9,16 +9,25 @@ import type { NnnRow, NoteRow } from "@cn/core/types";
 import { clearVote, fetchMyVotes, type Vote } from "@cn/core/votes";
 import { useActingUser } from "../auth/useActingUser";
 import { useSession } from "../auth/useSession";
-import { queryKeys } from "../query/queryKeys";
+import { mutationKeys, queryKeys } from "../query/queryKeys";
 import { updateNnnInNoteSets, updateNoteInNoteSets } from "./noteSet";
 
 const NO_VOTES: ReadonlyMap<string, Vote> = new Map();
 
-/** The signed-in reader's own votes on notes, keyed by note id. */
-export function useMyVotes(): ReadonlyMap<string, Vote> {
-  const userId = useSession().session?.user.id;
-  return useQuery({ queryKey: queryKeys.myVotes(userId), queryFn: fetchMyVotes, enabled: !!userId }).data ?? NO_VOTES;
+/** The signed-in reader's own votes on notes, keyed by note id. It is
+ *  undefined while the session or the votes are still loading. A reader
+ *  without a session has no votes, so they get an empty map. */
+export function useLoadedMyVotes(): ReadonlyMap<string, Vote> | undefined {
+  const { session, ready } = useSession();
+  const userId = session?.user.id;
+  const { data } = useQuery({ queryKey: queryKeys.myVotes(userId), queryFn: fetchMyVotes, enabled: !!userId });
+  if (!ready) return undefined;
+  return userId ? data : NO_VOTES;
 }
+
+/** The signed-in reader's own votes on notes, keyed by note id. It is empty
+ *  while they load. */
+export const useMyVotes = (): ReadonlyMap<string, Vote> => useLoadedMyVotes() ?? NO_VOTES;
 
 /** The signed-in reader's own votes on note-not-needed entries, keyed by entry
  *  id. */
@@ -60,6 +69,7 @@ export function useVoteOnNote(): (note: NoteRow, vote: Vote) => Promise<MintedDo
   const client = useQueryClient();
   const actingUser = useActingUser();
   const { mutateAsync } = useMutation({
+    mutationKey: mutationKeys.vote,
     mutationFn: async (v: VoteVariables<NoteRow>) =>
       isRetraction(v)
         ? (await clearVote(v.target.id), null)
@@ -92,6 +102,7 @@ export function useVoteOnNnn(): (entry: NnnRow, vote: Vote) => Promise<void> {
   const client = useQueryClient();
   const actingUser = useActingUser();
   const { mutateAsync } = useMutation({
+    mutationKey: mutationKeys.vote,
     mutationFn: (v: VoteVariables<NnnRow>) =>
       isRetraction(v) ? clearNnnVote(v.target.id) : castNnnVote(v.target.id, v.user.id, v.vote),
     onMutate: (v) => setCachedVote(client, queryKeys.myNnnVotes(v.user.id), v.target.id, isRetraction(v) ? undefined : v.vote),

@@ -8,7 +8,9 @@
 // post link it shows, for example on a profile's Posts tab, next to its utm_
 // parameters. On *.substack.com post links the whole query is dropped anyway
 // (see isSubstackHostPost), so lli is listed here for the custom domains.
-const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli"];
+// Condé Nast sites such as The New Yorker add _sp, a session id, to links they
+// share.
+const TRACKING_PARAMS = ["fbclid", "gclid", "igshid", "si", "lli", "_sp"];
 
 /** Whether the URL is a post on a *.substack.com host. Such a post is chosen by
  *  its path alone, and its stored item URL never has a query. Substack keeps
@@ -21,10 +23,35 @@ function isSubstackHostPost(url: URL): boolean {
   return /(^|\.)substack\.com$/.test(url.hostname) && url.pathname.startsWith("/p/");
 }
 
+/** Parameters only Substack adds, for example to the links in its emails. A
+ *  post on a newsletter's own domain that carries one of them is a Substack
+ *  post, so its whole query can go, like on a *.substack.com host. Without
+ *  them a custom domain keeps parameters such as r, which may mean something on
+ *  another site. */
+const SUBSTACK_ONLY_PARAMS = ["publication_id", "post_id", "isFreemail", "triedRedirect"];
+
+/** The BBC serves its news and sport articles on two hosts, and which one a
+ *  page names as canonical depends on where the reader is: a reader in Britain
+ *  is told bbc.co.uk and everyone else bbc.com. So these articles are stored
+ *  under www.bbc.com. Only exact host names count, and only these sections,
+ *  because bbc.co.uk also hosts UK-only sections such as iPlayer and Sounds
+ *  that bbc.com does not serve. */
+const BBC_HOSTS = ["bbc.co.uk", "www.bbc.co.uk", "bbc.com", "www.bbc.com"];
+const BBC_SHARED_SECTIONS = /^\/(news|sport)\//;
+const BBC_STORED_HOST = "www.bbc.com";
+
+function isBbcArticle(url: URL): boolean {
+  return BBC_HOSTS.includes(url.hostname) && BBC_SHARED_SECTIONS.test(url.pathname);
+}
+
+function isCustomDomainSubstackPost(url: URL): boolean {
+  return /^\/p\/[^/]+/.test(url.pathname) && SUBSTACK_ONLY_PARAMS.some((key) => url.searchParams.has(key));
+}
+
 /** Canonicalizes a page URL so it can be looked up in `everything_items.url`,
  *  with the page's canonical link passed in as a plain string. Callers that
  *  hold a Document use normalizePageUrl instead. The hash and any tracking
- *  parameters are dropped, and a *.substack.com post loses its whole query. */
+ *  parameters are dropped, and a Substack post loses its whole query. */
 export function canonicalizePageUrl(href: string, canonical: string | null): string {
   let url = new URL(href);
   if (canonical) {
@@ -38,7 +65,8 @@ export function canonicalizePageUrl(href: string, canonical: string | null): str
     if (canonicalUrl.pathname.replace(/\/$/, "") === url.pathname.replace(/\/$/, "")) url = canonicalUrl;
   }
   url.hash = "";
-  if (isSubstackHostPost(url)) {
+  if (isBbcArticle(url)) url.hostname = BBC_STORED_HOST;
+  if (isSubstackHostPost(url) || isCustomDomainSubstackPost(url)) {
     url.search = "";
     return url.toString();
   }

@@ -3,6 +3,8 @@ import { requestClaimCheck } from "../service/client";
 import { buildClaimPost, recordClaimRun } from "./pipeline/checkClaims";
 import { insertClaims, insertNote, raiseItemPriority, requeueItem, resolveNoteRequest, setClaimStatus, type NoteRequestRow } from "./db";
 import { requestBudgetExhausted } from "./spendCap";
+import { paragraphAround } from "./selectionParagraph";
+import { PASSAGE_CHECK } from "../everything-core/requestProgress";
 import type { NoteRequestOutcome } from "./consumeRequests";
 import type { ExtractedClaim, ItemSource } from "./types";
 
@@ -17,18 +19,22 @@ export async function consumeDirectedNoteRequest(request: NoteRequestRow, existi
   const db = getSupabaseClient();
   const { data: item, error } = await db.from("everything_items").select("id, source, full_text, published_at").eq("id", existing.id).single();
   if (error) throw error;
-  const passage = request.selection || request.page_text || item.full_text;
+  // The item's text is the article the whole-page check read. The extension's
+  // raw capture also holds comments and sidebars, so it is only the fallback.
+  const page = item.full_text || request.page_text;
+  const passage = request.selection || page;
   if (!passage) throw new Error("No passage to check");
+  const paragraph = request.selection && page ? paragraphAround(page, request.selection) : passage;
   const { data: claimed, error: claimError } = await db.from("everything_note_requests")
-    .update({ status: "enqueued", item_id: item.id }).eq("id", request.id).eq("status", "pending").select("id").maybeSingle();
+    .update({ status: "enqueued", status_reason: PASSAGE_CHECK.running, item_id: item.id }).eq("id", request.id).eq("status", "pending").select("id").maybeSingle();
   if (claimError) throw claimError;
   if (!claimed) return { kind: "deferred", detail: "another consumer took the request" };
   const claim: ExtractedClaim = {
-    claim: passage, context: passage, contextParagraph: passage, steer: request.steer,
-    imageUrls: [], veryConfidentTrue: false, speculation: false, anchor: { kind: "substack", url: request.page_url },
+    claim: passage, context: passage, contextParagraph: paragraph, steer: request.steer,
+    imageUrls: [], page: request.selection ? page : null, anchor: { kind: "substack", url: request.page_url },
   };
   const [claimId] = await insertClaims([{
-    item_id: item.id, claim: passage, judgement: "uncertain", context_quote: passage, context_paragraph: passage,
+    item_id: item.id, claim: passage, judgement: "uncertain", context_quote: passage, context_paragraph: paragraph,
     image_urls: [], context_url: request.page_url, start_seconds: null, end_seconds: null, status: "pending", status_reason: null,
   }]);
   try {
@@ -36,7 +42,7 @@ export async function consumeDirectedNoteRequest(request: NoteRequestRow, existi
     await recordClaimRun(claimId!, run, "reader");
     if (check.kind === "note") await insertNote(claimId!, check.note, check.sources);
     await setClaimStatus(claimId!, check.kind, check.kind === "no_note" ? check.reason : null);
-    await resolveNoteRequest(request.id, "done", null, item.id);
+    await resolveNoteRequest(request.id, "done", check.kind === "note" ? PASSAGE_CHECK.note : PASSAGE_CHECK.noNote, item.id);
   } catch (err) {
     await setClaimStatus(claimId!, "error", "Requested check failed");
     throw err;
