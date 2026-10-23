@@ -6,12 +6,11 @@ import type { Vote } from "./votes";
 /* "Note not needed" entries: arguments that a claim needs no note at all.
  * They are keyed to the claim, not to a note. */
 
-const asNnnRows = (rows: unknown[]) => rows as NnnRow[];
-
 const oldestFirst = (a: NnnRow, b: NnnRow) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id);
 
 /** All entries on a set of claims, oldest first. The extension asks for the
- *  claims of one page at a time, so the set stays small. */
+ *  claims of one page, and the website for the claims of one page of its
+ *  list, so the set stays small. */
 export async function fetchNnnForClaims(claimIds: string[]): Promise<NnnRow[]> {
   const entries = await fetchInBatches<NnnRow>(
     (chunk) => supabase.from("everything_note_not_needed").select("*").in("claim_id", chunk),
@@ -19,27 +18,6 @@ export async function fetchNnnForClaims(claimIds: string[]): Promise<NnnRow[]> {
     "id",
     { label: "nnnForClaims" },
   );
-  return entries.sort(oldestFirst);
-}
-
-/** Every entry in one project, oldest first, scoped through the same claim
- *  and item join the project's notes use. */
-export async function fetchProjectNnn(projectId: string): Promise<NnnRow[]> {
-  const rows = await fetchAllRows<NnnRow & { claim: unknown }>(
-    () => supabase
-      .from("everything_note_not_needed")
-      .select("*, claim:everything_claims!inner(item:everything_items!inner(project_id))")
-      .eq("claim.item.project_id", projectId),
-    "id",
-    { label: "projectNnn" },
-  );
-  // The joined claim is only there to carry the filter, so it is dropped again.
-  return asNnnRows(rows.map(({ claim: _claim, ...entry }) => entry)).sort(oldestFirst);
-}
-
-/** Every entry on the site, oldest first. */
-export async function fetchAllNnn(): Promise<NnnRow[]> {
-  const entries = await fetchAllRows<NnnRow>(() => supabase.from("everything_note_not_needed").select("*"), "id", { label: "allNnn" });
   return entries.sort(oldestFirst);
 }
 

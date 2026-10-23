@@ -1,29 +1,21 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { track } from "@cn/core/analytics";
+import { NO_FILTERS } from "@cn/core/feedPages";
 import { creatorPlatform } from "@cn/core/projects";
-import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
+import type { FeedItemRow, ProjectHeader } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
+import { ChevronIcon } from "@cn/ui/icons";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
-import { FeedNoteCard } from "../components/FeedNoteCard";
 import { BackToProjects } from "../components/BackToProjects";
 import { ItemList } from "../components/ItemList";
-import { NoteFeed, useFrozenTallies } from "../components/NoteFeed";
+import { NoteFeed } from "../components/NoteFeed";
 import { ProjectAvatar } from "../components/ProjectAvatar";
 import { RouteLink } from "../components/RouteLink";
 import { WriteNoteModal } from "../components/WriteNoteModal";
-import {
-  contentOrder,
-  entriesByClaim,
-  improvementsByOriginal,
-  itemsWithNotes,
-  notesByItem,
-  rankFeed,
-} from "../lib/feed";
-import { useProjectFeed } from "../lib/feedQueries";
+import { BAND_LABELS, bandTotal } from "../lib/feed";
+import { useFeedItem, useNoteCount, useNoteFeed, useProjectItems, useProjectRealtime, useSharedNote } from "../lib/feedQueries";
 import { noteUrl, type Route } from "../lib/routing";
-
-const NO_NOTES: NoteRow[] = [];
-const NO_ENTRIES: NnnRow[] = [];
 
 /** When the scroll to a shared note runs, in milliseconds after its card
  *  first renders. */
@@ -51,7 +43,7 @@ const ITEM_LIST_WIDTH = { default: 300, min: 220, max: 560 };
  *  with the creator's picture and a link to their own page. For one item it
  *  names the item under the project's name, and the item's title links to the
  *  original. */
-function PageHeading({ project, item, navigate }: { project: FeedProjectRow; item: FeedItemRow | null; navigate: (route: Route) => void }) {
+function PageHeading({ project, item, navigate }: { project: ProjectHeader; item: FeedItemRow | null; navigate: (route: Route) => void }) {
   const platform = project.feed_url ? creatorPlatform(project.feed_url) : null;
   if (item) {
     return (
@@ -102,59 +94,53 @@ function PageHeading({ project, item, navigate }: { project: FeedProjectRow; ite
 }
 
 
+/** The list of posts on a phone: a button that names the post shown, or all
+ *  of them, and opens the list below it. Picking a post closes it again. */
+function PhoneItemMenu({ label, children }: { label: string; children: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-control border border-line-strong bg-surface">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-base text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      >
+        <span className="min-w-0 truncate">{label}</span>
+        <ChevronIcon size={16} aria-hidden className={cn("shrink-0 text-fg-muted", open ? "-rotate-90" : "rotate-90")} />
+      </button>
+      {open && <div className="border-t border-line px-1 py-2">{children(() => setOpen(false))}</div>}
+    </div>
+  );
+}
+
 /** One project: its posts and videos listed on the left, newest first, and
- *  beside them the ranked notes of the one picked, or of all of them. On a
- *  phone the list becomes a menu above the notes. */
+ *  beside them the ranked notes of the one picked, or of all of them. Both
+ *  load a page at a time as the reader scrolls. On a phone the list of posts
+ *  opens from a button above the notes. A shared link to one note shows that
+ *  note first, because the feed may hold it on a page far below. */
 export function ProjectPage({ project, itemId, noteId, navigate }: {
-  project: FeedProjectRow;
+  project: ProjectHeader;
   itemId: string | null;
   noteId: string | null;
   navigate: (route: Route) => void;
 }) {
-  const { items, noteSet, failed, retry } = useProjectFeed(project.id);
-  const notes = noteSet?.notes;
-  const byItem = useMemo(() => notesByItem(notes?.values() ?? []), [notes]);
-  const improvements = useMemo(() => improvementsByOriginal(notes?.values() ?? []), [notes]);
-  const entries = useMemo(() => entriesByClaim(noteSet?.nnn.values() ?? []), [noteSet]);
-  const rankTally = useFrozenTallies(notes?.values() ?? []);
-  const [writeOpen, setWriteOpen] = useState(false);
-  const loaded = !!items && !!noteSet;
-  useScrollToNote(noteId, loaded);
-
-  const projectItems = loaded ? itemsWithNotes(items.values(), byItem) : [];
+  const itemQuery = useFeedItem(itemId);
   // An item link that is stale or belongs to another project shows the whole
   // project, which beats an empty feed.
-  const activeItem = projectItems.find((i) => i.id === itemId) ?? null;
-  const noteCounts = new Map(projectItems.map((i) => [i.id, byItem.get(i.id)!.length]));
-  const selectItem = (id: string | null) => navigate({ view: "notes", project: project.slug, item: id, note: null });
+  const activeItem = itemQuery.data?.project_id === project.id ? itemQuery.data : null;
+  const waitingForItem = !!itemId && itemQuery.isPending;
+  const { list, summary } = useNoteFeed({ projectId: project.id, itemId: activeItem?.id ?? null }, "mixed", NO_FILTERS);
+  const items = useProjectItems(project.id);
+  const total = useNoteCount({ projectId: project.id, itemId: null }).data;
+  const shared = useSharedNote(noteId).data;
+  const [writeOpen, setWriteOpen] = useState(false);
+  useProjectRealtime(project.id);
+  useScrollToNote(noteId, !!shared);
 
-  let feed: ReactNode;
-  if (failed) {
-    feed = (
-      <div className="space-y-3">
-        <p className="text-sm text-fg-secondary">These notes could not be loaded. The connection to our server failed.</p>
-        <Button onClick={retry}>Try again</Button>
-      </div>
-    );
-  } else if (!loaded) {
-    feed = <p className="text-sm text-fg-muted">Loading…</p>;
-  } else if (projectItems.length === 0) {
-    feed = <p className="text-sm text-fg-muted">No notes yet for this project.</p>;
-  } else {
-    const shown = activeItem ? [activeItem] : projectItems;
-    const sections = rankFeed(contentOrder(shown, byItem, noteSet.notes), rankTally);
-    const renderCard = (note: NoteRow) => (
-      <FeedNoteCard
-        key={note.id}
-        note={note}
-        post={activeItem ? undefined : items.get(note.claim.item_id)}
-        improvements={improvements.get(note.id) ?? NO_NOTES}
-        nnnEntries={entries.get(note.claim_id) ?? NO_ENTRIES}
-        shareUrl={noteUrl(project.slug, note.id)}
-      />
-    );
-    feed = <NoteFeed sections={sections} renderCard={renderCard} />;
-  }
+  const itemList = (onPick?: () => void) => (
+    <ItemList projectSlug={project.slug} list={items} total={total} selected={activeItem?.id ?? null} navigate={navigate} onPick={onPick} />
+  );
 
   return (
     <div className="md:flex">
@@ -170,7 +156,7 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
           <div className="px-3">
             <BackToProjects navigate={navigate} />
           </div>
-          <ItemList projectSlug={project.slug} items={projectItems} noteCounts={noteCounts} selected={activeItem?.id ?? null} navigate={navigate} />
+          {itemList()}
         </div>
       </ResizablePanel>
 
@@ -193,26 +179,22 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
             Write a note
           </Button>
         </div>
-        <div className="mb-6 md:hidden">
-          {projectItems.length > 1 && (
-            <label className="block text-sm text-fg-secondary">
-              <span className="sr-only">Post or video</span>
-              <select
-                value={activeItem?.id ?? ""}
-                onChange={(e) => selectItem(e.target.value || null)}
-                className="w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-base text-fg"
-              >
-                <option value="">All posts and videos</option>
-                {projectItems.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.title ?? "Untitled"}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+        <div className="mx-auto mb-6 max-w-[40rem] md:hidden">
+          <PhoneItemMenu label={activeItem?.title ?? "All posts and videos"}>{(close) => itemList(close)}</PhoneItemMenu>
         </div>
-        {feed}
+        {waitingForItem ? (
+          <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>
+        ) : (
+          <NoteFeed
+            list={list}
+            lead={shared ? [shared] : undefined}
+            labelOf={({ entry }) => BAND_LABELS[entry.band]}
+            totalOf={(label) => bandTotal(summary.data, label)}
+            showPost={!activeItem}
+            shareUrl={({ note }) => noteUrl(project.slug, note.id)}
+            emptyText="No notes yet for this project."
+          />
+        )}
       </main>
 
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} navigate={navigate} />

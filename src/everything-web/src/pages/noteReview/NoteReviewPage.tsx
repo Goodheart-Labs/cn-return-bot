@@ -1,8 +1,8 @@
-import { useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { REVIEW_SECTIONS, setApprovalRequired, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
 import { queryKeys } from "@cn/features/query/queryKeys";
-import { useLoadMoreSentinel } from "@cn/features/query/useLoadMoreSentinel";
+import { LoadFailed } from "@cn/features/query/LoadFailed";
+import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
@@ -122,25 +122,13 @@ function DraftPage({ drafts, section }: { drafts: ReviewDraft[]; section: Review
 
 function SectionFeed({ section }: { section: ReviewSection }) {
   const client = useQueryClient();
-  const query = useReviewSection(section, true);
-  const pages = query.data?.pages;
+  const list = useReviewSection(section);
+  const pages = list.pages;
   const drafts = pages?.flat();
   const newDrafts = useNewDrafts(section, drafts);
   usePollWaitingChats(section, drafts ?? []);
-  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
-  const loadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-  const setSentinel = useLoadMoreSentinel(loadMore, drafts?.length ?? 0);
 
-  if (query.isError) {
-    return (
-      <div className="mx-auto max-w-[40rem] space-y-3">
-        <p className="text-sm text-negative">{query.error.message}</p>
-        <Button onClick={() => void query.refetch()}>Try again</Button>
-      </div>
-    );
-  }
+  if (list.failed) return <LoadFailed what="These drafts" onRetry={list.retry} className="mx-auto max-w-[40rem]" />;
   if (!pages || !drafts) return <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>;
   return (
     <div className="space-y-6">
@@ -155,11 +143,7 @@ function SectionFeed({ section }: { section: ReviewSection }) {
       {pages.map((page, index) => (
         <DraftPage key={index} drafts={page} section={section} />
       ))}
-      {hasNextPage && <div ref={setSentinel} aria-hidden="true" />}
-      {isFetchingNextPage && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading more…</p>}
-      {drafts.length > 0 && !hasNextPage && (
-        <p className="mx-auto max-w-[40rem] text-center text-xs text-fg-muted">That is every draft in this section.</p>
-      )}
+      {drafts.length > 0 && <PagedListEnd list={list} endText="That is every draft in this section." className="mx-auto max-w-[40rem]" />}
     </div>
   );
 }

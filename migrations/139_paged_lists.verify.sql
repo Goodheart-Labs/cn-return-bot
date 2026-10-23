@@ -61,6 +61,57 @@ begin
   end loop;
 end $$;
 
+-- The mixed order on a small project of its own, three notes per page, so
+-- every bookmark is crossed. The rows are rolled back at the end. The three
+-- most helpful notes lead, then a note that needs ratings alternates with one
+-- more helpful note, the oldest such note first. Unhelpful notes follow, and a
+-- note whose source text changed comes last, however helpful it is. The
+-- Newest and Most helpful orders have no bands.
+reset role;
+begin;
+insert into everything_projects (id, slug, name) values ('00000000-0000-0000-0000-00000000f001', 'verify-139', 'Verify 139');
+insert into everything_items (id, project_id, url, source) values ('00000000-0000-0000-0000-00000000f002', '00000000-0000-0000-0000-00000000f001', 'https://example.com/verify-139', 'web');
+insert into everything_claims (id, item_id, claim, judgement, updated_quote)
+select ('00000000-0000-0000-0000-0000000' || lpad(n::text, 5, '0'))::uuid, '00000000-0000-0000-0000-00000000f002', 'claim ' || n, 'uncertain',
+       case when n = 9 then 'the source changed' end
+  from generate_series(1, 9) n;
+insert into everything_notes (id, claim_id, note, helpful_count, somewhat_helpful_count, not_helpful_count, created_at)
+select ('00000000-0000-0000-0000-0000001' || lpad(n::text, 5, '0'))::uuid, ('00000000-0000-0000-0000-0000000' || lpad(n::text, 5, '0'))::uuid,
+       name, h, s, nh, '2026-10-01'::timestamptz + n * interval '1 hour'
+  from (values (1, 'helpful-6', 6, 0, 0), (2, 'helpful-5', 5, 0, 0), (3, 'helpful-4', 4, 0, 0), (4, 'helpful-3', 3, 0, 0),
+               (5, 'unrated-older', 0, 0, 0), (6, 'unrated-newer', 0, 0, 0), (7, 'unhelpful', 0, 0, 3),
+               (8, 'one-somewhat', 0, 1, 0), (9, 'stale-but-helpful', 9, 0, 0)) v(n, name, h, s, nh);
+do $$
+declare
+  ordering text;
+  after jsonb;
+  page jsonb;
+  got text[];
+  expected text[];
+begin
+  foreach ordering in array array['mixed', 'helpful'] loop
+    after := null;
+    got := '{}';
+    loop
+      page := everything_note_feed_page(p_project_id => '00000000-0000-0000-0000-00000000f001', p_order => ordering, p_after => after, p_limit => 3);
+      got := got || array(select n.note || ':' || (p.entry ->> 'band')
+                            from jsonb_array_elements(page -> 'notes') with ordinality p(entry, place)
+                            join everything_notes n on n.id = (p.entry ->> 'id')::uuid
+                           order by p.place);
+      after := page -> 'next';
+      exit when after = 'null'::jsonb;
+    end loop;
+    expected := case ordering
+      when 'mixed' then array['helpful-6:main', 'helpful-5:main', 'helpful-4:main', 'one-somewhat:main', 'helpful-3:main',
+                              'unrated-older:main', 'unrated-newer:main', 'unhelpful:unhelpful', 'stale-but-helpful:stale']
+      else array['stale-but-helpful:all', 'helpful-6:all', 'helpful-5:all', 'helpful-4:all', 'helpful-3:all',
+                  'one-somewhat:all', 'unrated-older:all', 'unrated-newer:all', 'unhelpful:all'] end;
+    if got is distinct from expected then raise exception '% order: got %, expected %', ordering, got, expected; end if;
+  end loop;
+end $$;
+rollback;
+set role anon;
+
 -- The summary counts the same notes the pages show.
 do $$
 declare summary jsonb := everything_note_feed_summary();

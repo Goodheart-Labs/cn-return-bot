@@ -1,17 +1,16 @@
 import { useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  fetchLeaderboardPositionAtRank,
   moveToLeaderboard,
-  positionAtRank,
   removeRecommendation,
   restoreRecommendation,
   returnToRecommendations,
   setComment,
   setPosted,
-  type CuratedNoteRow,
   type CurationSection,
 } from "@cn/core/bestNotes";
-import type { FeedProjectRow } from "@cn/core/types";
+import type { ProjectHeader } from "@cn/core/types";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
@@ -35,8 +34,8 @@ export function useCurationChange(onError: (message: string) => void) {
       return false;
     } finally {
       await Promise.all([
-        client.invalidateQueries({ queryKey: ["curatedList"] }),
-        client.invalidateQueries({ queryKey: queryKeys.removedRecommendations }),
+        client.invalidateQueries({ queryKey: queryKeys.curation }),
+        client.invalidateQueries({ queryKey: queryKeys.curationSummaries }),
       ]);
     }
   };
@@ -118,7 +117,7 @@ const ICON_BUTTON = "h-8 w-8";
  *  (comment) and a red cross (remove, with a reason). A leaderboard note has
  *  the X logo (mark as posted on X), the speech bubble, and a red cross that
  *  offers to send the note back to the recommendations or remove it. */
-export function CurationBar({ section, rank, noteId, comment, posted, removedReason, project, leaderboard, navigate, onError }: {
+export function CurationBar({ section, rank, noteId, comment, posted, removedReason, project, leaderboardSize, navigate, onError }: {
   section: CurationSection;
   rank: number;
   noteId: string;
@@ -126,9 +125,9 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
   /** Whether an admin marked the note as posted on X. Only leaderboard notes have the mark. */
   posted: boolean;
   removedReason: string | null;
-  project: FeedProjectRow | undefined;
-  /** The leaderboard in its order, which a move or an addition is placed in. */
-  leaderboard: CuratedNoteRow[];
+  project: ProjectHeader | undefined;
+  /** How many notes the leaderboard holds, which an addition is placed among. */
+  leaderboardSize: number;
   navigate: (route: Route) => void;
   onError: (message: string) => void;
 }) {
@@ -185,10 +184,15 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
   if (panel === "add") {
     form = (
       <div className="space-y-2">
-        <Button onClick={() => void change(() => moveToLeaderboard(noteId, positionAtRank(leaderboard, leaderboard.length + 1)))}>
-          Add at the bottom ({leaderboard.length + 1})
+        <Button onClick={() => void change(async () => moveToLeaderboard(noteId, await fetchLeaderboardPositionAtRank(leaderboardSize + 1, leaderboardSize)))}>
+          Add at the bottom ({leaderboardSize + 1})
         </Button>
-        <PlaceForm label="Add here" max={leaderboard.length + 1} submit={(r) => change(() => moveToLeaderboard(noteId, positionAtRank(leaderboard, r)))} onDone={close} />
+        <PlaceForm
+          label="Add here"
+          max={leaderboardSize + 1}
+          submit={(r) => change(async () => moveToLeaderboard(noteId, await fetchLeaderboardPositionAtRank(r, leaderboardSize)))}
+          onDone={close}
+        />
       </div>
     );
   } else if (panel === "takeOff") {

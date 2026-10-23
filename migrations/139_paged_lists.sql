@@ -172,7 +172,11 @@ comment on column everything_notes.p_helpful_after_helpful is
 -- is never ranked again, so a card still never moves under the reader.
 
 -- What narrows the feed: a project or one of its items, and the reader's
--- filters. A minimum of 0 and false let every note through.
+-- filters. A minimum of 0 and false let every note through. With
+-- unvoted_only, the notes the reader had voted on before `voted_before` are
+-- left out. The website passes the moment the reader opened the feed. So a
+-- vote cast while reading never makes its card vanish, not even when the feed
+-- reloads, and the reader can still change the vote.
 create type everything_feed_scope as (
   project_id uuid,
   item_id uuid,
@@ -180,7 +184,8 @@ create type everything_feed_scope as (
   min_votes int,
   min_helpful int,
   min_not_helpful int,
-  unvoted_only boolean
+  unvoted_only boolean,
+  voted_before timestamptz
 );
 
 -- Every visible note in the scope that passes the filters, with what the feed
@@ -257,7 +262,8 @@ language sql stable security definer set search_path = public as $$
      -- A note the reader wrote counts as voted on, because posting a note
      -- casts a Helpful vote on it.
      and not (coalesce(p_scope.unvoted_only, false) and exists (
-       select 1 from everything_votes ev where ev.note_id = s.id and ev.voter_id = auth.uid()));
+       select 1 from everything_votes ev
+        where ev.note_id = s.id and ev.voter_id = auth.uid() and ev.created_at < coalesce(p_scope.voted_before, now())));
 $$;
 
 -- One stream of the feed: the notes of the given bands in one sort order,
@@ -274,10 +280,10 @@ $$;
 -- * best: the chance of ending up helpful alone.
 -- * recent: the newest note first.
 create function everything_feed_stream(p_scope everything_feed_scope, p_bands text[], p_key text, p_after jsonb, p_limit int)
-returns table (id uuid, item_id uuid, key float8[], content float8[])
+returns table (id uuid, item_id uuid, key float8[], content float8[], views bigint)
 language sql stable security definer set search_path = public as $$
   with keyed as (
-    select c.id, c.item_id, c.content,
+    select c.id, c.item_id, c.content, c.views,
            case p_key
              when 'helpful' then array[-c.p_helpful, -c.votes, -c.item_epoch]
              when 'needs_ratings' then array[-c.p_helpful_after_helpful, extract(epoch from c.created_at)::float8, -c.item_epoch]
@@ -287,7 +293,7 @@ language sql stable security definer set search_path = public as $$
       from everything_feed_candidates(p_scope) c
      where c.band = any (p_bands)
   )
-  select k.id, k.item_id, k.key, k.content
+  select k.id, k.item_id, k.key, k.content, k.views
     from keyed k
    where p_after is null
       or (k.key, k.item_id, k.content, k.id) > (
@@ -299,9 +305,10 @@ language sql stable security definer set search_path = public as $$
    limit p_limit;
 $$;
 
--- One page of the feed, as {"notes": [{"id", "band"}], "next": <position>}.
+-- One page of the feed, as {"notes": [{"id", "band", "views"}], "next": <position>}.
 -- `band` names the band of the mixed order a note belongs to: main, unhelpful
--- or stale. The other two orders put every note in the band 'all'. `next` is
+-- or stale. The other two orders put every note in the band 'all'. `views`
+-- counts the devices outside the team that were shown the post's notes. `next` is
 -- what the website passes as p_after to get the following page, and it is null
 -- after the last page. The website treats it as an opaque bookmark.
 --
@@ -325,6 +332,7 @@ create function everything_note_feed_page(
   p_min_helpful int default 0,
   p_min_not_helpful int default 0,
   p_unvoted_only boolean default false,
+  p_voted_before timestamptz default null,
   p_after jsonb default null,
   p_limit int default 30
 ) returns jsonb
@@ -332,7 +340,7 @@ language plpgsql stable security definer set search_path = public as $$
 declare
   max_page_size constant int := 100;
   leading_helpful_notes constant int := 3;
-  scope everything_feed_scope := row(p_project_id, p_item_id, p_min_views, p_min_votes, p_min_helpful, p_min_not_helpful, p_unvoted_only);
+  scope everything_feed_scope := row(p_project_id, p_item_id, p_min_views, p_min_votes, p_min_helpful, p_min_not_helpful, p_unvoted_only, p_voted_before);
   bands text[] := case p_order
     when 'mixed' then array['main', 'unhelpful', 'stale']
     when 'recent' then array['all']
@@ -379,7 +387,7 @@ begin
         order by place
         limit remaining
       loop
-        notes := notes || jsonb_build_object('id', r.id, 'band', band);
+        notes := notes || jsonb_build_object('id', r.id, 'band', band, 'views', r.views);
         if r.stream = 'helpful' then
           helpful_after := jsonb_build_object('key', r.key, 'item_id', r.item_id, 'content', r.content, 'id', r.id);
           helpful_taken := r.taken_index + 1;
@@ -400,7 +408,7 @@ begin
           bookmark -> 'after',
           remaining)
       loop
-        notes := notes || jsonb_build_object('id', r.id, 'band', band);
+        notes := notes || jsonb_build_object('id', r.id, 'band', band, 'views', r.views);
         bookmark := jsonb_build_object('band', band, 'after', jsonb_build_object('key', r.key, 'item_id', r.item_id, 'content', r.content, 'id', r.id));
         taken := taken + 1;
       end loop;
@@ -433,14 +441,15 @@ create function everything_note_feed_summary(
   p_min_helpful int default 0,
   p_min_not_helpful int default 0,
   p_unvoted_only boolean default false,
+  p_voted_before timestamptz default null,
   p_since timestamptz[] default '{}'
 ) returns jsonb
 language sql stable security definer set search_path = public as $$
   with matching as (
-    select * from everything_feed_candidates(row(p_project_id, p_item_id, p_min_views, p_min_votes, p_min_helpful, p_min_not_helpful, p_unvoted_only))
+    select * from everything_feed_candidates(row(p_project_id, p_item_id, p_min_views, p_min_votes, p_min_helpful, p_min_not_helpful, p_unvoted_only, p_voted_before))
   ),
   everything_in_scope as (
-    select * from everything_feed_candidates(row(p_project_id, p_item_id, 0, 0, 0, 0, false))
+    select * from everything_feed_candidates(row(p_project_id, p_item_id, 0, 0, 0, 0, false, null))
   )
   select jsonb_build_object(
     'matching', (select count(*) from matching),
@@ -515,13 +524,14 @@ $$;
 -- the most recent first. `sort_key` carries that order for the keyset: the
 -- position, or the removal time as negative seconds. A note that was deleted
 -- or hidden is left out. The filters narrow the section to one creator, to
--- leaderboard notes not yet posted on X, or to notes the admin has not voted
--- on.
+-- leaderboard notes not yet posted on X, or to notes the admin had not voted
+-- on before `p_voted_before`, as in the notes feed.
 create function everything_curation_page(
   p_section text,
   p_project_slug text default null,
   p_not_posted_only boolean default false,
   p_unvoted_only boolean default false,
+  p_voted_before timestamptz default null,
   p_after_key float8 default null,
   p_after_note_id uuid default null,
   p_limit int default 30
@@ -553,7 +563,8 @@ begin
      where (p_project_slug is null or p.slug = p_project_slug)
        and (not p_not_posted_only or s.posted_at is null)
        and (not p_unvoted_only or not exists (
-             select 1 from everything_votes v where v.note_id = s.note_id and v.voter_id = auth.uid()))
+             select 1 from everything_votes v
+              where v.note_id = s.note_id and v.voter_id = auth.uid() and v.created_at < coalesce(p_voted_before, now())))
        and (p_after_note_id is null or (s.sort_key, s.note_id) > (p_after_key, p_after_note_id))
      order by s.sort_key, s.note_id
      limit least(greatest(p_limit, 1), 100);
@@ -612,11 +623,11 @@ revoke all on function
   everything_note_status(float8),
   everything_feed_candidates(everything_feed_scope),
   everything_feed_stream(everything_feed_scope, text[], text, jsonb, int),
-  everything_note_feed_page(uuid, uuid, text, int, int, int, int, boolean, jsonb, int),
-  everything_note_feed_summary(uuid, uuid, int, int, int, int, boolean, timestamptz[]),
+  everything_note_feed_page(uuid, uuid, text, int, int, int, int, boolean, timestamptz, jsonb, int),
+  everything_note_feed_summary(uuid, uuid, int, int, int, int, boolean, timestamptz, timestamptz[]),
   everything_projects_page(text, numeric, text, uuid, int),
   everything_project_items_page(uuid, timestamptz, uuid, int),
-  everything_curation_page(text, text, boolean, boolean, float8, uuid, int),
+  everything_curation_page(text, text, boolean, boolean, timestamptz, float8, uuid, int),
   everything_curation_summary(text)
 from public, anon, authenticated;
 
@@ -631,14 +642,14 @@ grant execute on function
 to anon, authenticated, service_role;
 
 grant execute on function
-  everything_note_feed_page(uuid, uuid, text, int, int, int, int, boolean, jsonb, int),
-  everything_note_feed_summary(uuid, uuid, int, int, int, int, boolean, timestamptz[]),
+  everything_note_feed_page(uuid, uuid, text, int, int, int, int, boolean, timestamptz, jsonb, int),
+  everything_note_feed_summary(uuid, uuid, int, int, int, int, boolean, timestamptz, timestamptz[]),
   everything_projects_page(text, numeric, text, uuid, int),
   everything_project_items_page(uuid, timestamptz, uuid, int)
 to anon, authenticated, service_role;
 
 grant execute on function
-  everything_curation_page(text, text, boolean, boolean, float8, uuid, int),
+  everything_curation_page(text, text, boolean, boolean, timestamptz, float8, uuid, int),
   everything_curation_summary(text)
 to authenticated, service_role;
 
