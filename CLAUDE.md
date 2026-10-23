@@ -205,7 +205,7 @@ bun run candidate-notes [--days N | --since <ISO>] [--posted <file>] [--json]
 
 It lists every note that was rated helpful, got a Helpful or Somewhat helpful vote, was written by a person, or is new on an important creator in the window (`src/postable-notes/candidates.ts`).
 
-The job also recommends the best notes. Admins curate them at commonnotes.net/admin/best (GOO-555): "AI recommendations" is Claude's ranked list (`everything_note_recommendations`), "Our leaderboard" is the team's own (`everything_best_notes`, migrations 132 and 133). An admin moves a recommendation to the leaderboard at the bottom or at a typed place, removes it with a reason, or comments on any note to explain its place. A move or a removal is recorded on the recommendation's row, never deleted, so the reasons can later be summarised into the team's taste. The job adds recommendations with:
+The job also recommends the best notes. Admins curate them at commonnotes.net/admin/best (GOO-555): "AI recommendations" is Claude's ranked list (`everything_note_recommendations`), "Our leaderboard" is the team's own (`everything_best_notes`, migrations 132 and 133). An admin moves a recommendation to the leaderboard at the bottom or at a typed place, removes it with a reason, or comments on any note to explain its place. A move or a removal is recorded on the recommendation's row, never deleted, so the reasons can later be summarised into the team's taste. The recommendations hold at most 100 open notes: a new one on a full list pushes the last one out, unless an admin commented on it. The job adds recommendations with:
 
 ```bash
 bun run recommend-notes list                       # the open recommendations, best first, with ranks

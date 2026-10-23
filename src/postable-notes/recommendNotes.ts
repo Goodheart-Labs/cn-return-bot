@@ -7,8 +7,9 @@
  *   bun run recommend-notes add <noteId>... [--at N]   # recommend notes at rank N (default: the end), in the given order
  *   bun run recommend-notes move <noteId> --at N       # move a recommendation to rank N
  *
- * Ranks count from 1. A note an admin already moved to the leaderboard or
- * removed is left as it is, because that was their call. It writes the
+ * Ranks count from 1. The list holds at most 100 open recommendations: a note
+ * placed on a full list pushes the last one out. A note an admin already moved
+ * to the leaderboard or removed is left as it is, because that was their call. It writes the
  * production database through SUPABASE_URL and SUPABASE_SERVICE_KEY.
  */
 
@@ -18,6 +19,10 @@ import { positionsBetween, type CuratedNoteRow } from "../everything-core/bestNo
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 
 const NOTE_PREVIEW_LENGTH = 110;
+
+/** The recommendations hold at most this many open notes. A note placed on a
+ *  full list pushes the last one out (Jim, 2026-10-23). */
+const MAX_RECOMMENDATIONS = 100;
 const db = getSupabaseClient();
 
 function readFlag(name: string): string | undefined {
@@ -61,6 +66,19 @@ async function place(requested: string[]) {
   const { error } = await db.from("everything_note_recommendations").upsert(placed);
   if (error) throw error;
   console.log(`Placed ${placed.length} notes at rank ${index + 1}.`);
+  await dropOverflow();
+}
+
+/** Deletes the open recommendations past the cap, from the bottom. A note an
+ *  admin commented on stays, because the comment is part of the team's taste,
+ *  so the list can then hold a few more than the cap. */
+async function dropOverflow() {
+  const open = (await fetchRecommendations()).filter(isOpen);
+  const dropped = open.slice(MAX_RECOMMENDATIONS).filter((row) => !row.comment).map((row) => row.note_id);
+  if (dropped.length === 0) return;
+  const { error } = await db.from("everything_note_recommendations").delete().in("note_id", dropped);
+  if (error) throw error;
+  console.log(`Dropped ${dropped.length} notes from the bottom, so the list stays at ${MAX_RECOMMENDATIONS}: ${dropped.join(" ")}`);
 }
 
 async function list() {
