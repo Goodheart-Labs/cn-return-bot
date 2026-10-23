@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchFunnel, WINDOWS, type FunnelRow, type TimeWindow } from "./lib/queries";
+import { CreatorRanking } from "./components/CreatorRanking";
 import { FunnelTable } from "./components/FunnelTable";
 import { MetricsGraph } from "./components/MetricsGraph";
 import { PipelineSection } from "./components/PipelineSection";
@@ -53,6 +54,10 @@ export function App() {
 
       <Section title="Recently checked posts">
         <RecentPosts />
+      </Section>
+
+      <Section title="Creator ranking">
+        <CreatorRanking />
       </Section>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, fontSize: 13, color: "#6b7280" }}>

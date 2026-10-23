@@ -43,7 +43,7 @@
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
-import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
+import { byWalkOrder, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -70,27 +70,7 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
-/** The lowest score at which a creator is walked on visits alone. A
- *  prioritised creator is walked whatever their visits, because someone asked
- *  for them. */
-const MIN_SCORE_TO_WALK = 1.5;
-
-/** How many of a creator's posts must have been visited before their score
- *  counts. A single post that a few people opened, often one shared link, says
- *  little about how widely the creator is read. */
-const MIN_VISITED_POSTS_TO_WALK = 2;
-
 const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, people: 0 };
-
-/** Prioritised creators first, then the highest score. Among equal scores,
- *  the creator more different people visited goes first. The order ends on
- *  the feed address, so a tie sorts the same way on every run rather than
- *  depending on how the database returned the rows. */
-const byPriorityThenScore = (a: RankedCreator, b: RankedCreator) =>
-  Number(b.prioritized) - Number(a.prioritized) ||
-  b.score.visitors_per_post - a.score.visitors_per_post ||
-  b.score.people - a.score.people ||
-  a.feed_url.localeCompare(b.feed_url);
 
 /** Every creator with priority or attention, most important first. The
  *  auto-enqueue walks this list from the top until a creator has something
@@ -160,6 +140,6 @@ export async function rankCreators(): Promise<RankedCreator[]> {
     });
   }
 
-  ranked.sort(byPriorityThenScore);
+  ranked.sort(byWalkOrder);
   return ranked;
 }
