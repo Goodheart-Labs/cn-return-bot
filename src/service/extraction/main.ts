@@ -15,13 +15,17 @@ import "dotenv/config";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
 import { rateClaims } from "../../everything/pipeline/rateClaims";
 import { readItemText } from "../../everything/worker";
+import { fetchFeedXml } from "../../everything/sources/substack";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import {
   EXTRACT_CLAIMS_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
   ITEM_TEXT_PATH,
   RATE_CLAIMS_PATH,
+  SUBSTACK_FEED_PATH,
   type ExtractClaimsRequest,
+  type FetchUrlRequest,
+  type SubstackFeedXml,
   type ItemTextRequest,
   type ItemTextResponse,
   type ExtractClaimsResponse,
@@ -106,6 +110,14 @@ const itemTextRoute: ServiceRoute<ItemTextRequest, ItemTextResponse> = {
   },
 };
 
+/** Relays a Substack feed to the feed run in GitHub Actions, which Substack
+ *  refuses (GOO-549). */
+const substackFeedRoute: ServiceRoute<FetchUrlRequest, SubstackFeedXml> = {
+  path: SUBSTACK_FEED_PATH,
+  priorityOf: null,
+  handle: (body) => fetchFeedXml(body.url),
+};
+
 // On the services machine, outside pages and images are fetched only by the
 // sandboxed fetcher. A service started without its socket would fetch them in
 // this process, next to our keys, so it refuses to start instead.
@@ -116,5 +128,5 @@ startService({
   port: numberFromEnv("EXTRACTION_PORT", DEFAULT_PORT),
   concurrency: numberFromEnv("EXTRACTION_CONCURRENCY", DEFAULT_CONCURRENCY),
   reservedForReader: RESERVED_FOR_READER,
-  routes: [extractClaimsRoute, rateClaimsRoute, itemTextRoute],
+  routes: [extractClaimsRoute, rateClaimsRoute, itemTextRoute, substackFeedRoute],
 });

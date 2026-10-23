@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import { fetchCreatorRanking, type CreatorRankingRow } from "../lib/queries";
-import { byWalkOrder, LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
+import { byWalkOrder, creatorScore, IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
 
 const CREATORS_PER_STEP = 25;
 const HOURS_SHOWN_AS_HOURS = 48;
+const MINUTES_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
 const LABEL_COLOR = "#6b7280";
 
 const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "#", title: "The creator's place in the walk's order" },
   { label: "Creator", title: "The creator, and until when they hold priority" },
-  { label: "Score", title: `Average number of different people per post, over the creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts` },
+  {
+    label: "Score",
+    title: `Average number of different people per post over the creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts, counting ${IMAGINED_UNREAD_POSTS} imagined posts nobody read and ${IMAGINED_AVERAGE_POSTS} with the average readers. Below it, the plain average.`,
+  },
   {
     label: "Median delay",
-    title: `Median time from the publish day to the end of processing, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published new posts we checked`,
+    title: `Median time from publication to the end of the first check, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published new posts we checked`,
   },
   {
     label: "Vote rate",
@@ -25,20 +29,26 @@ const cell = { padding: "8px 10px", borderBottom: "1px solid #e5e7eb", verticalA
 const numberCell = { ...cell, textAlign: "right", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" } as const;
 const subline = { color: LABEL_COLOR, fontSize: 12, marginTop: 2 } as const;
 
-/** "19 h" under two days, "6.7 days" above. */
+/** "40 min" under an hour, "19 h" under two days, "6.7 days" above. */
 function formatDelay(hours: number): string {
+  if (hours < 1) return `${Math.round(hours * MINUTES_PER_HOUR)} min`;
   if (hours < HOURS_SHOWN_AS_HOURS) return `${Math.round(hours)} h`;
   return `${(hours / HOURS_PER_DAY).toFixed(1)} days`;
 }
 
 const postCount = (n: number) => (n === 1 ? "1 post" : `${n} posts`);
 
+/** The same score the walk ranks on, with the average the database computed. */
+const walkScore = (row: CreatorRankingRow) =>
+  creatorScore({ visitors_per_post: row.visitors_per_post ?? 0, posts: row.score_posts ?? 0 }, row.average_readers_per_post);
+
 /** The walk's comparator needs the score of a prioritised creator nobody
  *  visited as zero, the same value the walk itself uses for them. */
 const walkOrderKey = (row: CreatorRankingRow) => ({
   prioritized: row.priority_until !== null,
   feed_url: row.feed_url,
-  score: { visitors_per_post: row.visitors_per_post ?? 0, people: row.people ?? 0 },
+  walkScore: walkScore(row),
+  score: { people: row.people ?? 0 },
 });
 
 function CreatorCell({ row }: { row: CreatorRankingRow }) {
@@ -60,8 +70,10 @@ function ScoreCell({ row }: { row: CreatorRankingRow }) {
   if (row.visitors_per_post === null || row.score_posts === null) return <td style={numberCell}>—</td>;
   return (
     <td style={numberCell}>
-      {row.visitors_per_post.toFixed(2)}
-      <div style={subline}>{postCount(row.score_posts)}</div>
+      {walkScore(row).toFixed(2)}
+      <div style={subline}>
+        {row.visitors_per_post.toFixed(2)} per post, {postCount(row.score_posts)}
+      </div>
     </td>
   );
 }
@@ -146,9 +158,10 @@ export function CreatorRanking() {
           </button>
         )}
         <span>
-          This is the order the next walk will go through, computed now. The median delay runs from the day a post was published to
-          the end of its check. It counts only new posts, published on or after the day we first saw any post of the creator. So it
-          leaves out the older posts the first walk catches up on, and the most popular posts of all time. The vote rate divides the people who voted in the extension on a post's notes by the people who opened
+          This is the order the next walk will go through, computed now. The median delay runs from the moment a post was published to
+          the end of its first check. A later re-check does not count. It counts only new posts, published after the walk first took a post of the creator. So it leaves
+          out the older posts the first walk catches up on, and the most popular posts of all time. Posts taken before 23 October
+          2026 count only when we could look up their exact publication time. The vote rate divides the people who voted in the extension on a post's notes by the people who opened
           the post after its first note appeared. Votes by admins are left out. The two sides cannot be matched person to person, so
           a rate is a ratio of counts.
         </span>

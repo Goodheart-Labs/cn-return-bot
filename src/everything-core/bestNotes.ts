@@ -1,7 +1,7 @@
 import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 
-/* The admins' curation of the best notes (migrations 132 and 133). Claude
+/* The admins' curation of the best notes (migrations 136 to 138). Claude
  * keeps a ranked list of recommendations, and the admins build their own
  * leaderboard from it. Moving a note to the leaderboard or removing it from
  * the recommendations is recorded on the recommendation's row, so the reasons

@@ -1,10 +1,10 @@
--- Checks for migration 133, run on a fresh 132_best_notes.fixture.sql after
--- migrations 132 and 133. Every value should be true.
+-- Checks for migration 137, run on a fresh 136_best_notes.fixture.sql after
+-- migrations 136 and 137. Every value should be true.
 --
---   $PSQL -f migrations/132_best_notes.fixture.sql
---   $PSQL --single-transaction -f migrations/132_best_notes.sql
---   $PSQL --single-transaction -f migrations/133_best_notes_curation.sql
---   $PSQL -f migrations/133_best_notes_curation.verify.sql
+--   $PSQL -f migrations/136_best_notes.fixture.sql
+--   $PSQL --single-transaction -f migrations/136_best_notes.sql
+--   $PSQL --single-transaction -f migrations/137_best_notes_curation.sql
+--   $PSQL -f migrations/137_best_notes_curation.verify.sql
 create temp table result (name text, ok boolean);
 grant all on result to anon, authenticated;
 

@@ -19,11 +19,13 @@
 import { chmodSync } from "node:fs";
 import { downloadImageInlineData } from "../../pipeline/media/mediaAnalysisGemini";
 import { readPageAnswer } from "../../everything/minisites/readPage";
+import { fetchFeedXmlDirectly } from "../../everything/sources/substack";
 import { fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
 import {
   FETCH_IMAGE_PATH,
   FETCH_PAGE_PATH,
   READ_PAGE_PATH,
+  SUBSTACK_FEED_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
   type FetchUrlRequest,
   type FetchPageRequest,
@@ -46,6 +48,7 @@ const routes: Record<string, (body: any) => Promise<unknown>> = {
   [FETCH_PAGE_PATH]: (body: FetchPageRequest) => fetchWebPageInProcess(body.url),
   [READ_PAGE_PATH]: (body: FetchUrlRequest) => readPageAnswer(body.url),
   [FETCH_IMAGE_PATH]: (body: FetchUrlRequest) => downloadImageInlineData(body.url),
+  [SUBSTACK_FEED_PATH]: (body: FetchUrlRequest) => fetchFeedXmlDirectly(body.url),
 };
 
 export function startFetchService(socketPath: string) {

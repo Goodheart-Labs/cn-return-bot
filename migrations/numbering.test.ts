@@ -9,6 +9,9 @@ import { readdirSync } from "fs";
 const NUMBERS_USED_TWICE_BEFORE_THIS_CHECK = new Set([
   "014", "056", "058", "067", "068", "069", "070", "077", "079",
   "080", "081", "082", "085", "086", "087", "088", "094",
+  // Two branches each took 128 on 2026-10-20 and both reached production
+  // before anyone ran this check. Both are applied, so they keep their names.
+  "128",
 ]);
 
 /** A migration can come with helper files that share its number, such as

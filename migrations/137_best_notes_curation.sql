@@ -1,13 +1,14 @@
--- 133: admins curate the best notes from Claude's recommendations (GOO-555).
+-- 137: admins curate the best notes from Claude's recommendations (GOO-555).
+-- (applied in production on 2026-10-23 as 133, then renumbered because main took the number first.)
 --
--- Migration 132's list becomes Claude's recommendations: everything_best_notes
+-- Migration 136's list becomes Claude's recommendations: everything_best_notes
 -- is renamed to everything_note_recommendations and keeps its rows and order.
 -- A new, empty everything_best_notes is the team's own leaderboard.
 --
 -- Moving a note to the leaderboard or removing it from the recommendations
 -- records the step on the recommendation's row instead of deleting it, so the
 -- reasons stay readable for a later summary of the team's taste. Both lists
--- are admin-only: the public page of migration 132 is gone.
+-- are admin-only: the public page of migration 136 is gone.
 
 alter table everything_best_notes rename to everything_note_recommendations;
 alter index everything_best_notes_pkey rename to everything_note_recommendations_pkey;

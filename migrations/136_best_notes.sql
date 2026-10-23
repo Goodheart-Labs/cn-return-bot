@@ -1,4 +1,5 @@
--- 132: the best notes list on commonnotes.net/notes/best (GOO-526).
+-- 136: the best notes list on commonnotes.net/notes/best (GOO-526).
+-- (applied in production on 2026-10-22 as 130, then renumbered twice because main took the numbers first.)
 --
 -- One row per note on the list. The postable-notes job fills it with the
 -- service key, and admins reorder it or take notes off it on the website.

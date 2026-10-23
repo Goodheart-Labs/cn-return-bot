@@ -5,10 +5,10 @@
  *
  * The walk is one straight line (Jim's design, GOO-225). It goes down the
  * creator ranking from the top: creators holding priority first, then
- * everyone by their score, the average number of different people per post
- * (see creatorRanking.ts). At each creator it asks one
+ * everyone by their score, about the average number of different people per
+ * post (see creatorRanking.ts). At each creator it asks one
  * question: does this creator have a post we have not checked? A post counts
- * if it is among the creator's five newest, or among their all-time top posts
+ * if it is among the creator's three newest, or among their three all-time top posts
  * (GOO-81, see topPosts.ts). A post whose check failed also counts, once it
  * has rested after the failure and while it has attempts left. The first
  * creator with such a post gets it enqueued, and the walk stops there. The
@@ -23,13 +23,13 @@
  * the lowest-ranked creator went ahead of a failed post by the highest
  * (GOO-487).
  *
- * Only a feed's five newest posts are ever candidates. A newly ranked creator
- * therefore backfills at most five posts rather than their whole archive. A
+ * Only a feed's three newest posts are ever candidates. A newly ranked creator
+ * therefore backfills at most three posts rather than their whole archive. A
  * gap deeper than that stays unfilled on purpose. A post counts as checked
  * when it has a whole-page everything_items row in any status, including one
  * that finished with zero notes. A failed post comes back from the database
  * rather than from the feed listing, so it stays a candidate even after newer
- * posts pushed it out of the five newest.
+ * posts pushed it out of the three newest.
  *
  * Where the posts come from: a Substack feed from its RSS feed, which goes
  * through our Cloudflare Worker when we run in CI; a forum author from the
@@ -49,7 +49,7 @@
 import "dotenv/config";
 import { extractYoutubeVideoId, normalizeFeedUrl } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
+import { IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
 import {
   countYoutubeNotifications,
   enqueueItems,
@@ -73,7 +73,7 @@ import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
 import { fetchAuthorPosts } from "./sources/lesswrong";
 import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
 import { quotaRanOutThisRun } from "../pipeline/media/youtubeDataApi";
-import { refreshOneStaleTopList } from "./topPosts";
+import { refreshOneStaleTopList, TOP_POSTS_PER_FEED } from "./topPosts";
 import type { SourceKind } from "./types";
 import { RESUBSCRIBE_AFTER_DAYS, youtubeChannelUploads, type ListingReason } from "./youtubeChannels";
 
@@ -82,8 +82,10 @@ import { RESUBSCRIBE_AFTER_DAYS, youtubeChannelUploads, type ListingReason } fro
  *  backfills at most this many posts. Whole-window backfills used to eat the
  *  daily spend cap; one follow brought in archive posts years old while fresh
  *  posts from other feeds waited. A gap deeper than this window stays
- *  unfilled on purpose. */
-const FEED_CANDIDATE_LIMIT = 5;
+ *  unfilled on purpose. It was 5 until 2026-10-23, when Jim cut the catch-up
+ *  to 3 recent and 3 top posts, so each walk reaches new posts sooner
+ *  (GOO-549). */
+const FEED_CANDIDATE_LIMIT = 3;
 
 /** A creator's feed in the shape the fetchers work with. `url` is the feed's
  *  canonical URL: a Substack publication root, a YouTube channel, or a forum
@@ -108,6 +110,10 @@ interface FeedEntry {
   fullText?: string;
   title?: string;
   publishedAt?: string;
+  /** The exact moment of publication, which the dashboard's delay is measured
+   *  from. A top post and a YouTube listing stored before 2026-10-23 have only
+   *  the day, and leave this out. */
+  publishedTime?: string;
   /** Set when the entry is one of the creator's all-time top posts rather
    *  than a recent one: the platform's popularity count (views or likes).
    *  Such entries rank behind the creator's recent posts. */
@@ -148,6 +154,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
         fullText: htmlToText(p.bodyHtml, true),
         title: p.title,
         publishedAt: p.publishedAt.slice(0, 10),
+        publishedTime: p.publishedAt,
       }));
     return { sourceName, entries, paidPosts };
   }
@@ -161,6 +168,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
       fullText: p.text,
       title: p.title,
       publishedAt: p.postedAt.slice(0, 10),
+      publishedTime: p.postedAt,
     }));
     return { sourceName: authorName, entries, paidPosts: 0 };
   }
@@ -177,6 +185,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
       label: `${v.publishedAt} ${v.title}`,
       title: v.title,
       publishedAt: v.publishedAt,
+      publishedTime: v.publishedTime,
     }));
   return { sourceName: title, entries, paidPosts: 0, listedBecause };
 }
@@ -231,11 +240,13 @@ export async function triageOrphanedItems(tier: "requested" | "feed"): Promise<v
 }
 
 /** How long an errored item rests after its last failure before each repeat
- *  attempt. The first retry comes 3 hours after the first attempt and the
- *  second 12 hours after it. A video tried within an hour of its upload often
- *  has no captions yet. Of 14 such videos that got captions later, 9 had them
- *  by the first retry and 5 only by the second (GOO-422). */
-const RETRY_WAIT_HOURS = [3, 9] as const;
+ *  attempt. The retries come 1, 3 and 12 hours after the first attempt. A
+ *  video tried within an hour of its upload often has no captions yet. Of 14
+ *  such videos that got captions later, 9 had them 3 hours after the first
+ *  attempt and 5 only 12 hours after it (GOO-422). The retry after 1 hour was
+ *  added on 2026-10-23, so a passing failure delays a new post by an hour
+ *  instead of three (GOO-549). */
+const RETRY_WAIT_HOURS = [1, 2, 9] as const;
 
 /** How many repeat attempts an errored item gets before it stays an error a
  *  human has to look at. */
@@ -256,14 +267,17 @@ async function retryRequestedPages(): Promise<void> {
   }
 }
 
-/** Which attempt a retry of the item is, for the log: "2/3" or "3/3". */
+/** Which attempt a retry of the item is, for the log: "2/4", "3/4" or "4/4". */
 const attemptLabel = (item: RetryableErrorItem) => `${item.retries + 2}/${MAX_ITEM_RETRIES + 1}`;
 
 /** Turns a feed's cached top posts into feed entries, leaving out the ones
  *  already among the feed's recent entries so a recent viral post is not a
- *  candidate twice. Exported for the tests. */
+ *  candidate twice. A list cached before the top list was cut from 5 posts to
+ *  3 still holds 5, so the ranks beyond are dropped here. Exported for the
+ *  tests. */
 export function topPostEntries(tops: TopPostRow[], recent: FeedEntry[]): FeedEntry[] {
   return tops
+    .filter((t) => t.rank <= TOP_POSTS_PER_FEED)
     .map((t) => ({
       source: t.source,
       url: t.url,
@@ -435,6 +449,7 @@ async function enqueueEntry(creator: RankedCreator, walk: CreatorWalk, entry: Un
       // listing already carries. Setting it here keeps the queue's own
       // ordering honest from the start.
       published_at: entry.publishedAt,
+      published_time: entry.publishedTime,
       priority: creator.priority,
     },
   ]);
@@ -459,12 +474,12 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // slow walk never reads as a hang.
   const byPriority = ranked.filter((c) => c.prioritized).length;
   console.log(
-    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by the average number of different people per post, over each creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts`,
+    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by score: different people per post over each creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts, counting ${IMAGINED_UNREAD_POSTS} imagined unread posts and ${IMAGINED_AVERAGE_POSTS} average ones`,
   );
   console.log(`  walked from the top until a creator has a post we have not checked, or a failed post due another attempt`);
   console.log(groupOpen("the walk, in rank order"));
   console.log(
-    fixedRow(["rank", "creator", "why", "per post", "posts", "people", "listing", "unchecked", "retries"], CREATOR_COLUMNS, CREATOR_ALIGN),
+    fixedRow(["rank", "creator", "why", "score", "posts", "people", "listing", "unchecked", "retries"], CREATOR_COLUMNS, CREATOR_ALIGN),
   );
 
   const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<CreatorWalk | null> => {
@@ -492,7 +507,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
           String(feedIndex + 1),
           feed.project,
           creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "attention",
-          creator.score.visitors_per_post.toFixed(2),
+          creator.walkScore.toFixed(2),
           String(creator.score.posts),
           String(creator.score.people),
           listingSource(feed, listing),

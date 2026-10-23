@@ -39,9 +39,6 @@ jobs:
       XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       # Serper API key, the pipeline's web search backend
       SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
-      # Cloudflare Worker relaying Substack RSS fetches (Substack 403s runner IPs)
-      SUBSTACK_PROXY_URL: ${{ secrets.SUBSTACK_PROXY_URL }}
-      SUBSTACK_PROXY_KEY: ${{ secrets.SUBSTACK_PROXY_KEY }}
       # Residential proxy for yt-dlp caption downloads (YouTube bot-checks runner IPs)
       YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
       # YouTube Data API key: channel listings, publish dates, view counts and

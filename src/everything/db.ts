@@ -214,6 +214,7 @@ export interface EnqueueRow {
   title?: string; // We know this when the body is supplied. A live URL gets its title from the worker's fetch.
   full_text?: string; // The body we already have. A live URL carries none here.
   published_at?: string; // We know this at enqueue for an RSS-fed item. Otherwise the worker sets it.
+  published_time?: string; // The exact moment of publication, when the walk's listing gives one.
   priority?: number; // A QUEUE_PRIORITY tier. Left out it defaults to the backlog tier.
   checked_scope?: "page" | "paragraph"; // Left out it defaults to a whole-page check.
 }
@@ -222,7 +223,7 @@ export interface EnqueueRow {
  *  already have is ignored. Every row is padded to the same set of keys, because
  *  PostgREST rejects a bulk insert whose rows have differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
-  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, priority: QUEUE_PRIORITY.backlog, checked_scope: "page", ...r }));
+  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, published_time: null, priority: QUEUE_PRIORITY.backlog, checked_scope: "page", ...r }));
   const inserted = throwOnError(
     await getSupabaseClient()
       .from("everything_items")
@@ -852,6 +853,9 @@ export interface StoredUpload {
   title: string;
   /** The publish day, YYYY-MM-DD. */
   publishedAt: string;
+  /** The exact moment of publication. A listing stored before 2026-10-23
+   *  has only the day. */
+  publishedTime?: string;
   /** A premiere or stream that has not started, which cannot be checked yet. */
   upcoming: boolean;
 }
@@ -954,15 +958,15 @@ function inWorkerOrder(a: { priority: number; published_at: string | null; creat
   return a.created_at.localeCompare(b.created_at);
 }
 
-/** Every visited creator's score, counted in the database (see
- *  everything_creator_visit_scores, migrations 119 and 123). `lastPosts` is how many of
- *  a creator's most recently visited posts the average covers. */
-export async function fetchCreatorVisitScores(lastPosts: number): Promise<CreatorVisitScore[]> {
+/** Every visited creator's visit numbers over their LAST_POSTS_PER_CREATOR
+ *  most recently visited posts. They are counted once a day and stored in the
+ *  materialized view everything_creator_visits (migration 135), because
+ *  counting them reads every visit row ever written. */
+export async function fetchCreatorVisitScores(): Promise<CreatorVisitScore[]> {
   // One row per creator anyone visited, which passed 1,000 rows in September
-  // 2026. PostgREST can order and filter a function's rows, and feed_url is
-  // unique among them, so the rows page by it like a table.
+  // 2026. feed_url is unique in the view, so the rows page by it.
   return fetchAllRows<CreatorVisitScore>(
-    () => getSupabaseClient().rpc("everything_creator_visit_scores", { last_posts: lastPosts }),
+    () => getSupabaseClient().from("everything_creator_visits").select("feed_url, visitors_per_post, posts, people"),
     "feed_url",
     { label: "creatorVisitScores" },
   );
