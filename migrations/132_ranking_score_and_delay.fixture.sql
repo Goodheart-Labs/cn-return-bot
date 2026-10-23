@@ -1,7 +1,7 @@
 -- A miniature of production for testing migration 132 (GOO-549). It has only
 -- what everything_creator_ranking reads, and stand-ins for the two functions
 -- it calls. Run it, then the migration, then the verify file:
---   sudo docker run --rm -d --name pg132 -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:15
+--   sudo docker run --rm -d --name pg132 -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:17
 --   for f in 132_ranking_score_and_delay.fixture.sql 132_ranking_score_and_delay.sql 132_ranking_score_and_delay.verify.sql; do
 --     PGPASSWORD=test psql -h localhost -p 55432 -U postgres -v ON_ERROR_STOP=1 --single-transaction -f migrations/$f; done
 

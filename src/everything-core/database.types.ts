@@ -2391,6 +2391,15 @@ export type Database = {
       }
     }
     Views: {
+      everything_creator_visits: {
+        Row: {
+          feed_url: string | null
+          people: number | null
+          posts: number | null
+          visitors_per_post: number | null
+        }
+        Relationships: []
+      }
       everything_follow_requests: {
         Row: {
           created_at: string | null

@@ -1,6 +1,6 @@
 -- A miniature of production for testing migration 133 (GOO-549): migration
 -- 132's fixture, migration 132 itself, and the tables the backfill reads.
---   sudo docker run --rm -d --name pg133 -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:15
+--   sudo docker run --rm -d --name pg133 -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:17
 --   for f in 132_ranking_score_and_delay.fixture.sql 132_ranking_score_and_delay.sql 133_first_checked_at.fixture.sql 133_first_checked_at.sql 133_first_checked_at.verify.sql; do
 --     PGPASSWORD=test psql -h localhost -p 55432 -U postgres -v ON_ERROR_STOP=1 --single-transaction -f migrations/$f; done
 

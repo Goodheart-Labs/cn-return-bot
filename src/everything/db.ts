@@ -958,15 +958,15 @@ function inWorkerOrder(a: { priority: number; published_at: string | null; creat
   return a.created_at.localeCompare(b.created_at);
 }
 
-/** Every visited creator's score, counted in the database (see
- *  everything_creator_visit_scores, migrations 119 and 123). `lastPosts` is how many of
- *  a creator's most recently visited posts the average covers. */
-export async function fetchCreatorVisitScores(lastPosts: number): Promise<CreatorVisitScore[]> {
+/** Every visited creator's visit numbers over their LAST_POSTS_PER_CREATOR
+ *  most recently visited posts. They are counted once a day and stored in the
+ *  materialized view everything_creator_visits (migration 135), because
+ *  counting them reads every visit row ever written. */
+export async function fetchCreatorVisitScores(): Promise<CreatorVisitScore[]> {
   // One row per creator anyone visited, which passed 1,000 rows in September
-  // 2026. PostgREST can order and filter a function's rows, and feed_url is
-  // unique among them, so the rows page by it like a table.
+  // 2026. feed_url is unique in the view, so the rows page by it.
   return fetchAllRows<CreatorVisitScore>(
-    () => getSupabaseClient().rpc("everything_creator_visit_scores", { last_posts: lastPosts }),
+    () => getSupabaseClient().from("everything_creator_visits").select("feed_url, visitors_per_post, posts, people"),
     "feed_url",
     { label: "creatorVisitScores" },
   );

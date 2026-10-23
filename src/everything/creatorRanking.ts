@@ -56,7 +56,6 @@ import {
   averageReadersPerPost,
   byWalkOrder,
   creatorScore,
-  LAST_POSTS_PER_CREATOR,
   MIN_SCORE_TO_WALK,
   MIN_VISITED_POSTS_TO_WALK,
 } from "../everything-core/readers";
@@ -94,7 +93,7 @@ const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, peop
  *  auto-enqueue walks this list from the top until a creator has something
  *  unchecked. */
 export async function rankCreators(): Promise<RankedCreator[]> {
-  const [projects, scores] = await Promise.all([fetchCreatorProjects(), fetchCreatorVisitScores(LAST_POSTS_PER_CREATOR)]);
+  const [projects, scores] = await Promise.all([fetchCreatorProjects(), fetchCreatorVisitScores()]);
 
   // The database already groups creators case-insensitively, so there is one
   // row per creator here. The key is normalized again because the same creator

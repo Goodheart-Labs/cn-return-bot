@@ -6,9 +6,11 @@ import { normalizeFeedUrl } from "./pageUrls";
  *  window, so a creator who posts rarely keeps their score until newer visits
  *  replace it.
  *
- *  It lives here because two places have to agree on it: the pipeline walks
- *  creators on the score, and the analytics dashboard shows it. Both pass it
- *  to the database rather than the database holding a copy. */
+ *  The walk and the dashboard read the visit numbers from the materialized
+ *  view everything_creator_visits, which has 10 written into its query
+ *  (migration 135). A change here needs a migration that recreates the view.
+ *  The dashboard still passes this number to the database for the delay and
+ *  the vote rate, and to everything_recent_posts. */
 export const LAST_POSTS_PER_CREATOR = 10;
 
 /** The creator score adds imagined posts to the creator's real ones, so a
