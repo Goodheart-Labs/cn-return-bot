@@ -1,4 +1,4 @@
--- Checks for migration 130, run after it against 130_best_notes.fixture.sql
+-- Checks for migration 132, run after it against 132_best_notes.fixture.sql
 -- (the commands are at the top of the fixture). Every value should be true.
 create temp table result (name text, ok boolean);
 grant all on result to anon, authenticated;

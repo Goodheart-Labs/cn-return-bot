@@ -40,7 +40,7 @@ function markShown() {
 
 /** Every page counts towards the nudge except the homepage, which pitches the
  *  extension itself. A page added later counts without anyone adding it here. */
-const countsTowardsNudge = (route: Route) => route.view !== "home";
+const countsTowardsNudge = (route: Route) => route.view !== "home" && route.view !== "noteReview";
 
 const anotherDialogOpen = () => document.querySelector("dialog[open]") !== null;
 

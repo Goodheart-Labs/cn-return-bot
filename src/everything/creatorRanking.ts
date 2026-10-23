@@ -43,7 +43,7 @@
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
-import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
+import { byWalkOrder, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -70,22 +70,7 @@ export interface RankedCreator {
 const isOpen = (priorityUntil: string | null): boolean =>
   priorityUntil != null && Date.parse(priorityUntil) > Date.now();
 
-/** The lowest score at which a creator is walked on visits alone. A
- *  prioritised creator is walked whatever their visits, because someone asked
- *  for them. */
-const MIN_SCORE_TO_WALK = 1.5;
-
 const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, people: 0 };
-
-/** Prioritised creators first, then the highest score. Among equal scores,
- *  the creator more different people visited goes first. The order ends on
- *  the feed address, so a tie sorts the same way on every run rather than
- *  depending on how the database returned the rows. */
-const byPriorityThenScore = (a: RankedCreator, b: RankedCreator) =>
-  Number(b.prioritized) - Number(a.prioritized) ||
-  b.score.visitors_per_post - a.score.visitors_per_post ||
-  b.score.people - a.score.people ||
-  a.feed_url.localeCompare(b.feed_url);
 
 /** Every creator with priority or attention, most important first. The
  *  auto-enqueue walks this list from the top until a creator has something
@@ -130,7 +115,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK) continue;
+    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
@@ -155,6 +140,6 @@ export async function rankCreators(): Promise<RankedCreator[]> {
     });
   }
 
-  ranked.sort(byPriorityThenScore);
+  ranked.sort(byWalkOrder);
   return ranked;
 }

@@ -1,7 +1,7 @@
 import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 
-/* The best notes list on /notes/best (migration 130). Each row puts one note
+/* The best notes list on /notes/best (migration 132). Each row puts one note
  * on the list. The list is ordered by `position`, smallest first. A move
  * writes only the moved note's row: its new position lies between the
  * positions of its new neighbours. */
@@ -57,7 +57,7 @@ export async function fetchBestNotes(): Promise<BestNoteRow[]> {
   return rows.sort((a, b) => a.position - b.position);
 }
 
-/** Moves a note to a new position. Only admins may (migration 130). */
+/** Moves a note to a new position. Only admins may (migration 132). */
 export async function moveBestNote(noteId: string, position: number): Promise<void> {
   const { data, error } = await supabase.from("everything_best_notes").update({ position }).eq("note_id", noteId).select("note_id");
   if (error) throw new Error(`could not move the note: ${error.message}`);

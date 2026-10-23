@@ -1,9 +1,10 @@
 /* The Claude note writer's data (GOO-507). A permanent Claude Code session
  * writes Common Notes with subagents instead of the pipeline. Its drafts, its
  * settings and the log of every step live in prod, in the tables of migration
- * 129, so the note review dashboards of Jim and Nathan and the Claude session
- * all see the same state. Everything here runs with the service key, on the
- * devbox or in a reviewer's local dashboard server, never in a browser. */
+ * 129, so the admins' review page on commonnotes.net and the Claude session
+ * see the same state. Everything here runs with the service key on the
+ * devbox, never in a browser. Posting, rewriting and removing a note happen in
+ * the SQL functions of migration 130, which the review page calls too. */
 
 import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
@@ -12,12 +13,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { config as loadDotenv } from "dotenv";
 import { ENV_DIR } from "../cnEnv";
 import type { Database, Json } from "../everything-core/database.types";
+import { fetchAllRows } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 
 export type Actor = "jim" | "nathan" | "claude";
-export type PostedAs = "ai" | "jim" | "nathan";
 export type Writer = "pipeline" | "claude";
 
 export interface DraftSource {
@@ -41,15 +42,8 @@ export type DraftRow = Database["public"]["Tables"]["everything_claude_drafts"][
 export type EventRow = Database["public"]["Tables"]["everything_claude_events"]["Row"];
 export type Settings = { writer: Writer; approvalRequired: boolean; updatedAt: string; updatedBy: string };
 
-/** The account ids notes are posted under when a reviewer picks a person. An
- *  AI note has no account, like the pipeline's notes. */
-const ACCOUNTS: Record<Exclude<PostedAs, "ai">, { id: string; name: string }> = {
-  jim: { id: "0e97e940-652f-466b-8693-c142257e083d", name: "JimMaar1" },
-  nathan: { id: "963d0c31-33e5-47da-8aa1-386bc3289efb", name: "NathanpmYoung" },
-};
-/** A claim keeps only a preview of its passage in `claim`, as on the website
- *  (postNote.ts). The full passage is the claim's context_quote. */
-const CLAIM_PREVIEW_CHARS = 300;
+/** NathanpmYoung's account, whose notes on a post make Claude skip the post. */
+const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
 /** Marks the claims the Claude note writer created, so they can be told apart
  *  from the pipeline's ratings and from readers' own notes ("user"). */
 const CLAUDE_JUDGEMENT = "claude_code";
@@ -92,23 +86,12 @@ export async function readSettings(): Promise<Settings> {
 }
 
 export async function changeSettings(actor: Actor, change: { writer?: Writer; approvalRequired?: boolean }) {
-  const update = {
-    ...(change.writer && { writer: change.writer }),
-    ...(change.approvalRequired !== undefined && { approval_required: change.approvalRequired }),
-    updated_at: new Date().toISOString(),
-    updated_by: actor,
-  };
-  check(await db().from("everything_claude_settings").update(update).eq("id", true));
-  await logEvent({ actor, type: "settings_changed", data: change });
+  check(await db().rpc("everything_claude_change_settings", { p_writer: change.writer, p_approval_required: change.approvalRequired, p_actor: actor }));
 }
 
 // ---------------------------------------------------------------------------
-// Posting and removing notes on commonnotes.net
+// Where a passage sits in its post
 // ---------------------------------------------------------------------------
-
-async function itemUrl(itemId: string): Promise<string> {
-  return unwrap(await db().from("everything_items").select("url").eq("id", itemId).single()).url;
-}
 
 /** Where `take` writes a post's text, and a video's caption cues, for the
  *  note-finding agents. */
@@ -121,7 +104,8 @@ export function postDir(url: string): string {
 export const isVideo = (url: string) => extractYoutubeVideoId(url) !== null;
 
 /** Where a claim sits in a video: its seconds and a link that starts the
- *  video there. The extension pins a video's notes on the player by these. */
+ *  video there. The extension pins a video's notes on the player by these.
+ *  A draft stores it, and the database copies it onto the note's claim. */
 interface VideoTiming {
   start_seconds: number | null;
   end_seconds: number | null;
@@ -129,8 +113,7 @@ interface VideoTiming {
 }
 
 /** Finds the passage in the video's caption cues, which `take` saved next to
- *  the post's text. Null when the item is no video or no cues are saved, for
- *  example on a reviewer's own machine. */
+ *  the post's text. Null when the item is no video or no cues are saved. */
 function videoTiming(url: string, passage: string): VideoTiming | null {
   const videoId = extractYoutubeVideoId(url);
   const cuesPath = path.join(postDir(url), "cues.json");
@@ -141,59 +124,80 @@ function videoTiming(url: string, passage: string): VideoTiming | null {
   return { start_seconds: Math.floor(start), end_seconds: end === undefined ? null : Math.ceil(end), context_url: buildVideoLink(videoId, start) };
 }
 
-/** Creates a claim on the draft's passage and posts the note on it, with one
- *  source row per supporting quote. Returns the new note's id. */
-async function postNote(draft: DraftRow, postedAs: PostedAs, timing: VideoTiming | null): Promise<string> {
-  const account = postedAs === "ai" ? null : ACCOUNTS[postedAs];
-  const url = await itemUrl(draft.item_id);
-  const claim = unwrap(
-    await db()
-      .from("everything_claims")
-      .insert({
-        item_id: draft.item_id,
-        claim: draft.passage.slice(0, CLAIM_PREVIEW_CHARS),
-        judgement: CLAUDE_JUDGEMENT,
-        context_quote: draft.passage,
-        context_url: url,
-        ...(timing ?? videoTiming(url, draft.passage)),
-        status: "note",
-        created_by: account?.id ?? null,
-      })
-      .select("id")
-      .single(),
-  );
-  const note = unwrap(
-    await db()
-      .from("everything_notes")
-      .insert({ claim_id: claim.id, note: draft.note, author_id: account?.id ?? null, author_name: account?.name ?? null })
-      .select("id")
-      .single(),
-  );
-  const sources = (draft.sources as unknown as DraftSource[]).map((s, i) => ({ note_id: note.id, url: s.url, quote: s.quote, explanation: s.explanation, sort_order: i }));
-  if (sources.length > 0) check(await db().from("everything_note_sources").insert(sources));
-  return note.id;
+/** A paragraph longer than this, such as a whole video transcript, is cut to a
+ *  window of CONTEXT_WINDOW_CHARS around the passage. */
+const MAX_PARAGRAPH_CHARS = 3_000;
+const CONTEXT_WINDOW_CHARS = 1_500;
+/** An agent's passage sometimes leaves out a footnote marker inside it, so a
+ *  paragraph that holds only the passage's opening words counts too. */
+const PASSAGE_OPENING_CHARS = 40;
+
+/** The paragraph of the post that contains the passage, which the review page
+ *  shows beside the note. */
+export function contextParagraph(postText: string | null, passage: string): string | null {
+  if (!postText) return null;
+  const paragraphs = postText.split(/\n\s*\n/);
+  const opening = passage.slice(0, PASSAGE_OPENING_CHARS);
+  const paragraph = paragraphs.find((p) => p.includes(passage)) ?? paragraphs.find((p) => p.includes(opening));
+  if (!paragraph || paragraph.length <= MAX_PARAGRAPH_CHARS) return paragraph ?? null;
+  const passageStart = Math.max(0, paragraph.indexOf(opening));
+  const start = paragraph.lastIndexOf(" ", Math.max(0, passageStart - CONTEXT_WINDOW_CHARS / 2)) + 1;
+  const end = paragraph.indexOf(" ", passageStart + passage.length + CONTEXT_WINDOW_CHARS / 2);
+  return `${start > 0 ? "… " : ""}${paragraph.slice(start, end < 0 ? undefined : end)}${end < 0 ? "" : " …"}`;
 }
 
-async function claimTiming(noteId: string): Promise<VideoTiming | null> {
-  const note = unwrap(await db().from("everything_notes").select("claim:everything_claims(start_seconds, end_seconds, context_url)").eq("id", noteId).single());
-  const claim = note.claim as unknown as VideoTiming | null;
-  return claim?.start_seconds === null || !claim ? null : claim;
-}
-
-/** Removes a note the Claude note writer posted, together with the claim it
- *  created for it. Votes, sources and comments go with the note. */
-async function removeClaudeNote(noteId: string) {
-  const { claim_id } = unwrap(await db().from("everything_notes").select("claim_id").eq("id", noteId).single());
-  check(await db().from("everything_claims").delete().eq("id", claim_id).eq("judgement", CLAUDE_JUDGEMENT));
+/** Where a passage sits in its post: its paragraph and, in a video, its time. */
+async function placeOfPassage(itemId: string, passage: string) {
+  const item = unwrap(await db().from("everything_items").select("url, full_text").eq("id", itemId).single());
+  return { context_paragraph: contextParagraph(item.full_text, passage), video_timing: videoTiming(item.url, passage) as Json | null };
 }
 
 // ---------------------------------------------------------------------------
 // Drafts
 // ---------------------------------------------------------------------------
 
+/** Two passages count as the same place when one contains the other or they
+ *  share this many characters in a row. */
+const SHARED_PASSAGE_CHARS = 40;
+
+const normalizedPassage = (text: string) => text.toLowerCase().replace(/\s+/g, " ").trim();
+
+export function passagesOverlap(a: string, b: string): boolean {
+  const [x, y] = [normalizedPassage(a), normalizedPassage(b)];
+  if (!x || !y) return false;
+  if (x.includes(y) || y.includes(x)) return true;
+  const [shorter, longer] = x.length <= y.length ? [x, y] : [y, x];
+  for (let i = 0; i + SHARED_PASSAGE_CHARS <= shorter.length; i += SHARED_PASSAGE_CHARS / 2) {
+    if (longer.includes(shorter.slice(i, i + SHARED_PASSAGE_CHARS))) return true;
+  }
+  return false;
+}
+
+/** A note a person wrote on the same passage of this post, if there is one.
+ *  Claude never posts a second note where Jim, Nathan or a reader already
+ *  wrote one. */
+async function personNoteOnPassage(itemId: string, passage: string): Promise<{ note: string; author_name: string | null } | null> {
+  const claims = unwrap(
+    await db().from("everything_claims").select("context_quote, claim, everything_notes(note, author_id, author_name)").eq("item_id", itemId),
+  );
+  for (const c of claims) {
+    const personNote = (c.everything_notes ?? []).find((n) => n.author_id !== null);
+    if (personNote && passagesOverlap(c.context_quote ?? c.claim, passage)) return personNote;
+  }
+  return null;
+}
+
 /** Saves what a note-finding agent found on one passage. A note is posted as
  *  an AI note at once, unless notes currently wait for approval. */
 export async function addDraft(draft: NewDraft): Promise<DraftRow> {
+  const covering = draft.outcome === "note" ? await personNoteOnPassage(draft.itemId, draft.passage) : null;
+  if (covering) {
+    draft = {
+      ...draft,
+      outcome: "no_note_needed",
+      reasoning: `Not posted, because ${covering.author_name ?? "a person"} already wrote a note on this passage: "${covering.note}" ${draft.reasoning}`,
+    };
+  }
   const { approvalRequired } = await readSettings();
   const status = draft.outcome !== "note" ? "not_a_note" : approvalRequired ? "awaiting_approval" : "posted";
   const row = unwrap(
@@ -208,147 +212,67 @@ export async function addDraft(draft: NewDraft): Promise<DraftRow> {
         note: draft.note,
         reasoning: draft.reasoning,
         sources: draft.sources as unknown as Json,
-        status,
+        // A note that goes up at once is saved as waiting, and posting it
+        // marks it posted. If posting fails, the note waits for approval
+        // instead of looking posted.
+        status: status === "posted" ? "awaiting_approval" : status,
+        ...(await placeOfPassage(draft.itemId, draft.passage)),
       })
       .select("*")
       .single(),
   );
   await logEvent({ actor: "claude", type: "draft_written", draftId: row.id, itemId: row.item_id, data: { outcome: row.outcome, note: row.note } });
-  return status === "posted" ? publish(row, "ai", "claude") : row;
+  if (status !== "posted") return row;
+  await publishAsAi(row.id, "claude");
+  return readDraft(row.id);
 }
 
-/** Posts a draft's note on commonnotes.net and records it as posted. */
-export async function publish(draft: DraftRow, postedAs: PostedAs, actor: Actor, timing: VideoTiming | null = null): Promise<DraftRow> {
-  const noteId = await postNote(draft, postedAs, timing);
-  const row = unwrap(
-    await db()
-      .from("everything_claude_drafts")
-      .update({ status: "posted", note_id: noteId, posted_as: postedAs, updated_at: new Date().toISOString() })
-      .eq("id", draft.id)
-      .select("*")
-      .single(),
-  );
-  await logEvent({ actor, type: "posted", draftId: draft.id, itemId: draft.item_id, noteId, data: { posted_as: postedAs, note: draft.note } });
-  return row;
+/** Posts a draft's note on commonnotes.net as an AI note. */
+export async function publishAsAi(draftId: string, actor: Actor) {
+  check(await db().rpc("everything_claude_publish", { p_draft: draftId, p_posted_as: "ai", p_actor: actor }));
 }
 
 export async function readDraft(draftId: string): Promise<DraftRow> {
   return unwrap(await db().from("everything_claude_drafts").select("*").eq("id", draftId).single());
 }
 
-/** Approving a note counts as the reviewer's Helpful vote, the same vote a
- *  note's author gets automatically on the website. */
-const HELPFUL = 1;
-async function voteHelpful(noteId: string, by: Exclude<Actor, "claude">) {
-  check(await db().from("everything_votes").upsert({ note_id: noteId, voter_id: ACCOUNTS[by].id, vote: HELPFUL }, { onConflict: "note_id,voter_id" }));
-}
-
-/** Jim or Nathan keeps a note. A note that waited for approval goes up now. */
-export async function approve(draftId: string, by: Exclude<Actor, "claude">): Promise<DraftRow> {
-  let draft = await readDraft(draftId);
-  if (draft.outcome !== "note") throw new Error("Only a note can be approved");
-  if (draft.status === "awaiting_approval") draft = await publish(draft, "ai", by);
-  const row = unwrap(
-    await db()
-      .from("everything_claude_drafts")
-      .update({ reviewed_by: by, reviewed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", draftId)
-      .select("*")
-      .single(),
+/** Claude replaces a draft's note text after a reviewer's message. A posted
+ *  note is replaced on the site under the same account. A new passage gets
+ *  its paragraph and video time worked out again. */
+export async function rewrite(draftId: string, change: { note: string; sources?: DraftSource[]; passage?: string; reason: string }): Promise<DraftRow> {
+  const place = change.passage ? await placeOfPassage((await readDraft(draftId)).item_id, change.passage) : null;
+  check(
+    await db().rpc("everything_claude_rewrite", {
+      p_draft: draftId,
+      p_note: change.note,
+      p_reason: change.reason,
+      p_sources: change.sources as unknown as Json,
+      p_passage: change.passage,
+      p_context_paragraph: place?.context_paragraph ?? undefined,
+      p_video_timing: place?.video_timing ?? undefined,
+      p_actor: "claude",
+    }),
   );
-  if (row.note_id) await voteHelpful(row.note_id, by);
-  await logEvent({ actor: by, type: "approved", draftId, itemId: draft.item_id, noteId: draft.note_id ?? undefined });
-  return row;
-}
-
-/** Jim or Nathan turns a note down. A posted note is deleted from the site. */
-export async function reject(draftId: string, by: Exclude<Actor, "claude">, reason: string): Promise<DraftRow> {
-  const draft = await readDraft(draftId);
-  if (draft.note_id) await removeClaudeNote(draft.note_id);
-  const row = unwrap(
-    await db()
-      .from("everything_claude_drafts")
-      .update({ status: "rejected", note_id: null, reviewed_by: by, reviewed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", draftId)
-      .select("*")
-      .single(),
-  );
-  await logEvent({ actor: by, type: "rejected", draftId, itemId: draft.item_id, noteId: draft.note_id ?? undefined, data: { reason, note: draft.note } });
-  return row;
-}
-
-/** Replaces a draft's note text. A posted note is replaced on the site: the new
- *  text goes up under `postedAs` and the old note is deleted. */
-export async function rewrite(
-  draftId: string,
-  change: { actor: Actor; note: string; sources?: DraftSource[]; passage?: string; postedAs?: PostedAs; reason: string },
-): Promise<DraftRow> {
-  const draft = await readDraft(draftId);
-  const updated = unwrap(
-    await db()
-      .from("everything_claude_drafts")
-      .update({
-        note: change.note,
-        outcome: "note",
-        ...(change.sources && { sources: change.sources as unknown as Json }),
-        ...(change.passage && { passage: change.passage }),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", draftId)
-      .select("*")
-      .single(),
-  );
-  await logEvent({
-    actor: change.actor,
-    type: "rewritten",
-    draftId,
-    itemId: draft.item_id,
-    data: { reason: change.reason, previous_note: draft.note, previous_sources: draft.sources, previous_passage: draft.passage, note: change.note },
-  });
-  if (draft.status !== "posted" || !draft.note_id) return updated;
-  // A rewrite keeps the old claim's place in a video, so it also works on a
-  // reviewer's machine, which has no caption cues. A new passage is placed anew.
-  const timing = change.passage ? null : await claimTiming(draft.note_id);
-  await removeClaudeNote(draft.note_id);
-  return publish(updated, change.postedAs ?? (draft.posted_as as PostedAs), change.actor, timing);
+  return readDraft(draftId);
 }
 
 /** Claude takes back a note it no longer stands behind. */
 export async function withdraw(draftId: string, reason: string): Promise<DraftRow> {
-  const draft = await readDraft(draftId);
-  if (draft.note_id) await removeClaudeNote(draft.note_id);
-  const row = unwrap(
-    await db()
-      .from("everything_claude_drafts")
-      .update({ outcome: "withdrawn", status: "not_a_note", note_id: null, updated_at: new Date().toISOString() })
-      .eq("id", draftId)
-      .select("*")
-      .single(),
-  );
-  await logEvent({ actor: "claude", type: "withdrawn", draftId, itemId: draft.item_id, noteId: draft.note_id ?? undefined, data: { reason, note: draft.note } });
-  return row;
+  check(await db().rpc("everything_claude_withdraw", { p_draft: draftId, p_reason: reason, p_actor: "claude" }));
+  return readDraft(draftId);
 }
 
-/** A chat message from a reviewer, or Claude's answer to one. */
-export async function addMessage(draftId: string, actor: Actor, text: string) {
-  const draft = await readDraft(draftId);
-  await logEvent({ actor, type: actor === "claude" ? "answer" : "message", draftId, itemId: draft.item_id, data: { text } });
-}
-
-export async function listDrafts(): Promise<DraftRow[]> {
-  return unwrap(await db().from("everything_claude_drafts").select("*").order("created_at"));
-}
-
-/** Every logged step that belongs to one of the given drafts, oldest first. */
-export async function eventsOfDrafts(draftIds: string[]): Promise<EventRow[]> {
-  if (draftIds.length === 0) return [];
-  return unwrap(await db().from("everything_claude_events").select("*").in("draft_id", draftIds).order("id"));
+/** Claude's answer to a reviewer's chat message. */
+export async function answerMessage(draftId: string, text: string) {
+  check(await db().rpc("everything_claude_message", { p_draft: draftId, p_text: text, p_actor: "claude" }));
 }
 
 /** Reviewer messages Claude has not answered yet, oldest first. A message is
  *  answered once an answer to the same draft was logged after it. */
 export async function unansweredMessages(): Promise<EventRow[]> {
-  const rows = unwrap(await db().from("everything_claude_events").select("*").in("type", ["message", "answer"]).order("id"));
+  const rows = (
+    await fetchAllRows<EventRow>(() => db().from("everything_claude_events").select("*").in("type", ["message", "answer"]), "id", { label: "claude chat events" })
+  ).sort((a, b) => a.id - b.id);
   const lastAnswer = new Map<string, number>();
   for (const r of rows) if (r.type === "answer" && r.draft_id) lastAnswer.set(r.draft_id, r.id);
   return rows.filter((r) => r.type === "message" && r.draft_id && r.id > (lastAnswer.get(r.draft_id) ?? 0));
@@ -371,8 +295,12 @@ export interface QueueItem {
  *  An item Claude is working on stays queued until it is finished, so the
  *  take is what tells it apart. */
 export async function waitingItems(): Promise<QueueItem[]> {
-  const handedBack = new Set(unwrap(await db().from("everything_claude_handbacks").select("item_id")).map((h) => h.item_id));
-  const taken = new Set(unwrap(await db().from("everything_claude_events").select("item_id").eq("type", "item_taken")).map((e) => e.item_id));
+  const [handbacks, takes] = await Promise.all([
+    fetchAllRows<{ item_id: string }>(() => db().from("everything_claude_handbacks").select("item_id"), "item_id", { label: "claude handbacks" }),
+    fetchAllRows<{ id: number; item_id: string }>(() => db().from("everything_claude_events").select("id, item_id").eq("type", "item_taken"), "id", { label: "claude takes" }),
+  ]);
+  const handedBack = new Set(handbacks.map((h) => h.item_id));
+  const taken = new Set(takes.map((e) => e.item_id));
   const queued = unwrap(
     await db().from("everything_items").select("id, url, title, priority, status, full_text").eq("status", "queued").order("priority", { ascending: false }).order("created_at"),
   );
@@ -385,24 +313,11 @@ export async function readItem(itemId: string): Promise<QueueItem & { project: {
   ) as never;
 }
 
-/** How many item ids go into one `in` filter, so the request URL stays short. */
-const IDS_PER_REQUEST = 100;
-const itemTextCache = new Map<string, { url: string; title: string | null; creator: string; fullText: string | null }>();
-
-/** The address, title, creator and text of each item. A post's text does not
- *  change once it is checked, so the dashboard's server reads each item once. */
-export async function readItemTexts(itemIds: string[]) {
-  const missing = itemIds.filter((id) => !itemTextCache.has(id));
-  for (let i = 0; i < missing.length; i += IDS_PER_REQUEST) {
-    const rows = unwrap(
-      await db().from("everything_items").select("id, url, title, full_text, project:everything_projects(name)").in("id", missing.slice(i, i + IDS_PER_REQUEST)),
-    );
-    for (const r of rows) {
-      const project = r.project as unknown as { name: string } | null;
-      itemTextCache.set(r.id, { url: r.url, title: r.title, creator: project?.name ?? "", fullText: r.full_text });
-    }
-  }
-  return new Map(itemIds.map((id) => [id, itemTextCache.get(id)!]));
+/** Whether Nathan already wrote notes on this post. Jim asked that such posts
+ *  be skipped as a whole: Nathan fact-checked them by hand. */
+export async function nathanNotedItem(itemId: string): Promise<boolean> {
+  const claims = unwrap(await db().from("everything_claims").select("everything_notes(author_id)").eq("item_id", itemId));
+  return claims.some((c) => (c.everything_notes ?? []).some((n) => n.author_id === NATHAN_ACCOUNT_ID));
 }
 
 /** Gives an item back to the pipeline, which then processes it as before. */

@@ -21,7 +21,7 @@ import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
 import type { ItemTextResponse } from "../service/contract";
-import { fetchForumPost } from "./sources/lesswrong";
+import { fetchForumPost, parsePostUrl } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
 import { MAX_ITEM_RETRIES } from "./autoEnqueue";
@@ -119,6 +119,10 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
         return fetchWebContent(item);
       }
     default:
+      // A reader may request a forum post that was filed as a plain page. The
+      // forum renders its posts with JavaScript, so the plain fetch finds no
+      // text, and the forum's API is the only reliable route.
+      if (parsePostUrl(item.url)) return fetchForumPost(item.url);
       return fetchWebContent(item);
   }
 }

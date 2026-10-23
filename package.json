@@ -123,8 +123,6 @@
     "commonnotes-local": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort",
     "commonnotes-dashboard": "lsof -ti tcp:8004 -sTCP:LISTEN | xargs kill 2>/dev/null; cd src/analytics-dashboard && bunx vite --port 8004 --host 127.0.0.1 --strictPort --mode prod-backend",
     "commonnotes-dashboard-local": "lsof -ti tcp:8004 -sTCP:LISTEN | xargs kill 2>/dev/null; cd src/analytics-dashboard && bunx vite --port 8004 --host 127.0.0.1 --strictPort",
-    "note-review": "cd src/note-review && CN_REVIEWER=jim bunx vite --port 8010 --host 127.0.0.1 --strictPort --mode prod-backend",
-    "note-review-nathan": "cd src/note-review && CN_REVIEWER=nathan bunx vite --port 8010 --host 127.0.0.1 --strictPort --mode prod-backend",
     "claude-notes": "bun run src/claude-notes/cli.ts",
     "build-everything-web": "cd src/everything-web && bunx vite build --mode prod-backend",
     "dev-ext": "cd src/everything-extension && bunx wxt --mode prod-backend",

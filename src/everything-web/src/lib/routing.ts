@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { REVIEW_SECTIONS, type ReviewSection } from "@cn/core/claudeReview";
 import { capturePageview } from "./analytics";
 
 /* Every page has its own path.
@@ -14,6 +15,8 @@ import { capturePageview } from "./analytics";
  *   /minisites/new        an admin creates a minisite from a pasted link
  *   /minisites/<slug>     one minisite: an article with the reader features it switched on
  *   /leaderboard          the rating leaderboard
+ *   /admin/notes/<section> admins review the Claude note writer's notes, one
+ *                         section at a time
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
  * The paths /notes/all and /notes/best win over projects with those slugs.
@@ -39,7 +42,8 @@ export type Route =
   | { view: "bestNotes"; project: string | null }
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
-  | { view: "newMinisite" };
+  | { view: "newMinisite" }
+  | { view: "noteReview"; section: ReviewSection };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
@@ -47,6 +51,9 @@ export const NOTES: Route = { view: "notes", project: null, item: null, note: nu
 export const ALL_NOTES: Route = { view: "allNotes" };
 export const BEST_NOTES: Route = { view: "bestNotes", project: null };
 export const MINISITES: Route = { view: "minisites", slug: null };
+export const NOTE_REVIEW: Route = { view: "noteReview", section: "unreviewed" };
+
+const isReviewSection = (value: string | undefined): value is ReviewSection => (REVIEW_SECTIONS as readonly (string | undefined)[]).includes(value);
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
 const LEGACY_PARAMS = ["view", "project", "item", "episode", "section"];
@@ -69,6 +76,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "leaderboard") return { view: "leaderboard" };
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
+  if (page === "admin" && project === "notes") return isReviewSection(item) ? { view: "noteReview", section: item } : NOTE_REVIEW;
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes" && project === "best") return { view: "bestNotes", project: item ?? null };
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
@@ -81,6 +89,7 @@ export function routeHref(route: Route): string {
   if (route.view === "allNotes") return "/notes/all";
   if (route.view === "bestNotes") return route.project ? `/notes/best/${encodeURIComponent(route.project)}` : "/notes/best";
   if (route.view === "newMinisite") return "/minisites/new";
+  if (route.view === "noteReview") return `/admin/notes/${route.section}`;
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
   if (route.view === "home") return route.section ? `/${route.section}` : "/";
   const segments = ["notes", route.project, route.project && route.item].filter((segment) => !!segment) as string[];

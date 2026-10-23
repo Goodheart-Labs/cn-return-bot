@@ -8,7 +8,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { createClient } from "@supabase/supabase-js";
 import type { Database, Json } from "../../everything-core/database.types";
-import { publish } from "../../claude-notes/store";
+import { publishAsAi } from "../../claude-notes/store";
 
 const WORK_DIR = `${homedir()}/.local/share/claude-note-finder`;
 const WITHDRAWN_PREFIX = "Withdrawn by Claude";
@@ -103,6 +103,6 @@ for (const file of files) {
 console.log(`Imported ${files.length} drafts. Posting ${toPost.length} unreviewed notes as AI notes`);
 for (const id of toPost) {
   const { data: draft } = await db.from("everything_claude_drafts").select("*").eq("id", id).single();
-  await publish(draft!, "ai", "claude");
+  await publishAsAi(draft!.id, "claude");
 }
 console.log("Done");

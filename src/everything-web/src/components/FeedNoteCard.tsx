@@ -1,34 +1,11 @@
-import { useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
-import { Button } from "@cn/ui/Button";
-import { Card } from "@cn/ui/Card";
 import { chipVariants } from "@cn/ui/Chip";
 import { cn } from "@cn/ui/cn";
 import { ArrowDownIcon, ArrowUpIcon, PencilIcon } from "@cn/ui/icons";
 import { Note } from "@cn/features/notes/Note";
 import { NoteNotNeeded } from "@cn/features/notes/NoteNotNeeded";
-import { ContextParagraph } from "@cn/features/notes/ContextParagraph";
-import { ClaimContent, claimContent } from "./ClaimContent";
-
-/** The images a claim is grounded in, which are usually Substack charts or
- *  screenshots. They sit above the claim's context. Each one links out to the
- *  full-resolution original. */
-function ClaimImages({ urls }: { urls: string[] }) {
-  return (
-    <div className="flex flex-wrap gap-2 mb-2">
-      {urls.map((url) => (
-        <a key={url} href={url} target="_blank" rel="noreferrer" className="block">
-          <img
-            src={url}
-            alt="Claim source"
-            loading="lazy"
-            className="max-h-48 w-auto rounded-control border border-line object-contain"
-          />
-        </a>
-      ))}
-    </div>
-  );
-}
+import { ClaimCard } from "./ClaimCard";
 
 /** Scrolls to another note's card. If that card sits inside a collapsed
  *  <details> element, scrollIntoView silently does nothing, so we open the
@@ -115,52 +92,12 @@ export function FeedNoteCard({ note, byline, post, improvements, nnnEntries, sha
   /** The absolute deep link the Share button copies. */
   shareUrl: string;
 }) {
-  const [ctxOpen, setCtxOpen] = useState(false);
-  const cardColRef = useRef<HTMLDivElement>(null);
-  const claim = note.claim;
-  // A stored context_paragraph always contains its context_quote word for word.
-  // Ingest enforces that, not this component. It is why the bolding below always
-  // finds its span.
-  const paragraph = claim.context_paragraph;
-  const quoteInParagraph = claim.context_quote ?? claim.claim;
   return (
-    <div id={`note-${note.id}`} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
-      {paragraph && (
-        <div className="hidden xl:block xl:col-start-1 xl:row-start-1">
-          <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
-        </div>
-      )}
-      {paragraph && (
-        <div
-          className="xl:hidden w-full max-w-[40rem] mx-auto"
-          style={{ display: "grid", gridTemplateRows: ctxOpen ? "1fr" : "0fr", transition: "grid-template-rows 300ms ease" }}
-          aria-hidden={!ctxOpen}
-        >
-          <div className="overflow-hidden min-h-0">
-            <div className="mb-2">
-              <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} bare />
-            </div>
-          </div>
-        </div>
-      )}
-      <Card ref={cardColRef} className="p-4 w-full max-w-[40rem] mx-auto xl:max-w-none xl:mx-0 xl:col-start-2 xl:row-start-1">
-      {byline && <div className="mb-3">{byline}</div>}
-      <div className="mb-4">
-        {claim.image_urls.length > 0 && <ClaimImages urls={claim.image_urls} />}
-        {paragraph && (
-          <Button variant="link" className="xl:hidden text-xs mb-2" onClick={() => setCtxOpen((o) => !o)}>
-            {ctxOpen ? "Hide surrounding context" : "Show surrounding context"}
-          </Button>
-        )}
-        <ClaimContent content={claimContent(claim, post)} />
-      </div>
-
+    <ClaimCard id={`note-${note.id}`} claim={note.claim} paragraph={note.claim.context_paragraph} post={post} byline={byline}>
       <Note note={note} shareUrl={shareUrl}>
         <ImprovementLinks note={note} improvements={improvements} />
       </Note>
-
       <NoteNotNeeded entries={nnnEntries} />
-      </Card>
-    </div>
+    </ClaimCard>
   );
 }

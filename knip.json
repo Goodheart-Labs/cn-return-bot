@@ -12,9 +12,6 @@
     "src/everything-web/src/main.tsx",
     "src/analytics-dashboard/src/main.tsx",
     "src/analytics-dashboard/vite.config.ts",
-    "src/note-review/src/main.tsx",
-    "src/note-review/vite.config.ts",
-    "src/note-review/tailwind.config.ts",
     "src/everything-extension/entrypoints/**/*.{ts,tsx}",
     "src/everything-extension/wxt.config.ts",
     "src/everything-extension/tailwind.config.ts",
@@ -39,8 +36,6 @@
   ],
   "ignoreDependencies": [
     "@types/p-queue",
-    "papaparse",
-    "@types/papaparse",
     "react-json-view-lite",
     "exa-js",
     "@wxt-dev/module-react"

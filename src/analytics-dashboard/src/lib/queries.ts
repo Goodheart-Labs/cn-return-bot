@@ -2,7 +2,7 @@ import type { Database } from "../../../everything-core/database.types";
 import { supabase } from "../../../everything-core/supabase";
 
 type RpcName = keyof Database["public"]["Functions"];
-import { LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
+import { LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../../../everything-core/readers";
 import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
@@ -107,7 +107,13 @@ export interface MetricSeriesRow {
   writers: TimesHistogram | null;
   notes_written: number | null;
   installs: number | null;
+  /** The installs split by browser, {"chrome": 12, "firefox": 3}. A browser
+   *  with no install in the bucket is missing. */
+  installs_by_browser: Record<string, number> | null;
 }
+
+/** A column that splits a count metric by browser. */
+export type BrowserSplitKey = "installs_by_browser";
 
 export type CountMetricKey = "active_devices" | "notes_seen" | "votes" | "notes_written" | "installs";
 export type HistogramMetricKey = "note_viewers" | "voters" | "writers";
@@ -224,4 +230,36 @@ export interface SpendHourRow {
  *  hours included so a chart shows the gaps. */
 export function fetchSpendByHour(days: number): Promise<SpendHourRow[]> {
   return rpcAllRows<SpendHourRow>("everything_spend_by_hour", { window_days: days });
+}
+
+// --- The walk's ranking of creators (migration 131) ---
+
+export interface CreatorRankingRow {
+  feed_url: string;
+  /** Null for a creator walked on visits alone who has no project yet. */
+  project_slug: string | null;
+  project_name: string | null;
+  /** Set only while the creator's priority is open. */
+  priority_until: string | null;
+  /** Null for a prioritised creator nobody has visited. */
+  visitors_per_post: number | null;
+  score_posts: number | null;
+  people: number | null;
+  /** How many posts the median delay covers. Null when none qualified. */
+  delay_posts: number | null;
+  /** Median hours from the publish day to the end of processing. */
+  median_delay_hours: number | null;
+  /** How many posts with notes the vote counts cover. Null when none had a
+   *  visit after their first note. */
+  vote_posts: number | null;
+  vote_visitors: number | null;
+  extension_voters: number | null;
+}
+
+export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
+  return rpcAllRows<CreatorRankingRow>("everything_creator_ranking", {
+    last_posts: LAST_POSTS_PER_CREATOR,
+    min_score: MIN_SCORE_TO_WALK,
+    min_posts: MIN_VISITED_POSTS_TO_WALK,
+  });
 }

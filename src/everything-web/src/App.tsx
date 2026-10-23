@@ -9,6 +9,7 @@ import { HomePage } from "./pages/home/HomePage";
 import { CreateMinisitePage } from "./pages/minisites/CreateMinisitePage";
 import { MinisitePage } from "./pages/minisites/MinisitePage";
 import { MinisitesPage } from "./pages/minisites/MinisitesPage";
+import { NoteReviewPage } from "./pages/noteReview/NoteReviewPage";
 import { NotesView } from "./pages/NotesView";
 
 /** The website's frame: the header on every page, the page the route names
@@ -24,6 +25,7 @@ export function App() {
       {route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
+        : route.view === "noteReview" ? <NoteReviewPage section={route.section} navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <ExtensionNudge route={route} navigate={navigate} />

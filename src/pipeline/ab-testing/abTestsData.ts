@@ -80,11 +80,13 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
 // 2026-09-17: Sonnet 5 carries the writer, three newcomers at 13 each (numbers in the PR).
 // 2026-09-18: GPT-5.6 Sol takes Gemini 3.8 Flash's share. The arm exists to keep a
 // non-Anthropic writer qualified, and Sol is priced the same as Sonnet 5.
+// 2026-10-13: the ex-Muse share goes to Sonnet 5. Muse's notes netted 2.5% against Sonnet 5's 9.3%,
+// and Luna is untested as a writer here (numbers in the PR).
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 60 },
+    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 73 },
     { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 0 },
     { variant: { name: "gpt5_6sol",        overrides: { writer_model: "openai/gpt-5.6-sol"            }}, weight: 13 },
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
@@ -92,11 +94,9 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
-    // (GOO-303) and gave it back once the block was lifted (GOO-322). Meta blocked us again on 2026-10-13,
-    // so Luna holds the share again.
+    // Common Notes pins its writer arm by name, so both stay defined at weight 0 (GOO-303, GOO-322).
     { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
-    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 13 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
