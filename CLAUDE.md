@@ -211,7 +211,9 @@ The job also recommends the best notes. Admins curate them at commonnotes.net/ad
 bun run recommend-notes list                       # the open recommendations, best first, with ranks
 bun run recommend-notes add <noteId>... [--at N]   # recommend notes at rank N (default: the end)
 bun run recommend-notes move <noteId> --at N
-``` It replaced the `cn-notify` service, which posted those four kinds of note to four Slack channels, and the `Trending Posts` workflow. The tables they used to remember what they posted, `everything_slack_announcements` and `trending_posts`, are no longer written.
+```
+
+`bun run curation-taste --out <file>` writes the team's curation as one Markdown file: the leaderboard in order and the removed recommendations, each with the passage, the note and the team's comment or reason. The job reads it every morning before judging new notes. It replaced the `cn-notify` service, which posted those four kinds of note to four Slack channels, and the `Trending Posts` workflow. The tables they used to remember what they posted, `everything_slack_announcements` and `trending_posts`, are no longer written.
 
 ## Database
 
