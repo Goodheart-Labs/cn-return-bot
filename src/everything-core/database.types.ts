@@ -481,6 +481,7 @@ export type Database = {
           progress: Json | null
           project_id: string | null
           published_at: string | null
+          published_time: string | null
           request_steer: string | null
           retries: number
           skip_reason: string | null
@@ -501,6 +502,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          published_time?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -521,6 +523,7 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          published_time?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -2595,7 +2598,14 @@ export type Database = {
         Returns: string
       }
       everything_creator_ranking: {
-        Args: { last_posts: number; min_posts: number; min_score: number }
+        Args: {
+          average_posts: number
+          average_readers: number
+          last_posts: number
+          min_posts: number
+          min_score: number
+          unread_posts: number
+        }
         Returns: {
           delay_posts: number
           extension_voters: number

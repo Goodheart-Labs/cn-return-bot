@@ -11,22 +11,56 @@ import { normalizeFeedUrl } from "./pageUrls";
  *  to the database rather than the database holding a copy. */
 export const LAST_POSTS_PER_CREATOR = 10;
 
+/** The creator score adds imagined posts to the creator's real ones, so a
+ *  creator with only a few visited posts cannot rank high on one shared link
+ *  (GOO-549). Jim picked the numbers in a playground on 2026-10-23. Every
+ *  creator gets this many imagined posts that nobody read, which pulls every
+ *  score toward 0. */
+export const IMAGINED_UNREAD_POSTS = 2;
+
+/** And this many imagined posts with the average number of readers. Together
+ *  they pull a creator with few posts toward a typical creator. A creator with
+ *  10 real posts barely moves. */
+export const IMAGINED_AVERAGE_POSTS = 3;
+
+/** The average number of different people per visited post, over every
+ *  visited creator's recent posts. It was 1.07 over 8,740 posts on 2026-10-23.
+ *  It is fixed here rather than computed on every run, because it barely
+ *  changes and the dashboard asks about one creator at a time. */
+export const AVERAGE_READERS_PER_POST = 1.07;
+
 /** The lowest score at which the walk takes a creator on visits alone. A
  *  prioritised creator is walked whatever their visits, because someone asked
  *  for them. It lives here for the same reason as LAST_POSTS_PER_CREATOR: the
- *  analytics dashboard lists the creators the walk would take. */
-export const MIN_SCORE_TO_WALK = 1.5;
+ *  analytics dashboard lists the creators the walk would take. It was 1.5
+ *  until 2026-10-23, on the plain average without imagined posts. */
+export const MIN_SCORE_TO_WALK = 1;
 
 /** How many of a creator's posts must have been visited before their score
  *  counts. A single post that a few people opened, often one shared link, says
  *  little about how widely the creator is read. */
 export const MIN_VISITED_POSTS_TO_WALK = 2;
 
+/** What a creator's visits come to: the average number of different people
+ *  per post, and over how many posts. */
+export interface CreatorVisits {
+  visitors_per_post: number;
+  posts: number;
+}
+
+/** A creator's score: the average number of different people per post, with
+ *  the imagined posts counted as if they were real. The walk ranks on it and
+ *  the dashboard shows it. The database applies the same formula in
+ *  everything_creator_ranking (migration 132), with these constants passed in. */
+export const creatorScore = (visits: CreatorVisits): number =>
+  (visits.visitors_per_post * visits.posts + IMAGINED_AVERAGE_POSTS * AVERAGE_READERS_PER_POST) /
+  (visits.posts + IMAGINED_AVERAGE_POSTS + IMAGINED_UNREAD_POSTS);
+
 /** What the walk's order looks at in a creator. */
 export interface WalkOrderKey {
   prioritized: boolean;
   feed_url: string;
-  score: { visitors_per_post: number; people: number };
+  score: CreatorVisits & { people: number };
 }
 
 /** The walk's order: prioritised creators first, then the highest score.
@@ -35,7 +69,7 @@ export interface WalkOrderKey {
  *  run rather than depending on how the database returned the rows. */
 export const byWalkOrder = (a: WalkOrderKey, b: WalkOrderKey): number =>
   Number(b.prioritized) - Number(a.prioritized) ||
-  b.score.visitors_per_post - a.score.visitors_per_post ||
+  creatorScore(b.score) - creatorScore(a.score) ||
   b.score.people - a.score.people ||
   a.feed_url.localeCompare(b.feed_url);
 

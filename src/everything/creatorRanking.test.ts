@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { dbMock, dbState, resetDbState } from "./dbMock";
 
-/* Covers the two-source rule (GOO-107) and the score (GOO-257). A creator is
+/* Covers the two-source rule (GOO-107) and the score (GOO-257, GOO-549). A creator is
  * walked because their priority window is open, or because someone visited
  * them, and for no other reason. Priority beats the score, the score orders
  * everyone else, and a creator we already know keeps their project even when
@@ -26,34 +26,46 @@ const creator = (slug: string, overrides: Partial<(typeof dbState.creatorProject
   ...overrides,
 });
 
-/** One creator's score row. The default score is 1.5, the smallest the walk
- *  accepts, so a test that is about something else does not have to think
- *  about it. */
+/** One creator's visits. The default is 2 people per post over 10 posts, a
+ *  score of about 1.55 and well inside the walk, so a test that is about
+ *  something else does not have to think about it. */
 const visited = (feedUrl: string, score: { perPost?: number; posts?: number; people?: number } = {}) => ({
   feed_url: feedUrl,
-  visitors_per_post: score.perPost ?? 1.5,
-  posts: score.posts ?? 2,
+  visitors_per_post: score.perPost ?? 2,
+  posts: score.posts ?? 10,
   people: score.people ?? 1,
 });
 
 const rankedSlugs = async () => (await rankCreators()).map((c) => c.project_slug);
 
 describe("rankCreators, score", () => {
-  test("a creator needs a score of at least 1.5", async () => {
+  // The score counts 2 imagined posts nobody read and 3 with 1.07 readers.
+  // Over 10 real posts, 1.15 people per post scores 0.98 and 1.2 scores 1.01.
+  test("a creator needs a score of at least 1", async () => {
     dbState.creatorVisitScores = [
       visited("https://onereader.substack.com", { perPost: 1, posts: 10, people: 1 }),
-      visited("https://almost.substack.com", { perPost: 1.4, posts: 10, people: 4 }),
-      visited("https://enough.substack.com", { perPost: 1.5, posts: 10, people: 4 }),
+      visited("https://almost.substack.com", { perPost: 1.15, posts: 10, people: 4 }),
+      visited("https://enough.substack.com", { perPost: 1.2, posts: 10, people: 4 }),
     ];
     expect(await rankedSlugs()).toEqual(["enough"]);
   });
 
   test("a creator needs at least 2 visited posts, however many people opened the one", async () => {
     dbState.creatorVisitScores = [
-      visited("https://onepost.substack.com", { perPost: 3, posts: 1, people: 3 }),
-      visited("https://twoposts.substack.com", { perPost: 1.5, posts: 2, people: 2 }),
+      visited("https://onepost.substack.com", { perPost: 8, posts: 1, people: 8 }),
+      visited("https://twoposts.substack.com", { perPost: 3, posts: 2, people: 3 }),
     ];
     expect(await rankedSlugs()).toEqual(["twoposts"]);
+  });
+
+  test("the imagined posts pull a creator with few posts down more than one with many", async () => {
+    // joec and Astral Codex Ten on 2026-10-23. The plain average put joec
+    // first; with the imagined posts it is 2.65 against 2.81.
+    dbState.creatorVisitScores = [
+      visited("https://joec.substack.com", { perPost: 6, posts: 3, people: 11 }),
+      visited("https://acx.substack.com", { perPost: 3.9, posts: 10, people: 32 }),
+    ];
+    expect(await rankedSlugs()).toEqual(["acx", "joec"]);
   });
 
   test("a prioritized creator is walked with a low score", async () => {

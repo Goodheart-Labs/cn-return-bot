@@ -36,7 +36,7 @@ const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "Post", title: "The post, and the project it belongs to" },
   { label: "Published", title: "When the author published it" },
   { label: "Checked", title: "When the pipeline finished it" },
-  { label: "Author score", title: `Average number of different people per post, over the author's ${LAST_POSTS_PER_CREATOR} most recently visited posts` },
+  { label: "Readers per post", title: `Average number of different people per post, over the author's ${LAST_POSTS_PER_CREATOR} most recently visited posts. The walk's score also counts imagined posts, see the creator ranking.` },
   { label: "Claims", title: "Claims extracted from the post" },
   { label: "Checked claims", title: "Claims that went through a fact-check" },
   { label: "Notes", title: "Notes the pipeline wrote" },
@@ -127,9 +127,9 @@ export function RecentPosts() {
           </button>
         )}
         <span>
-          The author score is the number the pipeline picks authors by. It is the average number of different people per post, over
-          the author's {LAST_POSTS_PER_CREATOR} most recently visited posts, however long ago those visits were. A post in a project
-          without a feed, such as Around the web, has no author score.
+          Readers per post is the average number of different people per post, over the author's {LAST_POSTS_PER_CREATOR} most
+          recently visited posts, however long ago those visits were. The walk ranks authors on it, after adding a few imagined
+          posts that the creator ranking explains. A post in a project without a feed, such as Around the web, has no value here.
         </span>
       </div>
     </div>

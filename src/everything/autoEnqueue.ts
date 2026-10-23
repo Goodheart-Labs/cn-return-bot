@@ -5,8 +5,8 @@
  *
  * The walk is one straight line (Jim's design, GOO-225). It goes down the
  * creator ranking from the top: creators holding priority first, then
- * everyone by their score, the average number of different people per post
- * (see creatorRanking.ts). At each creator it asks one
+ * everyone by their score, about the average number of different people per
+ * post (see creatorRanking.ts). At each creator it asks one
  * question: does this creator have a post we have not checked? A post counts
  * if it is among the creator's three newest, or among their three all-time top posts
  * (GOO-81, see topPosts.ts). A post whose check failed also counts, once it
@@ -49,7 +49,7 @@
 import "dotenv/config";
 import { extractYoutubeVideoId, normalizeFeedUrl } from "../everything-core/pageUrls";
 import { rankCreators, type RankedCreator } from "./creatorRanking";
-import { LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
+import { creatorScore, IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "../everything-core/readers";
 import {
   countYoutubeNotifications,
   enqueueItems,
@@ -474,12 +474,12 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // slow walk never reads as a hang.
   const byPriority = ranked.filter((c) => c.prioritized).length;
   console.log(
-    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by the average number of different people per post, over each creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts`,
+    `\nCREATORS · ${ranked.length} ranked · ${byPriority} by priority, ${ranked.length - byPriority} by attention · ranked by score: different people per post over each creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts, counting ${IMAGINED_UNREAD_POSTS} imagined unread posts and ${IMAGINED_AVERAGE_POSTS} average ones`,
   );
   console.log(`  walked from the top until a creator has a post we have not checked, or a failed post due another attempt`);
   console.log(groupOpen("the walk, in rank order"));
   console.log(
-    fixedRow(["rank", "creator", "why", "per post", "posts", "people", "listing", "unchecked", "retries"], CREATOR_COLUMNS, CREATOR_ALIGN),
+    fixedRow(["rank", "creator", "why", "score", "posts", "people", "listing", "unchecked", "retries"], CREATOR_COLUMNS, CREATOR_ALIGN),
   );
 
   const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<CreatorWalk | null> => {
@@ -507,7 +507,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
           String(feedIndex + 1),
           feed.project,
           creator.prioritized ? `priority, ${priorityLeft(creator.priorityUntil)} left` : "attention",
-          creator.score.visitors_per_post.toFixed(2),
+          creatorScore(creator.score).toFixed(2),
           String(creator.score.posts),
           String(creator.score.people),
           listingSource(feed, listing),

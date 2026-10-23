@@ -1,5 +1,5 @@
--- 132: the exact publication time, and the creator ranking's delay measured
--- from it (GOO-549).
+-- 132: the exact publication time, the creator ranking's delay measured from
+-- it, and the ranking's new score (GOO-549).
 --
 -- everything_items.published_at is a day without a time. Migration 131
 -- measured "how long after publication we finish checking a post" from
@@ -20,14 +20,32 @@
 -- which can be a reader request. A post published before the first walk is
 -- catch-up, and its delay says how old it was rather than how fast we are.
 -- Feed items are those below the requested tier (priority 2, QUEUE_PRIORITY
--- in src/everything/db.ts). Everything else is as in migration 131.
+-- in src/everything/db.ts).
+--
+-- The ranking also takes the walk's new score. The walk now adds imagined posts
+-- to every creator's real ones: unread_posts posts that nobody read and
+-- average_posts posts with average_readers people each (creatorScore in
+-- src/everything-core/readers.ts). A creator with two or three visited posts
+-- could otherwise top the list on one shared link. The constants live in the
+-- code and are passed in, like min_score and min_posts already were. The
+-- function filters on the score here, because the dashboard calls it with the
+-- anon key and its 3-second limit, and 1,565 creators had at least 2 visited
+-- posts on 2026-10-23. It still returns the plain visitors_per_post, and the
+-- dashboard computes the score from it with the same code the walk uses. The
+-- new arguments change the function's signature, so the old one is dropped.
+-- Everything else is as in migration 131.
+
+drop function everything_creator_ranking(int, float8, int);
 
 alter table everything_items add column published_time timestamptz;
 
 comment on column everything_items.published_time is
   'The exact moment the post was published, from the walk''s listing (RSS pubDate, forum postedAt, YouTube upload time). Null when no listing gave one. published_at keeps only the day (GOO-549).';
 
-create or replace function everything_creator_ranking(last_posts int, min_score float8, min_posts int)
+create function everything_creator_ranking(
+  last_posts int, min_score float8, min_posts int,
+  unread_posts float8, average_posts float8, average_readers float8
+)
 returns table (
   feed_url text,
   project_slug text,
@@ -60,7 +78,8 @@ as $$
     from (select * from everything_projects where feed_url is not null) p
     full join score s on s.creator_key = lower(rtrim(p.feed_url, '/'))
     where p.priority_until > now()
-       or (s.visitors_per_post >= min_score and s.posts >= min_posts)
+       or (s.posts >= min_posts
+           and (s.visitors_per_post * s.posts + average_posts * average_readers) / (s.posts + average_posts + unread_posts) >= min_score)
   ),
   followed_since as (
     select w.creator_key, min(i.created_at) as first_walked_at
@@ -146,5 +165,8 @@ as $$
   left join votes vo using (creator_key);
 $$;
 
-comment on function everything_creator_ranking(int, float8, int) is
-  'The creators the auto-enqueue walk would go through now: open priority, or a score of at least min_score over at least min_posts visited posts. Per creator: the score, the median hours from the exact publication time to the end of processing over their last_posts most recently published checked posts published after the walk first enqueued anything from them and outside their top list, and extension voters and visitors summed over their last_posts most recently visited posts with notes (GOO-531, GOO-549).';
+comment on function everything_creator_ranking(int, float8, int, float8, float8, float8) is
+  'The creators the auto-enqueue walk would go through now: open priority, or at least min_posts visited posts and a score of at least min_score, where the score counts unread_posts imagined posts nobody read and average_posts with average_readers people each. Per creator: the plain average of people per post, the median hours from the exact publication time to the end of processing over their last_posts most recently published checked posts published after the walk first enqueued anything from them and outside their top list, and extension voters and visitors summed over their last_posts most recently visited posts with notes (GOO-531, GOO-549).';
+
+revoke execute on function everything_creator_ranking(int, float8, int, float8, float8, float8) from public;
+grant execute on function everything_creator_ranking(int, float8, int, float8, float8, float8) to anon, authenticated, service_role;

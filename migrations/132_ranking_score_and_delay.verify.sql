@@ -15,7 +15,7 @@ insert into everything_items (project_id, url, status, checked_scope, priority, 
 do $$
 declare r record;
 begin
-  select * into r from everything_creator_ranking(10, 1.5, 2) where project_slug = 'thezvi';
+  select * into r from everything_creator_ranking(10, 1.0, 2, 2, 3, 1.07) where project_slug = 'thezvi';
   if r.delay_posts is distinct from 2 then
     raise exception 'expected the two new posts to count, got %', r.delay_posts;
   end if;
@@ -24,7 +24,18 @@ begin
   end if;
 end $$;
 
+-- Only creators whose score with the imagined posts reaches 1 are walked,
+-- besides those holding priority.
+do $$
+declare walked text[];
+begin
+  select array_agg(feed_url order by feed_url) into walked from everything_creator_ranking(10, 1.0, 2, 2, 3, 1.07);
+  if walked is distinct from array['https://steady.substack.com', 'https://thezvi.substack.com'] then
+    raise exception 'expected steady and thezvi to be walked, got %', walked;
+  end if;
+end $$;
+
 -- The anon key keeps its access, since the dashboard calls this with it.
 set role anon;
-select count(*) from everything_creator_ranking(10, 1.5, 2);
+select count(*) from everything_creator_ranking(10, 1.0, 2, 2, 3, 1.07);
 reset role;

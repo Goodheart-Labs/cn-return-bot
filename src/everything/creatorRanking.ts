@@ -6,8 +6,8 @@
  *
  *   1. They hold priority. Someone pressed the button in the extension, or ran
  *      everything-prioritize. That lasts seven days and then lapses.
- *   2. Their score is at least 1.5: on average at least one and a half
- *      different people with the extension opened each of their posts.
+ *   2. Their score is at least 1 over at least 2 visited posts (see THE SCORE
+ *      below).
  *
  * Prioritised creators come first, then everyone else by their score. The walk
  * in autoEnqueue.ts goes down this list from the top and stops at the first
@@ -33,6 +33,15 @@
  * to a few people, and one person binge-watching a channel adds only about one
  * person to each video.
  *
+ * Since 2026-10-23 the score also counts imagined posts: 2 that nobody read
+ * and 3 with the average number of readers (creatorScore in
+ * everything-core/readers.ts, GOO-549). Before, a creator with two or three
+ * visited posts could top the walk on one shared link. On that day the plain
+ * average ranked joec, with 5.67 readers per post over 3 posts, above Astral
+ * Codex Ten, with 3.9 over 10. The imagined posts weigh little against 10 real
+ * ones and a lot against 2. A creator whose every post had one reader stays
+ * below the walk's minimum of 1, however many posts they have.
+ *
  * The score threshold replaced the rule that a creator needs two visited posts
  * (Jim, 2026-10-18). Most visited creators score exactly 1, which means one
  * person reads them. On 7 October that was 613 of 684 creators. Walking all of
@@ -43,7 +52,7 @@
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
-import { byWalkOrder, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../everything-core/readers";
+import { byWalkOrder, creatorScore, LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../everything-core/readers";
 
 export interface RankedCreator {
   project_slug: string;
@@ -115,7 +124,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key) || visited.score.visitors_per_post < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
+    if (alreadyRanked.has(key) || creatorScore(visited.score) < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.

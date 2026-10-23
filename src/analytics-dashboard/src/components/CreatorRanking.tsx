@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCreatorRanking, type CreatorRankingRow } from "../lib/queries";
-import { byWalkOrder, LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
+import { byWalkOrder, creatorScore, IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "../../../everything-core/readers";
 
 const CREATORS_PER_STEP = 25;
 const HOURS_SHOWN_AS_HOURS = 48;
@@ -11,7 +11,10 @@ const LABEL_COLOR = "#6b7280";
 const COLUMNS: readonly { label: string; title: string }[] = [
   { label: "#", title: "The creator's place in the walk's order" },
   { label: "Creator", title: "The creator, and until when they hold priority" },
-  { label: "Score", title: `Average number of different people per post, over the creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts` },
+  {
+    label: "Score",
+    title: `Average number of different people per post over the creator's ${LAST_POSTS_PER_CREATOR} most recently visited posts, counting ${IMAGINED_UNREAD_POSTS} imagined posts nobody read and ${IMAGINED_AVERAGE_POSTS} with the average readers. Below it, the plain average.`,
+  },
   {
     label: "Median delay",
     title: `Median time from publication to the end of processing, over the creator's ${LAST_POSTS_PER_CREATOR} most recently published new posts we checked`,
@@ -40,7 +43,7 @@ const postCount = (n: number) => (n === 1 ? "1 post" : `${n} posts`);
 const walkOrderKey = (row: CreatorRankingRow) => ({
   prioritized: row.priority_until !== null,
   feed_url: row.feed_url,
-  score: { visitors_per_post: row.visitors_per_post ?? 0, people: row.people ?? 0 },
+  score: { visitors_per_post: row.visitors_per_post ?? 0, posts: row.score_posts ?? 0, people: row.people ?? 0 },
 });
 
 function CreatorCell({ row }: { row: CreatorRankingRow }) {
@@ -62,8 +65,10 @@ function ScoreCell({ row }: { row: CreatorRankingRow }) {
   if (row.visitors_per_post === null || row.score_posts === null) return <td style={numberCell}>—</td>;
   return (
     <td style={numberCell}>
-      {row.visitors_per_post.toFixed(2)}
-      <div style={subline}>{postCount(row.score_posts)}</div>
+      {creatorScore({ visitors_per_post: row.visitors_per_post, posts: row.score_posts }).toFixed(2)}
+      <div style={subline}>
+        {row.visitors_per_post.toFixed(2)} per post, {postCount(row.score_posts)}
+      </div>
     </td>
   );
 }

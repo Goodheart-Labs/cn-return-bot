@@ -2,7 +2,14 @@ import type { Database } from "../../../everything-core/database.types";
 import { supabase } from "../../../everything-core/supabase";
 
 type RpcName = keyof Database["public"]["Functions"];
-import { LAST_POSTS_PER_CREATOR, MIN_SCORE_TO_WALK, MIN_VISITED_POSTS_TO_WALK } from "../../../everything-core/readers";
+import {
+  AVERAGE_READERS_PER_POST,
+  IMAGINED_AVERAGE_POSTS,
+  IMAGINED_UNREAD_POSTS,
+  LAST_POSTS_PER_CREATOR,
+  MIN_SCORE_TO_WALK,
+  MIN_VISITED_POSTS_TO_WALK,
+} from "../../../everything-core/readers";
 import { noteStatus } from "../../../everything-core/noteScore";
 
 // Every query runs through a security-definer RPC (migrations 077, 092, 095
@@ -195,8 +202,7 @@ export interface RecentPostRow {
   published_at: string | null;
   /** When the pipeline finished the post. */
   processed_at: string;
-  /** The author's score, the number the pipeline walks authors on: the
-   *  average number of different people per post, over the author's
+  /** The average number of different people per post, over the author's
    *  LAST_POSTS_PER_CREATOR most recently visited posts. A visit carries a
    *  person only since migration 089, so older reading is missing. Null when
    *  the post's project has no feed, or nobody visited the author. */
@@ -206,8 +212,8 @@ export interface RecentPostRow {
   notes: number;
 }
 
-/** The author score is the one the pipeline walks creators on, so the table
- *  shows the same attention that decided which posts got checked. */
+/** The table shows the readers per post that the walk's score is made from,
+ *  so it shows the attention that decided which posts got checked. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
   return rpcAllRows<RecentPostRow>("everything_recent_posts", {
     max_posts: maxPosts,
@@ -241,7 +247,8 @@ export interface CreatorRankingRow {
   project_name: string | null;
   /** Set only while the creator's priority is open. */
   priority_until: string | null;
-  /** Null for a prioritised creator nobody has visited. */
+  /** The plain average of different people per post, without the imagined
+   *  posts of creatorScore. Null for a prioritised creator nobody has visited. */
   visitors_per_post: number | null;
   score_posts: number | null;
   people: number | null;
@@ -261,5 +268,8 @@ export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
     last_posts: LAST_POSTS_PER_CREATOR,
     min_score: MIN_SCORE_TO_WALK,
     min_posts: MIN_VISITED_POSTS_TO_WALK,
+    unread_posts: IMAGINED_UNREAD_POSTS,
+    average_posts: IMAGINED_AVERAGE_POSTS,
+    average_readers: AVERAGE_READERS_PER_POST,
   });
 }
