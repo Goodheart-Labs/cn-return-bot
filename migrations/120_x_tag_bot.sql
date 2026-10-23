@@ -1,4 +1,4 @@
--- The X tag bot (GOO-212). People tag @CommonNotesBot under a post, and the bot
+-- The X tag bot (GOO-212). People tag @community_notes under a post, and the bot
 -- researches it and submits a Community Note, or says why it can't yet.
 --
 -- One row per tag. The bot answers every tag once, under the tag, and a note

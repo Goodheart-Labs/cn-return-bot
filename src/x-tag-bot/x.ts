@@ -1,5 +1,5 @@
 /**
- * The bot's side of the X API. Replies are posted as @CommonNotesBot with its
+ * The bot's side of the X API. Replies are posted as @community_notes with its
  * OAuth 1.0a keys (X_TAG_BOT_*). Tags arrive through the X Activity API
  * stream, read with the app's bearer token. The eligibility check uses the
  * notewriter's keys, because only the notewriter can write notes.

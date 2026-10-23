@@ -1,13 +1,13 @@
 /**
  * One-time setup of the bot's X Activity API subscription. Run it by hand
- * once the @CommonNotesBot account and its developer app exist (GOO-368).
+ * once the @community_notes account and its developer app exist (GOO-368).
  *
  *   bun run src/x-tag-bot/setup.ts
  *
  * Mentions are private events, so X creates their subscription
  * only with a login of the bot account itself: an OAuth 2.0 user token with the
  * tweet.read scope. The script prints a login link, you open it while logged
- * in as @CommonNotesBot, and you paste back the address the browser lands on.
+ * in as @community_notes, and you paste back the address the browser lands on.
  * It then creates the subscription and prints the account's user id, which
  * goes into X_TAG_BOT_USER_ID. The stream itself runs on the app's bearer
  * token, so this login is never needed again.
@@ -40,7 +40,7 @@ for (const [key, value] of Object.entries({
   code_challenge: challenge, code_challenge_method: "S256",
 })) login.searchParams.set(key, value);
 
-console.log(`Open this link while logged in as @CommonNotesBot and allow access:\n\n${login}\n`);
+console.log(`Open this link while logged in as @community_notes and allow access:\n\n${login}\n`);
 const lines = createInterface({ input: process.stdin, output: process.stdout });
 const landed = new URL(await lines.question("Paste the address the browser landed on: "));
 lines.close();

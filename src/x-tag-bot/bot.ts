@@ -187,7 +187,7 @@ export class TagBot {
   }
 }
 
-/** "@CommonNotesBot @someone is this true?" becomes "is this true?". */
+/** "@community_notes @someone is this true?" becomes "is this true?". */
 export function withoutLeadingMentions(text: string): string {
   return text.replace(/^(\s*@\w+)+/, "").trim();
 }

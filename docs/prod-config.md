@@ -440,7 +440,7 @@ Two separate X apps exist, in X's developer portal, and a third is planned.
    `TWITTER_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_TWITTER_SECRET`, which
    `config.toml` reads.
 3. **The tag bot app (not created yet, GOO-368).** It belongs to the
-   @CommonNotesBot account, which carries X Premium, the Automated label
+   @community_notes account, which carries X Premium, the Automated label
    (managing account @NathanpmYoung) and the bio from the GOO-212 plan. It
    sits inside a Project with pay-per-use credits and a monthly spending limit.
    OAuth 1.0a with read and write access posts the replies (`X_TAG_BOT_API_KEY`,

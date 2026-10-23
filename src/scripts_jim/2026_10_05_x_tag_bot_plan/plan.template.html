@@ -230,7 +230,7 @@ td code { white-space: nowrap; }
   <section id="behaviour" class="prose">
     <h2>Behaviour</h2>
     <ul>
-      <li>A person replies to a post and writes <code>@CommonNotesBot</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post.</li>
+      <li>A person replies to a post and writes <code>@community_notes</code> anywhere in the reply. The post they replied to is the one the bot checks. A quote post that tags the bot works the same way: the bot checks the quoted post.</li>
       <li>The bot answers within about 30 to 60 seconds. X pushes the tag to us within a second, and the research takes 20 to 40 seconds.</li>
       <li>The person's own words go into the research. If they point at one claim, the bot checks that claim even when it is not the post's main argument. This turned out to matter, see <a href="#d-requester">the decision on the tagger's comment</a>.</li>
       <li>If the research finds a note, the bot submits it right away and replies with the note and its link. There is no approval step.</li>
@@ -379,12 +379,12 @@ td code { white-space: nowrap; }
 
       <div class="decision" id="d-profile">
         <h3>The bot's profile</h3>
-        <p>Handle <code>@CommonNotesBot</code>, as you confirmed. The bio must say the account is automated and who runs it, and it has room for 160 characters. The store links are too long for it, so the bio and the website field point to commonnotes.net, whose home page has the install buttons, and a pinned post carries the direct store links.</p>
+        <p>Handle <code>@community_notes</code>, which Nathan registered on 23 October. The bio must say the account is automated and who runs it, and it has room for 160 characters. The store links are too long for it, so the bio and the website field point to commonnotes.net, whose home page has the install buttons, and a pinned post carries the direct store links.</p>
         <div class="table-wrap"><table>
           <thead><tr><th>Field</th><th>Text</th></tr></thead>
           <tbody>
             <tr><td>Display name</td><td>Common Notes Bot</td></tr>
-            <tr><td>Handle</td><td>@CommonNotesBot</td></tr>
+            <tr><td>Handle</td><td>@community_notes</td></tr>
             <tr><td>Bio (138 of 160 characters)</td><td>Tag me under a post and I'll check it and submit a Community Note. Automated, run by @NathanpmYoung. See notes on the web: commonnotes.net</td></tr>
             <tr><td>Website</td><td>https://commonnotes.net</td></tr>
             <tr><td>Automated label</td><td>Managed by @NathanpmYoung</td></tr>
@@ -392,7 +392,7 @@ td code { white-space: nowrap; }
         </table></div>
         <p>Pinned post, posted once (a post with links costs $0.20):</p>
         <pre class="text" style="border:1px solid var(--line);border-radius:10px">How I work:
-1. Reply to a post and tag @CommonNotesBot. Say what you think is wrong, if you like.
+1. Reply to a post and tag @community_notes. Say what you think is wrong, if you like.
 2. I research it and submit a Community Note, or explain why no note is needed.
 3. If X doesn't take notes from me on that post yet, request a Community Note from the post's menu. I keep trying for 3 hours.
 
@@ -485,7 +485,7 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/common-notes/</pre>
       <li><strong>No filter for submission claims.</strong> The only model-written reply is the no-note reply, so the tag bot doesn't need the Signal bot's <code>safeReply</code>.</li>
       <li><strong>The diagram shows every branch,</strong> including the loop that retries waiting notes.</li>
       <li><strong>While building:</strong> the service exits when the stream ends and systemd restarts it; a setup script logs in as the bot once and creates the event subscription.</li>
-      <li><strong>The bot's profile.</strong> Handle <code>@CommonNotesBot</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the bio, website and pinned post above.</li>
+      <li><strong>The bot's profile.</strong> Handle <code>@community_notes</code>, run by Nathan's account <code>@NathanpmYoung</code>, with the bio, website and pinned post above.</li>
       <li><strong>Open risk:</strong> whether X lets the bot reply under its own posts. The first live test checks it.</li>
     </ul>
   </section>
@@ -933,10 +933,10 @@ mumbaiThread.append(
   el("div", { class: "caption", text: "Real post from 29 September 2026, which quotes a post claiming that virtually everywhere Indians live looks like a garbage-filled canal. The thread assumes X doesn't take our notes on it yet." }),
   post({ role: "root", name: "Dinesh D'Souza", handle: "DineshDSouza", text: postText(M.postContext) + "\n\nQuoting: " + quotedText(M.postContext) }),
   post({ role: "human", handle: M.requester.handle, text: M.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: DATA.mumbaiWaitingNote, steps: [["search", "Search", 0], ["writer", "Writer"], ["trySubmit", "Try to submit"], ["waitingNote", "Waiting note"]] }),
-  post({ role: "human", handle: "dan_m", text: "@CommonNotesBot is this right?", silent: "A second tag under the same post while the note waits, written for this example." }),
-  post({ role: "bot", handle: "CommonNotesBot", text: R.earlierAnswer, steps: [["known", "Seen this post?"], ["repeat", "First answer"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: R.submittedLater, steps: [["waitingList", "Waiting notes"], ["tryAgain", "Try again"], ["submittedLater", "Submitted"]], silent: "Under the waiting note, once people requested a note and X allowed it. Fixed template; the example submitted nothing." }),
+  post({ role: "bot", handle: "community_notes", text: DATA.mumbaiWaitingNote, steps: [["search", "Search", 0], ["writer", "Writer"], ["trySubmit", "Try to submit"], ["waitingNote", "Waiting note"]] }),
+  post({ role: "human", handle: "dan_m", text: "@community_notes is this right?", silent: "A second tag under the same post while the note waits, written for this example." }),
+  post({ role: "bot", handle: "community_notes", text: R.earlierAnswer, steps: [["known", "Seen this post?"], ["repeat", "First answer"]] }),
+  post({ role: "bot", handle: "community_notes", text: R.submittedLater, steps: [["waitingList", "Waiting notes"], ["tryAgain", "Try again"], ["submittedLater", "Submitted"]], silent: "Under the waiting note, once people requested a note and X allowed it. Fixed template; the example submitted nothing." }),
 );
 
 const gdpThread = document.getElementById("thread-gdp");
@@ -945,7 +945,7 @@ gdpThread.append(
   el("div", { class: "caption", text: "Real post from 5 October 2026 by the US Treasury Secretary." }),
   post({ role: "root", name: "Treasury Secretary Scott Bessent", handle: "SecScottBessent", text: postText(G.postContext) }),
   post({ role: "human", handle: G.requester.handle, text: G.requester.text, steps: [["watch", "Event stream"], ["read", "Read the post"]] }),
-  post({ role: "bot", handle: "CommonNotesBot", text: G.reason.result.reply, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
+  post({ role: "bot", handle: "community_notes", text: G.reason.result.reply, steps: [["search", "Search", 1], ["noNote", "No-note reply"]] }),
   post({ role: "human", handle: G.feedback.handle, text: G.feedback.text, silent: "The bot doesn't answer replies, whatever they say." }),
 );
 

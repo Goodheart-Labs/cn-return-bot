@@ -1,4 +1,4 @@
-# The cn-x-tag-bot service: @CommonNotesBot on X (src/x-tag-bot/). Installed by
+# The cn-x-tag-bot service: @community_notes on X (src/x-tag-bot/). Installed by
 # hand once, see "The X tag bot" in ops/README.md.
 [Unit]
 Description=Common Notes X tag bot

@@ -95,7 +95,7 @@ YTDLP_PROXY_URL=
 #SUBSTACK_PROXY_URL=
 #SUBSTACK_PROXY_KEY=
 
-# cn-x-tag-bot only: @CommonNotesBot's account and developer app. See "The X
+# cn-x-tag-bot only: @community_notes's account and developer app. See "The X
 # tag bot" below. The bot also uses SUPABASE_*, CLAIM_CHECK_URL and the
 # notewriter's X_* keys above, which submit its notes.
 X_TAG_BOT_USER_ID=
@@ -117,7 +117,7 @@ X_TAG_BOT_BEARER_TOKEN=
 
 ## The X tag bot (cn-x-tag-bot)
 
-People tag @CommonNotesBot under a post on X. The bot researches the post and
+People tag @community_notes under a post on X. The bot researches the post and
 submits a Community Note through the notewriter, or says why it can't yet and
 keeps trying for three hours.
 The plan, with every prompt, reply and decision, is linked on GOO-212.

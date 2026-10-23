@@ -54,7 +54,7 @@ function harness(overrides: Partial<TagBotDeps> = {}) {
 
 /** Tags the bot under the target post and returns the id of its answer. */
 async function tagged(h: ReturnType<typeof harness>, author = "priya"): Promise<string> {
-  await h.bot.receive(h.tag(author, "@CommonNotesBot is this true? Dharavi still exists"));
+  await h.bot.receive(h.tag(author, "@community_notes is this true? Dharavi still exists"));
   return h.lastReply().id;
 }
 
@@ -72,7 +72,7 @@ describe("a tag", () => {
 
   test("under a quote post, the quoted post is the one researched", async () => {
     const h = harness();
-    await h.bot.receive(h.tag("priya", "@CommonNotesBot true?", { quotedId: "42" }));
+    await h.bot.receive(h.tag("priya", "@community_notes true?", { quotedId: "42" }));
     expect(h.deps.checkTweet).toHaveBeenCalledWith(expect.objectContaining({ id: "42" }), expect.anything());
   });
 
@@ -121,7 +121,7 @@ describe("a tag", () => {
 
   test("the same tag delivered twice is answered once", async () => {
     const h = harness();
-    const tag = h.tag("priya", "@CommonNotesBot check this");
+    const tag = h.tag("priya", "@community_notes check this");
     await h.bot.receive(tag);
     await h.bot.receive(tag);
     expect(h.replies).toHaveLength(1);
@@ -129,7 +129,7 @@ describe("a tag", () => {
 
   test("a reply to one of the bot's posts is not a tag", async () => {
     const h = harness();
-    await h.bot.receive(h.tag("raj", "@CommonNotesBot wrong", { repliedToId: "1000", repliedToUserId: "bot" }));
+    await h.bot.receive(h.tag("raj", "@community_notes wrong", { repliedToId: "1000", repliedToUserId: "bot" }));
     expect(h.replies).toHaveLength(0);
   });
 });
@@ -179,6 +179,6 @@ describe("a waiting note", () => {
 });
 
 test("leading mentions are stripped from the tagger's comment", () => {
-  expect(withoutLeadingMentions("@CommonNotesBot @dan is this true?")).toBe("is this true?");
-  expect(withoutLeadingMentions("is this true @CommonNotesBot")).toBe("is this true @CommonNotesBot");
+  expect(withoutLeadingMentions("@community_notes @dan is this true?")).toBe("is this true?");
+  expect(withoutLeadingMentions("is this true @community_notes")).toBe("is this true @community_notes");
 });

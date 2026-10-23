@@ -29,7 +29,7 @@ The goals, in order: views of AI-written notes, misleading views suppressed, get
 - `src/everything-core/`, `src/everything-ui/`, `src/everything-features/` - the shared layers of the Common Notes frontend.
 - `src/everything-web/` (website), `src/everything-extension/` (browser extension), `src/analytics-dashboard/` (Common Notes analytics), `src/review-dashboard/` (X note failures).
 - `src/signal-bot/` - a Signal chat bot that drafts a note for a pasted tweet and submits it after a human says yes.
-- `src/x-tag-bot/` - @CommonNotesBot on X: people tag it under a post, and it researches the post and submits a Community Note, or says why it can't yet (see "X tag bot" below).
+- `src/x-tag-bot/` - @community_notes on X: people tag it under a post, and it researches the post and submits a Community Note, or says why it can't yet (see "X tag bot" below).
 - `src/scripts_jim/`, `src/scripts_nathan/`, `src/scripts_rob/` - personal investigation journals, one dated folder each.
 - `migrations/` - Supabase SQL migrations. `ops/` - the services machine.
 
@@ -42,7 +42,7 @@ One always-on Linux server (the "services box") runs these systemd services, des
 - `cn-intake`: picks up reader requests for Common Notes at once and drives them through the other two.
 - `cn-fetch`: fetches every outside page and image in a sandbox without keys.
 - `cn-pot-provider`: a Docker container that hands out YouTube PO tokens on 127.0.0.1:4416 (see "Fetching sources").
-- `cn-x-tag-bot`: @CommonNotesBot on X (see "X tag bot" below and "The X tag bot" in `ops/README.md`).
+- `cn-x-tag-bot`: @community_notes on X (see "X tag bot" below and "The X tag bot" in `ops/README.md`).
 
 The X bot run and the Common Notes feed run are thin callers. They first check that the services they use are reachable and not stuck, and fail if not. Then they send the work over HTTP (`src/service/client.ts`, URLs in `CLAIM_CHECK_URL` and `EXTRACTION_URL`). The X bot and the Signal bot use only claim-check. So a change to note writing or claim checking reaches production only once the services box has deployed it. Deploying is a pull: a systemd timer runs `ops/autodeploy.sh` every 5 minutes, which pulls the checkout's branch and restarts the services once they are idle. A new unit file must be installed by hand once.
 

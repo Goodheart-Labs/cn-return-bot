@@ -1,5 +1,5 @@
 /**
- * The X tag bot: people tag @CommonNotesBot under a post, and it researches the
+ * The X tag bot: people tag @community_notes under a post, and it researches the
  * post and submits a Community Note, or says why it can't yet. It runs as the
  * cn-x-tag-bot service on the services box (ops/README.md).
  *
@@ -85,7 +85,7 @@ async function dryRun(postUrl: string | undefined, comment: string | undefined):
     store: createMemoryStore(),
     botUserId: "bot",
     postReply: async (text) => {
-      print("@CommonNotesBot would reply", text);
+      print("@community_notes would reply", text);
       return "2";
     },
     fetchPost: fetchTweetById,

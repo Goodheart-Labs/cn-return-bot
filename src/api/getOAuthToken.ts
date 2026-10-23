@@ -22,7 +22,7 @@ export function getOAuth1Headers(
 ) {
   const readerConfigured = profile === "reader" &&
     ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"].some((suffix) => process.env[`X_READ_${suffix}`]);
-  // The tag bot posts as its own account, @CommonNotesBot, never as the notewriter.
+  // The tag bot posts as its own account, @community_notes, never as the notewriter.
   const prefix = profile === "tagbot" ? "X_TAG_BOT" : readerConfigured ? "X_READ" : "X";
   const consumer_key = getRequiredEnv(`${prefix}_API_KEY`);
   const consumer_secret = getRequiredEnv(`${prefix}_API_KEY_SECRET`);
