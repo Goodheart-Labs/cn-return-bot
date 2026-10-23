@@ -19,6 +19,16 @@ export const queryKeys = {
   /** How many devices outside the team saw each item's notes. */
   itemNoteViewers: ["itemNoteViewers"] as const,
   leaderboard: ["leaderboard"] as const,
+  /** Everything the admins' note review page reads. */
+  noteReview: ["noteReview"] as const,
+  noteReviewSummary: ["noteReview", "summary"] as const,
+  /** The pages of one sidebar section that the admin scrolled through. */
+  noteReviewSection: (section: string) => ["noteReview", "section", section] as const,
+  /** The newest page of a section, polled to notice new drafts. */
+  noteReviewNewest: (section: string) => ["noteReview", "newest", section] as const,
+  /** The live notes of the drafts on screen. They sit under the noteSet
+   *  prefix, so a vote on one of them updates it here too. */
+  noteReviewNoteSet: (noteIds: string[]) => ["noteSet", "noteReview", ...noteIds] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

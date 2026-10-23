@@ -4,7 +4,7 @@ import { cn } from "@cn/ui/cn";
 
 /** The paragraph surrounding the claim, with the quoted excerpt in bold. It sits
  *  beside the note card so the correction can be read in its original context.
- *  The website and the note review dashboard both show it. */
+ *  The website and the admins' note review page both show it. */
 export function ContextParagraph({ paragraph, quote, bare, fitTo }: {
   paragraph: string;
   quote: string;
