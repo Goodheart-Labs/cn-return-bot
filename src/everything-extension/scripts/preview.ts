@@ -8,9 +8,6 @@
 // (or build-ext) first. The profile directory is kept between runs, which
 // keeps the background's synced coverage cache warm; on a cold profile the
 // script reloads the page until the sync has landed and badges can render.
-// On a machine without Chromium's system libraries, extract the needed .debs
-// into ~/.cache/cn-playwright-libs (no root needed) and the launcher puts
-// them on the library path by itself.
 import { openPageWithExtension } from "./browser";
 
 const BADGE_WAIT_ROUNDS = 6;
