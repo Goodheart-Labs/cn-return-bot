@@ -1,5 +1,40 @@
 import { expect, test } from "bun:test";
-import { canonicalizePageUrl } from "./pageUrls";
+import { canonicalizePageUrl, isSubstackReaderUrl, substackReaderFetchUrl } from "./pageUrls";
+
+test("Substack inbox posts resolve through the home reader URL", () => {
+  for (const href of [
+    "https://substack.com/inbox/post/206469842",
+    "https://substack.com/inbox/post/206469842/?utm_source=inbox#comments",
+    "https://www.substack.com/inbox/post/206469842",
+  ]) {
+    expect(isSubstackReaderUrl(href)).toBe(true);
+    expect(substackReaderFetchUrl(href)).toBe("https://substack.com/home/post/p-206469842");
+  }
+});
+
+test("existing Substack reader URLs keep their fetch URL", () => {
+  for (const href of ["https://substack.com/home/post/p-123", "https://substack.com/@author/p-123"]) {
+    expect(isSubstackReaderUrl(href)).toBe(true);
+    expect(substackReaderFetchUrl(href)).toBe(href);
+  }
+});
+
+test("unrelated paths and hosts are not Substack reader URLs", () => {
+  for (const href of [
+    "https://substack.com/inbox",
+    "https://substack.com/inbox/post/abc",
+    "https://substack.com/inbox/post/123abc",
+    "https://substack.com/inbox/post/123/other",
+    "https://substack.com/home",
+    "https://substack.com/@author",
+    "https://example.com/inbox/post/123",
+    "https://author.substack.com/inbox/post/123",
+    "not a URL",
+  ]) {
+    expect(isSubstackReaderUrl(href)).toBe(false);
+    expect(substackReaderFetchUrl(href)).toBe(href);
+  }
+});
 
 // The post links on Nathan Young's Substack profile, Posts tab, as the page
 // rendered them on 2026-10-05 (GOO-365). Logged in, Substack adds lli=1.
