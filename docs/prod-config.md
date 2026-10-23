@@ -84,8 +84,7 @@ The website asks X sign-in to return to the page the reader was on, in
 [src/everything-core/auth.ts](../src/everything-core/auth.ts).
 
 The two localhost lines let X sign-in work on a developer's machine while it
-talks to the production database. Port 8003 is the website and port 8004 is
-the analytics dashboard.
+talks to the production database. Port 8003 is the website.
 
 The last two lines are the browser extension's own return addresses. The
 extension's background script asks the browser for its return address with
@@ -271,7 +270,9 @@ GitHub Pages is GitHub's static website hosting. Under Settings → Pages the
 source is "GitHub Actions" (checked on 2026-10-01), so the Deploy Pages
 workflow publishes the site. The site lives at
 `https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain. It
-holds the stats dashboard and the analytics dashboard. The Common Notes
+holds the stats dashboard. Until 2026-10-23 it also held the Common Notes
+analytics dashboard at `/cn-return-bot/analytics/`, which moved to
+commonnotes.net/admin/dashboard (GOO-564). The Common Notes
 website used to have a copy at `/cn-return-bot/notes/`. That copy is gone, and
 its addresses now redirect to the same page on commonnotes.net.
 

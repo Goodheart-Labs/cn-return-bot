@@ -7,6 +7,10 @@ export function Menu({ className, children }: { className?: string; children: Re
   return <div className={cn(cardVariants({ elevation: "floating" }), "w-56 p-1.5 text-sm", className)}>{children}</div>;
 }
 
+/** The look of a menu row. A link in a menu, which cannot be a MenuItem
+ *  because it navigates instead of running an action, takes it directly. */
+export const menuItemClass = "flex w-full items-center gap-2 text-left px-2 py-2 rounded-control font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-focus";
+
 /** One row of a menu. A row marked as danger turns red, which is how a
  *  destructive action such as Delete is set apart from the rest. `selected`
  *  marks the current choice of a picker. */
@@ -28,7 +32,7 @@ export function MenuItem({ onClick, icon, danger, selected, autoFocus, children 
       autoFocus={autoFocus}
       aria-pressed={selected}
       className={cn(
-        "flex w-full items-center gap-2 text-left px-2 py-2 rounded-control font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+        menuItemClass,
         danger ? "text-negative hover:bg-negative-soft" : "text-fg-secondary hover:bg-surface-hover",
         selected && "text-link",
       )}
