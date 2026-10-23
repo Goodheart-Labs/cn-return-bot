@@ -28,7 +28,7 @@ export const IMAGINED_AVERAGE_POSTS = 3;
 /** The lowest score at which the walk takes a creator on visits alone. A
  *  prioritised creator is walked whatever their visits, because someone asked
  *  for them. It lives here for the same reason as LAST_POSTS_PER_CREATOR: the
- *  analytics dashboard lists the creators the walk would take. It was 1.5
+ *  admins' dashboard lists the creators the walk would take. It was 1.5
  *  until 2026-10-23, on the plain average without imagined posts. */
 export const MIN_SCORE_TO_WALK = 1;
 

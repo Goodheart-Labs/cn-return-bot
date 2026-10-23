@@ -1,35 +1,36 @@
-import type { Database } from "../../../everything-core/database.types";
-import { supabase } from "../../../everything-core/supabase";
-
-type RpcName = keyof Database["public"]["Functions"];
+import type { Database } from "./database.types";
 import {
   IMAGINED_AVERAGE_POSTS,
   IMAGINED_UNREAD_POSTS,
   LAST_POSTS_PER_CREATOR,
   MIN_SCORE_TO_WALK,
   MIN_VISITED_POSTS_TO_WALK,
-} from "../../../everything-core/readers";
-import { noteStatus } from "../../../everything-core/noteScore";
+} from "./readers";
+import { supabase } from "./supabase";
 
-// Every query runs through a security-definer RPC (migrations 077, 092, 095
-// and 097). The anon key cannot read everything_events or everything_votes
-// directly, and the RPCs return only aggregates.
+/* The numbers behind the admins' dashboard at /admin/dashboard. Every query
+ * runs through a security-definer function, one that runs with its owner's
+ * rights, because the anon key cannot read everything_events or
+ * everything_votes directly. The functions return only aggregates, and anyone
+ * with the public key may call them. The page itself shows only to admins. */
 
-/** PostgREST caps every response at this many rows, RPC results included.
- *  Series that grow one row per bucket page through it. */
+type RpcName = keyof Database["public"]["Functions"];
+
+/** PostgREST caps every response at this many rows, results of a database
+ *  function included. Series that grow by one row per bucket page through it. */
 const PAGE_SIZE = 1000;
 
 /** Postgres's code for a statement the server cancelled because it ran past
  *  the anon role's statement timeout, 3 seconds on this project. */
 const STATEMENT_TIMEOUT_CODE = "57014";
 /** The pauses before each retry of a timed-out call. The functions answer in
- *  well under a second warm; the timeout hits when the page loads with a cold
- *  cache and its four calls all read from disk at once, and the first retry
- *  can still land while the others are running. Three retries with growing
- *  pauses outlast that on the small production instance. */
+ *  well under a second when the database has their rows in memory. The
+ *  timeout hits when the page loads with a cold cache and its calls all read
+ *  from disk at once. Three retries with growing pauses outlast that on the
+ *  small production instance. */
 const RETRY_PAUSES_MS = [1500, 3000, 6000];
 
-/** One page of an RPC's rows, retrying a statement timeout. */
+/** One page of a function's rows, retrying a statement timeout. */
 async function rpcPage<T>(fn: RpcName, args: Record<string, unknown>, from: number, attempt = 0): Promise<T[]> {
   // The generated types tie each function to its own arguments, which this
   // generic pager cannot name, so the arguments go through unchecked.
@@ -43,8 +44,8 @@ async function rpcPage<T>(fn: RpcName, args: Record<string, unknown>, from: numb
   return data as T[];
 }
 
-/** Calls a set-returning RPC page by page until a short page arrives, so a
- *  series longer than PostgREST's cap still comes back whole. */
+/** Calls a function that returns rows, page by page until a short page
+ *  arrives, so a series longer than PostgREST's cap still comes back whole. */
 async function rpcAllRows<T>(fn: RpcName, args: Record<string, unknown>): Promise<T[]> {
   const rows: T[] = [];
   for (let from = 0; ; from += PAGE_SIZE) {
@@ -54,41 +55,7 @@ async function rpcAllRows<T>(fn: RpcName, args: Record<string, unknown>): Promis
   }
 }
 
-export type FunnelStage =
-  | "visitors"
-  | "devices"
-  | "shown_notes"
-  | "signed_in"
-  | "voted_1"
-  | "voted_5"
-  | "voted_10";
-
-export interface FunnelRow {
-  platform: string;
-  stage: FunnelStage;
-  users: number;
-}
-
-export interface TimeWindow {
-  label: string;
-  days: number | null;
-}
-
-export const WINDOWS: readonly TimeWindow[] = [
-  { label: "7 days", days: 7 },
-  { label: "30 days", days: 30 },
-  { label: "All time", days: null },
-];
-
-export async function fetchFunnel(days: number | null): Promise<FunnelRow[]> {
-  // Null means all time. The generated argument type cannot say that an
-  // argument accepts null.
-  const { data, error } = await supabase.rpc("everything_funnel", { window_days: days as number });
-  if (error) throw new Error(`everything_funnel failed: ${error.message}`);
-  return data as FunnelRow[];
-}
-
-// --- The metric series behind the line graph (migration 092) ---
+// --- The metric series behind the line chart (migrations 092 to 128) ---
 
 export type Granularity = "day" | "week" | "month";
 
@@ -97,14 +64,13 @@ export type Granularity = "day" | "week" | "month";
 export const HISTOGRAM_CAP = 20;
 
 /** How many people did the thing exactly k times in the bucket, keyed by k as
- *  a string because it arrives as a jsonb object. Sparse: an absent key means
- *  nobody. */
+ *  a string because it arrives as a jsonb object. An absent key means nobody. */
 export type TimesHistogram = Record<string, number>;
 
 export interface MetricSeriesRow {
   /** First day of the bucket, UTC, as YYYY-MM-DD. */
   bucket: string;
-  /** Null means the source was not recording yet; 0 means nobody. */
+  /** Null means the source was not recording yet. 0 means nobody. */
   active_devices: number | null;
   note_viewers: TimesHistogram | null;
   notes_seen: number | null;
@@ -137,58 +103,7 @@ export function fetchMetricSeries(granularity: Granularity): Promise<MetricSerie
   return rpcAllRows<MetricSeriesRow>("everything_metric_series", { granularity });
 }
 
-// --- The pipeline funnel (migration 092) ---
-
-/** One vote tally shared by `notes` AI notes written on the day's posts. */
-export interface NoteTally {
-  helpful_count: number;
-  somewhat_helpful_count: number;
-  not_helpful_count: number;
-  notes: number;
-}
-
-export interface PipelineDayRow {
-  /** UTC day as YYYY-MM-DD, the day the pipeline finished the posts. */
-  day: string;
-  items_processed: number;
-  claims_extracted: number;
-  claims_checked: number;
-  ai_note_tallies: NoteTally[];
-}
-
-export function fetchPipelineDays(): Promise<PipelineDayRow[]> {
-  return rpcAllRows<PipelineDayRow>("everything_pipeline_daily", {});
-}
-
-export interface PipelineFunnelBars {
-  items_processed: number;
-  claims_extracted: number;
-  claims_checked: number;
-  ai_notes: number;
-  /** AI notes whose tally noteStatus() calls helpful. The rule lives in
-   *  everything-core/noteScore.ts, not in SQL, so it is applied here. */
-  ai_notes_helpful: number;
-}
-
-const isRatedHelpful = (tally: NoteTally) => noteStatus({ ...tally, author_id: null }) === "helpful";
-
-/** The funnel for a range of days: every count summed, and the helpful bar
- *  summed over the tallies the shared rating rule accepts. */
-export function pipelineFunnelBars(days: PipelineDayRow[]): PipelineFunnelBars {
-  const bars: PipelineFunnelBars = { items_processed: 0, claims_extracted: 0, claims_checked: 0, ai_notes: 0, ai_notes_helpful: 0 };
-  for (const day of days) {
-    bars.items_processed += day.items_processed;
-    bars.claims_extracted += day.claims_extracted;
-    bars.claims_checked += day.claims_checked;
-    for (const tally of day.ai_note_tallies) {
-      bars.ai_notes += tally.notes;
-      if (isRatedHelpful(tally)) bars.ai_notes_helpful += tally.notes;
-    }
-  }
-  return bars;
-}
-
-// --- The recently checked posts (migrations 095 and 102) ---
+// --- The recently checked posts (migrations 095, 102 and 119) ---
 
 export interface RecentPostRow {
   id: string;
@@ -202,39 +117,20 @@ export interface RecentPostRow {
   /** When the pipeline finished the post. */
   processed_at: string;
   /** The average number of different people per post, over the author's
-   *  LAST_POSTS_PER_CREATOR most recently visited posts. A visit carries a
-   *  person only since migration 089, so older reading is missing. Null when
-   *  the post's project has no feed, or nobody visited the author. */
+   *  LAST_POSTS_PER_CREATOR most recently visited posts. Null when the post's
+   *  project has no feed, or nobody visited the author. */
   author_visitors_per_post: number | null;
   claims_extracted: number;
   claims_checked: number;
   notes: number;
 }
 
-/** The table shows the readers per post that the walk's score is made from,
- *  so it shows the attention that decided which posts got checked. */
+/** The posts the pipeline finished most recently, newest first. */
 export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
   return rpcAllRows<RecentPostRow>("everything_recent_posts", {
     max_posts: maxPosts,
     last_posts: LAST_POSTS_PER_CREATOR,
   });
-}
-
-// --- Spend by hour (migration 097) ---
-
-export interface SpendHourRow {
-  /** The start of the UTC hour. */
-  hour: string;
-  /** LLM cost in USD recorded in that hour. */
-  cost: number;
-  /** Pipeline steps recorded in that hour: claim checks, extractions and ratings. */
-  runs: number;
-}
-
-/** The last `days` days of Common Notes spend, one row per UTC hour, empty
- *  hours included so a chart shows the gaps. */
-export function fetchSpendByHour(days: number): Promise<SpendHourRow[]> {
-  return rpcAllRows<SpendHourRow>("everything_spend_by_hour", { window_days: days });
 }
 
 // --- The walk's ranking of creators (migrations 131 to 134) ---
@@ -265,6 +161,7 @@ export interface CreatorRankingRow {
   average_readers_per_post: number;
 }
 
+/** Every creator the walk would go through if it ran now, unsorted. */
 export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
   return rpcAllRows<CreatorRankingRow>("everything_creator_ranking", {
     last_posts: LAST_POSTS_PER_CREATOR,
