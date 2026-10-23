@@ -1,0 +1,979 @@
+[
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/ai-191-the-hackening-begins",
+  "title": "AI #191: The Hackening Begins",
+  "publishedAt": "2026-10-22T15:13:06.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/ai-191-the-hackening-begins",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T16:32:32.234625+00:00",
+   "processed_at": "2026-10-22T16:39:09.618+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/misaligned",
+  "title": "Misaligned!",
+  "publishedAt": "2026-10-21T22:24:38.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/misaligned",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T05:40:10.897152+00:00",
+   "processed_at": "2026-10-22T05:46:34.48+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/anthropic-does-not-understand-why",
+  "title": "Anthropic Does Not Understand Why Its Draft Bill Was Unacceptable and Troubling",
+  "publishedAt": "2026-10-20T23:03:05.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/anthropic-does-not-understand-why",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-21T00:50:13.765907+00:00",
+   "processed_at": "2026-10-21T00:58:14.184+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/i-can-see-everything",
+  "title": "I Can See Everything",
+  "publishedAt": "2026-10-19T13:44:21.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/i-can-see-everything",
+   "status": "done",
+   "retries": 1,
+   "created_at": "2026-10-19T18:12:56.323907+00:00",
+   "processed_at": "2026-10-19T21:39:40.131+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory",
+  "title": "Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling",
+  "publishedAt": "2026-10-17T14:42:39.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory",
+   "status": "done",
+   "retries": 1,
+   "created_at": "2026-10-17T16:45:08.302331+00:00",
+   "processed_at": "2026-10-20T02:57:12.24+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+  "title": "Monthly Roundup #47: October 2026",
+  "publishedAt": "2026-10-16T13:54:21.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "status": "done",
+   "retries": 1,
+   "created_at": "2026-10-16T14:59:10.205979+00:00",
+   "processed_at": "2026-10-20T03:38:43.831+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/ai-190-scion-of-the-times",
+  "title": "AI #190: Scion of the Times",
+  "publishedAt": "2026-10-15T12:03:51.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/ai-190-scion-of-the-times",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-15T13:46:32.175908+00:00",
+   "processed_at": "2026-10-15T14:15:37.862+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/the-safety-culture-at-the-labs-is",
+  "title": "The Safety Culture at the Labs is Broken",
+  "publishedAt": "2026-10-14T14:28:51.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/the-safety-culture-at-the-labs-is",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-14T18:50:37.489812+00:00",
+   "processed_at": "2026-10-14T18:57:44.237+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/arguments-about-ai-consciousness-b99",
+  "title": "Arguments About AI Consciousness Remain Highly Motivated and At Best Overconfident",
+  "publishedAt": "2026-10-13T14:00:22.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/arguments-about-ai-consciousness-b99",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-14T17:42:15.892183+00:00",
+   "processed_at": "2026-10-14T17:48:41.375+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "thezvi",
+  "priorityUntil": "2026-10-26T18:29:21.319029+00:00",
+  "key": "https://thezvi.substack.com/p/openai-fires-three-safety-researchers",
+  "title": "OpenAI Fires Three Safety Researchers",
+  "publishedAt": "2026-10-12T21:00:53.000Z",
+  "item": {
+   "url": "https://thezvi.substack.com/p/openai-fires-three-safety-researchers",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-12T21:27:05.185413+00:00",
+   "processed_at": "2026-10-12T21:33:54.147+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/san-francisco-meetup-this-saturday",
+  "title": "San Francisco Meetup This Saturday",
+  "publishedAt": "2026-10-22T19:42:57.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/san-francisco-meetup-this-saturday",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-23T01:37:21.427978+00:00",
+   "processed_at": "2026-10-23T01:38:24.521+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/why-global-trepanation",
+  "title": "Why Global Trepanation?",
+  "publishedAt": "2026-10-21T21:53:11.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/why-global-trepanation",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T06:12:18.197045+00:00",
+   "processed_at": "2026-10-22T06:16:29.899+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/against-against-handover",
+  "title": "Against Against Handover",
+  "publishedAt": "2026-10-20T20:32:59.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/against-against-handover",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-21T05:27:27.872818+00:00",
+   "processed_at": "2026-10-22T11:34:07.026+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/open-thread-456",
+  "title": "Open Thread 456",
+  "publishedAt": "2026-10-19T17:51:46.000Z",
+  "item": null
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/your-book-review-storm-of-steel",
+  "title": "Your Book Review: Storm Of Steel",
+  "publishedAt": "2026-10-16T23:39:56.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/your-book-review-storm-of-steel",
+   "status": "done",
+   "retries": 2,
+   "created_at": "2026-10-17T03:16:58.426836+00:00",
+   "processed_at": "2026-10-19T23:40:24.911+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/meetups-everywhere-2026-times-and",
+  "title": "Meetups Everywhere 2026: Times & Places",
+  "publishedAt": "2026-10-16T04:04:26.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/meetups-everywhere-2026-times-and",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-16T04:43:00.619375+00:00",
+   "processed_at": "2026-10-16T04:56:33.47+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/ai-safety-is-not-a-corporate-plot",
+  "title": "AI Safety Is Not A Corporate Plot",
+  "publishedAt": "2026-10-15T01:15:38.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/ai-safety-is-not-a-corporate-plot",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-15T02:33:03.688637+00:00",
+   "processed_at": "2026-10-15T02:40:52.594+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/open-thread-455",
+  "title": "Open Thread 455",
+  "publishedAt": "2026-10-13T00:19:32.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/open-thread-455",
+   "status": "done",
+   "retries": 2,
+   "created_at": "2026-10-13T03:04:12.438265+00:00",
+   "processed_at": "2026-10-13T15:07:26.941+00:00",
+   "checked_scope": "page",
+   "skip_reason": "This is an open thread with brief event and organizational announcements, rather than a text making a substantive argument or explaining a topic.",
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/your-book-review-we-present-television",
+  "title": "Your Book Review: We Present Television",
+  "publishedAt": "2026-10-10T01:05:13.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/your-book-review-we-present-television",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-10T05:38:21.12155+00:00",
+   "processed_at": "2026-10-10T05:53:42.198+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "astralcodexten",
+  "priorityUntil": "2026-10-30T05:16:36.117596+00:00",
+  "key": "https://www.astralcodexten.com/p/ballots-everywhere-times-and-places-673",
+  "title": "Ballots Everywhere: Times & Places",
+  "publishedAt": "2026-10-08T22:00:52.000Z",
+  "item": {
+   "url": "https://www.astralcodexten.com/p/ballots-everywhere-times-and-places-673",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-08T22:23:12.189421+00:00",
+   "processed_at": "2026-10-08T22:23:22.481+00:00",
+   "checked_scope": "page",
+   "skip_reason": "The text is an event notice announcing voter-guide meetup times and places without making substantive claims about the world.",
+   "error": null
+  }
+ },
+ {
+  "slug": "dwarkeshpatel",
+  "priorityUntil": "2026-10-29T14:43:15.800274+00:00",
+  "key": "frYSOKvNiiE",
+  "title": "What will computer chips look like in 2045?",
+  "publishedAt": "2026-10-22",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=frYSOKvNiiE",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T17:04:17.181676+00:00",
+   "processed_at": "2026-10-22T17:07:36.251+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "dwarkeshpatel",
+  "priorityUntil": "2026-10-29T14:43:15.800274+00:00",
+  "key": "LwQQ7nBCGSs",
+  "title": "How did a few hundred Spanish soldiers topple two empires? – Si Sheppard",
+  "publishedAt": "2026-10-01",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=LwQQ7nBCGSs",
+   "status": "done",
+   "retries": 1,
+   "created_at": "2026-10-01T16:22:19.856166+00:00",
+   "processed_at": "2026-10-01T23:05:59.833+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "aiexplained-official",
+  "priorityUntil": "2026-10-29T14:45:49.188789+00:00",
+  "key": "C4Sq3Rot8FU",
+  "title": "AI Labs Warn Race Makes Breach ‘Inevitable’",
+  "publishedAt": "2026-10-12",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=C4Sq3Rot8FU",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-12T22:57:33.021355+00:00",
+   "processed_at": "2026-10-12T23:08:26.574+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "aiexplained-official",
+  "priorityUntil": "2026-10-29T14:45:49.188789+00:00",
+  "key": "_rtp1XzaP6Q",
+  "title": "OpenAI Security: Controlling Models is Now ‘Hell’",
+  "publishedAt": "2026-10-01",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=_rtp1XzaP6Q",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-08T02:48:02.05477+00:00",
+   "processed_at": "2026-10-08T03:15:03.751+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "andymasley",
+  "priorityUntil": "2026-10-29T14:42:52.327393+00:00",
+  "key": "https://blog.andymasley.com/p/thinking-about-the-future-of-ai-shouldnt",
+  "title": "Thinking about the future of AI shouldn’t feel like choosing from a buffet",
+  "publishedAt": "2026-10-20T22:18:12.000Z",
+  "item": {
+   "url": "https://blog.andymasley.com/p/thinking-about-the-future-of-ai-shouldnt",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T15:28:25.239443+00:00",
+   "processed_at": "2026-10-22T15:29:49.448+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "andymasley",
+  "priorityUntil": "2026-10-29T14:42:52.327393+00:00",
+  "key": "https://blog.andymasley.com/p/the-direction-id-like-for-effective",
+  "title": "The direction I’d like for effective altruism",
+  "publishedAt": "2026-10-14T19:16:57.000Z",
+  "item": {
+   "url": "https://blog.andymasley.com/p/the-direction-id-like-for-effective",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-14T20:42:03.154309+00:00",
+   "processed_at": "2026-10-14T20:44:23.855+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "andymasley",
+  "priorityUntil": "2026-10-29T14:42:52.327393+00:00",
+  "key": "https://blog.andymasley.com/p/why-i-believe-current-ai-models-can-d63",
+  "title": "Why I believe current AI models can really think and understand - Part 2 of 3",
+  "publishedAt": "2026-10-09T12:29:32.000Z",
+  "item": {
+   "url": "https://blog.andymasley.com/p/why-i-believe-current-ai-models-can",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-09-30T07:48:20.441292+00:00",
+   "processed_at": "2026-09-30T08:04:56.626+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "eightythousandhours",
+  "priorityUntil": "2026-10-29T14:43:46.911111+00:00",
+  "key": "xPoyAMpg6fs",
+  "title": "8 ways the strategic situation has completely changed | Rob Wiblin",
+  "publishedAt": "2026-10-21",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=xPoyAMpg6fs",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T16:00:28.912896+00:00",
+   "processed_at": "2026-10-22T16:05:17.747+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "eightythousandhours",
+  "priorityUntil": "2026-10-29T14:43:46.911111+00:00",
+  "key": "EALt_-iIbzM",
+  "title": "Introducing our new channel",
+  "publishedAt": "2026-10-20",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=EALt_-iIbzM",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T17:37:10.873455+00:00",
+   "processed_at": "2026-10-22T17:37:59.895+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "eightythousandhours",
+  "priorityUntil": "2026-10-29T14:43:46.911111+00:00",
+  "key": "gNp77PKxqsQ",
+  "title": "A 7-step plan to have impact in AI safety – from career advisor Matt Beard",
+  "publishedAt": "2026-10-15",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=gNp77PKxqsQ",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-15T15:23:23.583268+00:00",
+   "processed_at": "2026-10-15T15:28:09.41+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "eightythousandhours",
+  "priorityUntil": "2026-10-29T14:43:46.911111+00:00",
+  "key": "3zNRoQmzaME",
+  "title": "11 'Hugging Face' details that reveal what's coming next",
+  "publishedAt": "2026-10-02",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=3zNRoQmzaME",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-08T06:07:10.056249+00:00",
+   "processed_at": "2026-10-08T06:14:13.199+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "visualpolitik",
+  "priorityUntil": "2026-10-27T16:51:05.166097+00:00",
+  "key": "I-E-OymKA00",
+  "title": "RUSIA pierde de repente la INICIATIVA y PUTIN mira a la OTAN @VisualPolitik",
+  "publishedAt": "2026-10-22",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=I-E-OymKA00",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T20:49:22.48083+00:00",
+   "processed_at": "2026-10-22T20:53:20.084+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "visualpolitik",
+  "priorityUntil": "2026-10-27T16:51:05.166097+00:00",
+  "key": "dpGG7a8nb5I",
+  "title": "La URSS fabricó PESTE inmune a ANTIBIÓTICOS: ahora muere una científica en SIBERIA @VisualPolitik",
+  "publishedAt": "2026-10-20",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=dpGG7a8nb5I",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T17:01:16.430483+00:00",
+   "processed_at": "2026-10-20T17:17:48.529+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "visualpolitik",
+  "priorityUntil": "2026-10-27T16:51:05.166097+00:00",
+  "key": "CUmwKYzxdw4",
+  "title": "Algo MUY EXTRAÑO está pasando en el cielo del BÁLTICO @VisualPolitik",
+  "publishedAt": "2026-10-16",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=CUmwKYzxdw4",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T16:56:25.915903+00:00",
+   "processed_at": "2026-10-20T17:14:10.698+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "visualpolitik",
+  "priorityUntil": "2026-10-27T16:51:05.166097+00:00",
+  "key": "xGZPHX9Wvn0",
+  "title": "TRUMP envía de repente 10.000 SOLDADOS y un tercer PORTAAVIONES contra IRÁN @VisualPolitik",
+  "publishedAt": "2026-10-14",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=xGZPHX9Wvn0",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T17:23:20.518518+00:00",
+   "processed_at": "2026-10-20T17:29:33.553+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "visualpolitik",
+  "priorityUntil": "2026-10-27T16:51:05.166097+00:00",
+  "key": "_YdzNPfVOM4",
+  "title": "TURQUÍA y PAKISTÁN envían de repente tropas a ARABIA SAUDÍ @VisualPolitik",
+  "publishedAt": "2026-10-13",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=_YdzNPfVOM4",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T17:46:24.746829+00:00",
+   "processed_at": "2026-10-20T17:51:56.462+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/trump-derangement-syndrome-has-been",
+  "title": "Trump Derangement Syndrome Has Been Vindicated ",
+  "publishedAt": "2026-10-22T15:30:55.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/trump-derangement-syndrome-has-been",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T18:09:17.457168+00:00",
+   "processed_at": "2026-10-22T18:13:15.143+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/talking-with-simon-goldstein-about",
+  "title": "Talking With Simon Goldstein About Why Biological Naturalism is False ",
+  "publishedAt": "2026-10-21T18:30:17.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/talking-with-simon-goldstein-about",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T18:41:22.852296+00:00",
+   "processed_at": "2026-10-22T18:42:13.447+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/nature-is-wrong-about-ai-consciousness",
+  "title": "Nature is Wrong About AI Consciousness",
+  "publishedAt": "2026-10-21T15:40:40.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/nature-is-wrong-about-ai-consciousness",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T19:13:17.433429+00:00",
+   "processed_at": "2026-10-22T19:16:00.981+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/private-law-for-ais",
+  "title": "Private Law For AIs",
+  "publishedAt": "2026-10-20T15:52:08.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/private-law-for-ais",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T19:45:25.12571+00:00",
+   "processed_at": "2026-10-22T19:47:38.144+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/if-every-blade-of-grass-screamed",
+  "title": "If Every Blade of Grass Screamed ",
+  "publishedAt": "2026-10-19T15:20:07.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/if-every-blade-of-grass-screamed",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-19T20:38:34.343068+00:00",
+   "processed_at": "2026-10-19T20:43:47.516+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/effective-altruists-should-grow-a",
+  "title": "Effective Altruists Should Grow a Spine",
+  "publishedAt": "2026-10-17T15:02:11.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/effective-altruists-should-grow-a",
+   "status": "done",
+   "retries": 1,
+   "created_at": "2026-10-17T17:08:20.0106+00:00",
+   "processed_at": "2026-10-22T20:19:11.147+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": "/extract-claims failed: [model: openai/gpt-6-luna] 403 403 Key limit exceeded (monthly limit). Manage it using https://openrouter.ai/workspaces/default/keys/3cec2aea92e14fe281eeebd0e7066ae2f5ad5040c85f7434d5302cd8a1e0c432 $1503.25 of $1500.00 used; resets 2026-11-01T00:00:00.000Z. | body: {\"message\":\"Key limit exceeded (monthly limit). Manage it using https://openrouter.ai/workspaces/default/keys/3cec2aea92e14fe281eeebd0e7066ae2f5ad5040c85f7434d5302cd8a1e0c432 $1503.25 of $1500.00 used; resets 2026-11-01T00:00:00.000Z.\",\"code\":403,\"metadata\":{\"limit_source\":\"openrouter_key_limit\",\"remedy_hint\":\"Raise or remove this API key's usage limit at https://openrouter.ai/settings/keys, or use a key without a limit.\",\"scope\":\"key_limit\",\"limit_usd\":1500,\"spend_usd\":1503.252185568,\"resets_at"
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/schmotte-and-bailey-pledge",
+  "title": "Schmotte and Bailey: Pledge ",
+  "publishedAt": "2026-10-15T15:34:20.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/schmotte-and-bailey-pledge",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-16T00:58:21.346518+00:00",
+   "processed_at": "2026-10-16T01:02:20.631+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/giant-dialogues",
+  "title": "Giant Dialogues ",
+  "publishedAt": "2026-10-14T15:34:22.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/giant-dialogues",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-14T19:07:23.439197+00:00",
+   "processed_at": "2026-10-14T19:09:27.026+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/leif-wenars-bad-criticisms-of-effective",
+  "title": "Leif Wenar’s Bad Criticisms of Effective Altruism ",
+  "publishedAt": "2026-10-12T15:33:25.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/leif-wenars-bad-criticisms-of-effective",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-12T18:46:22.99807+00:00",
+   "processed_at": "2026-10-12T19:01:26.77+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "benthams",
+  "priorityUntil": "2026-10-29T14:42:35.160767+00:00",
+  "key": "https://benthams.substack.com/p/of-course-conscious-ai-would-matter",
+  "title": "*Of Course* Conscious AI Would Matter Morally ",
+  "publishedAt": "2026-10-11T15:55:57.000Z",
+  "item": {
+   "url": "https://benthams.substack.com/p/of-course-conscious-ai-would-matter",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-12T03:44:16.742069+00:00",
+   "processed_at": "2026-10-12T03:47:09.376+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "moneymacro",
+  "priorityUntil": "2026-10-29T14:44:28.251839+00:00",
+  "key": "bWQe2IHpJ3M",
+  "title": "Why does middle-class life keep getting more expensive?",
+  "publishedAt": "2026-10-20",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=bWQe2IHpJ3M",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T21:21:15.06398+00:00",
+   "processed_at": "2026-10-22T21:25:53.128+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "moneymacro",
+  "priorityUntil": "2026-10-29T14:44:28.251839+00:00",
+  "key": "suiU5b9tmoE",
+  "title": "Why 98% of economists support a land value tax",
+  "publishedAt": "2026-10-08",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=suiU5b9tmoE",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-22T21:53:11.792776+00:00",
+   "processed_at": "2026-10-22T21:58:35.101+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "wired",
+  "priorityUntil": "2026-10-27T16:51:23.082537+00:00",
+  "key": "a1rdU67lvtM",
+  "title": "Presidential Historian Answers US Election Questions",
+  "publishedAt": "2026-10-20",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=a1rdU67lvtM",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T20:21:30.76448+00:00",
+   "processed_at": "2026-10-20T20:30:01.087+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "wired",
+  "priorityUntil": "2026-10-27T16:51:23.082537+00:00",
+  "key": "OxxOEUHfzw4",
+  "title": "Historian Fact Checks Gilded Age Slop",
+  "publishedAt": "2026-10-16",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=OxxOEUHfzw4",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T20:45:10.797653+00:00",
+   "processed_at": "2026-10-20T20:58:15.768+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "wired",
+  "priorityUntil": "2026-10-27T16:51:23.082537+00:00",
+  "key": "xjQGFaiClGA",
+  "title": "‘Abbott Elementary’ Cast Answer The 50 Most Searched Questions",
+  "publishedAt": "2026-10-14",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=xjQGFaiClGA",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T21:17:13.192997+00:00",
+   "processed_at": "2026-10-20T21:28:17.936+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "wired",
+  "priorityUntil": "2026-10-27T16:51:23.082537+00:00",
+  "key": "dmyi8LO6CBo",
+  "title": "Indian Film Expert Answers Bollywood Questions",
+  "publishedAt": "2026-10-13",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=dmyi8LO6CBo",
+   "status": "done",
+   "retries": 1,
+   "created_at": "2026-10-20T21:58:06.457201+00:00",
+   "processed_at": "2026-10-21T01:24:23.442+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "wired",
+  "priorityUntil": "2026-10-27T16:51:23.082537+00:00",
+  "key": "LBSkh4vayTk",
+  "title": "Presidential Historian Fact Checks US History Slop",
+  "publishedAt": "2026-10-09",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=LBSkh4vayTk",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-20T22:05:32.167818+00:00",
+   "processed_at": "2026-10-20T22:14:51.901+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "randombytes",
+  "priorityUntil": "2026-10-26T22:13:58.299334+00:00",
+  "key": "https://randombytes.substack.com/p/til-the-image-you-attached-to-a-claude",
+  "title": "TIL: The image you attached to a Claude chat isn't on your computer",
+  "publishedAt": "2026-10-11T15:45:09.000Z",
+  "item": {
+   "url": "https://randombytes.substack.com/p/til-the-image-you-attached-to-a-claude",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-19T22:25:09.620667+00:00",
+   "processed_at": "2026-10-19T22:28:40.401+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "ai_in_context",
+  "priorityUntil": null,
+  "key": "xFYUo0ZmK-A",
+  "title": "The AI Situation Is No Longer Under Control",
+  "publishedAt": "2026-10-20",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=xFYUo0ZmK-A",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-21T16:19:09.926466+00:00",
+   "processed_at": "2026-10-21T16:27:16.206+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "kurzgesagt",
+  "priorityUntil": "2026-09-10T16:34:35.32263+00:00",
+  "key": "PXbVn-f_wuM",
+  "title": "You Will Only Like Half of This Video",
+  "publishedAt": "2026-10-20",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=PXbVn-f_wuM",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-21T16:19:07.818946+00:00",
+   "processed_at": "2026-10-21T16:22:39.587+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "kurzgesagt",
+  "priorityUntil": "2026-09-10T16:34:35.32263+00:00",
+  "key": "_y9JuojAIg0",
+  "title": "We Finally Know More About Humanity’s First Civilization",
+  "publishedAt": "2026-10-08",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=_y9JuojAIg0",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-08T14:15:14.936821+00:00",
+   "processed_at": "2026-10-08T14:25:38.325+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ },
+ {
+  "slug": "kurzgesagt",
+  "priorityUntil": "2026-09-10T16:34:35.32263+00:00",
+  "key": "ujkD4SxPKOI",
+  "title": "AI Just Crossed the Terrifying Line - Now What?",
+  "publishedAt": "2026-10-05",
+  "item": {
+   "url": "https://www.youtube.com/watch?v=ujkD4SxPKOI",
+   "status": "done",
+   "retries": 0,
+   "created_at": "2026-10-06T08:47:32.185912+00:00",
+   "processed_at": "2026-10-06T08:53:03.764+00:00",
+   "checked_scope": "page",
+   "skip_reason": null,
+   "error": null
+  }
+ }
+]
