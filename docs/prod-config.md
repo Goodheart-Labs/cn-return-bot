@@ -197,6 +197,7 @@ so the live list is recorded here (checked on 2026-10-01):
 | `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `cleanup-cron-history` | `17 3 * * *` | Deletes pg_cron's own history older than 7 days. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `refresh-review-dashboard-base` | `0 * * * *` | Refreshes the review dashboard's cached table. | [migrations/080](../migrations/080_slow_review_dashboard_refresh.sql) |
+| `refresh-creator-visits` | `23 3 * * *` | Once a day, recounts every visited creator's visit numbers into `everything_creator_visits`, which the walk and the creator ranking read. Added on 2026-10-23. | [migrations/135](../migrations/135_creator_visits_daily.sql) |
 
 Both dispatch jobs read `github_dispatch_pat` from Vault. To pause one job
 without removing it, run `select cron.alter_job(job_id := <jobid>, active := false);`.
