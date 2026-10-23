@@ -21,7 +21,8 @@ import { fetchTopArchivePosts } from "./sources/substack";
 import { fetchChannelTopVideos } from "../pipeline/media/youtubeDataApi";
 import { youtubeChannelId } from "./youtubeChannels";
 
-const TOP_POSTS_PER_FEED = 5;
+/** It was 5 until 2026-10-23 (GOO-549). */
+export const TOP_POSTS_PER_FEED = 3;
 const REFRESH_AGE_DAYS = 60;
 
 /** How long a creator whose refresh failed waits before it is tried again.

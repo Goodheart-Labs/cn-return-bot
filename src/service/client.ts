@@ -22,7 +22,8 @@ import {
   type HealthResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
-  type ServiceErrorResponse, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse } from "./contract";
+  type ServiceErrorResponse, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse,
+  SUBSTACK_FEED_PATH, type FetchUrlRequest, type SubstackFeedXml } from "./contract";
 
 /** How long a caller waits for an answer. A check takes about a minute and a
  *  half of its own, and it may queue behind other work first, so this is a
@@ -62,6 +63,10 @@ export async function requestClaimRating(body: RateClaimsRequest): Promise<RateC
 
 export async function requestItemText(body: ItemTextRequest): Promise<ItemTextResponse> {
   return call<ItemTextResponse>(serviceUrl("EXTRACTION_URL"), ITEM_TEXT_PATH, body);
+}
+
+export async function requestSubstackFeed(body: FetchUrlRequest): Promise<SubstackFeedXml> {
+  return call<SubstackFeedXml>(serviceUrl("EXTRACTION_URL"), SUBSTACK_FEED_PATH, body);
 }
 
 export async function fetchClaimCheckHealth(): Promise<HealthResponse> {

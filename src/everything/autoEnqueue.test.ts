@@ -62,6 +62,11 @@ describe("topPostEntries", () => {
     expect(entries[0]!.publishedAt).toBe("2020-01-01");
   });
 
+  test("a list cached when it held 5 posts offers only the top 3", () => {
+    const tops = [1, 2, 3, 4, 5].map((rank) => row(`https://s/p/top-${rank}`, "substack", rank));
+    expect(topPostEntries(tops, []).map((e) => e.url)).toEqual(["https://s/p/top-1", "https://s/p/top-2", "https://s/p/top-3"]);
+  });
+
   test("a top post already among the recent entries is dropped", () => {
     const recent = [{ source: "substack" as const, url: "https://s/p/viral", matchKey: "https://s/p/viral", label: "x" }];
     const entries = topPostEntries([row("https://s/p/viral", "substack", 1), row("https://s/p/old", "substack", 2)], recent);

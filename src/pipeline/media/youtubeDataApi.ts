@@ -47,6 +47,8 @@ export interface YoutubeVideo {
   description: string;
   /** The publish day, YYYY-MM-DD. */
   publishedAt: string;
+  /** The exact moment of publication, as an ISO timestamp. */
+  publishedTime: string;
   viewCount: number;
   /** Null for a live stream or a premiere that has not aired, which the API
    *  reports with a zero-length duration. */
@@ -160,6 +162,7 @@ function toVideo(item: any): YoutubeVideo {
     channelTitle: item.snippet.channelTitle,
     description: item.snippet.description ?? "",
     publishedAt: item.snippet.publishedAt.slice(0, 10),
+    publishedTime: item.snippet.publishedAt,
     viewCount: Number(item.statistics?.viewCount ?? 0),
     durationSeconds: seconds > 0 ? seconds : null,
     upcoming: item.snippet.liveBroadcastContent === "upcoming",

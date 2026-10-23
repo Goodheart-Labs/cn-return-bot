@@ -61,10 +61,13 @@ export const DEFAULT_MEAN_POST_COST_USD = 1;
 
 /** How long a run that found nothing to process sets the alarm for. Without
  *  it an idle pipeline would be started every minute, since the interval is
- *  measured from a post start that never moves. Thirty minutes is the cadence
- *  the fixed timer had. The other timing rule, the database's 45-minute
+ *  measured from a post start that never moves. While the Claude note writer
+ *  writes the notes, every run is such a run, so this wait is also how often
+ *  the walk looks for new posts. It was 30 minutes until 2026-10-23, and Jim
+ *  chose 20 (GOO-549). Each walk enqueues one post, so a shorter wait gives
+ *  Claude more posts a day. The other timing rule, the database's 45-minute
  *  backstop for a run that never set its alarm, lives in migration 098. */
-export const IDLE_RECHECK_MS = 30 * 60_000;
+export const IDLE_RECHECK_MS = 20 * 60_000;
 
 const HOUR_MS = 3600_000;
 const DAY_MS = 24 * HOUR_MS;
