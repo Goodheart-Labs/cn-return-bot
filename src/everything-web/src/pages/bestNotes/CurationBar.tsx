@@ -8,6 +8,7 @@ import {
   returnToRecommendations,
   setComment,
   setPosition,
+  setPosted,
   type CuratedNoteRow,
   type CurationSection,
 } from "@cn/core/bestNotes";
@@ -117,11 +118,13 @@ function Action({ onClick, children }: { onClick: () => void; children: ReactNod
 /** The top of a note's card on the curation page: its rank, its creator, the
  *  admin's actions for the section, and the comment or removal reason. One
  *  small form at a time opens below it. */
-export function CurationBar({ section, rank, noteId, comment, removedReason, project, leaderboard, navigate, onError }: {
+export function CurationBar({ section, rank, noteId, comment, posted, removedReason, project, leaderboard, navigate, onError }: {
   section: CurationSection;
   rank: number;
   noteId: string;
   comment: string | null;
+  /** Whether an admin marked the note as posted on X. Only leaderboard notes have the mark. */
+  posted: boolean;
   removedReason: string | null;
   project: FeedProjectRow | undefined;
   /** The leaderboard in its order, which a move or an addition is placed in. */
@@ -147,6 +150,10 @@ export function CurationBar({ section, rank, noteId, comment, removedReason, pro
   } else if (section === "leaderboard") {
     actions = (
       <>
+        <label className="inline-flex items-center gap-1.5 text-sm text-fg-secondary">
+          <input type="checkbox" checked={posted} onChange={(e) => void change(() => setPosted(noteId, e.target.checked))} />
+          Posted on X
+        </label>
         <Action onClick={() => setPanel(panel === "place" ? null : "place")}>Move to place</Action>
         <Action onClick={() => setPanel(panel === "comment" ? null : "comment")}>Comment</Action>
         <Action onClick={() => void change(() => returnToRecommendations(noteId))}>Back to recommendations</Action>

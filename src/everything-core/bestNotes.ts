@@ -16,11 +16,14 @@ export type CurationList = "recommendations" | "leaderboard";
 export const CURATION_SECTIONS = ["recommendations", "leaderboard", "removed"] as const;
 export type CurationSection = (typeof CURATION_SECTIONS)[number];
 
-/** One note on a list. `comment` is an admin's note on why it sits where it does. */
+/** One note on a list. `comment` is an admin's note on why it sits where it
+ *  does. `posted_at` says when an admin marked a leaderboard note as posted on
+ *  X; it is always null for a recommendation. */
 export interface CuratedNoteRow {
   note_id: string;
   position: number;
   comment: string | null;
+  posted_at: string | null;
 }
 
 /** What the position helpers need of a row: which note, and where it sits. */
@@ -86,14 +89,16 @@ export function positionAtRank(list: Positioned[], rank: number): number {
 /** One list, best note first. Recommendations that were moved or removed are
  *  left out. */
 export async function fetchCuratedList(list: CurationList): Promise<CuratedNoteRow[]> {
-  const rows = await fetchAllRows<CuratedNoteRow>(
-    () => {
-      const query = supabase.from(TABLE[list]).select("note_id, position, comment");
-      return list === "recommendations" ? query.is("moved_at", null).is("removed_at", null) : query;
-    },
-    "note_id",
-    { label: list },
-  );
+  const rows =
+    list === "leaderboard"
+      ? await fetchAllRows<CuratedNoteRow>(() => supabase.from(TABLE.leaderboard).select("note_id, position, comment, posted_at"), "note_id", { label: list })
+      : (
+          await fetchAllRows<Omit<CuratedNoteRow, "posted_at">>(
+            () => supabase.from(TABLE.recommendations).select("note_id, position, comment").is("moved_at", null).is("removed_at", null),
+            "note_id",
+            { label: list },
+          )
+        ).map((row) => ({ ...row, posted_at: null }));
   return rows.sort((a, b) => a.position - b.position);
 }
 
@@ -119,6 +124,10 @@ export const setPosition = (list: CurationList, noteId: string, position: number
 
 export const setComment = (list: CurationList, noteId: string, comment: string) =>
   updateRow(list, noteId, { comment: comment.trim() || null }, "save the comment");
+
+/** Marks a leaderboard note as posted on X, or takes the mark off. */
+export const setPosted = (noteId: string, posted: boolean) =>
+  updateRow("leaderboard", noteId, { posted_at: posted ? new Date().toISOString() : null }, "change the posted mark");
 
 export const removeRecommendation = (noteId: string, reason: string) =>
   updateRow("recommendations", noteId, { removed_at: new Date().toISOString(), removed_reason: reason.trim() || null }, "remove the note");

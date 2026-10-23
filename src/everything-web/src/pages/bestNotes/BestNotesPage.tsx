@@ -14,6 +14,7 @@ import { useCurationFeed, useProjects, type CurationRow } from "../../lib/feedQu
 import { noteUrl, type Route } from "../../lib/routing";
 import { useAdminStatus } from "../../lib/useIsAdmin";
 import { useGrowingCount } from "../../lib/useGrowingCount";
+import { useVotedNoteIds } from "../../lib/useVotedNoteIds";
 import { BestNotesReorder } from "./BestNotesReorder";
 import { CurationBar, useCurationChange } from "./CurationBar";
 
@@ -130,7 +131,8 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
  *  its own ranking. Admins move the good ones to their own leaderboard, at the
  *  bottom or at a place they type, remove the rest with a reason, and comment
  *  on any note to explain its place. The leaderboard has a drag mode for
- *  reordering. A sidebar switches between the sections and narrows a section
+ *  reordering and a "Posted on X" mark on each note. Filters hide the notes
+ *  already posted and the notes the admin already voted on. A sidebar switches between the sections and narrows a section
  *  to one creator, whose slug then sits in the address. Anyone who is not an
  *  admin sees only a short message, and the database refuses them both lists. */
 export function BestNotesPage({ section, projectSlug, navigate }: { section: CurationSection; projectSlug: string | null; navigate: (route: Route) => void }) {
@@ -149,7 +151,12 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
   const leaderboardQuery = useQuery({ queryKey: queryKeys.curatedList("leaderboard"), queryFn: fetchLeaderboard });
   const [error, setError] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
+  const [notPostedOnly, setNotPostedOnly] = useState(false);
+  const [unvotedOnly, setUnvotedOnly] = useState(false);
   const change = useCurationChange(setError);
+  // A vote cast while the filter is on keeps its card until the filter is
+  // switched again, so the admin can still change the vote.
+  const votedNoteIds = useVotedNoteIds(String(unvotedOnly));
   const notes = noteSet?.notes;
   const improvements = useMemo(() => improvementsByOriginal(notes?.values() ?? []), [notes]);
   const entries = useMemo(() => entriesByClaim(noteSet?.nnn.values() ?? []), [noteSet]);
@@ -167,7 +174,12 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
       curated.push({ row, note, post, project: post?.project_id ? projectsById.get(post.project_id) : undefined });
     }
   }
-  const shown = projectSlug ? curated.filter((entry) => entry.project?.slug === projectSlug) : curated;
+  const shown = curated.filter(
+    ({ row, project, note }) =>
+      (!projectSlug || project?.slug === projectSlug) &&
+      (!notPostedOnly || !("posted_at" in row && row.posted_at)) &&
+      (!unvotedOnly || !votedNoteIds?.has(note.id)),
+  );
   const creators = countCreators(curated);
   const selectedProject = projectsQuery.data?.find((p) => p.slug === projectSlug);
 
@@ -205,6 +217,7 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
                 rank={index + 1}
                 noteId={note.id}
                 comment={"comment" in row ? row.comment : null}
+                posted={"posted_at" in row && !!row.posted_at}
                 removedReason={"removed_reason" in row ? row.removed_reason : null}
                 project={project}
                 leaderboard={leaderboard}
@@ -265,6 +278,20 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
             )}
           </div>
           <p className="text-sm text-fg-muted">{SECTION_INTROS[section]}</p>
+          {section !== "removed" && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-secondary">
+              {section === "leaderboard" && (
+                <label className="inline-flex items-center gap-1.5">
+                  <input type="checkbox" checked={notPostedOnly} onChange={(e) => setNotPostedOnly(e.target.checked)} />
+                  Not posted yet
+                </label>
+              )}
+              <label className="inline-flex items-center gap-1.5">
+                <input type="checkbox" checked={unvotedOnly} onChange={(e) => setUnvotedOnly(e.target.checked)} />
+                Not voted on by me
+              </label>
+            </div>
+          )}
           {error && <p className="text-sm text-negative">{error}</p>}
         </div>
         {feed}

@@ -10,7 +10,7 @@ const ENTRIES: ReorderEntry[] = Array.from({ length: ENTRY_COUNT }, (_, i) => {
   const note = NOTES[i % NOTES.length]!;
   const id = `best-${i + 1}`;
   return {
-    row: { note_id: id, position: i, comment: null },
+    row: { note_id: id, position: i, comment: null, posted_at: null },
     note: { ...note, id, note: `Note ${i + 1}. ${note.note}` },
     project: PROJECTS[i % PROJECTS.length],
   };

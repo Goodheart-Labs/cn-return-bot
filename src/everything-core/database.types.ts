@@ -122,18 +122,21 @@ export type Database = {
           comment: string | null
           note_id: string
           position: number
+          posted_at: string | null
         }
         Insert: {
           added_at?: string
           comment?: string | null
           note_id: string
           position: number
+          posted_at?: string | null
         }
         Update: {
           added_at?: string
           comment?: string | null
           note_id?: string
           position?: number
+          posted_at?: string | null
         }
         Relationships: [
           {
@@ -2432,6 +2435,15 @@ export type Database = {
       }
     }
     Views: {
+      everything_creator_visits: {
+        Row: {
+          feed_url: string | null
+          people: number | null
+          posts: number | null
+          visitors_per_post: number | null
+        }
+        Relationships: []
+      }
       everything_follow_requests: {
         Row: {
           created_at: string | null
