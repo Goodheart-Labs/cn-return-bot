@@ -199,7 +199,7 @@ function Chat({ draft, section }: { draft: ReviewDraft; section: ReviewSection }
 function RewriteForm({ draft, section, onDone }: { draft: ReviewDraft; section: ReviewSection; onDone: () => void }) {
   const { session } = useSession();
   const [note, setNote] = useState(draft.note);
-  const [postedAs, setPostedAs] = useState<"ai" | "me">("me");
+  const [postedAs, setPostedAs] = useState<"ai" | "me">("ai");
   const save = useReviewStep(draft, section, onDone);
   const posted = draft.status === "posted";
   const submit = (event: FormEvent) => {

@@ -101,11 +101,24 @@ export function normalizePageUrl(href: string, doc?: Document): string {
  *  caller falls back. */
 export function isSubstackReaderUrl(href: string): boolean {
   try {
-    const url = new URL(href);
+    const url = new URL(substackReaderFetchUrl(href));
     return /^(www\.)?substack\.com$/.test(url.hostname) && /\/p-\d+(\/|$)/.test(url.pathname);
   } catch {
     return false;
   }
+}
+
+export function substackReaderFetchUrl(href: string): string {
+  try {
+    const url = new URL(href);
+    const inboxPost = url.pathname.match(/^\/inbox\/post\/(\d+)\/?$/);
+    if (/^(www\.)?substack\.com$/.test(url.hostname) && inboxPost) {
+      return `https://substack.com/home/post/p-${inboxPost[1]}`;
+    }
+  } catch {
+    return href;
+  }
+  return href;
 }
 
 /** The embedded `canonical_url` appears either raw or JSON-escaped, depending on
@@ -164,8 +177,9 @@ export function sourceLinkLabel(url: string): string {
  *  cross-origin redirect nor read the response, and gets null instead. */
 export async function fetchReaderCanonical(href: string): Promise<string | null> {
   try {
-    const res = await fetch(href, { credentials: "omit" });
-    if (new URL(res.url).hostname !== new URL(href).hostname) {
+    const fetchUrl = substackReaderFetchUrl(href);
+    const res = await fetch(fetchUrl, { credentials: "omit" });
+    if (new URL(res.url).hostname !== new URL(fetchUrl).hostname) {
       void res.body?.cancel();
       return res.url;
     }
