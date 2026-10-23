@@ -1,8 +1,7 @@
 # Brief for the note-finding agents (GOO-504, GOO-507)
 
 Three levels of agents find and write Common Notes on one post. Every level reads
-`docs/note-examples.md` in the repo
-`/home/jim/dev/repos/cn-return-bot--feature-claude-note-writer` first. It holds the
+`docs/note-examples.md` first, in the same checkout as this brief. It holds the
 notes Jim judged very good and the ones that were rejected, with reasons. Match the
 good ones in tone, length and kind of finding.
 
