@@ -75,18 +75,16 @@ function CreatorCell({ row, navigate }: { row: CreatorRankingRow; navigate: (rou
   const name = row.project_name ?? shortFeedUrl(row.feed_url);
   return (
     <td className={cn(CELL, "min-w-52")}>
-      <span className="inline-flex items-center gap-1.5">
-        {row.project_slug ? (
-          <RouteLink to={{ view: "notes", project: row.project_slug, item: null, note: null }} navigate={navigate} className="font-medium text-fg hover:underline">
-            {name}
-          </RouteLink>
-        ) : (
-          <span className="font-medium text-fg">{name}</span>
-        )}
-        <a href={row.feed_url} target="_blank" rel="noreferrer" aria-label={`Open the feed of ${name}`} className="text-fg-subtle hover:text-fg">
-          <ExternalLinkIcon size={14} />
-        </a>
-      </span>
+      {row.project_slug ? (
+        <RouteLink to={{ view: "notes", project: row.project_slug, item: null, note: null }} navigate={navigate} className="font-medium text-fg hover:underline">
+          {name}
+        </RouteLink>
+      ) : (
+        <span className="font-medium text-fg">{name}</span>
+      )}
+      <a href={row.feed_url} target="_blank" rel="noreferrer" aria-label={`Open the feed of ${name}`} className="ml-1.5 inline-block align-[-2px] text-fg-subtle hover:text-fg">
+        <ExternalLinkIcon size={14} />
+      </a>
       {row.priority_until && (
         <div className={SUBLINE}>Priority until {new Date(row.priority_until).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</div>
       )}

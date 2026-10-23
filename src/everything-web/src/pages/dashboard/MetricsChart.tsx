@@ -372,7 +372,7 @@ function MetricPicker({ selection, allowOne, onChange }: { selection: Selection;
         <ChevronIcon size={16} aria-hidden className={cn("shrink-0 text-fg-muted transition-transform", open ? "-rotate-90" : "rotate-90")} />
       </div>
       {open && (
-        <Menu className="absolute left-0 top-full z-10 mt-1 w-max max-w-[min(28rem,calc(100vw-2rem))]">
+        <Menu className="absolute left-0 top-full z-10 mt-1 w-max min-w-full max-w-[calc(100vw-2rem)]">
           {keys.map((key) => (
             <MenuItem
               key={key}
