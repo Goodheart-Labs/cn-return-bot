@@ -30,16 +30,7 @@ number.
    - a claim that is wrong or misleading.
    Opinions, forecasts and jokes are not noteworthy unless they rest on a wrong fact.
    Be selective. Most posts have zero to three passages worth a note. Do not note
-   things a reader would not care about. Pick the claims most likely to leave readers
-   with a wrong picture, and be strictly neutral.
-   Never pick a pedantic passage. A note is pedantic when it corrects a number that is
-   roughly right, a detail that is not the speaker's point (such as who said a quote,
-   or which city), something whose correction does not change the point, or a figure
-   of speech, joke or obvious exaggeration. A note that only strengthens the point, or
-   that argues with someone's reasoning, is pedantic too.
-   A video's text is usually automatic captions. A misheard word is the captions'
-   mistake, not the speaker's. A speaker's own first-hand experience cannot be
-   checked, so check only the general facts a speaker states as true.
+   things a reader would not care about.
 3. For each passage, start one level-2 Opus agent (model "opus"), all of them at
    once. Give each one this brief's path, the post folder, the exact passage, why
    you picked it, and its draft number n (1, 2, 3, ... in your order). Agents that
@@ -87,8 +78,7 @@ a passage from memory because no agent was free.
      source matters to the point. The sources list already carries it.
    - It says what is actually the case, not just that something is wrong.
    - No links in the note text. Sources go in the sources list.
-   - Every sentence must be supported by at least one source, and every number in the
-     note must appear in one.
+   - Every sentence must be supported by at least one source.
 4. Start one level-3 Haiku agent (model "haiku") to check the sources. Give it the
    note and the list of source URLs, and ask it, for each URL, to open the page
    (WebFetch; for pages that fail, try `https://web.archive.org/web/2026/<url>`)
@@ -106,8 +96,7 @@ a passage from memory because no agent was free.
    drop the claim it supported, then check again with a new Haiku agent. Stop after
    3 rounds. If no well-sourced note is possible, the outcome is `too_hard`. If the
    research shows the passage is fine, the outcome is `no_note_needed`.
-6. Finish your own review of the note's wording first. Then save the draft: write this
-   JSON to a file in the run folder, named after the post and your
+6. Save the draft: write this JSON to a file in the run folder, named after the post and your
    draft number n, then run `bun run claude-notes draft <file>` in the repo. `draft`
    posts the note every time it runs, so run it exactly once per draft and never with
    extra arguments.
