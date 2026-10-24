@@ -1,0 +1,21 @@
+# The Claude note writer's runner on Nathan's ai-box (GOO-580). It runs as
+# Nathan's user, because Claude Code uses the login in his home folder.
+[Unit]
+Description=Claude note writer runner (one Claude per queued Common Notes post)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=3
+
+[Service]
+User=nathan
+WorkingDirectory=/srv/cn-notes
+EnvironmentFile=/etc/cn-notes/env
+Environment=CN_EXAMPLES_PATH=/home/nathan/.local/share/cn-notes/note-examples.md
+ExecStartPre=/usr/bin/mkdir -p /home/nathan/.local/share/cn-notes
+ExecStart=/home/nathan/.bun/bin/bun run claude-notes run
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -33,7 +33,7 @@ import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
-import { fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from "./db";
+import { feedPostsInFlight, fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from "./db";
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
@@ -46,7 +46,7 @@ import {
   nextAlarm,
 } from "./pacing";
 import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
-import { feedItemsQueued, logQueue, processNextFeedItem } from "./worker";
+import { logQueue, processNextFeedItem, queuedFeedItemCount } from "./worker";
 
 /** How long a reader request may sit unconsumed before this run fails. Intake
  *  consumes within seconds when it is alive, and its own 60-second poll is the
@@ -99,7 +99,7 @@ async function processOneFeedItem(): Promise<FeedRunOutcome> {
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
   console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
   const queue = await logQueue();
-  if (!feedItemsQueued(queue)) await runAutoEnqueue();
+  if (queuedFeedItemCount(queue) < (await feedPostsInFlight())) await runAutoEnqueue();
   const ended = await processNextFeedItem();
   if (ended === "empty") console.log("Nothing to process · every creator we walk is caught up");
   return ended;

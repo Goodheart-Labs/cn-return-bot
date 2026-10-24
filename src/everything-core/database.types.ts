@@ -366,6 +366,7 @@ export type Database = {
         Row: {
           approval_required: boolean
           id: boolean
+          posts_in_flight: number
           updated_at: string
           updated_by: string
           writer: string
@@ -373,6 +374,7 @@ export type Database = {
         Insert: {
           approval_required?: boolean
           id?: boolean
+          posts_in_flight?: number
           updated_at?: string
           updated_by?: string
           writer?: string
@@ -380,6 +382,7 @@ export type Database = {
         Update: {
           approval_required?: boolean
           id?: boolean
+          posts_in_flight?: number
           updated_at?: string
           updated_by?: string
           writer?: string
@@ -2547,6 +2550,7 @@ export type Database = {
         Args: {
           p_actor?: string
           p_approval_required?: boolean
+          p_posts_in_flight?: number
           p_writer?: string
         }
         Returns: undefined

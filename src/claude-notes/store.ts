@@ -13,7 +13,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { config as loadDotenv } from "dotenv";
 import { ENV_DIR } from "../cnEnv";
 import type { Database, Json } from "../everything-core/database.types";
-import { fetchAllRows } from "../everything-core/paging";
+import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
@@ -40,7 +40,7 @@ export interface NewDraft {
 
 export type DraftRow = Database["public"]["Tables"]["everything_claude_drafts"]["Row"];
 export type EventRow = Database["public"]["Tables"]["everything_claude_events"]["Row"];
-export type Settings = { writer: Writer; approvalRequired: boolean; updatedAt: string; updatedBy: string };
+export type Settings = { writer: Writer; approvalRequired: boolean; postsInFlight: number; updatedAt: string; updatedBy: string };
 
 /** NathanpmYoung's account, whose notes on a post make Claude skip the post. */
 const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
@@ -81,12 +81,21 @@ export async function logEvent(event: { actor: Actor; type: string; draftId?: st
 }
 
 export async function readSettings(): Promise<Settings> {
-  const row = unwrap(await db().from("everything_claude_settings").select("writer, approval_required, updated_at, updated_by").single());
-  return { writer: row.writer as Writer, approvalRequired: row.approval_required, updatedAt: row.updated_at, updatedBy: row.updated_by };
+  const row = unwrap(await db().from("everything_claude_settings").select("writer, approval_required, posts_in_flight, updated_at, updated_by").single());
+  return { writer: row.writer as Writer, approvalRequired: row.approval_required, postsInFlight: row.posts_in_flight, updatedAt: row.updated_at, updatedBy: row.updated_by };
 }
 
-export async function changeSettings(actor: Actor, change: { writer?: Writer; approvalRequired?: boolean }) {
-  check(await db().rpc("everything_claude_change_settings", { p_writer: change.writer, p_approval_required: change.approvalRequired, p_actor: actor }));
+export type SettingsChange = { writer?: Writer; approvalRequired?: boolean; postsInFlight?: number };
+
+export async function changeSettings(actor: Actor, change: SettingsChange) {
+  check(
+    await db().rpc("everything_claude_change_settings", {
+      p_writer: change.writer,
+      p_approval_required: change.approvalRequired,
+      p_posts_in_flight: change.postsInFlight,
+      p_actor: actor,
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -288,28 +297,56 @@ export interface QueueItem {
   title: string | null;
   priority: number;
   status: string;
-  full_text: string | null;
+  published_at: string | null;
+  created_at: string;
 }
 
-/** Queued items Claude has neither taken nor handed back, highest tier first.
- *  An item Claude is working on stays queued until it is finished, so the
- *  take is what tells it apart. */
-export async function waitingItems(): Promise<QueueItem[]> {
+/** The pipeline's order, so both writers agree: the highest tier first, then
+ *  items without a published date, then the newest, then the oldest in the
+ *  queue. */
+function inPipelineOrder(a: QueueItem, b: QueueItem): number {
+  if (a.priority !== b.priority) return b.priority - a.priority;
+  if (a.published_at !== b.published_at) {
+    if (a.published_at === null) return -1;
+    if (b.published_at === null) return 1;
+    return a.published_at < b.published_at ? 1 : -1;
+  }
+  return a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0;
+}
+
+/** The queue as the Claude note writer sees it. `waiting` holds the queued
+ *  items Claude has neither taken nor handed back. `taken` holds the ones
+ *  Claude took and has not finished yet: an item Claude works on stays queued
+ *  until it is finished, so the take event is what tells it apart. */
+export async function claudeQueue(): Promise<{ waiting: QueueItem[]; taken: QueueItem[] }> {
+  const queued = await fetchAllRows<QueueItem>(
+    () => db().from("everything_items").select("id, url, title, priority, status, published_at, created_at").eq("status", "queued"),
+    "id",
+    { label: "queued items" },
+  );
+  const ids = queued.map((item) => item.id);
   const [handbacks, takes] = await Promise.all([
-    fetchAllRows<{ item_id: string }>(() => db().from("everything_claude_handbacks").select("item_id"), "item_id", { label: "claude handbacks" }),
-    fetchAllRows<{ id: number; item_id: string }>(() => db().from("everything_claude_events").select("id, item_id").eq("type", "item_taken"), "id", { label: "claude takes" }),
+    fetchInBatches<{ item_id: string }>((chunk) => db().from("everything_claude_handbacks").select("item_id").in("item_id", chunk), ids, "item_id", { label: "claude handbacks" }),
+    fetchInBatches<{ id: number; item_id: string }>(
+      (chunk) => db().from("everything_claude_events").select("id, item_id").eq("type", "item_taken").in("item_id", chunk),
+      ids,
+      "id",
+      { label: "claude takes" },
+    ),
   ]);
   const handedBack = new Set(handbacks.map((h) => h.item_id));
   const taken = new Set(takes.map((e) => e.item_id));
-  const queued = unwrap(
-    await db().from("everything_items").select("id, url, title, priority, status, full_text").eq("status", "queued").order("priority", { ascending: false }).order("created_at"),
-  );
-  return queued.filter((item) => !handedBack.has(item.id) && !taken.has(item.id));
+  const mine = queued.filter((item) => !handedBack.has(item.id)).sort(inPipelineOrder);
+  return { waiting: mine.filter((item) => !taken.has(item.id)), taken: mine.filter((item) => taken.has(item.id)) };
 }
 
-export async function readItem(itemId: string): Promise<QueueItem & { project: { name: string; slug: string } | null; published_at: string | null }> {
+export async function readItem(itemId: string): Promise<QueueItem & { full_text: string | null; project: { name: string; slug: string } | null }> {
   return unwrap(
-    await db().from("everything_items").select("id, url, title, priority, status, full_text, published_at, project:everything_projects(name, slug)").eq("id", itemId).single(),
+    await db()
+      .from("everything_items")
+      .select("id, url, title, priority, status, full_text, published_at, created_at, project:everything_projects(name, slug)")
+      .eq("id", itemId)
+      .single(),
   ) as never;
 }
 
@@ -337,6 +374,36 @@ export async function finishItem(itemId: string, summary: Record<string, unknown
   await logEvent({ actor: "claude", type: "item_finished", itemId, data: summary });
 }
 
+/** Marks an item checked without notes, because nothing in it is worth
+ *  checking, such as a music video or a game trailer. */
+export async function skipItem(itemId: string, reason: string) {
+  await logEvent({ actor: "claude", type: "item_skipped", itemId, data: { reason } });
+  await finishItem(itemId, { skipped: true, reason });
+}
+
+/** How many drafts Claude saved on an item since a time. */
+export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
+  const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
+  if (error) throw new Error(JSON.stringify(error));
+  return count ?? 0;
+}
+
+/** The notes Claude posted since a time, newest first, for the daily review
+ *  on Nathan's ai-box. Withdrawn and rejected notes are not posted, so they
+ *  are left out. */
+export async function postedSince(since: string) {
+  return fetchAllRows<{ id: string; note_id: string | null; created_at: string; passage: string; note: string; item: { url: string; title: string | null; project: { slug: string } | null } | null }>(
+    () =>
+      db()
+        .from("everything_claude_drafts")
+        .select("id, note_id, created_at, passage, note, item:everything_items(url, title, project:everything_projects(slug))")
+        .eq("status", "posted")
+        .gte("created_at", since),
+    "id",
+    { label: "posted drafts" },
+  ).then((rows) => rows.sort((a, b) => (a.created_at < b.created_at ? 1 : -1)));
+}
+
 // ---------------------------------------------------------------------------
 // The pipeline's own notes on a post, which Claude judges after its own pass
 // ---------------------------------------------------------------------------
@@ -357,8 +424,10 @@ export async function keepPipelineNote(itemId: string, noteId: string, reason: s
 /** Deletes a pipeline note Claude judged bad. Its votes go with it, as Jim
  *  decided. The claim stays, marked as having no note. */
 export async function deletePipelineNote(itemId: string, noteId: string, reason: string) {
-  const note = unwrap(await db().from("everything_notes").select("id, note, claim_id, author_id").eq("id", noteId).single());
+  const note = unwrap(await db().from("everything_notes").select("id, note, claim_id, author_id, everything_claims(item_id, judgement)").eq("id", noteId).single());
   if (note.author_id !== null) throw new Error(`Note ${noteId} was written by a person, not by the pipeline`);
+  if (note.everything_claims?.item_id !== itemId) throw new Error(`Note ${noteId} is not on item ${itemId}`);
+  if (note.everything_claims.judgement === CLAUDE_JUDGEMENT) throw new Error(`Note ${noteId} is the Claude note writer's own note. Use withdraw for it`);
   check(await db().from("everything_notes").delete().eq("id", noteId));
   check(await db().from("everything_claims").update({ status: "no_note", status_reason: `Note removed by the Claude note writer: ${reason}` }).eq("id", note.claim_id));
   await logEvent({ actor: "claude", type: "pipeline_note_deleted", itemId, noteId, data: { reason, note: note.note } });
