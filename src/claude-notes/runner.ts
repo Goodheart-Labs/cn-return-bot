@@ -18,6 +18,7 @@ import { homedir } from "os";
 import * as path from "path";
 import {
   claudeDraftsSince,
+  recordUsage,
   claudeQueue,
   finishItem,
   handBack,
@@ -145,14 +146,15 @@ function runFolder(name: string): string {
 // Usage of Nathan's plan
 // ---------------------------------------------------------------------------
 
-/** The latest reading, at most 5 minutes old. A failed read keeps the last
- *  one, and with no reading at all no post starts. */
+/** The latest reading, at most 5 minutes old. Each new reading is stored for
+ *  the admin dashboard's usage chart. A failed read keeps the last one, and
+ *  with no reading at all no post starts. */
 async function weeklyUsage(): Promise<number | null> {
   if (Date.now() - usageReadAt > USAGE_READ_EVERY_MS) {
     usageReadAt = Date.now();
     try {
       usage = await readUsage();
-      console.log(`Nathan's plan: ${usage.weekly}% of the week used, ${usage.fiveHour}% of the 5-hour window`);
+      await recordUsage(usage);
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
     }
@@ -300,6 +302,7 @@ function refreshExamples() {
 // ---------------------------------------------------------------------------
 
 async function tick(first: boolean) {
+  await weeklyUsage();
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPost(run);
   await endAnswers();
   if ((await readSettings()).writer !== "claude") return;

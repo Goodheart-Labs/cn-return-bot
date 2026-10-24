@@ -389,6 +389,33 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_claude_usage: {
+        Row: {
+          at: string
+          five_hour: number | null
+          five_hour_resets_at: string | null
+          id: number
+          weekly: number
+          weekly_resets_at: string | null
+        }
+        Insert: {
+          at?: string
+          five_hour?: number | null
+          five_hour_resets_at?: string | null
+          id?: never
+          weekly: number
+          weekly_resets_at?: string | null
+        }
+        Update: {
+          at?: string
+          five_hour?: number | null
+          five_hour_resets_at?: string | null
+          id?: never
+          weekly?: number
+          weekly_resets_at?: string | null
+        }
+        Relationships: []
+      }
       everything_donations: {
         Row: {
           amount_if_helpful: number | null

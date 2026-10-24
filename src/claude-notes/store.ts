@@ -381,6 +381,18 @@ export async function skipItem(itemId: string, reason: string) {
   await finishItem(itemId, { skipped: true, reason });
 }
 
+/** Stores one reading of the plan's usage, for the admin dashboard's chart. */
+export async function recordUsage(reading: { weekly: number; fiveHour: number; weeklyResetsAt: string; fiveHourResetsAt: string }) {
+  check(
+    await db().from("everything_claude_usage").insert({
+      weekly: reading.weekly,
+      five_hour: reading.fiveHour,
+      weekly_resets_at: reading.weeklyResetsAt,
+      five_hour_resets_at: reading.fiveHourResetsAt,
+    }),
+  );
+}
+
 /** How many drafts Claude saved on an item since a time. */
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
