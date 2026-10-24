@@ -126,6 +126,14 @@ export async function approveDraft(draftId: string): Promise<string> {
   return data;
 }
 
+/** Takes an approval back: the note stays on the site and returns to the
+ *  review queue. Returns the live note's id. */
+export async function unapproveDraft(draftId: string): Promise<string> {
+  const { data, error } = await supabase.rpc("everything_claude_unapprove", { p_draft: draftId });
+  if (error) throw error;
+  return data;
+}
+
 /** Turns the note down. A posted note is deleted from the site. */
 export async function rejectDraft(draftId: string, reason: string): Promise<void> {
   const { error } = await supabase.rpc("everything_claude_reject", { p_draft: draftId, p_reason: reason });
