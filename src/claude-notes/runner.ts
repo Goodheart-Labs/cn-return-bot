@@ -151,6 +151,7 @@ async function weeklyUsage(): Promise<number | null> {
     usageReadAt = Date.now();
     try {
       usage = await readUsage();
+      console.log(`Nathan's plan: ${usage.weekly}% of the week used, ${usage.fiveHour}% of the 5-hour window`);
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
     }
@@ -170,14 +171,16 @@ async function mayStartPosts(): Promise<boolean> {
 
 async function startPost(item: QueueItem, attempt = 1) {
   const runDir = runFolder(item.id);
+  console.log(`Taking ${item.url}`);
   let taken;
   try {
     taken = await take(item.id);
   } catch (err) {
+    console.log(`Handing back ${item.url}: ${(err as Error).message}`);
     await handBack(item.id, `The Claude note writer could not read the post: ${(err as Error).message}`);
     return;
   }
-  if (taken.kind === "skipped") return;
+  if (taken.kind === "skipped") return console.log(`Skipped ${item.url}: ${taken.reason}`);
   const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
   startClaude(session, runDir, postPrompt(item, taken.dir, runDir));
   posts.set(item.id, { item, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
@@ -202,6 +205,7 @@ async function endPost(run: Run & { item: QueueItem }) {
   posts.delete(run.item.id);
   const report = readReport(run.runDir);
   const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt };
+  console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
   if (report?.skipped) return skipItem(run.item.id, String(report.reason ?? "nothing worth checking"));
   if (report) return finishItem(run.item.id, { ...report, ...usageNote });
   if (await savedDrafts(run)) return finishItem(run.item.id, { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote });
