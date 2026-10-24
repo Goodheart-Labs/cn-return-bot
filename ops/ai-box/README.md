@@ -10,7 +10,7 @@ message on the review page gets its own Claude in `cn-msg-<draft>`.
 
 | Path | What it is |
 |---|---|
-| `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it. |
+| `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it, and it follows whatever branch is checked out. |
 | `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`. Owned by root, readable by `nathan` only. |
 | `/tmp/cn-notes/<item id>/` | One run folder per post: the prompt, the Claude's output stream, its drafts and `report.json`. |
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
