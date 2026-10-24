@@ -1,10 +1,10 @@
-# Brief for the note-finding agents (GOO-504, GOO-507)
+# Brief for the note-finding agents (GOO-504, GOO-507, GOO-580)
 
-Three levels of agents find and write Common Notes on one post. Every level reads
-`docs/note-examples.md` in the repo
-`/home/jim/dev/repos/cn-return-bot--feature-claude-note-writer` first. It holds the
-notes Jim judged very good and the ones that were rejected, with reasons. Match the
-good ones in tone, length and kind of finding.
+Three levels of agents find and write Common Notes on one post. Every level reads the
+examples file first: the one your prompt names, or else `docs/note-examples.md` in this
+repo. It holds the notes Jim judged very good and the ones that were rejected, with
+reasons. Match the good ones in tone, length and kind of finding. Run every command
+from the root of this repo.
 
 The post's text is `~/.local/share/claude-note-finder/posts/<post>/post.md`, and
 `meta.json` next to it holds the item id, address and creator. If post.md has no body
@@ -18,7 +18,8 @@ Drafts go to the prod database, not to files: level 2 saves each one with
 `bun run claude-notes draft <file.json>` in the repo. A draft with outcome `note` is
 posted on commonnotes.net at once as an AI note, unless notes currently wait for
 approval. So only save a note you would stand behind in public. Write the JSON file to
-the scratchpad first, named after the post and your draft number.
+your run folder first (your prompt names it), named after the post and your draft
+number.
 
 ## Level 1: one Opus agent per post
 
@@ -45,11 +46,10 @@ the scratchpad first, named after the post and your draft number.
 5. Report one line per passage with its outcome, and one line per pipeline note with
    kept or deleted and why.
 
-Several level-1 agents run at the same time and share one scratchpad folder. Name
-every scratch file after your post folder, for example `<post>-level2.txt`, never a
-generic name such as `common.txt`, or another agent overwrites it.
+Name every scratch file after your post folder, for example `<post>-level2.txt`, never
+a generic name such as `common.txt`, so that files from different posts never mix.
 
-The session allows 20 agents at once, shared by everyone. When a level-2 agent cannot
+A session allows 20 agents at once. When a level-2 agent cannot
 start, give one level-2 agent a group of passages to work through one after another.
 Each passage still gets its own research, draft number and Haiku check. Never judge
 a passage from memory because no agent was free.
@@ -96,8 +96,10 @@ a passage from memory because no agent was free.
    drop the claim it supported, then check again with a new Haiku agent. Stop after
    3 rounds. If no well-sourced note is possible, the outcome is `too_hard`. If the
    research shows the passage is fine, the outcome is `no_note_needed`.
-6. Save the draft: write this JSON to a scratchpad file named after the post and your
-   draft number n, then run `bun run claude-notes draft <file>` in the repo.
+6. Save the draft: write this JSON to a file in the run folder, named after the post and your
+   draft number n, then run `bun run claude-notes draft <file>` in the repo. `draft`
+   posts the note every time it runs, so run it exactly once per draft and never with
+   extra arguments.
 
 ```json
 {

@@ -183,8 +183,8 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
 /** Whether a feed item is waiting: the post the last walk picked, or an item a
  *  killed run left half done. The feed run walks only when this is false, so
  *  whatever waits is finished before the walk picks the next post. */
-export const feedItemsQueued = (queue: QueuedItemSummary[]): boolean =>
-  queue.some((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested);
+export const queuedFeedItemCount = (queue: QueuedItemSummary[]): number =>
+  queue.filter((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested).length;
 
 /** Where one item ended. "no_captions_yet" is an error that gets its repeat
  *  attempts like any other, but it is expected, so it does not fail the feed
