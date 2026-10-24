@@ -1,4 +1,4 @@
--- 139: undo an approval on the note review page (Nathan, 2026-10-23: "when approved I can't unclick it").
+-- 141: undo an approval on the note review page (Nathan, 2026-10-23: "when approved I can't unclick it").
 --
 -- everything_claude_approve (migration 130) marks a posted note as reviewed. This takes that mark off again,
 -- so the note goes back to the reviewer's queue. The note itself stays on the site; only the review mark goes.
