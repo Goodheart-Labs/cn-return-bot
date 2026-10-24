@@ -5,7 +5,7 @@ import { localPoint } from "@visx/event";
 import { GridRows } from "@visx/grid";
 import { Group } from "@visx/group";
 import { ParentSize } from "@visx/responsive";
-import { scaleLinear, scaleTime } from "@visx/scale";
+import { scaleLinear, scaleUtc } from "@visx/scale";
 import { LinePath } from "@visx/shape";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { bisector } from "d3-array";
@@ -43,6 +43,10 @@ type Point = { date: Date; weekly: number };
 
 const bisectDate = bisector<Point, Date>((p) => p.date).center;
 
+/** A tick at midnight names the day, and any other tick its hour, so a range
+ *  with several ticks a day does not repeat the date. All in UTC. */
+const timeTick = (date: Date) => (date.getUTCHours() === 0 ? date.toISOString().slice(5, 10) : `${date.toISOString().slice(11, 13)}:00`);
+
 const formatTime = (date: Date) =>
   date.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", hour12: false }) + " UTC";
 
@@ -51,7 +55,7 @@ function UsageLines({ points, width }: { points: Point[]; width: number }) {
   const innerWidth = Math.max(width - MARGIN.left - MARGIN.right, 1);
   const innerHeight = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
   const xScale = useMemo(
-    () => scaleTime<number>({ domain: [points[0]!.date, points[points.length - 1]!.date], range: [0, innerWidth] }),
+    () => scaleUtc<number>({ domain: [points[0]!.date, points[points.length - 1]!.date], range: [0, innerWidth] }),
     [points, innerWidth],
   );
   const yScale = useMemo(() => scaleLinear<number>({ domain: [0, FULL_PERCENT], range: [innerHeight, 0] }), [innerHeight]);
@@ -93,7 +97,7 @@ function UsageLines({ points, width }: { points: Point[]; width: number }) {
             numTicks={Math.max(2, Math.floor(innerWidth / PIXELS_PER_TIME_TICK))}
             stroke={AXIS_COLOR}
             tickStroke={AXIS_COLOR}
-            tickFormat={(value) => (value instanceof Date ? value : new Date(value.valueOf())).toISOString().slice(5, 10)}
+            tickFormat={(value) => timeTick(value instanceof Date ? value : new Date(value.valueOf()))}
             tickLabelProps={() => ({ ...tickLabel, textAnchor: "middle", dy: 4 })}
           />
           <LinePath data={points} x={(p) => xScale(p.date)} y={(p) => yScale(p.weekly)} stroke={LINE_COLOR} strokeWidth={2} />
@@ -146,7 +150,10 @@ export function UsageChart() {
       ) : points.length < 2 ? (
         <p className="text-sm text-fg-muted">Not enough readings yet. The runner stores one every 5 minutes.</p>
       ) : (
-        <ParentSize>{({ width }) => (width > 0 ? <UsageLines points={points} width={width} /> : null)}</ParentSize>
+        // ParentSize positions its child absolutely, so it needs the height set.
+        <ParentSize debounceTime={50} style={{ height: CHART_HEIGHT }}>
+          {({ width }) => width > 0 && <UsageLines points={points} width={width} />}
+        </ParentSize>
       )}
     </div>
   );
