@@ -19,7 +19,9 @@ const NATHAN_USER_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
 /** Nathan posted his Claude Code batch on 2026-10-21 between 00:19 and 01:00
  *  UTC. His earlier notes are hand-written. */
 const CLAUDE_CODE_BATCH_START = "2026-10-21T00:00:00Z";
-const EXAMPLES_PATH = new URL("../../docs/note-examples.md", import.meta.url).pathname;
+// The runner on ai-box keeps its own copy outside the checkout, because the
+// checkout pulls main every few minutes and must stay clean.
+const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? new URL("../../docs/note-examples.md", import.meta.url).pathname;
 const REVIEW_HEADING = "## Jim's and Nathan's review decisions";
 const RATINGS_HEADING = "## Nathan's ratings on his own review page (2026-10-20 and 21)";
 /** The export of Nathan's local review page, one row per card he scored,

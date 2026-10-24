@@ -366,6 +366,7 @@ export type Database = {
         Row: {
           approval_required: boolean
           id: boolean
+          posts_in_flight: number
           updated_at: string
           updated_by: string
           writer: string
@@ -373,6 +374,7 @@ export type Database = {
         Insert: {
           approval_required?: boolean
           id?: boolean
+          posts_in_flight?: number
           updated_at?: string
           updated_by?: string
           writer?: string
@@ -380,9 +382,37 @@ export type Database = {
         Update: {
           approval_required?: boolean
           id?: boolean
+          posts_in_flight?: number
           updated_at?: string
           updated_by?: string
           writer?: string
+        }
+        Relationships: []
+      }
+      everything_claude_usage: {
+        Row: {
+          at: string
+          five_hour: number | null
+          five_hour_resets_at: string | null
+          id: number
+          weekly: number
+          weekly_resets_at: string | null
+        }
+        Insert: {
+          at?: string
+          five_hour?: number | null
+          five_hour_resets_at?: string | null
+          id?: never
+          weekly: number
+          weekly_resets_at?: string | null
+        }
+        Update: {
+          at?: string
+          five_hour?: number | null
+          five_hour_resets_at?: string | null
+          id?: never
+          weekly?: number
+          weekly_resets_at?: string | null
         }
         Relationships: []
       }
@@ -2547,6 +2577,7 @@ export type Database = {
         Args: {
           p_actor?: string
           p_approval_required?: boolean
+          p_posts_in_flight?: number
           p_writer?: string
         }
         Returns: undefined

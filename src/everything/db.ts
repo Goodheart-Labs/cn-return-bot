@@ -419,15 +419,23 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
-/** While the Claude note writer writes the notes (migration 129, GOO-507),
- *  the pipeline takes only the items Claude handed back to it, and this returns
- *  their ids. It returns null while the pipeline writes the notes as before. */
-async function itemsLeftToThePipeline(): Promise<string[] | null> {
-  const db = getSupabaseClient();
-  const settings = throwOnError(await db.from("everything_claude_settings").select("writer").single()) as { writer: string };
-  if (settings.writer !== "claude") return null;
-  const handbacks = throwOnError(await db.from("everything_claude_handbacks").select("item_id")) as { item_id: string }[];
-  return handbacks.map((h) => h.item_id);
+/** While the Claude note writer is on (everything_claude_settings.writer =
+ *  'claude'), the pipeline takes only the items Claude handed back to it. */
+async function claudeWritesNotes(): Promise<boolean> {
+  const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer").single()) as { writer: string };
+  return settings.writer === "claude";
+}
+
+/** How many feed posts may wait in the queue at once. The pipeline takes one
+ *  post per feed run. While Claude writes the notes, a post Claude works on
+ *  stays queued until it is finished, so this many posts are Claude's at the
+ *  same time. */
+export async function feedPostsInFlight(): Promise<number> {
+  const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer, posts_in_flight").single()) as {
+    writer: string;
+    posts_in_flight: number;
+  };
+  return settings.writer === "claude" ? settings.posts_in_flight : 1;
 }
 
 /** Moves the next queued item to `processing` and returns it. The highest
@@ -444,12 +452,12 @@ async function itemsLeftToThePipeline(): Promise<string[] | null> {
  *  back, and Claude takes the rest. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
   const db = getSupabaseClient();
+  // The inner join keeps only items with a hand-back row. A list of handed-back
+  // ids in the request would grow with every hand-back and break the URL.
   let query = db
     .from("everything_items")
-    .select(ITEM_COLUMNS)
+    .select((await claudeWritesNotes()) ? `${ITEM_COLUMNS}, everything_claude_handbacks!inner(item_id)` : ITEM_COLUMNS)
     .eq("status", "queued");
-  const handedBack = await itemsLeftToThePipeline();
-  if (handedBack) query = query.in("id", handedBack);
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)
@@ -464,7 +472,8 @@ export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<E
   );
   if (!item) return null;
   throwOnError(await db.from("everything_items").update({ status: "processing" }).eq("id", item.id));
-  return { ...item, status: "processing" };
+  const { everything_claude_handbacks: _handback, ...claimed } = item as EverythingItem & { everything_claude_handbacks?: unknown };
+  return { ...claimed, status: "processing" };
 }
 
 export async function fetchItem(id: string): Promise<EverythingItem> {
@@ -655,11 +664,17 @@ export async function markRequestedQueueBudgetExhausted(): Promise<void> {
  *  dead intake service: intake consumes requests within seconds, so an old
  *  pending request means nobody is listening. */
 export async function oldestPendingRequestAgeSeconds(): Promise<number | null> {
+  // A request with a steer or a passage question waits while its page is
+  // queued or being checked, and the Claude note writer can hold a page for
+  // much longer than 15 minutes. So only plain requests show that intake is
+  // alive. Intake turns those into queue items within seconds.
   const row = throwOnError<{ created_at: string } | null>(
     await getSupabaseClient()
       .from("everything_note_requests")
       .select("created_at")
       .eq("status", "pending")
+      .is("steer", null)
+      .is("passage_question_id", null)
       .order("created_at")
       .limit(1)
       .maybeSingle(),
