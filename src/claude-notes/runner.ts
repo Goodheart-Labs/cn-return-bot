@@ -228,10 +228,26 @@ async function endPost(run: Run & { item: QueueItem }) {
   const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt };
   console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
   if (report?.skipped) return skipItem(run.item.id, String(report.reason ?? "nothing worth checking"));
-  if (report) return finishItem(run.item.id, { ...report, ...usageNote });
+  if (report) {
+    await warnAboutUnsavedNotes(run, report);
+    return finishItem(run.item.id, { ...report, ...usageNote });
+  }
   if (await savedDrafts(run)) return finishItem(run.item.id, { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote });
   if (run.attempt < MAX_ATTEMPTS) return startPost(run.item, run.attempt + 1);
   await handBack(run.item.id, `The Claude note writer exited twice without a report; see ${run.runDir} on ai-box`);
+}
+
+/** A report that lists more notes than the post has drafts means some
+ *  `draft` calls failed, for example because a guard hook refused them. The
+ *  research is then lost unless a person saves the drafts from the run
+ *  folder, so the runner says so in its log and in the events table. */
+async function warnAboutUnsavedNotes(run: Run & { item: QueueItem }, report: Record<string, unknown>) {
+  const passages = (report.passages ?? []) as { outcome?: string }[];
+  const reported = passages.filter((p) => p.outcome === "note").length;
+  const saved = await claudeDraftsSince(run.item.id, new Date(run.startedAt).toISOString());
+  if (saved >= reported) return;
+  console.error(`UNSAVED NOTES on ${run.item.url}: the report lists ${reported} notes but only ${saved} drafts were saved. The draft files are in ${run.runDir}`);
+  await logEvent({ actor: "claude", type: "notes_unsaved", itemId: run.item.id, data: { reported, saved, runDir: run.runDir } });
 }
 
 /** After a restart, a post that is still taken either has its Claude still
