@@ -146,6 +146,24 @@ function runFolder(name: string): string {
 // Usage of Nathan's plan
 // ---------------------------------------------------------------------------
 
+/** Claude Code renews its login token only when it runs. While no post runs,
+ *  the token in the credentials file expires, and the usage endpoint answers
+ *  401. A tiny Claude call renews the token. */
+function renewClaudeLogin() {
+  const renewed = spawnSync(CLAUDE_BIN, ["-p", "Reply with OK", "--model", "haiku"], { cwd: RUNS_DIR, encoding: "utf8", timeout: 120_000 });
+  console.log(renewed.status === 0 ? "Renewed the Claude login" : `Could not renew the Claude login: ${renewed.stderr}`);
+}
+
+async function readUsageRenewingLogin(): Promise<UsageReading> {
+  try {
+    return await readUsage();
+  } catch (err) {
+    if (!(err as Error).message.includes(" 401")) throw err;
+    renewClaudeLogin();
+    return readUsage();
+  }
+}
+
 /** The latest reading, at most 5 minutes old. Each new reading is stored for
  *  the admin dashboard's usage chart. A failed read keeps the last one, and
  *  with no reading at all no post starts. */
@@ -153,7 +171,7 @@ async function weeklyUsage(): Promise<number | null> {
   if (Date.now() - usageReadAt > USAGE_READ_EVERY_MS) {
     usageReadAt = Date.now();
     try {
-      usage = await readUsage();
+      usage = await readUsageRenewingLogin();
       await recordUsage(usage);
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
