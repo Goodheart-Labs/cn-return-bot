@@ -16,7 +16,6 @@ import { spawnSync } from "child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
-import { QUEUE_PRIORITY } from "../everything/db";
 import {
   claudeDraftsSince,
   claudeQueue,
@@ -36,10 +35,14 @@ import { readUsage, type UsageReading } from "./usage";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 const POLL_MS = 30_000;
-/** Feed posts in progress at once. Reader requests do not count, because
- *  they always start at once. The walk gives Claude only as many feed posts as
- *  posts_in_flight, so this limit is rarely reached. */
-const MAX_FEED_POSTS_RUNNING = 5;
+/** Posts in progress at once. The queue puts reader requests first, so a
+ *  request takes the next free slot. The walk gives Claude only as many feed
+ *  posts as posts_in_flight, so this limit is rarely reached. */
+const MAX_POSTS_RUNNING = 5;
+/** An item the runner has not started this long after it first saw it goes to
+ *  the pipeline. That is the backup for when Claude cannot run: the box is
+ *  paused, Nathan's week is nearly used up, or something is broken. */
+const HAND_BACK_AFTER_MS = 30 * 60_000;
 /** Above this share of Nathan's weekly limit no new post is started. */
 const MAX_WEEKLY_USAGE_PERCENT = 90;
 /** The usage endpoint is rate limited, and Nathan's pacer reads it too. */
@@ -63,6 +66,8 @@ const posts = new Map<string, Run & { item: QueueItem }>();
 const answers = new Map<string, Run>();
 /** Drafts whose message Claude failed to answer twice. They wait for a person. */
 const unanswerable = new Set<string>();
+/** When the runner first saw each item waiting. */
+const firstSeen = new Map<string, number>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
 let examplesBuiltAt = 0;
@@ -220,16 +225,18 @@ async function adoptTakenPosts(taken: QueueItem[]) {
   }
 }
 
-const isRequest = (item: QueueItem) => item.priority >= QUEUE_PRIORITY.requested;
-
-/** Reader requests start at once, however many posts are running. When the
- *  runner may not start any, because the box is paused or Nathan's week is
- *  nearly used up, a request goes to the pipeline at once, so readers never
- *  wait. */
-async function startRequests(requests: QueueItem[], mayStart: boolean) {
-  for (const item of requests) {
-    if (mayStart) await startPost(item);
-    else await handBack(item.id, "The Claude note writer could not start a Claude for this reader request (ai-box paused or Nathan's weekly limit nearly used)");
+/** Hands back every item that has waited 30 minutes since the runner first
+ *  saw it. The clock does not start at the item's creation, because an item
+ *  raised to the request tier keeps its old creation time. */
+async function handBackLongWaits(waiting: QueueItem[]) {
+  const now = Date.now();
+  for (const item of waiting) {
+    const seen = firstSeen.get(item.id) ?? now;
+    firstSeen.set(item.id, seen);
+    if (now - seen < HAND_BACK_AFTER_MS) continue;
+    console.log(`Handing back ${item.url}: it waited 30 minutes`);
+    await handBack(item.id, "It waited 30 minutes in the queue without the Claude note writer starting it");
+    firstSeen.delete(item.id);
   }
 }
 
@@ -299,14 +306,12 @@ async function tick(first: boolean) {
   if (!existsSync(PAUSE_FILE)) await startAnswers();
   const queue = await claudeQueue();
   if (first) await adoptTakenPosts(queue.taken);
-  const requests = queue.waiting.filter(isRequest);
-  const feedPosts = queue.waiting.filter((item) => !isRequest(item));
-  if (requests.length > 0) await startRequests(requests, await mayStartPosts());
-  const feedRunning = () => [...posts.values()].filter((run) => !isRequest(run.item)).length;
-  for (const item of feedPosts) {
-    if (feedRunning() >= MAX_FEED_POSTS_RUNNING || !(await mayStartPosts())) break;
-    await startPost(item);
+  let waiting = queue.waiting;
+  while (waiting.length > 0 && posts.size < MAX_POSTS_RUNNING && (await mayStartPosts())) {
+    await startPost(waiting[0]!);
+    waiting = waiting.slice(1);
   }
+  await handBackLongWaits(waiting);
 }
 
 async function main() {
