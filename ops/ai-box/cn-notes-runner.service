@@ -16,6 +16,9 @@ ExecStartPre=/usr/bin/mkdir -p /home/nathan/.local/share/cn-notes
 ExecStart=/home/nathan/.bun/bin/bun run claude-notes run
 Restart=on-failure
 RestartSec=30
+# The Claudes run in tmux sessions the runner starts. A restart, such as after
+# a deploy, must stop only the runner. The new runner adopts the running ones.
+KillMode=process
 
 [Install]
 WantedBy=multi-user.target
