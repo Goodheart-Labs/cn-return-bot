@@ -36,16 +36,14 @@ import { readUsage, type UsageReading } from "./usage";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 const POLL_MS = 30_000;
-/** Posts in progress at once. Each one starts its own subagents, so 2 posts
- *  are close to the 4 runs Nathan's pacer allows on the box in total. */
-const MAX_POSTS_RUNNING = 2;
+/** Feed posts in progress at once. Reader requests do not count, because
+ *  they always start at once. The walk gives Claude only as many feed posts as
+ *  posts_in_flight, so this limit is rarely reached. */
+const MAX_FEED_POSTS_RUNNING = 5;
 /** Above this share of Nathan's weekly limit no new post is started. */
 const MAX_WEEKLY_USAGE_PERCENT = 90;
 /** The usage endpoint is rate limited, and Nathan's pacer reads it too. */
 const USAGE_READ_EVERY_MS = 5 * 60_000;
-/** A reader request that has waited this long goes back to the pipeline, so
- *  readers never wait on Nathan's quota. */
-const REQUEST_HAND_BACK_AFTER_MS = 30 * 60_000;
 /** A Claude that exits without a report gets one more try. */
 const MAX_ATTEMPTS = 2;
 const EXAMPLES_EVERY_MS = 24 * 3600_000;
@@ -65,8 +63,6 @@ const posts = new Map<string, Run & { item: QueueItem }>();
 const answers = new Map<string, Run>();
 /** Drafts whose message Claude failed to answer twice. They wait for a person. */
 const unanswerable = new Set<string>();
-/** When the runner first saw each reader request waiting. */
-const requestFirstSeen = new Map<string, number>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
 let examplesBuiltAt = 0;
@@ -224,19 +220,16 @@ async function adoptTakenPosts(taken: QueueItem[]) {
   }
 }
 
-/** Reader requests the runner could not start within 30 minutes go to the
- *  pipeline. The clock starts when the runner first sees the request, because
- *  an item raised to the request tier keeps its old creation time. */
-async function handBackWaitingRequests(waiting: QueueItem[]) {
-  const now = Date.now();
-  for (const item of waiting) {
-    if (item.priority < QUEUE_PRIORITY.requested) continue;
-    const seen = requestFirstSeen.get(item.id) ?? now;
-    requestFirstSeen.set(item.id, seen);
-    if (now - seen >= REQUEST_HAND_BACK_AFTER_MS) {
-      await handBack(item.id, "A reader request waited 30 minutes for the Claude note writer");
-      requestFirstSeen.delete(item.id);
-    }
+const isRequest = (item: QueueItem) => item.priority >= QUEUE_PRIORITY.requested;
+
+/** Reader requests start at once, however many posts are running. When the
+ *  runner may not start any, because the box is paused or Nathan's week is
+ *  nearly used up, a request goes to the pipeline at once, so readers never
+ *  wait. */
+async function startRequests(requests: QueueItem[], mayStart: boolean) {
+  for (const item of requests) {
+    if (mayStart) await startPost(item);
+    else await handBack(item.id, "The Claude note writer could not start a Claude for this reader request (ai-box paused or Nathan's weekly limit nearly used)");
   }
 }
 
@@ -306,13 +299,14 @@ async function tick(first: boolean) {
   if (!existsSync(PAUSE_FILE)) await startAnswers();
   const queue = await claudeQueue();
   if (first) await adoptTakenPosts(queue.taken);
-  let waiting = queue.waiting;
-  while (posts.size < MAX_POSTS_RUNNING && waiting.length > 0 && (await mayStartPosts())) {
-    const [next, ...rest] = waiting;
-    await startPost(next!);
-    waiting = rest;
+  const requests = queue.waiting.filter(isRequest);
+  const feedPosts = queue.waiting.filter((item) => !isRequest(item));
+  if (requests.length > 0) await startRequests(requests, await mayStartPosts());
+  const feedRunning = () => [...posts.values()].filter((run) => !isRequest(run.item)).length;
+  for (const item of feedPosts) {
+    if (feedRunning() >= MAX_FEED_POSTS_RUNNING || !(await mayStartPosts())) break;
+    await startPost(item);
   }
-  await handBackWaitingRequests(waiting);
 }
 
 async function main() {
