@@ -927,6 +927,15 @@ export type Database = {
           author_name: string | null
           claim_id: string
           created_at: string
+          feed_band: string | null
+          feed_best_key: number[] | null
+          feed_content_key: number[] | null
+          feed_helpful_key: number[] | null
+          feed_item_id: string | null
+          feed_needs_key: number[] | null
+          feed_project_id: string | null
+          feed_recent_key: number[] | null
+          feed_votes: number | null
           helpful_count: number
           id: string
           improved_from_note_id: string | null
@@ -938,6 +947,17 @@ export type Database = {
           status: string
         }
         Insert: {
+          feed_band?: string | null
+          feed_best_key?: number[] | null
+          feed_content_key?: number[] | null
+          feed_helpful_key?: number[] | null
+          feed_item_id?: string | null
+          feed_needs_key?: number[] | null
+          feed_project_id?: string | null
+          feed_recent_key?: number[] | null
+          feed_votes?: number | null
+          p_helpful?: number | null
+          p_helpful_after_helpful?: number | null
           author_id?: string | null
           author_name?: string | null
           claim_id: string
@@ -951,6 +971,17 @@ export type Database = {
           status?: string
         }
         Update: {
+          feed_band?: string | null
+          feed_best_key?: number[] | null
+          feed_content_key?: number[] | null
+          feed_helpful_key?: number[] | null
+          feed_item_id?: string | null
+          feed_needs_key?: number[] | null
+          feed_project_id?: string | null
+          feed_recent_key?: number[] | null
+          feed_votes?: number | null
+          p_helpful?: number | null
+          p_helpful_after_helpful?: number | null
           author_id?: string | null
           author_name?: string | null
           claim_id?: string

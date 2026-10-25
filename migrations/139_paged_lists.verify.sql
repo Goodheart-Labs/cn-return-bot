@@ -31,6 +31,67 @@ begin
   end if;
 end $$;
 
+-- Drift check: every note's stored feed values equal what its votes, claim
+-- and post give today. A write path the triggers miss shows up here.
+do $$
+declare drifted int;
+begin
+  select count(*) into drifted
+    from everything_notes n, everything_note_feed_fields(n) f
+   where (n.p_helpful, n.p_helpful_after_helpful, n.feed_item_id, n.feed_project_id, n.feed_band, n.feed_votes,
+          n.feed_helpful_key, n.feed_needs_key, n.feed_best_key, n.feed_recent_key, n.feed_content_key)
+         is distinct from
+         (f.p_helpful, f.p_helpful_after_helpful, f.feed_item_id, f.feed_project_id, f.feed_band, f.feed_votes,
+          f.feed_helpful_key, f.feed_needs_key, f.feed_best_key, f.feed_recent_key, f.feed_content_key);
+  if drifted > 0 then raise exception '% notes have feed values that differ from their votes, claim and post', drifted; end if;
+end $$;
+
+-- Each write path moves the stored values: a vote, an edited source text, a
+-- new publication date and a new project, and a new improvement, which joins
+-- the chain of the note it improves. The rows are rolled back at the end.
+begin;
+insert into everything_projects (id, slug, name) values
+  ('00000000-0000-0000-0000-00000000e001', 'verify-139-a', 'Verify 139 A'),
+  ('00000000-0000-0000-0000-00000000e002', 'verify-139-b', 'Verify 139 B');
+insert into everything_items (id, project_id, url, source, published_at) values
+  ('00000000-0000-0000-0000-00000000e003', '00000000-0000-0000-0000-00000000e001', 'https://example.com/verify-139-triggers', 'web', '2026-10-01');
+insert into everything_claims (id, item_id, claim, judgement) values
+  ('00000000-0000-0000-0000-00000000e004', '00000000-0000-0000-0000-00000000e003', 'claim', 'uncertain');
+insert into everything_notes (id, claim_id, note, created_at) values
+  ('00000000-0000-0000-0000-00000000e005', '00000000-0000-0000-0000-00000000e004', 'original', '2026-10-02');
+do $$
+declare
+  original constant uuid := '00000000-0000-0000-0000-00000000e005';
+  n everything_notes;
+begin
+  select * into n from everything_notes where id = original;
+  if n.feed_band <> 'needs_ratings' or n.feed_project_id <> '00000000-0000-0000-0000-00000000e001' then
+    raise exception 'a new note got band % and project %', n.feed_band, n.feed_project_id;
+  end if;
+
+  update everything_notes set helpful_count = 3 where id = original;
+  select * into n from everything_notes where id = original;
+  if n.feed_band <> 'helpful' or n.feed_votes <> 3 then raise exception 'three Helpful votes left band % and % votes', n.feed_band, n.feed_votes; end if;
+
+  update everything_claims set updated_quote = 'the source changed' where id = '00000000-0000-0000-0000-00000000e004';
+  select * into n from everything_notes where id = original;
+  if n.feed_band <> 'stale' then raise exception 'an edited source left band %', n.feed_band; end if;
+
+  update everything_items set published_at = '2026-10-10', project_id = '00000000-0000-0000-0000-00000000e002'
+   where id = '00000000-0000-0000-0000-00000000e003';
+  select * into n from everything_notes where id = original;
+  if n.feed_best_key[2] <> -extract(epoch from '2026-10-10 00:00:00+00'::timestamptz) or n.feed_project_id <> '00000000-0000-0000-0000-00000000e002' then
+    raise exception 'a new publication date and project left % and %', n.feed_best_key, n.feed_project_id;
+  end if;
+
+  insert into everything_notes (id, claim_id, note, improved_from_note_id, created_at)
+  values ('00000000-0000-0000-0000-00000000e006', '00000000-0000-0000-0000-00000000e004', 'improvement', original, '2026-10-05');
+  if (select feed_content_key[2] from everything_notes where id = '00000000-0000-0000-0000-00000000e006') <> extract(epoch from '2026-10-02 00:00:00+00'::timestamptz) then
+    raise exception 'an improvement did not join the chain of the note it improves';
+  end if;
+end $$;
+rollback;
+
 -- Paging through each order, a few notes at a time, gives every visible note
 -- exactly once, and stops.
 set role anon;
