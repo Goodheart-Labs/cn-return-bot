@@ -104,7 +104,7 @@ export function fetchMetricSeries(granularity: Granularity): Promise<MetricSerie
   return rpcAllRows<MetricSeriesRow>("everything_metric_series", { granularity });
 }
 
-// --- The recently checked posts (migrations 095 to 139) ---
+// --- The recently checked posts (migrations 095 to 141) ---
 
 export interface RecentPostRow {
   id: string;
@@ -140,7 +140,7 @@ export function fetchRecentPostsPage(after: RecentPostRow | null): Promise<Recen
   }, 0);
 }
 
-// --- The walk's ranking of creators (migrations 131 to 139) ---
+// --- The walk's ranking of creators (migrations 131 to 141) ---
 
 export interface CreatorRankingRow {
   feed_url: string;

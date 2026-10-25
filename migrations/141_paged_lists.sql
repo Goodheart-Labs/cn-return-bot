@@ -1,4 +1,4 @@
--- 139: real page-by-page loading for every growing list on commonnotes.net
+-- 141: real page-by-page loading for every growing list on commonnotes.net
 -- (GOO-524).
 --
 -- Until now the website downloaded whole lists and showed them a slice at a
@@ -202,11 +202,11 @@ alter table everything_notes
   add column feed_content_key float8[];
 
 comment on column everything_notes.p_helpful is
-  'The chance that the note ends up rated helpful, from its votes without the author''s own (migration 139). Kept by a trigger.';
+  'The chance that the note ends up rated helpful, from its votes without the author''s own (migration 141). Kept by a trigger.';
 comment on column everything_notes.p_helpful_after_helpful is
-  'Where p_helpful would land after one more Helpful vote (migration 139). Kept by a trigger.';
+  'Where p_helpful would land after one more Helpful vote (migration 141). Kept by a trigger.';
 comment on column everything_notes.feed_band is
-  'helpful, needs_ratings, not_helpful, or stale when the source text changed (migration 139). Kept by a trigger, like every feed_* column: copies the website''s feed sorts and filters by.';
+  'helpful, needs_ratings, not_helpful, or stale when the source text changed (migration 141). Kept by a trigger, like every feed_* column: copies the website''s feed sorts and filters by.';
 
 -- The note with every feed value worked out from its votes, its claim and its
 -- post. Both the trigger below and the drift check in the verify file use it.

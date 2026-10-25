@@ -5,7 +5,7 @@ import { fetchNotesByIds } from "./notes";
 import { supabase } from "./supabase";
 import type { FeedItemRow, NnnRow, NoteRow, ProjectHeader } from "./types";
 
-/* The website's notes feed, one page at a time (migration 139). The database
+/* The website's notes feed, one page at a time (migration 141). The database
  * ranks and filters the notes and returns the ids of one page. A second step
  * loads what the cards of that page render. */
 

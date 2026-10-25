@@ -13,7 +13,7 @@ export type ProjectOrder = "votes" | "name";
 export const PROJECTS_PAGE_SIZE = 30;
 
 /** One page of the website's projects overview, starting after the project
- *  `after` (migration 139). A project with no visible note is left out. Since
+ *  `after` (migration 141). A project with no visible note is left out. Since
  *  GOO-107 that matters: pressing "check this author's new posts" creates the
  *  creator's project immediately, and until the pipeline has checked
  *  something there is nothing to show under it. The anon key can create such a

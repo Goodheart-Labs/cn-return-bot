@@ -59,7 +59,7 @@ export function averageReadersPerPost(creators: CreatorVisits[]): number {
  *  the imagined posts counted as if they were real. The walk ranks on it. The
  *  database applies the same formula in everything_creator_ranking (migration
  *  134) and ranks the dashboard by it in everything_creator_ranking_page
- *  (migration 139), with these constants passed in. */
+ *  (migration 141), with these constants passed in. */
 export const creatorScore = (visits: CreatorVisits, averageReaders: number): number =>
   (visits.visitors_per_post * visits.posts + IMAGINED_AVERAGE_POSTS * averageReaders) /
   (visits.posts + IMAGINED_AVERAGE_POSTS + IMAGINED_UNREAD_POSTS);

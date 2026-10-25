@@ -31,7 +31,7 @@ export interface ItemRow {
  *  slug for the URL, and the creator's feed and picture. */
 export type ProjectHeader = Pick<ProjectRow, "id" | "slug" | "name" | "feed_url" | "avatar_url">;
 
-/** A project as the website's projects overview loads it (migration 139): its
+/** A project as the website's projects overview loads it (migration 141): its
  *  header, how many notes it has, and the score of the votes on them, which
  *  the default order uses. */
 export type FeedProjectRow = ProjectHeader & {

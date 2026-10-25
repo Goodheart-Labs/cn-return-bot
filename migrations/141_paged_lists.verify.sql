@@ -1,4 +1,4 @@
--- Checks migration 139 (GOO-524). It runs on any copy of the tables, with or
+-- Checks migration 141 (GOO-524). It runs on any copy of the tables, with or
 -- without rows. It was run on a copy of production's notes on 2026-10-23,
 -- where a separate script also compared every order, page by page, with the
 -- browser's ranking that this migration replaces, and found them equal.
@@ -51,10 +51,10 @@ end $$;
 -- the chain of the note it improves. The rows are rolled back at the end.
 begin;
 insert into everything_projects (id, slug, name) values
-  ('00000000-0000-0000-0000-00000000e001', 'verify-139-a', 'Verify 139 A'),
-  ('00000000-0000-0000-0000-00000000e002', 'verify-139-b', 'Verify 139 B');
+  ('00000000-0000-0000-0000-00000000e001', 'verify-141-a', 'Verify 141 A'),
+  ('00000000-0000-0000-0000-00000000e002', 'verify-141-b', 'Verify 141 B');
 insert into everything_items (id, project_id, url, source, published_at) values
-  ('00000000-0000-0000-0000-00000000e003', '00000000-0000-0000-0000-00000000e001', 'https://example.com/verify-139-triggers', 'web', '2026-10-01');
+  ('00000000-0000-0000-0000-00000000e003', '00000000-0000-0000-0000-00000000e001', 'https://example.com/verify-141-triggers', 'web', '2026-10-01');
 insert into everything_claims (id, item_id, claim, judgement) values
   ('00000000-0000-0000-0000-00000000e004', '00000000-0000-0000-0000-00000000e003', 'claim', 'uncertain');
 insert into everything_notes (id, claim_id, note, created_at) values
@@ -130,8 +130,8 @@ end $$;
 -- Newest and Most helpful orders have no bands.
 reset role;
 begin;
-insert into everything_projects (id, slug, name) values ('00000000-0000-0000-0000-00000000f001', 'verify-139', 'Verify 139');
-insert into everything_items (id, project_id, url, source) values ('00000000-0000-0000-0000-00000000f002', '00000000-0000-0000-0000-00000000f001', 'https://example.com/verify-139', 'web');
+insert into everything_projects (id, slug, name) values ('00000000-0000-0000-0000-00000000f001', 'verify-141', 'Verify 141');
+insert into everything_items (id, project_id, url, source) values ('00000000-0000-0000-0000-00000000f002', '00000000-0000-0000-0000-00000000f001', 'https://example.com/verify-141', 'web');
 insert into everything_claims (id, item_id, claim, judgement, updated_quote)
 select ('00000000-0000-0000-0000-0000000' || lpad(n::text, 5, '0'))::uuid, '00000000-0000-0000-0000-00000000f002', 'claim ' || n, 'uncertain',
        case when n = 9 then 'the source changed' end

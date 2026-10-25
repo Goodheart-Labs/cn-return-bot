@@ -18,7 +18,7 @@ const CLAIM_COLS =
   "id, item_id, claim, context_quote, context_paragraph, updated_quote, context_url, start_seconds, end_seconds, image_urls";
 const SOURCES = "sources:everything_note_sources(url, sort_order), detailed:everything_note_sources(sort_order)";
 /** The note's own columns a card renders. The note row also stores the
- *  values the website's feed sorts by (migration 139), which no card needs. */
+ *  values the website's feed sorts by (migration 141), which no card needs. */
 const NOTE_COLS =
   "id, claim_id, note, helpful_count, somewhat_helpful_count, not_helpful_count, author_id, author_name, improved_from_note_id, status, created_at";
 const NOTE_SELECT = `${NOTE_COLS}, claim:everything_claims!inner(${CLAIM_COLS}), ${SOURCES}` as const;

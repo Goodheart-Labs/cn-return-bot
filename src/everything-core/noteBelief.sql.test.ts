@@ -5,13 +5,13 @@ import { probabilityHelpful } from "./noteBelief";
 import { noteStatus } from "./noteScore";
 
 /* The database ranks the website's feed with its own copy of the chance that a
- * note ends up rated helpful (migration 139), because it has to sort notes by
+ * note ends up rated helpful (migration 141), because it has to sort notes by
  * it. The migration's verify file checks the database's values against the
  * numbers below it lists. This test checks those same numbers against the
  * TypeScript functions. So a change to the model here fails this test until
  * the verify file, and with it the SQL copy, is changed too. */
 
-const VERIFY_FILE = join(import.meta.dir, "../../migrations/139_paged_lists.verify.sql");
+const VERIFY_FILE = join(import.meta.dir, "../../migrations/141_paged_lists.verify.sql");
 
 /** The (helpful, somewhat helpful, not helpful, expected chance) rows the
  *  verify file checks the database against. */

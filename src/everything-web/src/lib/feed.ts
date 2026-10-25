@@ -2,7 +2,7 @@ import type { FeedBand, FeedSummary, NoteFilters, NoteMinimums } from "@cn/core/
 import type { NnnRow, NoteRow } from "@cn/core/types";
 
 /* What the browser still decides about a notes feed. The database ranks and
- * filters the notes and sends them a page at a time (migration 139). The
+ * filters the notes and sends them a page at a time (migration 141). The
  * browser groups the loaded notes into the bands the reader sees, labels them,
  * and links related notes. Every function here is pure, so it can be tested
  * without a browser. */

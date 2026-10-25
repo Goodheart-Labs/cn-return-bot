@@ -34,7 +34,7 @@ export const PROJECT_ITEMS_PAGE_SIZE = 30;
 export const itemDate = (item: Pick<FeedItemRow, "published_at" | "created_at">) => item.published_at ?? item.created_at;
 
 /** One page of a project's posts that have notes, newest first, starting
- *  after the post `after` (migration 139). */
+ *  after the post `after` (migration 141). */
 export async function fetchProjectItemsPage(projectId: string, after: ProjectItemRow | null): Promise<ProjectItemRow[]> {
   const { data, error } = await supabase.rpc("everything_project_items_page", {
     p_project_id: projectId,

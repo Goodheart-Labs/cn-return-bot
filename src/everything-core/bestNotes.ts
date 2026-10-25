@@ -121,7 +121,7 @@ export async function fetchLeaderboard(): Promise<CuratedNoteRow[]> {
   return rows.sort((a, b) => a.position - b.position);
 }
 
-/** One page of a section, starting after the row `after` (migration 139). A
+/** One page of a section, starting after the row `after` (migration 141). A
  *  note that was deleted or hidden is left out. */
 export async function fetchCurationPage(section: CurationSection, filters: CurationFilters, after: CurationRow | null): Promise<CurationRow[]> {
   const { data, error } = await supabase.rpc("everything_curation_page", {

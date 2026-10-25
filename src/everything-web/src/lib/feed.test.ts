@@ -4,7 +4,7 @@ import type { NoteRow } from "@cn/core/types";
 import { ageLabel, ageTotal, BAND_LABELS, bandTotal, improvementsByOriginal, sectionsOf, spanStarts } from "./feed";
 
 /* The order of the feed is decided in the database and tested in
- * migrations/139_paged_lists.verify.sql. These tests cover what the browser
+ * migrations/141_paged_lists.verify.sql. These tests cover what the browser
  * still does with the notes it has loaded. */
 
 const summary = (matching: number, since: number[], bands = { main: 0, unhelpful: 0, stale: 0 }): FeedSummary => ({
