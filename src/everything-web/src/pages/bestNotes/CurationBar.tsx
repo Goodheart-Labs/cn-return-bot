@@ -16,8 +16,7 @@ import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { IconButton } from "@cn/ui/IconButton";
 import { CloseIcon, SpeechBubbleIcon, TrophyIcon, XLogoIcon } from "@cn/ui/icons";
-import { ProjectAvatar } from "../../components/ProjectAvatar";
-import { RouteLink } from "../../components/RouteLink";
+import { CreatorLink } from "../../components/CreatorLink";
 import type { Route } from "../../lib/routing";
 
 /** Runs one change to the curation and then reloads every section, because a
@@ -242,16 +241,7 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="font-title text-base font-bold text-fg-secondary">#{rank}</span>
-        {project && (
-          <RouteLink
-            to={{ view: "notes", project: project.slug, item: null, note: null }}
-            navigate={navigate}
-            className="inline-flex items-center gap-2 text-sm font-medium text-fg-secondary hover:text-fg"
-          >
-            <ProjectAvatar project={project} size={22} />
-            {project.name}
-          </RouteLink>
-        )}
+        {project && <CreatorLink project={project} navigate={navigate} />}
         <span className="ml-auto flex items-center gap-1">{actions}</span>
       </div>
       {section !== "removed" && comment && panel !== "comment" && (

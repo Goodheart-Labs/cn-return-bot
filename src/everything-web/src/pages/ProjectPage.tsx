@@ -6,12 +6,12 @@ import type { FeedItemRow, ProjectHeader } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { ChevronIcon } from "@cn/ui/icons";
-import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { BackToProjects } from "../components/BackToProjects";
+import { CreatorLink } from "../components/CreatorLink";
 import { ItemList } from "../components/ItemList";
 import { NoteFeed } from "../components/NoteFeed";
 import { ProjectAvatar } from "../components/ProjectAvatar";
-import { RouteLink } from "../components/RouteLink";
+import { SidebarLayout } from "../components/SidebarLayout";
 import { WriteNoteModal } from "../components/WriteNoteModal";
 import { BAND_LABELS, bandTotal } from "../lib/feed";
 import { useFeedItem, useNoteCount, useNoteFeed, useProjectItems, useProjectRealtime, useSharedNote } from "../lib/feedQueries";
@@ -48,14 +48,7 @@ function PageHeading({ project, item, navigate }: { project: ProjectHeader; item
   if (item) {
     return (
       <div className="min-w-0">
-        <RouteLink
-          to={{ view: "notes", project: project.slug, item: null, note: null }}
-          navigate={navigate}
-          className="inline-flex items-center gap-2 text-sm font-medium text-fg-secondary hover:text-fg"
-        >
-          <ProjectAvatar project={project} size={22} />
-          {project.name}
-        </RouteLink>
+        <CreatorLink project={project} navigate={navigate} />
         {/* The title is the link to the original post or video. It reads as a
             plain title and turns blue under the pointer. */}
         <h1 className="mt-2 font-title text-2xl font-bold text-fg text-balance">
@@ -144,25 +137,16 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
     <ItemList projectSlug={project.slug} list={items} total={total} selected={activeItem?.id ?? null} navigate={navigate} onPick={onPick} />
   );
 
+  const sidebar = (
+    <div className="h-full space-y-5 overflow-y-auto px-3 py-5">
+      <div className="px-3">
+        <BackToProjects navigate={navigate} />
+      </div>
+      {itemList()}
+    </div>
+  );
   return (
-    <div className="md:flex">
-      <ResizablePanel
-        storageKey="cn:itemListWidth"
-        label="list of posts and videos"
-        defaultWidth={ITEM_LIST_WIDTH.default}
-        minWidth={ITEM_LIST_WIDTH.min}
-        maxWidth={ITEM_LIST_WIDTH.max}
-        className="hidden bg-surface md:block md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]"
-      >
-        <div className="h-full space-y-5 overflow-y-auto px-3 py-5">
-          <div className="px-3">
-            <BackToProjects navigate={navigate} />
-          </div>
-          {itemList()}
-        </div>
-      </ResizablePanel>
-
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-8">
+    <SidebarLayout storageKey="cn:itemListWidth" label="list of posts and videos" width={ITEM_LIST_WIDTH} sidebar={sidebar}>
         <div className="mb-5 md:hidden">
           <BackToProjects navigate={navigate} />
         </div>
@@ -197,9 +181,7 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
             emptyText="No notes yet for this project."
           />
         )}
-      </main>
-
       <WriteNoteModal open={writeOpen} onClose={() => setWriteOpen(false)} navigate={navigate} />
-    </div>
+    </SidebarLayout>
   );
 }

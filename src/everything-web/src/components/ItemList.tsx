@@ -5,6 +5,7 @@ import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import type { PagedList } from "@cn/features/query/usePagedList";
 import type { Route } from "../lib/routing";
 import { RouteLink } from "./RouteLink";
+import { sidebarEntry } from "./SidebarLayout";
 
 const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
@@ -27,11 +28,9 @@ export function ItemList({ projectSlug, list, total, selected, navigate, onPick 
     onPick?.();
     navigate(route);
   };
-  const entry = (active: boolean) =>
-    cn(
-      "block rounded-control px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-      active ? "bg-tint text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
-    );
+  // A post's entry holds its title and a line below it, so it stacks instead
+  // of lining its parts up, and only the title turns bold when it is shown.
+  const entry = (active: boolean) => cn(sidebarEntry(active), "block font-normal");
   return (
     <nav aria-label="Posts and videos">
       <ul className="space-y-0.5">

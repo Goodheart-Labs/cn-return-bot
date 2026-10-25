@@ -2732,6 +2732,33 @@ export type Database = {
           vote_visitors: number
         }[]
       }
+      everything_creator_ranking_page: {
+        Args: {
+          average_posts: number
+          last_posts: number
+          min_posts: number
+          min_score: number
+          p_after_feed_url?: string
+          p_limit?: number
+          unread_posts: number
+        }
+        Returns: {
+          average_readers_per_post: number
+          delay_posts: number
+          extension_voters: number
+          feed_url: string
+          median_delay_hours: number
+          people: number
+          priority_until: string
+          project_name: string
+          project_slug: string
+          score_posts: number
+          visitors_per_post: number
+          vote_posts: number
+          vote_visitors: number
+          walk_score: number
+        }[]
+      }
       everything_creator_visit_score: {
         Args: { creator_key: string; last_posts: number }
         Returns: {
@@ -2911,7 +2938,12 @@ export type Database = {
       }
       everything_reader_cost_since: { Args: { since: string }; Returns: number }
       everything_recent_posts: {
-        Args: { last_posts: number; max_posts: number }
+        Args: {
+          last_posts: number
+          p_after_id?: string
+          p_after_processed_at?: string
+          p_limit?: number
+        }
         Returns: {
           author_visitors_per_post: number
           checked_scope: string

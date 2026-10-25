@@ -18,6 +18,7 @@
 --    page, and a summary with the counts the page shows.
 -- 3. The creators overview, and one creator's posts.
 -- 4. The admins' best-notes curation: one page, and a summary.
+-- 5. The admin dashboard's two tables.
 
 
 -- 1. The chance that a note ends up rated helpful.
@@ -406,7 +407,10 @@ $$;
 -- or stale. The other two orders put every note in the band 'all'. `views`
 -- counts the devices outside the team that were shown the post's notes. `next` is
 -- what the website passes as p_after to get the following page, and it is null
--- after the last page. The website treats it as an opaque bookmark.
+-- after the last page. The website treats it as an opaque bookmark. The
+-- bookmark holds sort values as numbers, so the function writes them with
+-- every digit, whatever the caller's session asks for, and a value read back
+-- is exactly the value stored.
 --
 -- The mixed order's main band interleaves two streams, the helpful notes and
 -- the notes that need ratings. Its bookmark holds a position in each stream
@@ -432,7 +436,7 @@ create function everything_note_feed_page(
   p_after jsonb default null,
   p_limit int default 30
 ) returns jsonb
-language plpgsql stable security definer set search_path = public as $$
+language plpgsql stable security definer set search_path = public set extra_float_digits = 3 as $$
 declare
   max_page_size constant int := 100;
   leading_helpful_notes constant int := 3;
@@ -740,6 +744,126 @@ end;
 $$;
 
 
+-- 5. The admin dashboard's two tables (on the website since 2026-10-23).
+
+-- One page of the walk's ranking of creators, in the walk's order: creators
+-- holding priority first, then the highest score, then the most different
+-- readers, then the feed address, as byWalkOrder in
+-- src/everything-core/readers.ts orders them. The score counts the imagined
+-- posts as creatorScore does. The ranking needs every creator's visit numbers
+-- before it can be sorted, so each page scores all of them. That is about a
+-- hundred creators read from a view refreshed once a day (migration 135).
+-- The page starts after the creator `p_after_feed_url` names. Their place is
+-- looked up here, from the same scores, so no rounded number travels through
+-- the browser. A creator who has left the ranking since ends the list.
+create function everything_creator_ranking_page(
+  last_posts int, min_score float8, min_posts int, unread_posts float8, average_posts float8,
+  p_after_feed_url text default null,
+  p_limit int default 25
+) returns table (
+  feed_url text,
+  project_slug text,
+  project_name text,
+  priority_until timestamptz,
+  visitors_per_post float8,
+  score_posts bigint,
+  people bigint,
+  delay_posts bigint,
+  median_delay_hours float8,
+  vote_posts bigint,
+  vote_visitors bigint,
+  extension_voters bigint,
+  average_readers_per_post float8,
+  walk_score float8
+)
+language sql stable security definer set search_path = public as $$
+  with ranked as (
+    select r.*,
+           (coalesce(r.visitors_per_post, 0) * coalesce(r.score_posts, 0) + average_posts * coalesce(r.average_readers_per_post, 0))
+             / (coalesce(r.score_posts, 0) + average_posts + unread_posts) as walk_score
+      from everything_creator_ranking(last_posts, min_score, min_posts, unread_posts, average_posts) r
+  )
+  select k.* from ranked k
+   where p_after_feed_url is null
+      or (k.priority_until is null, -k.walk_score, -coalesce(k.people, 0), k.feed_url)
+         > (select a.priority_until is null, -a.walk_score, -coalesce(a.people, 0), a.feed_url from ranked a where a.feed_url = p_after_feed_url)
+   order by k.priority_until is null, k.walk_score desc, coalesce(k.people, 0) desc, k.feed_url
+   limit least(greatest(p_limit, 1), 100);
+$$;
+
+-- One page of the posts the pipeline finished most recently, newest first,
+-- starting after the post the page before ended on. It replaces the version of
+-- migration 123, which returned at most a fixed number of posts in one go.
+drop function everything_recent_posts(int, int);
+
+create function everything_recent_posts(
+  last_posts int,
+  p_after_processed_at timestamptz default null,
+  p_after_id uuid default null,
+  p_limit int default 25
+) returns table (
+  id uuid,
+  title text,
+  url text,
+  project text,
+  checked_scope text,
+  published_at date,
+  processed_at timestamptz,
+  author_visitors_per_post float8,
+  claims_extracted bigint,
+  claims_checked bigint,
+  notes bigint
+)
+language sql stable security definer set search_path = public as $$
+  with recent as (
+    select i.id, i.title, i.url, i.project_id, i.checked_scope, i.published_at, i.processed_at
+    from everything_items i
+    where i.status = 'done'
+      and i.checked_scope is not null
+      and i.processed_at is not null
+      and (p_after_id is null or (i.processed_at, i.id) < (p_after_processed_at, p_after_id))
+    order by i.processed_at desc, i.id desc
+    limit least(greatest(p_limit, 1), 100)
+  ),
+  author_score as (
+    select p.id as project_id, s.visitors_per_post
+    from everything_projects p
+    cross join lateral everything_creator_visit_score(lower(rtrim(p.feed_url, '/')), last_posts) s
+    where p.id in (select recent.project_id from recent)
+      and p.feed_url is not null
+  ),
+  claim_counts as (
+    select c.item_id,
+           count(*) as extracted,
+           count(*) filter (where c.status in ('note', 'no_note', 'error')) as checked
+    from everything_claims c
+    where c.item_id in (select recent.id from recent)
+      and c.created_by is null
+    group by c.item_id
+  ),
+  note_counts as (
+    select c.item_id, count(*) as notes
+    from everything_notes n
+    join everything_claims c on c.id = n.claim_id
+    where c.item_id in (select recent.id from recent)
+      and c.created_by is null
+      and n.author_id is null
+      and n.status <> 'hidden'
+    group by c.item_id
+  )
+  select
+    r.id, r.title, r.url, p.name, r.checked_scope, r.published_at, r.processed_at,
+    s.visitors_per_post,
+    coalesce(cc.extracted, 0), coalesce(cc.checked, 0), coalesce(nc.notes, 0)
+  from recent r
+  left join everything_projects p on p.id = r.project_id
+  left join author_score s on s.project_id = r.project_id
+  left join claim_counts cc on cc.item_id = r.id
+  left join note_counts nc on nc.item_id = r.id
+  order by r.processed_at desc, r.id desc
+$$;
+
+
 -- Who may call what. Supabase grants every new function in the public schema
 -- to anon and authenticated by default, so every grant is spelled out. The
 -- building blocks run only inside the functions above.
@@ -761,7 +885,9 @@ revoke all on function
   everything_projects_page(text, numeric, text, uuid, int),
   everything_project_items_page(uuid, timestamptz, uuid, int),
   everything_curation_page(text, text, boolean, boolean, timestamptz, float8, uuid, int),
-  everything_curation_summary(text)
+  everything_curation_summary(text),
+  everything_creator_ranking_page(int, float8, int, float8, float8, text, int),
+  everything_recent_posts(int, timestamptz, uuid, int)
 from public, anon, authenticated;
 
 -- The math functions read nothing, so anyone may call them.
@@ -777,6 +903,13 @@ grant execute on function
   everything_note_feed_summary(uuid, uuid, int, int, int, int, boolean, timestamptz, timestamptz[]),
   everything_projects_page(text, numeric, text, uuid, int),
   everything_project_items_page(uuid, timestamptz, uuid, int)
+to anon, authenticated, service_role;
+
+-- The dashboard's functions return only aggregates, and like the functions
+-- they page, anyone with the website's key may call them.
+grant execute on function
+  everything_creator_ranking_page(int, float8, int, float8, float8, text, int),
+  everything_recent_posts(int, timestamptz, uuid, int)
 to anon, authenticated, service_role;
 
 grant execute on function

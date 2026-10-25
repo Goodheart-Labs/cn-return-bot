@@ -1,21 +1,19 @@
 import { useState, type ReactNode } from "react";
 import { CURATION_SECTIONS, setPosition, type CurationCreator, type CurationSection } from "@cn/core/bestNotes";
-import { cn } from "@cn/ui/cn";
 import { Button } from "@cn/ui/Button";
 import { Checkbox } from "@cn/ui/Field";
-import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
+import { AdminOnly } from "../../components/AdminOnly";
 import { FiltersPopover } from "../../components/FiltersPopover";
 import { NoteFeed } from "../../components/NoteFeed";
 import { ProjectAvatar } from "../../components/ProjectAvatar";
 import { RouteLink } from "../../components/RouteLink";
+import { PhoneSectionMenu, SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
 import { useCurationSection, useCurationSummary, useWholeLeaderboard } from "../../lib/feedQueries";
 import { noteUrl, type Route } from "../../lib/routing";
-import { useAdminStatus } from "../../lib/useIsAdmin";
 import { BestNotesReorder } from "./BestNotesReorder";
 import { CurationBar, useCurationChange } from "./CurationBar";
 
-const SIDEBAR_WIDTH = { default: 280, min: 220, max: 420 };
 
 const SECTION_TITLES: Record<CurationSection, string> = {
   recommendations: "AI recommendations",
@@ -27,12 +25,6 @@ const EMPTY_SECTION: Record<CurationSection, string> = {
   leaderboard: "Nothing is on our leaderboard yet. Add notes from the AI recommendations.",
   removed: "No recommendation has been removed.",
 };
-
-const entryClass = (active: boolean) =>
-  cn(
-    "flex items-center gap-2 rounded-control px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-    active ? "bg-tint font-medium text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
-  );
 
 function Sidebar({ section, projectSlug, counts, creators, navigate }: {
   section: CurationSection;
@@ -48,7 +40,7 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
         <ul className="space-y-0.5">
           {CURATION_SECTIONS.map((s) => (
             <li key={s}>
-              <RouteLink to={{ view: "bestNotes", section: s, project: null }} navigate={navigate} current={s === section} className={entryClass(s === section)}>
+              <RouteLink to={{ view: "bestNotes", section: s, project: null }} navigate={navigate} current={s === section} className={sidebarEntry(s === section)}>
                 <span className="flex-1">{SECTION_TITLES[s]}</span>
                 {counts[s] !== undefined && (
                   <span className="rounded-full bg-surface-muted px-1.5 py-0.5 text-xs tabular-nums text-fg-secondary">{counts[s]}</span>
@@ -63,7 +55,7 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
           <h2 className="mb-1 px-3 text-xs font-medium uppercase tracking-wide text-fg-muted">Creators</h2>
           <ul className="space-y-0.5">
             <li>
-              <RouteLink to={{ view: "bestNotes", section, project: null }} navigate={navigate} current={projectSlug === null} className={entryClass(projectSlug === null)}>
+              <RouteLink to={{ view: "bestNotes", section, project: null }} navigate={navigate} current={projectSlug === null} className={sidebarEntry(projectSlug === null)}>
                 <span className="flex-1">All creators</span>
               </RouteLink>
             </li>
@@ -73,7 +65,7 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
                   to={{ view: "bestNotes", section, project: project.slug }}
                   navigate={navigate}
                   current={projectSlug === project.slug}
-                  className={entryClass(projectSlug === project.slug)}
+                  className={sidebarEntry(projectSlug === project.slug)}
                 >
                   <ProjectAvatar project={project} size={20} />
                   <span className="min-w-0 flex-1 truncate">{project.name}</span>
@@ -99,12 +91,11 @@ function Sidebar({ section, projectSlug, counts, creators, navigate }: {
  *  section to one creator, whose slug then sits in the address. Anyone who is not an
  *  admin sees only a short message, and the database refuses them both lists. */
 export function BestNotesPage({ section, projectSlug, navigate }: { section: CurationSection; projectSlug: string | null; navigate: (route: Route) => void }) {
-  const status = useAdminStatus();
-  if (status === "loading") return <p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>;
-  if (status === "not_admin") {
-    return <p className="mx-auto max-w-xl px-4 py-10 text-sm text-fg-secondary">This page is for admins. Sign in with an admin account to see it.</p>;
-  }
-  return <CurationPage section={section} projectSlug={projectSlug} navigate={navigate} />;
+  return (
+    <AdminOnly>
+      <CurationPage section={section} projectSlug={projectSlug} navigate={navigate} />
+    </AdminOnly>
+  );
 }
 
 function CurationPage({ section, projectSlug, navigate }: { section: CurationSection; projectSlug: string | null; navigate: (route: Route) => void }) {
@@ -168,35 +159,18 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
   }
 
   return (
-    <div className="md:flex">
-      <ResizablePanel
-        storageKey="cn:bestNotesSidebarWidth"
-        label="sidebar"
-        defaultWidth={SIDEBAR_WIDTH.default}
-        minWidth={SIDEBAR_WIDTH.min}
-        maxWidth={SIDEBAR_WIDTH.max}
-        className="hidden bg-surface md:block md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]"
-      >
-        <Sidebar section={section} projectSlug={projectSlug} counts={counts} creators={creators} navigate={navigate} />
-      </ResizablePanel>
-
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-8">
+    <SidebarLayout
+      storageKey="cn:bestNotesSidebarWidth"
+      sidebar={<Sidebar section={section} projectSlug={projectSlug} counts={counts} creators={creators} navigate={navigate} />}
+    >
         <div className="mx-auto mb-6 max-w-[40rem] space-y-3">
-          <label className="block text-sm text-fg-secondary md:hidden">
-            <span className="sr-only">Section</span>
-            <select
-              value={section}
-              onChange={(e) => navigate({ view: "bestNotes", section: e.target.value as CurationSection, project: null })}
-              className="w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-base text-fg"
-            >
-              {CURATION_SECTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {SECTION_TITLES[s]}
-                  {counts[s] !== undefined ? ` (${counts[s]})` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
+          <PhoneSectionMenu
+            sections={CURATION_SECTIONS}
+            value={section}
+            titles={SECTION_TITLES}
+            counts={counts}
+            onChange={(next) => navigate({ view: "bestNotes", section: next, project: null })}
+          />
           <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <h2 className="font-title text-2xl font-bold text-fg">
               {SECTION_TITLES[section]}
@@ -225,7 +199,6 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
           {error && <p className="text-sm text-negative">{error}</p>}
         </div>
         {feed}
-      </main>
-    </div>
+    </SidebarLayout>
   );
 }

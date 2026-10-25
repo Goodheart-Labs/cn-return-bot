@@ -3,10 +3,9 @@ import type { FeedOrder, NoteFilters, NoteMinimums } from "@cn/core/feedPages";
 import type { ProjectHeader } from "@cn/core/types";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
+import { CreatorLink } from "../components/CreatorLink";
 import { NoteFeed } from "../components/NoteFeed";
 import { NoteFiltersButton } from "../components/NoteFiltersButton";
-import { ProjectAvatar } from "../components/ProjectAvatar";
-import { RouteLink } from "../components/RouteLink";
 import { ageLabel, ageTotal, BAND_LABELS, bandTotal, DEFAULT_NOTE_FILTERS, MINIMUM_KEYS, spanStarts } from "../lib/feed";
 import { useNoteFeed } from "../lib/feedQueries";
 import { noteUrl, type Route } from "../lib/routing";
@@ -50,14 +49,7 @@ function parseFilters(stored: string | null): NoteFilters {
 function CreatorByline({ project, views, navigate }: { project: ProjectHeader; views: number; navigate: (route: Route) => void }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <RouteLink
-        to={{ view: "notes", project: project.slug, item: null, note: null }}
-        navigate={navigate}
-        className="inline-flex items-center gap-2 text-sm font-medium text-fg-secondary hover:text-fg"
-      >
-        <ProjectAvatar project={project} size={22} />
-        {project.name}
-      </RouteLink>
+      <CreatorLink project={project} navigate={navigate} />
       <span className="text-sm text-fg-muted" title="Readers outside our team who were shown the notes on this post">
         {views === 1 ? "1 view" : `${views} views`}
       </span>

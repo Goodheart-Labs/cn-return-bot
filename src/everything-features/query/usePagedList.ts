@@ -3,21 +3,29 @@ import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query";
 import { useLoadMoreSentinel } from "./useLoadMoreSentinel";
 
 /** A list that loads one page at a time from the server, as the reader
- *  scrolls. Every growing list on the website uses it. */
+ *  scrolls or presses "Show more". Every growing list on the website uses it. */
 export interface PagedList<TPage> {
   /** The pages loaded so far, in order. Undefined until the first arrives. */
   pages: TPage[] | undefined;
   /** The first page failed, so there is nothing to show. */
   failed: boolean;
+  /** Why the last load failed, while it has. */
+  error: Error | null;
   /** A later page failed. The pages above it stay on screen. */
   moreFailed: boolean;
   hasMore: boolean;
   loadingMore: boolean;
   retry: () => void;
+  /** Loads the next page, for a list with a "Show more" button. */
+  loadMore: () => void;
   /** The element to put after the last entry. When it comes near the screen,
    *  the next page loads. */
   sentinel: (element: HTMLElement | null) => void;
 }
+
+/** The bookmark for the page after `page`: its last row, or nothing when the
+ *  page came back shorter than a full page, because then it was the last. */
+export const afterFullPage = (pageSize: number) => <T>(page: T[]): T | undefined => (page.length === pageSize ? page.at(-1) : undefined);
 
 /** Loads a list page by page with TanStack Query's useInfiniteQuery, which
  *  keeps every loaded page in the cache under one key. `fetchPage` reads one
@@ -55,10 +63,12 @@ export function usePagedList<TPage, TBookmark>({ queryKey, fetchPage, firstBookm
   return {
     pages,
     failed: query.isError && !pages,
+    error: query.error,
     moreFailed: isFetchNextPageError,
     hasMore: hasNextPage,
     loadingMore: isFetchingNextPage,
     retry: () => void (pages ? fetchNextPage() : query.refetch()),
+    loadMore,
     sentinel: useLoadMoreSentinel(loadMore, pages?.length ?? 0),
   };
 }

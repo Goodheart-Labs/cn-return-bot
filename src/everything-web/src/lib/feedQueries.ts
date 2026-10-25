@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  CURATION_PAGE_SIZE,
   fetchCurationPage,
   fetchCurationSummary,
   fetchLeaderboard,
@@ -9,7 +10,7 @@ import {
   type CurationRow,
   type CurationSection,
 } from "@cn/core/bestNotes";
-import { fetchProjectBySlug, fetchProjectsPage, type ProjectOrder } from "@cn/core/creators";
+import { fetchProjectBySlug, fetchProjectsPage, PROJECTS_PAGE_SIZE, type ProjectOrder } from "@cn/core/creators";
 import {
   fetchFeedPageIds,
   fetchFeedSummary,
@@ -21,13 +22,13 @@ import {
   type NoteFilters,
   NO_FILTERS,
 } from "@cn/core/feedPages";
-import { fetchFeedItem, fetchProjectItemsPage, type ProjectItemRow } from "@cn/core/items";
+import { fetchFeedItem, fetchProjectItemsPage, PROJECT_ITEMS_PAGE_SIZE, type ProjectItemRow } from "@cn/core/items";
 import { subscribeToProjectChanges } from "@cn/core/projectRealtime";
 import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow, ProjectHeader } from "@cn/core/types";
 import { useSession } from "@cn/features/auth/useSession";
 import { noteSetOf, patchNoteInNoteSets, removeNnnFromNoteSets, removeNoteFromNoteSets, upsertNnnInNoteSets, type NoteSet } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
-import { usePagedList } from "@cn/features/query/usePagedList";
+import { afterFullPage, usePagedList } from "@cn/features/query/usePagedList";
 
 /* Every list on the website loads one page at a time as the reader scrolls
  * (GOO-524). The database orders and filters each list and returns one page,
@@ -127,7 +128,7 @@ export const useProjectsList = (order: ProjectOrder) =>
     queryKey: queryKeys.projectsPage(order),
     fetchPage: (after: FeedProjectRow | null) => fetchProjectsPage(order, after),
     firstBookmark: null as FeedProjectRow | null,
-    nextBookmark: (page) => page.at(-1),
+    nextBookmark: afterFullPage(PROJECTS_PAGE_SIZE),
   });
 
 /** The project with this slug. Undefined while it loads, null when there is
@@ -140,7 +141,7 @@ export const useProjectItems = (projectId: string) =>
     queryKey: queryKeys.projectItems(projectId),
     fetchPage: (after: ProjectItemRow | null) => fetchProjectItemsPage(projectId, after),
     firstBookmark: null as ProjectItemRow | null,
-    nextBookmark: (page) => page.at(-1),
+    nextBookmark: afterFullPage(PROJECT_ITEMS_PAGE_SIZE),
   });
 
 /** One post by id, for the heading of a project page that shows only that
@@ -164,7 +165,7 @@ export function useCurationSection(section: CurationSection, filters: Omit<Curat
       return loadCardPage(rows.map((row) => ({ noteId: row.note_id, row })));
     },
     firstBookmark: null as CurationRow | null,
-    nextBookmark: (page) => page.entries.at(-1)?.row,
+    nextBookmark: (page) => afterFullPage(CURATION_PAGE_SIZE)(page.entries)?.row,
   });
 }
 

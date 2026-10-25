@@ -5,10 +5,10 @@ import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { ResizablePanel } from "@cn/ui/ResizablePanel";
+import { AdminOnly } from "../../components/AdminOnly";
 import { RouteLink } from "../../components/RouteLink";
+import { PhoneSectionMenu, SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
 import type { Route } from "../../lib/routing";
-import { useAdminStatus } from "../../lib/useIsAdmin";
 import { PERSON, ReviewCard } from "./ReviewCard";
 import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary } from "./reviewQueries";
 
@@ -29,9 +29,6 @@ const EMPTY_SECTION: Record<ReviewSection, string> = {
 /** Sections whose drafts wait for a reviewer get a highlighted count. */
 const NEEDS_REVIEWER = new Set<ReviewSection>(["unreviewed", "waiting"]);
 
-/** How wide the sidebar starts, and how far it can be dragged. */
-const SIDEBAR_WIDTH = { default: 280, min: 220, max: 420 };
-
 const sectionRoute = (section: ReviewSection): Route => ({ view: "noteReview", section });
 
 function SectionList({ current, summary, navigate }: { current: ReviewSection; summary: ReviewSummary | undefined; navigate: (route: Route) => void }) {
@@ -48,10 +45,7 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
                 to={sectionRoute(section)}
                 navigate={navigate}
                 current={active}
-                className={cn(
-                  "flex items-center justify-between gap-3 rounded-control px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                  active ? "bg-tint font-medium text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
-                )}
+                className={cn(sidebarEntry(active), "justify-between gap-3")}
               >
                 {SECTION_TITLES[section]}
                 {count !== undefined && (
@@ -154,55 +148,40 @@ function SectionFeed({ section }: { section: ReviewSection }) {
  *  drafts. Anyone who is not an admin sees only a short message, and the
  *  database refuses them every draft and every step. */
 export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
-  const status = useAdminStatus();
-  const summary = useReviewSummary(status === "admin");
-  if (status === "loading") return <p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>;
-  if (status === "not_admin") {
-    return <p className="mx-auto max-w-xl px-4 py-10 text-sm text-fg-secondary">This page is for admins. Sign in with an admin account to see it.</p>;
-  }
   return (
-    <div className="md:flex">
-      <ResizablePanel
-        storageKey="cn:noteReviewSidebarWidth"
-        label="sidebar"
-        defaultWidth={SIDEBAR_WIDTH.default}
-        minWidth={SIDEBAR_WIDTH.min}
-        maxWidth={SIDEBAR_WIDTH.max}
-        className="hidden bg-surface md:block md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]"
-      >
-        <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
-          <h1 className="px-3 font-title text-lg font-bold text-fg">Note review</h1>
-          <SectionList current={section} summary={summary.data} navigate={navigate} />
-          <div className="mt-auto px-3">
-            <Settings summary={summary.data} />
-          </div>
-        </div>
-      </ResizablePanel>
+    <AdminOnly>
+      <NoteReview section={section} navigate={navigate} />
+    </AdminOnly>
+  );
+}
 
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-8">
-        <div className="mx-auto mb-6 max-w-[40rem] space-y-3 md:hidden">
-          <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
-          <label className="block text-sm text-fg-secondary">
-            <span className="sr-only">Section</span>
-            <select
-              value={section}
-              onChange={(e) => navigate(sectionRoute(e.target.value as ReviewSection))}
-              className="w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-base text-fg"
-            >
-              {REVIEW_SECTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {SECTION_TITLES[s]}
-                  {summary.data ? ` (${summary.data.counts[s]})` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Settings summary={summary.data} />
-        </div>
-        {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
-        <h2 className="mx-auto mb-6 hidden max-w-[40rem] font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
-        <SectionFeed key={section} section={section} />
-      </main>
+function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
+  const summary = useReviewSummary();
+  const sidebar = (
+    <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
+      <h1 className="px-3 font-title text-lg font-bold text-fg">Note review</h1>
+      <SectionList current={section} summary={summary.data} navigate={navigate} />
+      <div className="mt-auto px-3">
+        <Settings summary={summary.data} />
+      </div>
     </div>
+  );
+  return (
+    <SidebarLayout storageKey="cn:noteReviewSidebarWidth" sidebar={sidebar}>
+      <div className="mx-auto mb-6 max-w-[40rem] space-y-3 md:hidden">
+        <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
+        <PhoneSectionMenu
+          sections={REVIEW_SECTIONS}
+          value={section}
+          titles={SECTION_TITLES}
+          counts={summary.data?.counts}
+          onChange={(next) => navigate(sectionRoute(next))}
+        />
+        <Settings summary={summary.data} />
+      </div>
+      {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
+      <h2 className="mx-auto mb-6 hidden max-w-[40rem] font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
+      <SectionFeed key={section} section={section} />
+    </SidebarLayout>
   );
 }

@@ -41,8 +41,8 @@ function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): ReviewDr
   return drafts;
 }
 
-export const useReviewSummary = (enabled: boolean) =>
-  useQuery({ queryKey: queryKeys.noteReviewSummary, queryFn: fetchReviewSummary, enabled, refetchInterval: REFRESH_MS });
+export const useReviewSummary = () =>
+  useQuery({ queryKey: queryKeys.noteReviewSummary, queryFn: fetchReviewSummary, refetchInterval: REFRESH_MS });
 
 /** A page shorter than a full page is the section's last. */
 const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
