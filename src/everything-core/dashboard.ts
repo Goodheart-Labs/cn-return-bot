@@ -6,6 +6,7 @@ import {
   MIN_SCORE_TO_WALK,
   MIN_VISITED_POSTS_TO_WALK,
 } from "./readers";
+import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 
 /* The numbers behind the admins' dashboard at /admin/dashboard. Every query
@@ -181,4 +182,25 @@ export function fetchCreatorRankingPage(after: CreatorRankingRow | null): Promis
     p_after_feed_url: after?.feed_url,
     p_limit: DASHBOARD_PAGE_SIZE,
   }, 0);
+}
+
+// --- The Claude note writer's plan usage (migration 140) ---
+
+export interface ClaudeUsageRow {
+  at: string;
+  /** Percent of the weekly limit used. */
+  weekly: number;
+  /** When the weekly limit resets. Null in readings copied from logs. */
+  weekly_resets_at: string | null;
+}
+
+/** Every reading of the Claude plan's usage since a time, oldest first. Only
+ *  admins can read the table, through its row-level policy. */
+export async function fetchClaudeUsage(since: string): Promise<ClaudeUsageRow[]> {
+  const rows = await fetchAllRows<ClaudeUsageRow & { id: number }>(
+    () => supabase.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+    "id",
+    { label: "claude usage" },
+  );
+  return rows.sort((a, b) => a.id - b.id);
 }

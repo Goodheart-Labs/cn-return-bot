@@ -48,6 +48,7 @@ export const queryKeys = {
   dashboardMetricSeries: (granularity: string) => ["dashboard", "metricSeries", granularity] as const,
   dashboardCreatorRanking: ["dashboard", "creatorRanking"] as const,
   dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
+  dashboardClaudeUsage: (sinceDays: number) => ["dashboard", "claudeUsage", sinceDays] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

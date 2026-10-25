@@ -5,6 +5,7 @@ import type { Route } from "../../lib/routing";
 import { CreatorRanking } from "./CreatorRanking";
 import { MetricsChart } from "./MetricsChart";
 import { RecentPosts } from "./RecentPosts";
+import { UsageChart } from "./UsageChart";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -36,6 +37,9 @@ function Dashboard({ navigate }: { navigate: (route: Route) => void }) {
       </Section>
       <Section title="Creator ranking">
         <CreatorRanking navigate={navigate} />
+      </Section>
+      <Section title="Claude note writer usage">
+        <UsageChart />
       </Section>
       <Section title="Recently checked posts">
         <RecentPosts />

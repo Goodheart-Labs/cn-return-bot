@@ -1,11 +1,13 @@
-/* The Claude note writer's command line (GOO-507). The permanent Claude
- * session and its subagents call it to read the queue, save drafts, judge the
- * pipeline's notes, finish or hand back items, answer reviewers and change the
- * settings. Every write is logged in everything_claude_events.
+/* The Claude note writer's command line (GOO-507). The runner on Nathan's
+ * ai-box and the Claude agents it starts call it to read the queue, save
+ * drafts, judge the pipeline's notes, finish or hand back items, answer
+ * reviewers and change the settings. Every write is logged in
+ * everything_claude_events.
  *
  * Usage: bun run claude-notes <command> [arguments]
- *   settings [writer=pipeline|claude] [approval=on|off] [--by jim|nathan|claude]
- *   queue                         queued items Claude has not handed back
+ *   settings [writer=pipeline|claude] [approval=on|off] [posts=<n>] [by=jim|nathan|claude]
+ *                                 posts is how many feed posts Claude gets at once
+ *   queue                         queued items Claude is working on or has not taken yet
  *   take <item id>                writes the post's text for the agents, logs the take
  *   draft <draft.json>            saves one draft; a note is posted unless approval is on
  *   pipeline-notes <item id>      the pipeline's AI notes on a post, as JSON
@@ -13,40 +15,38 @@
  *   delete-pipeline-note <item id> <note id> <reason>
  *   finish <item id> <summary.json>
  *   hand-back <item id> <reason>
- *   skip <item id> <reason>       records that a post was judged not worth checking
+ *   skip <item id> <reason>       marks a post checked because nothing in it is worth checking
+ *   posted-since <ISO time>       the notes Claude posted since then, newest first
  *   messages                      reviewer messages still waiting for an answer
  *   watch                         waits for reviewer messages, queued items or a due digest, prints it and exits
  *   answer <answer.json>          { draftId, reply, note?, sources?, passage? }
  *   withdraw <draft id> <reason>
- *   usage                         Claude Code usage of Jim's plan
- *   examples                      regenerates docs/note-examples.md from prod */
+ *   usage                         Claude Code usage of the plan this machine is logged into
+ *   examples                      regenerates the examples file from prod
+ *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
 
-import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import * as path from "path";
+import { readFileSync } from "fs";
 import {
   addDraft,
   answerMessage,
   type Actor,
   changeSettings,
+  claudeQueue,
   deletePipelineNote,
   finishItem,
   handBack,
   keepPipelineNote,
-  logEvent,
   type NewDraft,
-  isVideo,
-  nathanNotedItem,
   pipelineNotes,
-  postDir,
-  readItem,
+  postedSince,
   readSettings,
   rewrite,
+  type SettingsChange,
+  skipItem,
   unansweredMessages,
-  waitingItems,
   withdraw,
-  type Writer,
 } from "./store";
-import { fetchAndStoreItemText } from "../everything/worker";
+import { take } from "./take";
 import { readUsage } from "./usage";
 
 
@@ -64,43 +64,16 @@ const readJson = (file: string) => JSON.parse(readFileSync(file, "utf8"));
 const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 
 
-/** Writes the post's text where the agents read it. A post without stored
- *  text, such as a new video or a requested page, is read first the way the
- *  pipeline reads it. If that fails, the item should be handed back. */
-/** Nathan's own fact-checks are not redone. */
-const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
-
-async function take(itemId: string) {
-  if (await nathanNotedItem(itemId)) {
-    await logEvent({ actor: "claude", type: "item_skipped", itemId, data: { reason: NATHAN_SKIP_REASON } });
-    await finishItem(itemId, { skipped: true, reason: NATHAN_SKIP_REASON });
-    console.log(`SKIPPED: ${NATHAN_SKIP_REASON}. The item is marked checked.`);
-    return;
-  }
-  const before = await readItem(itemId);
-  // A video is always read, even with stored text, because its caption cues
-  // are what give each note its time in the video.
-  const read = before.full_text && !isVideo(before.url) ? null : await fetchAndStoreItemText(itemId, { keepText: Boolean(before.full_text) });
-  const item = await readItem(itemId);
-  const dir = postDir(item.url);
-  mkdirSync(dir, { recursive: true });
-  if (read?.cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(read.cues));
-  const creator = item.project?.name ?? "unknown";
-  writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
-  writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
-  await logEvent({ actor: "claude", type: "item_taken", itemId });
-  console.log(dir);
-}
-
-function parseSettingsArgs(list: string[]): { change: { writer?: Writer; approvalRequired?: boolean }; by: Actor } {
-  const change: { writer?: Writer; approvalRequired?: boolean } = {};
+function parseSettingsArgs(list: string[]): { change: SettingsChange; by: Actor } {
+  const change: SettingsChange = {};
   let by: Actor = "claude";
-  for (let i = 0; i < list.length; i++) {
-    const [key, value] = (list[i] ?? "").split("=");
+  for (const entry of list) {
+    const [key, value] = entry.split("=");
     if (key === "writer" && (value === "pipeline" || value === "claude")) change.writer = value;
     else if (key === "approval" && (value === "on" || value === "off")) change.approvalRequired = value === "on";
-    else if (key === "--by") by = list[++i] as Actor;
-    else throw new Error(`Unknown setting: ${list[i]}`);
+    else if (key === "posts" && /^\d+$/.test(value ?? "")) change.postsInFlight = Number(value);
+    else if (key === "by" && (value === "jim" || value === "nathan" || value === "claude")) by = value;
+    else throw new Error(`Unknown setting: ${entry}`);
   }
   return { change, by };
 }
@@ -128,8 +101,8 @@ async function watch() {
     const messages = await unansweredMessages();
     if (messages.length > 0) return print({ wake: "messages", messages: messages.map((m) => ({ draftId: m.draft_id, from: m.actor, text: (m.data as { text: string }).text })) });
     const { writer } = await readSettings();
-    const items = writer === "claude" ? await waitingItems() : [];
-    if (items.length > 0) return print({ wake: "queue", items: items.map(({ full_text, ...item }) => item) });
+    const items = writer === "claude" ? (await claudeQueue()).waiting : [];
+    if (items.length > 0) return print({ wake: "queue", items });
     if (Date.now() - startedAt > DIGEST_EVERY_MS) return print({ wake: "digest" });
     await Bun.sleep(WATCH_POLL_MS);
   }
@@ -143,9 +116,11 @@ async function main() {
       return print(await readSettings());
     }
     case "queue":
-      return print((await waitingItems()).map(({ full_text, ...item }) => ({ ...item, hasText: Boolean(full_text) })));
-    case "take":
-      return take(arg(0));
+      return print(await claudeQueue());
+    case "take": {
+      const taken = await take(arg(0));
+      return console.log(taken.kind === "taken" ? taken.dir : `SKIPPED: ${taken.reason}. The item is marked checked.`);
+    }
     case "draft":
       return print(await addDraft(readJson(arg(0))));
     case "pipeline-notes":
@@ -157,9 +132,13 @@ async function main() {
     case "finish":
       return finishItem(arg(0), readJson(arg(1)));
     case "skip":
-      return logEvent({ actor: "claude", type: "item_skipped", itemId: arg(0), data: { reason: args.slice(1).join(" ") } });
+      return skipItem(arg(0), args.slice(1).join(" "));
     case "hand-back":
       return handBack(arg(0), args.slice(1).join(" "));
+    case "posted-since":
+      return print(await postedSince(arg(0)));
+    case "run":
+      return import("./runner");
     case "messages":
       return print(await unansweredMessages());
     case "watch":
