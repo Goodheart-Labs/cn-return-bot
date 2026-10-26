@@ -15,15 +15,15 @@ import { SidebarLayout } from "../components/SidebarLayout";
 import { WriteNoteModal } from "../components/WriteNoteModal";
 import { BAND_LABELS, bandTotal } from "../lib/feed";
 import { useFeedItem, useNoteCount, useNoteFeed, useProjectItems, useProjectRealtime, useSharedNote } from "../lib/feedQueries";
-import { noteUrl, type Route } from "../lib/routing";
+import type { Route } from "../lib/routing";
 
 /** When the scroll to a shared note runs, in milliseconds after its card
  *  first renders. */
 const SCROLL_TO_NOTE_RETRIES_MS = [0, 400, 1000, 1800];
 
 /** Scrolls to a shared note once its card has rendered. It scrolls again a few
- *  times over the next two seconds, because the YouTube iframes load late and
- *  shift the layout underneath it. */
+ *  times over the next two seconds, because the cards above it settle their
+ *  height after they first render and shift the layout underneath it. */
 function useScrollToNote(noteId: string | null, ready: boolean) {
   const done = useRef(false);
   useEffect(() => {
@@ -177,7 +177,6 @@ export function ProjectPage({ project, itemId, noteId, navigate }: {
             labelOf={({ entry }) => BAND_LABELS[entry.band]}
             totalOf={(label) => bandTotal(summary.data, label)}
             showPost={!activeItem}
-            shareUrl={({ note }) => noteUrl(project.slug, note.id)}
             emptyText="No notes yet for this project."
           />
         )}
