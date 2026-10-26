@@ -7,7 +7,7 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
-import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
+import { USAGE_WINDOW_HOURS, USAGE_WINDOW_NOT_BEFORE, type UsageSnapshot } from "./usagePacing";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -428,10 +428,11 @@ export async function claudeWritesNotes(): Promise<boolean> {
 }
 
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
- *  the usage readings and the posts Claude took over the window. */
+ *  the usage readings and the posts Claude took over the window, which starts
+ *  no earlier than USAGE_WINDOW_NOT_BEFORE. */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const now = new Date();
-  const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
+  const since = new Date(Math.max(now.getTime() - USAGE_WINDOW_HOURS * 3600_000, USAGE_WINDOW_NOT_BEFORE.getTime())).toISOString();
   const db = getSupabaseClient();
   const [readings, taken, last] = await Promise.all([
     fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(

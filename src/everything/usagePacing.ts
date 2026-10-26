@@ -13,7 +13,7 @@
  *   interval between posts = time until the reset × usage per post
  *                            ÷ (target − usage now)
  *
- * The usage per post is the rise of the weekly usage over the last 48 hours,
+ * The usage per post is the rise of the weekly usage over the last 7 days,
  * divided by the posts Claude took in that time. That rise includes every
  * other use of the plan, such as Nathan's own tasks on the box. So a post
  * looks more expensive while other work runs, and the posts slow down by just
@@ -42,8 +42,17 @@ import { duration } from "./logFormat";
  *  tasks still get the rest. */
 export const WEEKLY_USAGE_TARGET_PERCENT = 80;
 
-/** How far back the usage per post is measured. */
-export const USAGE_WINDOW_HOURS = 48;
+/** How far back the usage per post is measured. A whole week evens out the
+ *  days when other work on the plan ran, or when the posts were unusually long
+ *  or short. Jim chose 7 days over 48 hours on 2026-10-26. */
+export const USAGE_WINDOW_HOURS = 7 * 24;
+
+/** The window never reaches back before the runner started on ai-box. Before
+ *  then the note writer ran on the devbox, partly on Jim's plan, so its 618
+ *  posts barely show in the readings of Nathan's plan. Counting them made a
+ *  post look three times cheaper than it is. From 2026-10-31 the 7 days lie
+ *  wholly after this, and the date no longer matters. */
+export const USAGE_WINDOW_NOT_BEFORE = new Date("2026-10-24T05:27:00Z");
 
 /** Below this many posts in the window the measured usage per post says
  *  little, and DEFAULT_USAGE_PER_POST_PERCENT stands in. */
