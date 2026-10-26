@@ -8,9 +8,10 @@ import {
 } from "./usagePacing";
 
 /* Covers the usage pacing of the Claude note writer (GOO-587): the interval
- * between posts is the time until the weekly reset times the usage per post,
- * divided by the usage left below 80%; the usage per post is measured; and
- * the pipeline takes over when the week is used up or the runner is quiet. */
+ * between posts is 1.1 times the time until the weekly reset times the usage
+ * per post, divided by the usage left below 80%; the usage per post is
+ * measured; no new post comes at the target; and the pipeline steps in only
+ * when the runner is quiet. */
 
 const HOUR_MS = 3600_000;
 const NOW = new Date("2026-10-26T12:00:00Z");
@@ -45,10 +46,11 @@ describe("usageRise", () => {
 describe("computeClaudePacing", () => {
   test("spreads the usage left over the time until the reset", () => {
     // 10 points over 100 posts is 0.1 per post. 60 points are left below 80%,
-    // which is 600 posts in the 144 hours until the reset: one every 14.4 minutes.
+    // which is 600 posts in the 144 hours until the reset: one every 14.4
+    // minutes, stretched by 10% to 15.84.
     const pacing = claude(snapshot());
     expect(pacing.usagePerPost).toBeCloseTo(0.1);
-    expect(pacing.intervalMs).toBeCloseTo((144 * HOUR_MS) / 600, -3);
+    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 600, -3);
   });
 
   test("the next post is due one interval after Claude last took one", () => {
@@ -85,8 +87,10 @@ describe("computeClaudePacing", () => {
     expect(claude(snapshot({ readings: [reading(48, 20), reading(0, 20)] })).usagePerPost).toBe(DEFAULT_USAGE_PER_POST_PERCENT);
   });
 
-  test("at the target the pipeline takes the posts until the reset", () => {
-    expect(computeClaudePacing(snapshot({ readings: [reading(1, 79), reading(0, 80)] })).writer).toBe("pipeline");
+  test("at the target no new post is due until the reset, and Claude keeps the queue", () => {
+    const pacing = claude(snapshot({ readings: [reading(1, 79), reading(0, 80)], lastTakenAt: NOW }));
+    expect(pacing.intervalMs).toBe(Infinity);
+    expect(pacing.dueAt).toEqual(RESET);
   });
 
   test("when the runner has not reported for over 30 minutes the pipeline takes the posts", () => {

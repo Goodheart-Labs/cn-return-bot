@@ -455,12 +455,13 @@ export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   };
 }
 
-/** Sorts the queued feed items while the Claude note writer is on. Claude
- *  works on an item it took while the item stays queued, so a queued item is
- *  one of three things: handed back to the pipeline, taken by Claude, or still
+/** Sorts the queued items while the Claude note writer is on. Claude works on
+ *  an item it took while the item stays queued, so a queued item is one of
+ *  three things: handed back to the pipeline, taken by Claude, or still
  *  waiting for Claude to take it. */
-export async function sortClaudeFeedItems(queue: QueuedItemSummary[]): Promise<{ waiting: string[]; handedBack: string[] }> {
-  const ids = queue.filter((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested).map((item) => item.id);
+export async function sortClaudeQueue(queue: QueuedItemSummary[]): Promise<{ waiting: QueuedItemSummary[]; handedBack: QueuedItemSummary[] }> {
+  const queued = queue.filter((item) => item.status === "queued");
+  const ids = queued.map((item) => item.id);
   const db = getSupabaseClient();
   const [handbacks, takes] = await Promise.all([
     fetchInBatches<{ item_id: string }>((chunk) => db.from("everything_claude_handbacks").select("item_id").in("item_id", chunk), ids, "item_id", { label: "claudeHandbacks" }),
@@ -474,8 +475,8 @@ export async function sortClaudeFeedItems(queue: QueuedItemSummary[]): Promise<{
   const handedBack = new Set(handbacks.map((h) => h.item_id));
   const taken = new Set(takes.map((t) => t.item_id));
   return {
-    waiting: ids.filter((id) => !handedBack.has(id) && !taken.has(id)),
-    handedBack: ids.filter((id) => handedBack.has(id)),
+    waiting: queued.filter((item) => !handedBack.has(item.id) && !taken.has(item.id)),
+    handedBack: queued.filter((item) => handedBack.has(item.id)),
   };
 }
 

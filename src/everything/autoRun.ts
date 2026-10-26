@@ -29,9 +29,10 @@
  * (GOO-587). Claude's posts cost no money but use Nathan's weekly Claude
  * usage, so they are spaced by usagePacing.ts. The walk adds a post for Claude
  * when one is due and fewer than 3 feed posts are in the queue, and the
- * alarm wakes the next run when the next one is due. When Claude's week is
- * used up or its runner has gone quiet, the walk works for the pipeline again,
- * and every post waiting for Claude is handed to the pipeline.
+ * alarm wakes the next run when the next one is due. Once Claude's week is at
+ * its target, the walk adds nothing until the reset, and Claude still takes
+ * what is queued. Only when the runner on ai-box has gone quiet does this run
+ * hand what waits for Claude to the pipeline.
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -49,7 +50,8 @@ import {
   fetchUsageSnapshot,
   oldestPendingRequestAgeSeconds,
   setFeedAlarm,
-  sortClaudeFeedItems,
+  QUEUE_PRIORITY,
+  sortClaudeQueue,
   type QueuedItemSummary,
 } from "./db";
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
@@ -136,23 +138,28 @@ async function walkForClaude(queue: QueuedItemSummary[], pacing: Extract<ClaudeP
     console.log(`\n${queued} feed posts are in the queue already · no new post for Claude`);
     return null;
   }
-  return (await runAutoEnqueue()) > 0 ? new Date(Date.now() + pacing.intervalMs) : null;
+  const walked = (await runAutoEnqueue()) > 0;
+  return walked && Number.isFinite(pacing.intervalMs) ? new Date(Date.now() + pacing.intervalMs) : null;
 }
 
-/** While Claude's week is used up, the walk works for the pipeline, and every
- *  feed post still waiting for Claude goes to the pipeline, the new one too. */
-async function walkForPipelineInsteadOfClaude(queue: QueuedItemSummary[], reason: string): Promise<void> {
-  const before = await sortClaudeFeedItems(queue);
-  if (before.waiting.length === 0 && before.handedBack.length === 0) await runAutoEnqueue();
-  const { waiting } = await sortClaudeFeedItems(await fetchQueueOverview());
-  for (const itemId of waiting) await handBack(itemId, reason);
+/** While the runner on ai-box is down, nobody would take what waits for
+ *  Claude. So the pipeline takes it: every waiting item is handed back, reader
+ *  requests too, and the walk works for the pipeline as it did before Claude.
+ *  A post Claude had already taken stays Claude's, because the runner picks it
+ *  up again when it comes back. */
+async function handToPipelineWhileRunnerIsDown(queue: QueuedItemSummary[], reason: string): Promise<void> {
+  const isFeedItem = (item: QueuedItemSummary) => item.priority < QUEUE_PRIORITY.requested;
+  const before = await sortClaudeQueue(queue);
+  if (![...before.waiting, ...before.handedBack].some(isFeedItem)) await runAutoEnqueue();
+  const { waiting } = await sortClaudeQueue(await fetchQueueOverview());
+  for (const item of waiting) await handBack(item.id, reason);
 }
 
 /** Walks for a new feed post when one is due. Returns when the alarm should
  *  wake the next run for Claude's next post. */
 async function walkForNextPost(queue: QueuedItemSummary[], claude: ClaudePacing | null): Promise<Date | null> {
   if (claude?.writer === "claude") return walkForClaude(queue, claude);
-  if (claude?.writer === "pipeline") await walkForPipelineInsteadOfClaude(queue, claude.reason);
+  if (claude?.writer === "pipeline") await handToPipelineWhileRunnerIsDown(queue, claude.reason);
   else if (queuedFeedItemCount(queue) === 0) await runAutoEnqueue();
   return null;
 }

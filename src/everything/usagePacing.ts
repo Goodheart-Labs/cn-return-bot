@@ -31,9 +31,14 @@
  * total, so each use would need its own estimate, for example the cost that
  * Claude Code reports at the end of each of its runs. (Jim, 2026-10-26.)
  *
- * When the week is already at the target, or the runner has stopped reporting,
- * Claude gets no new post, and the pipeline checks new posts instead. Jim chose
- * that on 2026-10-26. */
+ * The interval is stretched by 10%, so the week most likely ends a little
+ * under the target rather than over it. Once the week is at the target, the
+ * walk adds no new post until the reset. Claude still takes everything that is
+ * already in the queue, reader requests included. Only the runner's own stop
+ * at 90% (MAX_WEEKLY_USAGE_PERCENT in src/claude-notes/runner.ts) sends queued
+ * items to the pipeline. When the runner has not reported for 30 minutes, it
+ * is taken to be down, and the feed run hands every item waiting for Claude
+ * to the pipeline. Jim set these rules on 2026-10-26. */
 
 import { duration } from "./logFormat";
 
@@ -41,6 +46,10 @@ import { duration } from "./logFormat";
  *  picked it on 2026-10-26. Nathan's own pacer on the box aims at 98%, so his
  *  tasks still get the rest. */
 export const WEEKLY_USAGE_TARGET_PERCENT = 80;
+
+/** The interval is stretched by this factor, so that an estimate a little too
+ *  low does not carry the week past the target. */
+export const INTERVAL_SAFETY_FACTOR = 1.1;
 
 /** How far back the usage per post is measured. A whole week evens out the
  *  days when other work on the plan ran, or when the posts were unusually long
@@ -63,7 +72,8 @@ export const MIN_POSTS_FOR_USAGE_ESTIMATE = 5;
 export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
 
 /** The runner reads the usage every 5 minutes. A newest reading older than
- *  this means the runner is down, so Claude would not start a post. */
+ *  this means the runner on ai-box is down, so Claude would not start a post,
+ *  and the pipeline takes what waits for Claude. */
 export const MAX_USAGE_READING_AGE_MS = 30 * 60_000;
 
 export interface UsageReading {
@@ -86,7 +96,9 @@ export interface UsageSnapshot {
   lastTakenAt: Date | null;
 }
 
-/** Who gets the next feed post, and for Claude, when it is due. */
+/** When Claude's next feed post is due, or that the runner on ai-box is down
+ *  and the pipeline has to step in. At the target the interval is infinite
+ *  and the next post is due at the reset. */
 export type ClaudePacing =
   | {
       writer: "claude";
@@ -116,17 +128,12 @@ export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
   if (!latest?.weeklyResetsAt || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
     return { writer: "pipeline", reason: "The runner on ai-box has not reported the usage of Nathan's plan in the last 30 minutes" };
   }
-  if (latest.weekly >= WEEKLY_USAGE_TARGET_PERCENT) {
-    return {
-      writer: "pipeline",
-      reason: `Nathan's plan is at ${latest.weekly}% of its weekly limit, the target is ${WEEKLY_USAGE_TARGET_PERCENT}%, and the week resets at ${utcTime(latest.weeklyResetsAt)}`,
-    };
-  }
   const rise = usageRise(snapshot.readings);
   const measured = snapshot.postsTaken >= MIN_POSTS_FOR_USAGE_ESTIMATE && rise > 0;
   const usagePerPost = measured ? rise / snapshot.postsTaken : DEFAULT_USAGE_PER_POST_PERCENT;
   const msToReset = Math.max(0, latest.weeklyResetsAt.getTime() - now.getTime());
-  const intervalMs = (msToReset * usagePerPost) / (WEEKLY_USAGE_TARGET_PERCENT - latest.weekly);
+  const usageLeft = WEEKLY_USAGE_TARGET_PERCENT - latest.weekly;
+  const intervalMs = usageLeft > 0 ? (INTERVAL_SAFETY_FACTOR * msToReset * usagePerPost) / usageLeft : Infinity;
   return {
     writer: "claude",
     weekly: latest.weekly,
@@ -134,14 +141,14 @@ export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
     usagePerPost,
     usagePerPostIsDefault: !measured,
     intervalMs,
-    dueAt: snapshot.lastTakenAt ? new Date(snapshot.lastTakenAt.getTime() + intervalMs) : now,
+    dueAt: usageLeft <= 0 ? latest.weeklyResetsAt : snapshot.lastTakenAt ? new Date(snapshot.lastTakenAt.getTime() + intervalMs) : now,
   };
 }
 
 /** The block the run log prints, so the spacing of Claude's posts is always
  *  explainable from the log alone. */
 export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapshot): string {
-  if (pacing.writer === "pipeline") return `CLAUDE · ${pacing.reason} · the pipeline takes new feed posts`;
+  if (pacing.writer === "pipeline") return `CLAUDE · ${pacing.reason} · the pipeline takes what waits for Claude`;
   const sample = pacing.usagePerPostIsDefault
     ? `default, fewer than ${MIN_POSTS_FOR_USAGE_ESTIMATE} posts in the last ${USAGE_WINDOW_HOURS}h`
     : `a ${usageRise(snapshot.readings)}% rise over ${snapshot.postsTaken} posts in the last ${USAGE_WINDOW_HOURS}h`;
@@ -149,6 +156,8 @@ export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapsh
   return [
     `CLAUDE · Nathan's plan at ${pacing.weekly}% of its weekly limit, aiming at ${WEEKLY_USAGE_TARGET_PERCENT}% by the reset at ${utcTime(pacing.resetsAt)}`,
     `         ${pacing.usagePerPost.toFixed(3)}% per post (${sample})`,
-    `         one post every ${duration(pacing.intervalMs)} · last taken ${lastTaken}`,
+    pacing.intervalMs === Infinity
+      ? `         the target is reached · no new feed post until the reset · last taken ${lastTaken}`
+      : `         one post every ${duration(pacing.intervalMs)}, ${INTERVAL_SAFETY_FACTOR}× the even spacing · last taken ${lastTaken}`,
   ].join("\n");
 }
