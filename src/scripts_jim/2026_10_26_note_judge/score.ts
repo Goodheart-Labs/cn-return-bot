@@ -161,7 +161,7 @@ const sets: [string, LabelledNote[], JudgeResult[]][] = [
 ];
 const scores = sets.map(([title, notes, results]) => ({ title, score: scoreSet(title, notes, results) }));
 const cost = { zero: runCost(zero), few: runCost(few) };
-const costLine = (mode: Mode) => `- ${mode}: ${cost[mode].judges} judges, $${cost[mode].usd.toFixed(2)} at API prices, ${cost[mode].minutesEach.toFixed(1)} minutes each on average`;
+const costLine = (mode: Mode) => `- ${mode}: ${cost[mode].judges} judges, $${cost[mode].usd.toFixed(2)} as Claude Code's estimate of the equivalent API price (not billed, Nathan's subscription paid), ${cost[mode].minutesEach.toFixed(1)} minutes each on average`;
 const report = [
   "# Note judge experiment",
   ...scores.map(({ title, score }) => setMarkdown(title, score)),

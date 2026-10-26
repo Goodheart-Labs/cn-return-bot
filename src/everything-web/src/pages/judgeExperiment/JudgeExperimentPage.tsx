@@ -225,8 +225,9 @@ function Results() {
         <SetScoreCard key={score.title} score={score} />
       ))}
       <p className="text-xs text-fg-muted">
-        Zero-shot: {cost.zero.judges} judges, ${cost.zero.usd.toFixed(2)} at API prices, {cost.zero.minutesEach.toFixed(1)} minutes each. Few-shot: {cost.few.judges} judges, $
-        {cost.few.usd.toFixed(2)} at API prices, {cost.few.minutesEach.toFixed(1)} minutes each. Nathan's subscription pays for both.
+        Every judge ran as Claude Code on Nathan's ai-box, on his Claude subscription. Nothing was billed. Zero-shot: {cost.zero.judges} judges,{" "}
+        {cost.zero.minutesEach.toFixed(1)} minutes each. Few-shot: {cost.few.judges} judges, {cost.few.minutesEach.toFixed(1)} minutes each. Claude Code estimates the same
+        tokens would cost ${(cost.zero.usd + cost.few.usd).toFixed(2)} on the API.
       </p>
     </div>
   );
