@@ -104,7 +104,7 @@ async function main() {
   const leaderboard = new Set(((await unwrap(db.from("everything_best_notes").select("note_id"))) as { note_id: string }[]).map((r) => r.note_id));
   const reasons = await reviewerReasons(drafts);
 
-  const labelled: LabelledNote[] = drafts.flatMap((d) => {
+  const unordered: Omit<LabelledNote, "fewShotRole">[] = drafts.flatMap((d) => {
     const result = label(d, d.note_id ? tallyById.get(d.note_id) : undefined);
     if (!result) return [];
     return [
@@ -124,7 +124,9 @@ async function main() {
       },
     ];
   });
-  labelled.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  unordered.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const half = Math.floor(unordered.length / 2);
+  const labelled: LabelledNote[] = unordered.map((n, i) => ({ ...n, fewShotRole: i < half ? "example" : "judged" }));
 
   mkdirSync(DATA_DIR, { recursive: true });
   writeFileSync(DATASET_PATH, JSON.stringify(labelled, null, 1));

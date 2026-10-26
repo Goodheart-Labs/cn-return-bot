@@ -15,6 +15,9 @@ export interface LabelledNote extends JudgeExample {
   /** Which part of the rule gave the label, for reading the results. */
   labelWhy: string;
   onLeaderboard: boolean;
+  /** In the few-shot run, the older half of the notes, by the time they were
+   *  written, are examples in the prompt, and the newer half is judged. */
+  fewShotRole: "example" | "judged";
 }
 
 export type Mode = "zero" | "few";
@@ -43,11 +46,8 @@ export function readResults(mode: Mode): JudgeResult[] {
     .map((line) => JSON.parse(line));
 }
 
-/** The examples the judge sees, and the notes it judges. The few-shot run
- *  shows the older half, by the time the notes were written, and judges the
- *  newer half. */
+/** The examples the judge sees, and the notes it judges. */
 export function splitForMode(dataset: LabelledNote[], mode: Mode): { examples: LabelledNote[]; targets: LabelledNote[] } {
   if (mode === "zero") return { examples: [], targets: dataset };
-  const half = Math.floor(dataset.length / 2);
-  return { examples: dataset.slice(0, half), targets: dataset.slice(half) };
+  return { examples: dataset.filter((n) => n.fewShotRole === "example"), targets: dataset.filter((n) => n.fewShotRole === "judged") };
 }
