@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchReviewDrafts, type ReviewDraft } from "@cn/core/claudeReview";
 import { cn } from "@cn/ui/cn";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
@@ -54,6 +54,14 @@ interface JudgeResult {
   reasoning: string;
 }
 type Mode = "zero" | "few";
+/** Each prompt's results sit in the data folder under its own file prefix.
+ *  The newest prompt comes first. */
+const PROMPTS = [
+  { prefix: "", title: "New prompt, with the reader guidance" },
+  { prefix: "v1-", title: "Old prompt, without the reader guidance" },
+] as const;
+type Prompt = (typeof PROMPTS)[number];
+type RunResults = Record<Mode, Map<string, JudgeResult>> & { prompt: Prompt };
 
 async function fetchDataset(): Promise<LabelledNote[]> {
   const response = await fetch(`${DATA_URL}/dataset.json`);
@@ -62,8 +70,8 @@ async function fetchDataset(): Promise<LabelledNote[]> {
 }
 
 /** One run's answers by draft. A run that has not started has no file. */
-async function fetchResults(mode: Mode): Promise<Map<string, JudgeResult>> {
-  const response = await fetch(`${DATA_URL}/${mode}.jsonl`);
+async function fetchResults(prefix: string, mode: Mode): Promise<Map<string, JudgeResult>> {
+  const response = await fetch(`${DATA_URL}/${prefix}${mode}.jsonl`);
   if (response.status === 404) return new Map();
   if (!response.ok) throw new Error(`Could not read the ${mode}-shot results`);
   const lines = (await response.text()).split("\n").filter(Boolean);
@@ -103,7 +111,7 @@ function JudgeAnswer({ mode, result }: { mode: Mode; result: JudgeResult | undef
 
 /** What the experiment knows about the note: its label, its part in the
  *  few-shot run, and the judges' answers once the runs have them. */
-function ExperimentFacts({ note, results }: { note: LabelledNote; results: Record<Mode, Map<string, JudgeResult>> }) {
+function ExperimentFacts({ note, results }: { note: LabelledNote; results: RunResults[] }) {
   return (
     <div className="space-y-1 rounded-control border border-line p-3 text-sm text-fg-secondary">
       <p>
@@ -111,13 +119,18 @@ function ExperimentFacts({ note, results }: { note: LabelledNote; results: Recor
         {`: ${note.labelWhy}. Few-shot ${note.fewShotRole === "example" ? "example" : "test note"}.`}
       </p>
       {note.reason && <p className="text-xs text-fg-muted">Reason: {note.reason}</p>}
-      <JudgeAnswer mode="zero" result={results.zero.get(note.draftId)} />
-      <JudgeAnswer mode="few" result={results.few.get(note.draftId)} />
+      {results.map(({ prompt, zero, few }) => (
+        <div key={prompt.prefix} className="pt-1">
+          <p className="text-xs text-fg-muted">{prompt.title}</p>
+          <JudgeAnswer mode="zero" result={zero.get(note.draftId)} />
+          <JudgeAnswer mode="few" result={few.get(note.draftId)} />
+        </div>
+      ))}
     </div>
   );
 }
 
-function SectionFeed({ notes, results }: { notes: LabelledNote[]; results: Record<Mode, Map<string, JudgeResult>> }) {
+function SectionFeed({ notes, results }: { notes: LabelledNote[]; results: RunResults[] }) {
   const drafts = useSectionDrafts(notes);
   const liveNotes = useLiveNotes(drafts.data ?? []);
   const noteById = new Map(notes.map((n) => [n.draftId, n]));
@@ -161,8 +174,8 @@ interface Report {
   cost: Record<Mode, RunCost>;
 }
 
-async function fetchReport(): Promise<Report | null> {
-  const response = await fetch(`${DATA_URL}/report.json`);
+async function fetchReport(prefix: string): Promise<Report | null> {
+  const response = await fetch(`${DATA_URL}/${prefix}report.json`);
   if (response.status === 404) return null;
   if (!response.ok) throw new Error("Could not read the report");
   return response.json();
@@ -213,14 +226,14 @@ function SetScoreCard({ score }: { score: SetScore }) {
   );
 }
 
-function Results() {
-  const report = useQuery({ queryKey: ["judgeExperiment", "report"], queryFn: fetchReport });
-  if (report.isError) return <p className="mx-auto max-w-[40rem] text-sm text-negative">{report.error.message}</p>;
-  if (report.isPending) return <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>;
-  if (!report.data) return <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">No report yet. Run score.ts first.</p>;
+function PromptResults({ prompt }: { prompt: Prompt }) {
+  const report = useQuery({ queryKey: ["judgeExperiment", "report", prompt.prefix], queryFn: () => fetchReport(prompt.prefix) });
+  if (report.isError) return <p className="text-sm text-negative">{report.error.message}</p>;
+  if (report.isPending) return <p className="text-sm text-fg-muted">Loading…</p>;
+  if (!report.data) return <p className="text-sm text-fg-muted">No report yet. Run score.ts first.</p>;
   const { sets, cost } = report.data;
   return (
-    <div className="mx-auto max-w-[40rem] space-y-6">
+    <div className="space-y-6">
       {sets.map((score) => (
         <SetScoreCard key={score.title} score={score} />
       ))}
@@ -229,6 +242,20 @@ function Results() {
         {cost.zero.minutesEach.toFixed(1)} minutes each. Few-shot: {cost.few.judges} judges, {cost.few.minutesEach.toFixed(1)} minutes each. Claude Code estimates the same
         tokens would cost ${(cost.zero.usd + cost.few.usd).toFixed(2)} on the API.
       </p>
+    </div>
+  );
+}
+
+/** The new prompt's scores and the old prompt's side by side on wide screens. */
+function Results() {
+  return (
+    <div className="mx-auto grid max-w-[40rem] gap-8 xl:max-w-[82rem] xl:grid-cols-2">
+      {PROMPTS.map((prompt) => (
+        <section key={prompt.prefix} className="space-y-4">
+          <h3 className="font-title text-lg font-bold text-fg">{prompt.title}</h3>
+          <PromptResults prompt={prompt} />
+        </section>
+      ))}
     </div>
   );
 }
@@ -263,12 +290,16 @@ function SectionList({ current, counts, navigate }: { current: JudgeSection; cou
 export function JudgeExperimentPage({ section, navigate }: { section: JudgeSection; navigate: (route: Route) => void }) {
   const status = useAdminStatus();
   const dataset = useQuery({ queryKey: ["judgeExperiment", "dataset"], queryFn: fetchDataset });
-  const zero = useQuery({ queryKey: ["judgeExperiment", "results", "zero"], queryFn: () => fetchResults("zero") });
-  const few = useQuery({ queryKey: ["judgeExperiment", "results", "few"], queryFn: () => fetchResults("few") });
+  const runs = useQueries({
+    queries: PROMPTS.map((prompt) => ({
+      queryKey: ["judgeExperiment", "results", prompt.prefix],
+      queryFn: async (): Promise<RunResults> => ({ prompt, zero: await fetchResults(prompt.prefix, "zero"), few: await fetchResults(prompt.prefix, "few") }),
+    })),
+  });
   if (status === "loading") return <p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>;
   if (status === "not_admin") return <p className="mx-auto max-w-xl px-4 py-10 text-sm text-fg-secondary">This page is for admins. Sign in with an admin account to see it.</p>;
   const counts = dataset.data && (Object.fromEntries(NOTE_SECTIONS.map((s) => [s, dataset.data.filter(inSection(s)).length])) as Record<NoteSection, number>);
-  const results = zero.data && few.data ? { zero: zero.data, few: few.data } : undefined;
+  const results = runs.every((run) => run.data) ? runs.map((run) => run.data!) : undefined;
   return (
     <div className="md:flex">
       <ResizablePanel
