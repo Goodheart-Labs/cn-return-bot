@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { approveDraft, rejectDraft, rewriteDraft, sendDraftMessage, type Reviewer, type ReviewDraft, type ReviewSection } from "@cn/core/claudeReview";
 import { mintSelfVoteDonation } from "@cn/core/donations";
@@ -290,8 +290,10 @@ function RejectedNote({ draft }: { draft: ReviewDraft }) {
 /** One passage the Claude note writer's agents looked at, on the website's
  *  own card: the passage in its post, then the note with its live votes while
  *  it is on the site, then the agent's reasoning, the chat with Claude and the
- *  reviewer's buttons. */
-export function ReviewCard({ draft, liveNote, section }: { draft: ReviewDraft; liveNote: NoteRow | undefined; section: ReviewSection }) {
+ *  reviewer's buttons. A card shown outside a review section, such as on the
+ *  note judge experiment page, has no chat and no buttons, and shows `extra`
+ *  under the reasoning instead. */
+export function ReviewCard({ draft, liveNote, section, extra }: { draft: ReviewDraft; liveNote: NoteRow | undefined; section?: ReviewSection; extra?: ReactNode }) {
   const post: FeedItemRow = { id: draft.itemId, project_id: null, url: draft.post.url, title: draft.post.title, published_at: null, created_at: draft.createdAt };
   const shareUrl = liveNote && draft.post.creatorSlug ? noteUrl(draft.post.creatorSlug, liveNote.id) : draft.post.url;
   return (
@@ -318,8 +320,13 @@ export function ReviewCard({ draft, liveNote, section }: { draft: ReviewDraft; l
           </details>
         )}
         <EarlierVersions draft={draft} />
-        <Chat draft={draft} section={section} />
-        <Actions draft={draft} section={section} />
+        {extra}
+        {section && (
+          <>
+            <Chat draft={draft} section={section} />
+            <Actions draft={draft} section={section} />
+          </>
+        )}
       </div>
     </ClaimCard>
   );

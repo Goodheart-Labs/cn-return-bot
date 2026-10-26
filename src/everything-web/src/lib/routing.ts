@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CURATION_SECTIONS, type CurationSection } from "@cn/core/bestNotes";
 import { REVIEW_SECTIONS, type ReviewSection } from "@cn/core/claudeReview";
+import { JUDGE_SECTIONS, type JudgeSection } from "../pages/judgeExperiment/sections";
 import { capturePageview } from "./analytics";
 
 /* Every page has its own path.
@@ -22,6 +23,8 @@ import { capturePageview } from "./analytics";
  *   /admin/best/<section>/<slug>  the same, narrowed to one creator
  *   /admin/dashboard      admins see how the extension is used, the order of
  *                         the next walk and the posts checked last
+ *   /admin/judge-experiment/<section>  the labelled notes of the note judge
+ *                         experiment, only on the development server
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
  * The path /notes/all wins over a project whose slug is "all".
@@ -49,7 +52,8 @@ export type Route =
   | { view: "newMinisite" }
   | { view: "noteReview"; section: ReviewSection }
   | { view: "bestNotes"; section: CurationSection; project: string | null }
-  | { view: "dashboard" };
+  | { view: "dashboard" }
+  | { view: "judgeExperiment"; section: JudgeSection };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
@@ -61,6 +65,7 @@ export const BEST_NOTES: Route = { view: "bestNotes", section: "recommendations"
 export const DASHBOARD: Route = { view: "dashboard" };
 
 const isCurationSection = (value: string | undefined): value is CurationSection => (CURATION_SECTIONS as readonly (string | undefined)[]).includes(value);
+const isJudgeSection = (value: string | undefined): value is JudgeSection => (JUDGE_SECTIONS as readonly (string | undefined)[]).includes(value);
 const isReviewSection = (value: string | undefined): value is ReviewSection => (REVIEW_SECTIONS as readonly (string | undefined)[]).includes(value);
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
@@ -86,6 +91,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "install") return INSTALL;
   if (page === "admin" && project === "best") return isCurationSection(item) ? { view: "bestNotes", section: item, project: creator ?? null } : BEST_NOTES;
   if (page === "admin" && project === "dashboard") return DASHBOARD;
+  if (import.meta.env.DEV && page === "admin" && project === "judge-experiment") return { view: "judgeExperiment", section: isJudgeSection(item) ? item : JUDGE_SECTIONS[0] };
   if (page === "admin" && project === "notes") return isReviewSection(item) ? { view: "noteReview", section: item } : NOTE_REVIEW;
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
@@ -99,6 +105,7 @@ export function routeHref(route: Route): string {
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "dashboard") return "/admin/dashboard";
   if (route.view === "noteReview") return `/admin/notes/${route.section}`;
+  if (route.view === "judgeExperiment") return `/admin/judge-experiment/${route.section}`;
   if (route.view === "bestNotes") return `/admin/best/${route.section}` + (route.project ? `/${encodeURIComponent(route.project)}` : "");
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";
   if (route.view === "home") return route.section ? `/${route.section}` : "/";

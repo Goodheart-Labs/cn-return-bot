@@ -33,7 +33,7 @@ export const draftNoteId = (draft: ReviewDraft) => `draft:${draft.id}`;
 /** Puts each draft's source quotes into the cache where the note box reads its
  *  "Source details" from, so the box never asks the database for ids that
  *  are not notes. */
-function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): ReviewDraft[] {
+export function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): ReviewDraft[] {
   for (const draft of drafts) {
     client.setQueryData(queryKeys.sourceDetails(draftNoteId(draft)), draft.sources.map((s, i) => ({ ...s, sort_order: i })));
   }
