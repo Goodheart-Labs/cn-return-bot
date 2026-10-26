@@ -55,41 +55,70 @@ function aucInterval(rows: Scored[]): [number, number] {
   return [samples[Math.floor(0.025 * samples.length)], samples[Math.floor(0.975 * samples.length)]];
 }
 
-function calibrationTable(rows: Scored[]): string {
-  const lines = ["| p_helpful | Notes | Really helpful |", "|---|---|---|"];
-  for (let i = 0; i < CALIBRATION_BINS.length - 1; i++) {
-    const [low, high] = [CALIBRATION_BINS[i], CALIBRATION_BINS[i + 1]];
-    const inBin = rows.filter((r) => r.p >= low && r.p < high);
-    if (inBin.length === 0) continue;
-    const helpful = inBin.filter((r) => r.helpful).length;
-    lines.push(`| ${low.toFixed(1)} to ${Math.min(high, 1).toFixed(1)} | ${inBin.length} | ${helpful} (${Math.round((100 * helpful) / inBin.length)}%) |`);
-  }
-  return lines.join("\n");
+/** One set of notes, scored against one run. The page's Results section reads
+ *  these from report.json. */
+export interface SetScore {
+  title: string;
+  notes: number;
+  judged: number;
+  helpful: number;
+  notHelpful: number;
+  auc: number;
+  aucInterval: [number, number];
+  brier: number;
+  baselineBrier: number;
+  meanPHelpful: { helpful: number; notHelpful: number };
+  calibration: { low: number; high: number; notes: number; helpful: number }[];
 }
 
-function scoreSection(title: string, notes: LabelledNote[], results: JudgeResult[]): string {
+function calibration(rows: Scored[]): SetScore["calibration"] {
+  return CALIBRATION_BINS.slice(0, -1).flatMap((low, i) => {
+    const high = Math.min(CALIBRATION_BINS[i + 1], 1);
+    const inBin = rows.filter((r) => r.p >= low && r.p < CALIBRATION_BINS[i + 1]);
+    return inBin.length === 0 ? [] : [{ low, high, notes: inBin.length, helpful: inBin.filter((r) => r.helpful).length }];
+  });
+}
+
+const mean = (values: number[]) => values.reduce((a, b) => a + b, 0) / values.length;
+
+function scoreSet(title: string, notes: LabelledNote[], results: JudgeResult[]): SetScore | null {
   const byDraft = new Map(results.map((r) => [r.draftId, r]));
   const rows: Scored[] = notes.flatMap((n) => {
     const r = byDraft.get(n.draftId);
     return r ? [{ p: r.pHelpful, helpful: n.outcome === "helpful" }] : [];
   });
-  if (rows.length === 0) return `## ${title}\n\nNo results yet.`;
+  if (rows.length === 0) return null;
   const helpfulShare = rows.filter((r) => r.helpful).length / rows.length;
-  const [low, high] = aucInterval(rows);
-  const mean = (helpful: boolean) => {
-    const ps = rows.filter((r) => r.helpful === helpful).map((r) => r.p);
-    return (ps.reduce((a, b) => a + b, 0) / ps.length).toFixed(2);
+  return {
+    title,
+    notes: notes.length,
+    judged: rows.length,
+    helpful: rows.filter((r) => r.helpful).length,
+    notHelpful: rows.filter((r) => !r.helpful).length,
+    auc: auc(rows),
+    aucInterval: aucInterval(rows),
+    brier: brier(rows),
+    baselineBrier: brier(rows, () => helpfulShare),
+    meanPHelpful: { helpful: mean(rows.filter((r) => r.helpful).map((r) => r.p)), notHelpful: mean(rows.filter((r) => !r.helpful).map((r) => r.p)) },
+    calibration: calibration(rows),
   };
+}
+
+function setMarkdown(title: string, score: SetScore | null): string {
+  if (!score) return `## ${title}\n\nNo results yet.`;
+  const bins = score.calibration.map((b) => `| ${b.low.toFixed(1)} to ${b.high.toFixed(1)} | ${b.notes} | ${b.helpful} (${Math.round((100 * b.helpful) / b.notes)}%) |`);
   return [
     `## ${title}`,
     "",
-    `${rows.length} of ${notes.length} notes judged: ${rows.filter((r) => r.helpful).length} helpful, ${rows.filter((r) => !r.helpful).length} not helpful.`,
+    `${score.judged} of ${score.notes} notes judged: ${score.helpful} helpful, ${score.notHelpful} not helpful.`,
     "",
-    `- AUC: ${auc(rows).toFixed(2)} (95% interval ${low.toFixed(2)} to ${high.toFixed(2)})`,
-    `- Brier score: ${brier(rows).toFixed(3)}. Always guessing ${helpfulShare.toFixed(2)} scores ${brier(rows, () => helpfulShare).toFixed(3)}.`,
-    `- Mean p_helpful: ${mean(true)} on helpful notes, ${mean(false)} on not-helpful notes.`,
+    `- AUC: ${score.auc.toFixed(2)} (95% interval ${score.aucInterval[0].toFixed(2)} to ${score.aucInterval[1].toFixed(2)})`,
+    `- Brier score: ${score.brier.toFixed(3)}. Always guessing the share of helpful notes scores ${score.baselineBrier.toFixed(3)}.`,
+    `- Mean p_helpful: ${score.meanPHelpful.helpful.toFixed(2)} on helpful notes, ${score.meanPHelpful.notHelpful.toFixed(2)} on not-helpful notes.`,
     "",
-    calibrationTable(rows),
+    "| p_helpful | Notes | Really helpful |",
+    "|---|---|---|",
+    ...bins,
   ].join("\n");
 }
 
@@ -113,24 +142,32 @@ function impactfulSection(dataset: LabelledNote[], results: JudgeResult[]): stri
   ].join("\n");
 }
 
-function costLine(mode: Mode, results: JudgeResult[]): string {
-  if (results.length === 0) return `- ${mode}: no results`;
-  const cost = results.reduce((sum, r) => sum + r.costUsd, 0);
-  const minutes = results.reduce((sum, r) => sum + r.seconds, 0) / results.length / 60;
-  return `- ${mode}: ${results.length} judges, $${cost.toFixed(2)} at API prices, ${minutes.toFixed(1)} minutes each on average`;
+function runCost(results: JudgeResult[]) {
+  return {
+    judges: results.length,
+    usd: results.reduce((sum, r) => sum + r.costUsd, 0),
+    minutesEach: results.length === 0 ? 0 : results.reduce((sum, r) => sum + r.seconds, 0) / results.length / 60,
+  };
 }
 
 const dataset = readDataset();
 const zero = readResults("zero");
 const few = readResults("few");
 const newerHalf = splitForMode(dataset, "few").targets;
+const sets: [string, LabelledNote[], JudgeResult[]][] = [
+  ["Experiment 1, zero-shot, every labelled note", dataset, zero],
+  ["Experiment 1, zero-shot, the newer half", newerHalf, zero],
+  ["Experiment 2, few-shot, the newer half", newerHalf, few],
+];
+const scores = sets.map(([title, notes, results]) => ({ title, score: scoreSet(title, notes, results) }));
+const cost = { zero: runCost(zero), few: runCost(few) };
+const costLine = (mode: Mode) => `- ${mode}: ${cost[mode].judges} judges, $${cost[mode].usd.toFixed(2)} at API prices, ${cost[mode].minutesEach.toFixed(1)} minutes each on average`;
 const report = [
   "# Note judge experiment",
-  scoreSection("P(helpful), zero-shot, every labelled note", dataset, zero),
-  scoreSection("P(helpful), zero-shot, the newer half", newerHalf, zero),
-  scoreSection("P(helpful), few-shot, the newer half", newerHalf, few),
+  ...scores.map(({ title, score }) => setMarkdown(title, score)),
   impactfulSection(dataset, zero),
-  ["## Cost", "", costLine("zero", zero), costLine("few", few)].join("\n"),
+  ["## Cost", "", costLine("zero"), costLine("few")].join("\n"),
 ].join("\n\n");
 writeFileSync(path.join(DATA_DIR, "report.md"), report + "\n");
+writeFileSync(path.join(DATA_DIR, "report.json"), JSON.stringify({ sets: scores.flatMap(({ score }) => (score ? [score] : [])), cost }, null, 1));
 console.log(report);
