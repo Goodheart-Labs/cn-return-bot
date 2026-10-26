@@ -977,6 +977,10 @@ export type Database = {
           status: string
         }
         Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          claim_id: string
+          created_at?: string
           feed_band?: string | null
           feed_best_key?: number[] | null
           feed_content_key?: number[] | null
@@ -986,21 +990,21 @@ export type Database = {
           feed_project_id?: string | null
           feed_recent_key?: number[] | null
           feed_votes?: number | null
-          p_helpful?: number | null
-          p_helpful_after_helpful?: number | null
-          author_id?: string | null
-          author_name?: string | null
-          claim_id: string
-          created_at?: string
           helpful_count?: number
           id?: string
           improved_from_note_id?: string | null
           not_helpful_count?: number
           note: string
+          p_helpful?: number | null
+          p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
           status?: string
         }
         Update: {
+          author_id?: string | null
+          author_name?: string | null
+          claim_id?: string
+          created_at?: string
           feed_band?: string | null
           feed_best_key?: number[] | null
           feed_content_key?: number[] | null
@@ -1010,17 +1014,13 @@ export type Database = {
           feed_project_id?: string | null
           feed_recent_key?: number[] | null
           feed_votes?: number | null
-          p_helpful?: number | null
-          p_helpful_after_helpful?: number | null
-          author_id?: string | null
-          author_name?: string | null
-          claim_id?: string
-          created_at?: string
           helpful_count?: number
           id?: string
           improved_from_note_id?: string | null
           not_helpful_count?: number
           note?: string
+          p_helpful?: number | null
+          p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
           status?: string
         }
@@ -2601,6 +2601,10 @@ export type Database = {
         Args: { p_lane?: string; p_tweet_id: string }
         Returns: Json
       }
+      everything_beta_continued_fraction: {
+        Args: { a: number; b: number; x: number }
+        Returns: number
+      }
       everything_claude_actor: { Args: { p_actor: string }; Returns: string }
       everything_claude_approve: {
         Args: { p_actor?: string; p_draft: string }
@@ -2717,28 +2721,6 @@ export type Database = {
         Args: { creator_feed_url: string }
         Returns: string
       }
-      everything_curation_page: {
-        Args: {
-          p_after_key?: number
-          p_after_note_id?: string
-          p_limit?: number
-          p_not_posted_only?: boolean
-          p_project_slug?: string
-          p_section: string
-          p_unvoted_only?: boolean
-          p_voted_before?: string
-        }
-        Returns: {
-          comment: string
-          note_id: string
-          position: number
-          posted_at: string
-          removed_at: string
-          removed_reason: string
-          sort_key: number
-        }[]
-      }
-      everything_curation_summary: { Args: { p_section: string }; Returns: Json }
       everything_creator_ranking: {
         Args: {
           average_posts: number
@@ -2807,6 +2789,31 @@ export type Database = {
           visitors_per_post: number
         }[]
       }
+      everything_curation_page: {
+        Args: {
+          p_after_key?: number
+          p_after_note_id?: string
+          p_limit?: number
+          p_not_posted_only?: boolean
+          p_project_slug?: string
+          p_section: string
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: {
+          comment: string
+          note_id: string
+          position: number
+          posted_at: string
+          removed_at: string
+          removed_reason: string
+          sort_key: number
+        }[]
+      }
+      everything_curation_summary: {
+        Args: { p_section: string }
+        Returns: Json
+      }
       everything_daily_activity: {
         Args: { window_days?: number }
         Returns: {
@@ -2838,6 +2845,23 @@ export type Database = {
         }[]
       }
       everything_feed_slug: { Args: { feed_url: string }; Returns: string }
+      everything_feed_stream: {
+        Args: {
+          p_after: Json
+          p_band: string
+          p_key: string
+          p_limit: number
+          p_scope: Database["public"]["CompositeTypes"]["everything_feed_scope"]
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
+        Returns: {
+          content: number[]
+          id: string
+          item_id: string
+          key: number[]
+          views: number
+        }[]
+      }
       everything_funnel: {
         Args: { window_days?: number }
         Returns: {
@@ -2845,6 +2869,10 @@ export type Database = {
           stage: string
           users: number
         }[]
+      }
+      everything_incomplete_beta: {
+        Args: { a: number; b: number; x: number }
+        Returns: number
       }
       everything_is_admin: { Args: never; Returns: boolean }
       everything_item_note_viewers: {
@@ -2854,6 +2882,16 @@ export type Database = {
           viewers: number
         }[]
       }
+      everything_item_views: {
+        Args: never
+        Returns: Database["public"]["CompositeTypes"]["everything_item_views"]
+        SetofOptions: {
+          from: "*"
+          to: "everything_item_views"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       everything_leaderboard: {
         Args: never
         Returns: {
@@ -2861,6 +2899,7 @@ export type Database = {
           rating_count: number
         }[]
       }
+      everything_log_gamma: { Args: { x: number }; Returns: number }
       everything_metric_series: {
         Args: { granularity?: string }
         Returns: {
@@ -2879,6 +2918,39 @@ export type Database = {
       everything_move_to_leaderboard: {
         Args: { p_note_id: string; p_position: number }
         Returns: undefined
+      }
+      everything_note_feed_fields: {
+        Args: { n: Database["public"]["Tables"]["everything_notes"]["Row"] }
+        Returns: {
+          author_id: string | null
+          author_name: string | null
+          claim_id: string
+          created_at: string
+          feed_band: string | null
+          feed_best_key: number[] | null
+          feed_content_key: number[] | null
+          feed_helpful_key: number[] | null
+          feed_item_id: string | null
+          feed_needs_key: number[] | null
+          feed_project_id: string | null
+          feed_recent_key: number[] | null
+          feed_votes: number | null
+          helpful_count: number
+          id: string
+          improved_from_note_id: string | null
+          not_helpful_count: number
+          note: string
+          p_helpful: number | null
+          p_helpful_after_helpful: number | null
+          somewhat_helpful_count: number
+          status: string
+        }
+        SetofOptions: {
+          from: "everything_notes"
+          to: "everything_notes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       everything_note_feed_page: {
         Args: {
@@ -2910,6 +2982,7 @@ export type Database = {
         }
         Returns: Json
       }
+      everything_note_status: { Args: { p_helpful: number }; Returns: string }
       everything_pipeline_daily: {
         Args: never
         Returns: {
@@ -2919,6 +2992,10 @@ export type Database = {
           day: string
           items_processed: number
         }[]
+      }
+      everything_probability_helpful: {
+        Args: { helpful: number; not_helpful: number; somewhat_helpful: number }
+        Returns: number
       }
       everything_project_items_page: {
         Args: {
@@ -3078,6 +3155,20 @@ export type Database = {
         rejection_reason: string | null
         messages: Json | null
         earlier_versions: Json | null
+      }
+      everything_feed_scope: {
+        project_id: string | null
+        item_id: string | null
+        min_views: number | null
+        min_votes: number | null
+        min_helpful: number | null
+        min_not_helpful: number | null
+        unvoted_only: boolean | null
+        voted_before: string | null
+      }
+      everything_item_views: {
+        item_ids: string[] | null
+        viewers: number[] | null
       }
     }
   }
