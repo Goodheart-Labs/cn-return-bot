@@ -25,18 +25,6 @@ export const IMAGINED_UNREAD_POSTS = 2;
  *  a typical creator. A creator with 10 real posts barely moves. */
 export const IMAGINED_AVERAGE_POSTS = 3;
 
-/** The lowest score at which the walk takes a creator on visits alone. A
- *  prioritised creator is walked whatever their visits, because someone asked
- *  for them. It lives here for the same reason as LAST_POSTS_PER_CREATOR: the
- *  admins' dashboard lists the creators the walk would take. It was 1.5
- *  until 2026-10-23, on the plain average without imagined posts. */
-export const MIN_SCORE_TO_WALK = 1;
-
-/** How many of a creator's posts must have been visited before their score
- *  counts. A single post that a few people opened, often one shared link, says
- *  little about how widely the creator is read. */
-export const MIN_VISITED_POSTS_TO_WALK = 2;
-
 /** What a creator's visits come to: the average number of different people
  *  per post, and over how many posts. */
 export interface CreatorVisits {

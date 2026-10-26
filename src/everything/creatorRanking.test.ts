@@ -40,30 +40,20 @@ const rankedSlugs = async () => (await rankCreators()).map((c) => c.project_slug
 
 /** Creators with one reader on each of 10 posts, as most visited creators
  *  have. They set the average readers per post that the score's imagined posts
- *  use. Their own score stays below the walk's minimum. */
+ *  use, and they rank below every creator a test is about. */
 const typicalCreators = (count: number) =>
   Array.from({ length: count }, (_, i) => visited(`https://typical${i}.substack.com`, { perPost: 1, posts: 10, people: 1 }));
 
 describe("rankCreators, score", () => {
-  // The score counts 2 imagined posts nobody read and 3 with the average
-  // readers per post, here (10 + 11.5 + 12 + 400) / 430 = 1.008. Over 10 real
-  // posts, 1.15 people per post scores 0.97 and 1.2 scores 1.002.
-  test("a creator needs a score of at least 1", async () => {
+  // The average is 41 / 21 = 1.95 readers per post. One post with one reader
+  // scores (1 + 3 * 1.95) / 6 = 1.14, ten such posts (10 + 5.86) / 15 = 1.06.
+  test("every visited creator is walked, however low their score, in score order", async () => {
     dbState.creatorVisitScores = [
-      ...typicalCreators(40),
+      visited("https://onepost.substack.com", { perPost: 1, posts: 1, people: 1 }),
       visited("https://onereader.substack.com", { perPost: 1, posts: 10, people: 1 }),
-      visited("https://almost.substack.com", { perPost: 1.15, posts: 10, people: 4 }),
-      visited("https://enough.substack.com", { perPost: 1.2, posts: 10, people: 4 }),
+      visited("https://popular.substack.com", { perPost: 3, posts: 10, people: 9 }),
     ];
-    expect(await rankedSlugs()).toEqual(["enough"]);
-  });
-
-  test("a creator needs at least 2 visited posts, however many people opened the one", async () => {
-    dbState.creatorVisitScores = [
-      visited("https://onepost.substack.com", { perPost: 8, posts: 1, people: 8 }),
-      visited("https://twoposts.substack.com", { perPost: 3, posts: 2, people: 3 }),
-    ];
-    expect(await rankedSlugs()).toEqual(["twoposts"]);
+    expect(await rankedSlugs()).toEqual(["popular", "onepost", "onereader"]);
   });
 
   test("the imagined posts pull a creator with few posts down more than one with many", async () => {
@@ -74,7 +64,7 @@ describe("rankCreators, score", () => {
       visited("https://joec.substack.com", { perPost: 6, posts: 3, people: 11 }),
       visited("https://acx.substack.com", { perPost: 3.9, posts: 10, people: 32 }),
     ];
-    expect(await rankedSlugs()).toEqual(["acx", "joec"]);
+    expect((await rankedSlugs()).slice(0, 2)).toEqual(["acx", "joec"]);
   });
 
   test("the imagined average posts take the average readers per post of every visited creator", async () => {

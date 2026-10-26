@@ -7,6 +7,7 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
+import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -421,21 +422,60 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
 
 /** While the Claude note writer is on (everything_claude_settings.writer =
  *  'claude'), the pipeline takes only the items Claude handed back to it. */
-async function claudeWritesNotes(): Promise<boolean> {
+export async function claudeWritesNotes(): Promise<boolean> {
   const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer").single()) as { writer: string };
   return settings.writer === "claude";
 }
 
-/** How many feed posts may wait in the queue at once. The pipeline takes one
- *  post per feed run. While Claude writes the notes, a post Claude works on
- *  stays queued until it is finished, so this many posts are Claude's at the
- *  same time. */
-export async function feedPostsInFlight(): Promise<number> {
-  const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer, posts_in_flight").single()) as {
-    writer: string;
-    posts_in_flight: number;
+/** What the usage pacing of the Claude note writer needs (usagePacing.ts):
+ *  the usage readings and the posts Claude took over the window. */
+export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
+  const now = new Date();
+  const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
+  const db = getSupabaseClient();
+  const [readings, taken, last] = await Promise.all([
+    fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
+      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+      "id",
+      { label: "claudeUsage" },
+    ),
+    db.from("everything_claude_events").select("id", { count: "exact", head: true }).eq("type", "item_taken").gte("at", since),
+    db.from("everything_claude_events").select("at").eq("type", "item_taken").order("at", { ascending: false }).limit(1).maybeSingle(),
+  ]);
+  if (taken.error) throw new Error(`Supabase: ${taken.error.message}`);
+  const lastTaken = throwOnError(last) as { at: string } | null;
+  return {
+    now,
+    readings: readings
+      .sort((a, b) => a.at.localeCompare(b.at))
+      .map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
+    postsTaken: taken.count ?? 0,
+    lastTakenAt: lastTaken ? new Date(lastTaken.at) : null,
   };
-  return settings.writer === "claude" ? settings.posts_in_flight : 1;
+}
+
+/** Sorts the queued feed items while the Claude note writer is on. Claude
+ *  works on an item it took while the item stays queued, so a queued item is
+ *  one of three things: handed back to the pipeline, taken by Claude, or still
+ *  waiting for Claude to take it. */
+export async function sortClaudeFeedItems(queue: QueuedItemSummary[]): Promise<{ waiting: string[]; handedBack: string[] }> {
+  const ids = queue.filter((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested).map((item) => item.id);
+  const db = getSupabaseClient();
+  const [handbacks, takes] = await Promise.all([
+    fetchInBatches<{ item_id: string }>((chunk) => db.from("everything_claude_handbacks").select("item_id").in("item_id", chunk), ids, "item_id", { label: "claudeHandbacks" }),
+    fetchInBatches<{ id: number; item_id: string }>(
+      (chunk) => db.from("everything_claude_events").select("id, item_id").eq("type", "item_taken").in("item_id", chunk),
+      ids,
+      "id",
+      { label: "claudeTakes" },
+    ),
+  ]);
+  const handedBack = new Set(handbacks.map((h) => h.item_id));
+  const taken = new Set(takes.map((t) => t.item_id));
+  return {
+    waiting: ids.filter((id) => !handedBack.has(id) && !taken.has(id)),
+    handedBack: ids.filter((id) => handedBack.has(id)),
+  };
 }
 
 /** Moves the next queued item to `processing` and returns it. The highest

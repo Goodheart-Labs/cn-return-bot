@@ -25,6 +25,14 @@
  * failed post does not wait in the queue. The walk picks it again in rank
  * order (see autoEnqueue.ts).
  *
+ * While the Claude note writer is on, the walk works for Claude instead
+ * (GOO-587). Claude's posts cost no money but use Nathan's weekly Claude
+ * usage, so they are spaced by usagePacing.ts. The walk adds a post for Claude
+ * when one is due and Claude has started every post it already has, and the
+ * alarm wakes the next run when the next one is due. When Claude's week is
+ * used up or its runner has gone quiet, the walk works for the pipeline again,
+ * and every post waiting for Claude is handed to the pipeline.
+ *
  * Usage:
  *   bun run src/everything/autoRun.ts
  */
@@ -32,8 +40,18 @@
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
+import { handBack } from "../claude-notes/store";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
-import { feedPostsInFlight, fetchFeedPacing, oldestPendingRequestAgeSeconds, setFeedAlarm } from "./db";
+import {
+  claudeWritesNotes,
+  fetchFeedPacing,
+  fetchQueueOverview,
+  fetchUsageSnapshot,
+  oldestPendingRequestAgeSeconds,
+  setFeedAlarm,
+  sortClaudeFeedItems,
+  type QueuedItemSummary,
+} from "./db";
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
@@ -44,8 +62,10 @@ import {
   describePacing,
   MEAN_COST_RULE,
   nextAlarm,
+  type FeedAlarm,
 } from "./pacing";
 import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
+import { computeClaudePacing, describeClaudePacing, type ClaudePacing } from "./usagePacing";
 import { logQueue, processNextFeedItem, queuedFeedItemCount } from "./worker";
 
 /** How long a reader request may sit unconsumed before this run fails. Intake
@@ -86,32 +106,83 @@ async function assertMachineHealthy(): Promise<void> {
 
 type FeedRunOutcome = Awaited<ReturnType<typeof processNextFeedItem>> | "budget_reached";
 
-/** Tidies the queue and processes one feed item. Returns how the item ended,
- *  or "budget_reached" when the day's feed budget allowed no item. The pacing
- *  block is printed here too, so the log shows the budget before the walk. */
-async function processOneFeedItem(): Promise<FeedRunOutcome> {
+/** How the run's item ended, and when the Claude note writer's next post is
+ *  due if the alarm should wake the next run for it. */
+type FeedRunResult = { ended: FeedRunOutcome; claudeDueAt: Date | null };
+
+/** Who gets the next feed post. Null while the pipeline writes the notes. */
+async function claudePacing(): Promise<ClaudePacing | null> {
+  if (!(await claudeWritesNotes())) return null;
+  const snapshot = await fetchUsageSnapshot();
+  const pacing = computeClaudePacing(snapshot);
+  console.log(describeClaudePacing(pacing, snapshot));
+  return pacing;
+}
+
+/** Adds a post for Claude when one is due and Claude has taken every feed
+ *  post it already has. Claude takes a post within 30 seconds when the runner
+ *  has a free slot, so a post still waiting means the runner is full or down,
+ *  and another post would only wait too. Returns when the next post is due:
+ *  one interval from now after a walk, the due time when it lies ahead, and
+ *  null when the next run should simply come after the idle wait. */
+async function walkForClaude(queue: QueuedItemSummary[], pacing: Extract<ClaudePacing, { writer: "claude" }>): Promise<Date | null> {
+  if (pacing.dueAt.getTime() > Date.now()) return pacing.dueAt;
+  const { waiting } = await sortClaudeFeedItems(queue);
+  if (waiting.length > 0) {
+    console.log(`\nClaude has not taken ${waiting.length} feed post${waiting.length === 1 ? "" : "s"} yet · no new post`);
+    return null;
+  }
+  return (await runAutoEnqueue()) > 0 ? new Date(Date.now() + pacing.intervalMs) : null;
+}
+
+/** While Claude's week is used up, the walk works for the pipeline, and every
+ *  feed post still waiting for Claude goes to the pipeline, the new one too. */
+async function walkForPipelineInsteadOfClaude(queue: QueuedItemSummary[], reason: string): Promise<void> {
+  const before = await sortClaudeFeedItems(queue);
+  if (before.waiting.length === 0 && before.handedBack.length === 0) await runAutoEnqueue();
+  const { waiting } = await sortClaudeFeedItems(await fetchQueueOverview());
+  for (const itemId of waiting) await handBack(itemId, reason);
+}
+
+/** Walks for a new feed post when one is due. Returns when the alarm should
+ *  wake the next run for Claude's next post. */
+async function walkForNextPost(queue: QueuedItemSummary[], claude: ClaudePacing | null): Promise<Date | null> {
+  if (claude?.writer === "claude") return walkForClaude(queue, claude);
+  if (claude?.writer === "pipeline") await walkForPipelineInsteadOfClaude(queue, claude.reason);
+  else if (queuedFeedItemCount(queue) === 0) await runAutoEnqueue();
+  return null;
+}
+
+/** Tidies the queue, walks for a new post when one is due, and processes one
+ *  feed item. The day's feed budget stops only the pipeline: Claude's posts
+ *  cost no money, so a walk for Claude still runs. The pacing block is printed
+ *  here too, so the log shows the budget before the walk. */
+async function processOneFeedItem(): Promise<FeedRunResult> {
   await triageQueue();
+  const claude = await claudePacing();
   if (await feedBudgetExhausted()) {
-    console.log(`Feed budget reached (${await describeTodaySpend()}) — not enqueueing or processing today`);
-    return "budget_reached";
+    console.log(`Feed budget reached (${await describeTodaySpend()}) · the pipeline enqueues and processes nothing more today`);
+    const claudeDueAt = claude?.writer === "claude" ? await walkForClaude(await logQueue(), claude) : null;
+    return { ended: "budget_reached", claudeDueAt };
   }
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
   console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
-  const queue = await logQueue();
-  if (queuedFeedItemCount(queue) < (await feedPostsInFlight())) await runAutoEnqueue();
+  const claudeDueAt = await walkForNextPost(await logQueue(), claude);
   const ended = await processNextFeedItem();
-  if (ended === "empty") console.log("Nothing to process · every creator we walk is caught up");
-  return ended;
+  if (ended === "empty") console.log("Nothing for the pipeline to process");
+  return { ended, claudeDueAt };
 }
 
 /** Sets the alarm the database starts the next run on. The snapshot is read
  *  again here, after the item, so the interval sees this item's start and
- *  whatever the day has cost by now, reader pages included. */
-async function setNextAlarm(started: boolean): Promise<void> {
+ *  whatever the day has cost by now, reader pages included. Claude's next
+ *  post wins when it is due before the pipeline's next run. */
+async function setNextAlarm(started: boolean, claudeDueAt: Date | null): Promise<void> {
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
-  const alarm = nextAlarm(nextRun, snapshot, started);
+  const pipelineAlarm = nextAlarm(nextRun, snapshot, started);
+  const alarm: FeedAlarm = claudeDueAt && claudeDueAt < pipelineAlarm.at ? { at: claudeDueAt, reason: "usage" } : pipelineAlarm;
   console.log(`\n${describePacing(nextRun, snapshot, FEED_BUDGET_USD)}\n${describeAlarm(alarm, snapshot)}`);
   await setFeedAlarm(alarm.at, alarm.reason);
 }
@@ -123,15 +194,17 @@ async function main() {
   // empty, the database's backstop starts another run 45 minutes later, and
   // that red run every 45 minutes is how the sickness stays visible.
   await assertMachineHealthy();
-  let ended: FeedRunOutcome | undefined;
+  let result: FeedRunResult | undefined;
   try {
-    ended = await processOneFeedItem();
+    result = await processOneFeedItem();
   } finally {
     // Whatever the item did, the next run must be scheduled, or the pipeline
     // would sleep until the backstop. The alarm is measured from the item's
     // start, so it needs to know whether an item was started.
-    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error" || ended === "no_captions_yet");
+    const ended = result?.ended;
+    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error" || ended === "no_captions_yet", result?.claudeDueAt ?? null);
   }
+  const ended = result.ended;
   // Creator pictures for the website cost no LLM money, so they refresh even
   // on a capped day. They run last, after the alarm is set, so a slow source
   // never delays the item or the schedule.

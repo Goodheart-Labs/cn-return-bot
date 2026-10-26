@@ -120,7 +120,7 @@ export function CreatorRanking({ navigate }: { navigate: (route: Route) => void 
   const rows = list.pages?.flat();
 
   if (!rows) return <LoadState error={list.error} onRetry={list.retry} />;
-  if (rows.length === 0) return <p className="text-sm text-fg-muted">No creator holds priority or reaches the walk's score.</p>;
+  if (rows.length === 0) return <p className="text-sm text-fg-muted">No creator holds priority or has visits.</p>;
   return (
     <>
       <DashboardTable columns={COLUMNS}>

@@ -1,11 +1,5 @@
 import type { Database } from "./database.types";
-import {
-  IMAGINED_AVERAGE_POSTS,
-  IMAGINED_UNREAD_POSTS,
-  LAST_POSTS_PER_CREATOR,
-  MIN_SCORE_TO_WALK,
-  MIN_VISITED_POSTS_TO_WALK,
-} from "./readers";
+import { IMAGINED_AVERAGE_POSTS, IMAGINED_UNREAD_POSTS, LAST_POSTS_PER_CREATOR } from "./readers";
 import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 
@@ -175,8 +169,6 @@ export interface CreatorRankingRow {
 export function fetchCreatorRankingPage(after: CreatorRankingRow | null): Promise<CreatorRankingRow[]> {
   return rpcPage<CreatorRankingRow>("everything_creator_ranking_page", {
     last_posts: LAST_POSTS_PER_CREATOR,
-    min_score: MIN_SCORE_TO_WALK,
-    min_posts: MIN_VISITED_POSTS_TO_WALK,
     unread_posts: IMAGINED_UNREAD_POSTS,
     average_posts: IMAGINED_AVERAGE_POSTS,
     p_after_feed_url: after?.feed_url,
