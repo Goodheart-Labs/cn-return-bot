@@ -28,7 +28,7 @@
  * While the Claude note writer is on, the walk works for Claude instead
  * (GOO-587). Claude's posts cost no money but use Nathan's weekly Claude
  * usage, so they are spaced by usagePacing.ts. The walk adds a post for Claude
- * when one is due and Claude has started every post it already has, and the
+ * when one is due and fewer than 3 feed posts are in the queue, and the
  * alarm wakes the next run when the next one is due. When Claude's week is
  * used up or its runner has gone quiet, the walk works for the pipeline again,
  * and every post waiting for Claude is handed to the pipeline.
@@ -119,17 +119,21 @@ async function claudePacing(): Promise<ClaudePacing | null> {
   return pacing;
 }
 
-/** Adds a post for Claude when one is due and Claude has taken every feed
- *  post it already has. Claude takes a post within 30 seconds when the runner
- *  has a free slot, so a post still waiting means the runner is full or down,
- *  and another post would only wait too. Returns when the next post is due:
- *  one interval from now after a walk, the due time when it lies ahead, and
- *  null when the next run should simply come after the idle wait. */
+/** A post Claude works on stays in the queue until Claude finishes it. So the
+ *  feed posts in the queue are the ones Claude is working on plus the ones it
+ *  has not started yet. At this many, no new post is added: the runner is busy
+ *  or down, and another post would only wait. Jim picked 3 on 2026-10-26. */
+const MAX_QUEUED_FEED_POSTS_FOR_CLAUDE = 3;
+
+/** Adds a post for Claude when one is due and the queue holds fewer than
+ *  MAX_QUEUED_FEED_POSTS_FOR_CLAUDE feed posts. Returns when the next post is
+ *  due: one interval from now after a walk, the due time when it lies ahead,
+ *  and null when the next run should simply come after the idle wait. */
 async function walkForClaude(queue: QueuedItemSummary[], pacing: Extract<ClaudePacing, { writer: "claude" }>): Promise<Date | null> {
   if (pacing.dueAt.getTime() > Date.now()) return pacing.dueAt;
-  const { waiting } = await sortClaudeFeedItems(queue);
-  if (waiting.length > 0) {
-    console.log(`\nClaude has not taken ${waiting.length} feed post${waiting.length === 1 ? "" : "s"} yet · no new post`);
+  const queued = queuedFeedItemCount(queue);
+  if (queued >= MAX_QUEUED_FEED_POSTS_FOR_CLAUDE) {
+    console.log(`\n${queued} feed posts are in the queue already · no new post for Claude`);
     return null;
   }
   return (await runAutoEnqueue()) > 0 ? new Date(Date.now() + pacing.intervalMs) : null;

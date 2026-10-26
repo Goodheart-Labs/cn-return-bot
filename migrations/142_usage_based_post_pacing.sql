@@ -10,7 +10,7 @@
 --    with the new reason 'usage'.
 -- 3. everything_claude_settings.posts_in_flight is dropped. The feed run now
 --    spaces Claude's posts by the weekly usage, and gives Claude a new post
---    only once Claude has started every post it already has.
+--    only while fewer than 3 feed posts are in the queue.
 
 -- ---------------------------------------------------------------------------
 -- 1. The creator ranking without a threshold.
