@@ -228,7 +228,7 @@ function YouTubeClip({ url, quote, restated, updatedQuote, startSeconds, endSeco
               className="group relative h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <img src={thumbnailUrl(videoId)} alt="" loading="lazy" className="h-full w-full object-cover" />
-              <span className="absolute inset-0 m-auto flex h-12 w-16 items-center justify-center rounded-xl bg-black/70 text-white transition-colors group-hover:bg-black/90">
+              <span className="absolute inset-0 m-auto flex h-12 w-16 items-center justify-center rounded-card bg-black/70 text-white transition-colors group-hover:bg-black/90">
                 <PlayIcon size={28} aria-hidden />
               </span>
             </button>
