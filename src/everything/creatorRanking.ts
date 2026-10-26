@@ -6,7 +6,7 @@
  *
  *   1. They hold priority. Someone pressed the button in the extension, or ran
  *      everything-prioritize. That lasts seven days and then lapses.
- *   2. Someone visited one of their posts with the extension (see THE SCORE
+ *   2. Their score is at least 1 over at least 2 visited posts (see THE SCORE
  *      below).
  *
  * Prioritised creators come first, then everyone else by their score. The walk
@@ -39,17 +39,14 @@
  * visited posts could top the walk on one shared link. On that day the plain
  * average ranked joec, with 5.67 readers per post over 3 posts, above Astral
  * Codex Ten, with 3.9 over 10. The imagined posts weigh little against 10 real
- * ones and a lot against 2.
+ * ones and a lot against 2. A creator whose every post had one reader stays
+ * below the walk's minimum of 1, however many posts they have.
  *
- * Every visited creator is walked, however low their score (GOO-587, Jim,
- * 2026-10-26). Until then a creator needed a score of at least 1 over at
- * least 2 visited posts. That left about 100 of the roughly 4,800 visited
- * creators, and on 2026-10-26 the walk already went down to rank 61 of them
- * to find one unchecked post. The Claude note writer can check far more posts
- * a week than that. The score still orders the walk, so a creator with one
- * reader per post is reached only when everyone above them is caught up. A
- * failed post waits with its creator in rank order (GOO-487), so it is not
- * pushed behind the low-ranked creators.
+ * The score threshold replaced the rule that a creator needs two visited posts
+ * (Jim, 2026-10-18). Most visited creators score exactly 1, which means one
+ * person reads them. On 7 October that was 613 of 684 creators. Walking all of
+ * them meant the walk almost never ran out of posts, so retried items waited
+ * behind posts that a single reader had opened.
  */
 
 import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
@@ -59,6 +56,8 @@ import {
   averageReadersPerPost,
   byWalkOrder,
   creatorScore,
+  MIN_SCORE_TO_WALK,
+  MIN_VISITED_POSTS_TO_WALK,
 } from "../everything-core/readers";
 
 export interface RankedCreator {
@@ -135,7 +134,8 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
 
   for (const [key, visited] of scoreByUrl) {
-    if (alreadyRanked.has(key)) continue;
+    const walkScore = creatorScore(visited.score, averageReaders);
+    if (alreadyRanked.has(key) || walkScore < MIN_SCORE_TO_WALK || visited.score.posts < MIN_VISITED_POSTS_TO_WALK) continue;
     // A captured feed URL of an unknown shape, or a corrupted old row, is
     // skipped rather than walked blindly. The pipeline has no other way to tell
     // what kind of feed it is, since the type is derived from the URL.
@@ -153,7 +153,7 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       prioritized: false,
       priorityUntil: null,
       score: visited.score,
-      walkScore: creatorScore(visited.score, averageReaders),
+      walkScore,
       // A creator with no project yet has no refresh stamp, so their top posts
       // are computed the first time they are walked.
       top_posts_refreshed_at: known?.top_posts_refreshed_at ?? null,

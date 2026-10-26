@@ -2721,6 +2721,8 @@ export type Database = {
         Args: {
           average_posts: number
           last_posts: number
+          min_posts: number
+          min_score: number
           unread_posts: number
         }
         Returns: {
@@ -2743,6 +2745,8 @@ export type Database = {
         Args: {
           average_posts: number
           last_posts: number
+          min_posts: number
+          min_score: number
           p_after_feed_url?: string
           p_limit?: number
           unread_posts: number
