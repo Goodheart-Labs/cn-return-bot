@@ -1,7 +1,8 @@
+import type { NoteFilters, NoteMinimums } from "@cn/core/feedPages";
 import { Button } from "@cn/ui/Button";
 import { Checkbox } from "@cn/ui/Field";
 import { Slider } from "@cn/ui/Slider";
-import { DEFAULT_NOTE_FILTERS, type NoteFilters, type NoteMinimums } from "../lib/feed";
+import { DEFAULT_NOTE_FILTERS } from "../lib/feed";
 import { FiltersPopover } from "./FiltersPopover";
 
 const SLIDERS: { key: keyof NoteMinimums; label: string }[] = [

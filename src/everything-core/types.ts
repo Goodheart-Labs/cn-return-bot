@@ -27,11 +27,14 @@ export interface ItemRow {
   checked_scope: "page" | "paragraph" | null;
 }
 
-/** A project as the website's projects overview loads it (migration 106): the
- *  name, the slug for the URL, the creator's feed and picture, how many notes
- *  it has, and the score of the votes on them, which the default order uses.
- *  The description is left in the database. */
-export type FeedProjectRow = Pick<ProjectRow, "id" | "slug" | "name" | "feed_url" | "avatar_url"> & {
+/** What the website shows of a project wherever it names one: the name, the
+ *  slug for the URL, and the creator's feed and picture. */
+export type ProjectHeader = Pick<ProjectRow, "id" | "slug" | "name" | "feed_url" | "avatar_url">;
+
+/** A project as the website's projects overview loads it (migration 141): its
+ *  header, how many notes it has, and the score of the votes on them, which
+ *  the default order uses. */
+export type FeedProjectRow = ProjectHeader & {
   vote_score: number;
   note_count: number;
 };

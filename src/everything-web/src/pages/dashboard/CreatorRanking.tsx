@@ -1,21 +1,17 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchCreatorRanking, type CreatorRankingRow } from "@cn/core/dashboard";
+import { DASHBOARD_PAGE_SIZE, fetchCreatorRankingPage, type CreatorRankingRow } from "@cn/core/dashboard";
 import {
-  byWalkOrder,
-  creatorScore,
   IMAGINED_AVERAGE_POSTS,
   IMAGINED_UNREAD_POSTS,
   LAST_POSTS_PER_CREATOR,
 } from "@cn/core/readers";
 import { queryKeys } from "@cn/features/query/queryKeys";
+import { afterFullPage, usePagedList } from "@cn/features/query/usePagedList";
 import { cn } from "@cn/ui/cn";
 import { ExternalLinkIcon } from "@cn/ui/icons";
 import { RouteLink } from "../../components/RouteLink";
 import type { Route } from "../../lib/routing";
 import { CELL, DashboardTable, LoadState, NUMBER_CELL, postCount, ShowMore, SUBLINE, type Column } from "./tableParts";
 
-const CREATORS_PER_STEP = 25;
 const HOURS_SHOWN_AS_HOURS = 48;
 const MINUTES_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
@@ -51,21 +47,6 @@ function formatDelay(hours: number): string {
   return `${(hours / HOURS_PER_DAY).toFixed(1)} days`;
 }
 
-/** The same score the walk ranks on, with the average the database computed. */
-const walkScore = (row: CreatorRankingRow) =>
-  creatorScore({ visitors_per_post: row.visitors_per_post ?? 0, posts: row.score_posts ?? 0 }, row.average_readers_per_post);
-
-/** The walk's comparator needs the score of a prioritised creator nobody
- *  visited as zero, the same value the walk itself uses for them. */
-const walkOrderKey = (row: CreatorRankingRow) => ({
-  prioritized: row.priority_until !== null,
-  feed_url: row.feed_url,
-  walkScore: walkScore(row),
-  score: { people: row.people ?? 0 },
-});
-
-const inWalkOrder = (rows: CreatorRankingRow[]) => rows.toSorted((a, b) => byWalkOrder(walkOrderKey(a), walkOrderKey(b)));
-
 const shortFeedUrl = (feedUrl: string) => feedUrl.replace(/^https?:\/\/(www\.)?/, "");
 
 /** The creator's name links to their project on the site. A creator walked on
@@ -96,7 +77,7 @@ function ScoreCell({ row }: { row: CreatorRankingRow }) {
   if (row.visitors_per_post === null || row.score_posts === null) return <td className={NUMBER_CELL}>—</td>;
   return (
     <td className={NUMBER_CELL}>
-      {walkScore(row).toFixed(2)}
+      {row.walk_score.toFixed(2)}
       <div className={SUBLINE}>
         {row.visitors_per_post.toFixed(2)} per post, {postCount(row.score_posts)}
       </div>
@@ -130,16 +111,20 @@ function VoteRateCell({ row }: { row: CreatorRankingRow }) {
  *  how widely each is read, how fast we check their posts, and how often their
  *  readers vote. */
 export function CreatorRanking({ navigate }: { navigate: (route: Route) => void }) {
-  const query = useQuery({ queryKey: queryKeys.dashboardCreatorRanking, queryFn: fetchCreatorRanking, select: inWalkOrder });
-  const [shown, setShown] = useState(CREATORS_PER_STEP);
-  const rows = query.data;
+  const list = usePagedList({
+    queryKey: queryKeys.dashboardCreatorRanking,
+    fetchPage: fetchCreatorRankingPage,
+    firstBookmark: null as CreatorRankingRow | null,
+    nextBookmark: afterFullPage(DASHBOARD_PAGE_SIZE),
+  });
+  const rows = list.pages?.flat();
 
-  if (!rows) return <LoadState error={query.error} onRetry={() => void query.refetch()} />;
+  if (!rows) return <LoadState error={list.error} onRetry={list.retry} />;
   if (rows.length === 0) return <p className="text-sm text-fg-muted">No creator holds priority or reaches the walk's score.</p>;
   return (
     <>
       <DashboardTable columns={COLUMNS}>
-        {rows.slice(0, shown).map((row, i) => (
+        {rows.map((row, i) => (
           <tr key={row.feed_url}>
             <td className={cn(NUMBER_CELL, "text-fg-muted")}>{i + 1}</td>
             <CreatorCell row={row} navigate={navigate} />
@@ -149,7 +134,7 @@ export function CreatorRanking({ navigate }: { navigate: (route: Route) => void 
           </tr>
         ))}
       </DashboardTable>
-      <ShowMore shown={shown} total={rows.length} step={CREATORS_PER_STEP} onMore={() => setShown((n) => n + CREATORS_PER_STEP)} />
+      <ShowMore list={list} />
     </>
   );
 }

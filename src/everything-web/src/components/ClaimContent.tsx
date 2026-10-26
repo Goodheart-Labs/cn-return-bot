@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ClaimRef, FeedItemRow } from "@cn/core/types";
 import { extractYoutubeVideoId, sourceLinkLabel } from "@cn/core/pageUrls";
 import { buttonVariants } from "@cn/ui/Button";
+import { PlayIcon } from "@cn/ui/icons";
 import { Quote } from "@cn/ui/typography";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
 
@@ -148,23 +149,18 @@ function loadYouTubeApi(): Promise<void> {
 
 const CLIP_END_POLL_MS = 200;
 
-/** Embeds a YouTube clip through the IFrame Player API. When playback reaches
+/** The still YouTube serves for a video. It is 4:3 with black bars, so the
+ *  frame crops it to 16:9. */
+const thumbnailUrl = (videoId: string) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+/** Plays a YouTube clip through the IFrame Player API. When playback reaches
  *  the end of the clip we rewind to its start and pause. Otherwise YouTube's own
  *  end screen takes over, and its replay button restarts the whole video from
- *  0:00. */
-function YouTubeClip({ url, quote, restated, updatedQuote, startSeconds, endSeconds }: {
-  url: string;
-  quote?: string;
-  restated?: boolean;
-  updatedQuote?: string;
-  startSeconds?: number | null;
-  endSeconds?: number | null;
-}) {
-  const videoId = extractYoutubeVideoId(url);
+ *  0:00. The player starts paused at the start of the clip. */
+function YouTubePlayerFrame({ videoId, startSeconds, endSeconds }: { videoId: string; startSeconds?: number | null; endSeconds?: number | null }) {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!videoId) return;
     const start = startSeconds != null ? Math.max(0, Math.floor(startSeconds)) : 0;
     const end = endSeconds != null ? Math.ceil(endSeconds) : null;
     let player: YouTubePlayer | undefined;
@@ -175,7 +171,7 @@ function YouTubeClip({ url, quote, restated, updatedQuote, startSeconds, endSeco
       if (cancelled || !hostRef.current) return;
       player = new window.YT!.Player(hostRef.current, {
         videoId,
-        playerVars: { start }, // We stop at the right moment ourselves.
+        playerVars: { start, autoplay: 1 }, // We stop at the right moment ourselves.
         events: {
           onStateChange: (e) => {
             clearInterval(endPoll);
@@ -199,9 +195,46 @@ function YouTubeClip({ url, quote, restated, updatedQuote, startSeconds, endSeco
     };
   }, [videoId, startSeconds, endSeconds]);
 
+  return <div ref={hostRef} className="h-full w-full" />;
+}
+
+/** A YouTube clip. Until the reader presses play it is only the video's still
+ *  with a play button. A YouTube player loads about a megabyte of script and
+ *  keeps running, and a list of notes holds dozens of clips, so starting one
+ *  per card made scrolling and leaving the list stall. Pressing play swaps the
+ *  still for the player, which starts at the clip. */
+function YouTubeClip({ url, quote, restated, updatedQuote, startSeconds, endSeconds }: {
+  url: string;
+  quote?: string;
+  restated?: boolean;
+  updatedQuote?: string;
+  startSeconds?: number | null;
+  endSeconds?: number | null;
+}) {
+  const videoId = extractYoutubeVideoId(url);
+  const [playing, setPlaying] = useState(false);
+
   return (
     <div className="space-y-2">
-      {videoId && <div ref={hostRef} className="w-full aspect-video rounded-control overflow-hidden" />}
+      {videoId && (
+        <div className="w-full aspect-video rounded-control overflow-hidden bg-black">
+          {playing ? (
+            <YouTubePlayerFrame videoId={videoId} startSeconds={startSeconds} endSeconds={endSeconds} />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setPlaying(true)}
+              aria-label="Play the clip"
+              className="group relative h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <img src={thumbnailUrl(videoId)} alt="" loading="lazy" className="h-full w-full object-cover" />
+              <span className="absolute inset-0 m-auto flex h-12 w-16 items-center justify-center rounded-card bg-black/70 text-white transition-colors group-hover:bg-black/90">
+                <PlayIcon size={28} aria-hidden />
+              </span>
+            </button>
+          )}
+        </div>
+      )}
       {quote && <CitationBlock quote={quote} restated={restated} updatedQuote={updatedQuote} />}
       {!videoId && !quote && (
         <a href={url} target="_blank" rel="noopener noreferrer" className={SOURCE_LINK}>

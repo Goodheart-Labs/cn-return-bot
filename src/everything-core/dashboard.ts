@@ -104,7 +104,7 @@ export function fetchMetricSeries(granularity: Granularity): Promise<MetricSerie
   return rpcAllRows<MetricSeriesRow>("everything_metric_series", { granularity });
 }
 
-// --- The recently checked posts (migrations 095, 102 and 119) ---
+// --- The recently checked posts (migrations 095 to 141) ---
 
 export interface RecentPostRow {
   id: string;
@@ -126,15 +126,21 @@ export interface RecentPostRow {
   notes: number;
 }
 
-/** The posts the pipeline finished most recently, newest first. */
-export function fetchRecentPosts(maxPosts: number): Promise<RecentPostRow[]> {
-  return rpcAllRows<RecentPostRow>("everything_recent_posts", {
-    max_posts: maxPosts,
+/** How many rows one page of a dashboard table holds. */
+export const DASHBOARD_PAGE_SIZE = 25;
+
+/** One page of the posts the pipeline finished most recently, newest first,
+ *  starting after the post `after`. */
+export function fetchRecentPostsPage(after: RecentPostRow | null): Promise<RecentPostRow[]> {
+  return rpcPage<RecentPostRow>("everything_recent_posts", {
     last_posts: LAST_POSTS_PER_CREATOR,
-  });
+    p_after_processed_at: after?.processed_at,
+    p_after_id: after?.id,
+    p_limit: DASHBOARD_PAGE_SIZE,
+  }, 0);
 }
 
-// --- The walk's ranking of creators (migrations 131 to 134) ---
+// --- The walk's ranking of creators (migrations 131 to 141) ---
 
 export interface CreatorRankingRow {
   feed_url: string;
@@ -160,17 +166,22 @@ export interface CreatorRankingRow {
   /** The average readers per post over all visited creators, the same in
    *  every row. The score's imagined average posts have this many readers. */
   average_readers_per_post: number;
+  /** The score the walk ranks on (creatorScore). */
+  walk_score: number;
 }
 
-/** Every creator the walk would go through if it ran now, unsorted. */
-export function fetchCreatorRanking(): Promise<CreatorRankingRow[]> {
-  return rpcAllRows<CreatorRankingRow>("everything_creator_ranking", {
+/** One page of the creators the walk would go through if it ran now, in the
+ *  walk's order, starting after the creator `after`. */
+export function fetchCreatorRankingPage(after: CreatorRankingRow | null): Promise<CreatorRankingRow[]> {
+  return rpcPage<CreatorRankingRow>("everything_creator_ranking_page", {
     last_posts: LAST_POSTS_PER_CREATOR,
     min_score: MIN_SCORE_TO_WALK,
     min_posts: MIN_VISITED_POSTS_TO_WALK,
     unread_posts: IMAGINED_UNREAD_POSTS,
     average_posts: IMAGINED_AVERAGE_POSTS,
-  });
+    p_after_feed_url: after?.feed_url,
+    p_limit: DASHBOARD_PAGE_SIZE,
+  }, 0);
 }
 
 // --- The Claude note writer's plan usage (migration 140) ---
