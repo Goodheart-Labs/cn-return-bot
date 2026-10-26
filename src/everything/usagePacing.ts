@@ -15,11 +15,21 @@
  *
  * The usage per post is the rise of the weekly usage over the last 48 hours,
  * divided by the posts Claude took in that time. That rise includes every
- * other use of the plan, such as Nathan's own tasks on the box or a future X
- * note writer. So a post looks more expensive while other work runs, and the
- * posts slow down by just enough for the total to land on the target. The
- * formula is computed again on every run, so an estimate that was off corrects
- * itself as the reset comes closer.
+ * other use of the plan, such as Nathan's own tasks on the box. So a post
+ * looks more expensive while other work runs, and the posts slow down by just
+ * enough for the total to land on the target. The formula is computed again on
+ * every run, so an estimate that was off corrects itself as the reset comes
+ * closer.
+ *
+ * This works while Common Notes is the only paced use of the plan. If we add
+ * a second one, for example an X note writer that also runs on Claude Code,
+ * do not let both pace themselves against the whole target. Instead, give
+ * each use a fixed share of the weekly target, for example 60% of the week to
+ * Common Notes and 20% to the X note writer. Each use then paces itself
+ * against its own share. For that, each use has to measure its own usage
+ * rather than the rise of the whole plan. The usage endpoint only reports the
+ * total, so each use would need its own estimate, for example the cost that
+ * Claude Code reports at the end of each of its runs. (Jim, 2026-10-26.)
  *
  * When the week is already at the target, or the runner has stopped reporting,
  * Claude gets no new post, and the pipeline checks new posts instead. Jim chose
