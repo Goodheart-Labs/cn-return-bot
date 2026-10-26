@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CURATION_SECTIONS, type CurationSection } from "@cn/core/bestNotes";
 import { REVIEW_SECTIONS, type ReviewSection } from "@cn/core/claudeReview";
 import { JUDGE_SECTIONS, type JudgeSection } from "../pages/judgeExperiment/sections";
@@ -138,7 +138,7 @@ export function useRoute(): [Route, (next: Route) => void] {
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
-  const navigate = (next: Route) => {
+  const navigate = useCallback((next: Route) => {
     window.history.pushState(null, "", routeHref(next));
     setRoute(next);
     // A new page starts at the top, as it does after following any link. Back
@@ -146,7 +146,7 @@ export function useRoute(): [Route, (next: Route) => void] {
     // the reader where they were.
     window.scrollTo(0, 0);
     capturePageview();
-  };
+  }, []);
   return [route, navigate];
 }
 

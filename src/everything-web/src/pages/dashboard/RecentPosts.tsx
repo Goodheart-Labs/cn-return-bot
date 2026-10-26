@@ -1,15 +1,9 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchRecentPosts, type RecentPostRow } from "@cn/core/dashboard";
+import { DASHBOARD_PAGE_SIZE, fetchRecentPostsPage, type RecentPostRow } from "@cn/core/dashboard";
 import { LAST_POSTS_PER_CREATOR } from "@cn/core/readers";
 import { queryKeys } from "@cn/features/query/queryKeys";
+import { afterFullPage, usePagedList } from "@cn/features/query/usePagedList";
 import { cn } from "@cn/ui/cn";
 import { CELL, DashboardTable, LoadState, NUMBER_CELL, ShowMore, SUBLINE, type Column } from "./tableParts";
-
-/** How many posts are fetched once, and how many more each "Show more" press
- *  reveals from them. */
-const POSTS_FETCHED = 100;
-const POSTS_PER_STEP = 25;
 
 const MINUTE_MS = 60 * 1000;
 const HOUR_MS = 60 * MINUTE_MS;
@@ -75,16 +69,20 @@ function PostCell({ post }: { post: RecentPostRow }) {
 /** The posts the pipeline finished most recently, newest first, with how much
  *  their author is read and what the pipeline got out of them. */
 export function RecentPosts() {
-  const query = useQuery({ queryKey: queryKeys.dashboardRecentPosts, queryFn: () => fetchRecentPosts(POSTS_FETCHED) });
-  const [shown, setShown] = useState(POSTS_PER_STEP);
-  const posts = query.data;
+  const list = usePagedList({
+    queryKey: queryKeys.dashboardRecentPosts,
+    fetchPage: fetchRecentPostsPage,
+    firstBookmark: null as RecentPostRow | null,
+    nextBookmark: afterFullPage(DASHBOARD_PAGE_SIZE),
+  });
+  const posts = list.pages?.flat();
 
-  if (!posts) return <LoadState error={query.error} onRetry={() => void query.refetch()} />;
+  if (!posts) return <LoadState error={list.error} onRetry={list.retry} />;
   if (posts.length === 0) return <p className="text-sm text-fg-muted">The pipeline has not finished a post yet.</p>;
   return (
     <>
       <DashboardTable columns={COLUMNS}>
-        {posts.slice(0, shown).map((post) => (
+        {posts.map((post) => (
           <tr key={post.id}>
             <PostCell post={post} />
             <td className={cn(CELL, "whitespace-nowrap text-fg-secondary")} title={post.published_at ?? undefined}>
@@ -100,7 +98,7 @@ export function RecentPosts() {
           </tr>
         ))}
       </DashboardTable>
-      <ShowMore shown={shown} total={posts.length} step={POSTS_PER_STEP} onMore={() => setShown((n) => n + POSTS_PER_STEP)} />
+      <ShowMore list={list} />
     </>
   );
 }

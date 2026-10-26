@@ -1,191 +1,209 @@
-import { useEffect } from "react";
-import { keepPreviousData, useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
-import { fetchProjects } from "@cn/core/creators";
-import { fetchCuratedList, fetchRemovedRecommendations, type CuratedNoteRow, type CurationSection, type RemovedRecommendation } from "@cn/core/bestNotes";
-import { fetchItemNoteViewers, fetchItemsByIds, fetchItemsWithNotes, fetchProjectItems } from "@cn/core/items";
-import { fetchAllNnn, fetchNnnForClaims, fetchProjectNnn } from "@cn/core/noteNotNeeded";
-import { fetchAllNotes, fetchNotesByIds, fetchProjectNote, fetchProjectNotes } from "@cn/core/notes";
+import { useEffect, useState } from "react";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  CURATION_PAGE_SIZE,
+  fetchCurationPage,
+  fetchCurationSummary,
+  fetchLeaderboard,
+  type CuratedNoteRow,
+  type CurationFilters,
+  type CurationRow,
+  type CurationSection,
+} from "@cn/core/bestNotes";
+import { fetchProjectBySlug, fetchProjectsPage, PROJECTS_PAGE_SIZE, type ProjectOrder } from "@cn/core/creators";
+import {
+  fetchFeedPageIds,
+  fetchFeedSummary,
+  fetchNoteCards,
+  type FeedBand,
+  type FeedBookmark,
+  type FeedOrder,
+  type FeedScope,
+  type NoteFilters,
+  NO_FILTERS,
+} from "@cn/core/feedPages";
+import { fetchFeedItem, fetchProjectItemsPage, PROJECT_ITEMS_PAGE_SIZE, type ProjectItemRow } from "@cn/core/items";
 import { subscribeToProjectChanges } from "@cn/core/projectRealtime";
-import type { FeedItemRow, NnnRow, NoteRow } from "@cn/core/types";
-import { noteSetOf, type NoteSet } from "@cn/features/notes/noteSet";
+import type { FeedItemRow, FeedProjectRow, NnnRow, NoteRow, ProjectHeader } from "@cn/core/types";
+import { useSession } from "@cn/features/auth/useSession";
+import { noteSetOf, patchNoteInNoteSets, removeNnnFromNoteSets, removeNoteFromNoteSets, upsertNnnInNoteSets, type NoteSet } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
+import { afterFullPage, usePagedList } from "@cn/features/query/usePagedList";
 
-/* The website reads one project at a time, because that is what a creator's
- * feed shows. The All notes page is the exception and reads every note at
- * once. Every query names what it needs and lists the columns the page
- * renders. Switching page loads that page's notes, and the previous ones drop
- * out of the cache after a few minutes. */
+/* Every list on the website loads one page at a time as the reader scrolls
+ * (GOO-524). The database orders and filters each list and returns one page,
+ * and usePagedList asks for the next page when the end of the list nears the
+ * screen. A list of notes loads its notes in two steps: the database names
+ * the notes of the page, and then the cards of exactly those notes load. */
 
-/** The projects the sidebar lists. */
-export const useProjects = () => useQuery({ queryKey: queryKeys.projects, queryFn: fetchProjects });
-
-/** Where one feed's items, notes and note-not-needed entries come from, and
- *  the cache keys they are kept under. */
-interface FeedSource {
-  itemsKey: QueryKey;
-  fetchItems: () => Promise<FeedItemRow[]>;
-  noteSetKey: QueryKey;
-  fetchNotes: () => Promise<NoteRow[]>;
-  fetchNnn: () => Promise<NnnRow[]>;
-  enabled: boolean;
+/** One loaded page of note cards. It is a NoteSet, so a vote anywhere updates
+ *  its notes. `entries` are the page's rows in order, and `items` and
+ *  `projects` are the posts and projects the cards name. */
+export interface CardPage<TEntry extends { noteId: string }> extends NoteSet {
+  entries: TEntry[];
+  items: Map<string, FeedItemRow>;
+  projects: Map<string, ProjectHeader>;
 }
 
-function useFeed({ itemsKey, fetchItems, noteSetKey, fetchNotes, fetchNnn, enabled }: FeedSource) {
-  const items = useQuery({
-    queryKey: itemsKey,
-    queryFn: fetchItems,
-    enabled,
-    select: (rows) => new Map(rows.map((r) => [r.id, r])),
-  });
-  const noteSet = useQuery({
-    queryKey: noteSetKey,
-    queryFn: async () => noteSetOf(...(await Promise.all([fetchNotes(), fetchNnn()]))),
-    enabled,
-  });
+async function loadCardPage<TEntry extends { noteId: string }>(entries: TEntry[]): Promise<CardPage<TEntry>> {
+  const cards = await fetchNoteCards(entries.map((entry) => entry.noteId));
   return {
-    items: items.data,
-    noteSet: noteSet.data,
-    failed: items.isError || noteSet.isError,
-    retry: () => void Promise.all([items.refetch(), noteSet.refetch()]),
+    ...noteSetOf(cards.notes, cards.nnn),
+    entries,
+    items: new Map(cards.items.map((item) => [item.id, item])),
+    projects: new Map(cards.projects.map((project) => [project.id, project])),
   };
 }
 
-/** One project's items, its notes and its note-not-needed entries, kept
- *  current over a realtime channel while the project is open. */
-export function useProjectFeed(projectId: string | null) {
-  const feed = useFeed({
-    itemsKey: queryKeys.projectItems(projectId ?? ""),
-    fetchItems: () => fetchProjectItems(projectId!),
-    noteSetKey: queryKeys.projectNoteSet(projectId ?? ""),
-    fetchNotes: () => fetchProjectNotes(projectId!),
-    fetchNnn: () => fetchProjectNnn(projectId!),
-    enabled: !!projectId,
-  });
-  useProjectRealtime(projectId);
-  return feed;
+/** A moment that stays fixed until `key` changes. A feed hides the notes the
+ *  reader had voted on when they opened it, and this is that moment. */
+function useMomentFor(key: string): Date {
+  const [moment, setMoment] = useState({ key, at: new Date() });
+  // Taking a new moment during render is React's pattern for state derived
+  // from props: React re-renders straight away with the new moment.
+  if (moment.key !== key) setMoment({ key, at: new Date() });
+  return moment.key === key ? moment.at : new Date();
 }
 
-/** Every visible note on the site, with the items they are on, for the All
- *  notes page. It has no realtime channel. A vote still shows up at once,
- *  because a vote refreshes its note in every cached NoteSet. Notes written
- *  by others appear when the page is opened again. */
-export const useAllNotesFeed = () =>
-  useFeed({
-    itemsKey: queryKeys.itemsWithNotes,
-    fetchItems: fetchItemsWithNotes,
-    noteSetKey: queryKeys.allNoteSet,
-    fetchNotes: fetchAllNotes,
-    fetchNnn: fetchAllNnn,
-    enabled: true,
-  });
+/** One note of a feed page: which note, the band it sits in, and how many
+ *  readers saw its post's notes. */
+export interface FeedEntry {
+  noteId: string;
+  band: FeedBand;
+  views: number;
+}
 
-/** One section of the admins' best notes curation: its rows in order, the
- *  notes on them with their note-not-needed entries, and the posts they are
- *  on. Each step waits for the one before, because it needs its ids. The notes
- *  are a NoteSet under the `noteSet` prefix, so a vote shows up here as
- *  everywhere else. */
-export function useCurationFeed(section: CurationSection) {
-  const list = useQuery({
-    queryKey: section === "removed" ? queryKeys.removedRecommendations : queryKeys.curatedList(section),
-    queryFn: async (): Promise<CurationRow[]> => (section === "removed" ? fetchRemovedRecommendations() : fetchCuratedList(section)),
-  });
-  // Sorted, so reordering a list does not count as a change of its notes.
-  const noteIds = list.data?.map((row) => row.note_id).sort();
-  const noteSet = useQuery({
-    // The ids are part of the key, so a note moved in or out loads its note.
-    queryKey: [...queryKeys.curatedNoteSet(section), noteIds],
-    queryFn: async () => {
-      const notes = await fetchNotesByIds(noteIds!);
-      return noteSetOf(notes, await fetchNnnForClaims(notes.map((note) => note.claim_id)));
+export type FeedPage = CardPage<FeedEntry> & { next: FeedBookmark | null };
+
+/** A notes feed and the counts it shows besides its pages. `since` lists the
+ *  moments whose counts the Newest order's dividers need. The feed hides the
+ *  notes the reader had voted on when it opened, so voting never makes a card
+ *  vanish. The pages are dropped when the feed leaves the screen, so opening
+ *  it again ranks the notes afresh. */
+export function useNoteFeed(scope: FeedScope, order: FeedOrder, filters: NoteFilters, since: Date[] = []) {
+  const userId = useSession().session?.user.id ?? null;
+  // A feed for another reader hides other votes, so the reader is part of
+  // what names the feed.
+  const named = { ...filters, userId };
+  const votedBefore = useMomentFor(JSON.stringify([scope, order, named]));
+  const list = usePagedList({
+    queryKey: queryKeys.noteFeed(scope, order, named),
+    fetchPage: async (after: FeedBookmark | null): Promise<FeedPage> => {
+      const page = await fetchFeedPageIds(scope, order, filters, votedBefore, after);
+      const entries = page.notes.map(({ id, band, views }) => ({ noteId: id, band, views }));
+      return { ...(await loadCardPage(entries)), next: page.next };
     },
-    enabled: !!noteIds,
+    firstBookmark: null as FeedBookmark | null,
+    nextBookmark: (page) => page.next ?? undefined,
+    keepAfterLeaving: false,
+  });
+  const sinceIso = since.map((moment) => moment.toISOString());
+  const summary = useQuery({
+    queryKey: queryKeys.noteFeedSummary(scope, named, sinceIso),
+    queryFn: () => fetchFeedSummary(scope, filters, votedBefore, since),
+    // The filter controls read the counts, so they stay on screen while the
+    // counts for new filters load.
     placeholderData: keepPreviousData,
   });
-  const itemIds = noteSet.data && [...new Set([...noteSet.data.notes.values()].map((note) => note.claim.item_id))];
-  const items = useQuery({
-    queryKey: [...queryKeys.curatedItems(section), itemIds],
-    queryFn: () => fetchItemsByIds(itemIds!),
-    enabled: !!itemIds,
-    placeholderData: keepPreviousData,
-    select: (rows) => new Map(rows.map((r) => [r.id, r])),
+  return { list, summary };
+}
+
+/** How many visible notes the scope holds, without any filter. */
+export const useNoteCount = (scope: FeedScope, enabled = true) =>
+  useQuery({ queryKey: queryKeys.noteCount(scope), queryFn: async () => (await fetchFeedSummary(scope, NO_FILTERS, new Date(), [])).matching, enabled });
+
+/** The note a shared link points at, with what its card renders. Its project
+ *  page shows it first, because the feed may hold it on a page far below. */
+export function useSharedNote(noteId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.sharedNote(noteId ?? ""),
+    queryFn: (): Promise<CardPage<FeedEntry>> => loadCardPage([{ noteId: noteId!, band: "main" as const, views: 0 }]),
+    enabled: !!noteId,
   });
-  return {
-    list: list.data,
-    noteSet: noteSet.data,
-    items: items.data,
-    failed: list.isError || noteSet.isError || items.isError,
-    retry: () => void Promise.all([list.refetch(), noteSet.refetch(), items.refetch()]),
-  };
 }
 
-/** A row of any curation section: a list entry, or a removed recommendation. */
-export type CurationRow = CuratedNoteRow | RemovedRecommendation;
+/** The pages of the projects overview in one order. */
+export const useProjectsList = (order: ProjectOrder) =>
+  usePagedList({
+    queryKey: queryKeys.projectsPage(order),
+    fetchPage: (after: FeedProjectRow | null) => fetchProjectsPage(order, after),
+    firstBookmark: null as FeedProjectRow | null,
+    nextBookmark: afterFullPage(PROJECTS_PAGE_SIZE),
+  });
 
-/** How many devices outside the team saw each item's notes, which the All
- *  notes page filters by. */
-export const useItemNoteViewers = () => useQuery({ queryKey: queryKeys.itemNoteViewers, queryFn: fetchItemNoteViewers });
+/** The project with this slug. Undefined while it loads, null when there is
+ *  none. */
+export const useProject = (slug: string) => useQuery({ queryKey: queryKeys.project(slug), queryFn: () => fetchProjectBySlug(slug) });
 
-/** Keeps only the columns the feed renders. A realtime message always carries
- *  the whole row, including the item's body text, and holding on to that
- *  would put back the memory the narrowed queries save. */
-function toFeedItem(row: Record<string, unknown>): FeedItemRow {
-  const { id, project_id, url, title, published_at, created_at } = row as FeedItemRow;
-  return { id, project_id, url, title, published_at, created_at };
+/** The pages of one project's list of posts, newest first. */
+export const useProjectItems = (projectId: string) =>
+  usePagedList({
+    queryKey: queryKeys.projectItems(projectId),
+    fetchPage: (after: ProjectItemRow | null) => fetchProjectItemsPage(projectId, after),
+    firstBookmark: null as ProjectItemRow | null,
+    nextBookmark: afterFullPage(PROJECT_ITEMS_PAGE_SIZE),
+  });
+
+/** One post by id, for the heading of a project page that shows only that
+ *  post's notes. */
+export const useFeedItem = (itemId: string | null) =>
+  useQuery({ queryKey: queryKeys.feedItem(itemId ?? ""), queryFn: () => fetchFeedItem(itemId!), enabled: !!itemId });
+
+/** One note of a curation section, with its row. */
+export interface CurationEntry {
+  noteId: string;
+  row: CurationRow;
 }
 
-function updateNoteSet(client: QueryClient, projectId: string, update: (set: NoteSet) => NoteSet) {
-  client.setQueryData<NoteSet>(queryKeys.projectNoteSet(projectId), (set) => set && update(set));
+/** The pages of one curation section, narrowed by the filters. */
+export function useCurationSection(section: CurationSection, filters: Omit<CurationFilters, "votedBefore">) {
+  const votedBefore = useMomentFor(JSON.stringify([section, filters]));
+  return usePagedList({
+    queryKey: queryKeys.curationSection(section, filters),
+    fetchPage: async (after: CurationRow | null) => {
+      const rows = await fetchCurationPage(section, { ...filters, votedBefore }, after);
+      return loadCardPage(rows.map((row) => ({ noteId: row.note_id, row })));
+    },
+    firstBookmark: null as CurationRow | null,
+    nextBookmark: (page) => afterFullPage(CURATION_PAGE_SIZE)(page.entries)?.row,
+  });
 }
 
-/** Applies realtime changes to the cached feed of the open project. */
-function useProjectRealtime(projectId: string | null) {
+/** The section counts and the creators of the open section. */
+export const useCurationSummary = (section: CurationSection) =>
+  useQuery({ queryKey: queryKeys.curationSummary(section), queryFn: () => fetchCurationSummary(section) });
+
+/** The whole leaderboard with its cards, which only the reorder mode loads. */
+export const useWholeLeaderboard = (enabled: boolean) =>
+  useQuery({
+    queryKey: queryKeys.wholeLeaderboard,
+    queryFn: async (): Promise<CardPage<{ noteId: string; row: CuratedNoteRow }>> =>
+      loadCardPage((await fetchLeaderboard()).map((row) => ({ noteId: row.note_id, row }))),
+    enabled,
+  });
+
+/** Keeps the notes of an open project current over a realtime channel, a
+ *  websocket on which Supabase pushes every change to the tables. Votes and
+ *  edits on the notes on screen show at once, and so do note-not-needed
+ *  entries on their claims. A new note appears when the page is opened again,
+ *  because only the database knows where in the feed it belongs. */
+export function useProjectRealtime(projectId: string) {
   const client = useQueryClient();
-  useEffect(() => {
-    if (!projectId) return;
-    const itemsKey = queryKeys.projectItems(projectId);
-    const withNote = (note: NoteRow) => updateNoteSet(client, projectId, (set) => ({ ...set, notes: new Map(set.notes).set(note.id, note) }));
-    /* A realtime change never carries the joined claim, so a note we have not
-     * seen before is fetched in full. A note of another project comes back
-     * null and is dropped. */
-    const pullNote = async (id: string) => {
-      const note = await fetchProjectNote(id, projectId);
-      if (note) withNote(note);
-    };
-    return subscribeToProjectChanges(projectId, {
-      onItem: (change) =>
-        client.setQueryData<FeedItemRow[]>(itemsKey, (rows = []) =>
-          change.type === "delete"
-            ? rows.filter((r) => r.id !== change.id)
-            : [...rows.filter((r) => r.id !== change.row.id), toFeedItem(change.row)],
-        ),
-      onNote: (change) => {
-        if (change.type === "delete") {
-          return updateNoteSet(client, projectId, (set) => {
-            const notes = new Map(set.notes);
-            notes.delete(change.id);
-            return { ...set, notes };
-          });
-        }
-        /* An update on a note we already hold only changes its vote counts. Its
-         * plain fields are merged in, and the citations, the source-details flag
-         * and the claim we already normalized are kept, because the raw row
-         * carries none of them. */
-        const existing = client.getQueryData<NoteSet>(queryKeys.projectNoteSet(projectId))?.notes.get(change.row.id);
-        if (!existing) return void pullNote(change.row.id);
-        const { sources: _s, has_source_details: _d, claim: _c, ...fields } = change.row as unknown as NoteRow;
-        withNote({ ...existing, ...fields });
-      },
-      /* An entry is rendered under the notes on its claim, so an entry on a
-       * claim we are not showing has nowhere to appear and is dropped. The
-       * counter trigger sends its updates as full rows, so no refetch is
-       * needed. */
-      onNnn: (change) =>
-        updateNoteSet(client, projectId, (set) => {
-          const nnn = new Map(set.nnn);
-          if (change.type === "delete") nnn.delete(change.id);
-          else if ([...set.notes.values()].some((n) => n.claim_id === change.row.claim_id)) nnn.set(change.row.id, change.row as unknown as NnnRow);
-          return { ...set, nnn };
-        }),
-    });
-  }, [client, projectId]);
+  useEffect(
+    () =>
+      subscribeToProjectChanges(projectId, {
+        onNote: (change) => {
+          if (change.type === "delete") return removeNoteFromNoteSets(client, change.id);
+          // A raw row carries none of the joins a query adds, so only its plain
+          // fields are merged into the note we hold.
+          const { sources: _s, has_source_details: _d, claim: _c, ...fields } = change.row as unknown as NoteRow;
+          patchNoteInNoteSets(client, change.row.id, fields);
+        },
+        // The counter trigger sends its updates as full rows, so no refetch is
+        // needed.
+        onNnn: (change) =>
+          change.type === "delete" ? removeNnnFromNoteSets(client, change.id) : upsertNnnInNoteSets(client, change.row as unknown as NnnRow),
+      }),
+    [client, projectId],
+  );
 }

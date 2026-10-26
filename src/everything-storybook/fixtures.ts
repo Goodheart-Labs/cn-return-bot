@@ -1,4 +1,6 @@
+import { NO_FILTERS, type FeedBand } from "@cn/core/feedPages";
 import type { PageItem } from "@cn/core/items";
+import { noteStatus } from "@cn/core/noteScore";
 import type { ClaimRef, FeedItemRow, FeedProjectRow, NnnRow, NoteRow } from "@cn/core/types";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
@@ -166,18 +168,59 @@ export const NNN_ENTRIES: NnnRow[] = [
   },
 ];
 
-export const NOTE_SET = noteSetOf(NOTES, NNN_ENTRIES);
-
 export const noteById = (id: string) => NOTES.find((n) => n.id === id)!;
 
 /** A seed for the query cache: one cached answer under one key. */
 export type QuerySeed = readonly [readonly unknown[], unknown];
 
+/** The band of the mixed order a note sits in, as the database decides it. */
+const bandOf = (note: NoteRow): FeedBand =>
+  note.claim.updated_quote ? "stale" : noteStatus(note) === "not_helpful" ? "unhelpful" : "main";
+const BAND_ORDER: FeedBand[] = ["main", "unhelpful", "stale"];
+
+/** The notes as one loaded page of a feed, in the mixed order's bands. */
+const feedPage = (notes: NoteRow[]) => ({
+  ...noteSetOf(notes, NNN_ENTRIES),
+  entries: [...notes]
+    .sort((a, b) => BAND_ORDER.indexOf(bandOf(a)) - BAND_ORDER.indexOf(bandOf(b)))
+    .map((note) => ({ noteId: note.id, band: bandOf(note), views: 12 })),
+  items: new Map(ITEMS.map((item) => [item.id, item])),
+  projects: new Map([[PROJECT.id, PROJECT]]),
+  next: null,
+});
+
+/** A paged list that has loaded its only page. */
+const onePage = (page: unknown) => ({ pages: [page], pageParams: [null] });
+
+const feedSummary = (notes: NoteRow[]) => ({
+  matching: notes.length,
+  bands: Object.fromEntries(BAND_ORDER.map((band) => [band, notes.filter((note) => bandOf(note) === band).length])),
+  since: [],
+  largest: { views: 12, votes: 5, helpful: 3, notHelpful: 2 },
+});
+
+/** The feed of a project, or of one of its items, as a reader who is not
+ *  signed in loads it. */
+function feedSeeds(itemId: string | null): QuerySeed[] {
+  const scope = { projectId: PROJECT.id, itemId };
+  const filters = { ...NO_FILTERS, userId: null };
+  const notes = NOTES.filter((note) => !itemId || note.claim.item_id === itemId);
+  return [
+    [queryKeys.noteFeed(scope, "mixed", filters), onePage(feedPage(notes))],
+    [queryKeys.noteFeedSummary(scope, filters, []), feedSummary(notes)],
+  ];
+}
+
 /** Everything the website's feed of the fixture project reads. */
 export const FEED_SEEDS: QuerySeed[] = [
-  [queryKeys.projects, PROJECTS],
-  [queryKeys.projectItems(PROJECT.id), ITEMS],
-  [queryKeys.projectNoteSet(PROJECT.id), NOTE_SET],
+  [queryKeys.projectsPage("votes"), onePage(PROJECTS)],
+  [queryKeys.project(PROJECT.slug), PROJECT],
+  [queryKeys.projectItems(PROJECT.id), onePage(ITEMS.map((item) => ({ ...item, note_count: NOTES.filter((note) => note.claim.item_id === item.id).length })))],
+  [queryKeys.noteCount({ projectId: PROJECT.id, itemId: null }), NOTES.length],
+  [queryKeys.noteCount({ projectId: null, itemId: null }), PROJECTS.reduce((total, project) => total + project.note_count, 0)],
+  [queryKeys.feedItem(ITEMS[0]!.id), ITEMS[0]],
+  ...feedSeeds(null),
+  ...feedSeeds(ITEMS[0]!.id),
   [queryKeys.sourceDetails("note-rent"), [
     { url: "https://housing.example.gov/rent-index-2025", quote: "Average rents declined by 2.1% compared with the previous year.", explanation: "The city's official index, which measures rents paid.", sort_order: 0 },
   ]],

@@ -3,6 +3,8 @@ import { Button } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { LoadFailed } from "@cn/features/query/LoadFailed";
+import type { PagedList } from "@cn/features/query/usePagedList";
 
 /* The pieces both dashboard tables are built from. */
 
@@ -78,12 +80,13 @@ export function DashboardTable({ columns, children }: { columns: readonly Column
   );
 }
 
-/** Reveals the next rows of a table that holds more than it shows. */
-export function ShowMore({ shown, total, step, onMore }: { shown: number; total: number; step: number; onMore: () => void }) {
-  if (shown >= total) return null;
+/** Loads the next page of a table from the server, while there is one. */
+export function ShowMore({ list }: { list: PagedList<unknown> }) {
+  if (list.moreFailed) return <LoadFailed what="The next rows" onRetry={list.retry} className="mt-3" />;
+  if (!list.hasMore) return null;
   return (
-    <Button variant="secondary" className="mt-3" onClick={onMore}>
-      Show {Math.min(step, total - shown)} more
+    <Button variant="secondary" className="mt-3" disabled={list.loadingMore} onClick={list.loadMore}>
+      {list.loadingMore ? "Loading…" : "Show more"}
     </Button>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useInfiniteQuery, useQuery, useQueryClient, type InfiniteData, type QueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type InfiniteData, type QueryClient } from "@tanstack/react-query";
 import {
   fetchReviewDrafts,
   fetchReviewPage,
@@ -12,6 +12,7 @@ import {
 import { fetchNotesByIds } from "@cn/core/notes";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
+import { usePagedList } from "@cn/features/query/usePagedList";
 
 /* How the review page loads its drafts. A section loads one page of
  * REVIEW_PAGE_SIZE drafts at a time as the admin scrolls, newest first. The
@@ -40,8 +41,8 @@ export function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): R
   return drafts;
 }
 
-export const useReviewSummary = (enabled: boolean) =>
-  useQuery({ queryKey: queryKeys.noteReviewSummary, queryFn: fetchReviewSummary, enabled, refetchInterval: REFRESH_MS });
+export const useReviewSummary = () =>
+  useQuery({ queryKey: queryKeys.noteReviewSummary, queryFn: fetchReviewSummary, refetchInterval: REFRESH_MS });
 
 /** A page shorter than a full page is the section's last. */
 const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
@@ -49,14 +50,13 @@ const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
   return page.length === REVIEW_PAGE_SIZE && last ? { createdAt: last.createdAt, id: last.id } : undefined;
 };
 
-export function useReviewSection(section: ReviewSection, enabled: boolean) {
+export function useReviewSection(section: ReviewSection) {
   const client = useQueryClient();
-  return useInfiniteQuery({
+  return usePagedList({
     queryKey: queryKeys.noteReviewSection(section),
-    queryFn: async ({ pageParam }) => withSourceDetails(client, await fetchReviewPage(section, pageParam)),
-    initialPageParam: null as ReviewCursor | null,
-    getNextPageParam: nextCursor,
-    enabled,
+    fetchPage: async (cursor: ReviewCursor | null) => withSourceDetails(client, await fetchReviewPage(section, cursor)),
+    firstBookmark: null as ReviewCursor | null,
+    nextBookmark: nextCursor,
   });
 }
 

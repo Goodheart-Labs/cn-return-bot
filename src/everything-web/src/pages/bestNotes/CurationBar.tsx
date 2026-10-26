@@ -1,24 +1,22 @@
 import { useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  fetchLeaderboardPositionAtRank,
   moveToLeaderboard,
-  positionAtRank,
   removeRecommendation,
   restoreRecommendation,
   returnToRecommendations,
   setComment,
   setPosted,
-  type CuratedNoteRow,
   type CurationSection,
 } from "@cn/core/bestNotes";
-import type { FeedProjectRow } from "@cn/core/types";
+import type { ProjectHeader } from "@cn/core/types";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { IconButton } from "@cn/ui/IconButton";
 import { CloseIcon, SpeechBubbleIcon, TrophyIcon, XLogoIcon } from "@cn/ui/icons";
-import { ProjectAvatar } from "../../components/ProjectAvatar";
-import { RouteLink } from "../../components/RouteLink";
+import { CreatorLink } from "../../components/CreatorLink";
 import type { Route } from "../../lib/routing";
 
 /** Runs one change to the curation and then reloads every section, because a
@@ -35,8 +33,8 @@ export function useCurationChange(onError: (message: string) => void) {
       return false;
     } finally {
       await Promise.all([
-        client.invalidateQueries({ queryKey: ["curatedList"] }),
-        client.invalidateQueries({ queryKey: queryKeys.removedRecommendations }),
+        client.invalidateQueries({ queryKey: queryKeys.curation }),
+        client.invalidateQueries({ queryKey: queryKeys.curationSummaries }),
       ]);
     }
   };
@@ -118,7 +116,7 @@ const ICON_BUTTON = "h-8 w-8";
  *  (comment) and a red cross (remove, with a reason). A leaderboard note has
  *  the X logo (mark as posted on X), the speech bubble, and a red cross that
  *  offers to send the note back to the recommendations or remove it. */
-export function CurationBar({ section, rank, noteId, comment, posted, removedReason, project, leaderboard, navigate, onError }: {
+export function CurationBar({ section, rank, noteId, comment, posted, removedReason, project, leaderboardSize, navigate, onError }: {
   section: CurationSection;
   rank: number;
   noteId: string;
@@ -126,9 +124,9 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
   /** Whether an admin marked the note as posted on X. Only leaderboard notes have the mark. */
   posted: boolean;
   removedReason: string | null;
-  project: FeedProjectRow | undefined;
-  /** The leaderboard in its order, which a move or an addition is placed in. */
-  leaderboard: CuratedNoteRow[];
+  project: ProjectHeader | undefined;
+  /** How many notes the leaderboard holds, which an addition is placed among. */
+  leaderboardSize: number;
   navigate: (route: Route) => void;
   onError: (message: string) => void;
 }) {
@@ -185,10 +183,15 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
   if (panel === "add") {
     form = (
       <div className="space-y-2">
-        <Button onClick={() => void change(() => moveToLeaderboard(noteId, positionAtRank(leaderboard, leaderboard.length + 1)))}>
-          Add at the bottom ({leaderboard.length + 1})
+        <Button onClick={() => void change(async () => moveToLeaderboard(noteId, await fetchLeaderboardPositionAtRank(leaderboardSize + 1, leaderboardSize)))}>
+          Add at the bottom ({leaderboardSize + 1})
         </Button>
-        <PlaceForm label="Add here" max={leaderboard.length + 1} submit={(r) => change(() => moveToLeaderboard(noteId, positionAtRank(leaderboard, r)))} onDone={close} />
+        <PlaceForm
+          label="Add here"
+          max={leaderboardSize + 1}
+          submit={(r) => change(async () => moveToLeaderboard(noteId, await fetchLeaderboardPositionAtRank(r, leaderboardSize)))}
+          onDone={close}
+        />
       </div>
     );
   } else if (panel === "takeOff") {
@@ -238,16 +241,7 @@ export function CurationBar({ section, rank, noteId, comment, posted, removedRea
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="font-title text-base font-bold text-fg-secondary">#{rank}</span>
-        {project && (
-          <RouteLink
-            to={{ view: "notes", project: project.slug, item: null, note: null }}
-            navigate={navigate}
-            className="inline-flex items-center gap-2 text-sm font-medium text-fg-secondary hover:text-fg"
-          >
-            <ProjectAvatar project={project} size={22} />
-            {project.name}
-          </RouteLink>
-        )}
+        {project && <CreatorLink project={project} navigate={navigate} />}
         <span className="ml-auto flex items-center gap-1">{actions}</span>
       </div>
       {section !== "removed" && comment && panel !== "comment" && (
