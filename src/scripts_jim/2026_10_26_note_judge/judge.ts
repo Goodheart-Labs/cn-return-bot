@@ -1,8 +1,10 @@
-/* The note judge (GOO-588). It moves to src/claude-notes/ once the note
- * writer runs it on every new note (GOO-591). One headless Claude Code run reads one note of
+/* The note judge (GOO-588). One headless Claude Code run reads one note of
  * the Claude note writer and predicts two things: the probability that the
  * note ends up rated helpful once enough readers rated it, and the
  * probability that the team adds it to its leaderboard of best notes.
+ *
+ * This file moves to src/claude-notes/ once the note writer runs the judge on
+ * every new note (GOO-591).
  *
  * The judge runs on Nathan's ai-box, like the note writer, with full Claude
  * Code tooling, so it may research the passage and the sources on the web.
