@@ -1,9 +1,10 @@
-import { Fragment, useMemo, type ReactNode } from "react";
+import { Fragment, memo, useMemo, type ReactNode } from "react";
 import type { FeedItemRow, NnnRow, NoteRow, ProjectHeader } from "@cn/core/types";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import type { PagedList } from "@cn/features/query/usePagedList";
 import { entriesByClaim, improvementsByOriginal, sectionsOf } from "../lib/feed";
+import { noteUrl } from "../lib/routing";
 import type { CardPage } from "../lib/feedQueries";
 import { FeedNoteCard } from "./FeedNoteCard";
 
@@ -20,20 +21,34 @@ export interface FeedCard<TEntry> {
   project: ProjectHeader | undefined;
 }
 
-/** The cards of the loaded pages, in order. A note that was deleted since its
- *  page loaded is left out. A note shown twice keeps only its first card,
- *  which happens when a note that leads the list also comes up in a page. */
+/** The cards of one page. They are kept per page, so a page that is already
+ *  loaded gives the same card objects every time, and its cards need not
+ *  render again when a later page arrives. A note that was deleted since its
+ *  page loaded is left out. */
+const cardsByPage = new WeakMap<object, FeedCard<{ noteId: string }>[]>();
+function cardsOfPage<TEntry extends { noteId: string }>(page: CardPage<TEntry>): FeedCard<TEntry>[] {
+  const known = cardsByPage.get(page) as FeedCard<TEntry>[] | undefined;
+  if (known) return known;
+  const cards = page.entries.flatMap((entry) => {
+    const note = page.notes.get(entry.noteId);
+    if (!note) return [];
+    const post = page.items.get(note.claim.item_id);
+    return [{ entry, note, post, project: post?.project_id ? page.projects.get(post.project_id) : undefined }];
+  });
+  cardsByPage.set(page, cards);
+  return cards;
+}
+
+/** The cards of the loaded pages, in order. A note shown twice keeps only its
+ *  first card, which happens when a note that leads the list also comes up in
+ *  a page. */
 function cardsOf<TEntry extends { noteId: string }>(pages: CardPage<TEntry>[]): FeedCard<TEntry>[] {
   const seen = new Set<string>();
-  return pages.flatMap((page) =>
-    page.entries.flatMap((entry) => {
-      const note = page.notes.get(entry.noteId);
-      if (!note || seen.has(note.id)) return [];
-      seen.add(note.id);
-      const post = page.items.get(note.claim.item_id);
-      return [{ entry, note, post, project: post?.project_id ? page.projects.get(post.project_id) : undefined }];
-    }),
-  );
+  return pages.flatMap(cardsOfPage).filter((card) => {
+    if (seen.has(card.note.id)) return false;
+    seen.add(card.note.id);
+    return true;
+  });
 }
 
 /** The divider above a labelled band of the feed. It names the band and says
@@ -51,6 +66,32 @@ function SectionDivider({ label, total }: { label: string; total: number | null 
   );
 }
 
+/** One card of the list. It is memoised, so when a page arrives only that
+ *  page's cards render, and not every card loaded before them. That keeps
+ *  each page as fast as the first however far the reader has scrolled. The
+ *  caller must therefore pass a `byline` function that keeps its identity
+ *  between renders. */
+function FeedCardItemUnmemoised<TEntry>({ card, index, byline, showPost, improvements, nnnEntries }: {
+  card: FeedCard<TEntry>;
+  index: number;
+  byline?: (card: FeedCard<TEntry>, index: number) => ReactNode;
+  showPost: boolean;
+  improvements: NoteRow[];
+  nnnEntries: NnnRow[];
+}) {
+  return (
+    <FeedNoteCard
+      note={card.note}
+      byline={byline?.(card, index)}
+      post={showPost ? card.post : undefined}
+      improvements={improvements}
+      nnnEntries={nnnEntries}
+      shareUrl={card.project ? noteUrl(card.project.slug, card.note.id) : window.location.href}
+    />
+  );
+}
+const FeedCardItem = memo(FeedCardItemUnmemoised) as typeof FeedCardItemUnmemoised;
+
 /** A list of note cards that loads page by page as the reader scrolls. Every
  *  list of notes on the website renders through it: All notes, a project's
  *  notes and the admins' curation.
@@ -60,7 +101,8 @@ function SectionDivider({ label, total }: { label: string; total: number | null 
  *  other with the same label share a band, and a band with a label sits below
  *  a divider. `totalOf` says how many notes a labelled band holds in all.
  *  `byline` renders the top of each card, and `showPost` whether each card
- *  names its post. */
+ *  names its post. `byline` must keep its identity between renders, for
+ *  example through useCallback, or every card renders again. */
 export function NoteFeed<TEntry extends { noteId: string }>({
   list,
   lead = NO_PAGES,
@@ -68,7 +110,6 @@ export function NoteFeed<TEntry extends { noteId: string }>({
   totalOf = () => null,
   byline,
   showPost = true,
-  shareUrl,
   emptyText,
 }: {
   list: PagedList<CardPage<TEntry>>;
@@ -77,7 +118,6 @@ export function NoteFeed<TEntry extends { noteId: string }>({
   totalOf?: (label: string) => number | null;
   byline?: (card: FeedCard<TEntry>, index: number) => ReactNode;
   showPost?: boolean;
-  shareUrl: (card: FeedCard<TEntry>) => string;
   emptyText: string;
 }) {
   const pages = useMemo(() => list.pages && [...lead, ...list.pages], [lead, list.pages]);
@@ -96,14 +136,14 @@ export function NoteFeed<TEntry extends { noteId: string }>({
         <Fragment key={sectionIndex}>
           {label && <SectionDivider label={label} total={total} />}
           {sectionCards.map((card) => (
-            <FeedNoteCard
+            <FeedCardItem
               key={card.note.id}
-              note={card.note}
-              byline={byline?.(card, index++)}
-              post={showPost ? card.post : undefined}
+              card={card}
+              index={index++}
+              byline={byline}
+              showPost={showPost}
               improvements={improvements.get(card.note.id) ?? NO_NOTES}
               nnnEntries={entries.get(card.note.claim_id) ?? NO_ENTRIES}
-              shareUrl={shareUrl(card)}
             />
           ))}
         </Fragment>

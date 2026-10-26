@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { FeedOrder, NoteFilters, NoteMinimums } from "@cn/core/feedPages";
 import type { ProjectHeader } from "@cn/core/types";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
-import { NoteFeed } from "../components/NoteFeed";
+import { NoteFeed, type FeedCard } from "../components/NoteFeed";
 import { NoteFiltersButton } from "../components/NoteFiltersButton";
 import { ageLabel, ageTotal, BAND_LABELS, bandTotal, DEFAULT_NOTE_FILTERS, MINIMUM_KEYS, spanStarts } from "../lib/feed";
-import { useNoteFeed } from "../lib/feedQueries";
-import { noteUrl, type Route } from "../lib/routing";
+import { useNoteFeed, type FeedEntry } from "../lib/feedQueries";
+import type { Route } from "../lib/routing";
 import { useSettledValue } from "../lib/useSettledValue";
 import { useStoredChoice, useStoredValue } from "../lib/useStoredValue";
 
@@ -71,6 +71,10 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   const [starts] = useState(() => spanStarts(new Date()));
   const { list, summary } = useNoteFeed(EVERY_PROJECT, order, useSettledValue(filters), order === "recent" ? starts : []);
   const counts = summary.data;
+  const byline = useCallback(
+    ({ entry, project }: FeedCard<FeedEntry>) => project && <CreatorByline project={project} views={entry.views} navigate={navigate} />,
+    [navigate],
+  );
 
   return (
     <main className="min-w-0 px-4 py-8 md:px-8">
@@ -88,8 +92,7 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
         list={list}
         labelOf={({ entry, note }) => (order === "recent" ? ageLabel(note.created_at, starts) : BAND_LABELS[entry.band])}
         totalOf={(label) => (order === "recent" ? ageTotal(counts, label) : bandTotal(counts, label))}
-        byline={({ entry, project }) => project && <CreatorByline project={project} views={entry.views} navigate={navigate} />}
-        shareUrl={({ note, project }) => (project ? noteUrl(project.slug, note.id) : window.location.href)}
+        byline={byline}
         emptyText="No notes match these filters."
       />
     </main>

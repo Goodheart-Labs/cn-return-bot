@@ -1,16 +1,16 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { CURATION_SECTIONS, setPosition, type CurationCreator, type CurationSection } from "@cn/core/bestNotes";
 import { Button } from "@cn/ui/Button";
 import { Checkbox } from "@cn/ui/Field";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { AdminOnly } from "../../components/AdminOnly";
 import { FiltersPopover } from "../../components/FiltersPopover";
-import { NoteFeed } from "../../components/NoteFeed";
+import { NoteFeed, type FeedCard } from "../../components/NoteFeed";
 import { ProjectAvatar } from "../../components/ProjectAvatar";
 import { RouteLink } from "../../components/RouteLink";
 import { PhoneSectionMenu, SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
-import { useCurationSection, useCurationSummary, useWholeLeaderboard } from "../../lib/feedQueries";
-import { noteUrl, type Route } from "../../lib/routing";
+import { useCurationSection, useCurationSummary, useWholeLeaderboard, type CurationEntry } from "../../lib/feedQueries";
+import type { Route } from "../../lib/routing";
 import { BestNotesReorder } from "./BestNotesReorder";
 import { CurationBar, useCurationChange } from "./CurationBar";
 
@@ -110,6 +110,24 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
   const counts: Partial<Record<CurationSection, number>> = summary.data?.counts ?? {};
   const creators = summary.data?.creators ?? [];
   const selectedProject = creators.find((p) => p.slug === projectSlug);
+  const leaderboardSize = counts.leaderboard ?? 0;
+  const byline = useCallback(
+    ({ entry: { row }, note, project }: FeedCard<CurationEntry>, index: number) => (
+      <CurationBar
+        section={section}
+        rank={index + 1}
+        noteId={note.id}
+        comment={row.comment}
+        posted={!!row.posted_at}
+        removedReason={row.removed_reason}
+        project={project}
+        leaderboardSize={leaderboardSize}
+        navigate={navigate}
+        onError={setError}
+      />
+    ),
+    [section, leaderboardSize, navigate],
+  );
 
   let feed: ReactNode;
   if (reordering) {
@@ -138,21 +156,7 @@ function CurationPage({ section, projectSlug, navigate }: { section: CurationSec
     feed = (
       <NoteFeed
         list={list}
-        byline={({ entry: { row }, note, project }, index) => (
-          <CurationBar
-            section={section}
-            rank={index + 1}
-            noteId={note.id}
-            comment={row.comment}
-            posted={!!row.posted_at}
-            removedReason={row.removed_reason}
-            project={project}
-            leaderboardSize={counts.leaderboard ?? 0}
-            navigate={navigate}
-            onError={setError}
-          />
-        )}
-        shareUrl={({ note, project }) => (project ? noteUrl(project.slug, note.id) : window.location.href)}
+        byline={byline}
         emptyText={EMPTY_SECTION[section]}
       />
     );
