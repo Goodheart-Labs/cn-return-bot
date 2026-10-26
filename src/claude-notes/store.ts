@@ -40,7 +40,7 @@ export interface NewDraft {
 
 export type DraftRow = Database["public"]["Tables"]["everything_claude_drafts"]["Row"];
 export type EventRow = Database["public"]["Tables"]["everything_claude_events"]["Row"];
-export type Settings = { writer: Writer; approvalRequired: boolean; postsInFlight: number; updatedAt: string; updatedBy: string };
+export type Settings = { writer: Writer; approvalRequired: boolean; updatedAt: string; updatedBy: string };
 
 /** NathanpmYoung's account, whose notes on a post make Claude skip the post. */
 const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
@@ -81,18 +81,17 @@ export async function logEvent(event: { actor: Actor; type: string; draftId?: st
 }
 
 export async function readSettings(): Promise<Settings> {
-  const row = unwrap(await db().from("everything_claude_settings").select("writer, approval_required, posts_in_flight, updated_at, updated_by").single());
-  return { writer: row.writer as Writer, approvalRequired: row.approval_required, postsInFlight: row.posts_in_flight, updatedAt: row.updated_at, updatedBy: row.updated_by };
+  const row = unwrap(await db().from("everything_claude_settings").select("writer, approval_required, updated_at, updated_by").single());
+  return { writer: row.writer as Writer, approvalRequired: row.approval_required, updatedAt: row.updated_at, updatedBy: row.updated_by };
 }
 
-export type SettingsChange = { writer?: Writer; approvalRequired?: boolean; postsInFlight?: number };
+export type SettingsChange = { writer?: Writer; approvalRequired?: boolean };
 
 export async function changeSettings(actor: Actor, change: SettingsChange) {
   check(
     await db().rpc("everything_claude_change_settings", {
       p_writer: change.writer,
       p_approval_required: change.approvalRequired,
-      p_posts_in_flight: change.postsInFlight,
       p_actor: actor,
     }),
   );

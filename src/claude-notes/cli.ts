@@ -5,8 +5,7 @@
  * everything_claude_events.
  *
  * Usage: bun run claude-notes <command> [arguments]
- *   settings [writer=pipeline|claude] [approval=on|off] [posts=<n>] [by=jim|nathan|claude]
- *                                 posts is how many feed posts Claude gets at once
+ *   settings [writer=pipeline|claude] [approval=on|off] [by=jim|nathan|claude]
  *   queue                         queued items Claude is working on or has not taken yet
  *   take <item id>                writes the post's text for the agents, logs the take
  *   draft <draft.json>            saves one draft; a note is posted unless approval is on
@@ -71,7 +70,6 @@ function parseSettingsArgs(list: string[]): { change: SettingsChange; by: Actor 
     const [key, value] = entry.split("=");
     if (key === "writer" && (value === "pipeline" || value === "claude")) change.writer = value;
     else if (key === "approval" && (value === "on" || value === "off")) change.approvalRequired = value === "on";
-    else if (key === "posts" && /^\d+$/.test(value ?? "")) change.postsInFlight = Number(value);
     else if (key === "by" && (value === "jim" || value === "nathan" || value === "claude")) by = value;
     else throw new Error(`Unknown setting: ${entry}`);
   }
