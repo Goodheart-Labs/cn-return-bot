@@ -1,0 +1,132 @@
+/* The note judge (GOO-588). It moves to src/claude-notes/ once the note
+ * writer runs it on every new note (GOO-591). One headless Claude Code run reads one note of
+ * the Claude note writer and predicts two things: the probability that the
+ * note ends up rated helpful once enough readers rated it, and the
+ * probability that the team adds it to its leaderboard of best notes.
+ *
+ * The judge runs on Nathan's ai-box, like the note writer, with full Claude
+ * Code tooling, so it may research the passage and the sources on the web.
+ * It must not see the note's votes. So it runs in an empty folder instead of
+ * the checkout, without the secrets, and it may not fetch commonnotes.net. */
+
+import { mkdirSync, writeFileSync } from "fs";
+import { homedir } from "os";
+import * as path from "path";
+
+export interface JudgedNote {
+  post: { title: string | null; url: string; creator: string | null };
+  passage: string;
+  contextParagraph: string | null;
+  note: string;
+  sources: { url: string; quote: string; explanation: string }[];
+}
+
+/** A note whose outcome is known, shown to the judge as an example. */
+export interface JudgeExample extends JudgedNote {
+  outcome: "helpful" | "not_helpful";
+  /** Why a reviewer voted or rejected the way they did, when they said so. */
+  reason: string | null;
+}
+
+export interface Judgement {
+  reasoning: string;
+  pHelpful: number;
+  pImpactful: number;
+}
+
+/** The judge thinks out loud first, so the reasoning comes before the numbers. */
+export const JUDGE_SCHEMA = {
+  type: "object",
+  properties: {
+    reasoning: { type: "string" },
+    p_helpful: { type: "number", minimum: 0, maximum: 1 },
+    p_impactful: { type: "number", minimum: 0, maximum: 1 },
+  },
+  required: ["reasoning", "p_helpful", "p_impactful"],
+  additionalProperties: false,
+};
+
+const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
+/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
+const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
+/** A judge that researches for longer than this is stuck. */
+const JUDGE_TIMEOUT_MS = 20 * 60_000;
+/** The website shows each note's votes, which are what the judge predicts. */
+const BLOCKED_TOOLS = ["WebFetch(domain:commonnotes.net)", "WebFetch(domain:www.commonnotes.net)"];
+
+function noteBlock(note: JudgedNote, withParagraph: boolean): string {
+  const sources = note.sources.map((s, i) => `${i + 1}. ${s.url}\n   Quote: ${s.quote}\n   Why it matters: ${s.explanation}`).join("\n");
+  return [
+    `Post: ${note.post.title ?? "(no title)"} by ${note.post.creator ?? "an unknown creator"}, ${note.post.url}`,
+    "",
+    "Passage:",
+    note.passage,
+    ...(withParagraph && note.contextParagraph ? ["", "The paragraph around it:", note.contextParagraph] : []),
+    "",
+    "Note:",
+    note.note,
+    "",
+    "Sources:",
+    sources || "(none)",
+  ].join("\n");
+}
+
+const OUTCOME_LABELS: Record<JudgeExample["outcome"], string> = { helpful: "Helpful", not_helpful: "Not helpful" };
+
+function examplesBlock(examples: JudgeExample[]): string {
+  const entries = examples.map((e, i) =>
+    [`### Example ${i + 1}: ${OUTCOME_LABELS[e.outcome]}`, noteBlock(e, false), ...(e.reason ? ["", `Reviewer's reason: ${e.reason}`] : [])].join("\n"),
+  );
+  return ["Here are earlier notes and how they were judged.", "", ...entries].join("\n\n");
+}
+
+export function judgePrompt(note: JudgedNote, examples: JudgeExample[] = []): string {
+  return [
+    "You judge one note on Common Notes (commonnotes.net). Common Notes shows short fact-checking notes next to passages of YouTube videos, Substack posts and other web pages, in the style of X's Community Notes. Readers rate each note Helpful, Somewhat helpful or Not helpful.",
+    ...(examples.length > 0 ? [examplesBlock(examples), "## The note to judge"] : []),
+    noteBlock(note, true),
+    `Answer two questions about this note.
+
+p_helpful: Suppose enough readers rate this note that it gets a final rating. What is the probability that the final rating is Helpful rather than Not helpful?
+
+p_impactful: The Common Notes team keeps a leaderboard of its best notes, the ones it shows off and posts on X. Suppose the team looks at this note and decides whether to add it. What is the probability that they add it?
+
+You may research the passage, the post and the sources on the web. Do not look this note up on commonnotes.net or in any database, because its ratings are what you are predicting.`,
+  ].join("\n\n");
+}
+
+/** Runs one judge in its own empty folder and returns its answer. The folder
+ *  keeps the prompt and Claude Code's full output for later reading. */
+export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { costUsd: number; turns: number }> {
+  mkdirSync(runDir, { recursive: true });
+  writeFileSync(path.join(runDir, "prompt.md"), prompt);
+  const child = Bun.spawn(
+    [
+      CLAUDE_BIN,
+      "-p",
+      prompt,
+      "--model",
+      "opus",
+      "--permission-mode",
+      "bypassPermissions",
+      "--settings",
+      RUN_SETTINGS,
+      "--disallowedTools",
+      ...BLOCKED_TOOLS,
+      "--output-format",
+      "json",
+      "--json-schema",
+      JSON.stringify(JUDGE_SCHEMA),
+      "--no-session-persistence",
+    ],
+    { cwd: runDir, stdout: "pipe", stderr: "pipe", timeout: JUDGE_TIMEOUT_MS },
+  );
+  const [stdout, stderr, exitCode] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text(), child.exited]);
+  writeFileSync(path.join(runDir, "output.json"), stdout);
+  if (stderr) writeFileSync(path.join(runDir, "stderr.txt"), stderr);
+  if (exitCode !== 0) throw new Error(`The judge exited with ${exitCode}: ${stderr.slice(0, 500)}`);
+  const output = JSON.parse(stdout);
+  const answer = output.structured_output;
+  if (output.is_error || !answer) throw new Error(`The judge gave no answer: ${String(output.result).slice(0, 500)}`);
+  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful, costUsd: output.total_cost_usd, turns: output.num_turns };
+}
