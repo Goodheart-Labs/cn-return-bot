@@ -111,6 +111,7 @@ interface ReviewedDraft {
   passage: string;
   note: string;
   status: string;
+  review_note: string | null;
   item: { url: string; title: string | null };
 }
 interface ReviewEvent {
@@ -126,25 +127,22 @@ interface ReviewEvent {
 const VERDICT_WORDS: Record<string, string> = { approved: "approved", disapproved: "disapproved", rejected: "rejected", deleted: "deleted from the site" };
 
 /** One entry per reviewer step that teaches something: an approval, a
- *  disapproval or a deletion with the reviewer's explanation, and a rewrite
+ *  disapproval or a deletion with the reviewers' shared note, and a rewrite
  *  with the message that asked for it. */
 async function reviewDecisions(): Promise<string[]> {
   const events = (
     await fetchAllRows<ReviewEvent & { id: number }>(
-      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", [...Object.keys(VERDICT_WORDS), "explained", "rewritten", "message"]).not("draft_id", "is", null),
+      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", [...Object.keys(VERDICT_WORDS), "rewritten", "message"]).not("draft_id", "is", null),
       "id",
     )
   ).sort((a, b) => a.id - b.id);
   const draftIds = [...new Set(events.map((e) => e.draft_id))];
   const drafts = await fetchInBatches<ReviewedDraft>(
-    (chunk) => db.from("everything_claude_drafts").select("id, passage, note, status, item:everything_items(url, title)").in("id", chunk),
+    (chunk) => db.from("everything_claude_drafts").select("id, passage, note, status, review_note, item:everything_items(url, title)").in("id", chunk),
     draftIds,
     "id",
   );
   const draftById = new Map(drafts.map((d) => [d.id, d]));
-  // A reviewer explains a vote after casting it, so the last explanation of
-  // each reviewer on each draft is looked up before the entries are written.
-  const explanation = new Map(events.filter((e) => e.type === "explained").map((e) => [`${e.draft_id}:${e.actor}`, e.data.text ?? ""]));
   let lastMessage = new Map<string, ReviewEvent>();
   const entries: string[] = [];
   for (const e of events) {
@@ -153,8 +151,9 @@ async function reviewDecisions(): Promise<string[]> {
     const claim = { claim: d.passage, context_quote: d.passage, item: d.item };
     if (e.type === "message") lastMessage = new Map(lastMessage).set(e.draft_id, e);
     else if (VERDICT_WORDS[e.type]) {
-      const reason = e.data.reason || explanation.get(`${e.draft_id}:${e.actor}`);
-      entries.push(noteSection(`${PERSON[e.actor]} ${VERDICT_WORDS[e.type]} (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, reason ? `\n${PERSON[e.actor]}'s reason: ${reason}` : ""));
+      // Jim's and Nathan's shared note on the draft says why it is good or bad.
+      const reason = e.data.reason || d.review_note;
+      entries.push(noteSection(`${PERSON[e.actor]} ${VERDICT_WORDS[e.type]} (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, reason ? `\nThe reviewers' note: ${reason}` : ""));
     } else if (e.type === "rewritten") {
       const previous = e.data.previous_note ?? e.data.previousNote;
       const asked = lastMessage.get(e.draft_id);

@@ -8,7 +8,7 @@
 -- That short state becomes 'posting' and shows under Not reviewed. Until the
 -- note writer runs the new code, it still saves drafts as
 -- 'awaiting_approval' for that moment, so both names are allowed here.
--- Migration 147 removes the old name and the setting once the new code runs.
+-- Migration 148 removes the old name and the setting once the new code runs.
 --
 -- The page also gets a filter by the reviewer whose vote decided, each card
 -- carries Jim's and Nathan's votes, and an explanation remembers the vote it

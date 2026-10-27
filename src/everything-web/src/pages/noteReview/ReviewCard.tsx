@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addToLeaderboard } from "@cn/core/bestNotes";
 import {
   deleteDraftNote,
-  explainVote,
   rewriteDraft,
   sendDraftMessage,
+  setReviewNote,
   skipDraft,
   type Reviewer,
   type ReviewDraft,
@@ -42,14 +42,11 @@ const NO_NOTE_LABELS: Record<Exclude<ReviewDraft["outcome"], "note">, string> = 
 };
 export const PERSON: Record<Reviewer | "claude", string> = { jim: "Jim", nathan: "Nathan", claude: "Claude" };
 const REVIEWERS: Reviewer[] = ["jim", "nathan"];
-/** An old rejection, from before votes were the review, reads as the
- *  disapproval it became. */
-const VOTE_LABELS: Record<ReviewVote | "rejected", string> = { 1: "Helpful", 0: "Somewhat helpful", [-1]: "Not helpful", rejected: "Disapproved" };
-const VOTE_TONES: Record<ReviewVote | "rejected", string> = {
+const VOTE_LABELS: Record<ReviewVote, string> = { 1: "Helpful", 0: "Somewhat helpful", [-1]: "Not helpful" };
+const VOTE_TONES: Record<ReviewVote, string> = {
   1: "bg-positive-soft text-positive",
   0: "bg-caution-soft text-caution",
   [-1]: "bg-negative-soft text-negative",
-  rejected: "bg-negative-soft text-negative",
 };
 
 const isNote = (draft: ReviewDraft) => draft.status !== "not_a_note";
@@ -132,7 +129,7 @@ type Step =
   | { step: "delete" }
   | { step: "skip"; skip: boolean }
   | { step: "leaderboard" }
-  | { step: "explain"; text: string }
+  | { step: "reviewNote"; text: string }
   | { step: "message"; text: string };
 
 /** Steps that take the draft out of the section it is shown in. */
@@ -159,8 +156,8 @@ function useReviewStep(draft: ReviewDraft, view: ReviewView, onDone?: () => void
         await skipDraft(draft.id, step.skip);
       } else if (step.step === "leaderboard") {
         await addToLeaderboard(draft.noteId!);
-      } else if (step.step === "explain") {
-        await explainVote(draft.id, step.text);
+      } else if (step.step === "reviewNote") {
+        await setReviewNote(draft.id, step.text);
       } else {
         await sendDraftMessage(draft.id, step.text);
       }
@@ -191,45 +188,92 @@ function AsideHeading({ children }: { children: ReactNode }) {
   return <h3 className="font-semibold text-fg-secondary">{children}</h3>;
 }
 
-/** Each reviewer's vote with the explanations they gave for it. An
- *  explanation names the vote it explains, which can differ from the current
- *  one after a change of mind. Old rejections show as "Rejected". */
-function Reviews({ draft }: { draft: ReviewDraft }) {
-  const rows = REVIEWERS.flatMap((reviewer) => {
-    const vote = draft.reviewerVotes.find((v) => v.reviewer === reviewer)?.vote;
-    const explanations = draft.explanations.filter((e) => e.actor === reviewer);
-    const shownVote = vote ?? explanations.at(-1)?.vote ?? undefined;
-    return vote === undefined && explanations.length === 0 ? [] : [{ reviewer, shownVote, explanations }];
-  });
-  if (rows.length === 0) return null;
+/** Jim's and Nathan's votes on the note. */
+function Votes({ draft }: { draft: ReviewDraft }) {
+  if (draft.reviewerVotes.length === 0) return null;
+  return (
+    <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {REVIEWERS.flatMap((reviewer) => {
+        const vote = draft.reviewerVotes.find((v) => v.reviewer === reviewer)?.vote;
+        return vote === undefined
+          ? []
+          : [
+              <span key={reviewer} className="flex items-center gap-1.5">
+                <span className="font-medium text-fg-secondary">{PERSON[reviewer]}</span>
+                <span className={cn("rounded-full px-2 py-0.5 font-semibold", VOTE_TONES[vote])}>{VOTE_LABELS[vote]}</span>
+              </span>,
+            ];
+      })}
+    </p>
+  );
+}
+
+/** The box that edits the shared review note, both after a vote and from the
+ *  side column. It starts from the note as it is. */
+function ReviewNoteForm({ draft, view, placeholder, onClose }: { draft: ReviewDraft; view: ReviewView; placeholder: string; onClose: () => void }) {
+  const [text, setText] = useState(draft.reviewNote?.text ?? "");
+  const save = useReviewStep(draft, view, onClose);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    save.mutate({ step: "reviewNote", text });
+  };
+  return (
+    <form onSubmit={submit} className="space-y-2">
+      <Textarea className="w-full text-sm" rows={3} autoFocus placeholder={placeholder} value={text} onChange={(e) => setText(e.currentTarget.value)} />
+      <div className="flex items-center gap-2">
+        <Button type="submit" disabled={save.isPending || text.trim() === (draft.reviewNote?.text ?? "")}>
+          Save
+        </Button>
+        <Button type="button" variant="quiet" onClick={onClose}>
+          Cancel
+        </Button>
+        <ErrorText error={save.error} />
+      </div>
+    </form>
+  );
+}
+
+/** The votes, and Jim's and Nathan's one shared note on the card, which
+ *  either of them edits in place. */
+function Reviews({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) {
+  const [editing, setEditing] = useState(false);
+  const note = draft.reviewNote;
+  if (!note && draft.reviewerVotes.length === 0 && !view) return null;
   return (
     <section className="space-y-2">
-      <AsideHeading>Reviews</AsideHeading>
-      {rows.map(({ reviewer, shownVote, explanations }) => (
-        <div key={reviewer} className="space-y-1">
-          <p className="flex flex-wrap items-center gap-2">
-            <span className="font-medium text-fg-secondary">{PERSON[reviewer]}</span>
-            {shownVote !== undefined && shownVote !== null && (
-              <span className={cn("rounded-full px-2 py-0.5 font-semibold", VOTE_TONES[shownVote])}>{VOTE_LABELS[shownVote]}</span>
+      <AsideHeading>Our review</AsideHeading>
+      <Votes draft={draft} />
+      {editing && view ? (
+        <ReviewNoteForm draft={draft} view={view} placeholder="Why is this note good or bad?" onClose={() => setEditing(false)} />
+      ) : note ? (
+        <div className="space-y-0.5">
+          <p className="whitespace-pre-wrap text-fg-secondary">{note.text}</p>
+          <p>
+            Last changed by {PERSON[note.by]}
+            {view && (
+              <>
+                {" · "}
+                <Button variant="link" className="text-2xs" onClick={() => setEditing(true)}>
+                  Edit
+                </Button>
+              </>
             )}
           </p>
-          {explanations.map((e) => (
-            <p key={e.at}>
-              {e.vote !== null && e.vote !== "rejected" && e.vote !== shownVote && <span className="text-fg-muted">About an earlier {VOTE_LABELS[e.vote]} vote: </span>}
-              {e.text}
-            </p>
-          ))}
         </div>
-      ))}
+      ) : (
+        view && (
+          <Button variant="link" className="text-2xs" onClick={() => setEditing(true)}>
+            Add a note
+          </Button>
+        )
+      )}
     </section>
   );
 }
 
-const helpfulWord = (p: number) => (p >= 0.7 ? "Likely helpful" : p <= 0.4 ? "Likely not helpful" : "Could go either way");
-const impactfulWord = (p: number) => (p >= 0.3 ? "A leaderboard candidate" : p >= 0.15 ? "Possibly for the leaderboard" : "Unlikely for the leaderboard");
 const meterTone = (p: number, good: number, bad: number) => (p >= good ? "bg-positive-solid" : p <= bad ? "bg-negative-solid" : "bg-caution-solid");
 
-function Meter({ label, value, word, tone }: { label: string; value: number; word: string; tone: string }) {
+function Meter({ label, value, tone }: { label: string; value: number; tone: string }) {
   const percent = Math.round(value * 100);
   return (
     <div className="space-y-1">
@@ -240,7 +284,6 @@ function Meter({ label, value, word, tone }: { label: string; value: number; wor
       <div className="h-1 rounded-full bg-surface-muted" role="meter" aria-label={label} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
         <div className={cn("h-full rounded-full", tone)} style={{ width: `${percent}%` }} />
       </div>
-      <p>{word}</p>
     </div>
   );
 }
@@ -252,13 +295,12 @@ function Judge({ draft }: { draft: ReviewDraft }) {
   return (
     <section className="space-y-3">
       <AsideHeading>The judge's guess</AsideHeading>
-      <Meter label="Chance of a helpful rating" value={pHelpful} word={helpfulWord(pHelpful)} tone={meterTone(pHelpful, 0.7, 0.4)} />
-      <Meter label="Chance of the leaderboard" value={pImpactful} word={impactfulWord(pImpactful)} tone={meterTone(pImpactful, 0.3, 0.15)} />
+      <Meter label="Chance of a helpful rating" value={pHelpful} tone={meterTone(pHelpful, 0.7, 0.4)} />
+      <Meter label="Chance of the leaderboard" value={pImpactful} tone={meterTone(pImpactful, 0.3, 0.15)} />
       <details>
         <summary className="cursor-pointer">Why</summary>
         <p className="mt-1 whitespace-pre-wrap">{reasoning}</p>
       </details>
-      <p>A Claude's guess from the note alone. In tests it matched real ratings only weakly.</p>
     </section>
   );
 }
@@ -278,64 +320,30 @@ function EarlierVersions({ draft }: { draft: ReviewDraft }) {
   );
 }
 
-/** Reasoning longer than this many characters is cut off until opened. */
-const REASONING_PREVIEW_CHARS = 600;
-
-/** The note-writing agent's reasoning, shortened to a preview when it is long. */
+/** The note-writing agent's reasoning, closed until the reviewer opens it. */
 function AgentReasoning({ reasoning }: { reasoning: string }) {
-  const [full, setFull] = useState(false);
-  const long = reasoning.length > REASONING_PREVIEW_CHARS;
   return (
-    <section className="space-y-1">
-      <AsideHeading>The agent's reasoning</AsideHeading>
-      <p>{long && !full ? `${reasoning.slice(0, REASONING_PREVIEW_CHARS).trimEnd()}…` : reasoning}</p>
-      {long && (
-        <Button variant="link" className="text-2xs" onClick={() => setFull(!full)}>
-          {full ? "Show less" : "Show all"}
-        </Button>
-      )}
-    </section>
+    <details>
+      <summary className="cursor-pointer font-semibold text-fg-secondary">The agent's reasoning</summary>
+      <p className="mt-1">{reasoning}</p>
+    </details>
   );
 }
 
 /** What sits beside the card on a wide screen and under it on a narrow one:
  *  the reviews, the judge's guess, the agent's reasoning and the note's
  *  earlier texts. */
-function SideColumn({ draft, showJudge, extra }: { draft: ReviewDraft; showJudge: boolean; extra?: ReactNode }) {
+function SideColumn({ draft, view, extra }: { draft: ReviewDraft; view?: ReviewView; extra?: ReactNode }) {
   return (
     // The side column is set like the surrounding context on the card's other
     // side: small and muted, so the eye stays on the card.
     <div className="space-y-4 text-2xs text-fg-muted [overflow-wrap:anywhere]">
-      <Reviews draft={draft} />
-      {showJudge && <Judge draft={draft} />}
+      {isNote(draft) && <Reviews draft={draft} view={view} />}
+      {view && <Judge draft={draft} />}
       {isNote(draft) && <AgentReasoning reasoning={draft.reasoning} />}
       <EarlierVersions draft={draft} />
       {extra}
     </div>
-  );
-}
-
-/** The optional box under a note after the reviewer voted on it. */
-function ExplainBox({ draft, view, onClose }: { draft: ReviewDraft; view: ReviewView; onClose: () => void }) {
-  const [text, setText] = useState("");
-  const explain = useReviewStep(draft, view, onClose);
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    if (text.trim()) explain.mutate({ step: "explain", text: text.trim() });
-  };
-  return (
-    <form onSubmit={submit} className="space-y-2">
-      <Textarea className="w-full" rows={2} autoFocus placeholder="Optional: Explain your decision" value={text} onChange={(e) => setText(e.currentTarget.value)} />
-      <div className="flex items-center gap-2">
-        <Button type="submit" disabled={explain.isPending || !text.trim()}>
-          Submit
-        </Button>
-        <Button type="button" variant="quiet" onClick={onClose}>
-          Close
-        </Button>
-        <ErrorText error={explain.error} />
-      </div>
-    </form>
   );
 }
 
@@ -569,7 +577,7 @@ export function ReviewCard({ draft, liveNote, view, extra }: {
       paragraph={liveNote?.claim.context_paragraph ?? draft.contextParagraph}
       post={post}
       byline={<CardHeader draft={draft} />}
-      aside={<SideColumn draft={draft} showJudge={!!view} extra={extra} />}
+      aside={<SideColumn draft={draft} view={view} extra={extra} />}
     >
       <div className="space-y-4">
         {!isNote(draft) ? (
@@ -581,7 +589,7 @@ export function ReviewCard({ draft, liveNote, view, extra }: {
         ) : (
           <NoteBox note={draftAsNote(draft)} status="needs_ratings" sourcesOpen />
         )}
-        {view && explaining && <ExplainBox draft={draft} view={view} onClose={() => setExplaining(false)} />}
+        {view && explaining && <ReviewNoteForm draft={draft} view={view} placeholder="Optional: Explain your decision" onClose={() => setExplaining(false)} />}
         {view && isNote(draft) && draft.status !== "removed" && <Tools draft={draft} view={view} />}
       </div>
     </ClaimCard>

@@ -90,9 +90,9 @@ export interface ReviewDraft {
   reviewerVotes: { reviewer: Reviewer; vote: ReviewVote }[];
   /** Whether the reviewer reading the page skipped the draft. */
   skipped: boolean;
-  /** Explanations given after a vote, with the vote they explain, and reasons
-   *  of old rejections, oldest first. */
-  explanations: { at: string; actor: Reviewer; text: string; vote: ReviewVote | "rejected" | null }[];
+  /** Jim's and Nathan's shared note on why the note is good or bad, and who
+   *  changed it last. */
+  reviewNote: { text: string; by: Reviewer; at: string } | null;
   /** Earlier texts of the note, oldest first. */
   earlierVersions: { at: string; note: string; reason: string }[];
 }
@@ -137,7 +137,7 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     onLeaderboard: row.on_leaderboard!,
     reviewerVotes: row.reviewer_votes as unknown as ReviewDraft["reviewerVotes"],
     skipped: row.skipped!,
-    explanations: row.explanations as unknown as ReviewDraft["explanations"],
+    reviewNote: row.review_note ? { text: row.review_note, by: row.review_note_by as Reviewer, at: row.review_note_at! } : null,
     earlierVersions: row.earlier_versions as unknown as ReviewDraft["earlierVersions"],
   };
 }
@@ -201,9 +201,9 @@ export async function skipDraft(draftId: string, skip: boolean): Promise<void> {
   if (error) throw error;
 }
 
-/** Why the reviewer voted the way they did. */
-export async function explainVote(draftId: string, text: string): Promise<void> {
-  const { error } = await supabase.rpc("everything_claude_explain", { p_draft: draftId, p_text: text });
+/** Replaces the shared review note. An empty text clears it. */
+export async function setReviewNote(draftId: string, text: string): Promise<void> {
+  const { error } = await supabase.rpc("everything_claude_set_review_note", { p_draft: draftId, p_text: text });
   if (error) throw error;
 }
 

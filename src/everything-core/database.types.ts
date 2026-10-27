@@ -226,6 +226,9 @@ export type Database = {
           proposed_note: string | null
           proposed_sources: Json | null
           reasoning: string
+          review_note: string | null
+          review_note_at: string | null
+          review_note_by: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           sources: Json
@@ -249,6 +252,9 @@ export type Database = {
           proposed_note?: string | null
           proposed_sources?: Json | null
           reasoning: string
+          review_note?: string | null
+          review_note_at?: string | null
+          review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           sources?: Json
@@ -272,6 +278,9 @@ export type Database = {
           proposed_note?: string | null
           proposed_sources?: Json | null
           reasoning?: string
+          review_note?: string | null
+          review_note_at?: string | null
+          review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           sources?: Json
@@ -2710,9 +2719,9 @@ export type Database = {
         }
         Returns: number
       }
-      everything_claude_explain: {
-        Args: { p_draft: string; p_text: string }
-        Returns: undefined
+      everything_claude_has_reviewer_vote: {
+        Args: { p_note: string; p_sign: number }
+        Returns: boolean
       }
       everything_claude_in_section: {
         Args: {
@@ -2834,6 +2843,10 @@ export type Database = {
           p_video_timing?: Json
         }
         Returns: string
+      }
+      everything_claude_set_review_note: {
+        Args: { p_draft: string; p_text: string }
+        Returns: undefined
       }
       everything_claude_settle_verdict: {
         Args: { p_note: string }
@@ -3304,7 +3317,9 @@ export type Database = {
         on_leaderboard: boolean | null
         reviewer_votes: Json | null
         skipped: boolean | null
-        explanations: Json | null
+        review_note: string | null
+        review_note_by: string | null
+        review_note_at: string | null
         messages: Json | null
         earlier_versions: Json | null
       }

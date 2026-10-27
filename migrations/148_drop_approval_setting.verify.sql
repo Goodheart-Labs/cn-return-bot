@@ -1,7 +1,7 @@
--- Checks for migration 147, run after it against 147_drop_approval_setting.fixture.sql
+-- Checks for migration 148, run after it against 148_drop_approval_setting.fixture.sql
 -- (the commands are at the top of the fixture). The block ends by raising an
 -- error that carries every result, so nothing it wrote stays. Not reviewed
--- holds the two posting drafts and the open note nobody voted on.
+-- holds the two posting drafts; the open note has Nathan's vote.
 do $$
 declare
   jim uuid := '00000000-0000-0000-0000-00000000000a';
@@ -37,7 +37,7 @@ begin
   reset role;
   r := r || jsonb_build_object(
     'settings_change', (select writer = 'pipeline' and updated_by = 'jim' from everything_claude_settings),
-    'posting_counts_as_not_reviewed', s.unreviewed = 3
+    'posting_counts_as_not_reviewed', s.unreviewed = 2
   );
   r := r || jsonb_build_object('let_through', to_jsonb(let_through));
   raise exception 'RESULT %', r;
