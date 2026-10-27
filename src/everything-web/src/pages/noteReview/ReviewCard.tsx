@@ -42,7 +42,9 @@ const NO_NOTE_LABELS: Record<Exclude<ReviewDraft["outcome"], "note">, string> = 
 };
 export const PERSON: Record<Reviewer | "claude", string> = { jim: "Jim", nathan: "Nathan", claude: "Claude" };
 const REVIEWERS: Reviewer[] = ["jim", "nathan"];
-const VOTE_LABELS: Record<ReviewVote | "rejected", string> = { 1: "Helpful", 0: "Somewhat helpful", [-1]: "Not helpful", rejected: "Rejected" };
+/** An old rejection, from before votes were the review, reads as the
+ *  disapproval it became. */
+const VOTE_LABELS: Record<ReviewVote | "rejected", string> = { 1: "Helpful", 0: "Somewhat helpful", [-1]: "Not helpful", rejected: "Disapproved" };
 const VOTE_TONES: Record<ReviewVote | "rejected", string> = {
   1: "bg-positive-soft text-positive",
   0: "bg-caution-soft text-caution",
@@ -120,9 +122,9 @@ function CardHeader({ draft }: { draft: ReviewDraft }) {
   const chip = verdictChip(draft);
   return (
     <div className="space-y-1">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium text-fg-secondary">{draft.post.creator}</p>
-        {chip && <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
+      <div className="flex items-center justify-between gap-2">
+        <p className="min-w-0 truncate text-sm font-medium text-fg-secondary">{draft.post.creator}</p>
+        {chip && <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
       </div>
       <p className="text-xs text-fg-muted" title="The views count readers outside our team who were shown the notes on this post">
         {detailsLine(draft)}
@@ -219,7 +221,7 @@ function Reviews({ draft }: { draft: ReviewDraft }) {
           </p>
           {explanations.map((e) => (
             <p key={e.at} className="text-fg-secondary">
-              {e.vote !== null && e.vote !== shownVote && <span className="text-fg-muted">Explaining {VOTE_LABELS[e.vote]}: </span>}
+              {e.vote !== null && e.vote !== "rejected" && e.vote !== shownVote && <span className="text-fg-muted">About an earlier {VOTE_LABELS[e.vote]} vote: </span>}
               {e.text}
             </p>
           ))}
@@ -257,8 +259,8 @@ function Judge({ draft, shown }: { draft: ReviewDraft; shown: JudgeShown }) {
   return (
     <section className="space-y-3">
       <AsideHeading>The judge's guess</AsideHeading>
-      {shown.helpful && <Meter label="Rated helpful" value={pHelpful} word={helpfulWord(pHelpful)} tone={meterTone(pHelpful, 0.7, 0.4)} />}
-      {shown.impactful && <Meter label="Leaderboard" value={pImpactful} word={impactfulWord(pImpactful)} tone={meterTone(pImpactful, 0.3, 0.15)} />}
+      {shown.helpful && <Meter label="Chance of a helpful rating" value={pHelpful} word={helpfulWord(pHelpful)} tone={meterTone(pHelpful, 0.7, 0.4)} />}
+      {shown.impactful && <Meter label="Chance of the leaderboard" value={pImpactful} word={impactfulWord(pImpactful)} tone={meterTone(pImpactful, 0.3, 0.15)} />}
       <details className="text-sm text-fg-secondary">
         <summary className="cursor-pointer text-fg-muted">Why</summary>
         <p className="mt-1 whitespace-pre-wrap">{reasoning}</p>
@@ -283,6 +285,26 @@ function EarlierVersions({ draft }: { draft: ReviewDraft }) {
   );
 }
 
+/** Reasoning longer than this many characters is cut off until opened. */
+const REASONING_PREVIEW_CHARS = 420;
+
+/** The note-writing agent's reasoning, shortened to a preview when it is long. */
+function AgentReasoning({ reasoning }: { reasoning: string }) {
+  const [full, setFull] = useState(false);
+  const long = reasoning.length > REASONING_PREVIEW_CHARS;
+  return (
+    <section className="space-y-1">
+      <AsideHeading>The agent's reasoning</AsideHeading>
+      <p className="text-sm text-fg-secondary">{long && !full ? `${reasoning.slice(0, REASONING_PREVIEW_CHARS).trimEnd()}…` : reasoning}</p>
+      {long && (
+        <Button variant="link" className="text-xs" onClick={() => setFull(!full)}>
+          {full ? "Show less" : "Show all"}
+        </Button>
+      )}
+    </section>
+  );
+}
+
 /** What sits beside the card on a wide screen and under it on a narrow one:
  *  the reviews, the judge's guess, the agent's reasoning and the note's
  *  earlier texts. */
@@ -291,12 +313,7 @@ function SideColumn({ draft, judgeShown, extra }: { draft: ReviewDraft; judgeSho
     <div className="space-y-5 [overflow-wrap:anywhere]">
       <Reviews draft={draft} />
       {judgeShown && <Judge draft={draft} shown={judgeShown} />}
-      {isNote(draft) && (
-        <section className="space-y-1">
-          <AsideHeading>The agent's reasoning</AsideHeading>
-          <p className="text-sm text-fg-secondary">{draft.reasoning}</p>
-        </section>
-      )}
+      {isNote(draft) && <AgentReasoning reasoning={draft.reasoning} />}
       <EarlierVersions draft={draft} />
       {extra}
     </div>
@@ -394,8 +411,8 @@ function ImprovedVersion({ draft, view, onClose }: { draft: ReviewDraft; view: R
         <div className="space-y-1">
           <p className="text-xs text-fg-muted">{proposal ? "Sources of the proposal" : "The sources stay as they are"}</p>
           <ul className="space-y-0.5 text-xs">
-            {sources.map((s) => (
-              <li key={s.url} className="truncate">
+            {sources.map((s, i) => (
+              <li key={`${i}:${s.url}`} className="truncate">
                 <a href={s.url} target="_blank" rel="noreferrer" className="text-link hover:underline">
                   {s.url}
                 </a>
@@ -442,7 +459,7 @@ function MoreMenu({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   const canAddToLeaderboard = draft.status === "posted" && draft.verdict === "approved" && !draft.onLeaderboard;
   return (
     <div ref={ref} className="relative">
-      <IconButton label="More steps" onClick={() => (open ? close() : setOpen(true))}>
+      <IconButton label="More steps" onClick={() => (open ? close() : setOpen(true))} className="border border-line-strong text-fg-secondary">
         <MoreIcon size={18} aria-hidden />
       </IconButton>
       {open && (

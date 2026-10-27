@@ -132,10 +132,10 @@ function JudgeToggles({ judgeShown, onChange }: { judgeShown: JudgeShown; onChan
     <fieldset className="space-y-1 text-sm text-fg-secondary">
       <legend className="mb-1 text-xs font-semibold text-fg-muted">The judge's guesses on each card</legend>
       <Checkbox checked={judgeShown.helpful} onChange={(helpful) => onChange({ ...judgeShown, helpful })} className="[@media(pointer:coarse)]:min-h-10">
-        Rated helpful
+        Chance of a helpful rating
       </Checkbox>
       <Checkbox checked={judgeShown.impactful} onChange={(impactful) => onChange({ ...judgeShown, impactful })} className="[@media(pointer:coarse)]:min-h-10">
-        Leaderboard
+        Chance of the leaderboard
       </Checkbox>
     </fieldset>
   );
@@ -225,8 +225,11 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
   const settledNoteFilters = useSettledValue(noteFilters);
   const [decidedBy, setDecidedBy] = useStoredChoice(DECIDED_BY_KEY, DECIDED_BY, "anyone");
   const reviewedBy: Reviewer | null = DECIDED_SECTIONS.has(section) && decidedBy !== "anyone" ? decidedBy : null;
-  const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, ratings, reviewedBy]));
-  const filters = useMemo(() => ({ ...settledNoteFilters, ratings, reviewedBy, votedBefore }), [settledNoteFilters, ratings, reviewedBy, votedBefore]);
+  // A passage without a note has no crowd rating, so No note hides that
+  // filter and shows every draft.
+  const shownRatings = useMemo(() => (section === "no_note" ? [...CROWD_RATINGS] : ratings), [section, ratings]);
+  const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, shownRatings, reviewedBy]));
+  const filters = useMemo(() => ({ ...settledNoteFilters, ratings: shownRatings, reviewedBy, votedBefore }), [settledNoteFilters, shownRatings, reviewedBy, votedBefore]);
   const [judgeShown, setJudgeShown] = useStoredValue(JUDGE_SHOWN_KEY, parseJudgeShown, JSON.stringify);
   const view = useMemo(() => ({ section, filters }), [section, filters]);
   const summary = useReviewSummary(filters);
@@ -272,8 +275,8 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
             <SegmentedControl label="Decided by" options={DECIDED_BY_OPTIONS} value={decidedBy} onChange={setDecidedBy} />
           </div>
         )}
-        <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <RatingFilter ratings={ratings} onChange={setRatings} />
+        <div className="relative flex items-start gap-x-4">
+          <div className="min-w-0 flex-1">{section !== "no_note" && <RatingFilter ratings={ratings} onChange={setRatings} />}</div>
           {summary.data && (
             <NoteFiltersButton
               filters={noteFilters}

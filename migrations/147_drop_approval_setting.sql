@@ -1,4 +1,4 @@
--- 146: the approval step is gone for good (GOO-563). Apply this once the note
+-- 147: the approval step is gone for good (GOO-563). Apply this once the note
 -- writer on Nathan's ai-box runs the code of PR #635, which saves drafts as
 -- 'posting' and no longer reads the setting.
 

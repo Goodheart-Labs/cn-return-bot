@@ -2,6 +2,7 @@ import { useRef, useState, type ReactNode } from "react";
 import type { ClaimRef, FeedItemRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
 import { ContextParagraph } from "@cn/features/notes/ContextParagraph";
 import { ClaimContent, claimContent } from "./ClaimContent";
 
@@ -45,7 +46,15 @@ export function ClaimCard({ id, claim, paragraph, post, byline, aside, children 
   const cardColRef = useRef<HTMLDivElement>(null);
   const quoteInParagraph = claim.context_quote ?? claim.claim;
   return (
-    <div id={id} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
+    <div
+      id={id}
+      // With an aside, the aside gets the larger share of the space beside the
+      // card, because it holds running text and the paragraph only a quote.
+      className={cn(
+        "scroll-mt-4 xl:grid xl:gap-4 items-start",
+        aside ? "xl:grid-cols-[minmax(0,0.7fr)_minmax(0,40rem)_minmax(0,1.3fr)]" : "xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)]",
+      )}
+    >
       {paragraph && (
         <div className="hidden min-w-0 [overflow-wrap:anywhere] xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
