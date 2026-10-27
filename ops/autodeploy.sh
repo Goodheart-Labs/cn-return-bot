@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Pulls the repository and restarts the services, but only when there is
-# something new and the machine is idle. A systemd timer runs this every few
-# minutes as root; there is no push deploy from GitHub.
+# something new and the machine is idle. Once a day it also upgrades yt-dlp.
+# A systemd timer runs this every few minutes as root; there is no push deploy
+# from GitHub.
 #
 # The whole script lives inside main() so that bash has read all of it before
 # any of it runs. Without that, the reset --hard below would replace this very
 # file mid-execution and bash would continue reading the new version at the old
-# byte offset.
+# byte offset. For the same reason the exit sits on the line that calls
+# main(), so that bash never reads past that line once the file has changed.
 
 set -euo pipefail
 
@@ -20,7 +22,34 @@ SERVICE_USER="cnbot"
 # on 2026-09-28.
 UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch)
 
+# When yt-dlp was last upgraded. The file's modification time is the record.
+YT_DLP_UPGRADE_STAMP="/var/lib/cn-autodeploy/yt-dlp-upgraded"
+YT_DLP_UPGRADE_EVERY_MINUTES=1440
+
+# Whether no service has work in flight or waiting. A restart or an upgrade
+# kills the in-flight calls, and the callers do retry, but there is no reason
+# to make them when waiting a few minutes for the queue to drain avoids it. A
+# service that does not answer its health endpoint counts as idle, because the
+# update may be the fix for whatever is wrong with it.
+machine_is_idle() {
+  local secret port health
+  secret=$(grep -m1 '^SERVICE_AUTH_SECRET=' "$ENV_FILE" | cut -d= -f2-)
+  for port in "${CLAIM_CHECK_PORT:-8787}" "${EXTRACTION_PORT:-8788}"; do
+    if health=$(curl -fsS -m 5 -H "x-cn-service-key: $secret" "http://localhost:$port/health"); then
+      if ! echo "$health" | jq -e '.inFlight + .waiting == 0' > /dev/null; then
+        echo "busy on port $port"
+        return 1
+      fi
+    fi
+  done
+}
+
 main() {
+  deploy_new_code
+  upgrade_yt_dlp_once_a_day
+}
+
+deploy_new_code() {
   # Deploy whatever branch the checkout is on. Before the cutover PR merges
   # that is the feature branch; afterwards it is main.
   local branch
@@ -33,25 +62,12 @@ main() {
   here=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse HEAD)
   upstream=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse "origin/$branch")
   if [ "$here" = "$upstream" ]; then
-    exit 0
+    return 0
   fi
-
-  # Only restart an idle machine. A restart kills the in-flight calls, and the
-  # callers do retry, but there is no reason to make them when waiting a few
-  # minutes for the queue to drain avoids it. A service that does not answer
-  # its health endpoint counts as idle, because the update may be the fix for
-  # whatever is wrong with it.
-  local secret
-  secret=$(grep -m1 '^SERVICE_AUTH_SECRET=' "$ENV_FILE" | cut -d= -f2-)
-  local port health
-  for port in "${CLAIM_CHECK_PORT:-8787}" "${EXTRACTION_PORT:-8788}"; do
-    if health=$(curl -fsS -m 5 -H "x-cn-service-key: $secret" "http://localhost:$port/health"); then
-      if ! echo "$health" | jq -e '.inFlight + .waiting == 0' > /dev/null; then
-        echo "busy on port $port, deferring deploy of ${upstream:0:10}"
-        exit 0
-      fi
-    fi
-  done
+  if ! machine_is_idle; then
+    echo "deferring deploy of ${upstream:0:10}"
+    return 0
+  fi
 
   echo "deploying $branch ${upstream:0:10} (was ${here:0:10})"
   sudo -u "$SERVICE_USER" git -C "$REPO_DIR" reset --hard "origin/$branch"
@@ -76,4 +92,24 @@ main() {
   echo "deployed ${upstream:0:10}"
 }
 
-main "$@"
+# yt-dlp must follow YouTube's player, which changes every few weeks, and
+# yt-dlp ships a fix each time. GitHub Actions installs the newest yt-dlp on
+# every run, so this keeps the services machine about as current. Until
+# GOO-603 the machine kept the version it was set up with. A failed upgrade
+# fails this unit, after the deploy above has already happened, and it is
+# tried again on the next tick.
+upgrade_yt_dlp_once_a_day() {
+  if [ -n "$(find "$YT_DLP_UPGRADE_STAMP" -mmin "-$YT_DLP_UPGRADE_EVERY_MINUTES" 2> /dev/null)" ]; then
+    return 0
+  fi
+  if ! machine_is_idle; then
+    echo "deferring the yt-dlp upgrade"
+    return 0
+  fi
+  sudo -u "$SERVICE_USER" bash -c 'PIPX_HOME=~/.local/pipx PIPX_BIN_DIR=~/.local/bin pipx upgrade yt-dlp'
+  mkdir -p "$(dirname "$YT_DLP_UPGRADE_STAMP")"
+  touch "$YT_DLP_UPGRADE_STAMP"
+  echo "yt-dlp is at $(sudo -u "$SERVICE_USER" /home/$SERVICE_USER/.local/bin/yt-dlp --version)"
+}
+
+main "$@"; exit

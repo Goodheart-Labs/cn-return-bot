@@ -17,6 +17,10 @@ import { proxyArgs, runYtDlp } from "./ytDlpDownload";
 /** How much of yt-dlp's complaint goes into an error message. */
 const MAX_REASON_LENGTH = 200;
 
+/** How much of yt-dlp's warnings goes into the explanation of a missing
+ *  transcript. A few warnings fit, and a flood of them does not fill the log. */
+const MAX_WARNINGS_LENGTH = 600;
+
 /** YouTube could not be reached, as opposed to YouTube answering that the
  *  video has no captions. The caller must treat this as a network failure:
  *  retry later, never record it as a fact about the video. Before GOO-169
@@ -163,28 +167,47 @@ export function chooseCaptionTrack(tracks: CaptionTrack[], audioLanguage: string
   return tracks.filter((track) => !isMachineTranslation(track)).toSorted(byPreference)[0] ?? null;
 }
 
-/** Every caption track the video has, or none when YouTube answered and the
- *  video has no captions, or the news that YouTube shows the video only to
- *  signed-in adults. The addresses carry the PO token.
+/** The video's caption tracks, as yt-dlp's dump of its player response lists
+ *  them. The player response is what a YouTube player downloads before it
+ *  plays a video, and its list of caption tracks is the list a viewer's CC
+ *  button offers. */
+type CaptionListing =
+  | { kind: "tracks"; tracks: CaptionTrack[] }
+  | { kind: "none"; why: string }
+  | { kind: "age_restricted" };
+
+/** Every caption track the video has, or why there is none: YouTube answered
+ *  and listed no tracks, or YouTube shows the video only to signed-in adults.
+ *  The addresses carry the PO token.
  *
  *  Success is judged by the tracks in the dump and never by the warnings,
  *  because a call that got the tracks can still print "HTTP Error 429" for a
  *  page it did not need. A call that got no tracks and whose output says
  *  YouTube was not reached throws YoutubeUnreachableError, and the proxy
  *  wrapper runs it again on a fresh connection until its tries run out. */
-async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionTrack[] | "age_restricted"> {
+async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionListing> {
   return withResidentialProxy(
     video.url,
     async (proxyUrl) => {
       const { stdout, stderr } = await dumpVideoJson(video, proxyUrl);
       const tracks = stdout.trim() ? captionTracksFromDump(JSON.parse(stdout)) : [];
-      if (tracks.length) return tracks;
+      if (tracks.length) return { kind: "tracks", tracks };
       const answer = readTracklessAnswer(stderr);
       if (answer.kind === "unreachable") throw new YoutubeUnreachableError(video.url, answer.line.trim().slice(0, MAX_REASON_LENGTH));
-      return answer.kind === "age_restricted" ? "age_restricted" : [];
+      return answer.kind === "age_restricted" ? answer : { kind: "none", why: `YouTube listed no caption tracks${ytDlpWarnings(stderr)}` };
     },
     (err) => err instanceof YoutubeUnreachableError,
   );
+}
+
+/** yt-dlp's complaints, quoted after a sentence that explains a missing
+ *  transcript, or nothing when yt-dlp printed none. On 2026-10-27 the CNN
+ *  videos without served captions printed only warnings about video formats
+ *  (GOO-603). Quoting them anyway means a new complaint from yt-dlp shows up
+ *  in the run log the first time it happens. */
+function ytDlpWarnings(stderr: string): string {
+  const complaints = hideProxyAddress(stderr).split("\n").map((line) => line.trim()).filter(Boolean).join(" | ");
+  return complaints ? `. yt-dlp said: ${complaints.slice(0, MAX_WARNINGS_LENGTH)}` : "";
 }
 
 /** What a dump without caption tracks means, read from yt-dlp's complaints:
@@ -209,8 +232,9 @@ async function downloadCaptionFile(videoUrl: string, track: CaptionTrack): Promi
 /** What YouTube answered about a video's captions. */
 export type YoutubeCaptions =
   | { kind: "captions"; cues: SubtitleCue[] }
-  /** The video has no captions in its own language. */
-  | { kind: "none" }
+  /** The video has no captions in its own language. `why` says which step
+   *  found none, for the run log. */
+  | { kind: "none"; why: string }
   /** YouTube shows the video only to signed-in adults. */
   | { kind: "age_restricted" };
 
@@ -221,12 +245,12 @@ export type YoutubeCaptions =
  * video without captions (GOO-169).
  */
 export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<YoutubeCaptions> {
-  const tracks = await listCaptionTracks(video);
-  if (tracks === "age_restricted") return { kind: "age_restricted" };
-  const track = chooseCaptionTrack(tracks, video.audioLanguage);
-  if (!track) return { kind: "none" };
+  const listing = await listCaptionTracks(video);
+  if (listing.kind !== "tracks") return listing;
+  const track = chooseCaptionTrack(listing.tracks, video.audioLanguage);
+  if (!track) return { kind: "none", why: `YouTube listed only machine translations (${listing.tracks.map((t) => t.code).join(", ")})` };
   const cues = parseSubtitleToCues(await downloadCaptionFile(video.url, track));
-  return cues.length ? { kind: "captions", cues } : { kind: "none" };
+  return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
 }
 
 export interface SubtitleCue {
