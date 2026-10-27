@@ -2,7 +2,8 @@
 # dependencies = ["requests", "python-dotenv", "supabase"]
 # ///
 """Step 3 of the X Claude examples (GOO-527, GOO-614): count the ratings of the
-100 chosen notes.
+candidate notes. It counts all candidates, so it can run before step 2 has
+chosen the 100 examples among them.
 
 It streams every ratings partition of the public dump, about 40 GB in all, one
 at a time, and deletes each after scanning it. For each note it counts the
@@ -28,8 +29,8 @@ OUT_PATH = HERE / "ratings.json"
 
 
 def main() -> None:
-    examples = [json.loads(line) for line in (HERE / "examples.jsonl").read_text().splitlines() if line]
-    aggregates = fr.aggregate_ratings({e["note_id"] for e in examples}, stream=True)
+    candidates = [json.loads(line) for line in (HERE / "candidates.jsonl").read_text().splitlines() if line]
+    aggregates = fr.aggregate_ratings({c["note_id"] for c in candidates}, stream=True)
     ratings = {
         note_id: {
             "helpful": agg["helpful_count"],
@@ -41,7 +42,7 @@ def main() -> None:
         for note_id, agg in aggregates.items()
     }
     OUT_PATH.write_text(json.dumps(ratings, indent=1))
-    print(f"[out] ratings for {len(ratings)} of {len(examples)} notes -> {OUT_PATH}")
+    print(f"[out] ratings for {len(ratings)} of {len(candidates)} notes -> {OUT_PATH}")
 
 
 if __name__ == "__main__":
