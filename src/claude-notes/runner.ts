@@ -37,14 +37,17 @@ import { readUsage, type UsageReading } from "./usage";
 const REPO = path.resolve(import.meta.dir, "../..");
 const POLL_MS = 30_000;
 /** Posts in progress at once. The queue puts reader requests first, so a
- *  request takes the next free slot. The walk gives Claude only as many feed
- *  posts as posts_in_flight, so this limit is rarely reached. */
+ *  request takes the next free slot. The feed run spaces Claude's feed posts
+ *  by the weekly usage (src/everything/usagePacing.ts), so this limit is
+ *  rarely reached. */
 const MAX_POSTS_RUNNING = 5;
 /** An item the runner has not started this long after it first saw it goes to
  *  the pipeline. That is the backup for when Claude cannot run: the box is
  *  paused, Nathan's week is nearly used up, or something is broken. */
 const HAND_BACK_AFTER_MS = 30 * 60_000;
-/** Above this share of Nathan's weekly limit no new post is started. */
+/** Above this share of Nathan's weekly limit no new post is started. The feed
+ *  run already stops giving Claude feed posts at 80% (usagePacing.ts), so this
+ *  stop holds back mainly reader requests, which Claude takes without pacing. */
 const MAX_WEEKLY_USAGE_PERCENT = 90;
 /** The usage endpoint is rate limited, and Nathan's pacer reads it too. */
 const USAGE_READ_EVERY_MS = 5 * 60_000;

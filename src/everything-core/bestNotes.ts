@@ -1,5 +1,6 @@
 import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
+import type { ProjectHeader } from "./types";
 
 /* The admins' curation of the best notes (migrations 136 to 138). Claude
  * keeps a ranked list of recommendations, and the admins build their own
@@ -29,12 +30,31 @@ export interface CuratedNoteRow {
 /** What the position helpers need of a row: which note, and where it sits. */
 type Positioned = Pick<CuratedNoteRow, "note_id" | "position">;
 
-/** A recommendation an admin removed, with the reason they gave. */
-export interface RemovedRecommendation {
+/** One note of a curation section as the page shows it. A list entry has a
+ *  position and may have a comment. A leaderboard entry may have been posted
+ *  on X. A removed recommendation has the time and the reason of its removal.
+ *  `sort_key` is the section's order, which the next page starts after. */
+export interface CurationRow {
   note_id: string;
-  removed_at: string;
+  sort_key: number;
+  position: number | null;
+  comment: string | null;
+  posted_at: string | null;
+  removed_at: string | null;
   removed_reason: string | null;
 }
+
+/** How a section is narrowed: to one creator, to leaderboard notes not yet
+ *  posted on X, or to notes the admin had not voted on before `votedBefore`. */
+export interface CurationFilters {
+  projectSlug: string | null;
+  notPostedOnly: boolean;
+  unvotedOnly: boolean;
+  votedBefore: Date;
+}
+
+/** How many notes one page of a section holds. */
+export const CURATION_PAGE_SIZE = 30;
 
 const TABLE: Record<CurationList, "everything_note_recommendations" | "everything_best_notes"> = {
   recommendations: "everything_note_recommendations",
@@ -79,37 +99,59 @@ export function positionAfterMove(list: Positioned[], movedId: string, above: st
   return positionBetween(undefined, undefined);
 }
 
-/** The position that puts a note at the given rank (1 is the top) of a list
- *  that does not contain it. A rank past the end means the end. */
-export function positionAtRank(list: Positioned[], rank: number): number {
-  const index = Math.min(Math.max(rank - 1, 0), list.length);
-  return positionBetween(list[index - 1]?.position, list[index]?.position);
+/** The position that puts a note at the given rank (1 is the top) of the
+ *  leaderboard, which holds `size` notes and not this one. A rank past the end
+ *  means the end. Only the two notes on either side of that place are read. */
+export async function fetchLeaderboardPositionAtRank(rank: number, size: number): Promise<number> {
+  const index = Math.min(Math.max(rank - 1, 0), size);
+  if (index === 0) {
+    const { data, error } = await supabase.from(TABLE.leaderboard).select("position").order("position").limit(1);
+    if (error) throw new Error(`could not read the leaderboard: ${error.message}`);
+    return positionBetween(undefined, data[0]?.position);
+  }
+  const { data, error } = await supabase.from(TABLE.leaderboard).select("position").order("position").range(index - 1, index);
+  if (error) throw new Error(`could not read the leaderboard: ${error.message}`);
+  return positionBetween(data[0]?.position, data[1]?.position);
 }
 
-/** One list, best note first. Recommendations that were moved or removed are
- *  left out. */
-export async function fetchCuratedList(list: CurationList): Promise<CuratedNoteRow[]> {
-  const rows =
-    list === "leaderboard"
-      ? await fetchAllRows<CuratedNoteRow>(() => supabase.from(TABLE.leaderboard).select("note_id, position, comment, posted_at"), "note_id", { label: list })
-      : (
-          await fetchAllRows<Omit<CuratedNoteRow, "posted_at">>(
-            () => supabase.from(TABLE.recommendations).select("note_id, position, comment").is("moved_at", null).is("removed_at", null),
-            "note_id",
-            { label: list },
-          )
-        ).map((row) => ({ ...row, posted_at: null }));
+/** The whole leaderboard, best note first. Only the reorder mode reads it, to
+ *  let an admin drag a note to any place. */
+export async function fetchLeaderboard(): Promise<CuratedNoteRow[]> {
+  const rows = await fetchAllRows<CuratedNoteRow>(() => supabase.from(TABLE.leaderboard).select("note_id, position, comment, posted_at"), "note_id", { label: "leaderboard" });
   return rows.sort((a, b) => a.position - b.position);
 }
 
-/** The recommendations admins removed, the most recent first. */
-export async function fetchRemovedRecommendations(): Promise<RemovedRecommendation[]> {
-  const rows = await fetchAllRows<RemovedRecommendation>(
-    () => supabase.from("everything_note_recommendations").select("note_id, removed_at, removed_reason").not("removed_at", "is", null),
-    "note_id",
-    { label: "removedRecommendations" },
-  );
-  return rows.sort((a, b) => b.removed_at.localeCompare(a.removed_at));
+/** One page of a section, starting after the row `after` (migration 141). A
+ *  note that was deleted or hidden is left out. */
+export async function fetchCurationPage(section: CurationSection, filters: CurationFilters, after: CurationRow | null): Promise<CurationRow[]> {
+  const { data, error } = await supabase.rpc("everything_curation_page", {
+    p_section: section,
+    p_project_slug: filters.projectSlug ?? undefined,
+    p_not_posted_only: filters.notPostedOnly,
+    p_unvoted_only: filters.unvotedOnly,
+    p_voted_before: filters.votedBefore.toISOString(),
+    p_after_key: after?.sort_key,
+    p_after_note_id: after?.note_id,
+    p_limit: CURATION_PAGE_SIZE,
+  });
+  if (error) throw new Error(`could not load the curation: ${error.message}`);
+  return data;
+}
+
+/** A creator with notes in a section, and how many. */
+export type CurationCreator = ProjectHeader & { count: number };
+
+/** What the curation sidebar shows: how many notes each section holds, and
+ *  the creators of the open section, the most notes first. */
+export interface CurationSummary {
+  counts: Record<CurationSection, number>;
+  creators: CurationCreator[];
+}
+
+export async function fetchCurationSummary(section: CurationSection): Promise<CurationSummary> {
+  const { data, error } = await supabase.rpc("everything_curation_summary", { p_section: section });
+  if (error) throw new Error(`could not load the curation: ${error.message}`);
+  return data as unknown as CurationSummary;
 }
 
 /** Writes one row's changed columns, and fails loudly when the database let
