@@ -424,6 +424,25 @@ export async function draftsToJudge(): Promise<string[]> {
     .map((d) => d.id);
 }
 
+/** The id of the newest entry of the log, where reading the posts after it
+ *  starts. */
+export async function latestEventId(): Promise<number> {
+  const { data, error } = await db().from("everything_claude_events").select("id").order("id", { ascending: false }).limit(1);
+  if (error) throw new Error(JSON.stringify(error));
+  return data[0]?.id ?? 0;
+}
+
+/** The notes posted after a log entry, oldest first. A replaced note is
+ *  posted anew, so its new text is among them. */
+export async function postedAfter(eventId: number): Promise<{ id: number; draftId: string }[]> {
+  const rows = await fetchAllRows<{ id: number; draft_id: string | null }>(
+    () => db().from("everything_claude_events").select("id, draft_id").eq("type", "posted").gt("id", eventId),
+    "id",
+    { label: "posted events" },
+  );
+  return rows.flatMap((r) => (r.draft_id ? [{ id: r.id, draftId: r.draft_id }] : [])).sort((a, b) => a.id - b.id);
+}
+
 /** A draft as the judge reads it. */
 export async function readJudgedNote(draftId: string): Promise<JudgedNote> {
   const d = unwrap(
