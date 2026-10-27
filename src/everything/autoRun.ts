@@ -181,7 +181,9 @@ async function processOneFeedItem(): Promise<FeedRunResult> {
   console.log(describePacing(nextRun, snapshot, FEED_BUDGET_USD));
   const claudeDueAt = await walkForNextPost(await logQueue(), claude);
   const ended = await processNextFeedItem();
-  if (ended === "empty") console.log("Nothing for the pipeline to process");
+  if (ended === "empty") {
+    console.log(`Nothing for the pipeline to process${claude?.writer === "claude" ? " · feed posts are left for Claude" : ""}`);
+  }
   return { ended, claudeDueAt };
 }
 
