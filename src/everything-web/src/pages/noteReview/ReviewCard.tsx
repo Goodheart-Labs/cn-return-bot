@@ -194,7 +194,7 @@ function ErrorText({ error }: { error: Error | null }) {
 
 /** A small heading over each part of the side column. */
 function AsideHeading({ children }: { children: ReactNode }) {
-  return <h3 className="text-xs font-semibold text-fg-secondary">{children}</h3>;
+  return <h3 className="font-semibold text-fg-secondary">{children}</h3>;
 }
 
 /** Each reviewer's vote with the explanations they gave for it. An
@@ -212,15 +212,15 @@ function Reviews({ draft }: { draft: ReviewDraft }) {
     <section className="space-y-2">
       <AsideHeading>Reviews</AsideHeading>
       {rows.map(({ reviewer, shownVote, explanations }) => (
-        <div key={reviewer} className="space-y-1 text-sm">
+        <div key={reviewer} className="space-y-1">
           <p className="flex flex-wrap items-center gap-2">
-            <span className="font-medium text-fg">{PERSON[reviewer]}</span>
+            <span className="font-medium text-fg-secondary">{PERSON[reviewer]}</span>
             {shownVote !== undefined && shownVote !== null && (
-              <span className={cn("rounded-full px-2 py-0.5 text-xs font-semibold", VOTE_TONES[shownVote])}>{VOTE_LABELS[shownVote]}</span>
+              <span className={cn("rounded-full px-2 py-0.5 font-semibold", VOTE_TONES[shownVote])}>{VOTE_LABELS[shownVote]}</span>
             )}
           </p>
           {explanations.map((e) => (
-            <p key={e.at} className="text-fg-secondary">
+            <p key={e.at}>
               {e.vote !== null && e.vote !== "rejected" && e.vote !== shownVote && <span className="text-fg-muted">About an earlier {VOTE_LABELS[e.vote]} vote: </span>}
               {e.text}
             </p>
@@ -239,14 +239,14 @@ function Meter({ label, value, word, tone }: { label: string; value: number; wor
   const percent = Math.round(value * 100);
   return (
     <div className="space-y-1">
-      <div className="flex items-baseline justify-between text-sm">
-        <span className="text-fg-secondary">{label}</span>
-        <span className="font-semibold tabular-nums text-fg">{percent}%</span>
+      <div className="flex items-baseline justify-between">
+        <span>{label}</span>
+        <span className="font-semibold tabular-nums text-fg-secondary">{percent}%</span>
       </div>
-      <div className="h-1.5 rounded-full bg-surface-muted" role="meter" aria-label={label} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
+      <div className="h-1 rounded-full bg-surface-muted" role="meter" aria-label={label} aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
         <div className={cn("h-full rounded-full", tone)} style={{ width: `${percent}%` }} />
       </div>
-      <p className="text-xs text-fg-muted">{word}</p>
+      <p>{word}</p>
     </div>
   );
 }
@@ -261,11 +261,11 @@ function Judge({ draft, shown }: { draft: ReviewDraft; shown: JudgeShown }) {
       <AsideHeading>The judge's guess</AsideHeading>
       {shown.helpful && <Meter label="Chance of a helpful rating" value={pHelpful} word={helpfulWord(pHelpful)} tone={meterTone(pHelpful, 0.7, 0.4)} />}
       {shown.impactful && <Meter label="Chance of the leaderboard" value={pImpactful} word={impactfulWord(pImpactful)} tone={meterTone(pImpactful, 0.3, 0.15)} />}
-      <details className="text-sm text-fg-secondary">
-        <summary className="cursor-pointer text-fg-muted">Why</summary>
+      <details>
+        <summary className="cursor-pointer">Why</summary>
         <p className="mt-1 whitespace-pre-wrap">{reasoning}</p>
       </details>
-      <p className="text-xs text-fg-muted">A Claude's guess from the note alone. In tests it matched real ratings only weakly.</p>
+      <p>A Claude's guess from the note alone. In tests it matched real ratings only weakly.</p>
     </section>
   );
 }
@@ -273,12 +273,12 @@ function Judge({ draft, shown }: { draft: ReviewDraft; shown: JudgeShown }) {
 function EarlierVersions({ draft }: { draft: ReviewDraft }) {
   if (draft.earlierVersions.length === 0) return null;
   return (
-    <details className="text-sm text-fg-secondary">
-      <summary className="cursor-pointer text-fg-muted">Earlier versions ({draft.earlierVersions.length})</summary>
+    <details>
+      <summary className="cursor-pointer">Earlier versions ({draft.earlierVersions.length})</summary>
       {draft.earlierVersions.map((v) => (
         <div key={v.at} className="mt-2 space-y-1 rounded-control bg-surface-muted px-3 py-2">
           <p className="whitespace-pre-wrap">{v.note}</p>
-          {v.reason && <p className="text-xs text-fg-muted">{v.reason}</p>}
+          {v.reason && <p>{v.reason}</p>}
         </div>
       ))}
     </details>
@@ -286,7 +286,7 @@ function EarlierVersions({ draft }: { draft: ReviewDraft }) {
 }
 
 /** Reasoning longer than this many characters is cut off until opened. */
-const REASONING_PREVIEW_CHARS = 420;
+const REASONING_PREVIEW_CHARS = 600;
 
 /** The note-writing agent's reasoning, shortened to a preview when it is long. */
 function AgentReasoning({ reasoning }: { reasoning: string }) {
@@ -295,9 +295,9 @@ function AgentReasoning({ reasoning }: { reasoning: string }) {
   return (
     <section className="space-y-1">
       <AsideHeading>The agent's reasoning</AsideHeading>
-      <p className="text-sm text-fg-secondary">{long && !full ? `${reasoning.slice(0, REASONING_PREVIEW_CHARS).trimEnd()}…` : reasoning}</p>
+      <p>{long && !full ? `${reasoning.slice(0, REASONING_PREVIEW_CHARS).trimEnd()}…` : reasoning}</p>
       {long && (
-        <Button variant="link" className="text-xs" onClick={() => setFull(!full)}>
+        <Button variant="link" className="text-2xs" onClick={() => setFull(!full)}>
           {full ? "Show less" : "Show all"}
         </Button>
       )}
@@ -310,7 +310,9 @@ function AgentReasoning({ reasoning }: { reasoning: string }) {
  *  earlier texts. */
 function SideColumn({ draft, judgeShown, extra }: { draft: ReviewDraft; judgeShown?: JudgeShown; extra?: ReactNode }) {
   return (
-    <div className="space-y-5 [overflow-wrap:anywhere]">
+    // The side column is set like the surrounding context on the card's other
+    // side: small and muted, so the eye stays on the card.
+    <div className="space-y-4 text-2xs text-fg-muted [overflow-wrap:anywhere]">
       <Reviews draft={draft} />
       {judgeShown && <Judge draft={draft} shown={judgeShown} />}
       {isNote(draft) && <AgentReasoning reasoning={draft.reasoning} />}
