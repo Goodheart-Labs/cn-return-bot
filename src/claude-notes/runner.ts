@@ -13,7 +13,7 @@
  * Usage: bun run claude-notes run */
 
 import { spawnSync } from "child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
 import {
@@ -253,13 +253,22 @@ async function warnAboutUnsavedNotes(run: Run & { item: QueueItem }, report: Rec
   await logEvent({ actor: "claude", type: "notes_unsaved", itemId: run.item.id, data: { reported, saved, runDir: run.runDir } });
 }
 
-/** After a restart, a post that is still taken either has its Claude still
- *  running, which the runner adopts, or lost it, and is taken again. */
+/** After a restart, a post that is still taken is in one of three states.
+ *  Its Claude is still running, and the runner adopts it. Its Claude finished
+ *  and wrote a report, but the runner died before it marked the item done; the
+ *  runner finishes it from that report, because running it again would post
+ *  its notes a second time. Or its Claude died without a report, and the post
+ *  is taken again. */
 async function adoptTakenPosts(taken: QueueItem[]) {
   for (const item of taken) {
     const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
     const runDir = runFolder(item.id);
-    if (tmuxAlive(session)) posts.set(item.id, { item, session, runDir, attempt: 1, startedAt: Date.now(), weeklyAtStart: null });
+    // The prompt file is written when the post's Claude starts.
+    const promptFile = path.join(runDir, "prompt.md");
+    const startedAt = existsSync(promptFile) ? statSync(promptFile).mtimeMs : Date.now();
+    const run = { item, session, runDir, attempt: 1, startedAt, weeklyAtStart: null };
+    if (tmuxAlive(session)) posts.set(item.id, run);
+    else if (readReport(runDir)) await endPost(run);
     else await startPost(item);
   }
 }
