@@ -11,10 +11,12 @@ import { SupabaseLogger } from "../../api/supabaseClient";
 import { beginTweetRun, finishTweetRun, type ProcessTweetResult } from "./processTweet";
 import { requestTweetCheck } from "../../service/client";
 import { STALE_TWEET_CUTOFF_HOURS, tweetAgeHours, type Candidate } from "./submitCandidates";
-import { createTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
+import { createTweetLog, nestDotKeys, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount } from "./utils/tweetSorting";
-import { getBotProbabilities, getForcedPicks } from "../ab-testing/abTests";
+import { getBotProbabilities, getForcedPicks, pickVariantName } from "../ab-testing/abTests";
+import { BOT_TEST } from "../ab-testing/abTestsData";
+import { CLAUDE_CODE_BOT, handTweetToClaude, PIPELINE_BOT } from "./claudeTweets";
 import type { MonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import { curateRegularFeedPosts, fillWithTopicPriority } from "../misinfo-monitoring/regularFeedTopicCuration";
 import type { MisinfoTopic } from "../misinfo-monitoring/topics";
@@ -341,10 +343,25 @@ export async function processPosts(
       // deadline, leaves a started-but-incomplete row, and the next run's
       // sweep and skip set are built on exactly those.
       const pipelineRunId = await beginTweetRun(supabaseLogger, item.post, commit);
+
+      // The bot is drawn here rather than on the service, because a tweet for
+      // the Claude Code note writer never reaches the pipeline. A curated-topic
+      // post always stays with the pipeline, which is the only bot that reads
+      // the topic's reference document.
+      const bot = item.monitoring ? PIPELINE_BOT : pickVariantName(BOT_TEST, perPostPicks.bot);
+      if (bot === CLAUDE_CODE_BOT) {
+        if (!supabaseLogger || !pipelineRunId) {
+          console.warn(`[${label}] ${item.post.id} drew Claude, but without a run row the ai-box cannot find it. Skipping it.`);
+          return;
+        }
+        const logs = nestDotKeys(Object.fromEntries(localLog));
+        await handTweetToClaude({ logger: supabaseLogger, runId: pipelineRunId, post: item.post, picks: { ...perPostPicks, bot }, logs });
+        return;
+      }
       const { output } = await requestTweetCheck({
         priority: "x",
         post: item.post,
-        picks: perPostPicks,
+        picks: { ...perPostPicks, bot },
         monitoring: item.monitoring,
       });
       for (const [key, value] of localLog) {

@@ -25,10 +25,14 @@ export interface ABTest {
   defaultVariant?: string;
 }
 
+// 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer on
+// Nathan's ai-box. The X run draws this test itself, and while the X share of
+// Nathan's Claude plan is used up it forces simple-bot (src/claude-notes/xShare.ts).
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
+    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 50 },
   ],
 };
 
