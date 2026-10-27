@@ -248,17 +248,11 @@ function Reviews({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) {
       ) : note ? (
         <div className="space-y-0.5">
           <p className="whitespace-pre-wrap text-fg-secondary">{note.text}</p>
-          <p>
-            Last changed by {PERSON[note.by]}
-            {view && (
-              <>
-                {" · "}
-                <Button variant="link" className="text-2xs" onClick={() => setEditing(true)}>
-                  Edit
-                </Button>
-              </>
-            )}
-          </p>
+          {view && (
+            <Button variant="link" className="text-2xs" onClick={() => setEditing(true)}>
+              Edit
+            </Button>
+          )}
         </div>
       ) : (
         view && (
