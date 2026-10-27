@@ -8,8 +8,9 @@ import { supabase } from "./supabase";
  * to the website's key.
  *
  * Since migration 143 (GOO-563) Jim's or Nathan's vote on a note is its
- * review: Helpful or Somewhat helpful approves it, Not helpful disapproves it,
- * wherever the vote is cast. A trigger on the votes table records it. */
+ * review: Helpful approves it and Not helpful disapproves it, wherever the
+ * vote is cast. Somewhat helpful decides nothing (migration 150). A trigger
+ * on the votes table records it. */
 
 /** The sidebar's sections, in its order. Skipped holds the notes the reviewer
  *  reading the page skipped and nobody reviewed yet. */
