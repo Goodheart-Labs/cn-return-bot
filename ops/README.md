@@ -137,6 +137,13 @@ when it drains; a service that does not answer health counts as idle, because
 the new commit may be the fix. So a merge to main is live within about five
 minutes of the machine going quiet.
 
+The same script upgrades yt-dlp once a day with `pipx upgrade`, also only on an
+idle machine, because yt-dlp needs a new release every time YouTube changes its
+player. The time of the last upgrade is the modification time of
+`/var/lib/cn-autodeploy/yt-dlp-upgraded`; delete that file to upgrade on the
+next tick. A failed upgrade fails the `cn-autodeploy` unit, which
+`journalctl -u cn-autodeploy` shows.
+
 The checkout tracks whichever branch it is on, which is `main`.
 
 ## Moving to a new machine
