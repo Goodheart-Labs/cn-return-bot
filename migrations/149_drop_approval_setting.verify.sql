@@ -1,4 +1,4 @@
--- Checks for migration 148, run after it against 148_drop_approval_setting.fixture.sql
+-- Checks for migration 149, run after it against 149_drop_approval_setting.fixture.sql
 -- (the commands are at the top of the fixture). The block ends by raising an
 -- error that carries every result, so nothing it wrote stays. Not reviewed
 -- holds the two posting drafts; the open note has Nathan's vote.
