@@ -389,7 +389,8 @@ function ImprovedVersion({ draft, view, onClose }: { draft: ReviewDraft; view: R
     setShownProposal(proposal.note);
     setNote(proposal.note);
   }
-  const sources = proposal?.sources ?? draft.sources;
+  // A note can quote one page several times, so each page is listed once.
+  const sourcePages = [...new Set((proposal?.sources ?? draft.sources).map((s) => s.url))];
   const unchanged = note === draft.note && !proposal;
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -404,14 +405,14 @@ function ImprovedVersion({ draft, view, onClose }: { draft: ReviewDraft; view: R
         </p>
       </div>
       <Textarea className="w-full" rows={4} value={note} onChange={(e) => setNote(e.currentTarget.value)} />
-      {sources.length > 0 && (
+      {sourcePages.length > 0 && (
         <div className="space-y-1">
           <p className="text-xs text-fg-muted">{proposal ? "Sources of the proposal" : "The sources stay as they are"}</p>
           <ul className="space-y-0.5 text-xs">
-            {sources.map((s, i) => (
-              <li key={`${i}:${s.url}`} className="truncate">
-                <a href={s.url} target="_blank" rel="noreferrer" className="text-link hover:underline">
-                  {s.url}
+            {sourcePages.map((url) => (
+              <li key={url} className="truncate">
+                <a href={url} target="_blank" rel="noreferrer" className="text-link hover:underline">
+                  {url}
                 </a>
               </li>
             ))}
