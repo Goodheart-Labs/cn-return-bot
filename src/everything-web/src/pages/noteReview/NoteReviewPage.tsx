@@ -132,7 +132,7 @@ function RatingFilter({ ratings, onChange }: { ratings: CrowdRating[]; onChange:
     <fieldset className="space-y-1 text-sm font-medium text-fg-secondary">
       <legend className="mb-1 text-xs font-semibold text-fg-muted">Crowd rating</legend>
       {CROWD_RATINGS.map((rating) => (
-        <span key={rating} title={RATING_TITLES[rating]}>
+        <span key={rating} title={RATING_TITLES[rating]} className="block">
           <Checkbox
             checked={ratings.includes(rating)}
             disabled={ratings.length === 1 && ratings.includes(rating)}
