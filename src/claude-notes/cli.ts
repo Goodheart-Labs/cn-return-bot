@@ -18,7 +18,7 @@
  *   posted-since <ISO time>       the notes Claude posted since then, newest first
  *   messages                      reviewer messages still waiting for an answer
  *   watch                         waits for reviewer messages, queued items or a due digest, prints it and exits
- *   answer <answer.json>          { draftId, reply, note?, sources?, passage? }
+ *   answer <answer.json>          { draftId, reply, note?, sources?, reason? }; a note is a proposal the reviewer posts
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
  *   examples                      regenerates the examples file from prod
@@ -38,8 +38,8 @@ import {
   type NewDraft,
   pipelineNotes,
   postedSince,
+  propose,
   readSettings,
-  rewrite,
   type SettingsChange,
   skipItem,
   unansweredMessages,
@@ -77,10 +77,10 @@ function parseSettingsArgs(list: string[]): { change: SettingsChange; by: Actor 
 }
 
 async function answer(file: string) {
-  const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; passage?: string; reason?: string } = readJson(file);
-  if (a.note) await rewrite(a.draftId, { note: a.note, sources: a.sources, passage: a.passage, reason: a.reason ?? a.reply });
+  const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; reason?: string } = readJson(file);
+  if (a.note) await propose(a.draftId, { note: a.note, sources: a.sources, reason: a.reason ?? a.reply });
   await answerMessage(a.draftId, a.reply);
-  console.log(a.note ? "Answered and rewrote the note" : "Answered");
+  console.log(a.note ? "Answered and proposed a new text" : "Answered");
 }
 
 /** How often `watch` looks for work. */

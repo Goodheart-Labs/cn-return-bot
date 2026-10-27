@@ -13,7 +13,8 @@
 
 import { appendFileSync } from "fs";
 import * as path from "path";
-import { judgePrompt, runJudge } from "./judge";
+import { runJudge } from "../../claude-notes/judge";
+import { judgePrompt } from "./judge";
 import { readDataset, readResults, resultsPath, splitForMode, type JudgeResult, type Mode } from "./dataFiles";
 
 /** Judges at once. Nathan's note writer shares the same weekly limit. */

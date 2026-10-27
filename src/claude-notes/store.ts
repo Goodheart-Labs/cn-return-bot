@@ -17,6 +17,7 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
+import type { JudgedNote, Judgement } from "./judge";
 
 export type Actor = "jim" | "nathan" | "claude";
 export type Writer = "pipeline" | "claude";
@@ -244,24 +245,20 @@ export async function readDraft(draftId: string): Promise<DraftRow> {
   return unwrap(await db().from("everything_claude_drafts").select("*").eq("id", draftId).single());
 }
 
-/** Claude replaces a draft's note text after a reviewer's message. A posted
- *  note is replaced on the site under the same account. A new passage gets
- *  its paragraph and video time worked out again. */
-export async function rewrite(draftId: string, change: { note: string; sources?: DraftSource[]; passage?: string; reason: string }): Promise<DraftRow> {
-  const place = change.passage ? await placeOfPassage((await readDraft(draftId)).item_id, change.passage) : null;
+/** Claude proposes a better text of a draft's note after a reviewer's
+ *  message. The review page shows it, and a reviewer posts it in place of the
+ *  note (migration 143). Without new sources the note's own are kept. */
+export async function propose(draftId: string, change: { note: string; sources?: DraftSource[]; reason: string }) {
+  const sources = change.sources ?? (await readDraft(draftId)).sources;
   check(
-    await db().rpc("everything_claude_rewrite", {
+    await db().rpc("everything_claude_propose", {
       p_draft: draftId,
       p_note: change.note,
+      p_sources: sources as unknown as Json,
       p_reason: change.reason,
-      p_sources: change.sources as unknown as Json,
-      p_passage: change.passage,
-      p_context_paragraph: place?.context_paragraph ?? undefined,
-      p_video_timing: place?.video_timing ?? undefined,
       p_actor: "claude",
     }),
   );
-  return readDraft(draftId);
 }
 
 /** Claude takes back a note it no longer stands behind. */
@@ -413,6 +410,56 @@ export async function postedSince(since: string) {
     "id",
     { label: "posted drafts" },
   ).then((rows) => rows.sort((a, b) => (a.created_at < b.created_at ? 1 : -1)));
+}
+
+// ---------------------------------------------------------------------------
+// The note judge's answers (GOO-591)
+// ---------------------------------------------------------------------------
+
+/** The notes on the site or waiting for approval whose current text the judge
+ *  has not answered for, newest first. A rewritten note is judged again. */
+export async function draftsToJudge(): Promise<string[]> {
+  const [drafts, judgements] = await Promise.all([
+    fetchAllRows<{ id: string; note: string; created_at: string }>(
+      () => db().from("everything_claude_drafts").select("id, note, created_at").eq("outcome", "note").in("status", ["posted", "awaiting_approval"]),
+      "id",
+      { label: "drafts to judge" },
+    ),
+    fetchAllRows<{ draft_id: string; note: string }>(() => db().from("everything_claude_judgements").select("draft_id, note"), "draft_id", { label: "judgements" }),
+  ]);
+  const judgedText = new Map(judgements.map((j) => [j.draft_id, j.note]));
+  return drafts
+    .filter((d) => judgedText.get(d.id) !== d.note)
+    .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+    .map((d) => d.id);
+}
+
+/** A draft as the judge reads it. */
+export async function readJudgedNote(draftId: string): Promise<JudgedNote> {
+  const d = unwrap(
+    await db()
+      .from("everything_claude_drafts")
+      .select("passage, context_paragraph, note, sources, item:everything_items(url, title, project:everything_projects(name))")
+      .eq("id", draftId)
+      .single(),
+  );
+  const item = d.item as unknown as { url: string; title: string | null; project: { name: string } | null };
+  return {
+    post: { title: item.title, url: item.url, creator: item.project?.name ?? null },
+    passage: d.passage,
+    contextParagraph: d.context_paragraph,
+    note: d.note,
+    sources: d.sources as unknown as DraftSource[],
+  };
+}
+
+/** Stores the judge's answer for the text it judged. */
+export async function saveJudgement(draftId: string, note: string, judgement: Judgement) {
+  check(
+    await db()
+      .from("everything_claude_judgements")
+      .upsert({ draft_id: draftId, note, p_helpful: judgement.pHelpful, p_impactful: judgement.pImpactful, reasoning: judgement.reasoning, judged_at: new Date().toISOString() }),
+  );
 }
 
 // ---------------------------------------------------------------------------
