@@ -3,13 +3,12 @@
 
 import { existsSync, readFileSync } from "fs";
 import * as path from "path";
-import type { JudgeExample } from "./judge";
+import { shuffled, type JudgeExample } from "../../claude-notes/judge";
 
 export const DATA_DIR = new URL("./data/", import.meta.url).pathname;
 export const DATASET_PATH = path.join(DATA_DIR, "dataset.json");
 
 export interface LabelledNote extends JudgeExample {
-  draftId: string;
   noteId: string | null;
   createdAt: string;
   /** Which part of the rule gave the label, for reading the results. */
@@ -49,23 +48,6 @@ export function readResults(mode: Mode): JudgeResult[] {
 /** The seed of the examples' order, so every run and every judge sees the
  *  same order. */
 const EXAMPLE_ORDER_SEED = 563;
-
-/** The same random order every time, from a seeded generator (mulberry32). */
-function shuffled<T>(items: T[], seed: number): T[] {
-  let state = seed;
-  const random = () => {
-    state = (state + 0x6d2b79f5) | 0;
-    let t = Math.imul(state ^ (state >>> 15), 1 | state);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 2 ** 32;
-  };
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [result[i], result[j]] = [result[j]!, result[i]!];
-  }
-  return result;
-}
 
 /** The examples the judge sees, and the notes it judges. The examples come in
  *  a fixed shuffled order. In the order they were written, all eleven oldest

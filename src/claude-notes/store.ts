@@ -17,7 +17,9 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
-import type { JudgedNote, Judgement } from "./judge";
+import { noteTally, type NoteTallyFields } from "../everything-core/noteBelief";
+import { noteStatus } from "../everything-core/noteScore";
+import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
 
 export type Actor = "jim" | "nathan" | "claude";
 export type Writer = "pipeline" | "claude";
@@ -441,6 +443,82 @@ export async function postedAfter(eventId: number): Promise<{ id: number; draftI
     { label: "posted events" },
   );
   return rows.flatMap((r) => (r.draft_id ? [{ id: r.id, draftId: r.draft_id }] : [])).sort((a, b) => a.id - b.id);
+}
+
+/** How many labelled notes the judge sees as examples. */
+const JUDGE_EXAMPLE_COUNT = 40;
+/** The seed of the examples' fixed shuffled order. In the order they were
+ *  written, labels come in runs, and a run of one label right before the note
+ *  to judge pulls the judge towards it. */
+const JUDGE_EXAMPLE_ORDER_SEED = 563;
+
+interface ExampleDraft {
+  id: string;
+  passage: string;
+  context_paragraph: string | null;
+  note: string;
+  sources: DraftSource[];
+  verdict: string | null;
+  review_note: string | null;
+  note_id: string | null;
+  created_at: string;
+  item: { url: string; title: string | null; project: { name: string } | null };
+}
+
+/** A note's label for the judge's examples. Jim's or Nathan's verdict decides.
+ *  Without one the crowd does: rated helpful or only upvotes is helpful, rated
+ *  not helpful or only downvotes is not helpful. The author's own automatic
+ *  vote does not count. Any other note has no label. */
+function exampleOutcome(draft: ExampleDraft, tally: NoteTallyFields | undefined): JudgeExample["outcome"] | null {
+  if (draft.verdict === "approved") return "helpful";
+  if (draft.verdict === "disapproved") return "not_helpful";
+  if (!tally) return null;
+  const status = noteStatus(tally);
+  if (status === "helpful" || status === "not_helpful") return status;
+  const votes = noteTally(tally);
+  const upvotes = votes.helpful + votes.somewhatHelpful;
+  if (upvotes > 0 && votes.notHelpful === 0) return "helpful";
+  if (votes.notHelpful > 0 && upvotes === 0) return "not_helpful";
+  return null;
+}
+
+/** The judge's examples: the newest labelled notes, in a fixed shuffled
+ *  order, each with the reviewers' note as its reason. */
+export async function judgeExamples(): Promise<JudgeExample[]> {
+  const drafts = await fetchAllRows<ExampleDraft>(
+    () =>
+      db()
+        .from("everything_claude_drafts")
+        .select("id, passage, context_paragraph, note, sources, verdict, review_note, note_id, created_at, item:everything_items(url, title, project:everything_projects(name))")
+        .eq("outcome", "note")
+        .in("status", ["posted", "removed"]),
+    "id",
+    { label: "judge example drafts" },
+  );
+  const tallies = await fetchInBatches<NoteTallyFields & { id: string }>(
+    (chunk) => db().from("everything_notes").select("id, helpful_count, somewhat_helpful_count, not_helpful_count, author_id").in("id", chunk),
+    drafts.flatMap((d) => (d.note_id ? [d.note_id] : [])),
+    "id",
+  );
+  const tallyById = new Map(tallies.map((t) => [t.id, t]));
+  const labelled = drafts
+    .flatMap((d) => {
+      const outcome = exampleOutcome(d, d.note_id ? tallyById.get(d.note_id) : undefined);
+      return outcome ? [{ draft: d, outcome }] : [];
+    })
+    .sort((a, b) => (a.draft.created_at < b.draft.created_at ? 1 : -1))
+    .slice(0, JUDGE_EXAMPLE_COUNT)
+    .map(({ draft: d, outcome }) => ({
+      draftId: d.id,
+      outcome,
+      reason: d.review_note,
+      post: { title: d.item.title, url: d.item.url, creator: d.item.project?.name ?? null },
+      passage: d.passage,
+      contextParagraph: d.context_paragraph,
+      note: d.note,
+      sources: d.sources,
+    }));
+  return shuffled(labelled, JUDGE_EXAMPLE_ORDER_SEED);
 }
 
 /** A draft as the judge reads it. */

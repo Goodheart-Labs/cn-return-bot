@@ -1,26 +1,9 @@
 /* The note judge experiment's prompts (GOO-588). The judge itself, and the
  * prompt that went into production, are in src/claude-notes/judge.ts. This
- * file adds what only the experiment used: the few-shot examples, and the
- * guidance of the last prompt we tried, Jim's flow chart (prompt 4 in
- * PROMPTS.md). */
+ * file adds what only the experiment used: the guidance of the last prompt we
+ * tried, Jim's flow chart (prompt 4 in PROMPTS.md). */
 
-import { JUDGE_INTRO, JUDGE_QUESTIONS, noteBlock, type JudgedNote } from "../../claude-notes/judge";
-
-/** A note whose outcome is known, shown to the judge as an example. */
-export interface JudgeExample extends JudgedNote {
-  outcome: "helpful" | "not_helpful";
-  /** Why a reviewer voted or rejected the way they did, when they said so. */
-  reason: string | null;
-}
-
-const OUTCOME_LABELS: Record<JudgeExample["outcome"], string> = { helpful: "Helpful", not_helpful: "Not helpful" };
-
-function examplesBlock(examples: JudgeExample[]): string {
-  const entries = examples.map((e, i) =>
-    [`### Example ${i + 1}: ${OUTCOME_LABELS[e.outcome]}`, noteBlock(e, false), ...(e.reason ? ["", `Reviewer's reason: ${e.reason}`] : [])].join("\n"),
-  );
-  return ["Here are earlier notes and how they were judged.", "", ...entries].join("\n\n");
-}
+import { examplesBlock, JUDGE_INTRO, JUDGE_QUESTIONS, noteBlock, type JudgedNote, type JudgeExample } from "../../claude-notes/judge";
 
 export function judgePrompt(note: JudgedNote, examples: JudgeExample[] = []): string {
   return [
