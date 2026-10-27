@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CROWD_RATINGS, REVIEW_SECTIONS, type CrowdRating, type Reviewer, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
+import { CROWD_RATINGS, REVIEW_SECTIONS, type CrowdRating, type Reviewer, type ReviewDraft, type ReviewFilters, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
 import { NO_FILTERS } from "@cn/core/feedPages";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
@@ -73,6 +73,10 @@ const parseRatings = (stored: string | null): CrowdRating[] => {
     return [...CROWD_RATINGS];
   }
 };
+
+/** No filter at all. Without "only notes I haven't voted on" the moment is
+ *  never read. */
+const EVERY_DRAFT: ReviewFilters = { ...NO_FILTERS, ratings: [...CROWD_RATINGS], reviewedBy: null, votedBefore: new Date(0) };
 
 /** The section whose drafts wait for a reviewer gets a highlighted count. */
 const NEEDS_REVIEWER: ReviewSection = "unreviewed";
@@ -232,14 +236,18 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
   const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, shownRatings, reviewedBy]));
   const filters = useMemo(() => ({ ...settledNoteFilters, ratings: shownRatings, reviewedBy, votedBefore }), [settledNoteFilters, shownRatings, reviewedBy, votedBefore]);
   const view = useMemo(() => ({ section, filters }), [section, filters]);
+  // The sidebar counts every draft of each section, whatever the filters, so
+  // a section never looks emptier than it is. The Filters popover says how
+  // many notes of the open section pass the filters.
+  const totals = useReviewSummary(EVERY_DRAFT);
   const summary = useReviewSummary(filters);
   const sidebar = (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
       <div className="space-y-0.5 px-3">
         <h1 className="font-title text-lg font-bold text-fg">Note review</h1>
-        <WhoLine summary={summary.data} />
+        <WhoLine summary={totals.data} />
       </div>
-      <SectionList current={section} summary={summary.data} navigate={navigate} />
+      <SectionList current={section} summary={totals.data} navigate={navigate} />
     </div>
   );
   return (
@@ -247,13 +255,13 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
       <div className="mx-auto mb-6 max-w-[40rem] space-y-3 md:hidden">
         <div className="space-y-0.5">
           <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
-          <WhoLine summary={summary.data} />
+          <WhoLine summary={totals.data} />
         </div>
         <PhoneSectionMenu
           sections={REVIEW_SECTIONS}
           value={section}
           titles={SECTION_TITLES}
-          counts={summary.data?.counts}
+          counts={totals.data?.counts}
           onChange={(next) => navigate(sectionRoute(next))}
         />
       </div>
