@@ -121,12 +121,17 @@ interface ReviewEvent {
   data: Record<string, string>;
 }
 
+/** What each review step is called in an entry's heading. Since migration 143
+ *  a vote of Jim or Nathan is the review, and "rejected" is the old button. */
+const VERDICT_WORDS: Record<string, string> = { approved: "approved", disapproved: "disapproved", rejected: "rejected", deleted: "deleted from the site" };
+
 /** One entry per reviewer step that teaches something: an approval, a
- *  rejection with its reason, and a rewrite with the message that asked for it. */
+ *  disapproval or a deletion with the reviewer's explanation, and a rewrite
+ *  with the message that asked for it. */
 async function reviewDecisions(): Promise<string[]> {
   const events = (
     await fetchAllRows<ReviewEvent & { id: number }>(
-      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", ["approved", "rejected", "rewritten", "message"]).not("draft_id", "is", null),
+      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", [...Object.keys(VERDICT_WORDS), "explained", "rewritten", "message"]).not("draft_id", "is", null),
       "id",
     )
   ).sort((a, b) => a.id - b.id);
@@ -137,6 +142,9 @@ async function reviewDecisions(): Promise<string[]> {
     "id",
   );
   const draftById = new Map(drafts.map((d) => [d.id, d]));
+  // A reviewer explains a vote after casting it, so the last explanation of
+  // each reviewer on each draft is looked up before the entries are written.
+  const explanation = new Map(events.filter((e) => e.type === "explained").map((e) => [`${e.draft_id}:${e.actor}`, e.data.text ?? ""]));
   let lastMessage = new Map<string, ReviewEvent>();
   const entries: string[] = [];
   for (const e of events) {
@@ -144,10 +152,10 @@ async function reviewDecisions(): Promise<string[]> {
     if (!d) continue;
     const claim = { claim: d.passage, context_quote: d.passage, item: d.item };
     if (e.type === "message") lastMessage = new Map(lastMessage).set(e.draft_id, e);
-    else if (e.type === "approved") entries.push(noteSection(`${PERSON[e.actor]} approved (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note));
-    else if (e.type === "rejected")
-      entries.push(noteSection(`${PERSON[e.actor]} rejected (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, e.data.reason ? `\n${PERSON[e.actor]}'s reason: ${e.data.reason}` : ""));
-    else if (e.type === "rewritten") {
+    else if (VERDICT_WORDS[e.type]) {
+      const reason = e.data.reason || explanation.get(`${e.draft_id}:${e.actor}`);
+      entries.push(noteSection(`${PERSON[e.actor]} ${VERDICT_WORDS[e.type]} (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, reason ? `\n${PERSON[e.actor]}'s reason: ${reason}` : ""));
+    } else if (e.type === "rewritten") {
       const previous = e.data.previous_note ?? e.data.previousNote;
       const asked = lastMessage.get(e.draft_id);
       if (!previous || !asked) continue;
