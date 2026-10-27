@@ -245,6 +245,10 @@ X's notewriter page scrolls `document.documentElement`, not the window, and only
 - Supabase's API returns at most 1,000 rows per request and does not say when it cut a result short. Every read that can return more than a handful of rows goes through `fetchAllRows` or `fetchInBatches` in `src/everything-core/paging.ts`. That includes `rpc()` calls that return rows, and `.in()` lists longer than about 200 values, whose URL gets too long. Only `.single()`, `.maybeSingle()` and a deliberately small `.limit()` are safe without it. `fetchAllRows` pages by a unique key, so read its rules before using it: the query you hand it must not call `.order()`.
 - Community Notes reports `currentStatus` (overall) and `currentCoreStatus` (core model only, can be empty). Always use the overall status to decide whether a note is helpful. In our `notes` table that column is `cn_status`.
 
+## Checks
+
+The pre-commit hook runs gitleaks and `bun run check`: the three type checks on TypeScript 7, ESLint and knip, about 17 seconds. Do not run these yourself after a change or before a commit. Commit, and when the hook fails, fix what it reports and commit again. Run a check yourself only when you have a specific reason, for example to see a type error in the middle of a larger change. The unit tests (`bun test`) run in CI on every push.
+
 ## Running locally
 
 ```bash
