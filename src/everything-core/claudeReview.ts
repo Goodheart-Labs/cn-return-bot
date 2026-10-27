@@ -13,7 +13,7 @@ import { supabase } from "./supabase";
 
 /** The sidebar's sections, in its order. Skipped holds the notes the reviewer
  *  reading the page skipped and nobody reviewed yet. */
-export const REVIEW_SECTIONS = ["unreviewed", "waiting", "approved", "disapproved", "no_note", "skipped"] as const;
+export const REVIEW_SECTIONS = ["unreviewed", "approved", "disapproved", "no_note", "skipped"] as const;
 export type ReviewSection = (typeof REVIEW_SECTIONS)[number];
 export type Reviewer = "jim" | "nathan";
 
@@ -29,13 +29,17 @@ export type CrowdRating = (typeof CROWD_RATINGS)[number];
  *  reviewing never makes its card vanish. */
 export interface ReviewFilters extends NoteFilters {
   ratings: CrowdRating[];
+  /** Only the notes whose deciding vote is this reviewer's. */
+  reviewedBy: Reviewer | null;
   votedBefore: Date;
 }
+
+/** A vote of Jim or Nathan: 1 Helpful, 0 Somewhat helpful, -1 Not helpful. */
+export type ReviewVote = 1 | 0 | -1;
 
 export interface ReviewSummary {
   reviewer: Reviewer;
   writer: "pipeline" | "claude";
-  approvalRequired: boolean;
   counts: Record<ReviewSection, number>;
   /** The largest view and vote counts of any note, where the filter sliders end. */
   largest: NoteMinimums;
@@ -59,9 +63,10 @@ export interface ReviewDraft {
   note: string;
   reasoning: string;
   sources: ReviewDraftSource[];
-  /** Whether the note is on the site. A removed note was deleted from the
-   *  site or turned down while it waited for approval. */
-  status: "awaiting_approval" | "posted" | "removed" | "not_a_note";
+  /** Whether the note is on the site. A posting note was saved but its post
+   *  has not finished, or failed. A removed note was deleted from the site,
+   *  or rejected with the old buttons. */
+  status: "posting" | "posted" | "removed" | "not_a_note";
   /** The review, from Jim's or Nathan's last vote. */
   verdict: "approved" | "disapproved" | null;
   /** The live note on the website, while there is one. */
@@ -81,11 +86,13 @@ export interface ReviewDraft {
   /** The note judge's answer for the note's current text. */
   judge: { pHelpful: number; pImpactful: number; reasoning: string } | null;
   onLeaderboard: boolean;
+  /** Jim's and Nathan's votes on the live note, the oldest first. */
+  reviewerVotes: { reviewer: Reviewer; vote: ReviewVote }[];
   /** Whether the reviewer reading the page skipped the draft. */
   skipped: boolean;
-  /** Reasons of old rejections and explanations given after a vote, oldest
-   *  first. */
-  explanations: { at: string; actor: Reviewer; text: string }[];
+  /** Explanations given after a vote, with the vote they explain, and reasons
+   *  of old rejections, oldest first. */
+  explanations: { at: string; actor: Reviewer; text: string; vote: ReviewVote | "rejected" | null }[];
   /** Earlier texts of the note, oldest first. */
   earlierVersions: { at: string; note: string; reason: string }[];
 }
@@ -128,6 +135,7 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     proposal: row.proposed_note ? { note: row.proposed_note, sources: (row.proposed_sources ?? row.sources) as unknown as ReviewDraftSource[] } : null,
     judge: row.judge_p_helpful === null ? null : { pHelpful: row.judge_p_helpful, pImpactful: row.judge_p_impactful!, reasoning: row.judge_reasoning! },
     onLeaderboard: row.on_leaderboard!,
+    reviewerVotes: row.reviewer_votes as unknown as ReviewDraft["reviewerVotes"],
     skipped: row.skipped!,
     explanations: row.explanations as unknown as ReviewDraft["explanations"],
     earlierVersions: row.earlier_versions as unknown as ReviewDraft["earlierVersions"],
@@ -144,16 +152,16 @@ const filterArgs = (filters: ReviewFilters) => ({
   p_min_not_helpful: filters.notHelpful,
   p_unvoted_only: filters.unvotedOnly,
   p_voted_before: filters.votedBefore.toISOString(),
+  p_reviewed_by: filters.reviewedBy ?? undefined,
 });
 
 export async function fetchReviewSummary(filters: ReviewFilters): Promise<ReviewSummary> {
   const { data, error } = await supabase.rpc("everything_claude_review_summary", filterArgs(filters)).single();
   if (error) throw error;
-  const { reviewer, writer, approval_required, largest_views, largest_votes, largest_helpful, largest_not_helpful, ...counts } = data;
+  const { reviewer, writer, largest_views, largest_votes, largest_helpful, largest_not_helpful, ...counts } = data;
   return {
     reviewer: reviewer as Reviewer,
     writer: writer as ReviewSummary["writer"],
-    approvalRequired: approval_required,
     counts,
     largest: { views: largest_views, votes: largest_votes, helpful: largest_helpful, notHelpful: largest_not_helpful },
   };
@@ -180,17 +188,7 @@ export async function fetchReviewDrafts(ids: string[]): Promise<ReviewDraft[]> {
   return data.map(toReviewDraft);
 }
 
-/** A vote on a note that waits for approval. An upvote posts it as an AI note
- *  and returns its id, so the caller casts the vote on it. A Not helpful vote
- *  keeps it off the site and returns null. */
-export async function voteOnWaitingDraft(draftId: string, vote: number): Promise<string | null> {
-  const { data, error } = await supabase.rpc("everything_claude_vote_waiting", { p_draft: draftId, p_vote: vote });
-  if (error) throw error;
-  return data;
-}
-
-/** Deletes the note from the site, or turns down a note that waits for
- *  approval. Either way it counts as disapproved. */
+/** Deletes the note from the site. It then counts as disapproved. */
 export async function deleteDraftNote(draftId: string): Promise<void> {
   const { error } = await supabase.rpc("everything_claude_delete_note", { p_draft: draftId });
   if (error) throw error;
@@ -231,11 +229,5 @@ export async function rewriteDraft(
 /** A chat message to Claude about one draft. Claude answers within minutes. */
 export async function sendDraftMessage(draftId: string, text: string): Promise<void> {
   const { error } = await supabase.rpc("everything_claude_message", { p_draft: draftId, p_text: text });
-  if (error) throw error;
-}
-
-/** Whether Claude's new notes wait for an admin's approval before they go up. */
-export async function setApprovalRequired(required: boolean): Promise<void> {
-  const { error } = await supabase.rpc("everything_claude_change_settings", { p_approval_required: required });
   if (error) throw error;
 }

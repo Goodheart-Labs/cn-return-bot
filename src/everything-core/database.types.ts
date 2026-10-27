@@ -2769,6 +2769,7 @@ export type Database = {
           p_min_views?: number
           p_min_votes?: number
           p_ratings?: string[]
+          p_reviewed_by?: string
           p_section: string
           p_unvoted_only?: boolean
           p_voted_before?: string
@@ -2802,11 +2803,11 @@ export type Database = {
           p_min_views?: number
           p_min_votes?: number
           p_ratings?: string[]
+          p_reviewed_by?: string
           p_unvoted_only?: boolean
           p_voted_before?: string
         }
         Returns: {
-          approval_required: boolean
           approved: number
           disapproved: number
           largest_helpful: number
@@ -2817,7 +2818,6 @@ export type Database = {
           reviewer: string
           skipped: number
           unreviewed: number
-          waiting: number
           writer: string
         }[]
       }
@@ -2842,10 +2842,6 @@ export type Database = {
       everything_claude_skip: {
         Args: { p_actor?: string; p_draft: string; p_skip: boolean }
         Returns: undefined
-      }
-      everything_claude_vote_waiting: {
-        Args: { p_actor?: string; p_draft: string; p_vote: number }
-        Returns: string
       }
       everything_claude_withdraw: {
         Args: { p_actor?: string; p_draft: string; p_reason: string }
@@ -3306,6 +3302,7 @@ export type Database = {
         judge_p_impactful: number | null
         judge_reasoning: string | null
         on_leaderboard: boolean | null
+        reviewer_votes: Json | null
         skipped: boolean | null
         explanations: Json | null
         messages: Json | null

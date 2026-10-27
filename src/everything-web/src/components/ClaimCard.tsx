@@ -27,9 +27,10 @@ function ClaimImages({ urls }: { urls: string[] }) {
 
 /** A card about one claim: the claim in its source at the top, and below it
  *  whatever the page shows about the claim. On a wide screen the paragraph
- *  around the claim sits beside the card. On a narrow one it opens above the
- *  card behind a button. */
-export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
+ *  around the claim sits beside the card, and `aside` on its other side. On a
+ *  narrow one the paragraph opens above the card behind a button, and `aside`
+ *  follows the card's own content. */
+export function ClaimCard({ id, claim, paragraph, post, byline, aside, children }: {
   id?: string;
   claim: ClaimRef;
   /** The post's paragraph around the claim. It contains the claim's quote. */
@@ -37,6 +38,7 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
   post?: FeedItemRow;
   /** A line at the top of the card. */
   byline?: ReactNode;
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
@@ -76,7 +78,9 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
           <ClaimContent content={claimContent(claim, post)} />
         </div>
         {children}
+        {aside && <div className="mt-4 xl:hidden">{aside}</div>}
       </Card>
+      {aside && <div className="hidden min-w-0 xl:block xl:col-start-3 xl:row-start-1">{aside}</div>}
     </div>
   );
 }

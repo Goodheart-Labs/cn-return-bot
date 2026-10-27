@@ -41,7 +41,7 @@ export interface NewDraft {
 
 export type DraftRow = Database["public"]["Tables"]["everything_claude_drafts"]["Row"];
 export type EventRow = Database["public"]["Tables"]["everything_claude_events"]["Row"];
-export type Settings = { writer: Writer; approvalRequired: boolean; updatedAt: string; updatedBy: string };
+export type Settings = { writer: Writer; updatedAt: string; updatedBy: string };
 
 /** NathanpmYoung's account, whose notes on a post make Claude skip the post. */
 const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
@@ -82,20 +82,12 @@ export async function logEvent(event: { actor: Actor; type: string; draftId?: st
 }
 
 export async function readSettings(): Promise<Settings> {
-  const row = unwrap(await db().from("everything_claude_settings").select("writer, approval_required, updated_at, updated_by").single());
-  return { writer: row.writer as Writer, approvalRequired: row.approval_required, updatedAt: row.updated_at, updatedBy: row.updated_by };
+  const row = unwrap(await db().from("everything_claude_settings").select("writer, updated_at, updated_by").single());
+  return { writer: row.writer as Writer, updatedAt: row.updated_at, updatedBy: row.updated_by };
 }
 
-export type SettingsChange = { writer?: Writer; approvalRequired?: boolean };
-
-export async function changeSettings(actor: Actor, change: SettingsChange) {
-  check(
-    await db().rpc("everything_claude_change_settings", {
-      p_writer: change.writer,
-      p_approval_required: change.approvalRequired,
-      p_actor: actor,
-    }),
-  );
+export async function changeWriter(actor: Actor, writer: Writer) {
+  check(await db().rpc("everything_claude_change_settings", { p_writer: writer, p_actor: actor }));
 }
 
 // ---------------------------------------------------------------------------
@@ -197,7 +189,7 @@ async function personNoteOnPassage(itemId: string, passage: string): Promise<{ n
 }
 
 /** Saves what a note-finding agent found on one passage. A note is posted as
- *  an AI note at once, unless notes currently wait for approval. */
+ *  an AI note at once. */
 export async function addDraft(draft: NewDraft): Promise<DraftRow> {
   const covering = draft.outcome === "note" ? await personNoteOnPassage(draft.itemId, draft.passage) : null;
   if (covering) {
@@ -207,8 +199,6 @@ export async function addDraft(draft: NewDraft): Promise<DraftRow> {
       reasoning: `Not posted, because ${covering.author_name ?? "a person"} already wrote a note on this passage: "${covering.note}" ${draft.reasoning}`,
     };
   }
-  const { approvalRequired } = await readSettings();
-  const status = draft.outcome !== "note" ? "not_a_note" : approvalRequired ? "awaiting_approval" : "posted";
   const row = unwrap(
     await db()
       .from("everything_claude_drafts")
@@ -221,17 +211,17 @@ export async function addDraft(draft: NewDraft): Promise<DraftRow> {
         note: draft.note,
         reasoning: draft.reasoning,
         sources: draft.sources as unknown as Json,
-        // A note that goes up at once is saved as waiting, and posting it
-        // marks it posted. If posting fails, the note waits for approval
-        // instead of looking posted.
-        status: status === "posted" ? "awaiting_approval" : status,
+        // A note is saved as posting, and posting it marks it posted. If
+        // posting fails, the draft stays visible under Not reviewed instead
+        // of looking posted.
+        status: draft.outcome === "note" ? "posting" : "not_a_note",
         ...(await placeOfPassage(draft.itemId, draft.passage)),
       })
       .select("*")
       .single(),
   );
   await logEvent({ actor: "claude", type: "draft_written", draftId: row.id, itemId: row.item_id, data: { outcome: row.outcome, note: row.note } });
-  if (status !== "posted") return row;
+  if (draft.outcome !== "note") return row;
   await publishAsAi(row.id, "claude");
   return readDraft(row.id);
 }
@@ -416,12 +406,12 @@ export async function postedSince(since: string) {
 // The note judge's answers (GOO-591)
 // ---------------------------------------------------------------------------
 
-/** The notes on the site or waiting for approval whose current text the judge
- *  has not answered for, newest first. A rewritten note is judged again. */
+/** The notes on the site whose current text the judge has not answered for,
+ *  newest first. A rewritten note is judged again. */
 export async function draftsToJudge(): Promise<string[]> {
   const [drafts, judgements] = await Promise.all([
     fetchAllRows<{ id: string; note: string; created_at: string }>(
-      () => db().from("everything_claude_drafts").select("id, note, created_at").eq("outcome", "note").in("status", ["posted", "awaiting_approval"]),
+      () => db().from("everything_claude_drafts").select("id, note, created_at").eq("outcome", "note").eq("status", "posted"),
       "id",
       { label: "drafts to judge" },
     ),

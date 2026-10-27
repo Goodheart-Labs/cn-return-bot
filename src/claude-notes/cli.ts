@@ -5,10 +5,10 @@
  * everything_claude_events.
  *
  * Usage: bun run claude-notes <command> [arguments]
- *   settings [writer=pipeline|claude] [approval=on|off] [by=jim|nathan|claude]
+ *   settings [writer=pipeline|claude] [by=jim|nathan|claude]
  *   queue                         queued items Claude is working on or has not taken yet
  *   take <item id>                writes the post's text for the agents, logs the take
- *   draft <draft.json>            saves one draft; a note is posted unless approval is on
+ *   draft <draft.json>            saves one draft; a note is posted at once
  *   pipeline-notes <item id>      the pipeline's AI notes on a post, as JSON
  *   keep-pipeline-note <item id> <note id> <reason>
  *   delete-pipeline-note <item id> <note id> <reason>
@@ -29,7 +29,7 @@ import {
   addDraft,
   answerMessage,
   type Actor,
-  changeSettings,
+  changeWriter,
   claudeQueue,
   deletePipelineNote,
   finishItem,
@@ -40,10 +40,10 @@ import {
   postedSince,
   propose,
   readSettings,
-  type SettingsChange,
   skipItem,
   unansweredMessages,
   withdraw,
+  type Writer,
 } from "./store";
 import { take } from "./take";
 import { readUsage } from "./usage";
@@ -63,17 +63,16 @@ const readJson = (file: string) => JSON.parse(readFileSync(file, "utf8"));
 const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 
 
-function parseSettingsArgs(list: string[]): { change: SettingsChange; by: Actor } {
-  const change: SettingsChange = {};
+function parseSettingsArgs(list: string[]): { writer: Writer | undefined; by: Actor } {
+  let writer: Writer | undefined;
   let by: Actor = "claude";
   for (const entry of list) {
     const [key, value] = entry.split("=");
-    if (key === "writer" && (value === "pipeline" || value === "claude")) change.writer = value;
-    else if (key === "approval" && (value === "on" || value === "off")) change.approvalRequired = value === "on";
+    if (key === "writer" && (value === "pipeline" || value === "claude")) writer = value;
     else if (key === "by" && (value === "jim" || value === "nathan" || value === "claude")) by = value;
     else throw new Error(`Unknown setting: ${entry}`);
   }
-  return { change, by };
+  return { writer, by };
 }
 
 async function answer(file: string) {
@@ -109,8 +108,8 @@ async function watch() {
 async function main() {
   switch (command) {
     case "settings": {
-      const { change, by } = parseSettingsArgs(args);
-      if (Object.keys(change).length > 0) await changeSettings(by, change);
+      const { writer, by } = parseSettingsArgs(args);
+      if (writer) await changeWriter(by, writer);
       return print(await readSettings());
     }
     case "queue":

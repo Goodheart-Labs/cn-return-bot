@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CROWD_RATINGS, REVIEW_SECTIONS, setApprovalRequired, type CrowdRating, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
+import { useQueryClient } from "@tanstack/react-query";
+import { CROWD_RATINGS, REVIEW_SECTIONS, type CrowdRating, type Reviewer, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
 import { NO_FILTERS } from "@cn/core/feedPages";
-import { queryKeys } from "@cn/features/query/queryKeys";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { Checkbox } from "@cn/ui/Field";
+import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { AdminOnly } from "../../components/AdminOnly";
 import { NoteFiltersButton } from "../../components/NoteFiltersButton";
 import { RouteLink } from "../../components/RouteLink";
@@ -16,13 +16,12 @@ import { parseNoteFilters } from "../../lib/feed";
 import { useMomentFor } from "../../lib/feedQueries";
 import type { Route } from "../../lib/routing";
 import { useSettledValue } from "../../lib/useSettledValue";
-import { useStoredValue } from "../../lib/useStoredValue";
+import { useStoredChoice, useStoredValue } from "../../lib/useStoredValue";
 import { PERSON, ReviewCard, type JudgeShown } from "./ReviewCard";
 import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary, type ReviewView } from "./reviewQueries";
 
 const SECTION_TITLES: Record<ReviewSection, string> = {
   unreviewed: "Not reviewed",
-  waiting: "Waiting for approval",
   approved: "Approved",
   disapproved: "Disapproved",
   no_note: "No note",
@@ -30,7 +29,6 @@ const SECTION_TITLES: Record<ReviewSection, string> = {
 };
 const EMPTY_SECTION: Record<ReviewSection, string> = {
   unreviewed: "Every posted note has been reviewed.",
-  waiting: "No note is waiting for approval.",
   approved: "No note has been approved yet.",
   disapproved: "No note has been disapproved.",
   no_note: "No passage ended without a note.",
@@ -38,9 +36,24 @@ const EMPTY_SECTION: Record<ReviewSection, string> = {
 };
 const RATING_LABELS: Record<CrowdRating, string> = {
   helpful: "Rated helpful",
-  upvoted: "Only Helpful or Somewhat helpful votes",
+  upvoted: "Only upvotes",
   other: "Everything else",
 };
+const RATING_TITLES: Record<CrowdRating, string> = {
+  helpful: "Notes the crowd's votes rate helpful",
+  upvoted: "Notes with Helpful or Somewhat helpful votes and no Not helpful vote",
+  other: "Every other note, including notes nobody voted on",
+};
+/** Approved and Disapproved can be narrowed to the reviewer whose vote decided. */
+const DECIDED_SECTIONS = new Set<ReviewSection>(["approved", "disapproved"]);
+const DECIDED_BY = ["anyone", "jim", "nathan"] as const;
+type DecidedBy = (typeof DECIDED_BY)[number];
+const DECIDED_BY_OPTIONS: { id: DecidedBy; label: string }[] = [
+  { id: "anyone", label: "Anyone" },
+  { id: "jim", label: "Jim" },
+  { id: "nathan", label: "Nathan" },
+];
+const DECIDED_BY_KEY = "cn:noteReviewDecidedBy";
 const RATINGS_KEY = "cn:noteReviewRatings";
 /** The All notes page's filters on this page start with every note shown. */
 const NOTE_FILTERS_KEY = "cn:noteReviewNoteFilters";
@@ -62,8 +75,8 @@ const parseJudgeShown = (stored: string | null): JudgeShown => {
     return { helpful: true, impactful: true };
   }
 };
-/** Sections whose drafts wait for a reviewer get a highlighted count. */
-const NEEDS_REVIEWER = new Set<ReviewSection>(["unreviewed", "waiting"]);
+/** The section whose drafts wait for a reviewer gets a highlighted count. */
+const NEEDS_REVIEWER: ReviewSection = "unreviewed";
 
 const sectionRoute = (section: ReviewSection): Route => ({ view: "noteReview", section });
 
@@ -74,7 +87,7 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
         {REVIEW_SECTIONS.map((section) => {
           const count = summary?.counts[section];
           const active = section === current;
-          const highlighted = NEEDS_REVIEWER.has(section) && !!count;
+          const highlighted = section === NEEDS_REVIEWER && !!count;
           return (
             <li key={section}>
               <RouteLink
@@ -84,7 +97,7 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
                 className={cn(sidebarEntry(active), "justify-between gap-3")}
               >
                 {SECTION_TITLES[section]}
-                {count !== undefined && (
+                {!!count && (
                   <span
                     className={cn(
                       "min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs tabular-nums",
@@ -103,70 +116,49 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
   );
 }
 
-/** Turns the approval step on or off for every reviewer. While it is on,
- *  Claude's new notes wait in "Waiting for approval". */
-function ApprovalSwitch({ approvalRequired }: { approvalRequired: boolean }) {
-  const client = useQueryClient();
-  const toggle = useMutation({
-    mutationFn: () => setApprovalRequired(!approvalRequired),
-    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.noteReviewSummaries }),
-  });
+/** Who is reviewing and who writes the notes. */
+function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
+  if (!summary) return null;
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={approvalRequired}
-      disabled={toggle.isPending}
-      onClick={() => toggle.mutate()}
-      title={approvalRequired ? "New notes wait for approval. Click to post them at once" : "New notes go up at once. Click to make them wait for approval"}
-      className="flex items-center gap-2 rounded-full border border-line px-2 py-0.5 text-xs text-fg-secondary hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-    >
-      <span className={cn("relative h-3.5 w-6 rounded-full transition-colors", approvalRequired ? "bg-primary" : "bg-line-strong")}>
-        <span className={cn("absolute top-0.5 h-2.5 w-2.5 rounded-full bg-surface transition-all", approvalRequired ? "left-3" : "left-0.5")} />
-      </span>
-      Approval before posting
-    </button>
+    <p className="text-xs text-fg-muted">
+      Reviewing as {PERSON[summary.reviewer]} · {summary.writer === "claude" ? "Claude writes the notes" : "The pipeline writes the notes"}
+    </p>
   );
 }
 
-/** Who is reviewing, who writes the notes, the approval switch, and which of
- *  the note judge's probabilities the cards show. */
-function Settings({ summary, judgeShown, onJudgeShown }: { summary: ReviewSummary | undefined; judgeShown: JudgeShown; onJudgeShown: (shown: JudgeShown) => void }) {
-  if (!summary) return null;
+/** Which of the note judge's two guesses the cards show. */
+function JudgeToggles({ judgeShown, onChange }: { judgeShown: JudgeShown; onChange: (shown: JudgeShown) => void }) {
   return (
-    <div className="space-y-3 text-xs text-fg-muted">
-      <div className="space-y-1">
-        <Checkbox checked={judgeShown.helpful} onChange={(helpful) => onJudgeShown({ ...judgeShown, helpful })}>
-          Show the judge's P(helpful)
-        </Checkbox>
-        <Checkbox checked={judgeShown.impactful} onChange={(impactful) => onJudgeShown({ ...judgeShown, impactful })}>
-          Show the judge's P(impactful)
-        </Checkbox>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <span>Reviewing as {PERSON[summary.reviewer]}</span>
-        <span className="rounded-full border border-line px-2 py-0.5">{summary.writer === "claude" ? "Claude writes" : "Pipeline writes"}</span>
-        <ApprovalSwitch approvalRequired={summary.approvalRequired} />
-      </div>
-    </div>
+    <fieldset className="space-y-1 text-sm text-fg-secondary">
+      <legend className="mb-1 text-xs font-semibold text-fg-muted">The judge's guesses on each card</legend>
+      <Checkbox checked={judgeShown.helpful} onChange={(helpful) => onChange({ ...judgeShown, helpful })} className="[@media(pointer:coarse)]:min-h-10">
+        Rated helpful
+      </Checkbox>
+      <Checkbox checked={judgeShown.impactful} onChange={(impactful) => onChange({ ...judgeShown, impactful })} className="[@media(pointer:coarse)]:min-h-10">
+        Leaderboard
+      </Checkbox>
+    </fieldset>
   );
 }
 
 /** The three crowd ratings a section can show. At least one stays on. */
 function RatingFilter({ ratings, onChange }: { ratings: CrowdRating[]; onChange: (ratings: CrowdRating[]) => void }) {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-secondary">
+    <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fg-secondary">
+      <legend className="float-left mr-1 text-sm font-medium text-fg">Crowd rating:</legend>
       {CROWD_RATINGS.map((rating) => (
-        <Checkbox
-          key={rating}
-          checked={ratings.includes(rating)}
-          disabled={ratings.length === 1 && ratings.includes(rating)}
-          onChange={(on) => onChange(CROWD_RATINGS.filter((r) => (r === rating ? on : ratings.includes(r))))}
-        >
-          {RATING_LABELS[rating]}
-        </Checkbox>
+        <span key={rating} title={RATING_TITLES[rating]}>
+          <Checkbox
+            checked={ratings.includes(rating)}
+            disabled={ratings.length === 1 && ratings.includes(rating)}
+            onChange={(on) => onChange(CROWD_RATINGS.filter((r) => (r === rating ? on : ratings.includes(r))))}
+            className="[@media(pointer:coarse)]:min-h-10"
+          >
+            {RATING_LABELS[rating]}
+          </Checkbox>
+        </span>
       ))}
-    </div>
+    </fieldset>
   );
 }
 
@@ -212,8 +204,9 @@ function SectionFeed({ view, judgeShown }: { view: ReviewView; judgeShown: Judge
  *  page as the admin scrolls. Above the drafts, three checkboxes narrow every
  *  section to how the crowd rated the notes, and the All notes page's Filters
  *  button narrows it by views and votes and hides the notes the admin voted
- *  on. On a phone the sidebar becomes a menu
- *  above the drafts. Anyone who is not an admin sees only a short message, and
+ *  on. Approved and Disapproved can be narrowed to the reviewer whose vote
+ *  decided. On a phone the sidebar becomes a menu above the drafts, and the
+ *  judge's checkboxes fold away. Anyone who is not an admin sees only a short message, and
  *  the database refuses them every draft and every step. */
 export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
   return (
@@ -230,23 +223,32 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
   // that "only notes I haven't voted on" counts from is taken anew whenever a
   // filter changes.
   const settledNoteFilters = useSettledValue(noteFilters);
-  const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, ratings]));
-  const filters = useMemo(() => ({ ...settledNoteFilters, ratings, votedBefore }), [settledNoteFilters, ratings, votedBefore]);
+  const [decidedBy, setDecidedBy] = useStoredChoice(DECIDED_BY_KEY, DECIDED_BY, "anyone");
+  const reviewedBy: Reviewer | null = DECIDED_SECTIONS.has(section) && decidedBy !== "anyone" ? decidedBy : null;
+  const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, ratings, reviewedBy]));
+  const filters = useMemo(() => ({ ...settledNoteFilters, ratings, reviewedBy, votedBefore }), [settledNoteFilters, ratings, reviewedBy, votedBefore]);
   const [judgeShown, setJudgeShown] = useStoredValue(JUDGE_SHOWN_KEY, parseJudgeShown, JSON.stringify);
   const view = useMemo(() => ({ section, filters }), [section, filters]);
   const summary = useReviewSummary(filters);
-  const settings = <Settings summary={summary.data} judgeShown={judgeShown} onJudgeShown={setJudgeShown} />;
   const sidebar = (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
-      <h1 className="px-3 font-title text-lg font-bold text-fg">Note review</h1>
+      <div className="space-y-0.5 px-3">
+        <h1 className="font-title text-lg font-bold text-fg">Note review</h1>
+        <WhoLine summary={summary.data} />
+      </div>
       <SectionList current={section} summary={summary.data} navigate={navigate} />
-      <div className="mt-auto px-3">{settings}</div>
+      <div className="px-3">
+        <JudgeToggles judgeShown={judgeShown} onChange={setJudgeShown} />
+      </div>
     </div>
   );
   return (
     <SidebarLayout storageKey="cn:noteReviewSidebarWidth" sidebar={sidebar}>
       <div className="mx-auto mb-6 max-w-[40rem] space-y-3 md:hidden">
-        <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
+        <div className="space-y-0.5">
+          <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
+          <WhoLine summary={summary.data} />
+        </div>
         <PhoneSectionMenu
           sections={REVIEW_SECTIONS}
           value={section}
@@ -254,11 +256,22 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
           counts={summary.data?.counts}
           onChange={(next) => navigate(sectionRoute(next))}
         />
-        {settings}
+        <details className="text-sm text-fg-secondary">
+          <summary className="cursor-pointer text-fg-muted">The judge's guesses</summary>
+          <div className="mt-2">
+            <JudgeToggles judgeShown={judgeShown} onChange={setJudgeShown} />
+          </div>
+        </details>
       </div>
       {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
       <div className="mx-auto mb-6 max-w-[40rem] space-y-3">
         <h2 className="hidden font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
+        {DECIDED_SECTIONS.has(section) && (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="font-medium text-fg">Decided by</span>
+            <SegmentedControl label="Decided by" options={DECIDED_BY_OPTIONS} value={decidedBy} onChange={setDecidedBy} />
+          </div>
+        )}
         <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <RatingFilter ratings={ratings} onChange={setRatings} />
           {summary.data && (
