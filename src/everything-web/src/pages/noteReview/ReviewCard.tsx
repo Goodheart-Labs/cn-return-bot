@@ -106,7 +106,7 @@ function CardHeader({ draft }: { draft: ReviewDraft }) {
     <div className="space-y-0.5">
       <p className="text-sm font-medium text-fg-secondary">{draft.post.creator}</p>
       <p className="text-xs text-fg-muted">
-        {KIND_LABELS[draft.kind]} · {statusLine(draft)}
+        {KIND_LABELS[draft.kind]} · {statusLine(draft)} · <span title="Readers outside our team who were shown the notes on this post">{draft.views === 1 ? "1 view" : `${draft.views} views`}</span>
       </p>
     </div>
   );

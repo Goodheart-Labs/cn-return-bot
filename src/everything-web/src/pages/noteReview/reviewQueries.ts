@@ -5,9 +5,9 @@ import {
   fetchReviewPage,
   fetchReviewSummary,
   REVIEW_PAGE_SIZE,
-  type CrowdRating,
   type ReviewCursor,
   type ReviewDraft,
+  type ReviewFilters,
   type ReviewSection,
 } from "@cn/core/claudeReview";
 import { fetchNotesByIds } from "@cn/core/notes";
@@ -17,7 +17,7 @@ import { usePagedList } from "@cn/features/query/usePagedList";
 
 /* How the review page loads its drafts. A section loads one page of
  * REVIEW_PAGE_SIZE drafts at a time as the admin scrolls, newest first, under
- * the crowd-rating filter the admin picked. The server pages by a keyset: each
+ * the filters the admin picked. The server pages by a keyset: each
  * page starts just after the last draft of the page before it. The sidebar's
  * counts come from one small summary call. While the page is open it polls
  * three cheap things: the summary, the newest page of the open section, and
@@ -27,10 +27,10 @@ import { usePagedList } from "@cn/features/query/usePagedList";
 /** How often the page looks for new drafts and for Claude's answers. */
 export const REFRESH_MS = 10_000;
 
-/** What the page shows: one section under one crowd-rating filter. */
+/** What the page shows: one section under the filters. */
 export interface ReviewView {
   section: ReviewSection;
-  ratings: CrowdRating[];
+  filters: ReviewFilters;
 }
 
 type SectionPages = InfiniteData<ReviewDraft[], ReviewCursor | null>;
@@ -49,8 +49,8 @@ export function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): R
   return drafts;
 }
 
-export const useReviewSummary = (ratings: CrowdRating[]) =>
-  useQuery({ queryKey: queryKeys.noteReviewSummary(ratings), queryFn: () => fetchReviewSummary(ratings), refetchInterval: REFRESH_MS, placeholderData: (previous) => previous });
+export const useReviewSummary = (filters: ReviewFilters) =>
+  useQuery({ queryKey: queryKeys.noteReviewSummary(filters), queryFn: () => fetchReviewSummary(filters), refetchInterval: REFRESH_MS, placeholderData: (previous) => previous });
 
 /** A page shorter than a full page is the section's last. */
 const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
@@ -58,11 +58,11 @@ const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
   return page.length === REVIEW_PAGE_SIZE && last ? { createdAt: last.createdAt, id: last.id } : undefined;
 };
 
-export function useReviewSection({ section, ratings }: ReviewView) {
+export function useReviewSection({ section, filters }: ReviewView) {
   const client = useQueryClient();
   return usePagedList({
-    queryKey: queryKeys.noteReviewSection(section, ratings),
-    fetchPage: async (cursor: ReviewCursor | null) => withSourceDetails(client, await fetchReviewPage(section, ratings, cursor)),
+    queryKey: queryKeys.noteReviewSection(section, filters),
+    fetchPage: async (cursor: ReviewCursor | null) => withSourceDetails(client, await fetchReviewPage(section, filters, cursor)),
     firstBookmark: null as ReviewCursor | null,
     nextBookmark: nextCursor,
   });
@@ -70,11 +70,11 @@ export function useReviewSection({ section, ratings }: ReviewView) {
 
 /** Drafts that reached the section after it was loaded. The newest page is
  *  polled, and whatever in it is newer than the section's first draft is new. */
-export function useNewDrafts({ section, ratings }: ReviewView, shown: ReviewDraft[] | undefined): ReviewDraft[] {
+export function useNewDrafts({ section, filters }: ReviewView, shown: ReviewDraft[] | undefined): ReviewDraft[] {
   const client = useQueryClient();
   const newest = useQuery({
-    queryKey: queryKeys.noteReviewNewest(section, ratings),
-    queryFn: async () => withSourceDetails(client, await fetchReviewPage(section, ratings, null)),
+    queryKey: queryKeys.noteReviewNewest(section, filters),
+    queryFn: async () => withSourceDetails(client, await fetchReviewPage(section, filters, null)),
     enabled: shown !== undefined,
     refetchInterval: REFRESH_MS,
   });
@@ -83,7 +83,7 @@ export function useNewDrafts({ section, ratings }: ReviewView, shown: ReviewDraf
 }
 
 const setSection = (client: QueryClient, view: ReviewView, change: (pages: ReviewDraft[][]) => ReviewDraft[][]) =>
-  client.setQueryData<SectionPages>(queryKeys.noteReviewSection(view.section, view.ratings), (data) => data && { ...data, pages: change(data.pages) });
+  client.setQueryData<SectionPages>(queryKeys.noteReviewSection(view.section, view.filters), (data) => data && { ...data, pages: change(data.pages) });
 
 /** Puts new drafts at the top of the section. */
 export function showNewDrafts(client: QueryClient, view: ReviewView, drafts: ReviewDraft[]) {

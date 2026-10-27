@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CROWD_RATINGS, REVIEW_SECTIONS, setApprovalRequired, type CrowdRating, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
+import { NO_FILTERS } from "@cn/core/feedPages";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
@@ -8,9 +9,13 @@ import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { Checkbox } from "@cn/ui/Field";
 import { AdminOnly } from "../../components/AdminOnly";
+import { NoteFiltersButton } from "../../components/NoteFiltersButton";
 import { RouteLink } from "../../components/RouteLink";
 import { PhoneSectionMenu, SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
+import { parseNoteFilters } from "../../lib/feed";
+import { useMomentFor } from "../../lib/feedQueries";
 import type { Route } from "../../lib/routing";
+import { useSettledValue } from "../../lib/useSettledValue";
 import { useStoredValue } from "../../lib/useStoredValue";
 import { PERSON, ReviewCard, type JudgeShown } from "./ReviewCard";
 import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary, type ReviewView } from "./reviewQueries";
@@ -37,6 +42,8 @@ const RATING_LABELS: Record<CrowdRating, string> = {
   other: "Everything else",
 };
 const RATINGS_KEY = "cn:noteReviewRatings";
+/** The All notes page's filters on this page start with every note shown. */
+const NOTE_FILTERS_KEY = "cn:noteReviewNoteFilters";
 const JUDGE_SHOWN_KEY = "cn:noteReviewJudgeShown";
 
 const parseRatings = (stored: string | null): CrowdRating[] => {
@@ -202,8 +209,10 @@ function SectionFeed({ view, judgeShown }: { view: ReviewView; judgeShown: Judge
 
 /** The admins' review of the Claude note writer's notes. A sidebar lists the
  *  sections with their counts, and the open section's drafts load page by
- *  page as the admin scrolls. A filter above the drafts narrows every section
- *  to how the crowd rated the notes. On a phone the sidebar becomes a menu
+ *  page as the admin scrolls. Above the drafts, three checkboxes narrow every
+ *  section to how the crowd rated the notes, and the All notes page's Filters
+ *  button narrows it by views and votes and hides the notes the admin voted
+ *  on. On a phone the sidebar becomes a menu
  *  above the drafts. Anyone who is not an admin sees only a short message, and
  *  the database refuses them every draft and every step. */
 export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
@@ -216,9 +225,16 @@ export function NoteReviewPage({ section, navigate }: { section: ReviewSection; 
 
 function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
   const [ratings, setRatings] = useStoredValue(RATINGS_KEY, parseRatings, JSON.stringify);
+  const [noteFilters, setNoteFilters] = useStoredValue(NOTE_FILTERS_KEY, (stored) => parseNoteFilters(stored, NO_FILTERS), JSON.stringify);
+  // A slider sends its value only once it has stopped moving, and the moment
+  // that "only notes I haven't voted on" counts from is taken anew whenever a
+  // filter changes.
+  const settledNoteFilters = useSettledValue(noteFilters);
+  const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, ratings]));
+  const filters = useMemo(() => ({ ...settledNoteFilters, ratings, votedBefore }), [settledNoteFilters, ratings, votedBefore]);
   const [judgeShown, setJudgeShown] = useStoredValue(JUDGE_SHOWN_KEY, parseJudgeShown, JSON.stringify);
-  const view = useMemo(() => ({ section, ratings }), [section, ratings]);
-  const summary = useReviewSummary(ratings);
+  const view = useMemo(() => ({ section, filters }), [section, filters]);
+  const summary = useReviewSummary(filters);
   const settings = <Settings summary={summary.data} judgeShown={judgeShown} onJudgeShown={setJudgeShown} />;
   const sidebar = (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
@@ -243,9 +259,20 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
       {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
       <div className="mx-auto mb-6 max-w-[40rem] space-y-3">
         <h2 className="hidden font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
-        <RatingFilter ratings={ratings} onChange={setRatings} />
+        <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <RatingFilter ratings={ratings} onChange={setRatings} />
+          {summary.data && (
+            <NoteFiltersButton
+              filters={noteFilters}
+              onChange={setNoteFilters}
+              largest={summary.data.largest}
+              matchingNotes={summary.data.counts[section]}
+              defaults={NO_FILTERS}
+            />
+          )}
+        </div>
       </div>
-      <SectionFeed key={`${section}:${ratings.join(",")}`} view={view} judgeShown={judgeShown} />
+      <SectionFeed key={`${section}:${JSON.stringify(filters)}`} view={view} judgeShown={judgeShown} />
     </SidebarLayout>
   );
 }

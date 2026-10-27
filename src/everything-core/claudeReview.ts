@@ -1,4 +1,5 @@
 import type { Database, Json } from "./database.types";
+import type { NoteFilters, NoteMinimums } from "./feedPages";
 import { supabase } from "./supabase";
 
 /* The admins' review of the Claude note writer's notes (GOO-518). Every call
@@ -22,11 +23,22 @@ export type Reviewer = "jim" | "nathan";
 export const CROWD_RATINGS = ["helpful", "upvoted", "other"] as const;
 export type CrowdRating = (typeof CROWD_RATINGS)[number];
 
+/** What narrows every section: the crowd ratings it shows, and the All notes
+ *  page's filters (migration 144). With `unvotedOnly`, the notes the reviewer
+ *  had voted on before `votedBefore` are hidden, so a vote cast while
+ *  reviewing never makes its card vanish. */
+export interface ReviewFilters extends NoteFilters {
+  ratings: CrowdRating[];
+  votedBefore: Date;
+}
+
 export interface ReviewSummary {
   reviewer: Reviewer;
   writer: "pipeline" | "claude";
   approvalRequired: boolean;
   counts: Record<ReviewSection, number>;
+  /** The largest view and vote counts of any note, where the filter sliders end. */
+  largest: NoteMinimums;
 }
 
 export interface ReviewDraftSource {
@@ -61,6 +73,8 @@ export interface ReviewDraft {
   contextParagraph: string | null;
   /** The post, and the creator's project on the website. */
   post: { url: string; title: string; creator: string; creatorSlug: string | null };
+  /** How many devices outside the team were shown the post's notes. */
+  views: number;
   messages: { at: string; actor: Reviewer | "claude"; text: string }[];
   /** Claude's proposed improvement of the note, from a reviewer's chat. */
   proposal: { note: string; sources: ReviewDraftSource[] } | null;
@@ -109,6 +123,7 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     createdAt: row.created_at!,
     contextParagraph: row.context_paragraph,
     post: { url: row.post_url!, title: row.post_title ?? row.post_url!, creator: row.creator ?? "", creatorSlug: row.creator_slug },
+    views: row.views ?? 0,
     messages: row.messages as unknown as ReviewDraft["messages"],
     proposal: row.proposed_note ? { note: row.proposed_note, sources: (row.proposed_sources ?? row.sources) as unknown as ReviewDraftSource[] } : null,
     judge: row.judge_p_helpful === null ? null : { pHelpful: row.judge_p_helpful, pImpactful: row.judge_p_impactful!, reasoning: row.judge_reasoning! },
@@ -119,22 +134,36 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
   };
 }
 
-/** The crowd ratings a section shows. All three show everything, which the
- *  database reads as no filter at all. */
-const ratingsFilter = (ratings: CrowdRating[]) => (ratings.length === CROWD_RATINGS.length ? undefined : ratings);
+/** The filters as the database functions take them. All three crowd ratings
+ *  show everything, which the database reads as no rating filter at all. */
+const filterArgs = (filters: ReviewFilters) => ({
+  p_ratings: filters.ratings.length === CROWD_RATINGS.length ? undefined : filters.ratings,
+  p_min_views: filters.views,
+  p_min_votes: filters.votes,
+  p_min_helpful: filters.helpful,
+  p_min_not_helpful: filters.notHelpful,
+  p_unvoted_only: filters.unvotedOnly,
+  p_voted_before: filters.votedBefore.toISOString(),
+});
 
-export async function fetchReviewSummary(ratings: CrowdRating[]): Promise<ReviewSummary> {
-  const { data, error } = await supabase.rpc("everything_claude_review_summary", { p_ratings: ratingsFilter(ratings) }).single();
+export async function fetchReviewSummary(filters: ReviewFilters): Promise<ReviewSummary> {
+  const { data, error } = await supabase.rpc("everything_claude_review_summary", filterArgs(filters)).single();
   if (error) throw error;
-  const { reviewer, writer, approval_required, ...counts } = data;
-  return { reviewer: reviewer as Reviewer, writer: writer as ReviewSummary["writer"], approvalRequired: approval_required, counts };
+  const { reviewer, writer, approval_required, largest_views, largest_votes, largest_helpful, largest_not_helpful, ...counts } = data;
+  return {
+    reviewer: reviewer as Reviewer,
+    writer: writer as ReviewSummary["writer"],
+    approvalRequired: approval_required,
+    counts,
+    largest: { views: largest_views, votes: largest_votes, helpful: largest_helpful, notHelpful: largest_not_helpful },
+  };
 }
 
 /** One page of a section, newest first, starting after `cursor`. */
-export async function fetchReviewPage(section: ReviewSection, ratings: CrowdRating[], cursor: ReviewCursor | null): Promise<ReviewDraft[]> {
+export async function fetchReviewPage(section: ReviewSection, filters: ReviewFilters, cursor: ReviewCursor | null): Promise<ReviewDraft[]> {
   const { data, error } = await supabase.rpc("everything_claude_review_page", {
     p_section: section,
-    p_ratings: ratingsFilter(ratings),
+    ...filterArgs(filters),
     p_before_created_at: cursor?.createdAt,
     p_before_id: cursor?.id,
     p_limit: REVIEW_PAGE_SIZE,

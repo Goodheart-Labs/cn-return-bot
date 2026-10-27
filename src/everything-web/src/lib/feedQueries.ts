@@ -56,7 +56,7 @@ async function loadCardPage<TEntry extends { noteId: string }>(entries: TEntry[]
 
 /** A moment that stays fixed until `key` changes. A feed hides the notes the
  *  reader had voted on when they opened it, and this is that moment. */
-function useMomentFor(key: string): Date {
+export function useMomentFor(key: string): Date {
   const [moment, setMoment] = useState({ key, at: new Date() });
   // Taking a new moment during render is React's pattern for state derived
   // from props: React re-renders straight away with the new moment.

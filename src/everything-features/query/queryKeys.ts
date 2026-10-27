@@ -34,14 +34,14 @@ export const queryKeys = {
   leaderboard: ["leaderboard"] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
-  /** The sidebar's counts, under every crowd-rating filter. */
+  /** The sidebar's counts, under every set of filters. */
   noteReviewSummaries: ["noteReview", "summary"] as const,
-  noteReviewSummary: (ratings: readonly string[]) => ["noteReview", "summary", ratings] as const,
+  noteReviewSummary: (filters: unknown) => ["noteReview", "summary", filters] as const,
   /** The pages of every sidebar section, and of one under one filter. */
   noteReviewSections: ["noteReview", "section"] as const,
-  noteReviewSection: (section: string, ratings: readonly string[]) => ["noteReview", "section", section, ratings] as const,
+  noteReviewSection: (section: string, filters: unknown) => ["noteReview", "section", section, filters] as const,
   /** The newest page of a section, polled to notice new drafts. */
-  noteReviewNewest: (section: string, ratings: readonly string[]) => ["noteReview", "newest", section, ratings] as const,
+  noteReviewNewest: (section: string, filters: unknown) => ["noteReview", "newest", section, filters] as const,
   /** The live notes of the drafts on screen. They sit under the noteSet
    *  prefix, so a vote on one of them updates it here too. */
   noteReviewNoteSet: (noteIds: string[]) => ["noteSet", "noteReview", ...noteIds] as const,

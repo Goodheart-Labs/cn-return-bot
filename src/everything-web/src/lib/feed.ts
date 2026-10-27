@@ -113,3 +113,19 @@ export const MINIMUM_KEYS: (keyof NoteMinimums)[] = ["views", "votes", "helpful"
  *  already voted on are hidden by default, so the feed shows what still needs
  *  their vote. */
 export const DEFAULT_NOTE_FILTERS: NoteFilters = { views: 5, votes: 0, helpful: 0, notHelpful: 0, unvotedOnly: true };
+
+/** Reads remembered filters. A minimum that is missing, or is not a whole
+ *  number of at least zero, gets its default. So does a checkbox that is
+ *  missing or not true or false. */
+export function parseNoteFilters(stored: string | null, defaults: NoteFilters): NoteFilters {
+  let parsed: Partial<Record<keyof NoteFilters, unknown>> = {};
+  try {
+    parsed = JSON.parse(stored ?? "{}") ?? {};
+  } catch {
+    // Unreadable text means nothing usable was stored.
+  }
+  const validMinimum = (value: unknown): value is number => Number.isInteger(value) && (value as number) >= 0;
+  const minimums = MINIMUM_KEYS.map((key) => [key, validMinimum(parsed[key]) ? parsed[key] : defaults[key]]);
+  const unvotedOnly = typeof parsed.unvotedOnly === "boolean" ? parsed.unvotedOnly : defaults.unvotedOnly;
+  return { ...(Object.fromEntries(minimums) as NoteMinimums), unvotedOnly };
+}

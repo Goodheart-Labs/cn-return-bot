@@ -2689,6 +2689,27 @@ export type Database = {
         Args: { p_actor?: string; p_draft: string }
         Returns: undefined
       }
+      everything_claude_draft_matches: {
+        Args: {
+          d: Database["public"]["Tables"]["everything_claude_drafts"]["Row"]
+          p_min_helpful: number
+          p_min_not_helpful: number
+          p_min_views: number
+          p_min_votes: number
+          p_ratings: string[]
+          p_unvoted_only: boolean
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+          p_voted_before: string
+        }
+        Returns: boolean
+      }
+      everything_claude_draft_views: {
+        Args: {
+          d: Database["public"]["Tables"]["everything_claude_drafts"]["Row"]
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
+        Returns: number
+      }
       everything_claude_explain: {
         Args: { p_draft: string; p_text: string }
         Returns: undefined
@@ -2743,8 +2764,14 @@ export type Database = {
           p_before_created_at?: string
           p_before_id?: string
           p_limit?: number
+          p_min_helpful?: number
+          p_min_not_helpful?: number
+          p_min_views?: number
+          p_min_votes?: number
           p_ratings?: string[]
           p_section: string
+          p_unvoted_only?: boolean
+          p_voted_before?: string
         }
         Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
         SetofOptions: {
@@ -2755,7 +2782,11 @@ export type Database = {
         }
       }
       everything_claude_review_rows: {
-        Args: { p_ids: string[]; p_reviewer: string }
+        Args: {
+          p_ids: string[]
+          p_reviewer: string
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
         Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
         SetofOptions: {
           from: "*"
@@ -2765,11 +2796,23 @@ export type Database = {
         }
       }
       everything_claude_review_summary: {
-        Args: { p_ratings?: string[] }
+        Args: {
+          p_min_helpful?: number
+          p_min_not_helpful?: number
+          p_min_views?: number
+          p_min_votes?: number
+          p_ratings?: string[]
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
         Returns: {
           approval_required: boolean
           approved: number
           disapproved: number
+          largest_helpful: number
+          largest_not_helpful: number
+          largest_views: number
+          largest_votes: number
           no_note: number
           reviewer: string
           skipped: number
@@ -3256,6 +3299,7 @@ export type Database = {
         post_title: string | null
         creator: string | null
         creator_slug: string | null
+        views: number | null
         proposed_note: string | null
         proposed_sources: Json | null
         judge_p_helpful: number | null
