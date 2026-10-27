@@ -1,17 +1,16 @@
 """Per API request: context size, output tokens, and how long the reply took."""
-import json, glob, os, collections, datetime as dt, statistics as st
-ROOT=os.path.expanduser("~/.claude/projects")
-SINCE=dt.datetime(2026,10,12,tzinfo=dt.timezone.utc)
+import json, sys, collections, datetime as dt, statistics as st
+from window import parse_window, transcripts, in_window
+SINCE, UNTIL, _ = parse_window(sys.argv[1:])
 def ts(s): return dt.datetime.fromisoformat(s.replace("Z","+00:00"))
 rows=[]
 models=collections.Counter()
-for f in glob.glob(f"{ROOT}/-home-jim-dev-repos-*/*.jsonl"):
-    if dt.datetime.fromtimestamp(os.path.getmtime(f),dt.timezone.utc)<SINCE: continue
+for f in transcripts("", SINCE):
     req=None; msgs={}
     for line in open(f):
         try: d=json.loads(line)
         except: continue
-        if d.get("isSidechain"): continue
+        if d.get("isSidechain") or not in_window(d, SINCE, UNTIL): continue
         if d.get("type")=="api-request": req=ts(d["timestamp"])
         elif d.get("type")=="assistant" and req:
             m=d["message"]; mid=m.get("id")

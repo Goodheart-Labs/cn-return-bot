@@ -1,16 +1,15 @@
-import json, glob, os, re, collections, datetime as dt
-ROOT=os.path.expanduser("~/.claude/projects")
-SINCE=dt.datetime(2026,10,12,tzinfo=dt.timezone.utc)
+import json, sys, re, collections, datetime as dt
+from window import parse_window, transcripts, in_window
+SINCE, UNTIL, _ = parse_window(sys.argv[1:])
 def ts(s): return dt.datetime.fromisoformat(s.replace("Z","+00:00"))
 agg=collections.defaultdict(list)
-for f in glob.glob(f"{ROOT}/-home-jim-dev-repos-*/*.jsonl"):
-    if dt.datetime.fromtimestamp(os.path.getmtime(f),dt.timezone.utc)<SINCE: continue
+for f in transcripts("", SINCE):
     repo="cn" if "cn-return-bot" in f else ("abb" if "ai-browser" in f else "other")
     calls={}
     for line in open(f):
         try: d=json.loads(line)
         except: continue
-        if d.get("isSidechain") or not d.get("timestamp"): continue
+        if d.get("isSidechain") or not in_window(d, SINCE, UNTIL): continue
         if d["type"]=="assistant":
             for b in d["message"].get("content") or []:
                 if b.get("type")=="tool_use" and b["name"]=="Bash" and not b["input"].get("run_in_background"):

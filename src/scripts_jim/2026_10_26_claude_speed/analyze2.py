@@ -5,11 +5,10 @@ line of its reply. Tool time is the span of each tool call, from the call to its
 result. Where they overlap, the tool wins. Time where neither runs is the agent
 waiting for a human or for a background task, and is reported separately.
 """
-import json, glob, os, re, sys, collections, datetime as dt
+import json, os, sys, collections, datetime as dt
 from analyze import classify_tool
+from window import parse_window, transcripts
 
-ROOT = os.path.expanduser("~/.claude/projects")
-SINCE = dt.datetime(2026, 10, 12, tzinfo=dt.timezone.utc)
 CAP_S = 3600
 
 
@@ -61,6 +60,16 @@ def intervals(path):
     return model, tools, bg
 
 
+def clip(intervals, since, until):
+    """Cut each (start, end, ...) interval to the period and drop the ones outside it."""
+    clipped = []
+    for start, end, *rest in intervals:
+        start, end = max(start, since), min(end, until)
+        if start < end:
+            clipped.append((start, end, *rest))
+    return clipped
+
+
 def busy_split(model, tools):
     """Walk all interval edges; a moment counts for the oldest running tool, else the model."""
     edges = []
@@ -86,20 +95,23 @@ def busy_split(model, tools):
 
 
 def main():
-    for pattern in sys.argv[1:]:
-        files = [f for f in glob.glob(f"{ROOT}/-home-jim-dev-repos-{pattern}*/*.jsonl")
-                 if os.path.getmtime(f) > SINCE.timestamp()]
+    since, until, patterns = parse_window(sys.argv[1:])
+    for pattern in patterns:
+        files = transcripts(pattern, since)
         total = collections.Counter()
         bg_total = 0
+        sessions = 0
         for f in files:
-            model, tools, bg = intervals(f)
+            model, tools, bg = (clip(i, since, until) for i in intervals(f))
+            sessions += bool(model or tools)
             total.update(busy_split(model, tools))
             bg_total += sum(b - a for a, b in bg)
         busy = sum(total.values())
-        print(f"\n=== {pattern}: {len(files)} sessions, busy {busy/3600:.1f} h, waiting on background tasks {bg_total/3600:.1f} h")
+        period = f"{dt.date.fromtimestamp(since)} to {dt.date.fromtimestamp(until)}"
+        print(f"\n=== {pattern}, {period}: {sessions} sessions, busy {busy/3600:.1f} h, waiting on background tasks {bg_total/3600:.1f} h")
         for k, v in total.most_common(12):
             print(f"  {k:36} {v/3600:6.2f} h {v/busy:5.0%}")
-        json.dump({"busy": busy, "bg": bg_total, "split": total, "sessions": len(files)},
+        json.dump({"busy": busy, "bg": bg_total, "split": total, "sessions": sessions},
                   open(f"{os.path.dirname(os.path.abspath(__file__))}/split_{pattern}.json", "w"))
 
 
