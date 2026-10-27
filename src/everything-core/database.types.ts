@@ -2673,6 +2673,14 @@ export type Database = {
         Returns: number
       }
       everything_claude_actor: { Args: { p_actor: string }; Returns: string }
+      everything_claude_change_settings: {
+        Args: {
+          p_actor?: string
+          p_approval_required?: boolean
+          p_writer?: string
+        }
+        Returns: undefined
+      }
       everything_claude_crowd_rating: {
         Args: { p_note: string }
         Returns: string
@@ -2685,26 +2693,17 @@ export type Database = {
         Args: { p_draft: string; p_text: string }
         Returns: undefined
       }
-      everything_claude_change_settings: {
+      everything_claude_in_section: {
         Args: {
-          p_actor?: string
-          p_approval_required?: boolean
-          p_writer?: string
+          d: Database["public"]["Tables"]["everything_claude_drafts"]["Row"]
+          p_reviewer: string
+          p_section: string
         }
-        Returns: undefined
+        Returns: boolean
       }
       everything_claude_message: {
         Args: { p_actor?: string; p_draft: string; p_text: string }
         Returns: undefined
-      }
-      everything_claude_publish: {
-        Args: {
-          p_actor: string
-          p_author?: string
-          p_draft: string
-          p_posted_as: string
-        }
-        Returns: string
       }
       everything_claude_propose: {
         Args: {
@@ -2715,6 +2714,15 @@ export type Database = {
           p_sources: Json
         }
         Returns: undefined
+      }
+      everything_claude_publish: {
+        Args: {
+          p_actor: string
+          p_author?: string
+          p_draft: string
+          p_posted_as: string
+        }
+        Returns: string
       }
       everything_claude_remove_note: {
         Args: { p_note: string }
@@ -3172,6 +3180,7 @@ export type Database = {
         Args: { p_note_id: string }
         Returns: undefined
       }
+      everything_reviewer_of: { Args: { p_user: string }; Returns: string }
       everything_set_feed_alarm: {
         Args: { next_at: string; reason: string }
         Returns: undefined
