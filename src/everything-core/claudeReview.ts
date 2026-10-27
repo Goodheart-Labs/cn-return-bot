@@ -9,7 +9,8 @@ import { supabase } from "./supabase";
  *
  * Since migration 143 (GOO-563) Jim's or Nathan's vote on a note is its
  * review: Helpful approves it and Not helpful disapproves it, wherever the
- * vote is cast. Somewhat helpful decides nothing (migration 150). A trigger
+ * vote is cast. Somewhat helpful decides nothing (migration 150), and when
+ * they disagree the note counts as not reviewed (migration 151). A trigger
  * on the votes table records it. */
 
 /** The sidebar's sections, in its order. Skipped holds the notes the reviewer
