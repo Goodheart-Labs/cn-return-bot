@@ -21,18 +21,26 @@ const SMALLEST_SLIDER_END = 10;
  *  checkbox that hides the notes the reader voted on, and one minimum slider
  *  per vote or view count. The button counts the checkbox when it is ticked,
  *  and each slider above zero. Reset goes back to `defaults`. */
-export function NoteFiltersButton({ filters, onChange, largest, matchingNotes, defaults = DEFAULT_NOTE_FILTERS }: {
+export function NoteFiltersButton({ filters, onChange, largest, matchingNotes, defaults = DEFAULT_NOTE_FILTERS, extra, extraActive = 0, onReset }: {
   filters: NoteFilters;
   onChange: (filters: NoteFilters) => void;
   /** The largest value of each minimum among all notes, before filtering. */
   largest: NoteMinimums;
   matchingNotes: number;
   defaults?: NoteFilters;
+  /** More filters of the page, shown above these, and how many of them are
+   *  narrowing the list. */
+  extra?: React.ReactNode;
+  extraActive?: number;
+  /** Resets the page's own filters too. Without it, Reset goes back to
+   *  `defaults`. */
+  onReset?: () => void;
 }) {
-  const activeCount = SLIDERS.filter(({ key }) => filters[key] > 0).length + Number(filters.unvotedOnly);
+  const activeCount = SLIDERS.filter(({ key }) => filters[key] > 0).length + Number(filters.unvotedOnly) + extraActive;
 
   return (
     <FiltersPopover activeCount={activeCount}>
+      {extra}
       <Checkbox checked={filters.unvotedOnly} onChange={(unvotedOnly) => onChange({ ...filters, unvotedOnly })} className="text-sm font-medium text-fg-secondary">
         Only notes I haven't voted on
       </Checkbox>
@@ -50,7 +58,7 @@ export function NoteFiltersButton({ filters, onChange, largest, matchingNotes, d
       ))}
       <div className="flex items-baseline justify-between text-sm">
         <span className="text-fg-muted">{matchingNotes === 1 ? "1 note" : `${matchingNotes} notes`}</span>
-        <Button variant="link" onClick={() => onChange(defaults)}>Reset</Button>
+        <Button variant="link" onClick={onReset ?? (() => onChange(defaults))}>Reset</Button>
       </div>
     </FiltersPopover>
   );

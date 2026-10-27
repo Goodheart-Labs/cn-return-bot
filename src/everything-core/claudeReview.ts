@@ -18,9 +18,10 @@ export type ReviewSection = (typeof REVIEW_SECTIONS)[number];
 export type Reviewer = "jim" | "nathan";
 
 /** How the crowd rated a live note: rated helpful, only Helpful or Somewhat
- *  helpful votes, or anything else, including no note on the site. The
- *  author's own automatic vote does not count. */
-export const CROWD_RATINGS = ["helpful", "upvoted", "other"] as const;
+ *  helpful votes, rated not helpful, only Not helpful votes, or anything
+ *  else, including no note on the site (migration 149). The author's own
+ *  automatic vote does not count. */
+export const CROWD_RATINGS = ["helpful", "upvoted", "not_helpful", "downvoted", "other"] as const;
 export type CrowdRating = (typeof CROWD_RATINGS)[number];
 
 /** What narrows every section: the crowd ratings it shows, and the All notes

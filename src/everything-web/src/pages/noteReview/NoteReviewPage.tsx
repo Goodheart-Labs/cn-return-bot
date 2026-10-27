@@ -38,11 +38,15 @@ const EMPTY_SECTION: Record<ReviewSection, string> = {
 const RATING_LABELS: Record<CrowdRating, string> = {
   helpful: "Rated helpful",
   upvoted: "Only upvotes",
+  not_helpful: "Rated not helpful",
+  downvoted: "Only downvotes",
   other: "Everything else",
 };
 const RATING_TITLES: Record<CrowdRating, string> = {
   helpful: "Notes the crowd's votes rate helpful",
   upvoted: "Notes with Helpful or Somewhat helpful votes and no Not helpful vote",
+  not_helpful: "Notes the crowd's votes rate not helpful",
+  downvoted: "Notes with Not helpful votes and no Helpful or Somewhat helpful vote",
   other: "Every other note, including notes nobody voted on",
 };
 /** Approved and Disapproved can be narrowed to the reviewer whose vote decided. */
@@ -55,7 +59,9 @@ const DECIDED_BY_OPTIONS: { id: DecidedBy; label: string }[] = [
   { id: "nathan", label: "Nathan" },
 ];
 const DECIDED_BY_KEY = "cn:noteReviewDecidedBy";
-const RATINGS_KEY = "cn:noteReviewRatings";
+/** Renamed when two ratings were added (migration 149), so a list remembered
+ *  before does not hide the new ones. */
+const RATINGS_KEY = "cn:noteReviewCrowdRatings";
 /** The All notes page's filters on this page start with every note shown. */
 const NOTE_FILTERS_KEY = "cn:noteReviewNoteFilters";
 
@@ -119,11 +125,12 @@ function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
   );
 }
 
-/** The three crowd ratings a section can show. At least one stays on. */
+/** The crowd ratings a section can show, inside the Filters popover. At least
+ *  one stays on. */
 function RatingFilter({ ratings, onChange }: { ratings: CrowdRating[]; onChange: (ratings: CrowdRating[]) => void }) {
   return (
-    <fieldset className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fg-secondary">
-      <legend className="float-left mr-1 text-sm font-medium text-fg">Crowd rating:</legend>
+    <fieldset className="space-y-1 text-sm font-medium text-fg-secondary">
+      <legend className="mb-1 text-xs font-semibold text-fg-muted">Crowd rating</legend>
       {CROWD_RATINGS.map((rating) => (
         <span key={rating} title={RATING_TITLES[rating]}>
           <Checkbox
@@ -197,10 +204,9 @@ function SectionFeed({ view }: { view: ReviewView }) {
 
 /** The admins' review of the Claude note writer's notes. A sidebar lists the
  *  sections with their counts, and the open section's drafts load page by
- *  page as the admin scrolls. Above the drafts, three checkboxes narrow every
- *  section to how the crowd rated the notes, and the All notes page's Filters
- *  button narrows it by views and votes and hides the notes the admin voted
- *  on. Approved and Disapproved can be narrowed to the reviewer whose vote
+ *  page as the admin scrolls. A Filters button beside the heading narrows
+ *  every section to how the crowd rated the notes, by views and votes as on
+ *  the All notes page, and to the notes the admin has not voted on. Approved and Disapproved can be narrowed to the reviewer whose vote
  *  decided. On a phone the sidebar becomes a menu above the drafts. Anyone who is not an admin sees only a short message, and
  *  the database refuses them every draft and every step. */
 export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
@@ -257,25 +263,34 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
         </CardColumn>
       )}
       <CardColumn className="mb-6 space-y-3">
-        <h2 className="hidden font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
+        <div className="relative flex items-center justify-between gap-4">
+          <h2 className="hidden font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
+          {summary.data && (
+            <div className="ml-auto">
+              <NoteFiltersButton
+                filters={noteFilters}
+                onChange={setNoteFilters}
+                largest={summary.data.largest}
+                matchingNotes={summary.data.counts[section]}
+                defaults={NO_FILTERS}
+                // A passage without a note has no crowd rating, so No note has
+                // no rating filter.
+                extra={section !== "no_note" && <RatingFilter ratings={ratings} onChange={setRatings} />}
+                extraActive={section !== "no_note" && ratings.length < CROWD_RATINGS.length ? 1 : 0}
+                onReset={() => {
+                  setNoteFilters(NO_FILTERS);
+                  setRatings([...CROWD_RATINGS]);
+                }}
+              />
+            </div>
+          )}
+        </div>
         {DECIDED_SECTIONS.has(section) && (
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="font-medium text-fg">Decided by</span>
             <SegmentedControl label="Decided by" options={DECIDED_BY_OPTIONS} value={decidedBy} onChange={setDecidedBy} />
           </div>
         )}
-        <div className="relative flex items-start gap-x-4">
-          <div className="min-w-0 flex-1">{section !== "no_note" && <RatingFilter ratings={ratings} onChange={setRatings} />}</div>
-          {summary.data && (
-            <NoteFiltersButton
-              filters={noteFilters}
-              onChange={setNoteFilters}
-              largest={summary.data.largest}
-              matchingNotes={summary.data.counts[section]}
-              defaults={NO_FILTERS}
-            />
-          )}
-        </div>
       </CardColumn>
       <SectionFeed key={`${section}:${JSON.stringify(filters)}`} view={view} />
     </SidebarLayout>
