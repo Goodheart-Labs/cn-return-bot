@@ -223,12 +223,15 @@ export type Database = {
           outcome: string
           passage: string
           posted_as: string | null
+          proposed_note: string | null
+          proposed_sources: Json | null
           reasoning: string
           reviewed_at: string | null
           reviewed_by: string | null
           sources: Json
           status: string
           updated_at: string
+          verdict: string | null
           video_timing: Json | null
         }
         Insert: {
@@ -243,12 +246,15 @@ export type Database = {
           outcome: string
           passage: string
           posted_as?: string | null
+          proposed_note?: string | null
+          proposed_sources?: Json | null
           reasoning: string
           reviewed_at?: string | null
           reviewed_by?: string | null
           sources?: Json
           status: string
           updated_at?: string
+          verdict?: string | null
           video_timing?: Json | null
         }
         Update: {
@@ -263,12 +269,15 @@ export type Database = {
           outcome?: string
           passage?: string
           posted_as?: string | null
+          proposed_note?: string | null
+          proposed_sources?: Json | null
           reasoning?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
           sources?: Json
           status?: string
           updated_at?: string
+          verdict?: string | null
           video_timing?: Json | null
         }
         Relationships: [
@@ -362,6 +371,41 @@ export type Database = {
           },
         ]
       }
+      everything_claude_judgements: {
+        Row: {
+          draft_id: string
+          judged_at: string
+          note: string
+          p_helpful: number
+          p_impactful: number
+          reasoning: string
+        }
+        Insert: {
+          draft_id: string
+          judged_at?: string
+          note: string
+          p_helpful: number
+          p_impactful: number
+          reasoning: string
+        }
+        Update: {
+          draft_id?: string
+          judged_at?: string
+          note?: string
+          p_helpful?: number
+          p_impactful?: number
+          reasoning?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_judgements_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: true
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_claude_settings: {
         Row: {
           approval_required: boolean
@@ -385,6 +429,32 @@ export type Database = {
           writer?: string
         }
         Relationships: []
+      }
+      everything_claude_skips: {
+        Row: {
+          at: string
+          draft_id: string
+          reviewer: string
+        }
+        Insert: {
+          at?: string
+          draft_id: string
+          reviewer: string
+        }
+        Update: {
+          at?: string
+          draft_id?: string
+          reviewer?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_skips_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       everything_claude_usage: {
         Row: {
@@ -2603,9 +2673,17 @@ export type Database = {
         Returns: number
       }
       everything_claude_actor: { Args: { p_actor: string }; Returns: string }
-      everything_claude_approve: {
-        Args: { p_actor?: string; p_draft: string }
+      everything_claude_crowd_rating: {
+        Args: { p_note: string }
         Returns: string
+      }
+      everything_claude_delete_note: {
+        Args: { p_actor?: string; p_draft: string }
+        Returns: undefined
+      }
+      everything_claude_explain: {
+        Args: { p_draft: string; p_text: string }
+        Returns: undefined
       }
       everything_claude_change_settings: {
         Args: {
@@ -2628,8 +2706,14 @@ export type Database = {
         }
         Returns: string
       }
-      everything_claude_reject: {
-        Args: { p_actor?: string; p_draft: string; p_reason: string }
+      everything_claude_propose: {
+        Args: {
+          p_actor?: string
+          p_draft: string
+          p_note: string
+          p_reason: string
+          p_sources: Json
+        }
         Returns: undefined
       }
       everything_claude_remove_note: {
@@ -2651,6 +2735,7 @@ export type Database = {
           p_before_created_at?: string
           p_before_id?: string
           p_limit?: number
+          p_ratings?: string[]
           p_section: string
         }
         Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
@@ -2662,7 +2747,7 @@ export type Database = {
         }
       }
       everything_claude_review_rows: {
-        Args: { p_ids: string[] }
+        Args: { p_ids: string[]; p_reviewer: string }
         Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
         SetofOptions: {
           from: "*"
@@ -2672,13 +2757,14 @@ export type Database = {
         }
       }
       everything_claude_review_summary: {
-        Args: never
+        Args: { p_ratings?: string[] }
         Returns: {
           approval_required: boolean
           approved: number
+          disapproved: number
           no_note: number
-          rejected: number
           reviewer: string
+          skipped: number
           unreviewed: number
           waiting: number
           writer: string
@@ -2696,6 +2782,18 @@ export type Database = {
           p_sources?: Json
           p_video_timing?: Json
         }
+        Returns: string
+      }
+      everything_claude_settle_verdict: {
+        Args: { p_note: string }
+        Returns: undefined
+      }
+      everything_claude_skip: {
+        Args: { p_actor?: string; p_draft: string; p_skip: boolean }
+        Returns: undefined
+      }
+      everything_claude_vote_waiting: {
+        Args: { p_actor?: string; p_draft: string; p_vote: number }
         Returns: string
       }
       everything_claude_withdraw: {
@@ -3138,6 +3236,7 @@ export type Database = {
         reasoning: string | null
         sources: Json | null
         status: string | null
+        verdict: string | null
         note_id: string | null
         posted_as: string | null
         reviewed_by: string | null
@@ -3148,7 +3247,14 @@ export type Database = {
         post_title: string | null
         creator: string | null
         creator_slug: string | null
-        rejection_reason: string | null
+        proposed_note: string | null
+        proposed_sources: Json | null
+        judge_p_helpful: number | null
+        judge_p_impactful: number | null
+        judge_reasoning: string | null
+        on_leaderboard: boolean | null
+        skipped: boolean | null
+        explanations: Json | null
         messages: Json | null
         earlier_versions: Json | null
       }

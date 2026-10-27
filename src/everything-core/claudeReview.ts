@@ -1,15 +1,26 @@
-import type { Database } from "./database.types";
+import type { Database, Json } from "./database.types";
 import { supabase } from "./supabase";
 
 /* The admins' review of the Claude note writer's notes (GOO-518). Every call
- * goes through a database function of migration 130, and each of them refuses
- * anyone who is not an admin. The tables behind them are closed to the
- * website's key. */
+ * goes through a database function of migrations 130 and 143, and each of
+ * them refuses anyone who is not an admin. The tables behind them are closed
+ * to the website's key.
+ *
+ * Since migration 143 (GOO-563) Jim's or Nathan's vote on a note is its
+ * review: Helpful or Somewhat helpful approves it, Not helpful disapproves it,
+ * wherever the vote is cast. A trigger on the votes table records it. */
 
-/** The sidebar's sections, in its order. */
-export const REVIEW_SECTIONS = ["unreviewed", "waiting", "approved", "rejected", "no_note"] as const;
+/** The sidebar's sections, in its order. Skipped holds the notes the reviewer
+ *  reading the page skipped and nobody reviewed yet. */
+export const REVIEW_SECTIONS = ["unreviewed", "waiting", "approved", "disapproved", "no_note", "skipped"] as const;
 export type ReviewSection = (typeof REVIEW_SECTIONS)[number];
 export type Reviewer = "jim" | "nathan";
+
+/** How the crowd rated a live note: rated helpful, only Helpful or Somewhat
+ *  helpful votes, or anything else, including no note on the site. The
+ *  author's own automatic vote does not count. */
+export const CROWD_RATINGS = ["helpful", "upvoted", "other"] as const;
+export type CrowdRating = (typeof CROWD_RATINGS)[number];
 
 export interface ReviewSummary {
   reviewer: Reviewer;
@@ -36,7 +47,11 @@ export interface ReviewDraft {
   note: string;
   reasoning: string;
   sources: ReviewDraftSource[];
-  status: "awaiting_approval" | "posted" | "rejected" | "not_a_note";
+  /** Whether the note is on the site. A removed note was deleted from the
+   *  site or turned down while it waited for approval. */
+  status: "awaiting_approval" | "posted" | "removed" | "not_a_note";
+  /** The review, from Jim's or Nathan's last vote. */
+  verdict: "approved" | "disapproved" | null;
   /** The live note on the website, while there is one. */
   noteId: string | null;
   postedAs: "ai" | Reviewer | null;
@@ -47,8 +62,16 @@ export interface ReviewDraft {
   /** The post, and the creator's project on the website. */
   post: { url: string; title: string; creator: string; creatorSlug: string | null };
   messages: { at: string; actor: Reviewer | "claude"; text: string }[];
-  /** Why the last reviewer who rejected the note did so. */
-  rejectionReason: string | null;
+  /** Claude's proposed improvement of the note, from a reviewer's chat. */
+  proposal: { note: string; sources: ReviewDraftSource[] } | null;
+  /** The note judge's answer for the note's current text. */
+  judge: { pHelpful: number; pImpactful: number; reasoning: string } | null;
+  onLeaderboard: boolean;
+  /** Whether the reviewer reading the page skipped the draft. */
+  skipped: boolean;
+  /** Reasons of old rejections and explanations given after a vote, oldest
+   *  first. */
+  explanations: { at: string; actor: Reviewer; text: string }[];
   /** Earlier texts of the note, oldest first. */
   earlierVersions: { at: string; note: string; reason: string }[];
 }
@@ -79,6 +102,7 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     reasoning: row.reasoning!,
     sources: row.sources as unknown as ReviewDraftSource[],
     status: row.status as ReviewDraft["status"],
+    verdict: row.verdict as ReviewDraft["verdict"],
     noteId: row.note_id,
     postedAs: row.posted_as as ReviewDraft["postedAs"],
     reviewedBy: row.reviewed_by as Reviewer | null,
@@ -86,22 +110,31 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     contextParagraph: row.context_paragraph,
     post: { url: row.post_url!, title: row.post_title ?? row.post_url!, creator: row.creator ?? "", creatorSlug: row.creator_slug },
     messages: row.messages as unknown as ReviewDraft["messages"],
-    rejectionReason: row.rejection_reason || null,
+    proposal: row.proposed_note ? { note: row.proposed_note, sources: (row.proposed_sources ?? row.sources) as unknown as ReviewDraftSource[] } : null,
+    judge: row.judge_p_helpful === null ? null : { pHelpful: row.judge_p_helpful, pImpactful: row.judge_p_impactful!, reasoning: row.judge_reasoning! },
+    onLeaderboard: row.on_leaderboard!,
+    skipped: row.skipped!,
+    explanations: row.explanations as unknown as ReviewDraft["explanations"],
     earlierVersions: row.earlier_versions as unknown as ReviewDraft["earlierVersions"],
   };
 }
 
-export async function fetchReviewSummary(): Promise<ReviewSummary> {
-  const { data, error } = await supabase.rpc("everything_claude_review_summary").single();
+/** The crowd ratings a section shows. All three show everything, which the
+ *  database reads as no filter at all. */
+const ratingsFilter = (ratings: CrowdRating[]) => (ratings.length === CROWD_RATINGS.length ? undefined : ratings);
+
+export async function fetchReviewSummary(ratings: CrowdRating[]): Promise<ReviewSummary> {
+  const { data, error } = await supabase.rpc("everything_claude_review_summary", { p_ratings: ratingsFilter(ratings) }).single();
   if (error) throw error;
   const { reviewer, writer, approval_required, ...counts } = data;
   return { reviewer: reviewer as Reviewer, writer: writer as ReviewSummary["writer"], approvalRequired: approval_required, counts };
 }
 
 /** One page of a section, newest first, starting after `cursor`. */
-export async function fetchReviewPage(section: ReviewSection, cursor: ReviewCursor | null): Promise<ReviewDraft[]> {
+export async function fetchReviewPage(section: ReviewSection, ratings: CrowdRating[], cursor: ReviewCursor | null): Promise<ReviewDraft[]> {
   const { data, error } = await supabase.rpc("everything_claude_review_page", {
     p_section: section,
+    p_ratings: ratingsFilter(ratings),
     p_before_created_at: cursor?.createdAt,
     p_before_id: cursor?.id,
     p_limit: REVIEW_PAGE_SIZE,
@@ -118,27 +151,47 @@ export async function fetchReviewDrafts(ids: string[]): Promise<ReviewDraft[]> {
   return data.map(toReviewDraft);
 }
 
-/** Keeps the note. A note that waited for approval goes up as an AI note.
- *  Returns the live note's id. */
-export async function approveDraft(draftId: string): Promise<string> {
-  const { data, error } = await supabase.rpc("everything_claude_approve", { p_draft: draftId });
+/** A vote on a note that waits for approval. An upvote posts it as an AI note
+ *  and returns its id, so the caller casts the vote on it. A Not helpful vote
+ *  keeps it off the site and returns null. */
+export async function voteOnWaitingDraft(draftId: string, vote: number): Promise<string | null> {
+  const { data, error } = await supabase.rpc("everything_claude_vote_waiting", { p_draft: draftId, p_vote: vote });
   if (error) throw error;
   return data;
 }
 
-/** Turns the note down. A posted note is deleted from the site. */
-export async function rejectDraft(draftId: string, reason: string): Promise<void> {
-  const { error } = await supabase.rpc("everything_claude_reject", { p_draft: draftId, p_reason: reason });
+/** Deletes the note from the site, or turns down a note that waits for
+ *  approval. Either way it counts as disapproved. */
+export async function deleteDraftNote(draftId: string): Promise<void> {
+  const { error } = await supabase.rpc("everything_claude_delete_note", { p_draft: draftId });
   if (error) throw error;
 }
 
-/** Replaces the note's text. A posted note goes up again as an AI note or
- *  under the signed-in admin's own account. Returns the new live note's id,
- *  or null when the draft was not posted. */
-export async function rewriteDraft(draftId: string, change: { note: string; postedAs?: "ai" | "me"; reason: string }): Promise<string | null> {
+/** Hides the draft from the reviewer's own Not reviewed and Waiting sections,
+ *  or shows it there again. */
+export async function skipDraft(draftId: string, skip: boolean): Promise<void> {
+  const { error } = await supabase.rpc("everything_claude_skip", { p_draft: draftId, p_skip: skip });
+  if (error) throw error;
+}
+
+/** Why the reviewer voted the way they did. */
+export async function explainVote(draftId: string, text: string): Promise<void> {
+  const { error } = await supabase.rpc("everything_claude_explain", { p_draft: draftId, p_text: text });
+  if (error) throw error;
+}
+
+/** Replaces the note's text, and with Claude's proposal its sources too. A
+ *  posted note goes up again as an AI note or under the signed-in admin's own
+ *  account. Returns the new live note's id, or null when the draft was not
+ *  posted. */
+export async function rewriteDraft(
+  draftId: string,
+  change: { note: string; sources?: ReviewDraftSource[]; postedAs?: "ai" | "me"; reason: string },
+): Promise<string | null> {
   const { data, error } = await supabase.rpc("everything_claude_rewrite", {
     p_draft: draftId,
     p_note: change.note,
+    p_sources: change.sources as unknown as Json,
     p_reason: change.reason,
     p_posted_as: change.postedAs,
   });

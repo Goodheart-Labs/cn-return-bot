@@ -114,6 +114,14 @@ export async function fetchLeaderboardPositionAtRank(rank: number, size: number)
   return positionBetween(data[0]?.position, data[1]?.position);
 }
 
+/** Puts a note at the bottom of the leaderboard. */
+export async function addToLeaderboard(noteId: string): Promise<void> {
+  const { data, error } = await supabase.from(TABLE.leaderboard).select("position").order("position", { ascending: false }).limit(1);
+  if (error) throw new Error(`could not read the leaderboard: ${error.message}`);
+  const { error: insertError } = await supabase.from(TABLE.leaderboard).insert({ note_id: noteId, position: positionBetween(data[0]?.position, undefined) });
+  if (insertError) throw new Error(`could not add the note to the leaderboard: ${insertError.message}`);
+}
+
 /** The whole leaderboard, best note first. Only the reorder mode reads it, to
  *  let an admin drag a note to any place. */
 export async function fetchLeaderboard(): Promise<CuratedNoteRow[]> {

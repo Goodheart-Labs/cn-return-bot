@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import type { MintedDonation } from "@cn/core/donations";
 import { noteStatus, noteTallyVisible } from "@cn/core/noteScore";
 import type { NoteRow } from "@cn/core/types";
+import type { Vote } from "@cn/core/votes";
 import { VoteDonation } from "../donations/VoteDonation";
 import { takeMintedDonation } from "../donations/mintedDonations";
 import { NoteBox } from "./NoteBox";
@@ -14,12 +15,15 @@ import { useVotingNudge, VotingNudge } from "./VotingNudge";
  *  rating status, the rating pills, the donation notice that appears after a
  *  vote, and the action row. The website's feed and every extension overlay
  *  render this same component. `children` adds actions to the action row. */
-export function Note({ note, shareUrl, compact, children }: {
+export function Note({ note, shareUrl, compact, onVoted, children }: {
   note: NoteRow;
   /** For a narrow column: sources show as site names. */
   compact?: boolean;
   /** The absolute deep link the Share button copies. */
   shareUrl: string;
+  /** Called once the viewer's vote is saved, with the vote, or with undefined
+   *  when a second click retracted it. */
+  onVoted?: (vote: Vote | undefined) => void;
   children?: ReactNode;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(false);
@@ -45,7 +49,11 @@ export function Note({ note, shareUrl, compact, children }: {
           showCounts={noteTallyVisible(status, myVote, note.created_at)}
           onVote={(vote) => {
             if (nudge.show) nudge.dismiss();
-            void voteOnNote(note, vote).then(setCast);
+            const retracting = vote === myVote;
+            void voteOnNote(note, vote).then((donation) => {
+              setCast(donation);
+              onVoted?.(retracting ? undefined : vote);
+            });
           }}
         />
       </NoteBox>
