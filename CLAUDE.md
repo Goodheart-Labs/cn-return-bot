@@ -206,7 +206,7 @@ A standing Claude session on the devbox, `cn-return-bot--sandbox-daily-good-note
 bun run candidate-notes [--days N | --since <ISO>] [--posted <file>] [--json]
 ```
 
-It lists every note that was rated helpful, got a Helpful or Somewhat helpful vote, was written by a person, or is new on an important creator in the window (`src/postable-notes/candidates.ts`).
+It lists, among the notes that got votes or a judgement from the note judge (GOO-591) in the window, every note rated helpful, plus every note that got a Helpful vote or that the judge gives at least a 0.7 chance of ending up rated helpful, if it is on one of five important creators or the judge gives it at least a 0.25 chance of a place on the team's leaderboard (GOO-622, `src/postable-notes/candidates.ts`).
 
 The admins keep a leaderboard of the best notes at commonnotes.net/admin/best (`everything_best_notes`, migrations 136 to 138). They add a note to it from the review page, at the bottom, reorder it by dragging, and comment on any note to explain its place. Until 2026-10-27 the job also recommended notes into `everything_note_recommendations`, which admins picked from (GOO-555). Jim dropped that step (GOO-597); the table keeps its rows. `bun run curation-taste --out <file>` writes the team's curation as one Markdown file: the leaderboard in order and the removed recommendations, each with the passage, the note and the team's comment or reason. The job reads it every morning before judging new notes. It replaced the `cn-notify` service, which posted those four kinds of note to four Slack channels, and the `Trending Posts` workflow. The tables they used to remember what they posted, `everything_slack_announcements` and `trending_posts`, are no longer written.
 
