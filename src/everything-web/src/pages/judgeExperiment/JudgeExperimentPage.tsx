@@ -55,10 +55,12 @@ interface JudgeResult {
 }
 type Mode = "zero" | "few";
 /** Each prompt's results sit in the data folder under its own file prefix.
- *  The newest prompt comes first. */
+ *  The newest prompt comes first. Prompt 3 was tried on only two notes, so it
+ *  has no scores. */
 const PROMPTS = [
-  { prefix: "", title: "New prompt, with the reader guidance" },
-  { prefix: "v1-", title: "Old prompt, without the reader guidance" },
+  { prefix: "v3-", title: "Prompt 3, with the most favourable reading", scored: false },
+  { prefix: "", title: "Prompt 2, with the reader guidance", scored: true },
+  { prefix: "v1-", title: "Prompt 1, the original", scored: true },
 ] as const;
 type Prompt = (typeof PROMPTS)[number];
 type RunResults = Record<Mode, Map<string, JudgeResult>> & { prompt: Prompt };
@@ -119,7 +121,9 @@ function ExperimentFacts({ note, results }: { note: LabelledNote; results: RunRe
         {`: ${note.labelWhy}. Few-shot ${note.fewShotRole === "example" ? "example" : "test note"}.`}
       </p>
       {note.reason && <p className="text-xs text-fg-muted">Reason: {note.reason}</p>}
-      {results.map(({ prompt, zero, few }) => (
+      {results
+        .filter(({ zero, few }) => zero.has(note.draftId) || few.has(note.draftId))
+        .map(({ prompt, zero, few }) => (
         <div key={prompt.prefix} className="pt-1">
           <p className="text-xs text-fg-muted">{prompt.title}</p>
           <JudgeAnswer mode="zero" result={zero.get(note.draftId)} />
@@ -246,11 +250,11 @@ function PromptResults({ prompt }: { prompt: Prompt }) {
   );
 }
 
-/** The new prompt's scores and the old prompt's side by side on wide screens. */
+/** The scored prompts side by side on wide screens. */
 function Results() {
   return (
     <div className="mx-auto grid max-w-[40rem] gap-8 xl:max-w-[82rem] xl:grid-cols-2">
-      {PROMPTS.map((prompt) => (
+      {PROMPTS.filter((prompt) => prompt.scored).map((prompt) => (
         <section key={prompt.prefix} className="space-y-4">
           <h3 className="font-title text-lg font-bold text-fg">{prompt.title}</h3>
           <PromptResults prompt={prompt} />
