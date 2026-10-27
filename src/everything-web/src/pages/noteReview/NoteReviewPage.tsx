@@ -9,6 +9,7 @@ import { cn } from "@cn/ui/cn";
 import { Checkbox } from "@cn/ui/Field";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { AdminOnly } from "../../components/AdminOnly";
+import { CardColumn } from "../../components/ClaimCard";
 import { NoteFiltersButton } from "../../components/NoteFiltersButton";
 import { RouteLink } from "../../components/RouteLink";
 import { PhoneSectionMenu, SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
@@ -156,22 +157,40 @@ function SectionFeed({ view }: { view: ReviewView }) {
   const newDrafts = useNewDrafts(view, drafts);
   usePollWaitingChats(view, drafts ?? []);
 
-  if (list.failed) return <LoadFailed what="These drafts" onRetry={list.retry} className="mx-auto max-w-[40rem]" />;
-  if (!pages || !drafts) return <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>;
+  if (list.failed)
+    return (
+      <CardColumn>
+        <LoadFailed what="These drafts" onRetry={list.retry} />
+      </CardColumn>
+    );
+  if (!pages || !drafts)
+    return (
+      <CardColumn>
+        <p className="text-sm text-fg-muted">Loading…</p>
+      </CardColumn>
+    );
   return (
     <div className="space-y-6">
       {newDrafts.length > 0 && (
-        <div className="mx-auto max-w-[40rem]">
+        <CardColumn>
           <Button variant="secondary" className="w-full" onClick={() => showNewDrafts(client, view, newDrafts)}>
             {newDrafts.length === 1 ? "1 new draft. Show it" : `${newDrafts.length} new drafts. Show them`}
           </Button>
-        </div>
+        </CardColumn>
       )}
-      {drafts.length === 0 && <p className="mx-auto max-w-[40rem] py-12 text-center text-sm text-fg-muted">{EMPTY_SECTION[view.section]}</p>}
+      {drafts.length === 0 && (
+        <CardColumn>
+          <p className="py-12 text-center text-sm text-fg-muted">{EMPTY_SECTION[view.section]}</p>
+        </CardColumn>
+      )}
       {pages.map((page, index) => (
         <DraftPage key={index} drafts={page} view={view} />
       ))}
-      {drafts.length > 0 && <PagedListEnd list={list} endText="That is every draft in this section." className="mx-auto max-w-[40rem]" />}
+      {drafts.length > 0 && (
+        <CardColumn>
+          <PagedListEnd list={list} endText="That is every draft in this section." />
+        </CardColumn>
+      )}
     </div>
   );
 }
@@ -232,8 +251,12 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
           onChange={(next) => navigate(sectionRoute(next))}
         />
       </div>
-      {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
-      <div className="mx-auto mb-6 max-w-[40rem] space-y-3">
+      {summary.isError && (
+        <CardColumn className="mb-4">
+          <p className="text-sm text-negative">{summary.error.message}</p>
+        </CardColumn>
+      )}
+      <CardColumn className="mb-6 space-y-3">
         <h2 className="hidden font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
         {DECIDED_SECTIONS.has(section) && (
           <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -253,7 +276,7 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
             />
           )}
         </div>
-      </div>
+      </CardColumn>
       <SectionFeed key={`${section}:${JSON.stringify(filters)}`} view={view} />
     </SidebarLayout>
   );
