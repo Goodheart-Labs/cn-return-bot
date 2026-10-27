@@ -1,33 +1,85 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { REVIEW_SECTIONS, setApprovalRequired, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
-import { queryKeys } from "@cn/features/query/queryKeys";
+import { useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { CROWD_RATINGS, REVIEW_SECTIONS, type CrowdRating, type Reviewer, type ReviewDraft, type ReviewFilters, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
+import { NO_FILTERS } from "@cn/core/feedPages";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { Checkbox } from "@cn/ui/Field";
+import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { AdminOnly } from "../../components/AdminOnly";
+import { CardColumn } from "../../components/ClaimCard";
+import { NoteFiltersButton } from "../../components/NoteFiltersButton";
 import { RouteLink } from "../../components/RouteLink";
 import { PhoneSectionMenu, SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
+import { parseNoteFilters } from "../../lib/feed";
+import { useMomentFor } from "../../lib/feedQueries";
 import type { Route } from "../../lib/routing";
+import { useSettledValue } from "../../lib/useSettledValue";
+import { useStoredChoice, useStoredValue } from "../../lib/useStoredValue";
 import { PERSON, ReviewCard } from "./ReviewCard";
-import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary } from "./reviewQueries";
+import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary, type ReviewView } from "./reviewQueries";
 
 const SECTION_TITLES: Record<ReviewSection, string> = {
-  unreviewed: "Posted, not reviewed",
-  waiting: "Waiting for approval",
+  unreviewed: "Not reviewed",
   approved: "Approved",
-  rejected: "Rejected",
+  disapproved: "Disapproved",
   no_note: "No note",
+  skipped: "Skipped",
 };
 const EMPTY_SECTION: Record<ReviewSection, string> = {
   unreviewed: "Every posted note has been reviewed.",
-  waiting: "No note is waiting for approval.",
   approved: "No note has been approved yet.",
-  rejected: "No note has been rejected.",
+  disapproved: "No note has been disapproved.",
   no_note: "No passage ended without a note.",
+  skipped: "You have not skipped any note that is still open.",
 };
-/** Sections whose drafts wait for a reviewer get a highlighted count. */
-const NEEDS_REVIEWER = new Set<ReviewSection>(["unreviewed", "waiting"]);
+const RATING_LABELS: Record<CrowdRating, string> = {
+  helpful: "Rated helpful",
+  upvoted: "Only upvotes",
+  not_helpful: "Rated not helpful",
+  downvoted: "Only downvotes",
+  other: "Everything else",
+};
+const RATING_TITLES: Record<CrowdRating, string> = {
+  helpful: "Notes the crowd's votes rate helpful",
+  upvoted: "Notes with Helpful or Somewhat helpful votes and no Not helpful vote",
+  not_helpful: "Notes the crowd's votes rate not helpful",
+  downvoted: "Notes with Not helpful votes and no Helpful or Somewhat helpful vote",
+  other: "Every other note, including notes nobody voted on",
+};
+/** Approved and Disapproved can be narrowed to the reviewer whose vote decided. */
+const DECIDED_SECTIONS = new Set<ReviewSection>(["approved", "disapproved"]);
+const DECIDED_BY = ["anyone", "jim", "nathan"] as const;
+type DecidedBy = (typeof DECIDED_BY)[number];
+const DECIDED_BY_OPTIONS: { id: DecidedBy; label: string }[] = [
+  { id: "anyone", label: "Anyone" },
+  { id: "jim", label: "Jim" },
+  { id: "nathan", label: "Nathan" },
+];
+const DECIDED_BY_KEY = "cn:noteReviewDecidedBy";
+/** Renamed when two ratings were added (migration 149), so a list remembered
+ *  before does not hide the new ones. */
+const RATINGS_KEY = "cn:noteReviewCrowdRatings";
+/** The All notes page's filters on this page start with every note shown. */
+const NOTE_FILTERS_KEY = "cn:noteReviewNoteFilters";
+
+const parseRatings = (stored: string | null): CrowdRating[] => {
+  try {
+    const ratings = JSON.parse(stored ?? "null");
+    return Array.isArray(ratings) ? CROWD_RATINGS.filter((r) => ratings.includes(r)) : [...CROWD_RATINGS];
+  } catch {
+    return [...CROWD_RATINGS];
+  }
+};
+
+/** No filter at all. Without "only notes I haven't voted on" the moment is
+ *  never read. */
+const EVERY_DRAFT: ReviewFilters = { ...NO_FILTERS, ratings: [...CROWD_RATINGS], reviewedBy: null, votedBefore: new Date(0) };
+
+/** The section whose drafts wait for a reviewer gets a highlighted count. */
+const NEEDS_REVIEWER: ReviewSection = "unreviewed";
 
 const sectionRoute = (section: ReviewSection): Route => ({ view: "noteReview", section });
 
@@ -38,7 +90,7 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
         {REVIEW_SECTIONS.map((section) => {
           const count = summary?.counts[section];
           const active = section === current;
-          const highlighted = NEEDS_REVIEWER.has(section) && !!count;
+          const highlighted = section === NEEDS_REVIEWER && !!count;
           return (
             <li key={section}>
               <RouteLink
@@ -48,7 +100,7 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
                 className={cn(sidebarEntry(active), "justify-between gap-3")}
               >
                 {SECTION_TITLES[section]}
-                {count !== undefined && (
+                {!!count && (
                   <span
                     className={cn(
                       "min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs tabular-nums",
@@ -67,86 +119,100 @@ function SectionList({ current, summary, navigate }: { current: ReviewSection; s
   );
 }
 
-/** Turns the approval step on or off for every reviewer. While it is on,
- *  Claude's new notes wait in "Waiting for approval". */
-function ApprovalSwitch({ approvalRequired }: { approvalRequired: boolean }) {
-  const client = useQueryClient();
-  const toggle = useMutation({
-    mutationFn: () => setApprovalRequired(!approvalRequired),
-    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.noteReviewSummary }),
-  });
+/** Who is reviewing and who writes the notes. */
+function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
+  if (!summary) return null;
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={approvalRequired}
-      disabled={toggle.isPending}
-      onClick={() => toggle.mutate()}
-      title={approvalRequired ? "New notes wait for approval. Click to post them at once" : "New notes go up at once. Click to make them wait for approval"}
-      className="flex items-center gap-2 rounded-full border border-line px-2 py-0.5 text-xs text-fg-secondary hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-    >
-      <span className={cn("relative h-3.5 w-6 rounded-full transition-colors", approvalRequired ? "bg-primary" : "bg-line-strong")}>
-        <span className={cn("absolute top-0.5 h-2.5 w-2.5 rounded-full bg-surface transition-all", approvalRequired ? "left-3" : "left-0.5")} />
-      </span>
-      Approval before posting
-    </button>
+    <p className="text-xs text-fg-muted">
+      Reviewing as {PERSON[summary.reviewer]} · {summary.writer === "claude" ? "Claude writes the notes" : "The pipeline writes the notes"}
+    </p>
   );
 }
 
-/** Who is reviewing, who writes the notes, and the approval switch. */
-function Settings({ summary }: { summary: ReviewSummary | undefined }) {
-  if (!summary) return null;
+/** The crowd ratings a section can show, inside the Filters popover. At least
+ *  one stays on. */
+function RatingFilter({ ratings, onChange }: { ratings: CrowdRating[]; onChange: (ratings: CrowdRating[]) => void }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-fg-muted">
-      <span>Reviewing as {PERSON[summary.reviewer]}</span>
-      <span className="rounded-full border border-line px-2 py-0.5">{summary.writer === "claude" ? "Claude writes" : "Pipeline writes"}</span>
-      <ApprovalSwitch approvalRequired={summary.approvalRequired} />
-    </div>
+    <fieldset className="space-y-1 text-sm font-medium text-fg-secondary">
+      <legend className="mb-1 text-xs font-semibold text-fg-muted">Crowd rating</legend>
+      {CROWD_RATINGS.map((rating) => (
+        <span key={rating} title={RATING_TITLES[rating]} className="block">
+          <Checkbox
+            checked={ratings.includes(rating)}
+            disabled={ratings.length === 1 && ratings.includes(rating)}
+            onChange={(on) => onChange(CROWD_RATINGS.filter((r) => (r === rating ? on : ratings.includes(r))))}
+            className="[@media(pointer:coarse)]:min-h-10"
+          >
+            {RATING_LABELS[rating]}
+          </Checkbox>
+        </span>
+      ))}
+    </fieldset>
   );
 }
 
 /** One loaded page of drafts. Each page reads the live notes of its own
  *  drafts, so loading the next page never reloads the notes above it. */
-function DraftPage({ drafts, section }: { drafts: ReviewDraft[]; section: ReviewSection }) {
+function DraftPage({ drafts, view }: { drafts: ReviewDraft[]; view: ReviewView }) {
   const liveNotes = useLiveNotes(drafts);
   return drafts.map((draft) => (
-    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} section={section} />
+    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} view={view} />
   ));
 }
 
-function SectionFeed({ section }: { section: ReviewSection }) {
+function SectionFeed({ view }: { view: ReviewView }) {
   const client = useQueryClient();
-  const list = useReviewSection(section);
+  const list = useReviewSection(view);
   const pages = list.pages;
   const drafts = pages?.flat();
-  const newDrafts = useNewDrafts(section, drafts);
-  usePollWaitingChats(section, drafts ?? []);
+  const newDrafts = useNewDrafts(view, drafts);
+  usePollWaitingChats(view, drafts ?? []);
 
-  if (list.failed) return <LoadFailed what="These drafts" onRetry={list.retry} className="mx-auto max-w-[40rem]" />;
-  if (!pages || !drafts) return <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>;
+  if (list.failed)
+    return (
+      <CardColumn>
+        <LoadFailed what="These drafts" onRetry={list.retry} />
+      </CardColumn>
+    );
+  if (!pages || !drafts)
+    return (
+      <CardColumn>
+        <p className="text-sm text-fg-muted">Loading…</p>
+      </CardColumn>
+    );
   return (
     <div className="space-y-6">
       {newDrafts.length > 0 && (
-        <div className="mx-auto max-w-[40rem]">
-          <Button variant="secondary" className="w-full" onClick={() => showNewDrafts(client, section, newDrafts)}>
+        <CardColumn>
+          <Button variant="secondary" className="w-full" onClick={() => showNewDrafts(client, view, newDrafts)}>
             {newDrafts.length === 1 ? "1 new draft. Show it" : `${newDrafts.length} new drafts. Show them`}
           </Button>
-        </div>
+        </CardColumn>
       )}
-      {drafts.length === 0 && <p className="mx-auto max-w-[40rem] py-12 text-center text-sm text-fg-muted">{EMPTY_SECTION[section]}</p>}
+      {drafts.length === 0 && (
+        <CardColumn>
+          <p className="py-12 text-center text-sm text-fg-muted">{EMPTY_SECTION[view.section]}</p>
+        </CardColumn>
+      )}
       {pages.map((page, index) => (
-        <DraftPage key={index} drafts={page} section={section} />
+        <DraftPage key={index} drafts={page} view={view} />
       ))}
-      {drafts.length > 0 && <PagedListEnd list={list} endText="That is every draft in this section." className="mx-auto max-w-[40rem]" />}
+      {drafts.length > 0 && (
+        <CardColumn>
+          <PagedListEnd list={list} endText="That is every draft in this section." />
+        </CardColumn>
+      )}
     </div>
   );
 }
 
 /** The admins' review of the Claude note writer's notes. A sidebar lists the
  *  sections with their counts, and the open section's drafts load page by
- *  page as the admin scrolls. On a phone the sidebar becomes a menu above the
- *  drafts. Anyone who is not an admin sees only a short message, and the
- *  database refuses them every draft and every step. */
+ *  page as the admin scrolls. A Filters button beside the heading narrows
+ *  every section to how the crowd rated the notes, by views and votes as on
+ *  the All notes page, and to the notes the admin has not voted on. Approved and Disapproved can be narrowed to the reviewer whose vote
+ *  decided. On a phone the sidebar becomes a menu above the drafts. Anyone who is not an admin sees only a short message, and
+ *  the database refuses them every draft and every step. */
 export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
   return (
     <AdminOnly>
@@ -156,32 +222,85 @@ export function NoteReviewPage({ section, navigate }: { section: ReviewSection; 
 }
 
 function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
-  const summary = useReviewSummary();
+  const [ratings, setRatings] = useStoredValue(RATINGS_KEY, parseRatings, JSON.stringify);
+  const [noteFilters, setNoteFilters] = useStoredValue(NOTE_FILTERS_KEY, (stored) => parseNoteFilters(stored, NO_FILTERS), JSON.stringify);
+  // A slider sends its value only once it has stopped moving, and the moment
+  // that "only notes I haven't voted on" counts from is taken anew whenever a
+  // filter changes.
+  const settledNoteFilters = useSettledValue(noteFilters);
+  const [decidedBy, setDecidedBy] = useStoredChoice(DECIDED_BY_KEY, DECIDED_BY, "anyone");
+  const reviewedBy: Reviewer | null = DECIDED_SECTIONS.has(section) && decidedBy !== "anyone" ? decidedBy : null;
+  // A passage without a note has no crowd rating, so No note hides that
+  // filter and shows every draft.
+  const shownRatings = useMemo(() => (section === "no_note" ? [...CROWD_RATINGS] : ratings), [section, ratings]);
+  const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, shownRatings, reviewedBy]));
+  const filters = useMemo(() => ({ ...settledNoteFilters, ratings: shownRatings, reviewedBy, votedBefore }), [settledNoteFilters, shownRatings, reviewedBy, votedBefore]);
+  const view = useMemo(() => ({ section, filters }), [section, filters]);
+  // The sidebar counts every draft of each section, whatever the filters, so
+  // a section never looks emptier than it is. The Filters popover says how
+  // many notes of the open section pass the filters.
+  const totals = useReviewSummary(EVERY_DRAFT);
+  const summary = useReviewSummary(filters);
   const sidebar = (
     <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
-      <h1 className="px-3 font-title text-lg font-bold text-fg">Note review</h1>
-      <SectionList current={section} summary={summary.data} navigate={navigate} />
-      <div className="mt-auto px-3">
-        <Settings summary={summary.data} />
+      <div className="space-y-0.5 px-3">
+        <h1 className="font-title text-lg font-bold text-fg">Note review</h1>
+        <WhoLine summary={totals.data} />
       </div>
+      <SectionList current={section} summary={totals.data} navigate={navigate} />
     </div>
   );
   return (
     <SidebarLayout storageKey="cn:noteReviewSidebarWidth" sidebar={sidebar}>
       <div className="mx-auto mb-6 max-w-[40rem] space-y-3 md:hidden">
-        <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
+        <div className="space-y-0.5">
+          <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
+          <WhoLine summary={totals.data} />
+        </div>
         <PhoneSectionMenu
           sections={REVIEW_SECTIONS}
           value={section}
           titles={SECTION_TITLES}
-          counts={summary.data?.counts}
+          counts={totals.data?.counts}
           onChange={(next) => navigate(sectionRoute(next))}
         />
-        <Settings summary={summary.data} />
       </div>
-      {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
-      <h2 className="mx-auto mb-6 hidden max-w-[40rem] font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
-      <SectionFeed key={section} section={section} />
+      {summary.isError && (
+        <CardColumn className="mb-4">
+          <p className="text-sm text-negative">{summary.error.message}</p>
+        </CardColumn>
+      )}
+      <CardColumn className="mb-6 space-y-3">
+        <div className="relative flex items-center justify-between gap-4">
+          <h2 className="hidden font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
+          {summary.data && (
+            <div className="ml-auto">
+              <NoteFiltersButton
+                filters={noteFilters}
+                onChange={setNoteFilters}
+                largest={summary.data.largest}
+                matchingNotes={summary.data.counts[section]}
+                defaults={NO_FILTERS}
+                // A passage without a note has no crowd rating, so No note has
+                // no rating filter.
+                extra={section !== "no_note" && <RatingFilter ratings={ratings} onChange={setRatings} />}
+                extraActive={section !== "no_note" && ratings.length < CROWD_RATINGS.length ? 1 : 0}
+                onReset={() => {
+                  setNoteFilters(NO_FILTERS);
+                  setRatings([...CROWD_RATINGS]);
+                }}
+              />
+            </div>
+          )}
+        </div>
+        {DECIDED_SECTIONS.has(section) && (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="font-medium text-fg">Decided by</span>
+            <SegmentedControl label="Decided by" options={DECIDED_BY_OPTIONS} value={decidedBy} onChange={setDecidedBy} />
+          </div>
+        )}
+      </CardColumn>
+      <SectionFeed key={`${section}:${JSON.stringify(filters)}`} view={view} />
     </SidebarLayout>
   );
 }

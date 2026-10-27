@@ -7,6 +7,7 @@ import {
   REVIEW_PAGE_SIZE,
   type ReviewCursor,
   type ReviewDraft,
+  type ReviewFilters,
   type ReviewSection,
 } from "@cn/core/claudeReview";
 import { fetchNotesByIds } from "@cn/core/notes";
@@ -15,15 +16,22 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 import { usePagedList } from "@cn/features/query/usePagedList";
 
 /* How the review page loads its drafts. A section loads one page of
- * REVIEW_PAGE_SIZE drafts at a time as the admin scrolls, newest first. The
- * server pages by a keyset: each page starts just after the last draft of the
- * page before it. The sidebar's counts come from one small summary call. While
- * the page is open it polls three cheap things: the summary, the newest page
- * of the open section, and the drafts whose chat waits for Claude's answer. It
- * never reloads every page it has shown. */
+ * REVIEW_PAGE_SIZE drafts at a time as the admin scrolls, newest first, under
+ * the filters the admin picked. The server pages by a keyset: each
+ * page starts just after the last draft of the page before it. The sidebar's
+ * counts come from one small summary call. While the page is open it polls
+ * three cheap things: the summary, the newest page of the open section, and
+ * the drafts whose chat waits for Claude's answer. It never reloads every page
+ * it has shown. */
 
 /** How often the page looks for new drafts and for Claude's answers. */
 export const REFRESH_MS = 10_000;
+
+/** What the page shows: one section under the filters. */
+export interface ReviewView {
+  section: ReviewSection;
+  filters: ReviewFilters;
+}
 
 type SectionPages = InfiniteData<ReviewDraft[], ReviewCursor | null>;
 
@@ -34,15 +42,15 @@ export const draftNoteId = (draft: ReviewDraft) => `draft:${draft.id}`;
 /** Puts each draft's source quotes into the cache where the note box reads its
  *  "Source details" from, so the box never asks the database for ids that
  *  are not notes. */
-function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): ReviewDraft[] {
+export function withSourceDetails(client: QueryClient, drafts: ReviewDraft[]): ReviewDraft[] {
   for (const draft of drafts) {
     client.setQueryData(queryKeys.sourceDetails(draftNoteId(draft)), draft.sources.map((s, i) => ({ ...s, sort_order: i })));
   }
   return drafts;
 }
 
-export const useReviewSummary = () =>
-  useQuery({ queryKey: queryKeys.noteReviewSummary, queryFn: fetchReviewSummary, refetchInterval: REFRESH_MS });
+export const useReviewSummary = (filters: ReviewFilters) =>
+  useQuery({ queryKey: queryKeys.noteReviewSummary(filters), queryFn: () => fetchReviewSummary(filters), refetchInterval: REFRESH_MS, placeholderData: (previous) => previous });
 
 /** A page shorter than a full page is the section's last. */
 const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
@@ -50,11 +58,11 @@ const nextCursor = (page: ReviewDraft[]): ReviewCursor | undefined => {
   return page.length === REVIEW_PAGE_SIZE && last ? { createdAt: last.createdAt, id: last.id } : undefined;
 };
 
-export function useReviewSection(section: ReviewSection) {
+export function useReviewSection({ section, filters }: ReviewView) {
   const client = useQueryClient();
   return usePagedList({
-    queryKey: queryKeys.noteReviewSection(section),
-    fetchPage: async (cursor: ReviewCursor | null) => withSourceDetails(client, await fetchReviewPage(section, cursor)),
+    queryKey: queryKeys.noteReviewSection(section, filters),
+    fetchPage: async (cursor: ReviewCursor | null) => withSourceDetails(client, await fetchReviewPage(section, filters, cursor)),
     firstBookmark: null as ReviewCursor | null,
     nextBookmark: nextCursor,
   });
@@ -62,11 +70,11 @@ export function useReviewSection(section: ReviewSection) {
 
 /** Drafts that reached the section after it was loaded. The newest page is
  *  polled, and whatever in it is newer than the section's first draft is new. */
-export function useNewDrafts(section: ReviewSection, shown: ReviewDraft[] | undefined): ReviewDraft[] {
+export function useNewDrafts({ section, filters }: ReviewView, shown: ReviewDraft[] | undefined): ReviewDraft[] {
   const client = useQueryClient();
   const newest = useQuery({
-    queryKey: queryKeys.noteReviewNewest(section),
-    queryFn: async () => withSourceDetails(client, await fetchReviewPage(section, null)),
+    queryKey: queryKeys.noteReviewNewest(section, filters),
+    queryFn: async () => withSourceDetails(client, await fetchReviewPage(section, filters, null)),
     enabled: shown !== undefined,
     refetchInterval: REFRESH_MS,
   });
@@ -74,32 +82,29 @@ export function useNewDrafts(section: ReviewSection, shown: ReviewDraft[] | unde
   return (newest.data ?? []).filter((d) => !first || d.createdAt > first.createdAt);
 }
 
-/** Puts new drafts at the top of the section. */
-export function showNewDrafts(client: QueryClient, section: ReviewSection, drafts: ReviewDraft[]) {
-  client.setQueryData<SectionPages>(queryKeys.noteReviewSection(section), (data) =>
-    data && { ...data, pages: [[...drafts, ...(data.pages[0] ?? [])], ...data.pages.slice(1)] },
-  );
-}
+const setSection = (client: QueryClient, view: ReviewView, change: (pages: ReviewDraft[][]) => ReviewDraft[][]) =>
+  client.setQueryData<SectionPages>(queryKeys.noteReviewSection(view.section, view.filters), (data) => data && { ...data, pages: change(data.pages) });
 
-/** Replaces drafts the section shows with fresher copies. */
-function mergeDrafts(client: QueryClient, section: ReviewSection, fresh: ReviewDraft[]) {
-  const byId = new Map(fresh.map((d) => [d.id, d]));
-  client.setQueryData<SectionPages>(queryKeys.noteReviewSection(section), (data) =>
-    data && { ...data, pages: data.pages.map((page) => page.map((d) => byId.get(d.id) ?? d)) },
-  );
+/** Puts new drafts at the top of the section. */
+export function showNewDrafts(client: QueryClient, view: ReviewView, drafts: ReviewDraft[]) {
+  setSection(client, view, (pages) => [[...drafts, ...(pages[0] ?? [])], ...pages.slice(1)]);
 }
 
 /** Takes a draft out of the section, after an admin's step moved it to
- *  another one. */
-export function dropDraft(client: QueryClient, section: ReviewSection, draftId: string) {
-  client.setQueryData<SectionPages>(queryKeys.noteReviewSection(section), (data) =>
-    data && { ...data, pages: data.pages.map((page) => page.filter((d) => d.id !== draftId)) },
-  );
+ *  another one, and drops the cached other sections, so they load fresh when
+ *  opened. */
+export function dropDraft(client: QueryClient, view: ReviewView, draftId: string) {
+  setSection(client, view, (pages) => pages.map((page) => page.filter((d) => d.id !== draftId)));
+  client.removeQueries({ queryKey: queryKeys.noteReviewSections, predicate: (q) => q.queryKey[2] !== view.section });
 }
 
-/** Reads drafts again and puts the fresh copies into the section. */
-export async function refreshDrafts(client: QueryClient, section: ReviewSection, ids: string[]) {
-  if (ids.length > 0) mergeDrafts(client, section, withSourceDetails(client, await fetchReviewDrafts(ids)));
+/** Reads drafts again and puts the fresh copies into the section, where they
+ *  stay even when the step moved them to another section, so the card does
+ *  not jump away under the admin. */
+export async function refreshDrafts(client: QueryClient, view: ReviewView, ids: string[]) {
+  if (ids.length === 0) return;
+  const byId = new Map(withSourceDetails(client, await fetchReviewDrafts(ids)).map((d) => [d.id, d]));
+  setSection(client, view, (pages) => pages.map((page) => page.map((d) => byId.get(d.id) ?? d)));
 }
 
 /** Whether the draft's last chat message is a reviewer's, still waiting for
@@ -107,15 +112,15 @@ export async function refreshDrafts(client: QueryClient, section: ReviewSection,
 export const waitsForClaude = (draft: ReviewDraft) => (draft.messages.at(-1)?.actor ?? "claude") !== "claude";
 
 /** Polls the drafts on screen whose chat waits for Claude, so Claude's answer
- *  and any rewrite it made show up without a reload. */
-export function usePollWaitingChats(section: ReviewSection, drafts: ReviewDraft[]) {
+ *  and any proposal it made show up without a reload. */
+export function usePollWaitingChats(view: ReviewView, drafts: ReviewDraft[]) {
   const client = useQueryClient();
   const waitingIds = drafts.filter(waitsForClaude).map((d) => d.id).join(",");
   useEffect(() => {
     if (!waitingIds) return;
-    const timer = setInterval(() => void refreshDrafts(client, section, waitingIds.split(",")), REFRESH_MS);
+    const timer = setInterval(() => void refreshDrafts(client, view, waitingIds.split(",")), REFRESH_MS);
     return () => clearInterval(timer);
-  }, [client, section, waitingIds]);
+  }, [client, view, waitingIds]);
 }
 
 /** The live notes of the drafts on screen, with their current votes. */

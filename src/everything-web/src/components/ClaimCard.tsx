@@ -2,6 +2,7 @@ import { useRef, useState, type ReactNode } from "react";
 import type { ClaimRef, FeedItemRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { Card } from "@cn/ui/Card";
+import { cn } from "@cn/ui/cn";
 import { ContextParagraph } from "@cn/features/notes/ContextParagraph";
 import { ClaimContent, claimContent } from "./ClaimContent";
 
@@ -25,11 +26,30 @@ function ClaimImages({ urls }: { urls: string[] }) {
   );
 }
 
+/** The columns of a card with an aside on a wide screen: the paragraph, the
+ *  card and the aside. The aside gets the larger share of the space beside the
+ *  card, because it holds running text and the paragraph only a quote. A page
+ *  lines up its other content with the card by placing it in the middle
+ *  column of the same grid (`CardColumn`). */
+const ASIDE_GRID = "xl:grid xl:grid-cols-[minmax(0,0.7fr)_minmax(0,40rem)_minmax(0,1.3fr)] xl:gap-4";
+
+/** Content that lines up with the cards of a page whose cards have an aside:
+ *  on a wide screen it sits in the cards' middle column, on a narrow one it is
+ *  centred as wide as a card. */
+export function CardColumn({ className, children }: { className?: string; children: ReactNode }) {
+  return (
+    <div className={ASIDE_GRID}>
+      <div className={cn("mx-auto w-full max-w-[40rem] xl:col-start-2 xl:mx-0 xl:max-w-none", className)}>{children}</div>
+    </div>
+  );
+}
+
 /** A card about one claim: the claim in its source at the top, and below it
  *  whatever the page shows about the claim. On a wide screen the paragraph
- *  around the claim sits beside the card. On a narrow one it opens above the
- *  card behind a button. */
-export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
+ *  around the claim sits beside the card, and `aside` on its other side. On a
+ *  narrow one the paragraph opens above the card behind a button, and `aside`
+ *  follows the card's own content. */
+export function ClaimCard({ id, claim, paragraph, post, byline, aside, children }: {
   id?: string;
   claim: ClaimRef;
   /** The post's paragraph around the claim. It contains the claim's quote. */
@@ -37,13 +57,17 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
   post?: FeedItemRow;
   /** A line at the top of the card. */
   byline?: ReactNode;
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   const [ctxOpen, setCtxOpen] = useState(false);
   const cardColRef = useRef<HTMLDivElement>(null);
   const quoteInParagraph = claim.context_quote ?? claim.claim;
   return (
-    <div id={id} className="scroll-mt-4 xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)] xl:gap-4 items-start">
+    <div
+      id={id}
+      className={cn("scroll-mt-4 items-start", aside ? ASIDE_GRID : "xl:grid xl:gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)_minmax(0,1fr)]")}
+    >
       {paragraph && (
         <div className="hidden min-w-0 [overflow-wrap:anywhere] xl:block xl:col-start-1 xl:row-start-1">
           <ContextParagraph paragraph={paragraph} quote={quoteInParagraph} fitTo={cardColRef} />
@@ -76,7 +100,9 @@ export function ClaimCard({ id, claim, paragraph, post, byline, children }: {
           <ClaimContent content={claimContent(claim, post)} />
         </div>
         {children}
+        {aside && <div className="mt-4 xl:hidden">{aside}</div>}
       </Card>
+      {aside && <div className="hidden min-w-0 xl:block xl:col-start-3 xl:row-start-1">{aside}</div>}
     </div>
   );
 }
