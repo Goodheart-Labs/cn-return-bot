@@ -25,3 +25,7 @@
   meaning no captions a person uploaded. Every CNN video the pipeline did read
   has `caption = true`. Other channels' videos with `caption = false` (Fireship,
   Hank Green, Last Week Tonight) do get their automatic track served.
+- Jim opened FtOrcFEStbE on his Mac: there is no CC button, signed in or not.
+  So YouTube shows these automatic tracks to nobody, and "no captions" is the
+  true answer. `captions.list` lists tracks that YouTube does not publish to
+  viewers, so it overcounts what we can read. Nothing was requeued.

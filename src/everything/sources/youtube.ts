@@ -26,14 +26,16 @@ const CAPTIONS_GRACE_HOURS = 24;
  *  item is then not a failure. The worker records it as done with `reason` as
  *  its skip reason, except that a video young enough to still get captions is
  *  tried again first. The extension's progress card reads the reason to tell
- *  a reader who requested the video why nothing was checked. */
+ *  a reader who requested the video why nothing was checked. `why` explains
+ *  the reason in the run log, for example which step found no captions. */
 export class UnreadableVideoError extends Error {
   constructor(
     url: string,
     readonly reason: UnreadableVideoReason,
     readonly captionsMayStillCome: boolean,
+    why?: string,
   ) {
-    super(`${url}: ${reason}${captionsMayStillCome ? ", but the video is young enough to still get captions" : ""}`);
+    super(`${url}: ${reason}${captionsMayStillCome ? ", but the video is young enough to still get captions" : ""}${why ? `. ${why}` : ""}`);
     this.name = "UnreadableVideoError";
   }
 }
@@ -48,7 +50,7 @@ async function fetchCues(video: YoutubeVideo): Promise<SubtitleCue[]> {
   const captions = await fetchYoutubeCaptions(video);
   if (captions.kind === "captions") return captions.cues;
   if (captions.kind === "age_restricted") throw new UnreadableVideoError(video.url, "age-restricted", false);
-  throw new UnreadableVideoError(video.url, "no captions", ageHours(video.publishedAt) < CAPTIONS_GRACE_HOURS);
+  throw new UnreadableVideoError(video.url, "no captions", ageHours(video.publishedAt) < CAPTIONS_GRACE_HOURS, captions.why);
 }
 
 export async function fetchYoutubeContent(url: string): Promise<FetchedContent> {
