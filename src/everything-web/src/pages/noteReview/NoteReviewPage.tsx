@@ -17,7 +17,7 @@ import { useMomentFor } from "../../lib/feedQueries";
 import type { Route } from "../../lib/routing";
 import { useSettledValue } from "../../lib/useSettledValue";
 import { useStoredChoice, useStoredValue } from "../../lib/useStoredValue";
-import { PERSON, ReviewCard, type JudgeShown } from "./ReviewCard";
+import { PERSON, ReviewCard } from "./ReviewCard";
 import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary, type ReviewView } from "./reviewQueries";
 
 const SECTION_TITLES: Record<ReviewSection, string> = {
@@ -57,7 +57,6 @@ const DECIDED_BY_KEY = "cn:noteReviewDecidedBy";
 const RATINGS_KEY = "cn:noteReviewRatings";
 /** The All notes page's filters on this page start with every note shown. */
 const NOTE_FILTERS_KEY = "cn:noteReviewNoteFilters";
-const JUDGE_SHOWN_KEY = "cn:noteReviewJudgeShown";
 
 const parseRatings = (stored: string | null): CrowdRating[] => {
   try {
@@ -67,14 +66,7 @@ const parseRatings = (stored: string | null): CrowdRating[] => {
     return [...CROWD_RATINGS];
   }
 };
-const parseJudgeShown = (stored: string | null): JudgeShown => {
-  try {
-    const shown = JSON.parse(stored ?? "null");
-    return { helpful: shown?.helpful !== false, impactful: shown?.impactful !== false };
-  } catch {
-    return { helpful: true, impactful: true };
-  }
-};
+
 /** The section whose drafts wait for a reviewer gets a highlighted count. */
 const NEEDS_REVIEWER: ReviewSection = "unreviewed";
 
@@ -126,21 +118,6 @@ function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
   );
 }
 
-/** Which of the note judge's two guesses the cards show. */
-function JudgeToggles({ judgeShown, onChange }: { judgeShown: JudgeShown; onChange: (shown: JudgeShown) => void }) {
-  return (
-    <fieldset className="space-y-1 text-sm text-fg-secondary">
-      <legend className="mb-1 text-xs font-semibold text-fg-muted">The judge's guesses on each card</legend>
-      <Checkbox checked={judgeShown.helpful} onChange={(helpful) => onChange({ ...judgeShown, helpful })} className="[@media(pointer:coarse)]:min-h-10">
-        Chance of a helpful rating
-      </Checkbox>
-      <Checkbox checked={judgeShown.impactful} onChange={(impactful) => onChange({ ...judgeShown, impactful })} className="[@media(pointer:coarse)]:min-h-10">
-        Chance of the leaderboard
-      </Checkbox>
-    </fieldset>
-  );
-}
-
 /** The three crowd ratings a section can show. At least one stays on. */
 function RatingFilter({ ratings, onChange }: { ratings: CrowdRating[]; onChange: (ratings: CrowdRating[]) => void }) {
   return (
@@ -164,14 +141,14 @@ function RatingFilter({ ratings, onChange }: { ratings: CrowdRating[]; onChange:
 
 /** One loaded page of drafts. Each page reads the live notes of its own
  *  drafts, so loading the next page never reloads the notes above it. */
-function DraftPage({ drafts, view, judgeShown }: { drafts: ReviewDraft[]; view: ReviewView; judgeShown: JudgeShown }) {
+function DraftPage({ drafts, view }: { drafts: ReviewDraft[]; view: ReviewView }) {
   const liveNotes = useLiveNotes(drafts);
   return drafts.map((draft) => (
-    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} view={view} judgeShown={judgeShown} />
+    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} view={view} />
   ));
 }
 
-function SectionFeed({ view, judgeShown }: { view: ReviewView; judgeShown: JudgeShown }) {
+function SectionFeed({ view }: { view: ReviewView }) {
   const client = useQueryClient();
   const list = useReviewSection(view);
   const pages = list.pages;
@@ -192,7 +169,7 @@ function SectionFeed({ view, judgeShown }: { view: ReviewView; judgeShown: Judge
       )}
       {drafts.length === 0 && <p className="mx-auto max-w-[40rem] py-12 text-center text-sm text-fg-muted">{EMPTY_SECTION[view.section]}</p>}
       {pages.map((page, index) => (
-        <DraftPage key={index} drafts={page} view={view} judgeShown={judgeShown} />
+        <DraftPage key={index} drafts={page} view={view} />
       ))}
       {drafts.length > 0 && <PagedListEnd list={list} endText="That is every draft in this section." className="mx-auto max-w-[40rem]" />}
     </div>
@@ -205,8 +182,7 @@ function SectionFeed({ view, judgeShown }: { view: ReviewView; judgeShown: Judge
  *  section to how the crowd rated the notes, and the All notes page's Filters
  *  button narrows it by views and votes and hides the notes the admin voted
  *  on. Approved and Disapproved can be narrowed to the reviewer whose vote
- *  decided. On a phone the sidebar becomes a menu above the drafts, and the
- *  judge's checkboxes fold away. Anyone who is not an admin sees only a short message, and
+ *  decided. On a phone the sidebar becomes a menu above the drafts. Anyone who is not an admin sees only a short message, and
  *  the database refuses them every draft and every step. */
 export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
   return (
@@ -230,7 +206,6 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
   const shownRatings = useMemo(() => (section === "no_note" ? [...CROWD_RATINGS] : ratings), [section, ratings]);
   const votedBefore = useMomentFor(JSON.stringify([settledNoteFilters, shownRatings, reviewedBy]));
   const filters = useMemo(() => ({ ...settledNoteFilters, ratings: shownRatings, reviewedBy, votedBefore }), [settledNoteFilters, shownRatings, reviewedBy, votedBefore]);
-  const [judgeShown, setJudgeShown] = useStoredValue(JUDGE_SHOWN_KEY, parseJudgeShown, JSON.stringify);
   const view = useMemo(() => ({ section, filters }), [section, filters]);
   const summary = useReviewSummary(filters);
   const sidebar = (
@@ -240,9 +215,6 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
         <WhoLine summary={summary.data} />
       </div>
       <SectionList current={section} summary={summary.data} navigate={navigate} />
-      <div className="px-3">
-        <JudgeToggles judgeShown={judgeShown} onChange={setJudgeShown} />
-      </div>
     </div>
   );
   return (
@@ -259,12 +231,6 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
           counts={summary.data?.counts}
           onChange={(next) => navigate(sectionRoute(next))}
         />
-        <details className="text-sm text-fg-secondary">
-          <summary className="cursor-pointer text-fg-muted">The judge's guesses</summary>
-          <div className="mt-2">
-            <JudgeToggles judgeShown={judgeShown} onChange={setJudgeShown} />
-          </div>
-        </details>
       </div>
       {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
       <div className="mx-auto mb-6 max-w-[40rem] space-y-3">
@@ -288,7 +254,7 @@ function NoteReview({ section, navigate }: { section: ReviewSection; navigate: (
           )}
         </div>
       </div>
-      <SectionFeed key={`${section}:${JSON.stringify(filters)}`} view={view} judgeShown={judgeShown} />
+      <SectionFeed key={`${section}:${JSON.stringify(filters)}`} view={view} />
     </SidebarLayout>
   );
 }

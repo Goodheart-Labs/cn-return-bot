@@ -52,12 +52,6 @@ const VOTE_TONES: Record<ReviewVote | "rejected", string> = {
   rejected: "bg-negative-soft text-negative",
 };
 
-/** Which of the note judge's two probabilities the reviewer chose to see. */
-export interface JudgeShown {
-  helpful: boolean;
-  impactful: boolean;
-}
-
 const isNote = (draft: ReviewDraft) => draft.status !== "not_a_note";
 const reviewOpen = (draft: ReviewDraft) => draft.verdict === null && (draft.status === "posted" || draft.status === "posting");
 
@@ -251,16 +245,15 @@ function Meter({ label, value, word, tone }: { label: string; value: number; wor
   );
 }
 
-/** The note judge's guesses for the note's current text, as two meters. Each
- *  shows only while its checkbox in the sidebar is on. */
-function Judge({ draft, shown }: { draft: ReviewDraft; shown: JudgeShown }) {
-  if (!draft.judge || (!shown.helpful && !shown.impactful)) return null;
+/** The note judge's guesses for the note's current text, as two meters. */
+function Judge({ draft }: { draft: ReviewDraft }) {
+  if (!draft.judge) return null;
   const { pHelpful, pImpactful, reasoning } = draft.judge;
   return (
     <section className="space-y-3">
       <AsideHeading>The judge's guess</AsideHeading>
-      {shown.helpful && <Meter label="Chance of a helpful rating" value={pHelpful} word={helpfulWord(pHelpful)} tone={meterTone(pHelpful, 0.7, 0.4)} />}
-      {shown.impactful && <Meter label="Chance of the leaderboard" value={pImpactful} word={impactfulWord(pImpactful)} tone={meterTone(pImpactful, 0.3, 0.15)} />}
+      <Meter label="Chance of a helpful rating" value={pHelpful} word={helpfulWord(pHelpful)} tone={meterTone(pHelpful, 0.7, 0.4)} />
+      <Meter label="Chance of the leaderboard" value={pImpactful} word={impactfulWord(pImpactful)} tone={meterTone(pImpactful, 0.3, 0.15)} />
       <details>
         <summary className="cursor-pointer">Why</summary>
         <p className="mt-1 whitespace-pre-wrap">{reasoning}</p>
@@ -308,13 +301,13 @@ function AgentReasoning({ reasoning }: { reasoning: string }) {
 /** What sits beside the card on a wide screen and under it on a narrow one:
  *  the reviews, the judge's guess, the agent's reasoning and the note's
  *  earlier texts. */
-function SideColumn({ draft, judgeShown, extra }: { draft: ReviewDraft; judgeShown?: JudgeShown; extra?: ReactNode }) {
+function SideColumn({ draft, showJudge, extra }: { draft: ReviewDraft; showJudge: boolean; extra?: ReactNode }) {
   return (
     // The side column is set like the surrounding context on the card's other
     // side: small and muted, so the eye stays on the card.
     <div className="space-y-4 text-2xs text-fg-muted [overflow-wrap:anywhere]">
       <Reviews draft={draft} />
-      {judgeShown && <Judge draft={draft} shown={judgeShown} />}
+      {showJudge && <Judge draft={draft} />}
       {isNote(draft) && <AgentReasoning reasoning={draft.reasoning} />}
       <EarlierVersions draft={draft} />
       {extra}
@@ -552,11 +545,10 @@ function OffSiteNote({ draft, label }: { draft: ReviewDraft; label: string }) {
  *  the judge's guess, the agent's reasoning and earlier texts. A card shown
  *  outside a review section, such as on the note judge experiment page, has no
  *  pills, explanation box or tools, and shows `extra` in the side column. */
-export function ReviewCard({ draft, liveNote, view, judgeShown, extra }: {
+export function ReviewCard({ draft, liveNote, view, extra }: {
   draft: ReviewDraft;
   liveNote: NoteRow | undefined;
   view?: ReviewView;
-  judgeShown?: JudgeShown;
   extra?: ReactNode;
 }) {
   const client = useQueryClient();
@@ -577,7 +569,7 @@ export function ReviewCard({ draft, liveNote, view, judgeShown, extra }: {
       paragraph={liveNote?.claim.context_paragraph ?? draft.contextParagraph}
       post={post}
       byline={<CardHeader draft={draft} />}
-      aside={<SideColumn draft={draft} judgeShown={judgeShown} extra={extra} />}
+      aside={<SideColumn draft={draft} showJudge={!!view} extra={extra} />}
     >
       <div className="space-y-4">
         {!isNote(draft) ? (
