@@ -12,6 +12,7 @@ function snapshot(overrides: Partial<XShareSnapshot> & { weekly?: number } = {})
     latest: { at: new Date(now.getTime() - 5 * 60_000), weekly, weeklyResetsAt: new Date(now.getTime() + 84 * HOUR) },
     xCostUsd: 10,
     commonNotesCostUsd: 90,
+    weeklyBeforeCosts: 0,
     ...rest,
   };
 }
@@ -21,6 +22,10 @@ describe("computeXShare", () => {
     const share = computeXShare(snapshot());
     expect(share).toEqual({ kind: "measured", usedPercent: 4, allowedPercent: 10 });
     expect(xShareHasRoom(share)).toBe(true);
+  });
+
+  test("splits only the usage that rose since costs were first recorded", () => {
+    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }))).toEqual({ kind: "measured", usedPercent: 1, allowedPercent: 10 });
   });
 
   test("has no room once X used more than its allowance so far", () => {
