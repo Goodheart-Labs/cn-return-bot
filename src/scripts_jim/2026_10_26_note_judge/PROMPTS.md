@@ -20,6 +20,12 @@ notes of `buildDataset.ts`: 42 helpful and 19 not helpful. The newer half has
 On the newer half no prompt beat always guessing the share of helpful notes on
 Brier score (0.156).
 
+All four few-shot runs gave the 30 examples in the order the notes were
+written. That put the eleven oldest, all rejections, first and left the
+last thirteen nearly all helpful, which may have pushed the few-shot judge
+towards helpful. Since 2026-10-27 `splitForMode` gives them in a fixed
+shuffled order instead; no run has used that order yet.
+
 ## Prompt 1, the original
 
 Commit `a43d5478`. No guidance: the opening paragraph goes straight to the note

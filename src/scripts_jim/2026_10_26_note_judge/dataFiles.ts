@@ -46,8 +46,35 @@ export function readResults(mode: Mode): JudgeResult[] {
     .map((line) => JSON.parse(line));
 }
 
-/** The examples the judge sees, and the notes it judges. */
+/** The seed of the examples' order, so every run and every judge sees the
+ *  same order. */
+const EXAMPLE_ORDER_SEED = 563;
+
+/** The same random order every time, from a seeded generator (mulberry32). */
+function shuffled<T>(items: T[], seed: number): T[] {
+  let state = seed;
+  const random = () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 2 ** 32;
+  };
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j]!, result[i]!];
+  }
+  return result;
+}
+
+/** The examples the judge sees, and the notes it judges. The examples come in
+ *  a fixed shuffled order. In the order they were written, all eleven oldest
+ *  were rejections and the last thirteen nearly all helpful, which may have
+ *  pushed the few-shot judge towards helpful. */
 export function splitForMode(dataset: LabelledNote[], mode: Mode): { examples: LabelledNote[]; targets: LabelledNote[] } {
   if (mode === "zero") return { examples: [], targets: dataset };
-  return { examples: dataset.filter((n) => n.fewShotRole === "example"), targets: dataset.filter((n) => n.fewShotRole === "judged") };
+  return {
+    examples: shuffled(dataset.filter((n) => n.fewShotRole === "example"), EXAMPLE_ORDER_SEED),
+    targets: dataset.filter((n) => n.fewShotRole === "judged"),
+  };
 }
