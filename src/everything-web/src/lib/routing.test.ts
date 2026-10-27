@@ -10,8 +10,8 @@ const ROUTES: [string, Route][] = [
   ["/install", { view: "home", section: "install" }],
   ["/notes", { view: "notes", project: null, item: null, note: null }],
   ["/notes/all", { view: "allNotes" }],
-  ["/admin/best/recommendations", { view: "bestNotes", section: "recommendations", project: null }],
-  ["/admin/best/leaderboard/zvi", { view: "bestNotes", section: "leaderboard", project: "zvi" }],
+  ["/admin/best", { view: "bestNotes", project: null }],
+  ["/admin/best/zvi", { view: "bestNotes", project: "zvi" }],
   ["/notes/zvi", { view: "notes", project: "zvi", item: null, note: null }],
   ["/notes/zvi/item-1", { view: "notes", project: "zvi", item: "item-1", note: null }],
   ["/notes/zvi?note=n-1", { view: "notes", project: "zvi", item: null, note: "n-1" }],
@@ -28,6 +28,11 @@ describe("routing", () => {
     const [pathname, search = ""] = address.split("?");
     expect(readRoute(pathname!, search ? `?${search}` : "")).toEqual(route);
     expect(routeHref(route)).toBe(address);
+  });
+
+  test("old best-notes links that name a section still open the leaderboard", () => {
+    expect(readRoute("/admin/best/recommendations", "")).toEqual({ view: "bestNotes", project: null });
+    expect(readRoute("/admin/best/leaderboard/zvi", "")).toEqual({ view: "bestNotes", project: "zvi" });
   });
 
   test("a trailing slash reads as the same page", () => {

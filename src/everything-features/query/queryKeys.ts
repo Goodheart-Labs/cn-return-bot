@@ -22,10 +22,9 @@ export const queryKeys = {
   /** The admins' curation of the best notes. Every section's pages and the
    *  whole leaderboard sit under one prefix, so a change reloads them all. */
   curation: ["noteSet", "curation"] as const,
-  curationSection: (section: string, filters: unknown) => ["noteSet", "curation", "section", section, filters] as const,
+  curationSection: (filters: unknown) => ["noteSet", "curation", "section", filters] as const,
   wholeLeaderboard: ["noteSet", "curation", "wholeLeaderboard"] as const,
-  curationSummaries: ["curationSummary"] as const,
-  curationSummary: (section: string) => ["curationSummary", section] as const,
+  curationSummary: ["curationSummary"] as const,
   /** The pages of the projects overview in one order. */
   projectsPage: (order: string) => ["projects", order] as const,
   project: (slug: string) => ["project", slug] as const,

@@ -8,7 +8,6 @@ import {
   type CuratedNoteRow,
   type CurationFilters,
   type CurationRow,
-  type CurationSection,
 } from "@cn/core/bestNotes";
 import { fetchProjectBySlug, fetchProjectsPage, PROJECTS_PAGE_SIZE, type ProjectOrder } from "@cn/core/creators";
 import {
@@ -149,19 +148,19 @@ export const useProjectItems = (projectId: string) =>
 export const useFeedItem = (itemId: string | null) =>
   useQuery({ queryKey: queryKeys.feedItem(itemId ?? ""), queryFn: () => fetchFeedItem(itemId!), enabled: !!itemId });
 
-/** One note of a curation section, with its row. */
+/** One note of the leaderboard, with its row. */
 export interface CurationEntry {
   noteId: string;
   row: CurationRow;
 }
 
-/** The pages of one curation section, narrowed by the filters. */
-export function useCurationSection(section: CurationSection, filters: Omit<CurationFilters, "votedBefore">) {
-  const votedBefore = useMomentFor(JSON.stringify([section, filters]));
+/** The pages of the leaderboard, narrowed by the filters. */
+export function useLeaderboardPages(filters: Omit<CurationFilters, "votedBefore">) {
+  const votedBefore = useMomentFor(JSON.stringify(filters));
   return usePagedList({
-    queryKey: queryKeys.curationSection(section, filters),
+    queryKey: queryKeys.curationSection(filters),
     fetchPage: async (after: CurationRow | null) => {
-      const rows = await fetchCurationPage(section, { ...filters, votedBefore }, after);
+      const rows = await fetchCurationPage({ ...filters, votedBefore }, after);
       return loadCardPage(rows.map((row) => ({ noteId: row.note_id, row })));
     },
     firstBookmark: null as CurationRow | null,
@@ -169,9 +168,8 @@ export function useCurationSection(section: CurationSection, filters: Omit<Curat
   });
 }
 
-/** The section counts and the creators of the open section. */
-export const useCurationSummary = (section: CurationSection) =>
-  useQuery({ queryKey: queryKeys.curationSummary(section), queryFn: () => fetchCurationSummary(section) });
+/** How many notes the leaderboard holds, and its creators. */
+export const useCurationSummary = () => useQuery({ queryKey: queryKeys.curationSummary, queryFn: fetchCurationSummary });
 
 /** The whole leaderboard with its cards, which only the reorder mode loads. */
 export const useWholeLeaderboard = (enabled: boolean) =>

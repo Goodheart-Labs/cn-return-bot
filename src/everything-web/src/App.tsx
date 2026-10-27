@@ -42,7 +42,7 @@ export function App() {
             <JudgeExperimentPage section={route.section} navigate={navigate} />
           </Suspense>
         )
-        : route.view === "bestNotes" ? <BestNotesPage key={route.section} section={route.section} projectSlug={route.project} navigate={navigate} />
+        : route.view === "bestNotes" ? <BestNotesPage projectSlug={route.project} navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <ExtensionNudge route={route} navigate={navigate} />
