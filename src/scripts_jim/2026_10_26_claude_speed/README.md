@@ -13,4 +13,5 @@ Every script except `timeit.py` takes `--since` and `--until` as UTC dates (the 
 - `commits.py` looks at how commits fail and what Claude does next.
 - `ghcmds.py` times the gh, git fetch, ssh and sleep commands.
 - `edits.py <dir-prefix>...` relates each session's model time to the lines and files Claude edited.
+- `check_cadence.py <dir-prefix>...` shows how often Claude runs checks relative to its edits and commits.
 - `timeit.py check_timings.txt` times each step of the commit hook one after another. Replace `$SCRATCH` with a writable folder first.
