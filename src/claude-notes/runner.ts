@@ -17,11 +17,10 @@ import { spawnSync } from "child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
-import { judgePrompt, runJudge, type JudgeExample } from "./judge";
+import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
 import {
   claudeDraftsSince,
   draftsToJudge,
-  judgeExamples,
   latestEventId,
   postedAfter,
   recordUsage,
@@ -70,8 +69,6 @@ const PAUSE_FILE = process.env.CN_PAUSE_FILE ?? "/srv/ai-box/PAUSE";
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 const ENV_FILE = process.env.CN_ENV_FILE ?? "/etc/cn-notes/env";
 const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? path.join(REPO, "docs/note-examples.md");
-/** The judge's examples as the runner last built them, kept for reading. */
-const JUDGE_EXAMPLES_PATH = process.env.CN_JUDGE_EXAMPLES_PATH ?? path.join(path.dirname(EXAMPLES_PATH), "judge-examples.json");
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
 const RUNS_DIR = "/tmp/cn-notes";
 const POST_SESSION_PREFIX = "cn-post-";
@@ -96,9 +93,8 @@ const judging = new Set<string>();
 const judgeQueue: string[] = [];
 let lastPostedEventId = 0;
 const judgeFailures = new Map<string, number>();
-/** The labelled notes every judge sees, rebuilt once a day. */
-let examplesForJudge: JudgeExample[] = [];
-let judgeExamplesBuiltAt = 0;
+/** The labelled notes every judge sees, from the checkout's file. */
+const examplesForJudge: JudgeExample[] = JSON.parse(readFileSync(JUDGE_EXAMPLES_PATH, "utf8"));
 
 // ---------------------------------------------------------------------------
 // Prompts
@@ -355,22 +351,6 @@ async function judgeNotes(first: boolean) {
 // The examples file
 // ---------------------------------------------------------------------------
 
-/** Rebuilds the judge's examples once a day from the reviews, and writes them
- *  next to the note writer's examples for reading. A failed rebuild keeps the
- *  last examples until the next day. */
-async function refreshJudgeExamples() {
-  if (Date.now() - judgeExamplesBuiltAt < EXAMPLES_EVERY_MS) return;
-  judgeExamplesBuiltAt = Date.now();
-  try {
-    examplesForJudge = await judgeExamples();
-    writeFileSync(JUDGE_EXAMPLES_PATH, JSON.stringify(examplesForJudge, null, 1));
-    const helpful = examplesForJudge.filter((e) => e.outcome === "helpful").length;
-    console.log(`Judge examples rebuilt: ${helpful} helpful, ${examplesForJudge.length - helpful} not helpful`);
-  } catch (err) {
-    console.error(`The judge examples rebuild failed: ${(err as Error).message}`);
-  }
-}
-
 /** Rebuilds the examples once a day, outside the checkout. The first build
  *  starts from the checkout's copy, because a rebuild keeps old entries that
  *  prod no longer yields. */
@@ -408,7 +388,6 @@ async function main() {
   console.log(`Claude note writer runner started in ${REPO}`);
   for (let first = true; ; first = false) {
     refreshExamples();
-    await refreshJudgeExamples();
     await tick(first);
     await Bun.sleep(POLL_MS);
   }

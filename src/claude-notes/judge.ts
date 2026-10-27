@@ -7,8 +7,10 @@
  * The prompt is "prompt 1" of the experiment in
  * src/scripts_jim/2026_10_26_note_judge/, which Jim picked on 2026-10-27
  * because the longer prompts did no better, with labelled example notes in
- * front of the note to judge (few-shot). The runner rebuilds the examples once
- * a day from the reviews (`judgeExamples` in store.ts).
+ * front of the note to judge (few-shot). The examples are every note of the
+ * review page's Approved and Disapproved sections on the day the file
+ * judge-examples.json was built; `bun run claude-notes judge-examples`
+ * builds it again. GOO-619 is about a better set.
  *
  * The judge has full Claude Code tooling, so it may research the passage and
  * the sources on the web. It must not see the note's votes. So it runs in an
@@ -52,6 +54,9 @@ const JUDGE_SCHEMA = {
   required: ["reasoning", "p_helpful", "p_impactful"],
   additionalProperties: false,
 };
+
+/** The judge's examples, committed with the code. */
+export const JUDGE_EXAMPLES_PATH = path.join(import.meta.dir, "judge-examples.json");
 
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
 /** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */

@@ -17,7 +17,7 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
-import { noteTally, type NoteTallyFields } from "../everything-core/noteBelief";
+import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
 
@@ -445,8 +445,6 @@ export async function postedAfter(eventId: number): Promise<{ id: number; draftI
   return rows.flatMap((r) => (r.draft_id ? [{ id: r.id, draftId: r.draft_id }] : [])).sort((a, b) => a.id - b.id);
 }
 
-/** How many labelled notes the judge sees as examples. */
-const JUDGE_EXAMPLE_COUNT = 40;
 /** The seed of the examples' fixed shuffled order. In the order they were
  *  written, labels come in runs, and a run of one label right before the note
  *  to judge pulls the judge towards it. */
@@ -465,25 +463,18 @@ interface ExampleDraft {
   item: { url: string; title: string | null; project: { name: string } | null };
 }
 
-/** A note's label for the judge's examples. Jim's or Nathan's verdict decides.
- *  Without one the crowd does: rated helpful or only upvotes is helpful, rated
- *  not helpful or only downvotes is not helpful. The author's own automatic
- *  vote does not count. Any other note has no label. */
+/** A note's label for the judge's examples: the notes of the review page's
+ *  Approved and Disapproved sections. Jim's or Nathan's verdict decides, and
+ *  without one the overall rating does. Any other note has no label. */
 function exampleOutcome(draft: ExampleDraft, tally: NoteTallyFields | undefined): JudgeExample["outcome"] | null {
   if (draft.verdict === "approved") return "helpful";
   if (draft.verdict === "disapproved") return "not_helpful";
-  if (!tally) return null;
-  const status = noteStatus(tally);
-  if (status === "helpful" || status === "not_helpful") return status;
-  const votes = noteTally(tally);
-  const upvotes = votes.helpful + votes.somewhatHelpful;
-  if (upvotes > 0 && votes.notHelpful === 0) return "helpful";
-  if (votes.notHelpful > 0 && upvotes === 0) return "not_helpful";
-  return null;
+  const status = tally && noteStatus(tally);
+  return status === "helpful" || status === "not_helpful" ? status : null;
 }
 
-/** The judge's examples: the newest labelled notes, in a fixed shuffled
- *  order, each with the reviewers' note as its reason. */
+/** The judge's examples: every approved and disapproved note, in a fixed
+ *  shuffled order, each with the reviewers' note as its reason. */
 export async function judgeExamples(): Promise<JudgeExample[]> {
   const drafts = await fetchAllRows<ExampleDraft>(
     () =>
@@ -507,7 +498,6 @@ export async function judgeExamples(): Promise<JudgeExample[]> {
       return outcome ? [{ draft: d, outcome }] : [];
     })
     .sort((a, b) => (a.draft.created_at < b.draft.created_at ? 1 : -1))
-    .slice(0, JUDGE_EXAMPLE_COUNT)
     .map(({ draft: d, outcome }) => ({
       draftId: d.id,
       outcome,

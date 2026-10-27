@@ -22,9 +22,11 @@
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
  *   examples                      regenerates the examples file from prod
+ *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
  *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
 
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
+import { JUDGE_EXAMPLES_PATH } from "./judge";
 import {
   addDraft,
   answerMessage,
@@ -34,6 +36,7 @@ import {
   deletePipelineNote,
   finishItem,
   handBack,
+  judgeExamples,
   keepPipelineNote,
   type NewDraft,
   pipelineNotes,
@@ -148,6 +151,12 @@ async function main() {
       return print(await readUsage());
     case "examples":
       return import("./buildExamples");
+    case "judge-examples": {
+      const examples = await judgeExamples();
+      writeFileSync(JUDGE_EXAMPLES_PATH, JSON.stringify(examples, null, 1) + "\n");
+      const helpful = examples.filter((e) => e.outcome === "helpful").length;
+      return console.log(`Wrote ${examples.length} examples (${helpful} helpful, ${examples.length - helpful} not helpful) to ${JUDGE_EXAMPLES_PATH}`);
+    }
     default:
       throw new Error(`Unknown command ${command}. See the usage at the top of src/claude-notes/cli.ts`);
   }
