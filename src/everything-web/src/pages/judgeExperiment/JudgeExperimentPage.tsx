@@ -55,9 +55,10 @@ interface JudgeResult {
 }
 type Mode = "zero" | "few";
 /** Each prompt's results sit in the data folder under its own file prefix.
- *  The newest prompt comes first. Prompt 3 was tried on only two notes, so it
- *  has no scores. */
+ *  The newest prompt comes first. Prompts 3 and 4 were tried on only two
+ *  notes, so they have no scores. */
 const PROMPTS = [
+  { prefix: "v4-", title: "Prompt 4, Jim's flow chart", scored: false },
   { prefix: "v3-", title: "Prompt 3, with the most favourable reading", scored: false },
   { prefix: "", title: "Prompt 2, with the reader guidance", scored: true },
   { prefix: "v1-", title: "Prompt 1, the original", scored: true },
