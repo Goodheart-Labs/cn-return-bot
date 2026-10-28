@@ -180,7 +180,7 @@ function ChoiceEntry({ entry }: { entry: Extract<MenuEntry, { type: "choice" }> 
 function SubmenuLabel({ entry, arrow }: { entry: SubmenuEntry; arrow: ReactNode }) {
   return (
     <>
-      <span className="max-w-[85%] shrink-0 truncate">{entry.label}</span>
+      <span className="max-w-[75%] shrink-0 truncate">{entry.label}</span>
       <span className="ml-auto flex min-w-0 items-center gap-1 pl-3 text-xs font-normal text-fg-muted">
         {entry.value !== undefined && <span className="min-w-0 truncate">{entry.value}</span>}
         <span className="shrink-0">{arrow}</span>

@@ -29,9 +29,9 @@ export const REVIEW_FIELDS: FieldDef[] = [
     multiple: true,
     sortable: false,
     options: [
-      { value: "not_posted", label: "Not posted yet" },
-      { value: "posted", label: "Posted on X" },
-      { value: "wont_post", label: "We won't post it" },
+      { value: "not_posted", label: "Not posted" },
+      { value: "posted", label: "Posted" },
+      { value: "wont_post", label: "Won't post", hint: "We decided not to post it" },
     ],
   },
   { id: "my_vote", label: "My vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
@@ -54,7 +54,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
   { id: "p_impactful", label: "P(impactful)", hint: "The note judge's guess of the chance that the note makes our leaderboard", kind: "percent", sortable: true },
   { id: "helpful_votes", label: "Helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
   { id: "not_helpful_votes", label: "Not helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
-  { id: "somewhat_votes", label: "Somewhat helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
+  { id: "somewhat_votes", label: "Somewhat helpful", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
   { id: "votes", label: "All votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
   {
     id: "views",
