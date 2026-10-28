@@ -174,14 +174,17 @@ function ChoiceEntry({ entry }: { entry: Extract<MenuEntry, { type: "choice" }> 
   );
 }
 
+/** A submenu's entry: its name, then a summary of its state and its arrow at
+ *  the right. The name keeps its room first, and the summary is cut short to
+ *  what is left. */
 function SubmenuLabel({ entry, arrow }: { entry: SubmenuEntry; arrow: ReactNode }) {
   return (
     <>
-      <span className="min-w-0 truncate">{entry.label}</span>
-      <EntryEnd>
-        {entry.value !== undefined && <span className="max-w-24 truncate">{entry.value}</span>}
-        {arrow}
-      </EntryEnd>
+      <span className="max-w-[85%] shrink-0 truncate">{entry.label}</span>
+      <span className="ml-auto flex min-w-0 items-center gap-1 pl-3 text-xs font-normal text-fg-muted">
+        {entry.value !== undefined && <span className="min-w-0 truncate">{entry.value}</span>}
+        <span className="shrink-0">{arrow}</span>
+      </span>
     </>
   );
 }
