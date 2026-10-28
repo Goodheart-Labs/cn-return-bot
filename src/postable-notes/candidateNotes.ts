@@ -34,10 +34,8 @@ function describeReason(reason: Reason): string {
       const team = reason.fromTeam > 0 ? `, ${reason.fromTeam} of them from the team` : "";
       return `${reason.helpful} new Helpful and ${reason.somewhatHelpful} new Somewhat helpful votes${team}`;
     }
-    case "written_by_person":
-      return `written by ${reason.author}`;
-    case "important_creator":
-      return "new note on an important creator";
+    case "judged_promising":
+      return `the judge expects it to be rated helpful (${reason.pHelpful.toFixed(2)})`;
   }
 }
 
@@ -54,6 +52,12 @@ function formatCandidate(candidate: Candidate): string {
     `Sources: ${[...new Set(candidate.sources.map((source) => source.url))].join(" ") || "none"}`,
     `Link: ${candidate.minisiteUrl ?? candidate.noteUrl}`,
   ];
+  const judge = candidate.judge;
+  lines.splice(
+    3,
+    0,
+    `Judge: ${judge ? `P(Helpful) ${judge.pHelpful.toFixed(2)}, P(Impactful) ${judge.pImpactful.toFixed(2)}` : "not judged"}${candidate.importantCreator ? "; on an important creator" : ""}`,
+  );
   if (candidate.postedAt) lines.push(`Posted before on ${candidate.postedAt.slice(0, 10)}`);
   return lines.join("\n");
 }

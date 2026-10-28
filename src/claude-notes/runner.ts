@@ -5,8 +5,9 @@
  * Claude for it, and finishes or hands back the item when that Claude is done.
  * It also starts one Claude for each reviewer message on the review page, and
  * one Claude for each X tweet the X run handed to it (GOO-527, see
- * src/pipeline/orchestration/claudeTweets.ts). Nobody judges the notes in
- * between; reviewers do that on the review page.
+ * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
+ * every note as soon as it is posted (GOO-591), whose two probabilities the
+ * review page shows.
  *
  * Every Claude runs in its own tmux session, so a person can attach and watch
  * it. Its files are in its run folder under /tmp/cn-notes, the place Nathan's
@@ -18,8 +19,12 @@ import { spawnSync } from "child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
+import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
 import {
   claudeDraftsSince,
+  draftsToJudge,
+  latestEventId,
+  postedAfter,
   recordUsage,
   claudeQueue,
   finishItem,
@@ -29,7 +34,9 @@ import {
   postDir,
   readDraft,
   readItem,
+  readJudgedNote,
   readSettings,
+  saveJudgement,
   skipItem,
   unansweredMessages,
 } from "./store";
@@ -58,6 +65,9 @@ const USAGE_READ_EVERY_MS = 5 * 60_000;
 /** A Claude that exits without a report gets one more try. */
 const MAX_ATTEMPTS = 2;
 const EXAMPLES_EVERY_MS = 24 * 3600_000;
+/** Judges running at once. They share Nathan's weekly limit with the posts,
+ *  so they run one at a time. */
+const MAX_JUDGES_RUNNING = 1;
 
 const PAUSE_FILE = process.env.CN_PAUSE_FILE ?? "/srv/ai-box/PAUSE";
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
@@ -85,6 +95,16 @@ const firstSeen = new Map<string, number>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
 let examplesBuiltAt = 0;
+/** Drafts being judged now, the ones still to judge, the last "posted" entry
+ *  of the log the runner has seen, and how often the judge failed on each
+ *  draft. A draft that failed MAX_ATTEMPTS times waits for a restart of the
+ *  runner. */
+const judging = new Set<string>();
+const judgeQueue: string[] = [];
+let lastPostedEventId = 0;
+const judgeFailures = new Map<string, number>();
+/** The labelled notes every judge sees, from the checkout's file. */
+const examplesForJudge: JudgeExample[] = JSON.parse(readFileSync(JUDGE_EXAMPLES_PATH, "utf8"));
 
 // ---------------------------------------------------------------------------
 // Prompts
@@ -129,9 +149,9 @@ Your run folder: ${params.runDir}
 
 Read src/claude-notes/agentBrief.md and ${EXAMPLES_PATH} first. Research on the web when the question needs it. Then write a JSON file to your run folder and run \`bun run claude-notes answer <file>\`:
 
-{ "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the new note text>", "sources": [<only with a new note: sources with Haiku-checked quotes, as in the brief>], "reason": "<only with a new note: why it changed>" }
+{ "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the improved note text>", "sources": [<only with a new note whose sources changed: sources with Haiku-checked quotes, as in the brief>], "reason": "<only with a new note: why it changed>" }
 
-If the reviewer asks you to change the note, change it. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
+If the reviewer asks you to change the note, write the improved text as "note". It does not replace the note: the reviewer sees it on the review page and posts it if they agree. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -376,6 +396,48 @@ async function endAnswers() {
 }
 
 // ---------------------------------------------------------------------------
+// The note judge
+// ---------------------------------------------------------------------------
+
+async function judgeOne(draftId: string) {
+  try {
+    const note = await readJudgedNote(draftId);
+    const examples = examplesForJudge.filter((e) => e.draftId !== draftId);
+    const judgement = await runJudge(runFolder(`judge/${draftId}-${Date.now()}`), judgePrompt(note, examples));
+    await saveJudgement(draftId, note.note, judgement);
+    console.log(`Judged draft ${draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
+  } catch (err) {
+    judgeFailures.set(draftId, (judgeFailures.get(draftId) ?? 0) + 1);
+    console.error(`Could not judge draft ${draftId}: ${(err as Error).message}`);
+  }
+}
+
+function queueForJudge(draftId: string) {
+  if (!judging.has(draftId) && !judgeQueue.includes(draftId) && (judgeFailures.get(draftId) ?? 0) < MAX_ATTEMPTS) judgeQueue.push(draftId);
+}
+
+/** Judges every note as soon as it is posted, one at a time, while the runner
+ *  may start posts. On its first tick the runner also queues every note that
+ *  still has no answer for its current text, newest first. After that it only
+ *  reads the posts the log recorded since the last tick. */
+async function judgeNotes(first: boolean) {
+  if (first) {
+    lastPostedEventId = await latestEventId();
+    for (const draftId of await draftsToJudge()) queueForJudge(draftId);
+  } else {
+    for (const posted of await postedAfter(lastPostedEventId)) {
+      queueForJudge(posted.draftId);
+      lastPostedEventId = posted.id;
+    }
+  }
+  while (judging.size < MAX_JUDGES_RUNNING && judgeQueue.length > 0 && (await mayStartPosts())) {
+    const draftId = judgeQueue.shift()!;
+    judging.add(draftId);
+    void judgeOne(draftId).finally(() => judging.delete(draftId));
+  }
+}
+
+// ---------------------------------------------------------------------------
 // The examples file
 // ---------------------------------------------------------------------------
 
@@ -399,6 +461,7 @@ async function tick(first: boolean) {
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPost(run);
   await endAnswers();
   await tickTweets(first);
+  await judgeNotes(first);
   if ((await readSettings()).writer !== "claude") return;
   if (!existsSync(PAUSE_FILE)) await startAnswers();
   const queue = await claudeQueue();

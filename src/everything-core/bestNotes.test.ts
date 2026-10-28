@@ -1,15 +1,14 @@
 import { expect, test } from "bun:test";
-import { positionAfterMove, positionsBetween } from "./bestNotes";
+import { positionAfterMove, positionBetween } from "./bestNotes";
 
-test("notes placed between two neighbours are spaced evenly between them", () => {
-  expect(positionsBetween(1, 2, 1)).toEqual([1.5]);
-  expect(positionsBetween(0, 3, 2)).toEqual([1, 2]);
+test("a note placed between two neighbours lands halfway", () => {
+  expect(positionBetween(1, 2)).toBe(1.5);
 });
 
-test("notes placed at an end of the list go one apart", () => {
-  expect(positionsBetween(5, undefined, 2)).toEqual([6, 7]);
-  expect(positionsBetween(undefined, 5, 2)).toEqual([3, 4]);
-  expect(positionsBetween(undefined, undefined, 3)).toEqual([0, 1, 2]);
+test("a note placed at an end of the list goes one past it", () => {
+  expect(positionBetween(5, undefined)).toBe(6);
+  expect(positionBetween(undefined, 5)).toBe(4);
+  expect(positionBetween(undefined, undefined)).toBe(0);
 });
 
 const LIST = [

@@ -111,6 +111,7 @@ interface ReviewedDraft {
   passage: string;
   note: string;
   status: string;
+  review_note: string | null;
   item: { url: string; title: string | null };
 }
 interface ReviewEvent {
@@ -121,18 +122,23 @@ interface ReviewEvent {
   data: Record<string, string>;
 }
 
+/** What each review step is called in an entry's heading. Since migration 143
+ *  a vote of Jim or Nathan is the review, and "rejected" is the old button. */
+const VERDICT_WORDS: Record<string, string> = { approved: "approved", disapproved: "disapproved", rejected: "rejected", deleted: "deleted from the site" };
+
 /** One entry per reviewer step that teaches something: an approval, a
- *  rejection with its reason, and a rewrite with the message that asked for it. */
+ *  disapproval or a deletion with the reviewers' shared note, and a rewrite
+ *  with the message that asked for it. */
 async function reviewDecisions(): Promise<string[]> {
   const events = (
     await fetchAllRows<ReviewEvent & { id: number }>(
-      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", ["approved", "rejected", "rewritten", "message"]).not("draft_id", "is", null),
+      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", [...Object.keys(VERDICT_WORDS), "rewritten", "message"]).not("draft_id", "is", null),
       "id",
     )
   ).sort((a, b) => a.id - b.id);
   const draftIds = [...new Set(events.map((e) => e.draft_id))];
   const drafts = await fetchInBatches<ReviewedDraft>(
-    (chunk) => db.from("everything_claude_drafts").select("id, passage, note, status, item:everything_items(url, title)").in("id", chunk),
+    (chunk) => db.from("everything_claude_drafts").select("id, passage, note, status, review_note, item:everything_items(url, title)").in("id", chunk),
     draftIds,
     "id",
   );
@@ -144,10 +150,11 @@ async function reviewDecisions(): Promise<string[]> {
     if (!d) continue;
     const claim = { claim: d.passage, context_quote: d.passage, item: d.item };
     if (e.type === "message") lastMessage = new Map(lastMessage).set(e.draft_id, e);
-    else if (e.type === "approved") entries.push(noteSection(`${PERSON[e.actor]} approved (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note));
-    else if (e.type === "rejected")
-      entries.push(noteSection(`${PERSON[e.actor]} rejected (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, e.data.reason ? `\n${PERSON[e.actor]}'s reason: ${e.data.reason}` : ""));
-    else if (e.type === "rewritten") {
+    else if (VERDICT_WORDS[e.type]) {
+      // Jim's and Nathan's shared note on the draft says why it is good or bad.
+      const reason = e.data.reason || d.review_note;
+      entries.push(noteSection(`${PERSON[e.actor]} ${VERDICT_WORDS[e.type]} (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, reason ? `\nThe reviewers' note: ${reason}` : ""));
+    } else if (e.type === "rewritten") {
       const previous = e.data.previous_note ?? e.data.previousNote;
       const asked = lastMessage.get(e.draft_id);
       if (!previous || !asked) continue;

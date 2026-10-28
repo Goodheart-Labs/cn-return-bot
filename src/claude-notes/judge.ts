@@ -1,0 +1,169 @@
+/* The note judge (GOO-591). One headless Claude Code run reads one note of
+ * the Claude note writer and predicts two things: the probability that the
+ * note ends up rated helpful by human raters, and the probability that the
+ * team adds it to its leaderboard of best notes. The runner on Nathan's ai-box
+ * judges every note, and the review page shows both numbers.
+ *
+ * The prompt is "prompt 1" of the experiment in
+ * src/scripts_jim/2026_10_26_note_judge/, which Jim picked on 2026-10-27
+ * because the longer prompts did no better, with labelled example notes in
+ * front of the note to judge (few-shot). The examples are every note of the
+ * review page's Approved and Disapproved sections on the day the file
+ * judge-examples.json was built; `bun run claude-notes judge-examples`
+ * builds it again. GOO-619 is about a better set.
+ *
+ * The judge has full Claude Code tooling, so it may research the passage and
+ * the sources on the web. It must not see the note's votes. So it runs in an
+ * empty folder instead of the checkout, without the runner's secrets, and it
+ * may not fetch commonnotes.net. */
+
+import { mkdirSync, writeFileSync } from "fs";
+import { homedir } from "os";
+import * as path from "path";
+
+export interface JudgedNote {
+  post: { title: string | null; url: string; creator: string | null };
+  passage: string;
+  contextParagraph: string | null;
+  note: string;
+  sources: { url: string; quote: string; explanation: string }[];
+}
+
+/** A note whose outcome is known, shown to the judge as an example. */
+export interface JudgeExample extends JudgedNote {
+  draftId: string;
+  outcome: "helpful" | "not_helpful";
+  /** Jim's and Nathan's note on why it is good or bad, when they wrote one. */
+  reason: string | null;
+}
+
+export interface Judgement {
+  reasoning: string;
+  pHelpful: number;
+  pImpactful: number;
+}
+
+/** The judge thinks out loud first, so the reasoning comes before the numbers. */
+const JUDGE_SCHEMA = {
+  type: "object",
+  properties: {
+    reasoning: { type: "string" },
+    p_helpful: { type: "number", minimum: 0, maximum: 1 },
+    p_impactful: { type: "number", minimum: 0, maximum: 1 },
+  },
+  required: ["reasoning", "p_helpful", "p_impactful"],
+  additionalProperties: false,
+};
+
+/** The judge's examples, committed with the code. */
+export const JUDGE_EXAMPLES_PATH = path.join(import.meta.dir, "judge-examples.json");
+
+const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
+/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
+const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
+/** A judge that researches for longer than this is stuck. */
+const JUDGE_TIMEOUT_MS = 20 * 60_000;
+/** The website shows each note's votes, which are what the judge predicts. */
+const BLOCKED_TOOLS = ["WebFetch(domain:commonnotes.net)", "WebFetch(domain:www.commonnotes.net)"];
+/** The only environment the judge gets. Claude Code finds its login in the
+ *  home folder, and the runner's database keys stay out of reach. */
+const JUDGE_ENV_NAMES = ["HOME", "PATH", "USER", "LANG"];
+
+export function noteBlock(note: JudgedNote, withParagraph: boolean): string {
+  const sources = note.sources.map((s, i) => `${i + 1}. ${s.url}\n   Quote: ${s.quote}\n   Why it matters: ${s.explanation}`).join("\n");
+  return [
+    `Post: ${note.post.title ?? "(no title)"} by ${note.post.creator ?? "an unknown creator"}, ${note.post.url}`,
+    "",
+    "Passage:",
+    note.passage,
+    ...(withParagraph && note.contextParagraph ? ["", "The paragraph around it:", note.contextParagraph] : []),
+    "",
+    "Note:",
+    note.note,
+    "",
+    "Sources:",
+    sources || "(none)",
+  ].join("\n");
+}
+
+const OUTCOME_LABELS: Record<JudgeExample["outcome"], string> = { helpful: "Helpful", not_helpful: "Not helpful" };
+
+export function examplesBlock(examples: JudgeExample[]): string {
+  const entries = examples.map((e, i) =>
+    [`### Example ${i + 1}: ${OUTCOME_LABELS[e.outcome]}`, noteBlock(e, false), ...(e.reason ? ["", `The reviewers' note: ${e.reason}`] : [])].join("\n"),
+  );
+  return ["Here are earlier notes and how they were judged.", "", ...entries].join("\n\n");
+}
+
+/** The same random order every time, from a seeded generator (mulberry32). */
+export function shuffled<T>(items: T[], seed: number): T[] {
+  let state = seed;
+  const random = () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 2 ** 32;
+  };
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j]!, result[i]!];
+  }
+  return result;
+}
+
+export const JUDGE_INTRO =
+  "Please judge this Common Note. Common Notes add additional context to articles and videos on the web. A note will most often point out something misleading or false, provide an explanation when something could easily be misunderstood, or provide additional details if they are useful to understand the author's point. The note was generated by an AI research agent.";
+
+export const JUDGE_QUESTIONS = `Answer two questions about this note.
+
+p_helpful: Please give a probability that the note will be rated helpful, as opposed to unhelpful, by human raters. In most cases where a note gets rated unhelpful, the note is true but misses the point in some way. So ask yourself: would a reader or watcher find this note useful, or would they find it unnecessary or even confusing?
+
+p_impactful: The Common Notes team keeps a leaderboard of its best notes, the ones it shows off and posts on X. Suppose the team looks at this note and decides whether to add it. What is the probability that they add it?
+
+You may research the passage, the post and the sources on the web. Do not look this note up on commonnotes.net or in any database, because its ratings are what you are predicting.`;
+
+export const judgePrompt = (note: JudgedNote, examples: JudgeExample[] = []) =>
+  [JUDGE_INTRO, ...(examples.length > 0 ? [examplesBlock(examples), "## The note to judge"] : []), noteBlock(note, true), JUDGE_QUESTIONS].join("\n\n");
+
+/** Runs one judge in its own empty folder and returns its answer. The folder
+ *  keeps the prompt and Claude Code's full output for later reading. */
+export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { costUsd: number; turns: number }> {
+  mkdirSync(runDir, { recursive: true });
+  writeFileSync(path.join(runDir, "prompt.md"), prompt);
+  const child = Bun.spawn(
+    [
+      CLAUDE_BIN,
+      "-p",
+      prompt,
+      "--model",
+      "opus",
+      "--permission-mode",
+      "bypassPermissions",
+      "--settings",
+      RUN_SETTINGS,
+      "--disallowedTools",
+      ...BLOCKED_TOOLS,
+      "--output-format",
+      "json",
+      "--json-schema",
+      JSON.stringify(JUDGE_SCHEMA),
+      "--no-session-persistence",
+    ],
+    {
+      cwd: runDir,
+      env: Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
+      stdout: "pipe",
+      stderr: "pipe",
+      timeout: JUDGE_TIMEOUT_MS,
+    },
+  );
+  const [stdout, stderr, exitCode] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text(), child.exited]);
+  writeFileSync(path.join(runDir, "output.json"), stdout);
+  if (stderr) writeFileSync(path.join(runDir, "stderr.txt"), stderr);
+  if (exitCode !== 0) throw new Error(`The judge exited with ${exitCode}: ${stderr.slice(0, 500)}`);
+  const output = JSON.parse(stdout);
+  const answer = output.structured_output;
+  if (output.is_error || !answer) throw new Error(`The judge gave no answer: ${String(output.result).slice(0, 500)}`);
+  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful, costUsd: output.total_cost_usd, turns: output.num_turns };
+}

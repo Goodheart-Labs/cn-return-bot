@@ -22,10 +22,9 @@ export const queryKeys = {
   /** The admins' curation of the best notes. Every section's pages and the
    *  whole leaderboard sit under one prefix, so a change reloads them all. */
   curation: ["noteSet", "curation"] as const,
-  curationSection: (section: string, filters: unknown) => ["noteSet", "curation", "section", section, filters] as const,
+  curationSection: (filters: unknown) => ["noteSet", "curation", "section", filters] as const,
   wholeLeaderboard: ["noteSet", "curation", "wholeLeaderboard"] as const,
-  curationSummaries: ["curationSummary"] as const,
-  curationSummary: (section: string) => ["curationSummary", section] as const,
+  curationSummary: ["curationSummary"] as const,
   /** The pages of the projects overview in one order. */
   projectsPage: (order: string) => ["projects", order] as const,
   project: (slug: string) => ["project", slug] as const,
@@ -35,11 +34,14 @@ export const queryKeys = {
   leaderboard: ["leaderboard"] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
-  noteReviewSummary: ["noteReview", "summary"] as const,
-  /** The pages of one sidebar section that the admin scrolled through. */
-  noteReviewSection: (section: string) => ["noteReview", "section", section] as const,
+  /** The sidebar's counts, under every set of filters. */
+  noteReviewSummaries: ["noteReview", "summary"] as const,
+  noteReviewSummary: (filters: unknown) => ["noteReview", "summary", filters] as const,
+  /** The pages of every sidebar section, and of one under one filter. */
+  noteReviewSections: ["noteReview", "section"] as const,
+  noteReviewSection: (section: string, filters: unknown) => ["noteReview", "section", section, filters] as const,
   /** The newest page of a section, polled to notice new drafts. */
-  noteReviewNewest: (section: string) => ["noteReview", "newest", section] as const,
+  noteReviewNewest: (section: string, filters: unknown) => ["noteReview", "newest", section, filters] as const,
   /** The live notes of the drafts on screen. They sit under the noteSet
    *  prefix, so a vote on one of them updates it here too. */
   noteReviewNoteSet: (noteIds: string[]) => ["noteSet", "noteReview", ...noteIds] as const,

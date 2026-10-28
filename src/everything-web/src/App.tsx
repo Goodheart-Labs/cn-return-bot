@@ -16,6 +16,7 @@ import { NotesView } from "./pages/NotesView";
 /** The dashboard's charts pull in a chart library that no reader needs, so
  *  its code loads only when an admin opens the page. */
 const DashboardPage = lazy(() => import("./pages/dashboard/DashboardPage").then((module) => ({ default: module.DashboardPage })));
+const JudgeExperimentPage = lazy(() => import("./pages/judgeExperiment/JudgeExperimentPage").then((module) => ({ default: module.JudgeExperimentPage })));
 
 /** The website's frame: the header on every page, the page the route names
  *  below it, and the extension nudge, which counts time across pages. */
@@ -36,7 +37,12 @@ export function App() {
             <DashboardPage navigate={navigate} />
           </Suspense>
         )
-        : route.view === "bestNotes" ? <BestNotesPage key={route.section} section={route.section} projectSlug={route.project} navigate={navigate} />
+        : route.view === "judgeExperiment" ? (
+          <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
+            <JudgeExperimentPage section={route.section} navigate={navigate} />
+          </Suspense>
+        )
+        : route.view === "bestNotes" ? <BestNotesPage projectSlug={route.project} navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <ExtensionNudge route={route} navigate={navigate} />
