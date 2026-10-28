@@ -1,6 +1,6 @@
 /* The Claude note writer's command line (GOO-507). The runner on Nathan's
  * ai-box and the Claude agents it starts call it to read the queue, save
- * drafts, judge the pipeline's notes, finish or hand back items, answer
+ * drafts, judge the pipeline's notes, finish items, answer
  * reviewers and change the settings. Every write is logged in
  * everything_claude_events.
  *
@@ -13,7 +13,6 @@
  *   keep-pipeline-note <item id> <note id> <reason>
  *   delete-pipeline-note <item id> <note id> <reason>
  *   finish <item id> <summary.json>
- *   hand-back <item id> <reason>
  *   skip <item id> <reason>       marks a post checked because nothing in it is worth checking
  *   posted-since <ISO time>       the notes Claude posted since then, newest first
  *   messages                      reviewer messages still waiting for an answer
@@ -35,7 +34,6 @@ import {
   claudeQueue,
   deletePipelineNote,
   finishItem,
-  handBack,
   judgeExamples,
   keepPipelineNote,
   type NewDraft,
@@ -133,8 +131,6 @@ async function main() {
       return finishItem(arg(0), readJson(arg(1)));
     case "skip":
       return skipItem(arg(0), args.slice(1).join(" "));
-    case "hand-back":
-      return handBack(arg(0), args.slice(1).join(" "));
     case "posted-since":
       return print(await postedSince(arg(0)));
     case "run":

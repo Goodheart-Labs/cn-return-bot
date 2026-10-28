@@ -421,10 +421,43 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
 }
 
 /** While the Claude note writer is on (everything_claude_settings.writer =
- *  'claude'), the pipeline takes only the items Claude handed back to it. */
+ *  'claude'), Claude takes every queued item and the pipeline takes none. */
 export async function claudeWritesNotes(): Promise<boolean> {
   const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer").single()) as { writer: string };
   return settings.writer === "claude";
+}
+
+/** A post the Claude note writer failed on, from its item_failed event. */
+export interface ClaudeFailure {
+  at: string;
+  url: string;
+  reason: string;
+}
+
+/** A run reports at most this many failures. Any more wait for the next run,
+ *  which is red anyway. */
+const MAX_CLAUDE_FAILURES_PER_RUN = 50;
+
+/** The Claude note writer's failures that no feed run has reported yet. They
+ *  are marked as reported here (migration 153), so each failure turns exactly
+ *  one run red, however far apart the runs are. */
+export async function takeUnreportedClaudeFailures(): Promise<ClaudeFailure[]> {
+  const db = getSupabaseClient();
+  const schedule = throwOnError(await db.from("everything_feed_schedule").select("claude_failures_reported_through").single()) as {
+    claude_failures_reported_through: string;
+  };
+  const events = throwOnError(
+    await db
+      .from("everything_claude_events")
+      .select("at, data, item:everything_items(url)")
+      .eq("type", "item_failed")
+      .gt("at", schedule.claude_failures_reported_through)
+      .order("at")
+      .limit(MAX_CLAUDE_FAILURES_PER_RUN),
+  ) as { at: string; data: { reason: string }; item: { url: string } }[];
+  if (events.length === 0) return [];
+  throwOnError(await db.from("everything_feed_schedule").update({ claude_failures_reported_through: events.at(-1)!.at }).eq("id", true));
+  return events.map((e) => ({ at: e.at, url: e.item.url, reason: e.data.reason }));
 }
 
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
@@ -455,31 +488,6 @@ export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   };
 }
 
-/** Sorts the queued items while the Claude note writer is on. Claude works on
- *  an item it took while the item stays queued, so a queued item is one of
- *  three things: handed back to the pipeline, taken by Claude, or still
- *  waiting for Claude to take it. */
-export async function sortClaudeQueue(queue: QueuedItemSummary[]): Promise<{ waiting: QueuedItemSummary[]; handedBack: QueuedItemSummary[] }> {
-  const queued = queue.filter((item) => item.status === "queued");
-  const ids = queued.map((item) => item.id);
-  const db = getSupabaseClient();
-  const [handbacks, takes] = await Promise.all([
-    fetchInBatches<{ item_id: string }>((chunk) => db.from("everything_claude_handbacks").select("item_id").in("item_id", chunk), ids, "item_id", { label: "claudeHandbacks" }),
-    fetchInBatches<{ id: number; item_id: string }>(
-      (chunk) => db.from("everything_claude_events").select("id, item_id").eq("type", "item_taken").in("item_id", chunk),
-      ids,
-      "id",
-      { label: "claudeTakes" },
-    ),
-  ]);
-  const handedBack = new Set(handbacks.map((h) => h.item_id));
-  const taken = new Set(takes.map((t) => t.item_id));
-  return {
-    waiting: queued.filter((item) => !handedBack.has(item.id) && !taken.has(item.id)),
-    handedBack: queued.filter((item) => handedBack.has(item.id)),
-  };
-}
-
 /** Moves the next queued item to `processing` and returns it. The highest
  *  priority tier wins, and within a tier the newest published content comes
  *  first. An item with no published date yet, which is typically a freshly
@@ -490,16 +498,12 @@ export async function sortClaudeQueue(queue: QueuedItemSummary[]): Promise<{ wai
  *  safe because each tier has exactly one worker: the intake service on the
  *  machine takes only the requested tier, and the Actions feed run takes only
  *  the tiers below it. Two workers exist, but they can never want the same
- *  row. While the Claude note writer is on, both take only what it handed
- *  back, and Claude takes the rest. */
+ *  row. While the Claude note writer is on, neither takes anything, and
+ *  Claude takes every item. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
+  if (await claudeWritesNotes()) return null;
   const db = getSupabaseClient();
-  // The inner join keeps only items with a hand-back row. A list of handed-back
-  // ids in the request would grow with every hand-back and break the URL.
-  let query = db
-    .from("everything_items")
-    .select((await claudeWritesNotes()) ? `${ITEM_COLUMNS}, everything_claude_handbacks!inner(item_id)` : ITEM_COLUMNS)
-    .eq("status", "queued");
+  let query = db.from("everything_items").select(ITEM_COLUMNS).eq("status", "queued");
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)
@@ -514,8 +518,7 @@ export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<E
   );
   if (!item) return null;
   throwOnError(await db.from("everything_items").update({ status: "processing" }).eq("id", item.id));
-  const { everything_claude_handbacks: _handback, ...claimed } = item as EverythingItem & { everything_claude_handbacks?: unknown };
-  return { ...claimed, status: "processing" };
+  return { ...item, status: "processing" };
 }
 
 export async function fetchItem(id: string): Promise<EverythingItem> {

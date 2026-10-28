@@ -14,7 +14,7 @@ export type Take = { kind: "taken"; dir: string } | { kind: "skipped"; reason: s
 
 /** A post without stored text, such as a new video or a requested page, is
  *  read first the way the pipeline reads it. If that read fails, this throws,
- *  and the item should be handed back. */
+ *  and the caller records the failure on the item. */
 export async function take(itemId: string): Promise<Take> {
   if (await nathanNotedItem(itemId)) {
     await skipItem(itemId, NATHAN_SKIP_REASON);
