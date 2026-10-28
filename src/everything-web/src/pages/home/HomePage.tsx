@@ -4,7 +4,7 @@ import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { NextIcon, PreviousIcon } from "@cn/ui/icons";
 import { BrowserLogo, DesktopOnly, StoreButton } from "../../components/StoreButton";
-import { BROWSERS, canInstallExtensions, isListed } from "../../lib/extensionStores";
+import { BROWSERS, canInstallExtensions, isListed, trackGetExtensionClick } from "../../lib/extensionStores";
 import type { Route } from "../../lib/routing";
 import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall } from "./content";
 import { useCarousel } from "./useCarousel";
@@ -124,7 +124,14 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
           {!desktop ? (
             <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />
           ) : (
-            <button type="button" onClick={scrollToInstall} className={buttonVariants({ variant: "primary", size: "lg" })}>
+            <button
+              type="button"
+              onClick={() => {
+                trackGetExtensionClick("home");
+                scrollToInstall();
+              }}
+              className={buttonVariants({ variant: "primary", size: "lg" })}
+            >
               Get the extension
             </button>
           )}

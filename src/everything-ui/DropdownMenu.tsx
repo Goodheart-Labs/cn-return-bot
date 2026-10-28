@@ -57,7 +57,7 @@ const PHONE_QUERY = "(max-width: 639px)";
 const panelClass = cn(
   cardVariants({ elevation: "floating" }),
   "z-50 w-64 overflow-y-auto p-1.5 text-sm [direction:ltr]",
-  "max-h-[min(28rem,var(--radix-dropdown-menu-content-available-height))]",
+  "max-h-[var(--radix-dropdown-menu-content-available-height)]",
 );
 
 /** A menu row. Radix moves focus to the row under the pointer, so a row shows

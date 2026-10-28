@@ -54,6 +54,7 @@ export const queryKeys = {
   dashboardCreatorRanking: ["dashboard", "creatorRanking"] as const,
   dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
   dashboardClaudeUsage: (sinceDays: number) => ["dashboard", "claudeUsage", sinceDays] as const,
+  dashboardClicks: (sinceDays: number) => ["dashboard", "clicks", sinceDays] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

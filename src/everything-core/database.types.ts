@@ -1405,6 +1405,11 @@ export type Database = {
           sort_order: number
           top_posts_attempted_at: string | null
           top_posts_refreshed_at: string | null
+          x_handle: string | null
+          x_handle_checked_at: string | null
+          x_handle_checked_by: string | null
+          x_handle_evidence: string | null
+          x_handle_status: string | null
         }
         Insert: {
           avatar_refreshed_at?: string | null
@@ -1419,6 +1424,11 @@ export type Database = {
           sort_order?: number
           top_posts_attempted_at?: string | null
           top_posts_refreshed_at?: string | null
+          x_handle?: string | null
+          x_handle_checked_at?: string | null
+          x_handle_checked_by?: string | null
+          x_handle_evidence?: string | null
+          x_handle_status?: string | null
         }
         Update: {
           avatar_refreshed_at?: string | null
@@ -1433,6 +1443,11 @@ export type Database = {
           sort_order?: number
           top_posts_attempted_at?: string | null
           top_posts_refreshed_at?: string | null
+          x_handle?: string | null
+          x_handle_checked_at?: string | null
+          x_handle_checked_by?: string | null
+          x_handle_evidence?: string | null
+          x_handle_status?: string | null
         }
         Relationships: []
       }
@@ -2918,6 +2933,7 @@ export type Database = {
         Args: { p_actor?: string; p_draft: string; p_reason: string }
         Returns: undefined
       }
+      everything_click_counts: { Args: { p_since: string }; Returns: Json }
       everything_cost_since: { Args: { since: string }; Returns: number }
       everything_create_minisite: {
         Args: {
@@ -3357,6 +3373,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      everything_review_signed: {
+        Args: { p_sort: Json; p_value: string }
+        Returns: string
+      }
       everything_review_sort_key: { Args: { p_sorts: Json }; Returns: string }
       everything_review_summary: {
         Args: { p_request: Json }
@@ -3371,6 +3391,15 @@ export type Database = {
       everything_reviewer_of: { Args: { p_user: string }; Returns: string }
       everything_set_feed_alarm: {
         Args: { next_at: string; reason: string }
+        Returns: undefined
+      }
+      everything_set_x_handle: {
+        Args: {
+          p_actor?: string
+          p_evidence: string
+          p_handle: string
+          p_project_slug: string
+        }
         Returns: undefined
       }
       everything_set_x_mark: {
@@ -3548,6 +3577,9 @@ export type Database = {
         review_note: boolean | null
         note_length: number | null
         sources: number | null
+        creator_x: string | null
+        creator_x_handle: string | null
+        creator_x_evidence: string | null
       }
     }
   }

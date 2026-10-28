@@ -29,6 +29,11 @@ import type { Facet } from "../../components/fieldQuery/Filters";
 /** How often the page looks for new drafts and for Claude's answers. */
 export const REFRESH_MS = 10_000;
 
+/** The most drafts everything_review_drafts reads at once. */
+const MAX_DRAFTS_PER_READ = 50;
+
+const chunks = <T>(items: T[], size: number): T[][] => Array.from({ length: Math.ceil(items.length / size) }, (_, i) => items.slice(i * size, (i + 1) * size));
+
 type ListPages = InfiniteData<ReviewDraft[], ReviewCursor | null>;
 
 /** What a card needs from the page: the request its list was loaded with,
@@ -118,6 +123,14 @@ export async function refreshDrafts(client: QueryClient, request: QueryRequest, 
     data && { ...data, pages: data.pages.map((page) => page.map((d) => (byId.has(d.id) ? { ...byId.get(d.id)!, sortKey: d.sortKey } : d))) },
   );
   await client.invalidateQueries({ queryKey: queryKeys.noteReviewCounts });
+}
+
+/** Reads again every draft on screen by one creator, after their X account
+ *  changed. */
+export function refreshCreator(client: QueryClient, request: QueryRequest, creatorSlug: string) {
+  const pages = client.getQueryData<ListPages>(queryKeys.noteReviewList(request))?.pages ?? [];
+  const ids = pages.flat().filter((draft) => draft.post.creatorSlug === creatorSlug).map((draft) => draft.id);
+  return Promise.all(chunks(ids, MAX_DRAFTS_PER_READ).map((part) => refreshDrafts(client, request, part)));
 }
 
 /** Whether the draft's last chat message is a reviewer's, still waiting for

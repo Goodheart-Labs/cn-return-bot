@@ -12,6 +12,7 @@ import {
   type ReviewDraft,
   type ReviewVote,
 } from "@cn/core/claudeReview";
+import { setCreatorXHandle } from "@cn/core/creatorX";
 import { mintSelfVoteDonation } from "@cn/core/donations";
 import { bucketChips } from "@cn/core/fieldQuery";
 import { displayName } from "@cn/core/session";
@@ -31,7 +32,7 @@ import { ClaimCard } from "../../components/ClaimCard";
 import { noteUrl } from "../../lib/routing";
 import { PostOnX } from "./PostOnX";
 import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
-import { draftNoteId, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
+import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
 import { TWEET_SERVER } from "./tweetServer";
 
 const KIND_LABELS: Record<ReviewDraft["kind"], string> = {
@@ -129,12 +130,72 @@ function BucketChips({ draft, view }: { draft: ReviewDraft; view: ReviewView }) 
   );
 }
 
+/** The creator's X account beside their name, which an admin can correct. An
+ *  empty handle records that the creator has no X account. */
+function CreatorXAccount({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
+  const client = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [handle, setHandle] = useState((draft.fields.creator_x_handle as string | null) ?? "");
+  const slug = draft.post.creatorSlug!;
+  const save = useMutation({
+    mutationFn: () => setCreatorXHandle(slug, handle.trim() || null, "Set by hand on the review page"),
+    onSuccess: async () => {
+      setEditing(false);
+      await refreshCreator(client, view.request, slug);
+    },
+  });
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    save.mutate();
+  };
+  if (editing) {
+    return (
+      <form onSubmit={submit} className="flex flex-wrap items-center gap-2 text-xs">
+        <input
+          autoFocus
+          value={handle}
+          onChange={(e) => setHandle(e.currentTarget.value)}
+          placeholder="X handle, empty for none"
+          aria-label="The creator's X handle. Leave it empty if they have none."
+          className="w-44 rounded-control border border-line-input bg-surface px-2 py-1 text-fg"
+        />
+        <Button type="submit" disabled={save.isPending}>
+          Save
+        </Button>
+        <Button type="button" variant="quiet" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
+        <ErrorText error={save.error} />
+      </form>
+    );
+  }
+  const status = draft.fields.creator_x;
+  const evidence = (draft.fields.creator_x_evidence as string | null) ?? undefined;
+  return (
+    <span className="flex shrink-0 items-center gap-2 text-xs text-fg-muted">
+      {status === "found" ? (
+        <a href={`https://x.com/${draft.fields.creator_x_handle}`} target="_blank" rel="noreferrer" title={evidence} className="text-link hover:underline">
+          @{String(draft.fields.creator_x_handle)}
+        </a>
+      ) : (
+        <span title={evidence}>{status === "none" ? "No X account" : "X account not looked up yet"}</span>
+      )}
+      <Button variant="link" onClick={() => setEditing(true)}>
+        Edit
+      </Button>
+    </span>
+  );
+}
+
 function CardHeader({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) {
   const chip = verdictChip(draft);
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-sm font-medium text-fg-secondary">{draft.post.creator}</p>
+        <p className="flex min-w-0 flex-wrap items-center gap-x-2 text-sm font-medium text-fg-secondary">
+          <span className="truncate">{draft.post.creator}</span>
+          {view && draft.post.creatorSlug && <CreatorXAccount draft={draft} view={view} />}
+        </p>
         {chip && <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
       </div>
       <p className="text-xs text-fg-muted" title="The views count readers outside our team who were shown the notes on this post">

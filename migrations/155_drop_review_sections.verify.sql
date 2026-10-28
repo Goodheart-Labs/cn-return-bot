@@ -1,4 +1,4 @@
--- Checks for migration 154, run after it against 154_drop_review_sections.fixture.sql
+-- Checks for migration 155, run after it against 155_drop_review_sections.fixture.sql
 -- (the commands are at the top of the fixture). The block ends by raising an
 -- error that carries every result, so nothing it wrote stays.
 do $$

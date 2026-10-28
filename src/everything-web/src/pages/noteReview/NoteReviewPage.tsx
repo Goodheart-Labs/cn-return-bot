@@ -126,7 +126,10 @@ function NoteReview() {
   const view = useMemo(() => ({ request, sorts: query.sorts, display: query.display, now }), [request, query.sorts, query.display, now]);
   return (
     <main className="min-w-0 px-4 py-8 md:px-8">
-      <CardColumn className="mb-6 space-y-3">
+      {/* The controls span the page's whole width, so the pills have room on
+          one line, and the menus open to the left of the buttons at its right
+          edge. */}
+      <header className="mb-6 space-y-3">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-0.5">
             <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
@@ -140,7 +143,7 @@ function NoteReview() {
         {summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
         <FilterPills {...filterProps} />
         <SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />
-      </CardColumn>
+      </header>
       <ReviewFeed key={JSON.stringify(request)} view={view} />
     </main>
   );

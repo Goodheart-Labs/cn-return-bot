@@ -4,7 +4,8 @@ import { LARGE_COUNTS, SMALL_COUNTS, type FieldDef, type FieldOption, type Field
  * column of the database's field row (everything_review_field_row, migration
  * 153), so a new field is one entry here and one column there. The fields are
  * listed in the order the Filter and Sort menus show them, with what Nathan
- * needs most for posting on X first. */
+ * needs most for posting on X first. The rarer fields sit in groups, which
+ * keeps the Filter menu short enough to see whole. */
 
 const YES_NO: FieldOption[] = [
   { value: "true", label: "Yes" },
@@ -52,10 +53,10 @@ export const REVIEW_FIELDS: FieldDef[] = [
   },
   { id: "p_helpful", label: "P(helpful)", hint: "The note judge's guess of the chance that the note ends up rated helpful", kind: "percent", sortable: true },
   { id: "p_impactful", label: "P(impactful)", hint: "The note judge's guess of the chance that the note makes our leaderboard", kind: "percent", sortable: true },
-  { id: "helpful_votes", label: "Helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
-  { id: "not_helpful_votes", label: "Not helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
-  { id: "somewhat_votes", label: "Somewhat helpful", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
-  { id: "votes", label: "All votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
+  { id: "helpful_votes", group: "Votes", label: "Helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
+  { id: "not_helpful_votes", group: "Votes", label: "Not helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
+  { id: "somewhat_votes", group: "Votes", label: "Somewhat helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
+  { id: "votes", group: "Votes", label: "All votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
   {
     id: "views",
     label: "Views",
@@ -77,6 +78,19 @@ export const REVIEW_FIELDS: FieldDef[] = [
     sortable: true,
   },
   { id: "creator_posts", group: "Creator", label: "Posts with views", hint: "How many of the creator's posts anybody saw", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", sortable: true },
+  {
+    id: "creator_x",
+    group: "Creator",
+    label: "On X",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "found", label: "Has an X account" },
+      { value: "none", label: "No X account" },
+      { value: "unknown", label: "Not looked up yet" },
+    ],
+  },
   { id: "creator", group: "Creator", label: "Specific creators", kind: "choice", multiple: true, sortable: false, labelColumn: "creator_name" },
   { id: "written", label: "Written", hint: "When Claude wrote the note", kind: "date", sortable: true },
   { id: "published", label: "Post published", kind: "date", sortable: true },
@@ -95,8 +109,10 @@ export const REVIEW_FIELDS: FieldDef[] = [
   },
   { id: "jim_vote", group: "Jim and Nathan", label: "Jim's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
   { id: "nathan_vote", group: "Jim and Nathan", label: "Nathan's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
+  { id: "leaderboard", label: "On our leaderboard", kind: "choice", multiple: false, sortable: false, options: YES_NO },
+  { id: "few_shot", label: "Few-shot example", hint: "Notes we picked to show the note writer as examples", kind: "choice", multiple: false, sortable: false, options: YES_NO },
   {
-    id: "outcome",
+    id: "outcome", group: "Note",
     label: "Note or no note",
     kind: "choice",
     multiple: true,
@@ -109,7 +125,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   {
-    id: "kind",
+    id: "kind", group: "Note",
     label: "Kind of note",
     kind: "choice",
     multiple: true,
@@ -121,7 +137,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   {
-    id: "on_site",
+    id: "on_site", group: "Note",
     label: "On the site",
     kind: "choice",
     multiple: true,
@@ -133,7 +149,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   {
-    id: "posted_as",
+    id: "posted_as", group: "Note",
     label: "Posted as",
     kind: "choice",
     multiple: true,
@@ -144,11 +160,9 @@ export const REVIEW_FIELDS: FieldDef[] = [
       { value: "nathan", label: "Nathan" },
     ],
   },
-  { id: "leaderboard", label: "On our leaderboard", kind: "choice", multiple: false, sortable: false, options: YES_NO },
-  { id: "few_shot", label: "Few-shot example", hint: "Notes we picked to show the note writer as examples", kind: "choice", multiple: false, sortable: false, options: YES_NO },
-  { id: "skipped", label: "Skipped by me", kind: "choice", multiple: false, sortable: false, options: YES_NO },
+  { id: "skipped", group: "Review work", label: "Skipped by me", kind: "choice", multiple: false, sortable: false, options: YES_NO },
   {
-    id: "chat",
+    id: "chat", group: "Review work",
     label: "Chat with Claude",
     kind: "choice",
     multiple: true,
@@ -159,9 +173,9 @@ export const REVIEW_FIELDS: FieldDef[] = [
       { value: "answered", label: "Claude answered" },
     ],
   },
-  { id: "review_note", label: "Our review note", kind: "choice", multiple: false, sortable: false, options: YES_NO },
-  { id: "note_length", label: "Note length", hint: "In characters. A tweet holds 280.", kind: "count", thresholds: NOTE_LENGTHS, bound: "atMost", sortable: true },
-  { id: "sources", label: "Sources", hint: "How many different pages the note cites", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", sortable: true },
+  { id: "review_note", group: "Review work", label: "Our review note", kind: "choice", multiple: false, sortable: false, options: YES_NO },
+  { id: "note_length", group: "Note", label: "Note length", hint: "In characters. A tweet holds 280.", kind: "count", thresholds: NOTE_LENGTHS, bound: "atMost", sortable: true },
+  { id: "sources", group: "Note", label: "Sources", hint: "How many different pages the note cites", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", sortable: true },
 ];
 
 /** The buttons a card can show, each switched on or off in the Display menu. */

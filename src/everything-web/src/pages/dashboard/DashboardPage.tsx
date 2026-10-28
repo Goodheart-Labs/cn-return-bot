@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Card } from "@cn/ui/Card";
 import { AdminOnly } from "../../components/AdminOnly";
 import type { Route } from "../../lib/routing";
+import { Clicks } from "./Clicks";
 import { CreatorRanking } from "./CreatorRanking";
 import { MetricsChart } from "./MetricsChart";
 import { RecentPosts } from "./RecentPosts";
@@ -34,6 +35,9 @@ function Dashboard({ navigate }: { navigate: (route: Route) => void }) {
       <h1 className="font-title text-3xl font-bold text-fg">Dashboard</h1>
       <Section title="Metrics">
         <MetricsChart />
+      </Section>
+      <Section title="Clicks towards the extension">
+        <Clicks />
       </Section>
       <Section title="Creator ranking">
         <CreatorRanking navigate={navigate} />

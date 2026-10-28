@@ -1,4 +1,4 @@
--- 154: remove what migration 153 replaced, now that the new review page is
+-- 155: remove what migration 153 replaced, now that the new review page is
 -- live (GOO-623).
 --
 -- 153 only added, so the old website kept working while its pull request

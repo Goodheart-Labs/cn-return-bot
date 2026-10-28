@@ -30,7 +30,7 @@
 --
 -- This migration only adds, so the website that is live while the pull
 -- request waits keeps working. The new functions have names of their own.
--- Migration 154 removes what this one replaces, once the new website is live:
+-- Migration 155 removes what this one replaces, once the new website is live:
 -- the section functions of migrations 143 to 151, the crowd rating helpers
 -- whose rules the field row now holds, and the leaderboard's posted_at column.
 -- Until then everything_set_x_mark also writes posted_at, so the leaderboard
@@ -70,7 +70,7 @@ grant all on everything_note_x_marks, everything_claude_few_shot_examples to ser
 create policy note_x_marks_admin_read on everything_note_x_marks for select to authenticated using (everything_is_admin());
 grant select on everything_note_x_marks to authenticated;
 
--- Sets or clears a note's X mark. A null mark clears it. Until migration 154
+-- Sets or clears a note's X mark. A null mark clears it. Until migration 155
 -- it also writes the leaderboard's own posted_at, which the live website reads.
 create function everything_set_x_mark(p_note uuid, p_mark text, p_typefully_draft_id text default null, p_scheduled_for timestamptz default null)
 returns void
