@@ -15,10 +15,8 @@ import { useVotingNudge, VotingNudge } from "./VotingNudge";
  *  rating status, the rating pills, the donation notice that appears after a
  *  vote, and the action row. The website's feed and every extension overlay
  *  render this same component. `children` adds actions to the action row. */
-export function Note({ note, shareUrl, compact, review = false, onVoted, children }: {
+export function Note({ note, shareUrl, review = false, onVoted, children }: {
   note: NoteRow;
-  /** For a narrow column: sources show as site names. */
-  compact?: boolean;
   /** The absolute deep link the Share button copies. */
   shareUrl: string;
   /** The admins' review of a note: the pills are their review, and neither
@@ -43,7 +41,7 @@ export function Note({ note, shareUrl, compact, review = false, onVoted, childre
   const status = noteStatus(note);
   return (
     <div>
-      <NoteBox note={note} status={status} compact={compact} sourcesOpen={sourcesOpen} question={review ? <span className="font-semibold">Your review</span> : nudge.show ? <VotingNudge onDismiss={nudge.dismiss} /> : undefined}>
+      <NoteBox note={note} status={status} sourcesOpen={sourcesOpen} question={review ? <span className="font-semibold">Your review</span> : nudge.show ? <VotingNudge onDismiss={nudge.dismiss} /> : undefined}>
         <VoteRatings
           helpful={note.helpful_count}
           somewhatHelpful={note.somewhat_helpful_count}
