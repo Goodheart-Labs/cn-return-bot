@@ -28,9 +28,9 @@ const COUNT_COLUMNS: readonly Column[] = [
 ];
 
 const NOTE_COLUMNS: readonly Column[] = [
-  { label: "Note", align: "left", explanation: "A note whose own link was opened. The tweets we post link to single notes. The most opened note comes first." },
   { label: "Opens", align: "right", explanation: "How often the note's link was opened, outside our own admin accounts." },
   COUNT_COLUMNS[1]!,
+  { label: "Note", align: "left", explanation: "A note whose own link was opened. The tweets we post link to single notes. The most opened note comes first." },
 ];
 
 function CountTable({ label, rows }: { label: Column; rows: (ClickCount & { name: string })[] }) {
@@ -89,6 +89,8 @@ export function Clicks() {
               <DashboardTable columns={NOTE_COLUMNS}>
                 {counts.notes.map((row) => (
                   <tr key={row.note_id}>
+                    <td className={NUMBER_CELL}>{row.opens}</td>
+                    <td className={NUMBER_CELL}>{row.devices}</td>
                     <td className={CELL}>
                       {row.slug ? (
                         <a href={noteUrl(row.slug, row.note_id)} target="_blank" rel="noreferrer" className="line-clamp-2 text-link hover:underline">
@@ -99,8 +101,6 @@ export function Clicks() {
                       )}
                       {row.creator && <p className={SUBLINE}>{row.creator}</p>}
                     </td>
-                    <td className={NUMBER_CELL}>{row.opens}</td>
-                    <td className={NUMBER_CELL}>{row.devices}</td>
                   </tr>
                 ))}
               </DashboardTable>

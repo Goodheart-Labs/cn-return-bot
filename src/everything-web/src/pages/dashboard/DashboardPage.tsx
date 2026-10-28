@@ -36,9 +36,6 @@ function Dashboard({ navigate }: { navigate: (route: Route) => void }) {
       <Section title="Metrics">
         <MetricsChart />
       </Section>
-      <Section title="Clicks towards the extension">
-        <Clicks />
-      </Section>
       <Section title="Creator ranking">
         <CreatorRanking navigate={navigate} />
       </Section>
@@ -47,6 +44,9 @@ function Dashboard({ navigate }: { navigate: (route: Route) => void }) {
       </Section>
       <Section title="Recently checked posts">
         <RecentPosts />
+      </Section>
+      <Section title="Clicks towards the extension">
+        <Clicks />
       </Section>
     </main>
   );
