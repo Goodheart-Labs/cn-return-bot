@@ -22,7 +22,7 @@ import {
   type HealthResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
-  type ServiceErrorResponse, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse,
+  type ServiceErrorResponse, ServiceError, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse,
   SUBSTACK_FEED_PATH, type FetchUrlRequest, type SubstackFeedXml } from "./contract";
 
 /** How long a caller waits for an answer. A check takes about a minute and a
@@ -130,7 +130,8 @@ function parseAnswer<Answer>(text: string, status: number, path: string): Answer
   // A failure that happens after the answer started streaming cannot change the
   // status line, so the error field is what tells the two apart.
   if (parsed && typeof parsed === "object" && "error" in parsed) {
-    throw new Error(`${path} failed: ${(parsed as ServiceErrorResponse).error}`);
+    const failure = parsed as ServiceErrorResponse;
+    throw new ServiceError({ ...failure, error: `${path} failed: ${failure.error}` });
   }
   return parsed as Answer;
 }
