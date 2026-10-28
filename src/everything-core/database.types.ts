@@ -122,21 +122,18 @@ export type Database = {
           comment: string | null
           note_id: string
           position: number
-          posted_at: string | null
         }
         Insert: {
           added_at?: string
           comment?: string | null
           note_id: string
           position: number
-          posted_at?: string | null
         }
         Update: {
           added_at?: string
           comment?: string | null
           note_id?: string
           position?: number
-          posted_at?: string | null
         }
         Relationships: [
           {
@@ -2765,31 +2762,9 @@ export type Database = {
         Args: { p_actor?: string; p_writer: string }
         Returns: undefined
       }
-      everything_claude_crowd_rating: {
-        Args: { p_note: string }
-        Returns: string
-      }
-      everything_claude_crowd_status: {
-        Args: { p_note: string }
-        Returns: string
-      }
       everything_claude_delete_note: {
         Args: { p_actor?: string; p_draft: string }
         Returns: undefined
-      }
-      everything_claude_draft_matches: {
-        Args: {
-          d: Database["public"]["Tables"]["everything_claude_drafts"]["Row"]
-          p_min_helpful: number
-          p_min_not_helpful: number
-          p_min_views: number
-          p_min_votes: number
-          p_ratings: string[]
-          p_unvoted_only: boolean
-          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
-          p_voted_before: string
-        }
-        Returns: boolean
       }
       everything_claude_draft_views: {
         Args: {
@@ -2797,14 +2772,6 @@ export type Database = {
           p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
         }
         Returns: number
-      }
-      everything_claude_in_section: {
-        Args: {
-          d: Database["public"]["Tables"]["everything_claude_drafts"]["Row"]
-          p_reviewer: string
-          p_section: string
-        }
-        Returns: boolean
       }
       everything_claude_message: {
         Args: { p_actor?: string; p_draft: string; p_text: string }
@@ -2832,78 +2799,6 @@ export type Database = {
       everything_claude_remove_note: {
         Args: { p_note: string }
         Returns: undefined
-      }
-      everything_claude_review_drafts: {
-        Args: { p_ids: string[] }
-        Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
-        SetofOptions: {
-          from: "*"
-          to: "everything_claude_review_draft"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      everything_claude_review_page: {
-        Args: {
-          p_before_created_at?: string
-          p_before_id?: string
-          p_limit?: number
-          p_min_helpful?: number
-          p_min_not_helpful?: number
-          p_min_views?: number
-          p_min_votes?: number
-          p_ratings?: string[]
-          p_reviewed_by?: string
-          p_section: string
-          p_unvoted_only?: boolean
-          p_voted_before?: string
-        }
-        Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
-        SetofOptions: {
-          from: "*"
-          to: "everything_claude_review_draft"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      everything_claude_review_rows: {
-        Args: {
-          p_ids: string[]
-          p_reviewer: string
-          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
-        }
-        Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
-        SetofOptions: {
-          from: "*"
-          to: "everything_claude_review_draft"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      everything_claude_review_summary: {
-        Args: {
-          p_min_helpful?: number
-          p_min_not_helpful?: number
-          p_min_views?: number
-          p_min_votes?: number
-          p_ratings?: string[]
-          p_reviewed_by?: string
-          p_unvoted_only?: boolean
-          p_voted_before?: string
-        }
-        Returns: {
-          approved: number
-          disapproved: number
-          largest_helpful: number
-          largest_not_helpful: number
-          largest_views: number
-          largest_votes: number
-          no_note: number
-          reviewer: string
-          skipped: number
-          unreviewed: number
-          writer: string
-        }[]
       }
       everything_claude_rewrite: {
         Args: {
@@ -3477,43 +3372,6 @@ export type Database = {
       [_ in never]: never
     }
     CompositeTypes: {
-      everything_claude_review_draft: {
-        id: string | null
-        item_id: string | null
-        passage: string | null
-        claim: string | null
-        kind: string | null
-        outcome: string | null
-        note: string | null
-        reasoning: string | null
-        sources: Json | null
-        status: string | null
-        verdict: string | null
-        note_id: string | null
-        posted_as: string | null
-        reviewed_by: string | null
-        reviewed_at: string | null
-        created_at: string | null
-        context_paragraph: string | null
-        post_url: string | null
-        post_title: string | null
-        creator: string | null
-        creator_slug: string | null
-        views: number | null
-        proposed_note: string | null
-        proposed_sources: Json | null
-        judge_p_helpful: number | null
-        judge_p_impactful: number | null
-        judge_reasoning: string | null
-        on_leaderboard: boolean | null
-        reviewer_votes: Json | null
-        skipped: boolean | null
-        review_note: string | null
-        review_note_by: string | null
-        review_note_at: string | null
-        messages: Json | null
-        earlier_versions: Json | null
-      }
       everything_feed_scope: {
         project_id: string | null
         item_id: string | null
