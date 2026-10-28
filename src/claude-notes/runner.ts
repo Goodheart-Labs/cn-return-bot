@@ -3,8 +3,11 @@
  * the login in his home folder. It does what the permanent Claude session on
  * the devbox did by hand: it watches the queue, takes each post, starts one
  * Claude for it, and finishes or hands back the item when that Claude is done.
- * It also starts one Claude for each reviewer message on the review page.
- * Nobody judges the notes in between; reviewers do that on the review page.
+ * It also starts one Claude for each reviewer message on the review page, and
+ * one Claude for each X tweet the X run handed to it (GOO-527, see
+ * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
+ * every note as soon as it is posted (GOO-591), whose two probabilities the
+ * review page shows.
  *
  * Every Claude runs in its own tmux session, so a person can attach and watch
  * it. Its files are in its run folder under /tmp/cn-notes, the place Nathan's
@@ -16,8 +19,12 @@ import { spawnSync } from "child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
+import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
 import {
   claudeDraftsSince,
+  draftsToJudge,
+  latestEventId,
+  postedAfter,
   recordUsage,
   claudeQueue,
   finishItem,
@@ -27,12 +34,16 @@ import {
   postDir,
   readDraft,
   readItem,
+  readJudgedNote,
   readSettings,
+  saveJudgement,
   skipItem,
   unansweredMessages,
 } from "./store";
 import { take } from "./take";
 import { readUsage, type UsageReading } from "./usage";
+import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import { failXTweet, markXTweetRunning, openXTweets, recordXTweetRun, X_NOTE_MAX_CHARS, xTweetIsOpen, type XTweet } from "./xTweets";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 const POLL_MS = 30_000;
@@ -41,32 +52,41 @@ const POLL_MS = 30_000;
  *  by the weekly usage (src/everything/usagePacing.ts), so this limit is
  *  rarely reached. */
 const MAX_POSTS_RUNNING = 5;
+/** X tweets in progress at once, on top of the posts. The X share of the week
+ *  (src/claude-notes/xShare.ts) decides how many tweets come; this only stops
+ *  a burst from one X run from starting all its tweets at the same moment. */
+const MAX_TWEETS_RUNNING = 3;
 /** An item the runner has not started this long after it first saw it goes to
  *  the pipeline. That is the backup for when Claude cannot run: the box is
  *  paused, Nathan's week is nearly used up, or something is broken. */
 const HAND_BACK_AFTER_MS = 30 * 60_000;
-/** Above this share of Nathan's weekly limit no new post is started. The feed
- *  run already stops giving Claude feed posts at 80% (usagePacing.ts), so this
- *  stop holds back mainly reader requests, which Claude takes without pacing. */
-const MAX_WEEKLY_USAGE_PERCENT = 90;
 /** The usage endpoint is rate limited, and Nathan's pacer reads it too. */
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 /** A Claude that exits without a report gets one more try. */
 const MAX_ATTEMPTS = 2;
 const EXAMPLES_EVERY_MS = 24 * 3600_000;
+/** Judges running at once. They share Nathan's weekly limit with the posts,
+ *  so they run one at a time. */
+const MAX_JUDGES_RUNNING = 1;
 
 const PAUSE_FILE = process.env.CN_PAUSE_FILE ?? "/srv/ai-box/PAUSE";
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 const ENV_FILE = process.env.CN_ENV_FILE ?? "/etc/cn-notes/env";
 const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? path.join(REPO, "docs/note-examples.md");
+/** Built once from the public Community Notes data, by the scripts in
+ *  src/scripts_jim/2026_10_27_x_claude_examples/. Every X Claude gets it
+ *  appended to its system prompt, so the prompt cache can share it. */
+const X_EXAMPLES_PATH = path.join(REPO, "docs/x-note-examples.md");
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
 const RUNS_DIR = "/tmp/cn-notes";
 const POST_SESSION_PREFIX = "cn-post-";
 const MESSAGE_SESSION_PREFIX = "cn-msg-";
+const TWEET_SESSION_PREFIX = "cn-x-";
 
 type Run = { session: string; runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null };
 
 const posts = new Map<string, Run & { item: QueueItem }>();
+const tweets = new Map<string, Run & { tweet: XTweet }>();
 const answers = new Map<string, Run>();
 /** Drafts whose message Claude failed to answer twice. They wait for a person. */
 const unanswerable = new Set<string>();
@@ -75,6 +95,16 @@ const firstSeen = new Map<string, number>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
 let examplesBuiltAt = 0;
+/** Drafts being judged now, the ones still to judge, the last "posted" entry
+ *  of the log the runner has seen, and how often the judge failed on each
+ *  draft. A draft that failed MAX_ATTEMPTS times waits for a restart of the
+ *  runner. */
+const judging = new Set<string>();
+const judgeQueue: string[] = [];
+let lastPostedEventId = 0;
+const judgeFailures = new Map<string, number>();
+/** The labelled notes every judge sees, from the checkout's file. */
+const examplesForJudge: JudgeExample[] = JSON.parse(readFileSync(JUDGE_EXAMPLES_PATH, "utf8"));
 
 // ---------------------------------------------------------------------------
 // Prompts
@@ -95,6 +125,18 @@ When you are done, write ${runDir}/report.json with this shape and stop. Do not 
 If the post has nothing worth checking (a game trailer, show highlights, a music video, a comedy sketch, a personal memoir), write { "skipped": true, "reason": "..." } instead.`;
 }
 
+function tweetPrompt(tweet: XTweet, runDir: string): string {
+  return `Decide whether this X post needs a Community Note, and write the note if it does. The examples in your system prompt are notes that contributors wrote on other posts, each with the verdict raters gave it.
+
+Research the post on the web as much as you need. If it has images, download them into your run folder and look at them. Your run folder is ${runDir}; write every file there.
+
+If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\`. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\`. Stop once one of the two has succeeded.
+
+The post, as our pipeline shows it:
+
+${tweet.input}`;
+}
+
 function messagePrompt(params: { text: string; from: string; draft: unknown; url: string; dir: string; runDir: string }): string {
   return `A reviewer asked about one of the Claude note writer's notes on commonnotes.net. Answer them.
 
@@ -107,9 +149,9 @@ Your run folder: ${params.runDir}
 
 Read src/claude-notes/agentBrief.md and ${EXAMPLES_PATH} first. Research on the web when the question needs it. Then write a JSON file to your run folder and run \`bun run claude-notes answer <file>\`:
 
-{ "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the new note text>", "sources": [<only with a new note: sources with Haiku-checked quotes, as in the brief>], "reason": "<only with a new note: why it changed>" }
+{ "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the improved note text>", "sources": [<only with a new note whose sources changed: sources with Haiku-checked quotes, as in the brief>], "reason": "<only with a new note: why it changed>" }
 
-If the reviewer asks you to change the note, change it. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
+If the reviewer asks you to change the note, write the improved text as "note". It does not replace the note: the reviewer sees it on the review page and posts it if they agree. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -122,7 +164,7 @@ const tmuxAlive = (session: string) => spawnSync("tmux", ["has-session", "-t", `
  *  env file inside the session, so they never appear in a process's
  *  arguments. The service secret is removed again, because the agents never
  *  call the services box; only `take` in this runner does. */
-function startClaude(session: string, runDir: string, prompt: string) {
+function startClaude(session: string, runDir: string, prompt: string, extraArgs: string[] = []) {
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   const script = [
     "set -a",
@@ -131,7 +173,7 @@ function startClaude(session: string, runDir: string, prompt: string) {
     "unset SERVICE_AUTH_SECRET EXTRACTION_URL",
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
-    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${RUN_SETTINGS} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
+    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${RUN_SETTINGS} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
     `echo $? > ${runDir}/exit-code`,
   ].join("\n");
   writeFileSync(path.join(runDir, "run.sh"), script);
@@ -143,6 +185,27 @@ function runFolder(name: string): string {
   const dir = path.join(RUNS_DIR, name);
   mkdirSync(dir, { recursive: true });
   return dir;
+}
+
+/** What the run would have cost on the API, as Claude Code reports it in the
+ *  last event of its output. xShare.ts splits the plan's usage by these costs.
+ *  Null when the run died before it reported. */
+function runCost(runDir: string): number | null {
+  let lines: string[];
+  try {
+    lines = readFileSync(path.join(runDir, "stream.jsonl"), "utf8").trim().split("\n");
+  } catch {
+    return null;
+  }
+  for (const line of lines.reverse()) {
+    try {
+      const event = JSON.parse(line);
+      if (event.type === "result" && typeof event.total_cost_usd === "number") return event.total_cost_usd;
+    } catch {
+      // A run killed mid-write leaves a cut-off last line.
+    }
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -228,7 +291,7 @@ async function savedDrafts(run: Run & { item: QueueItem }): Promise<boolean> {
 async function endPost(run: Run & { item: QueueItem }) {
   posts.delete(run.item.id);
   const report = readReport(run.runDir);
-  const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt };
+  const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt, costUsd: runCost(run.runDir) };
   console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
   if (report?.skipped) return skipItem(run.item.id, String(report.reason ?? "nothing worth checking"));
   if (report) {
@@ -289,6 +352,53 @@ async function handBackLongWaits(waiting: QueueItem[]) {
 }
 
 // ---------------------------------------------------------------------------
+// X tweets
+// ---------------------------------------------------------------------------
+
+async function startTweet(tweet: XTweet, attempt = 1) {
+  const runDir = runFolder(`x-${tweet.runId}`);
+  const session = TWEET_SESSION_PREFIX + tweet.runId.slice(0, 8);
+  await markXTweetRunning(tweet.runId, attempt);
+  startClaude(session, runDir, tweetPrompt(tweet, runDir), ["--append-system-prompt-file", X_EXAMPLES_PATH]);
+  tweets.set(tweet.runId, { tweet, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
+  console.log(`Started ${session} on tweet ${tweet.tweetId} (attempt ${attempt})`);
+}
+
+/** A Claude that exited without a note or a no-note gets one more try. The
+ *  stage guards in xTweets.ts make sure an answer is never saved twice. */
+async function endTweet(run: Run & { tweet: XTweet }) {
+  tweets.delete(run.tweet.runId);
+  const minutes = Math.round((Date.now() - run.startedAt) / 60_000);
+  await recordXTweetRun(run.tweet.runId, { costUsd: runCost(run.runDir), minutes });
+  console.log(`${run.session} ended after ${minutes} minutes`);
+  if (!(await xTweetIsOpen(run.tweet.runId))) return;
+  if (run.attempt < MAX_ATTEMPTS) return startTweet(run.tweet, run.attempt + 1);
+  await failXTweet(run.tweet.runId, `The Claude note writer exited twice without an answer; see ${run.runDir} on ai-box`);
+}
+
+/** After a restart, a tweet whose Claude still runs is adopted, and one that
+ *  lost its Claude is started again. */
+async function adoptRunningTweets(running: XTweet[]) {
+  for (const tweet of running) {
+    const session = TWEET_SESSION_PREFIX + tweet.runId.slice(0, 8);
+    if (tmuxAlive(session)) tweets.set(tweet.runId, { tweet, session, runDir: runFolder(`x-${tweet.runId}`), attempt: 1, startedAt: Date.now(), weeklyAtStart: null });
+    else await startTweet(tweet);
+  }
+}
+
+/** X tweets run whatever the Common Notes writer setting says, because the X
+ *  run already decided that they go to Claude. */
+async function tickTweets(first: boolean) {
+  for (const run of [...tweets.values()]) if (!tmuxAlive(run.session)) await endTweet(run);
+  const open = await openXTweets();
+  if (first) await adoptRunningTweets(open.running);
+  for (const tweet of open.waiting) {
+    if (tweets.size >= MAX_TWEETS_RUNNING || !(await mayStartPosts())) break;
+    await startTweet(tweet);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Reviewer messages
 // ---------------------------------------------------------------------------
 
@@ -329,6 +439,48 @@ async function endAnswers() {
 }
 
 // ---------------------------------------------------------------------------
+// The note judge
+// ---------------------------------------------------------------------------
+
+async function judgeOne(draftId: string) {
+  try {
+    const note = await readJudgedNote(draftId);
+    const examples = examplesForJudge.filter((e) => e.draftId !== draftId);
+    const judgement = await runJudge(runFolder(`judge/${draftId}-${Date.now()}`), judgePrompt(note, examples));
+    await saveJudgement(draftId, note.note, judgement);
+    console.log(`Judged draft ${draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
+  } catch (err) {
+    judgeFailures.set(draftId, (judgeFailures.get(draftId) ?? 0) + 1);
+    console.error(`Could not judge draft ${draftId}: ${(err as Error).message}`);
+  }
+}
+
+function queueForJudge(draftId: string) {
+  if (!judging.has(draftId) && !judgeQueue.includes(draftId) && (judgeFailures.get(draftId) ?? 0) < MAX_ATTEMPTS) judgeQueue.push(draftId);
+}
+
+/** Judges every note as soon as it is posted, one at a time, while the runner
+ *  may start posts. On its first tick the runner also queues every note that
+ *  still has no answer for its current text, newest first. After that it only
+ *  reads the posts the log recorded since the last tick. */
+async function judgeNotes(first: boolean) {
+  if (first) {
+    lastPostedEventId = await latestEventId();
+    for (const draftId of await draftsToJudge()) queueForJudge(draftId);
+  } else {
+    for (const posted of await postedAfter(lastPostedEventId)) {
+      queueForJudge(posted.draftId);
+      lastPostedEventId = posted.id;
+    }
+  }
+  while (judging.size < MAX_JUDGES_RUNNING && judgeQueue.length > 0 && (await mayStartPosts())) {
+    const draftId = judgeQueue.shift()!;
+    judging.add(draftId);
+    void judgeOne(draftId).finally(() => judging.delete(draftId));
+  }
+}
+
+// ---------------------------------------------------------------------------
 // The examples file
 // ---------------------------------------------------------------------------
 
@@ -351,6 +503,8 @@ async function tick(first: boolean) {
   await weeklyUsage();
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPost(run);
   await endAnswers();
+  await tickTweets(first);
+  await judgeNotes(first);
   if ((await readSettings()).writer !== "claude") return;
   if (!existsSync(PAUSE_FILE)) await startAnswers();
   const queue = await claudeQueue();

@@ -1,14 +1,15 @@
 /* The Claude note writer's command line (GOO-507). The runner on Nathan's
  * ai-box and the Claude agents it starts call it to read the queue, save
  * drafts, judge the pipeline's notes, finish or hand back items, answer
- * reviewers and change the settings. Every write is logged in
- * everything_claude_events.
+ * reviewers and change the settings. Every Common Notes write is logged in
+ * everything_claude_events. The two x- commands answer an X tweet (GOO-527)
+ * on its pipeline_runs row.
  *
  * Usage: bun run claude-notes <command> [arguments]
- *   settings [writer=pipeline|claude] [approval=on|off] [by=jim|nathan|claude]
+ *   settings [writer=pipeline|claude] [by=jim|nathan|claude]
  *   queue                         queued items Claude is working on or has not taken yet
  *   take <item id>                writes the post's text for the agents, logs the take
- *   draft <draft.json>            saves one draft; a note is posted unless approval is on
+ *   draft <draft.json>            saves one draft; a note is posted at once
  *   pipeline-notes <item id>      the pipeline's AI notes on a post, as JSON
  *   keep-pipeline-note <item id> <note id> <reason>
  *   delete-pipeline-note <item id> <note id> <reason>
@@ -18,35 +19,41 @@
  *   posted-since <ISO time>       the notes Claude posted since then, newest first
  *   messages                      reviewer messages still waiting for an answer
  *   watch                         waits for reviewer messages, queued items or a due digest, prints it and exits
- *   answer <answer.json>          { draftId, reply, note?, sources?, passage? }
+ *   answer <answer.json>          { draftId, reply, note?, sources?, reason? }; a note is a proposal the reviewer posts
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
  *   examples                      regenerates the examples file from prod
+ *   x-note <note.json>            { runId, note, reasoning }: queues a note on an X tweet for the next X run
+ *   x-no-note <run id> <reason>   records that an X tweet needs no note
+ *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
  *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
 
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
+import { JUDGE_EXAMPLES_PATH } from "./judge";
 import {
   addDraft,
   answerMessage,
   type Actor,
-  changeSettings,
+  changeWriter,
   claudeQueue,
   deletePipelineNote,
   finishItem,
   handBack,
+  judgeExamples,
   keepPipelineNote,
   type NewDraft,
   pipelineNotes,
   postedSince,
+  propose,
   readSettings,
-  rewrite,
-  type SettingsChange,
   skipItem,
   unansweredMessages,
   withdraw,
+  type Writer,
 } from "./store";
 import { take } from "./take";
 import { readUsage } from "./usage";
+import { declineXTweet, saveXNote } from "./xTweets";
 
 
 const [command, ...args] = process.argv.slice(2);
@@ -63,24 +70,23 @@ const readJson = (file: string) => JSON.parse(readFileSync(file, "utf8"));
 const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 
 
-function parseSettingsArgs(list: string[]): { change: SettingsChange; by: Actor } {
-  const change: SettingsChange = {};
+function parseSettingsArgs(list: string[]): { writer: Writer | undefined; by: Actor } {
+  let writer: Writer | undefined;
   let by: Actor = "claude";
   for (const entry of list) {
     const [key, value] = entry.split("=");
-    if (key === "writer" && (value === "pipeline" || value === "claude")) change.writer = value;
-    else if (key === "approval" && (value === "on" || value === "off")) change.approvalRequired = value === "on";
+    if (key === "writer" && (value === "pipeline" || value === "claude")) writer = value;
     else if (key === "by" && (value === "jim" || value === "nathan" || value === "claude")) by = value;
     else throw new Error(`Unknown setting: ${entry}`);
   }
-  return { change, by };
+  return { writer, by };
 }
 
 async function answer(file: string) {
-  const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; passage?: string; reason?: string } = readJson(file);
-  if (a.note) await rewrite(a.draftId, { note: a.note, sources: a.sources, passage: a.passage, reason: a.reason ?? a.reply });
+  const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; reason?: string } = readJson(file);
+  if (a.note) await propose(a.draftId, { note: a.note, sources: a.sources, reason: a.reason ?? a.reply });
   await answerMessage(a.draftId, a.reply);
-  console.log(a.note ? "Answered and rewrote the note" : "Answered");
+  console.log(a.note ? "Answered and proposed a new text" : "Answered");
 }
 
 /** How often `watch` looks for work. */
@@ -109,8 +115,8 @@ async function watch() {
 async function main() {
   switch (command) {
     case "settings": {
-      const { change, by } = parseSettingsArgs(args);
-      if (Object.keys(change).length > 0) await changeSettings(by, change);
+      const { writer, by } = parseSettingsArgs(args);
+      if (writer) await changeWriter(by, writer);
       return print(await readSettings());
     }
     case "queue":
@@ -149,6 +155,20 @@ async function main() {
       return print(await readUsage());
     case "examples":
       return import("./buildExamples");
+    case "x-note": {
+      const note: { runId: string; note: string; reasoning: string } = readJson(arg(0));
+      await saveXNote(note.runId, note);
+      return console.log("Saved. The next X run rates the note and submits it if X has room.");
+    }
+    case "x-no-note":
+      await declineXTweet(arg(0), args.slice(1).join(" "));
+      return console.log("Recorded that the tweet needs no note.");
+    case "judge-examples": {
+      const examples = await judgeExamples();
+      writeFileSync(JUDGE_EXAMPLES_PATH, JSON.stringify(examples, null, 1) + "\n");
+      const helpful = examples.filter((e) => e.outcome === "helpful").length;
+      return console.log(`Wrote ${examples.length} examples (${helpful} helpful, ${examples.length - helpful} not helpful) to ${JUDGE_EXAMPLES_PATH}`);
+    }
     default:
       throw new Error(`Unknown command ${command}. See the usage at the top of src/claude-notes/cli.ts`);
   }

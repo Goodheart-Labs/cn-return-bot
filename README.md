@@ -21,8 +21,11 @@ bun test
 bun run check
 ```
 
-`check` runs the TypeScript checks and unused-code analysis. The pre-commit hook
-also scans staged changes for secrets.
+`check` runs the TypeScript checks, ESLint and knip's unused-code analysis. The
+type checks use TypeScript 7, the Go rewrite of the compiler, which checks all
+three projects in a few seconds. ESLint and knip keep caches, so a repeat run
+only looks at files that changed. The pre-commit hook runs `check` and also
+scans staged changes for secrets. CI runs the same checks on every PR.
 
 To try the note pipeline without submitting to X:
 

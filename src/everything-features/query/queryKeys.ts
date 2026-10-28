@@ -22,10 +22,9 @@ export const queryKeys = {
   /** The admins' curation of the best notes. Every section's pages and the
    *  whole leaderboard sit under one prefix, so a change reloads them all. */
   curation: ["noteSet", "curation"] as const,
-  curationSection: (section: string, filters: unknown) => ["noteSet", "curation", "section", section, filters] as const,
+  curationSection: (filters: unknown) => ["noteSet", "curation", "section", filters] as const,
   wholeLeaderboard: ["noteSet", "curation", "wholeLeaderboard"] as const,
-  curationSummaries: ["curationSummary"] as const,
-  curationSummary: (section: string) => ["curationSummary", section] as const,
+  curationSummary: ["curationSummary"] as const,
   /** The pages of the projects overview in one order. */
   projectsPage: (order: string) => ["projects", order] as const,
   project: (slug: string) => ["project", slug] as const,
@@ -35,11 +34,18 @@ export const queryKeys = {
   leaderboard: ["leaderboard"] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
-  noteReviewSummary: ["noteReview", "summary"] as const,
-  /** The pages of one sidebar section that the admin scrolled through. */
-  noteReviewSection: (section: string) => ["noteReview", "section", section] as const,
-  /** The newest page of a section, polled to notice new drafts. */
-  noteReviewNewest: (section: string) => ["noteReview", "newest", section] as const,
+  typefullySync: ["typefullySync"] as const,
+  /** Every count of the page: how many drafts match, and how many each value
+   *  of the choice fields would show, each under one request. */
+  noteReviewCounts: ["noteReview", "counts"] as const,
+  noteReviewSummary: (request: unknown) => ["noteReview", "counts", "summary", request] as const,
+  noteReviewFacets: (request: unknown) => ["noteReview", "counts", "facets", request] as const,
+  /** The pages of the list under one request. */
+  noteReviewList: (request: unknown) => ["noteReview", "list", request] as const,
+  /** One note for the local posting tool: the note on its picture page, and
+   *  the picture's address on the tool's server. */
+  noteImage: (noteId: string) => ["noteImage", noteId] as const,
+  noteImageUrl: (noteId: string) => ["noteImage", "url", noteId] as const,
   /** The live notes of the drafts on screen. They sit under the noteSet
    *  prefix, so a vote on one of them updates it here too. */
   noteReviewNoteSet: (noteIds: string[]) => ["noteSet", "noteReview", ...noteIds] as const,
@@ -49,6 +55,7 @@ export const queryKeys = {
   dashboardCreatorRanking: ["dashboard", "creatorRanking"] as const,
   dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
   dashboardClaudeUsage: (sinceDays: number) => ["dashboard", "claudeUsage", sinceDays] as const,
+  dashboardClicks: (sinceDays: number) => ["dashboard", "clicks", sinceDays] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

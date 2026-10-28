@@ -1,16 +1,17 @@
 import { useCallback, useState } from "react";
-import type { FeedOrder, NoteFilters, NoteMinimums } from "@cn/core/feedPages";
+import type { FeedOrder } from "@cn/core/feedPages";
+import type { FieldFilter } from "@cn/core/fieldQuery";
 import type { ProjectHeader } from "@cn/core/types";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
 import { NoteFeed, type FeedCard } from "../components/NoteFeed";
-import { NoteFiltersButton } from "../components/NoteFiltersButton";
-import { ageLabel, ageTotal, BAND_LABELS, bandTotal, DEFAULT_NOTE_FILTERS, MINIMUM_KEYS, spanStarts } from "../lib/feed";
+import { FilterButton, FilterPills } from "../components/fieldQuery/Filters";
+import { ageLabel, ageTotal, ALL_NOTES_FIELDS, BAND_LABELS, bandTotal, DEFAULT_ALL_NOTES_QUERY, noteFiltersOf, spanStarts } from "../lib/feed";
 import { useNoteFeed, type FeedEntry } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
-import { useSettledValue } from "../lib/useSettledValue";
-import { useStoredChoice, useStoredValue } from "../lib/useStoredValue";
+import { useFieldQuery } from "../lib/useFieldQuery";
+import { useStoredChoice } from "../lib/useStoredValue";
 
 const ORDERS: { id: FeedOrder; label: string }[] = [
   { id: "recent", label: "Newest" },
@@ -21,27 +22,12 @@ const ORDERS: { id: FeedOrder; label: string }[] = [
 /** The order the reader picked last time, remembered on this device. */
 const ORDER_KEY = "cn:allNotesOrder";
 
-/** The filters the reader set last time, remembered on this device. */
-const FILTERS_KEY = "cn:allNotesFilters";
+/** The filters the reader set last time, remembered on this device. Renamed
+ *  when the sliders became the Filter menu (GOO-628). */
+const QUERY_KEY = "cn:allNotesQuery";
 
 /** The whole site, as the feed's scope. */
 const EVERY_PROJECT = { projectId: null, itemId: null };
-
-/** Reads the remembered filters. A minimum that is missing, or is not a whole
- *  number of at least zero, gets its default. So does a checkbox that is
- *  missing or not true or false. */
-function parseFilters(stored: string | null): NoteFilters {
-  let parsed: Partial<Record<keyof NoteFilters, unknown>> = {};
-  try {
-    parsed = JSON.parse(stored ?? "{}") ?? {};
-  } catch {
-    // Unreadable text means nothing usable was stored.
-  }
-  const validMinimum = (value: unknown): value is number => Number.isInteger(value) && (value as number) >= 0;
-  const minimums = MINIMUM_KEYS.map((key) => [key, validMinimum(parsed[key]) ? parsed[key] : DEFAULT_NOTE_FILTERS[key]]);
-  const unvotedOnly = typeof parsed.unvotedOnly === "boolean" ? parsed.unvotedOnly : DEFAULT_NOTE_FILTERS.unvotedOnly;
-  return { ...(Object.fromEntries(minimums) as NoteMinimums), unvotedOnly };
-}
 
 /** The creator a note belongs to, at the top of its card. It links to the
  *  creator's own page of notes. Beside it stands how many readers saw the notes
@@ -65,11 +51,12 @@ function CreatorByline({ project, views, navigate }: { project: ProjectHeader; v
  *  that at least 5 readers saw. Each card names its creator. */
 export function AllNotesPage({ navigate }: { navigate: (route: Route) => void }) {
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "recent");
-  const [filters, setFilters] = useStoredValue(FILTERS_KEY, parseFilters, JSON.stringify);
+  const [query, setQuery] = useFieldQuery({ storageKey: QUERY_KEY, fields: ALL_NOTES_FIELDS, displayOptions: [], defaults: DEFAULT_ALL_NOTES_QUERY });
   // The Newest order's dividers are drawn on the reader's calendar, from the
   // moment the page opened.
   const [starts] = useState(() => spanStarts(new Date()));
-  const { list, summary } = useNoteFeed(EVERY_PROJECT, order, useSettledValue(filters), order === "recent" ? starts : []);
+  const filterProps = { fields: ALL_NOTES_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }) };
+  const { list, summary } = useNoteFeed(EVERY_PROJECT, order, noteFiltersOf(query.filters), order === "recent" ? starts : []);
   const counts = summary.data;
   const byline = useCallback(
     ({ entry, project }: FeedCard<FeedEntry>) => project && <CreatorByline project={project} views={entry.views} navigate={navigate} />,
@@ -84,9 +71,11 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
           <h1 className="font-title text-2xl font-bold text-fg">All notes</h1>
           <div className="flex flex-wrap items-center gap-2">
             <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
-            {counts && <NoteFiltersButton filters={filters} onChange={setFilters} largest={counts.largest} matchingNotes={counts.matching} />}
+            <FilterButton {...filterProps} />
           </div>
         </div>
+        {counts && <p className="text-sm text-fg-muted">{counts.matching === 1 ? "1 note matches" : `${counts.matching} notes match`}</p>}
+        <FilterPills {...filterProps} />
       </div>
       <NoteFeed
         list={list}

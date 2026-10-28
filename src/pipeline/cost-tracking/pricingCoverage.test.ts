@@ -12,20 +12,23 @@ import { AB_TESTS } from "../ab-testing/abTestsData";
 
 /** Reads the models an A/B test can select for a given search strategy. The
  *  stored ids carry a provider prefix that the dispatcher strips before calling
- *  the vendor, so we strip it the same way. */
-function searchModelsFor(webSearch: string, prefix: string): string[] {
+ *  the vendor, so we strip it the same way. With liveOnly, arms at weight 0 are
+ *  left out. */
+function searchModelsFor(webSearch: string, prefix: string, liveOnly: boolean): string[] {
   const test = AB_TESTS.find((t) => t.name === "simple_bot_search");
   if (!test) throw new Error("simple_bot_search test not found");
   return test.variants
-    .filter((v) => v.weight > 0)
+    .filter((v) => !liveOnly || v.weight > 0)
     .map((v) => v.variant.overrides)
     .filter((o: any) => o.web_search === webSearch)
     .map((o: any) => String(o.search_model).replace(prefix, ""));
 }
 
 describe("native-API arms have a pricing row", () => {
-  test("every live native_grok arm is priced", () => {
-    const models = searchModelsFor("native_grok", "x-ai/");
+  // Every Grok arm is at weight 0 since the xAI credits ran out (GOO-546). We check
+  // all of them, so that turning one back on can never record it at cost 0.
+  test("every native_grok arm is priced", () => {
+    const models = searchModelsFor("native_grok", "x-ai/", false);
     expect(models.length).toBeGreaterThan(0);
     for (const model of models) {
       expect(GROK_PRICING[model], `no GROK_PRICING row for "${model}"`).toBeDefined();
@@ -33,7 +36,7 @@ describe("native-API arms have a pricing row", () => {
   });
 
   test("every live native_gemini arm is priced", () => {
-    const models = searchModelsFor("native_gemini", "google/");
+    const models = searchModelsFor("native_gemini", "google/", true);
     expect(models.length).toBeGreaterThan(0);
     for (const model of models) {
       expect(GEMINI_PRICING[model], `no GEMINI_PRICING row for "${model}"`).toBeDefined();

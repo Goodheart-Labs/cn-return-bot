@@ -42,31 +42,3 @@ export const sidebarEntry = (active: boolean) =>
     "flex items-center gap-2 rounded-control px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
     active ? "bg-tint font-medium text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
   );
-
-/** On a phone, where the sidebar is hidden, its sections as a menu above the
- *  page, each with its count once that has loaded. */
-export function PhoneSectionMenu<TSection extends string>({ sections, value, titles, counts, onChange }: {
-  sections: readonly TSection[];
-  value: TSection;
-  titles: Record<TSection, string>;
-  counts: Partial<Record<TSection, number>> | undefined;
-  onChange: (section: TSection) => void;
-}) {
-  return (
-    <label className="block text-sm text-fg-secondary md:hidden">
-      <span className="sr-only">Section</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as TSection)}
-        className="w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-base text-fg"
-      >
-        {sections.map((section) => (
-          <option key={section} value={section}>
-            {titles[section]}
-            {counts?.[section] !== undefined ? ` (${counts[section]})` : ""}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}

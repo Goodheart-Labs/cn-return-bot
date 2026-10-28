@@ -18,6 +18,9 @@
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
+    // TypeScript 7 loads only the type packages named here, not every
+    // package in node_modules/@types.
+    "types": ["bun", "node"],
 
     // Some stricter flags (disabled by default)
     "noUnusedLocals": true,

@@ -16,8 +16,8 @@ so do not spend research on such passages.
 
 Drafts go to the prod database, not to files: level 2 saves each one with
 `bun run claude-notes draft <file.json>` in the repo. A draft with outcome `note` is
-posted on commonnotes.net at once as an AI note, unless notes currently wait for
-approval. So only save a note you would stand behind in public. Write the JSON file to
+posted on commonnotes.net at once as an AI note. So only save a note you would
+stand behind in public. Write the JSON file to
 your run folder first (your prompt names it), named after the post and your draft
 number.
 

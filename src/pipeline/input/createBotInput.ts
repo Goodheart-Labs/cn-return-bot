@@ -1,8 +1,8 @@
 /**
  * Bot Input
  *
- * Gathers the inputs that agent-family bots share: the media analysis, the
- * author's note history, and the comments under the post.
+ * Gathers the inputs that agent-family bots share: the media analysis and the
+ * author's note history.
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -12,14 +12,12 @@ import { isRealTweetId } from "../utils/tweetId";
 import { addWarning } from "../utils/warnings";
 import { analyzeMediaGemini, type GeminiMediaResult } from "../media/mediaAnalysisGemini";
 import { getAuthorNoteHistory, type AuthorNoteHistory } from "./authorHistory";
-import { fetchTweetComments } from "./comments";
 import { detectMadeWithAiLabel } from "./madeWithAiLabel";
 import { readInputCache, writeInputCache, readInputCacheMem, writeInputCacheMem } from "./inputCache";
 
 export interface BotInput {
   mediaResult: GeminiMediaResult;
   authorHistory?: AuthorNoteHistory;
-  comments?: string;
   /** X showed a "Made with AI" provenance label on the post's media. */
   mediaMadeWithAiLabel: boolean;
 }
@@ -105,15 +103,6 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
     }
   }
 
-  // The comments are optional. A failed fetch just means the writer sees none.
-  let comments: string | undefined;
-  try {
-    const text = await fetchTweetComments(post.id, post.text);
-    comments = text || undefined;
-  } catch (err: any) {
-    console.warn(`[${logTag}] Comment fetch failed: ${err.message}`);
-  }
-
   log?.set("inputs.author", {
     name: post.author_name,
     description: post.author_description,
@@ -123,7 +112,7 @@ export async function createBotInput(post: Post, logTag: string): Promise<BotInp
   });
   log?.set("inputs.mediaMadeWithAiLabel", mediaMadeWithAiLabel);
 
-  const result: BotInput = { mediaResult, authorHistory, comments, mediaMadeWithAiLabel };
+  const result: BotInput = { mediaResult, authorHistory, mediaMadeWithAiLabel };
   writeInputCache(post, strategy, result);
   writeInputCacheMem(post.id, strategy, result);
   return result;

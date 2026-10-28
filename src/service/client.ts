@@ -9,6 +9,7 @@
 import {
   CHECK_CLAIM_PATH,
   CHECK_TWEET_PATH,
+  TWEET_INPUT_PATH,
   EXTRACT_CLAIMS_PATH,
   HEALTH_PATH,
   RATE_CLAIMS_PATH,
@@ -17,6 +18,8 @@ import {
   type CheckClaimResponse,
   type CheckTweetRequest,
   type CheckTweetResponse,
+  type TweetInputRequest,
+  type TweetInputResponse,
   type ExtractClaimsRequest,
   type ExtractClaimsResponse,
   type HealthResponse,
@@ -51,6 +54,10 @@ export async function requestClaimCheck(body: CheckClaimRequest): Promise<CheckC
 
 export async function requestTweetCheck(body: CheckTweetRequest): Promise<CheckTweetResponse> {
   return call<CheckTweetResponse>(serviceUrl("CLAIM_CHECK_URL"), CHECK_TWEET_PATH, body);
+}
+
+export async function requestTweetInput(body: TweetInputRequest): Promise<TweetInputResponse> {
+  return call<TweetInputResponse>(serviceUrl("CLAIM_CHECK_URL"), TWEET_INPUT_PATH, body);
 }
 
 export async function requestClaimExtraction(body: ExtractClaimsRequest): Promise<ExtractClaimsResponse> {

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Card } from "@cn/ui/Card";
 import { AdminOnly } from "../../components/AdminOnly";
 import type { Route } from "../../lib/routing";
+import { Clicks } from "./Clicks";
 import { CreatorRanking } from "./CreatorRanking";
 import { MetricsChart } from "./MetricsChart";
 import { RecentPosts } from "./RecentPosts";
@@ -43,6 +44,9 @@ function Dashboard({ navigate }: { navigate: (route: Route) => void }) {
       </Section>
       <Section title="Recently checked posts">
         <RecentPosts />
+      </Section>
+      <Section title="Clicks towards the extension">
+        <Clicks />
       </Section>
     </main>
   );

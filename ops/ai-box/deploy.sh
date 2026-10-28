@@ -11,7 +11,7 @@ branch="$(as_nathan git -C "$checkout" symbolic-ref --short HEAD)"
 as_nathan git -C "$checkout" fetch -q origin "$branch"
 [ "$(as_nathan git -C "$checkout" rev-parse HEAD)" = "$(as_nathan git -C "$checkout" rev-parse "origin/$branch")" ] && exit 0
 
-if as_nathan tmux ls -F '#S' 2>/dev/null | grep -qE '^cn-(post|msg)-'; then
+if as_nathan tmux ls -F '#S' 2>/dev/null | grep -qE '^cn-(post|msg|x)-'; then
   echo "A new $branch is waiting, but a Claude is at work. Trying again later."
   exit 0
 fi
