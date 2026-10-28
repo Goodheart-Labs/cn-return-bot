@@ -129,7 +129,7 @@ function NoteReview() {
       {/* The controls span the page's whole width, so the pills have room on
           one line, and the menus open to the left of the buttons at its right
           edge. */}
-      <header className="mb-6 space-y-3">
+      <header className="mb-6 space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-0.5">
             <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
