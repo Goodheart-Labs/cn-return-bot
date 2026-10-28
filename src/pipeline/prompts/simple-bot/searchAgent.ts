@@ -27,7 +27,7 @@ Return JSON with two fields:
 - When the "error" is too minor or pedantic
 
 ## Sourcing rules
-- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Tweets and tweet replies are valid sources and can be included in the findings (include full x.com URL).
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.`;
 
@@ -95,7 +95,7 @@ Return JSON with two fields:
 - misleading_probability: your subjective probability, as a number from 0 to 1, that the claim is misleading in any way.
 
 ## Sourcing rules
-- Tweets and tweet replies from the comments are valid sources and can be included in the findings (include full x.com URL).
+- Tweets and tweet replies are valid sources and can be included in the findings (include full x.com URL).
 - Include what each source says that's relevant.
 - If no correction is needed, the findings can be brief — just explain why.
 
