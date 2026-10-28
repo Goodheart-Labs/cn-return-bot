@@ -1,41 +1,22 @@
 import type { Database, Json } from "./database.types";
-import type { NoteFilters, NoteMinimums } from "./feedPages";
+import type { QueryRequest } from "./fieldQuery";
 import { supabase } from "./supabase";
+import type { XMark } from "./xMarks";
 
 /* The admins' review of the Claude note writer's notes (GOO-518). Every call
- * goes through a database function of migrations 130 and 143, and each of
- * them refuses anyone who is not an admin. The tables behind them are closed
- * to the website's key.
+ * goes through a database function, and each of them refuses anyone who is
+ * not an admin. The tables behind them are closed to the website's key.
  *
  * Since migration 143 (GOO-563) Jim's or Nathan's vote on a note is its
  * review: Helpful approves it and Not helpful disapproves it, wherever the
  * vote is cast. Somewhat helpful decides nothing (migration 150), and when
  * they disagree the note counts as not reviewed (migration 151). A trigger
- * on the votes table records it. */
+ * on the votes table records it.
+ *
+ * Since migration 153 (GOO-623) the page filters and sorts by any field of a
+ * draft's field row. The page sends a QueryRequest, and the database runs it. */
 
-/** The sidebar's sections, in its order. Skipped holds the notes the reviewer
- *  reading the page skipped and nobody reviewed yet. */
-export const REVIEW_SECTIONS = ["unreviewed", "approved", "disapproved", "no_note", "skipped"] as const;
-export type ReviewSection = (typeof REVIEW_SECTIONS)[number];
 export type Reviewer = "jim" | "nathan";
-
-/** How the crowd rated a live note: rated helpful, only Helpful or Somewhat
- *  helpful votes, rated not helpful, only Not helpful votes, or anything
- *  else, including no note on the site (migration 149). The author's own
- *  automatic vote does not count. */
-export const CROWD_RATINGS = ["helpful", "upvoted", "not_helpful", "downvoted", "other"] as const;
-export type CrowdRating = (typeof CROWD_RATINGS)[number];
-
-/** What narrows every section: the crowd ratings it shows, and the All notes
- *  page's filters (migration 144). With `unvotedOnly`, the notes the reviewer
- *  had voted on before `votedBefore` are hidden, so a vote cast while
- *  reviewing never makes its card vanish. */
-export interface ReviewFilters extends NoteFilters {
-  ratings: CrowdRating[];
-  /** Only the notes whose deciding vote is this reviewer's. */
-  reviewedBy: Reviewer | null;
-  votedBefore: Date;
-}
 
 /** A vote of Jim or Nathan: 1 Helpful, 0 Somewhat helpful, -1 Not helpful. */
 export type ReviewVote = 1 | 0 | -1;
@@ -43,15 +24,23 @@ export type ReviewVote = 1 | 0 | -1;
 export interface ReviewSummary {
   reviewer: Reviewer;
   writer: "pipeline" | "claude";
-  counts: Record<ReviewSection, number>;
-  /** The largest view and vote counts of any note, where the filter sliders end. */
-  largest: NoteMinimums;
+  /** How many drafts pass the filters, and when the newest of them was
+   *  written. */
+  matching: number;
+  newest: string | null;
 }
 
 export interface ReviewDraftSource {
   url: string;
   quote: string;
   explanation: string;
+}
+
+/** One value of a choice field, and how many drafts it would show. */
+export interface FacetValue {
+  value: string;
+  label: string | null;
+  drafts: number;
 }
 
 /** One passage the Claude note writer's agents looked at, as the review page
@@ -89,6 +78,9 @@ export interface ReviewDraft {
   /** The note judge's answer for the note's current text. */
   judge: { pHelpful: number; pImpactful: number; reasoning: string } | null;
   onLeaderboard: boolean;
+  /** Whether the note was posted on X or the admins decided not to post it. */
+  xMark: XMark | null;
+  fewShot: boolean;
   /** Jim's and Nathan's votes on the live note, the oldest first. */
   reviewerVotes: { reviewer: Reviewer; vote: ReviewVote }[];
   /** Whether the reviewer reading the page skipped the draft. */
@@ -98,23 +90,29 @@ export interface ReviewDraft {
   reviewNote: { text: string; by: Reviewer; at: string } | null;
   /** Earlier texts of the note, oldest first. */
   earlierVersions: { at: string; note: string; reason: string }[];
+  /** Every field of the draft's field row, by field id. */
+  fields: Record<string, unknown>;
+  /** Where the draft sits in the order of the page it came from. */
+  sortKey: number[] | null;
 }
 
-/** Where the next page of a section starts: just after this draft. */
+/** Where the next page starts: just after this draft. */
 export interface ReviewCursor {
-  createdAt: string;
+  key: number[];
   id: string;
 }
 
 /** How many drafts one page holds. */
 export const REVIEW_PAGE_SIZE = 20;
 
-type ReviewRow = Database["public"]["CompositeTypes"]["everything_claude_review_draft"];
+type ReviewRow = Database["public"]["CompositeTypes"]["everything_review_draft"];
 
 /** The function's columns are all nullable in the generated types, because
  *  Postgres types a composite's fields that way. The drafts table they come
  *  from fills every one that is not nullable here. */
 function toReviewDraft(row: ReviewRow): ReviewDraft {
+  const fields = row.fields as Record<string, unknown>;
+  const pHelpful = fields.p_helpful as number | null;
   return {
     id: row.id!,
     itemId: row.item_id!,
@@ -133,60 +131,62 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     createdAt: row.created_at!,
     contextParagraph: row.context_paragraph,
     post: { url: row.post_url!, title: row.post_title ?? row.post_url!, creator: row.creator ?? "", creatorSlug: row.creator_slug },
-    views: row.views ?? 0,
+    views: fields.views as number,
     messages: row.messages as unknown as ReviewDraft["messages"],
     proposal: row.proposed_note ? { note: row.proposed_note, sources: (row.proposed_sources ?? row.sources) as unknown as ReviewDraftSource[] } : null,
-    judge: row.judge_p_helpful === null ? null : { pHelpful: row.judge_p_helpful, pImpactful: row.judge_p_impactful!, reasoning: row.judge_reasoning! },
-    onLeaderboard: row.on_leaderboard!,
+    judge: pHelpful === null ? null : { pHelpful, pImpactful: fields.p_impactful as number, reasoning: row.judge_reasoning! },
+    onLeaderboard: fields.leaderboard as boolean,
+    xMark: fields.on_x === "not_posted" ? null : (fields.on_x as XMark),
+    fewShot: fields.few_shot as boolean,
     reviewerVotes: row.reviewer_votes as unknown as ReviewDraft["reviewerVotes"],
-    skipped: row.skipped!,
+    skipped: fields.skipped as boolean,
     reviewNote: row.review_note ? { text: row.review_note, by: row.review_note_by as Reviewer, at: row.review_note_at! } : null,
     earlierVersions: row.earlier_versions as unknown as ReviewDraft["earlierVersions"],
+    fields,
+    sortKey: row.sort_key,
   };
 }
 
-/** The filters as the database functions take them. All three crowd ratings
- *  show everything, which the database reads as no rating filter at all. */
-const filterArgs = (filters: ReviewFilters) => ({
-  p_ratings: filters.ratings.length === CROWD_RATINGS.length ? undefined : filters.ratings,
-  p_min_views: filters.views,
-  p_min_votes: filters.votes,
-  p_min_helpful: filters.helpful,
-  p_min_not_helpful: filters.notHelpful,
-  p_unvoted_only: filters.unvotedOnly,
-  p_voted_before: filters.votedBefore.toISOString(),
-  p_reviewed_by: filters.reviewedBy ?? undefined,
-});
+/** The request as the database functions take it. */
+const requestArg = (request: QueryRequest) => request as unknown as Json;
 
-export async function fetchReviewSummary(filters: ReviewFilters): Promise<ReviewSummary> {
-  const { data, error } = await supabase.rpc("everything_claude_review_summary", filterArgs(filters)).single();
+export async function fetchReviewSummary(request: QueryRequest): Promise<ReviewSummary> {
+  const { data, error } = await supabase.rpc("everything_review_summary", { p_request: requestArg(request) }).single();
   if (error) throw error;
-  const { reviewer, writer, largest_views, largest_votes, largest_helpful, largest_not_helpful, ...counts } = data;
-  return {
-    reviewer: reviewer as Reviewer,
-    writer: writer as ReviewSummary["writer"],
-    counts,
-    largest: { views: largest_views, votes: largest_votes, helpful: largest_helpful, notHelpful: largest_not_helpful },
-  };
+  return { reviewer: data.reviewer as Reviewer, writer: data.writer as ReviewSummary["writer"], matching: data.matching, newest: data.newest };
 }
 
-/** One page of a section, newest first, starting after `cursor`. */
-export async function fetchReviewPage(section: ReviewSection, filters: ReviewFilters, cursor: ReviewCursor | null): Promise<ReviewDraft[]> {
-  const { data, error } = await supabase.rpc("everything_claude_review_page", {
-    p_section: section,
-    ...filterArgs(filters),
-    p_before_created_at: cursor?.createdAt,
-    p_before_id: cursor?.id,
+/** One page of the drafts that pass the request's filters, in its order,
+ *  starting after `cursor`. */
+export async function fetchReviewPage(request: QueryRequest, cursor: ReviewCursor | null): Promise<ReviewDraft[]> {
+  const { data, error } = await supabase.rpc("everything_review_page", {
+    p_request: requestArg(request),
+    p_after_key: cursor?.key,
+    p_after_id: cursor?.id,
     p_limit: REVIEW_PAGE_SIZE,
   });
   if (error) throw error;
   return data.map(toReviewDraft);
 }
 
+/** How many drafts each value of these choice fields would show under the
+ *  request's other filters, by field. A field with a `labelColumn` gets each
+ *  value's display name from that column. */
+export async function fetchReviewFacets(request: QueryRequest, facets: { column: string; labelColumn?: string }[]): Promise<Record<string, FacetValue[]>> {
+  const { data, error } = await supabase.rpc("everything_review_facets", {
+    p_request: requestArg(request),
+    p_facets: facets.map((f) => ({ column: f.column, ...(f.labelColumn ? { label_column: f.labelColumn } : {}) })),
+  });
+  if (error) throw error;
+  const byField: Record<string, FacetValue[]> = {};
+  for (const row of data) (byField[row.field] ??= []).push({ value: row.value, label: row.label, drafts: row.drafts });
+  return byField;
+}
+
 /** A few drafts by id, at most 50, to refresh them without reloading a
  *  section. */
 export async function fetchReviewDrafts(ids: string[]): Promise<ReviewDraft[]> {
-  const { data, error } = await supabase.rpc("everything_claude_review_drafts", { p_ids: ids });
+  const { data, error } = await supabase.rpc("everything_review_drafts", { p_ids: ids });
   if (error) throw error;
   return data.map(toReviewDraft);
 }
@@ -197,8 +197,8 @@ export async function deleteDraftNote(draftId: string): Promise<void> {
   if (error) throw error;
 }
 
-/** Hides the draft from the reviewer's own Not reviewed and Waiting sections,
- *  or shows it there again. */
+/** Marks the draft as skipped by the reviewer reading the page, or takes the
+ *  mark off. */
 export async function skipDraft(draftId: string, skip: boolean): Promise<void> {
   const { error } = await supabase.rpc("everything_claude_skip", { p_draft: draftId, p_skip: skip });
   if (error) throw error;
@@ -232,5 +232,12 @@ export async function rewriteDraft(
 /** A chat message to Claude about one draft. Claude answers within minutes. */
 export async function sendDraftMessage(draftId: string, text: string): Promise<void> {
   const { error } = await supabase.rpc("everything_claude_message", { p_draft: draftId, p_text: text });
+  if (error) throw error;
+}
+
+/** Marks a draft as an example to show the note writer later, or takes the
+ *  mark off. */
+export async function setFewShotExample(draftId: string, on: boolean): Promise<void> {
+  const { error } = await supabase.rpc("everything_claude_set_few_shot", { p_draft: draftId, p_on: on });
   if (error) throw error;
 }

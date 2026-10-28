@@ -18,7 +18,7 @@ const ROUTES: [string, Route][] = [
   ["/leaderboard", { view: "leaderboard" }],
   ["/minisites", { view: "minisites", slug: null }],
   ["/minisites/new", { view: "newMinisite" }],
-  ["/admin/notes/approved", { view: "noteReview", section: "approved" }],
+  ["/admin/notes", { view: "noteReview" }],
   ["/admin/dashboard", { view: "dashboard" }],
   ["/minisites/big-tent-or-small-tent", { view: "minisites", slug: "big-tent-or-small-tent" }],
 ];
@@ -33,6 +33,10 @@ describe("routing", () => {
   test("old best-notes links that name a section still open the leaderboard", () => {
     expect(readRoute("/admin/best/recommendations", "")).toEqual({ view: "bestNotes", project: null });
     expect(readRoute("/admin/best/leaderboard/zvi", "")).toEqual({ view: "bestNotes", project: "zvi" });
+  });
+
+  test("old review links that name a section open the review page", () => {
+    expect(readRoute("/admin/notes/approved", "")).toEqual({ view: "noteReview" });
   });
 
   test("a trailing slash reads as the same page", () => {
