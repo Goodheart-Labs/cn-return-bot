@@ -16,7 +16,7 @@ import { typefully } from "./typefully";
  * needs its browser once: `bunx playwright install chromium`. */
 
 const SITE_PORT = 8003;
-const SERVER_PORT = 8006;
+const SERVER_PORT = 8010;
 const SITE = `http://127.0.0.1:${SITE_PORT}`;
 const SERVER = `http://127.0.0.1:${SERVER_PORT}`;
 const IMAGE_DIR = new URL("./.state/images/", import.meta.url).pathname;
