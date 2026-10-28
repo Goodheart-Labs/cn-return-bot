@@ -21,6 +21,7 @@ import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitorin
 
 export const CHECK_CLAIM_PATH = "/check-claim";
 export const CHECK_TWEET_PATH = "/check-tweet";
+export const TWEET_INPUT_PATH = "/tweet-input";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
 export const RATE_CLAIMS_PATH = "/rate-claims";
 export const ITEM_TEXT_PATH = "/item-text";
@@ -105,6 +106,18 @@ export interface CheckTweetRequest {
  *  in-process path wrote, and needs every field to do that faithfully. */
 export interface CheckTweetResponse {
   output: TweetComputeOutput;
+}
+
+/** A tweet that a Claude Code note writer on the ai-box will check (GOO-527).
+ *  The service only builds the input Claude reads, because describing a video
+ *  needs the media tools and keys that live on the services box. */
+export interface TweetInputRequest {
+  priority: WorkPriority;
+  post: Post;
+}
+
+export interface TweetInputResponse {
+  input: string;
 }
 
 // ---------------------------------------------------------------------------
