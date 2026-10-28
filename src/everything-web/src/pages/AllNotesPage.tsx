@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 import type { FeedOrder } from "@cn/core/feedPages";
+import type { FieldFilter } from "@cn/core/fieldQuery";
 import type { ProjectHeader } from "@cn/core/types";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
 import { NoteFeed, type FeedCard } from "../components/NoteFeed";
-import { FilterBar } from "../components/fieldQuery/FilterBar";
+import { FilterButton, FilterPills } from "../components/fieldQuery/Filters";
 import { ageLabel, ageTotal, ALL_NOTES_FIELDS, BAND_LABELS, bandTotal, DEFAULT_ALL_NOTES_QUERY, noteFiltersOf, spanStarts } from "../lib/feed";
 import { useNoteFeed, type FeedEntry } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
@@ -54,6 +55,7 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   // The Newest order's dividers are drawn on the reader's calendar, from the
   // moment the page opened.
   const [starts] = useState(() => spanStarts(new Date()));
+  const filterProps = { fields: ALL_NOTES_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }) };
   const { list, summary } = useNoteFeed(EVERY_PROJECT, order, noteFiltersOf(query.filters), order === "recent" ? starts : []);
   const counts = summary.data;
   const byline = useCallback(
@@ -69,12 +71,11 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
           <h1 className="font-title text-2xl font-bold text-fg">All notes</h1>
           <div className="flex flex-wrap items-center gap-2">
             <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
+            <FilterButton {...filterProps} />
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <FilterBar fields={ALL_NOTES_FIELDS} filters={query.filters} onChange={(filters) => setQuery({ ...query, filters })} />
-          {counts && <span className="text-sm text-fg-muted">{counts.matching === 1 ? "1 note" : `${counts.matching} notes`}</span>}
-        </div>
+        {counts && <p className="text-sm text-fg-muted">{counts.matching === 1 ? "1 note matches" : `${counts.matching} notes match`}</p>}
+        <FilterPills {...filterProps} />
       </div>
       <NoteFeed
         list={list}

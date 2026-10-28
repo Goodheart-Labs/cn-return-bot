@@ -14,7 +14,7 @@ import { fetchNotesByIds } from "@cn/core/notes";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { usePagedList } from "@cn/features/query/usePagedList";
-import type { Facet } from "../../components/fieldQuery/FilterBar";
+import type { Facet } from "../../components/fieldQuery/Filters";
 
 /* How the review page loads its drafts. The list loads one page of
  * REVIEW_PAGE_SIZE drafts at a time as the admin scrolls, in the request's

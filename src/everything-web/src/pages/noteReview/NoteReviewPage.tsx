@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import type { ReviewDraft, ReviewSummary } from "@cn/core/claudeReview";
-import { buildRequest } from "@cn/core/fieldQuery";
+import { buildRequest, type FieldFilter } from "@cn/core/fieldQuery";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
 import { AdminOnly } from "../../components/AdminOnly";
 import { CardColumn } from "../../components/ClaimCard";
 import { DisplayMenu } from "../../components/fieldQuery/DisplayMenu";
-import { FilterBar } from "../../components/fieldQuery/FilterBar";
+import { FilterButton, FilterPills } from "../../components/fieldQuery/Filters";
 import { SortBar } from "../../components/fieldQuery/SortBar";
 import { useMomentFor } from "../../lib/feedQueries";
 import { useFieldQuery } from "../../lib/useFieldQuery";
@@ -122,6 +122,7 @@ function NoteReview() {
   const request = useMemo(() => buildRequest(REVIEW_FIELDS, query, now), [query, now]);
   const summary = useReviewSummary(request);
   const facets = useReviewFacets(REVIEW_FIELDS, request);
+  const filterProps = { fields: REVIEW_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), facets };
   const view = useMemo(() => ({ request, sorts: query.sorts, display: query.display, now }), [request, query.sorts, query.display, now]);
   return (
     <main className="min-w-0 px-4 py-8 md:px-8">
@@ -131,10 +132,13 @@ function NoteReview() {
             <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
             <WhoLine summary={summary.data} />
           </div>
-          <DisplayMenu options={DISPLAY_OPTIONS} shown={query.display} onChange={(display) => setQuery({ ...query, display })} />
+          <div className="flex shrink-0 items-center gap-2">
+            <FilterButton {...filterProps} />
+            <DisplayMenu options={DISPLAY_OPTIONS} shown={query.display} onChange={(display) => setQuery({ ...query, display })} />
+          </div>
         </div>
         {summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
-        <FilterBar fields={REVIEW_FIELDS} filters={query.filters} onChange={(filters) => setQuery({ ...query, filters })} facets={facets} />
+        <FilterPills {...filterProps} />
         <SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />
       </CardColumn>
       <ReviewFeed key={JSON.stringify(request)} view={view} />

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { FieldQuery } from "@cn/core/fieldQuery";
+import type { FieldFilter, FieldQuery } from "@cn/core/fieldQuery";
 import { DEFAULT_REVIEW_QUERY, DISPLAY, REVIEW_FIELDS } from "../../pages/noteReview/reviewFields";
 import { DisplayMenu } from "./DisplayMenu";
-import { FilterBar, type Facet } from "./FilterBar";
+import { FilterButton, FilterPills, type Facet } from "./Filters";
 import { SortBar } from "./SortBar";
 
 const meta = { title: "Website/Filter, sort and display" } satisfies Meta;
@@ -25,12 +25,14 @@ const FACETS: Record<string, Facet[]> = {
 export const ReviewPage: StoryObj = {
   render: function Render() {
     const [query, setQuery] = useState<FieldQuery>(DEFAULT_REVIEW_QUERY);
+    const filterProps = { fields: REVIEW_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), facets: FACETS };
     return (
       <div className="mx-auto max-w-[40rem] space-y-3 p-8">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <FilterButton {...filterProps} />
           <DisplayMenu options={Object.values(DISPLAY)} shown={query.display} onChange={(display) => setQuery({ ...query, display })} />
         </div>
-        <FilterBar fields={REVIEW_FIELDS} filters={query.filters} onChange={(filters) => setQuery({ ...query, filters })} facets={FACETS} />
+        <FilterPills {...filterProps} />
         <SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />
         <pre className="text-2xs text-fg-muted">{JSON.stringify(query, null, 2)}</pre>
       </div>

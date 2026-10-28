@@ -27,7 +27,7 @@ export function QueryChip({ label, menu, menuLabel, removeLabel, onRemove, extra
         label={menuLabel}
         entries={menu}
         trigger={
-          <button type="button" className="max-w-64 truncate rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <button type="button" className="-ml-1.5 max-w-64 truncate rounded-full px-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-focus">
             {label}
           </button>
         }
