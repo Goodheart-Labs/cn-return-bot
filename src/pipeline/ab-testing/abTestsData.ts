@@ -45,7 +45,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 7 },
+    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 10 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },

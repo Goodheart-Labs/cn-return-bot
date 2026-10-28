@@ -9,7 +9,7 @@
  * search, the writer and the gates are all rebuilt.
  * At level "input" we also reuse the whole BotInput by seeding the input cache
  * named in BIG_EVAL_INPUT_CACHE. createBotInput then returns straight away and
- * nothing is fetched for comments, media or author history.
+ * nothing is fetched for media or author history.
  * At level "note" we also reuse the note the writer produced by seeding the
  * cache named in WRITER_CACHE. The orchestrator then replays from the two
  * gates, which are the note-needed judge and the source verifier.
@@ -115,7 +115,6 @@ function reconstructBotInput(logs: any): BotInput | null {
       quotedTweetMedia: Array.isArray(gemini?.quotedTweetMedia) ? gemini.quotedTweetMedia : [],
     },
     authorHistory: inputs?.author?.noteHistory ?? undefined,
-    comments: inputs?.comments?.text ?? undefined,
     mediaMadeWithAiLabel: !!inputs?.mediaMadeWithAiLabel,
   };
 }
