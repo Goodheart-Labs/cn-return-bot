@@ -26,7 +26,8 @@
 --    "the rows after the last one shown" is one comparison whatever the sort.
 --    everything_review_summary counts the matching drafts and
 --    everything_review_facets counts each value of the choice fields.
--- 4. The section functions of migrations 143 to 151 go.
+-- 4. The section functions of migrations 143 to 151 go, and with them the
+--    crowd rating helpers, whose rules the field row now holds.
 
 -- 1. The marks.
 
@@ -223,6 +224,8 @@ drop function everything_claude_review_drafts(uuid[]);
 drop function everything_claude_review_rows(uuid[], text, everything_item_views);
 drop function everything_claude_draft_matches(everything_claude_drafts, everything_item_views, text[], int, int, int, int, boolean, timestamptz);
 drop function everything_claude_in_section(everything_claude_drafts, text, text);
+drop function everything_claude_crowd_rating(uuid);
+drop function everything_claude_crowd_status(uuid);
 drop type everything_claude_review_draft;
 
 -- Every field of a draft that the review page filters or sorts by. The
@@ -237,7 +240,9 @@ create type everything_review_field_row as (
   my_vote text,
   jim_vote text,
   nathan_vote text,
-  -- How the crowd rated the note (everything_claude_crowd_rating).
+  -- How the crowd rated the note: 'helpful' or 'not_helpful' when its votes
+  -- rate it so, 'upvoted' or 'downvoted' when it has only votes of one side,
+  -- otherwise 'other' (migration 149).
   rating text,
   p_helpful float8,
   p_impactful float8,
@@ -274,15 +279,35 @@ create type everything_review_field_row as (
 );
 
 -- The field rows of the drafts with these ids, or of every draft when
--- `p_ids` is null, as `p_reviewer` sees them.
+-- `p_ids` is null, as `p_reviewer` sees them. Every table the fields need is
+-- grouped once and joined, so the cost grows with the drafts and not with
+-- the drafts times the lookups per draft. The overall rating is the rule of
+-- migration 149's everything_claude_crowd_rating, which this replaces: the
+-- note's rating state, or else whether it has only upvotes or only
+-- downvotes. The author's own automatic vote does not count.
 create function everything_review_field_rows(p_reviewer text, p_views everything_item_views, p_ids uuid[] default null)
 returns setof everything_review_field_row
 language sql stable security definer set search_path = public as $$
-  with reviewers as (
+  with drafts as (
+    select * from everything_claude_drafts where p_ids is null or id = any (p_ids)
+  ),
+  reviewers as (
     select u.id, a.reviewer
       from auth.users u
       join everything_admins a on a.email = lower(u.email)
      where a.reviewer is not null
+  ),
+  vote_names (vote, name) as (values (1, 'helpful'), (0, 'somewhat'), (-1, 'not_helpful')),
+  votes as (
+    select v.note_id,
+           min(vn.name) filter (where v.voter_id = auth.uid()) as mine,
+           min(vn.name) filter (where r.reviewer = 'jim') as jim,
+           min(vn.name) filter (where r.reviewer = 'nathan') as nathan
+      from everything_votes v
+      join vote_names vn using (vote)
+      left join reviewers r on r.id = v.voter_id
+     where v.note_id in (select note_id from drafts)
+     group by v.note_id
   ),
   item_views as (
     select unnest(p_views.item_ids) as item_id, unnest(p_views.viewers) as viewers
@@ -294,20 +319,32 @@ language sql stable security definer set search_path = public as $$
      where v.viewers >= 1
      group by i.project_id
   ),
-  vote_names (vote, name) as (values (1, 'helpful'), (0, 'somewhat'), (-1, 'not_helpful'))
+  last_chat as (
+    select distinct on (e.draft_id) e.draft_id, e.actor
+      from everything_claude_events e
+     where e.type in ('message', 'answer') and e.draft_id in (select id from drafts)
+     order by e.draft_id, e.id desc
+  )
   select d.id,
          coalesce(x.mark, 'not_posted'),
-         coalesce((select vn.name from everything_votes v join vote_names vn using (vote) where v.note_id = d.note_id and v.voter_id = auth.uid()), 'none'),
-         coalesce((select vn.name from everything_votes v join reviewers r on r.id = v.voter_id join vote_names vn using (vote) where v.note_id = d.note_id and r.reviewer = 'jim'), 'none'),
-         coalesce((select vn.name from everything_votes v join reviewers r on r.id = v.voter_id join vote_names vn using (vote) where v.note_id = d.note_id and r.reviewer = 'nathan'), 'none'),
-         everything_claude_crowd_rating(d.note_id),
+         coalesce(vt.mine, 'none'),
+         coalesce(vt.jim, 'none'),
+         coalesce(vt.nathan, 'none'),
+         case
+           when n.id is null then 'other'
+           when n.state = 'helpful' then 'helpful'
+           when n.state = 'not_helpful' then 'not_helpful'
+           when n.not_helpful_count = 0 and n.upvotes > 0 then 'upvoted'
+           when n.not_helpful_count > 0 and n.upvotes = 0 then 'downvoted'
+           else 'other'
+         end,
          j.p_helpful,
          j.p_impactful,
          coalesce(n.helpful_count, 0),
          coalesce(n.somewhat_helpful_count, 0),
          coalesce(n.not_helpful_count, 0),
          coalesce(n.feed_votes, 0),
-         everything_claude_draft_views(d, p_views),
+         coalesce(iv.viewers, 0),
          p.slug,
          p.name,
          coalesce(c.views, 0),
@@ -317,35 +354,39 @@ language sql stable security definer set search_path = public as $$
          case
            when d.status = 'not_a_note' then null
            when d.verdict is not null then d.verdict
-           when everything_claude_crowd_status(d.note_id) = 'helpful' then 'approved'
-           when everything_claude_crowd_status(d.note_id) = 'not_helpful' then 'disapproved'
+           when n.state = 'helpful' then 'approved'
+           when n.state = 'not_helpful' then 'disapproved'
            else 'not_reviewed'
          end,
          d.outcome,
          case when d.status <> 'not_a_note' then d.kind end,
          case d.status when 'posted' then 'on_site' when 'posting' then 'not_yet' when 'removed' then 'deleted' end,
          d.posted_as,
-         exists (select 1 from everything_claude_skips s where s.draft_id = d.id and s.reviewer = p_reviewer),
-         exists (select 1 from everything_best_notes b where b.note_id = d.note_id),
-         exists (select 1 from everything_claude_few_shot_examples f where f.draft_id = d.id),
-         coalesce((
-           select case when e.actor = 'claude' then 'answered' else 'waiting' end
-             from everything_claude_events e
-            where e.draft_id = d.id and e.type in ('message', 'answer')
-            order by e.id desc
-            limit 1
-         ), 'none'),
+         s.draft_id is not null,
+         b.note_id is not null,
+         f.draft_id is not null,
+         case when lc.draft_id is null then 'none' when lc.actor = 'claude' then 'answered' else 'waiting' end,
          coalesce(d.review_note, '') <> '',
          char_length(d.note),
-         (select count(distinct s ->> 'url')::int from jsonb_array_elements(d.sources) s)
-    from everything_claude_drafts d
+         (select count(distinct src ->> 'url')::int from jsonb_array_elements(d.sources) src)
+    from drafts d
     join everything_items i on i.id = d.item_id
     left join everything_projects p on p.id = i.project_id
     left join creators c on c.project_id = i.project_id
-    left join everything_notes n on n.id = d.note_id
+    left join item_views iv on iv.item_id = d.item_id
+    left join lateral (
+      select n.*, everything_note_status(n.p_helpful) as state,
+             n.helpful_count - (n.author_id is not null)::int + n.somewhat_helpful_count as upvotes
+        from everything_notes n
+       where n.id = d.note_id
+    ) n on true
+    left join votes vt on vt.note_id = d.note_id
     left join everything_note_x_marks x on x.note_id = d.note_id
     left join everything_claude_judgements j on j.draft_id = d.id and j.note = d.note
-   where p_ids is null or d.id = any (p_ids);
+    left join everything_claude_skips s on s.draft_id = d.id and s.reviewer = p_reviewer
+    left join everything_best_notes b on b.note_id = d.note_id
+    left join everything_claude_few_shot_examples f on f.draft_id = d.id
+    left join last_chat lc on lc.draft_id = d.id;
 $$;
 
 -- One draft as the page shows it: its text and history, every field of its
@@ -534,22 +575,24 @@ declare
   max_page_size constant int := 50;
   v_reviewer text := everything_claude_actor(null);
   v_views everything_item_views := everything_item_views();
-  v_page record;
+  v_ids uuid[];
+  v_keys jsonb;
   v_draft everything_claude_review_draft;
 begin
-  for v_page in execute format($q$
-      select k.id, k.sort_key
-        from (select f.id, %s as sort_key
-                from everything_review_field_rows($1, $2) f
-               where %s) k
-       where $3 is null or (k.sort_key, k.id) > ($3, $4)
-       order by k.sort_key, k.id
-       limit $5$q$,
+  execute format($q$
+      select array_agg(k.id order by k.sort_key, k.id), jsonb_agg(to_jsonb(k.sort_key) order by k.sort_key, k.id)
+        from (select k.id, k.sort_key
+                from (select f.id, %s as sort_key
+                        from everything_review_field_rows($1, $2) f
+                       where %s) k
+               where $3 is null or (k.sort_key, k.id) > ($3, $4)
+               order by k.sort_key, k.id
+               limit $5) k$q$,
       everything_review_sort_key(p_request -> 'sorts'), everything_review_condition(p_request -> 'filters'))
-    using v_reviewer, v_views, p_after_key, p_after_id, least(greatest(p_limit, 1), max_page_size)
-  loop
-    select * into v_draft from everything_claude_review_rows(array[v_page.id], v_reviewer, v_views);
-    v_draft.sort_key := v_page.sort_key;
+    into v_ids, v_keys
+    using v_reviewer, v_views, p_after_key, p_after_id, least(greatest(p_limit, 1), max_page_size);
+  for v_draft in select * from everything_claude_review_rows(coalesce(v_ids, '{}'), v_reviewer, v_views) loop
+    v_draft.sort_key := array(select jsonb_array_elements_text(v_keys -> (array_position(v_ids, v_draft.id) - 1)))::float8[];
     return next v_draft;
   end loop;
 end;
