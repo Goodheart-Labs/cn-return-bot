@@ -1,8 +1,9 @@
 /* The Claude note writer's command line (GOO-507). The runner on Nathan's
  * ai-box and the Claude agents it starts call it to read the queue, save
  * drafts, judge the pipeline's notes, finish or hand back items, answer
- * reviewers and change the settings. Every write is logged in
- * everything_claude_events.
+ * reviewers and change the settings. Every Common Notes write is logged in
+ * everything_claude_events. The two x- commands answer an X tweet (GOO-527)
+ * on its pipeline_runs row.
  *
  * Usage: bun run claude-notes <command> [arguments]
  *   settings [writer=pipeline|claude] [by=jim|nathan|claude]
@@ -22,6 +23,8 @@
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
  *   examples                      regenerates the examples file from prod
+ *   x-note <note.json>            { runId, note, reasoning }: queues a note on an X tweet for the next X run
+ *   x-no-note <run id> <reason>   records that an X tweet needs no note
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
  *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
 
@@ -50,6 +53,7 @@ import {
 } from "./store";
 import { take } from "./take";
 import { readUsage } from "./usage";
+import { declineXTweet, saveXNote } from "./xTweets";
 
 
 const [command, ...args] = process.argv.slice(2);
@@ -151,6 +155,14 @@ async function main() {
       return print(await readUsage());
     case "examples":
       return import("./buildExamples");
+    case "x-note": {
+      const note: { runId: string; note: string; reasoning: string } = readJson(arg(0));
+      await saveXNote(note.runId, note);
+      return console.log("Saved. The next X run rates the note and submits it if X has room.");
+    }
+    case "x-no-note":
+      await declineXTweet(arg(0), args.slice(1).join(" "));
+      return console.log("Recorded that the tweet needs no note.");
     case "judge-examples": {
       const examples = await judgeExamples();
       writeFileSync(JUDGE_EXAMPLES_PATH, JSON.stringify(examples, null, 1) + "\n");

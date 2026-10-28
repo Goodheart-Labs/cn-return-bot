@@ -12,6 +12,7 @@ import type { QueuedRun, QueuedTweetRow } from "../pipeline/orchestration/noteQu
 // "candidate" rows (older code, local tools, runs cut off before submit) are
 // never loaded or expired.
 const QUEUED_REASON = "queued";
+import { CLAUDE_CODE_BOT, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
 import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
 // How often an --incremental scrape may scroll past a note without capturing it
@@ -817,26 +818,45 @@ export class SupabaseLogger {
    * processTweet's final `completePipelineRun` call threw. Without this sweep
    * those rows would stay `in_progress` forever and would distort every
    * outcome-rate calculation.
+   *
+   * A tweet handed to the Claude Code note writer stays `in_progress` while it
+   * waits on the ai-box, which can take longer than a pipeline run. Such rows
+   * get their own, longer limit.
    */
-  async sweepStuckRuns(opts: { olderThanMinutes: number }): Promise<number> {
-    const cutoff = new Date(Date.now() - opts.olderThanMinutes * 60_000).toISOString();
-    const { data, error } = await this.client
+  async sweepStuckRuns(opts: { olderThanMinutes: number; claudeOlderThanMinutes: number }): Promise<number> {
+    const results = await Promise.all([
+      this.sweepOlderThan(opts.olderThanMinutes).or(`bot_name.is.null,bot_name.neq.${CLAUDE_CODE_BOT}`).select("id"),
+      this.sweepOlderThan(opts.claudeOlderThanMinutes).eq("bot_name", CLAUDE_CODE_BOT).select("id"),
+    ]);
+    for (const { error } of results) {
+      if (!error) continue;
+      console.error("[SupabaseLogger] Error sweeping stuck runs:", error);
+      throw error;
+    }
+    return results.reduce((swept, { data }) => swept + (data?.length ?? 0), 0);
+  }
+
+  private sweepOlderThan(olderThanMinutes: number) {
+    return this.client
       .from("pipeline_runs")
       .update({
         outcome: "failed",
         outcome_reason: "not_completed",
-        error_message: `Run did not finish (sweeper marked failed after ${opts.olderThanMinutes} min)`,
+        error_message: `Run did not finish (sweeper marked failed after ${olderThanMinutes} min)`,
         final_stage: "error",
       })
       .eq("outcome", "in_progress")
-      .lt("created_at", cutoff)
-      .select("id");
+      .lt("created_at", new Date(Date.now() - olderThanMinutes * 60_000).toISOString());
+  }
 
-    if (error) {
-      console.error("[SupabaseLogger] Error sweeping stuck runs:", error);
-      throw error;
-    }
-    return data?.length ?? 0;
+  /** Leaves a tweet's run open for the Claude Code note writer on the ai-box
+   *  (GOO-527). The runner there finds it by its final stage. */
+  async markRunWaitingForClaude(runId: string, data: { picks: Record<string, string>; logs: Record<string, unknown> }): Promise<void> {
+    const { error } = await this.client
+      .from("pipeline_runs")
+      .update({ bot_name: CLAUDE_CODE_BOT, ab_test_picks: data.picks, logs: data.logs, final_stage: CLAUDE_WAITING_STAGE })
+      .eq("id", runId);
+    if (error) throw error;
   }
 
   async markCandidateSubmitted(runId: string, noteId: string): Promise<void> {
