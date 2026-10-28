@@ -12,6 +12,7 @@ import { MinisitesPage } from "./pages/minisites/MinisitesPage";
 import { BestNotesPage } from "./pages/bestNotes/BestNotesPage";
 import { NoteImagePage } from "./pages/noteReview/NoteImagePage";
 import { NoteReviewPage } from "./pages/noteReview/NoteReviewPage";
+import { TWEET_SERVER } from "./pages/noteReview/tweetServer";
 import { NotesView } from "./pages/NotesView";
 
 /** The dashboard's charts pull in a chart library that no reader needs, so
@@ -21,21 +22,21 @@ const JudgeExperimentPage = lazy(() => import("./pages/judgeExperiment/JudgeExpe
 
 /** The website's frame: the header on every page, the page the route names
  *  below it, and the extension nudge, which counts time across pages. The
- *  note picture page of the local posting tool is the one page without the
- *  frame, because it is only there to be photographed. */
+ *  local posting tool is only the review page, at any address, plus the note
+ *  picture page its server photographs. It has no frame. */
 export function App() {
   const [route, navigate] = useRoute();
   const [loginOpen, setLoginOpen] = useState(false);
   useAuthAnalytics();
 
-  if (route.view === "noteImage") return <NoteImagePage noteId={route.note} />;
   return (
     <LoginPromptProvider value={() => setLoginOpen(true)}>
-      <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />
-      {route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
+      {!TWEET_SERVER && <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />}
+      {route.view === "noteImage" ? <NoteImagePage noteId={route.note} />
+        : TWEET_SERVER || route.view === "noteReview" ? <NoteReviewPage />
+        : route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
-        : route.view === "noteReview" ? <NoteReviewPage />
         : route.view === "dashboard" ? (
           <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
             <DashboardPage navigate={navigate} />
@@ -49,7 +50,7 @@ export function App() {
         : route.view === "bestNotes" ? <BestNotesPage projectSlug={route.project} navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      <ExtensionNudge route={route} navigate={navigate} />
+      {!TWEET_SERVER && <ExtensionNudge route={route} navigate={navigate} />}
     </LoginPromptProvider>
   );
 }
