@@ -26,8 +26,14 @@
 --    "the rows after the last one shown" is one comparison whatever the sort.
 --    everything_review_summary counts the matching drafts and
 --    everything_review_facets counts each value of the choice fields.
--- 4. The section functions of migrations 143 to 151 go, and with them the
---    crowd rating helpers, whose rules the field row now holds.
+--
+-- This migration only adds, so the website that is live while the pull
+-- request waits keeps working. The new functions have names of their own.
+-- Migration 154 removes what this one replaces, once the new website is live:
+-- the section functions of migrations 143 to 151, the crowd rating helpers
+-- whose rules the field row now holds, and the leaderboard's posted_at column.
+-- Until then everything_set_x_mark also writes posted_at, so the leaderboard
+-- shows the same mark on both websites.
 
 -- 1. The marks.
 
@@ -47,7 +53,6 @@ comment on table everything_note_x_marks is
 
 insert into everything_note_x_marks (note_id, mark, marked_at)
 select note_id, 'posted', posted_at from everything_best_notes where posted_at is not null;
-alter table everything_best_notes drop column posted_at;
 
 create table everything_claude_few_shot_examples (
   draft_id uuid primary key references everything_claude_drafts (id) on delete cascade,
@@ -64,13 +69,15 @@ grant all on everything_note_x_marks, everything_claude_few_shot_examples to ser
 create policy note_x_marks_admin_read on everything_note_x_marks for select to authenticated using (everything_is_admin());
 grant select on everything_note_x_marks to authenticated;
 
--- Sets or clears a note's X mark. A null mark clears it.
+-- Sets or clears a note's X mark. A null mark clears it. Until migration 154
+-- it also writes the leaderboard's own posted_at, which the live website reads.
 create function everything_set_x_mark(p_note uuid, p_mark text, p_typefully_draft_id text default null, p_scheduled_for timestamptz default null)
 returns void
 language plpgsql security definer set search_path = public as $$
 declare
   v_actor text := everything_claude_actor(null);
 begin
+  update everything_best_notes set posted_at = case when p_mark = 'posted' then coalesce(posted_at, now()) end where note_id = p_note;
   if p_mark is null then
     delete from everything_note_x_marks where note_id = p_note;
     return;
@@ -168,65 +175,7 @@ begin
 end;
 $$;
 
--- The leaderboard's page reads its "Posted on X" mark from the new table.
--- Otherwise as in migration 141.
-create or replace function everything_curation_page(
-  p_section text,
-  p_project_slug text default null,
-  p_not_posted_only boolean default false,
-  p_unvoted_only boolean default false,
-  p_voted_before timestamptz default null,
-  p_after_key float8 default null,
-  p_after_note_id uuid default null,
-  p_limit int default 30
-) returns table (note_id uuid, sort_key float8, "position" float8, comment text, posted_at timestamptz, removed_at timestamptz, removed_reason text)
-language plpgsql stable security definer set search_path = public as $$
-begin
-  if not everything_is_admin() then raise exception 'Only admins can read the curation'; end if;
-  if p_section not in ('recommendations', 'leaderboard', 'removed') then raise exception 'Unknown section %', p_section; end if;
-  return query
-    with section_rows as (
-      select b.note_id, b.position as sort_key, b.position, b.comment, null::timestamptz as removed_at, null::text as removed_reason
-        from everything_best_notes b
-       where p_section = 'leaderboard'
-      union all
-      select r.note_id, r.position, r.position, r.comment, null, null
-        from everything_note_recommendations r
-       where p_section = 'recommendations' and r.moved_at is null and r.removed_at is null
-      union all
-      select r.note_id, -extract(epoch from r.removed_at)::float8, null, null, r.removed_at, r.removed_reason
-        from everything_note_recommendations r
-       where p_section = 'removed' and r.removed_at is not null
-    )
-    select s.note_id, s.sort_key, s.position, s.comment, m.marked_at, s.removed_at, s.removed_reason
-      from section_rows s
-      join everything_notes n on n.id = s.note_id and n.status <> 'hidden'
-      join everything_claims c on c.id = n.claim_id
-      join everything_items i on i.id = c.item_id
-      left join everything_projects p on p.id = i.project_id
-      left join everything_note_x_marks m on m.note_id = s.note_id and m.mark = 'posted'
-     where (p_project_slug is null or p.slug = p_project_slug)
-       and (not p_not_posted_only or m.note_id is null)
-       and (not p_unvoted_only or not exists (
-             select 1 from everything_votes v
-              where v.note_id = s.note_id and v.voter_id = auth.uid() and v.created_at < coalesce(p_voted_before, now())))
-       and (p_after_note_id is null or (s.sort_key, s.note_id) > (p_after_key, p_after_note_id))
-     order by s.sort_key, s.note_id
-     limit least(greatest(p_limit, 1), 100);
-end;
-$$;
-
 -- 2. The fields.
-
-drop function everything_claude_review_summary(text[], int, int, int, int, boolean, timestamptz, text);
-drop function everything_claude_review_page(text, text[], int, int, int, int, boolean, timestamptz, text, timestamptz, uuid, int);
-drop function everything_claude_review_drafts(uuid[]);
-drop function everything_claude_review_rows(uuid[], text, everything_item_views);
-drop function everything_claude_draft_matches(everything_claude_drafts, everything_item_views, text[], int, int, int, int, boolean, timestamptz);
-drop function everything_claude_in_section(everything_claude_drafts, text, text);
-drop function everything_claude_crowd_rating(uuid);
-drop function everything_claude_crowd_status(uuid);
-drop type everything_claude_review_draft;
 
 -- Every field of a draft that the review page filters or sorts by. The
 -- column names are the field ids of the page's field registry
@@ -391,7 +340,7 @@ $$;
 
 -- One draft as the page shows it: its text and history, every field of its
 -- field row as `fields`, and on a page, its `sort_key`.
-create type everything_claude_review_draft as (
+create type everything_review_draft as (
   id uuid,
   item_id uuid,
   passage text,
@@ -433,7 +382,7 @@ create type everything_claude_review_draft as (
 
 -- The drafts with these ids, in that order, as `p_reviewer` sees them. The
 -- functions below are the only callers, and each checks the caller first.
-create function everything_claude_review_rows(p_ids uuid[], p_reviewer text, p_views everything_item_views) returns setof everything_claude_review_draft
+create function everything_review_rows(p_ids uuid[], p_reviewer text, p_views everything_item_views) returns setof everything_review_draft
 language sql stable security definer set search_path = public as $$
   select d.id, d.item_id, d.passage, d.claim, d.kind, d.outcome, d.note, d.reasoning, d.sources,
          d.status, d.verdict, d.note_id, d.posted_as, d.reviewed_by, d.reviewed_at, d.created_at, d.context_paragraph,
@@ -569,7 +518,7 @@ $$;
 -- One page of the drafts that pass the request's filters, in its order,
 -- starting after the draft with sort key `p_after_key` and id `p_after_id`.
 create function everything_review_page(p_request jsonb, p_after_key float8[] default null, p_after_id uuid default null, p_limit int default 20)
-returns setof everything_claude_review_draft
+returns setof everything_review_draft
 language plpgsql stable security definer set search_path = public as $$
 declare
   max_page_size constant int := 50;
@@ -577,7 +526,7 @@ declare
   v_views everything_item_views := everything_item_views();
   v_ids uuid[];
   v_keys jsonb;
-  v_draft everything_claude_review_draft;
+  v_draft everything_review_draft;
 begin
   execute format($q$
       select array_agg(k.id order by k.sort_key, k.id), jsonb_agg(to_jsonb(k.sort_key) order by k.sort_key, k.id)
@@ -591,7 +540,7 @@ begin
       everything_review_sort_key(p_request -> 'sorts'), everything_review_condition(p_request -> 'filters'))
     into v_ids, v_keys
     using v_reviewer, v_views, p_after_key, p_after_id, least(greatest(p_limit, 1), max_page_size);
-  for v_draft in select * from everything_claude_review_rows(coalesce(v_ids, '{}'), v_reviewer, v_views) loop
+  for v_draft in select * from everything_review_rows(coalesce(v_ids, '{}'), v_reviewer, v_views) loop
     v_draft.sort_key := array(select jsonb_array_elements_text(v_keys -> (array_position(v_ids, v_draft.id) - 1)))::float8[];
     return next v_draft;
   end loop;
@@ -600,14 +549,14 @@ $$;
 
 -- A few drafts by id, so the page can refresh the ones a reviewer changed or
 -- whose chat waits for Claude's answer, without reloading every page.
-create function everything_claude_review_drafts(p_ids uuid[]) returns setof everything_claude_review_draft
+create function everything_review_drafts(p_ids uuid[]) returns setof everything_review_draft
 language plpgsql stable security definer set search_path = public as $$
 declare
   max_ids constant int := 50;
   v_reviewer text := everything_claude_actor(null);
 begin
   if cardinality(p_ids) > max_ids then raise exception 'Ask for at most % drafts', max_ids; end if;
-  return query select * from everything_claude_review_rows(p_ids, v_reviewer, everything_item_views());
+  return query select * from everything_review_rows(p_ids, v_reviewer, everything_item_views());
 end;
 $$;
 
@@ -664,13 +613,13 @@ revoke all on function
   everything_set_x_mark(uuid, text, text, timestamptz),
   everything_claude_set_few_shot(uuid, boolean),
   everything_review_field_rows(text, everything_item_views, uuid[]),
-  everything_claude_review_rows(uuid[], text, everything_item_views),
+  everything_review_rows(uuid[], text, everything_item_views),
   everything_review_number(text),
   everything_review_text(text),
   everything_review_condition(jsonb, text),
   everything_review_sort_key(jsonb),
   everything_review_page(jsonb, float8[], uuid, int),
-  everything_claude_review_drafts(uuid[]),
+  everything_review_drafts(uuid[]),
   everything_review_summary(jsonb),
   everything_review_facets(jsonb, jsonb)
 from public, anon, authenticated;
@@ -679,7 +628,7 @@ grant execute on function
   everything_set_x_mark(uuid, text, text, timestamptz),
   everything_claude_set_few_shot(uuid, boolean),
   everything_review_page(jsonb, float8[], uuid, int),
-  everything_claude_review_drafts(uuid[]),
+  everything_review_drafts(uuid[]),
   everything_review_summary(jsonb),
   everything_review_facets(jsonb, jsonb)
 to authenticated, service_role;

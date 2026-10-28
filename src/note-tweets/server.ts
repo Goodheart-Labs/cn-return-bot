@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { mkdir } from "node:fs/promises";
 import { chromium, type Browser } from "playwright";
-import { typefully } from "./typefully";
+import { createDraft } from "./typefully";
 
 /* The local posting tool (GOO-629). `bun run note-tweets` starts two servers
  * on the admin's computer:
@@ -12,7 +12,8 @@ import { typefully } from "./typefully";
  *     picture of a note's card from the website's picture page, and sends a
  *     tweet with it to Typefully.
  * The browser marks the note as posted on X after a send, with the admin's
- * own sign-in. The pictures stay in .state/, which git ignores. Playwright
+ * own sign-in. Without the Typefully settings everything works except the
+ * send, which says what is missing. The pictures stay in .state/, which git ignores. Playwright
  * needs its browser once: `bunx playwright install chromium`. */
 
 const SITE_PORT = 8003;
@@ -25,7 +26,6 @@ const IMAGE_SCALE = 2;
 const IMAGE_TIMEOUT_MS = 20_000;
 const NOTE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-const createDraft = typefully();
 await mkdir(IMAGE_DIR, { recursive: true });
 const imagePath = (noteId: string) => `${IMAGE_DIR}${noteId}.png`;
 

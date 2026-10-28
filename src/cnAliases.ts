@@ -1,9 +1,9 @@
 import { fileURLToPath } from "url";
 
 /** The import aliases of the Common Notes code, shared by every bundler that
- *  builds it: the website's Vite config, the extension's WXT config and
- *  Storybook. An alias maps a short prefix such as `@cn/ui` to a folder, so
- *  a file imports `@cn/ui/Button` instead of counting `../` steps.
+ *  builds it: the website's Vite config and the extension's WXT config. An
+ *  alias maps a short prefix such as `@cn/ui` to a folder, so a file imports
+ *  `@cn/ui/Button` instead of counting `../` steps.
  *
  *  The layers, from the bottom up:
  *  - `@cn/core` holds the data access, the types and the scoring math. It

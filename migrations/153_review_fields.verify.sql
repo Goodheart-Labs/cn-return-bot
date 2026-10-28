@@ -30,8 +30,7 @@ begin
   select note_id into d2_note from everything_claude_drafts where id = d2;
   select note_id into old_note from everything_claude_drafts where id = d4;
   r := r || jsonb_build_object(
-    'posted_mark_moved', (select count(*) = 1 from everything_note_x_marks m join everything_claude_drafts d on d.note_id = m.note_id where d.id = d4 and m.mark = 'posted'),
-    'posted_at_column_gone', not exists (select 1 from information_schema.columns where table_name = 'everything_best_notes' and column_name = 'posted_at')
+    'posted_mark_moved', (select count(*) = 1 from everything_note_x_marks m join everything_claude_drafts d on d.note_id = m.note_id where d.id = d4 and m.mark = 'posted')
   );
 
   -- A reader may neither read nor mark.
@@ -52,13 +51,13 @@ begin
   perform set_config('request.jwt.claims', json_build_object('role', 'authenticated', 'sub', jim)::text, true);
   set local role authenticated;
 
-  select fields into f4 from everything_claude_review_drafts(array[d4]);
-  select fields into f7 from everything_claude_review_drafts(array[d7]);
+  select fields into f4 from everything_review_drafts(array[d4]);
+  select fields into f7 from everything_review_drafts(array[d7]);
   r := r || jsonb_build_object(
     'd4_fields', f4 @> '{"on_x": "posted", "leaderboard": true, "nathan_vote": "somewhat", "jim_vote": "none", "approval": "not_reviewed", "on_site": "on_site", "creator": "some-creator", "creator_views": 7, "creator_posts": 1, "views": 7}',
     'd7_fields', f7 @> '{"outcome": "no_note_needed", "on_x": "not_posted", "creator": "other-creator", "creator_name": "Other Creator", "creator_views": 0, "creator_posts": 0, "views": 0}'
                  and f7 -> 'approval' = 'null' and f7 -> 'on_site' = 'null',
-    'd2_approved', (select fields ->> 'approval' = 'approved' from everything_claude_review_drafts(array[d2]))
+    'd2_approved', (select fields ->> 'approval' = 'approved' from everything_review_drafts(array[d2]))
   );
 
   -- Newest first by default, without the posted d4 and the note-less d7, two
@@ -106,22 +105,22 @@ begin
   end;
 
   -- Marks, and a rewrite that keeps the X mark.
+  perform everything_set_x_mark(d2_note, 'posted');
+  reset role;
+  r := r || jsonb_build_object('posted_mirrored_to_leaderboard', (select posted_at is not null from everything_best_notes where note_id = d2_note));
+  set local role authenticated;
   perform everything_set_x_mark(d2_note, 'wont_post');
   perform everything_claude_set_few_shot(d2, true);
   new_note := everything_claude_rewrite(d4, 'A better text', 'test');
   reset role;
   r := r || jsonb_build_object(
     'wont_post', (select mark = 'wont_post' and marked_by = 'jim' from everything_note_x_marks where note_id = d2_note),
+    'wont_post_clears_leaderboard_posted', (select posted_at is null from everything_best_notes where note_id = d2_note),
+    'old_functions_stay', to_regprocedure('everything_claude_review_drafts(uuid[])') is not null,
     'few_shot', exists (select 1 from everything_claude_few_shot_examples where draft_id = d2 and added_by = 'jim'),
     'rewrite_keeps_mark', new_note <> old_note and exists (select 1 from everything_note_x_marks where note_id = new_note and mark = 'posted')
   );
 
-  perform set_config('request.jwt.claims', json_build_object('role', 'authenticated', 'sub', jim)::text, true);
-  set local role authenticated;
-  r := r || jsonb_build_object('leaderboard_posted', (
-    select jsonb_agg(posted_at is not null order by position) from everything_curation_page('leaderboard')
-  ) = '[false]');
-  reset role;
 
   raise exception 'results: % let through: %', r, let_through;
 end;

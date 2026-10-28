@@ -105,7 +105,7 @@ export interface ReviewCursor {
 /** How many drafts one page holds. */
 export const REVIEW_PAGE_SIZE = 20;
 
-type ReviewRow = Database["public"]["CompositeTypes"]["everything_claude_review_draft"];
+type ReviewRow = Database["public"]["CompositeTypes"]["everything_review_draft"];
 
 /** The function's columns are all nullable in the generated types, because
  *  Postgres types a composite's fields that way. The drafts table they come
@@ -186,7 +186,7 @@ export async function fetchReviewFacets(request: QueryRequest, facets: { column:
 /** A few drafts by id, at most 50, to refresh them without reloading a
  *  section. */
 export async function fetchReviewDrafts(ids: string[]): Promise<ReviewDraft[]> {
-  const { data, error } = await supabase.rpc("everything_claude_review_drafts", { p_ids: ids });
+  const { data, error } = await supabase.rpc("everything_review_drafts", { p_ids: ids });
   if (error) throw error;
   return data.map(toReviewDraft);
 }

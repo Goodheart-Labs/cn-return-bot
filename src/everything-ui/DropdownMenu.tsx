@@ -84,12 +84,20 @@ function EntryEnd({ children }: { children: ReactNode }) {
   return <span className="ml-auto flex shrink-0 items-center gap-1 pl-3 text-xs font-normal text-fg-muted">{children}</span>;
 }
 
-/** The box at the left of an option: a tick when it is selected. */
-function Tick() {
+/** What sits left of an option. In a multiple choice it is a checkbox, empty
+ *  until the option is ticked, so the list shows that several can be picked.
+ *  In a single choice only the picked option has a tick. */
+function Tick({ checkbox }: { checkbox: boolean }) {
   return (
-    <span className="flex w-4 shrink-0 justify-center text-link" aria-hidden>
+    <span
+      className={cn(
+        "flex size-4 shrink-0 items-center justify-center",
+        checkbox ? "rounded-[4px] border border-line-strong text-on-primary group-data-[state=checked]:border-primary group-data-[state=checked]:bg-primary" : "text-link",
+      )}
+      aria-hidden
+    >
       <Radix.ItemIndicator>
-        <CheckIcon size={14} />
+        <CheckIcon size={checkbox ? 12 : 14} />
       </Radix.ItemIndicator>
     </span>
   );
@@ -146,13 +154,13 @@ function ChoiceEntry({ entry }: { entry: Extract<MenuEntry, { type: "choice" }> 
           <Radix.CheckboxItem
             key={option.value}
             title={option.hint}
-            className={itemClass}
+            className={cn(itemClass, "group")}
             checked={entry.selected.includes(option.value)}
             onCheckedChange={(on) => toggle(option.value, on === true)}
             // Ticking an option keeps the menu open for the next one.
             onSelect={(event) => event.preventDefault()}
           >
-            <Tick />
+            <Tick checkbox />
             <OptionLabel option={option} />
           </Radix.CheckboxItem>
         ))}
@@ -165,7 +173,7 @@ function ChoiceEntry({ entry }: { entry: Extract<MenuEntry, { type: "choice" }> 
       <Radix.RadioGroup value={entry.selected[0] ?? ""} onValueChange={(value) => entry.onChange([value])}>
         {shown.map((option) => (
           <Radix.RadioItem key={option.value} value={option.value} title={option.hint} className={itemClass}>
-            <Tick />
+            <Tick checkbox={false} />
             <OptionLabel option={option} />
           </Radix.RadioItem>
         ))}
