@@ -25,8 +25,6 @@
  *   examples                      regenerates the examples file from prod
  *   x-note <note.json>            { runId, note, reasoning }: queues a note on an X tweet for the next X run
  *   x-no-note <run id> <reason>   records that an X tweet needs no note
- *   x-handle <creator slug> <handle | none> <evidence>
- *                                 records a creator's X account, or that they have none
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
  *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
 
@@ -55,7 +53,6 @@ import {
 } from "./store";
 import { take } from "./take";
 import { readUsage } from "./usage";
-import { saveXHandle } from "./xAccounts";
 import { declineXTweet, saveXNote } from "./xTweets";
 
 
@@ -166,11 +163,6 @@ async function main() {
     case "x-no-note":
       await declineXTweet(arg(0), args.slice(1).join(" "));
       return console.log("Recorded that the tweet needs no note.");
-    case "x-handle": {
-      const handle = arg(1);
-      await saveXHandle(arg(0), handle === "none" ? null : handle, args.slice(2).join(" "));
-      return console.log(handle === "none" ? "Recorded that the creator has no X account." : `Recorded @${handle.replace(/^@/, "")}.`);
-    }
     case "judge-examples": {
       const examples = await judgeExamples();
       writeFileSync(JUDGE_EXAMPLES_PATH, JSON.stringify(examples, null, 1) + "\n");
