@@ -21,7 +21,8 @@
 --    which is called dynamic SQL. Every column name in the request is checked
 --    against the row type and quoted, and every value is cast to a number or
 --    quoted as text, so the request cannot add SQL of its own. The page pages
---    by a sort key: an array of numbers, one per sort level, then the time the
+--    by a sort key: an array of numbers, first the buckets of every sort
+--    level, then the exact values of the bucketed levels, then the time the
 --    draft was written. Postgres compares such arrays element by element, so
 --    "the rows after the last one shown" is one comparison whatever the sort.
 --    everything_review_summary counts the matching drafts and
@@ -483,35 +484,46 @@ begin
 end;
 $$;
 
+-- One element of a sort key: the value, negated for a descending sort, and
+-- infinity when it is missing, so missing values sort last.
+create function everything_review_signed(p_value text, p_sort jsonb) returns text
+language sql immutable as $$
+  select format('coalesce(%s, ''infinity''::float8)', case when coalesce((p_sort ->> 'descending')::boolean, false) then format('-(%s)', p_value) else p_value end)
+$$;
+
 -- The sort key of a request's sorts, as an expression for an array of
--- numbers: [{ column, descending, buckets?, order? }]. A choice sorts by its
--- value's position in `order`, worst first. A number sorts by itself, or with
--- `buckets` by how many of those ascending boundaries it reaches. A descending
--- level is negated, and a missing value sorts last. The time the draft was
--- written, newest first, settles the rest.
+-- numbers: [{ column, descending, buckets?, order? }]. It sorts in two passes.
+-- The first pass takes every level in turn: a choice by its value's position
+-- in `order`, worst first, a number with `buckets` by how many of those
+-- ascending boundaries it reaches, and any other number by itself. Drafts
+-- that tie on all of that form a group, and the second pass orders each group
+-- by the exact values of the bucketed levels, again in turn. The time the
+-- draft was written, newest first, settles the rest. A descending level is
+-- negated in both passes, and a missing value sorts last.
 create function everything_review_sort_key(p_sorts jsonb) returns text
 language plpgsql stable set search_path = public as $$
 declare
   s jsonb;
-  v_value text;
-  v_parts text[] := '{}';
+  v_exact text;
+  v_first text[] := '{}';
+  v_second text[] := '{}';
 begin
   for s in select t.value from jsonb_array_elements(coalesce(p_sorts, '[]'::jsonb)) t loop
     if s ? 'order' then
-      v_value := format('array_position(%L::text[], %s)::float8', array(select jsonb_array_elements_text(s -> 'order')), everything_review_text(s ->> 'column'));
-    else
-      v_value := everything_review_number(s ->> 'column');
-      if v_value is null then raise exception 'Field % cannot be sorted', s ->> 'column'; end if;
-      if s ? 'buckets' then
-        v_value := format('case when %1$s is null then null else (select count(*) from unnest(%2$L::float8[]) b where b <= %1$s)::float8 end',
-                          v_value, array(select jsonb_array_elements_text(s -> 'buckets'))::float8[]);
-      end if;
+      v_first := v_first || everything_review_signed(format('array_position(%L::text[], %s)::float8', array(select jsonb_array_elements_text(s -> 'order')), everything_review_text(s ->> 'column')), s);
+      continue;
     end if;
-    if coalesce((s ->> 'descending')::boolean, false) then v_value := format('-(%s)', v_value); end if;
-    v_parts := v_parts || format('coalesce(%s, ''infinity''::float8)', v_value);
+    v_exact := everything_review_number(s ->> 'column');
+    if v_exact is null then raise exception 'Field % cannot be sorted', s ->> 'column'; end if;
+    if s ? 'buckets' then
+      v_first := v_first || everything_review_signed(format('case when %1$s is null then null else (select count(*) from unnest(%2$L::float8[]) b where b <= %1$s)::float8 end',
+                                                            v_exact, array(select jsonb_array_elements_text(s -> 'buckets'))::float8[]), s);
+      v_second := v_second || everything_review_signed(v_exact, s);
+    else
+      v_first := v_first || everything_review_signed(v_exact, s);
+    end if;
   end loop;
-  v_parts := v_parts || 'coalesce(-extract(epoch from f.written)::float8, 0)'::text;
-  return format('array[%s]::float8[]', array_to_string(v_parts, ', '));
+  return format('array[%s]::float8[]', array_to_string(v_first || v_second || 'coalesce(-extract(epoch from f.written)::float8, 0)'::text, ', '));
 end;
 $$;
 
@@ -617,6 +629,7 @@ revoke all on function
   everything_review_number(text),
   everything_review_text(text),
   everything_review_condition(jsonb, text),
+  everything_review_signed(text, jsonb),
   everything_review_sort_key(jsonb),
   everything_review_page(jsonb, float8[], uuid, int),
   everything_review_drafts(uuid[]),

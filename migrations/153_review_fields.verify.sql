@@ -82,6 +82,14 @@ begin
     from everything_review_page('{"filters": [{"column": "published", "min": 0}, {"column": "p_helpful", "min": 0.5}], "sorts": []}') with ordinality t;
   r := r || jsonb_build_object('missing_values_fail_a_filter', page is null);
 
+  -- Two passes: every draft is in the same written bucket, so approval
+  -- decides first, and within each approval group the exact time does,
+  -- oldest first as asked. Without the second pass the newest would come
+  -- first, from the final tie-break.
+  select array_agg(id order by t.ordinality) into page
+    from everything_review_page('{"filters": [], "sorts": [{"column": "written", "descending": false, "buckets": [0]}, {"column": "approval", "descending": true, "order": ["disapproved", "not_reviewed", "approved"]}]}') with ordinality t;
+  r := r || jsonb_build_object('second_pass', page = array[d2, d4, '00000000-0000-0000-0000-0000000000d5', '00000000-0000-0000-0000-0000000000d6', '00000000-0000-0000-0000-0000000000d1', '00000000-0000-0000-0000-0000000000d3', d7]::uuid[]);
+
   select * into s from everything_review_summary(not_posted_notes);
   r := r || jsonb_build_object('summary', s.reviewer = 'jim' and s.matching = 5 and s.newest is not null);
   r := r || jsonb_build_object('facets', (

@@ -113,8 +113,8 @@ function draftAsNote(draft: ReviewDraft): NoteRow {
   };
 }
 
-/** The buckets the card sits in, one per sort level that a deeper level
- *  follows, so the order of the list can be read off the cards. */
+/** The buckets the card sits in, one per sort level when there are several,
+ *  so the order of the list can be read off the cards. */
 function BucketChips({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   const chips = bucketChips(REVIEW_FIELDS, view.sorts, draft.fields, view.now);
   if (chips.length === 0) return null;

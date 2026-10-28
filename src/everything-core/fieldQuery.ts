@@ -12,12 +12,16 @@
  *   date     a moment, filtered by how many days back it lies
  *   choice   one of a list of values, filtered by the values to keep
  *
- * A list can be sorted by any number of fields, one after another. Every
- * sort level that has a deeper level after it sorts by buckets of its field
- * instead of its exact value: the same thresholds and day spans the filters
- * use. So "newest first, then most viewed" lists today's notes by views, then
- * yesterday's by views, and so on. Each card then names the bucket it sits in,
- * because otherwise the order would look random. Every function here is pure. */
+ * A list can be sorted by any number of fields, one after another. With more
+ * than one level the sort runs in two passes. The first pass sorts by the
+ * buckets of every level: the same thresholds and day spans the filters use.
+ * Rows that land in the same bucket on every level form a group, and the
+ * second pass goes through the levels again and orders each group by the
+ * exact values. So "newest first, then most helpful votes" lists today's notes
+ * with 3 to 4 helpful votes before today's with 2, and within each such group
+ * the newest note first, then the one with more votes. Each card names the
+ * buckets it sits in, because otherwise the order would look random. A single
+ * level sorts by the exact value. Every function here is pure. */
 
 export interface FieldOption {
   value: string;
@@ -174,8 +178,8 @@ function filterRequest(field: FieldDef, filter: FieldFilter, now: Date): QueryRe
 // ---------------------------------------------------------------------------
 // Sorting
 
-/** A sort level is bucketed when a deeper level follows it. */
-export const isBucketed = (sorts: readonly FieldSort[], index: number) => index < sorts.length - 1;
+/** Every sort level is bucketed when there is more than one. */
+const isBucketed = (sorts: readonly FieldSort[]) => sorts.length > 1;
 
 function sortRequest(field: FieldDef, sort: FieldSort, bucketed: boolean, now: Date): QueryRequest["sorts"][number] {
   const base = { column: field.id, descending: sort.descending };
@@ -218,12 +222,12 @@ export function bucketText(field: FieldDef, value: unknown, now: Date, labels: R
   return rangeText(limits[index - 1]!, limits[index]! - 1);
 }
 
-/** The chips a card shows: one per bucketed sort level, naming the bucket the
- *  card's row falls in. */
+/** The chips a card shows: one per sort level when there are several, naming
+ *  the bucket the card's row falls in. */
 export function bucketChips(fields: readonly FieldDef[], sorts: readonly FieldSort[], row: Record<string, unknown>, now: Date, labels: Record<string, string> = {}): string[] {
-  return sorts.flatMap((sort, index) => {
+  return sorts.flatMap((sort) => {
     const field = fieldById(fields, sort.field);
-    const text = field && isBucketed(sorts, index) ? bucketText(field, row[field.id], now, labels) : null;
+    const text = field && isBucketed(sorts) ? bucketText(field, row[field.id], now, labels) : null;
     return text ? [`${field!.label}: ${text}`] : [];
   });
 }
@@ -233,7 +237,7 @@ export function buildRequest(fields: readonly FieldDef[], query: Pick<FieldQuery
   const known = <T extends { field: string }>(items: readonly T[]) => items.flatMap((item) => (fieldById(fields, item.field) ? [[fieldById(fields, item.field)!, item] as const] : []));
   return {
     filters: known(query.filters).map(([field, filter]) => filterRequest(field, filter, now)),
-    sorts: known(query.sorts).map(([field, sort], index) => sortRequest(field, sort, isBucketed(query.sorts, index), now)),
+    sorts: known(query.sorts).map(([field, sort]) => sortRequest(field, sort, isBucketed(query.sorts), now)),
   };
 }
 

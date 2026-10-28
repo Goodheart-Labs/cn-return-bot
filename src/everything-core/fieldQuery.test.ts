@@ -57,7 +57,13 @@ describe("filters", () => {
 });
 
 describe("sorting", () => {
-  test("only levels with a deeper level after them are bucketed", () => {
+  test("a single level sorts by the exact value", () => {
+    expect(buildRequest(FIELDS, { filters: [], sorts: [{ field: "helpful_votes", descending: true }] }, NOW).sorts).toEqual([
+      { column: "helpful_votes", descending: true },
+    ]);
+  });
+
+  test("with several levels every level is bucketed", () => {
     const request = buildRequest(FIELDS, {
       filters: [],
       sorts: [
@@ -69,7 +75,7 @@ describe("sorting", () => {
     expect(request.sorts).toEqual([
       { column: "rating", descending: true, order: ["not_helpful", "other", "helpful"] },
       { column: "helpful_votes", descending: true, buckets: [1, 2, 3, 5, 8] },
-      { column: "p_helpful", descending: true },
+      { column: "p_helpful", descending: true, buckets: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] },
     ]);
   });
 
@@ -86,12 +92,13 @@ describe("sorting", () => {
     expect(bucketText(field("written"), new Date(2026, 6, 1).toISOString(), NOW)).toBe("60 or more days ago");
   });
 
-  test("a card gets a chip for each bucketed level", () => {
+  test("a card gets a chip for each level when there are several", () => {
     const sorts = [
       { field: "written", descending: true },
       { field: "helpful_votes", descending: true },
     ];
-    expect(bucketChips(FIELDS, sorts, { written: new Date(2026, 9, 27, 9).toISOString(), helpful_votes: 4 }, NOW)).toEqual(["Written: yesterday"]);
+    expect(bucketChips(FIELDS, sorts, { written: new Date(2026, 9, 27, 9).toISOString(), helpful_votes: 4 }, NOW)).toEqual(["Written: yesterday", "Helpful votes: 3 to 4"]);
+    expect(bucketChips(FIELDS, sorts.slice(0, 1), { written: new Date(2026, 9, 27, 9).toISOString() }, NOW)).toEqual([]);
   });
 });
 
