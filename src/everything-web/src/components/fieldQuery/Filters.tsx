@@ -51,6 +51,9 @@ function filterMenu({ fields, filters, onChange, facets }: FilterProps) {
     options: field.kind === "choice" ? choiceOptions(field, facets?.[field.id]) : filterOptions(field),
     selected: selectedOptions(filterOf(field)),
     onChange: (values) => set(field, values),
+    // Values that come from the data, such as creators, are many and unknown
+    // in advance, so they can be searched.
+    searchable: field.kind === "choice" && !field.options,
   });
   const fieldEntry = (field: FieldDef): MenuEntry => {
     const filter = filterOf(field);

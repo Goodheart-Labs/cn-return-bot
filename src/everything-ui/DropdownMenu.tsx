@@ -38,16 +38,14 @@ type SubmenuEntry = { type: "submenu"; key: string; label: ReactNode; hint?: str
 /** One entry of a menu. An action runs and closes the menu. A submenu opens
  *  another menu of entries, and `value` sums up its current state at the
  *  right. A choice is a list of options: a single choice closes the menu on a
- *  pick, a multiple choice stays open so more options can be ticked. */
+ *  pick, a multiple choice stays open so more options can be ticked. A
+ *  searchable choice has a search box above its options. */
 export type MenuEntry =
   | { type: "action"; key: string; label: ReactNode; icon?: ReactNode; hint?: string; danger?: boolean; onSelect: () => void }
   | SubmenuEntry
-  | { type: "choice"; key: string; multiple: boolean; options: MenuOption[]; selected: readonly string[]; onChange: (selected: string[]) => void }
+  | { type: "choice"; key: string; multiple: boolean; options: MenuOption[]; selected: readonly string[]; onChange: (selected: string[]) => void; searchable?: boolean }
   | { type: "heading"; key: string; label: ReactNode }
   | { type: "separator"; key: string };
-
-/** A choice with more options than this gets a search box above them. */
-const SEARCH_FROM_OPTIONS = 12;
 
 /** Screens narrower than this open submenus in place of the menu. */
 const PHONE_QUERY = "(max-width: 639px)";
@@ -142,9 +140,8 @@ function OptionSearch({ query, onChange }: { query: string; onChange: (query: st
 
 function ChoiceEntry({ entry }: { entry: Extract<MenuEntry, { type: "choice" }> }) {
   const [query, setQuery] = useState("");
-  const searchable = entry.options.length > SEARCH_FROM_OPTIONS;
-  const shown = searchable && query ? entry.options.filter((option) => optionText(option).includes(query.toLowerCase())) : entry.options;
-  const search = searchable && <OptionSearch query={query} onChange={setQuery} />;
+  const shown = entry.searchable && query ? entry.options.filter((option) => optionText(option).includes(query.toLowerCase())) : entry.options;
+  const search = entry.searchable && <OptionSearch query={query} onChange={setQuery} />;
   if (entry.multiple) {
     const toggle = (value: string, on: boolean) => entry.onChange(on ? [...entry.selected, value] : entry.selected.filter((v) => v !== value));
     return (
