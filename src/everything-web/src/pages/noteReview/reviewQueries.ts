@@ -117,7 +117,7 @@ export async function refreshDrafts(client: QueryClient, request: QueryRequest, 
   client.setQueryData<ListPages>(queryKeys.noteReviewList(request), (data) =>
     data && { ...data, pages: data.pages.map((page) => page.map((d) => (byId.has(d.id) ? { ...byId.get(d.id)!, sortKey: d.sortKey } : d))) },
   );
-  await client.invalidateQueries({ queryKey: queryKeys.noteReviewSummaries });
+  await client.invalidateQueries({ queryKey: queryKeys.noteReviewCounts });
 }
 
 /** Whether the draft's last chat message is a reviewer's, still waiting for

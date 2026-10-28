@@ -34,13 +34,13 @@ export const queryKeys = {
   leaderboard: ["leaderboard"] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
-  /** How many drafts match, under every request, and under one. */
-  noteReviewSummaries: ["noteReview", "summary"] as const,
-  noteReviewSummary: (request: unknown) => ["noteReview", "summary", request] as const,
+  /** Every count of the page: how many drafts match, and how many each value
+   *  of the choice fields would show, each under one request. */
+  noteReviewCounts: ["noteReview", "counts"] as const,
+  noteReviewSummary: (request: unknown) => ["noteReview", "counts", "summary", request] as const,
+  noteReviewFacets: (request: unknown) => ["noteReview", "counts", "facets", request] as const,
   /** The pages of the list under one request. */
   noteReviewList: (request: unknown) => ["noteReview", "list", request] as const,
-  /** How many drafts each value of the choice fields would show. */
-  noteReviewFacets: (request: unknown) => ["noteReview", "facets", request] as const,
   /** One note for the local posting tool: the note on its picture page, and
    *  the picture's address on the tool's server. */
   noteImage: (noteId: string) => ["noteImage", noteId] as const,

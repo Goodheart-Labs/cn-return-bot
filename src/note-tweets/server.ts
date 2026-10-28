@@ -46,8 +46,22 @@ async function takeImage(noteId: string): Promise<void> {
   }
 }
 
-const CORS = { "Access-Control-Allow-Origin": SITE, "Access-Control-Allow-Headers": "content-type", "Access-Control-Allow-Methods": "GET, POST" };
-const answer = (body: BodyInit | null, init: ResponseInit = {}) => new Response(body, { ...init, headers: { ...CORS, ...init.headers } });
+/** The website may be opened under either name of this computer. The browser
+ *  keeps a separate sign-in for each. */
+const SITE_ORIGINS = [SITE, `http://localhost:${SITE_PORT}`];
+
+/** A response the website's page may read, from whichever of its origins
+ *  asked. */
+function answer(request: Request, body: BodyInit | null, init: ResponseInit = {}) {
+  const origin = request.headers.get("origin");
+  const cors = {
+    "Access-Control-Allow-Origin": origin && SITE_ORIGINS.includes(origin) ? origin : SITE,
+    "Access-Control-Allow-Headers": "content-type",
+    "Access-Control-Allow-Methods": "GET, POST",
+    Vary: "Origin",
+  };
+  return new Response(body, { ...init, headers: { ...cors, ...init.headers } });
+}
 
 async function noteIdOf(request: Request): Promise<{ noteId: string } & Record<string, unknown>> {
   const body = (await request.json()) as { noteId?: unknown } & Record<string, unknown>;
@@ -61,14 +75,14 @@ Bun.serve({
   idleTimeout: 120,
   async fetch(request) {
     const { pathname } = new URL(request.url);
-    if (request.method === "OPTIONS") return answer(null, { status: 204 });
+    if (request.method === "OPTIONS") return answer(request, null, { status: 204 });
     try {
       const image = pathname.match(/^\/images\/([0-9a-f-]{36})\.png$/);
-      if (image && request.method === "GET") return answer(Bun.file(imagePath(image[1]!)), { headers: { "content-type": "image/png" } });
+      if (image && request.method === "GET") return answer(request, Bun.file(imagePath(image[1]!)), { headers: { "content-type": "image/png" } });
       if (pathname === "/image" && request.method === "POST") {
         const { noteId } = await noteIdOf(request);
         await takeImage(noteId);
-        return answer(JSON.stringify({ url: `/images/${noteId}.png?at=${Date.now()}` }), { headers: { "content-type": "application/json" } });
+        return answer(request, JSON.stringify({ url: `/images/${noteId}.png?at=${Date.now()}` }), { headers: { "content-type": "application/json" } });
       }
       if (pathname === "/send" && request.method === "POST") {
         const { noteId, text, reply, timing } = await noteIdOf(request);
@@ -80,11 +94,11 @@ Bun.serve({
           title: `Common Note ${noteId}`,
           timing: timing === "now" ? "now" : "next_free_slot",
         });
-        return answer(JSON.stringify(draft), { headers: { "content-type": "application/json" } });
+        return answer(request, JSON.stringify(draft), { headers: { "content-type": "application/json" } });
       }
-      return answer("Not found", { status: 404 });
+      return answer(request, "Not found", { status: 404 });
     } catch (error) {
-      return answer(error instanceof Error ? error.message : String(error), { status: 500 });
+      return answer(request, error instanceof Error ? error.message : String(error), { status: 500 });
     }
   },
 });
