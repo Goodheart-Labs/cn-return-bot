@@ -1,8 +1,10 @@
 /* Typefully, the paid service Nathan schedules his X posts with, through its
  * v2 API. A draft holds the tweet with its picture and the reply below it.
  * Typefully publishes it in the next free slot of the account's posting
- * queue, or at once. The API cannot delete a draft, so a mistake is removed
- * in the Typefully app. Ported from Nathan's PR #528. */
+ * queue, or at once. The tool reads each draft back later to learn whether
+ * it went out. Ported from Nathan's PR #528. */
+
+import type { TypefullyDraftState } from "../everything-core/xMarks";
 
 /** How long Typefully may take to process an uploaded picture. */
 const MEDIA_READY_TIMEOUT_MS = 30_000;
@@ -70,4 +72,34 @@ export async function createDraft(draft: TweetDraft): Promise<{ draftId: string;
     "draft",
   );
   return { draftId: String(created.id), scheduledFor: created.scheduled_date ?? created.publish_at ?? null };
+}
+
+/** A draft as Typefully's API returns it, with the fields the tool reads. */
+interface TypefullyDraft {
+  status: "draft" | "planned" | "scheduled" | "publishing" | "published" | "error";
+  scheduled_date: string | null;
+  published_at: string | null;
+  x_published_url: string | null;
+}
+
+const HTTP_NOT_FOUND = 404;
+
+/** Reads a draft back. A draft that was deleted in Typefully answers 404. A
+ *  draft that was taken off the schedule, or is still a plain draft, counts as
+ *  scheduled without a time, because it can still go out. */
+async function draftState(account: Settings, draftId: string): Promise<TypefullyDraftState> {
+  const response = await fetch(`${account.api}/drafts/${encodeURIComponent(draftId)}`, { headers: account.headers });
+  if (response.status === HTTP_NOT_FOUND) return { state: "deleted" };
+  const draft = await json<TypefullyDraft>(response, "draft");
+  if (draft.status === "published") return { state: "published", publishedAt: draft.published_at, tweetUrl: draft.x_published_url };
+  if (draft.status === "error") return { state: "failed" };
+  return { state: "scheduled", scheduledFor: draft.scheduled_date };
+}
+
+/** What Typefully says about each of these drafts, by draft id. */
+export async function draftStates(draftIds: string[]): Promise<Record<string, TypefullyDraftState>> {
+  const account = settings();
+  const states: Record<string, TypefullyDraftState> = {};
+  for (const draftId of draftIds) states[draftId] = await draftState(account, draftId);
+  return states;
 }

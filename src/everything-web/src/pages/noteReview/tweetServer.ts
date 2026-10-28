@@ -1,4 +1,4 @@
-import type { TypefullyPost } from "@cn/core/xMarks";
+import type { TypefullyDraftState, TypefullyPost } from "@cn/core/xMarks";
 
 /* The local posting tool's server (src/note-tweets/server.ts). It runs on the
  * admin's own computer, because it holds the Typefully key, and only
@@ -24,3 +24,6 @@ export const fetchNoteImage = (noteId: string) => call<{ url: string }>("/image"
 /** Creates a Typefully draft of the tweet, with the note's picture and the
  *  reply below it. */
 export const sendTweet = (tweet: { noteId: string; text: string; reply: string; timing: TweetTiming }) => call<TypefullyPost>("/send", tweet);
+
+/** What Typefully says about each of these drafts, by draft id. */
+export const fetchDraftStates = (draftIds: string[]) => call<Record<string, TypefullyDraftState>>("/drafts", { draftIds });

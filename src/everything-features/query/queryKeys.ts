@@ -34,6 +34,7 @@ export const queryKeys = {
   leaderboard: ["leaderboard"] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
+  typefullySync: ["typefullySync"] as const,
   /** Every count of the page: how many drafts match, and how many each value
    *  of the choice fields would show, each under one request. */
   noteReviewCounts: ["noteReview", "counts"] as const,

@@ -545,6 +545,31 @@ function DeleteButton({ draft, view }: { draft: ReviewDraft; view: ReviewView })
 
 /** A button that switches a mark on or off. It shows a tick while the mark
  *  is on. */
+const X_TIME_FORMAT: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" };
+
+/** When the note goes out on X or went out, and the tweet's link once it is
+ *  out. A note marked as posted by hand has neither. */
+function XPostLine({ draft }: { draft: ReviewDraft }) {
+  const time = draft.fields.x_time as string | null;
+  const tweetUrl = draft.fields.x_tweet_url as string | null;
+  const when = time && new Date(time).toLocaleString("en-GB", X_TIME_FORMAT);
+  if (draft.xMark === "scheduled") return <span className="text-sm text-fg-muted">{when ? `Scheduled on X for ${when}` : "In Typefully, not scheduled"}</span>;
+  if (draft.xMark !== "posted" || !when) return null;
+  return (
+    <span className="text-sm text-fg-muted">
+      Posted on X {when}
+      {tweetUrl && (
+        <>
+          {" · "}
+          <a href={tweetUrl} target="_blank" rel="noreferrer" className="text-link hover:underline">
+            See the tweet
+          </a>
+        </>
+      )}
+    </span>
+  );
+}
+
 function MarkButton({ on, label, onClick, disabled }: { on: boolean; label: string; onClick: () => void; disabled: boolean }) {
   return (
     <Button variant="secondary" aria-pressed={on} disabled={disabled} onClick={onClick} title={on ? `${label}. Click to take the mark off` : undefined} className={cn(on && "border-link text-link")}>
@@ -579,9 +604,10 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        {live && TWEET_SERVER && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && panelButton("post", "Post on X")}
+        {live && TWEET_SERVER && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
         {live && shows(DISPLAY.markPosted.value) && <MarkButton on={draft.xMark === "posted"} label="Posted on X" disabled={act.isPending} onClick={() => markX("posted")} />}
         {live && shows(DISPLAY.wontPost.value) && <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />}
+        <XPostLine draft={draft} />
         {shows(DISPLAY.chat.value) && panelButton("chat", "Chat with Claude")}
         {live && shows(DISPLAY.improve.value) && panelButton("improve", draft.proposal ? "Improved version" : "Improve the note")}
         {shows(DISPLAY.skip.value) && (reviewOpen(draft) || draft.skipped) && (

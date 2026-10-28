@@ -1056,7 +1056,9 @@ export type Database = {
           marked_at: string
           marked_by: string | null
           note_id: string
+          published_at: string | null
           scheduled_for: string | null
+          tweet_url: string | null
           typefully_draft_id: string | null
         }
         Insert: {
@@ -1064,7 +1066,9 @@ export type Database = {
           marked_at?: string
           marked_by?: string | null
           note_id: string
+          published_at?: string | null
           scheduled_for?: string | null
+          tweet_url?: string | null
           typefully_draft_id?: string | null
         }
         Update: {
@@ -1072,7 +1076,9 @@ export type Database = {
           marked_at?: string
           marked_by?: string | null
           note_id?: string
+          published_at?: string | null
           scheduled_for?: string | null
+          tweet_url?: string | null
           typefully_draft_id?: string | null
         }
         Relationships: [
@@ -3423,6 +3429,17 @@ export type Database = {
         Args: { target_minisite: string }
         Returns: undefined
       }
+      everything_update_x_post: {
+        Args: {
+          p_draft_id: string
+          p_note: string
+          p_published_at?: string
+          p_scheduled_for?: string
+          p_state: string
+          p_tweet_url?: string
+        }
+        Returns: undefined
+      }
       everything_visit_page: { Args: { url: string }; Returns: string }
       finish_note_submission_claim: {
         Args: {
@@ -3580,6 +3597,8 @@ export type Database = {
         creator_x: string | null
         creator_x_handle: string | null
         creator_x_evidence: string | null
+        x_time: string | null
+        x_tweet_url: string | null
       }
     }
   }

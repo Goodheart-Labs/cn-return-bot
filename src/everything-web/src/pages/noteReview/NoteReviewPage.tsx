@@ -15,6 +15,7 @@ import { PERSON, ReviewCard } from "./ReviewCard";
 import { DEFAULT_REVIEW_QUERY, DISPLAY, REVIEW_FIELDS } from "./reviewFields";
 import { useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewFacets, useReviewList, useReviewSummary, type ReviewView } from "./reviewQueries";
 import { TWEET_SERVER } from "./tweetServer";
+import { useTypefullySync } from "./typefullySync";
 
 /** The Display menu offers Post on X only in the local posting tool, which
  *  has a server that can reach Typefully. */
@@ -123,6 +124,7 @@ function NoteReview() {
   const summary = useReviewSummary(request);
   const facets = useReviewFacets(REVIEW_FIELDS, request);
   const filterProps = { fields: REVIEW_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), facets };
+  const typefully = useTypefullySync();
   const view = useMemo(() => ({ request, sorts: query.sorts, display: query.display, now }), [request, query.sorts, query.display, now]);
   return (
     <main className="min-w-0 px-4 py-8 md:px-8">
@@ -141,6 +143,12 @@ function NoteReview() {
           </div>
         </div>
         {summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
+        {typefully.isError && <p className="text-sm text-negative">Could not check Typefully: {typefully.error.message}</p>}
+        {!!typefully.data?.failed && (
+          <p className="text-sm text-negative">
+            Typefully could not publish {typefully.data.failed === 1 ? "1 tweet" : `${typefully.data.failed} tweets`}. Fix them in Typefully.
+          </p>
+        )}
         <FilterPills {...filterProps} />
         <SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />
       </header>

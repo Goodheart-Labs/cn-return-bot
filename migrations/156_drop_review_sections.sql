@@ -1,4 +1,4 @@
--- 155: remove what migration 153 replaced, now that the new review page is
+-- 156: remove what migration 153 replaced, now that the new review page is
 -- live (GOO-623).
 --
 -- 153 only added, so the old website kept working while its pull request
@@ -6,7 +6,8 @@
 -- 1. Leaderboard notes marked as posted on the old website since 153 get
 --    their X mark too, and the leaderboard's posted_at column goes. The
 --    leaderboard reads the mark from everything_note_x_marks, and
---    everything_set_x_mark stops writing posted_at.
+--    everything_set_x_mark and everything_update_x_post stop writing
+--    posted_at.
 -- 2. The review page's section functions of migrations 143 to 151 go, and
 --    with them the crowd rating helpers, whose rules the field row holds.
 
@@ -33,6 +34,27 @@ begin
   on conflict (note_id) do update
     set mark = excluded.mark, typefully_draft_id = excluded.typefully_draft_id,
         scheduled_for = excluded.scheduled_for, marked_by = excluded.marked_by, marked_at = now();
+end;
+$$;
+
+-- As in migration 155, without the leaderboard's posted_at.
+create or replace function everything_update_x_post(p_note uuid, p_draft_id text, p_state text, p_scheduled_for timestamptz default null, p_published_at timestamptz default null, p_tweet_url text default null)
+returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  perform everything_claude_actor(null);
+  if p_state = 'deleted' then
+    delete from everything_note_x_marks where note_id = p_note and mark = 'scheduled' and typefully_draft_id = p_draft_id;
+  elsif p_state = 'published' then
+    update everything_note_x_marks
+       set mark = 'posted', published_at = coalesce(p_published_at, now()), tweet_url = p_tweet_url
+     where note_id = p_note and mark = 'scheduled' and typefully_draft_id = p_draft_id;
+  elsif p_state = 'scheduled' then
+    update everything_note_x_marks set scheduled_for = p_scheduled_for
+     where note_id = p_note and mark = 'scheduled' and typefully_draft_id = p_draft_id;
+  else
+    raise exception 'Unknown Typefully state %', p_state;
+  end if;
 end;
 $$;
 
@@ -66,7 +88,7 @@ begin
         from everything_note_recommendations r
        where p_section = 'removed' and r.removed_at is not null
     )
-    select s.note_id, s.sort_key, s.position, s.comment, m.marked_at, s.removed_at, s.removed_reason
+    select s.note_id, s.sort_key, s.position, s.comment, coalesce(m.published_at, m.marked_at), s.removed_at, s.removed_reason
       from section_rows s
       join everything_notes n on n.id = s.note_id and n.status <> 'hidden'
       join everything_claims c on c.id = n.claim_id

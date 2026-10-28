@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { mkdir } from "node:fs/promises";
 import { chromium, type Browser } from "playwright";
-import { createDraft } from "./typefully";
+import { createDraft, draftStates } from "./typefully";
 
 /* The local posting tool (GOO-629). `bun run note-tweets` starts two servers
  * on the admin's computer:
@@ -11,10 +11,13 @@ import { createDraft } from "./typefully";
  *   - this server on SERVER_PORT, which holds the Typefully key. It takes a
  *     picture of a note's card from the website's picture page, and sends a
  *     tweet with it to Typefully.
- * The browser marks the note as posted on X after a send, with the admin's
- * own sign-in. Without the Typefully settings everything works except the
- * send, which says what is missing. The pictures stay in .state/, which git ignores. Playwright
- * needs its browser once: `bunx playwright install chromium`. */
+ * The browser marks the note as scheduled on X after a send, with the
+ * admin's own sign-in. Every few minutes it asks this server what Typefully
+ * says about each scheduled note, and marks a published one as posted.
+ * Without the Typefully settings everything works except the send and that
+ * check, which say what is missing. The pictures stay in .state/, which git
+ * ignores. Playwright needs its browser once: `bunx playwright install
+ * chromium`. */
 
 const SITE_PORT = 8003;
 const SERVER_PORT = 8010;
@@ -95,6 +98,11 @@ Bun.serve({
           timing: timing === "now" ? "now" : "next_free_slot",
         });
         return answer(request, JSON.stringify(draft), { headers: { "content-type": "application/json" } });
+      }
+      if (pathname === "/drafts" && request.method === "POST") {
+        const { draftIds } = (await request.json()) as { draftIds?: unknown };
+        if (!Array.isArray(draftIds) || !draftIds.every((id) => typeof id === "string")) throw new Error("draftIds must be a list of Typefully draft ids");
+        return answer(request, JSON.stringify(await draftStates(draftIds)), { headers: { "content-type": "application/json" } });
       }
       return answer(request, "Not found", { status: 404 });
     } catch (error) {

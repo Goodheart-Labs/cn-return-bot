@@ -24,8 +24,9 @@ const publicNoteLink = (draft: ReviewDraft) =>
  *  both editable, and a picture of the note's card that goes with the tweet.
  *  Sending creates a Typefully draft, which Typefully publishes in the next
  *  free slot of the account's posting queue or at once, and marks the note as
- *  posted on X. Typefully cannot delete a draft through its API, so a mistake
- *  is removed in the Typefully app. */
+ *  scheduled on X until Typefully has published it (typefullySync.ts). A
+ *  mistake is removed in the Typefully app, and the note then counts as not
+ *  posted again. */
 export function PostOnX({ draft, view, onClose }: { draft: ReviewDraft; view: ReviewView; onClose: () => void }) {
   const client = useQueryClient();
   const [text, setText] = useState(() => tweetText(draft, publicNoteLink(draft)));
@@ -34,7 +35,7 @@ export function PostOnX({ draft, view, onClose }: { draft: ReviewDraft; view: Re
   const noteId = draft.noteId!;
   const image = useQuery({ queryKey: queryKeys.noteImageUrl(noteId), queryFn: () => fetchNoteImage(noteId), staleTime: Infinity });
   const send = useMutation({
-    mutationFn: async () => setXMark(noteId, "posted", await sendTweet({ noteId, text, reply, timing })),
+    mutationFn: async () => setXMark(noteId, "scheduled", await sendTweet({ noteId, text, reply, timing })),
     onSuccess: async () => {
       onClose();
       await refreshDrafts(client, view.request, [draft.id]);

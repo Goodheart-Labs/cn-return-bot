@@ -31,6 +31,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     sortable: false,
     options: [
       { value: "not_posted", label: "Not posted" },
+      { value: "scheduled", label: "Scheduled", hint: "Sent to Typefully, not published yet" },
       { value: "posted", label: "Posted" },
       { value: "wont_post", label: "Won't post", hint: "We decided not to post it" },
     ],

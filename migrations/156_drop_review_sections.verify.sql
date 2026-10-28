@@ -1,4 +1,4 @@
--- Checks for migration 155, run after it against 155_drop_review_sections.fixture.sql
+-- Checks for migration 156, run after it against 156_drop_review_sections.fixture.sql
 -- (the commands are at the top of the fixture). The block ends by raising an
 -- error that carries every result, so nothing it wrote stays.
 do $$
@@ -20,6 +20,9 @@ begin
   r := r || jsonb_build_object('leaderboard_reads_the_mark', (select bool_and(posted_at is not null) from everything_curation_page('leaderboard')));
   perform everything_set_x_mark(d2_note, null);
   r := r || jsonb_build_object('unmarked', (select posted_at is null from everything_curation_page('leaderboard') where note_id = d2_note));
+  perform everything_set_x_mark(d2_note, 'scheduled', 't2', now());
+  perform everything_update_x_post(d2_note, 't2', 'published', null, now(), null);
+  r := r || jsonb_build_object('published_after_156', (select posted_at is not null from everything_curation_page('leaderboard') where note_id = d2_note));
   reset role;
   raise exception 'results: %', r;
 end;

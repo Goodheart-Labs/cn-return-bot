@@ -19,8 +19,8 @@ import { X_MARKS_TABLE } from "./xMarks";
 const LEADERBOARD = "leaderboard";
 
 /** One note on a list. `comment` is an admin's note on why it sits where it
- *  does. `posted_at` says when an admin marked the note as posted on X
- *  (everything_note_x_marks, migration 153). */
+ *  does. `posted_at` says when the note went out on X, or when an admin
+ *  marked it as posted (everything_note_x_marks, migrations 153 and 155). */
 export interface CuratedNoteRow {
   note_id: string;
   position: number;
@@ -103,9 +103,13 @@ export async function removeFromLeaderboard(noteId: string): Promise<void> {
 export async function fetchLeaderboard(): Promise<CuratedNoteRow[]> {
   const [rows, posted] = await Promise.all([
     fetchAllRows<Omit<CuratedNoteRow, "posted_at">>(() => supabase.from(TABLE).select("note_id, position, comment"), "note_id", { label: "leaderboard" }),
-    fetchAllRows<{ note_id: string; marked_at: string }>(() => supabase.from(X_MARKS_TABLE).select("note_id, marked_at").eq("mark", "posted"), "note_id", { label: "posted marks" }),
+    fetchAllRows<{ note_id: string; marked_at: string; published_at: string | null }>(
+      () => supabase.from(X_MARKS_TABLE).select("note_id, marked_at, published_at").eq("mark", "posted"),
+      "note_id",
+      { label: "posted marks" },
+    ),
   ]);
-  const postedAt = new Map(posted.map((mark) => [mark.note_id, mark.marked_at]));
+  const postedAt = new Map(posted.map((mark) => [mark.note_id, mark.published_at ?? mark.marked_at]));
   return rows.map((row) => ({ ...row, posted_at: postedAt.get(row.note_id) ?? null })).sort((a, b) => a.position - b.position);
 }
 
