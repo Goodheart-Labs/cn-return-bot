@@ -7,8 +7,7 @@
  * one Claude for each X tweet the X run handed to it (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
  * every note as soon as it is posted (GOO-591), whose two probabilities the
- * review page shows. And it starts one Claude for each creator with a Claude
- * note whose X account nobody has looked up yet (GOO-639).
+ * review page shows.
  *
  * Every Claude runs in its own tmux session, so a person can attach and watch
  * it. Its files are in its run folder under /tmp/cn-notes, the place Nathan's
@@ -44,7 +43,6 @@ import {
 import { take } from "./take";
 import { readUsage, type UsageReading } from "./usage";
 import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
-import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { failXTweet, markXTweetRunning, openXTweets, recordXTweetRun, X_NOTE_MAX_CHARS, xTweetIsOpen, type XTweet } from "./xTweets";
 
 const REPO = path.resolve(import.meta.dir, "../..");
@@ -84,21 +82,12 @@ const RUNS_DIR = "/tmp/cn-notes";
 const POST_SESSION_PREFIX = "cn-post-";
 const MESSAGE_SESSION_PREFIX = "cn-msg-";
 const TWEET_SESSION_PREFIX = "cn-x-";
-const X_ACCOUNT_SESSION_PREFIX = "cn-xacct-";
-/** X account lookups at once. They are small, so one at a time keeps them
- *  from crowding out posts. */
-const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
 
 type Run = { session: string; runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null };
 
 const posts = new Map<string, Run & { item: QueueItem }>();
 const tweets = new Map<string, Run & { tweet: XTweet }>();
 const answers = new Map<string, Run>();
-/** The X account lookups running, by creator slug, and how many each creator
- *  has had. A creator whose lookups all ended without an answer waits for a
- *  person. */
-const xAccountLookups = new Map<string, Run>();
-const xAccountAttempts = new Map<string, number>();
 /** Drafts whose message Claude failed to answer twice. They wait for a person. */
 const unanswerable = new Set<string>();
 /** When the runner first saw each item waiting. */
@@ -163,18 +152,6 @@ Read src/claude-notes/agentBrief.md and ${EXAMPLES_PATH} first. Research on the 
 { "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the improved note text>", "sources": [<only with a new note whose sources changed: sources with Haiku-checked quotes, as in the brief>], "reason": "<only with a new note: why it changed>" }
 
 If the reviewer asks you to change the note, write the improved text as "note". It does not replace the note: the reviewer sees it on the review page and posts it if they agree. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
-}
-
-function xAccountPrompt(creator: CreatorToLookUp, runDir: string): string {
-  return `Find the X (Twitter) account of the creator behind the Common Notes project "${creator.name}" (slug ${creator.slug}).
-
-Their feed: ${creator.feedUrl ?? "unknown"}
-Posts of theirs we wrote notes on:
-${creator.postUrls.map((url) => `- ${url}`).join("\n")}
-
-Search the web, and ask Grok, which can search X itself: \`bun run trending-on-x --ask "<your question>"\`. Make sure the account is really theirs: their site or channel links to it, or its name, bio and posts match their work. A fan account, a namesake or a parody is not theirs.
-
-When you have found it, run \`bun run claude-notes x-handle ${creator.slug} <handle> "<one or two sentences of evidence>"\`. If you cannot confirm an account, run \`bun run claude-notes x-handle ${creator.slug} none "<what you checked>"\`. Your run folder is ${runDir}; write every file there. Stop once the command has succeeded.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -419,31 +396,6 @@ async function endAnswers() {
 }
 
 // ---------------------------------------------------------------------------
-// Creators' X accounts
-// ---------------------------------------------------------------------------
-
-/** Starts a lookup for the next creator nobody has looked up, while the plan
- *  allows Claude runs. A creator whose X account is saved drops out of the
- *  list by itself. */
-async function tickXAccounts() {
-  for (const [slug, run] of xAccountLookups) {
-    if (tmuxAlive(run.session)) continue;
-    xAccountLookups.delete(slug);
-    console.log(`${run.session} ended after ${Math.round((Date.now() - run.startedAt) / 60_000)} minutes`);
-  }
-  if (xAccountLookups.size >= MAX_X_ACCOUNT_LOOKUPS_RUNNING || !(await mayStartPosts())) return;
-  const next = (await creatorsToLookUp()).find((c) => !xAccountLookups.has(c.slug) && (xAccountAttempts.get(c.slug) ?? 0) < MAX_ATTEMPTS);
-  if (!next) return;
-  const attempt = (xAccountAttempts.get(next.slug) ?? 0) + 1;
-  xAccountAttempts.set(next.slug, attempt);
-  const runDir = runFolder(`xacct-${next.slug}-${Date.now()}`);
-  const session = X_ACCOUNT_SESSION_PREFIX + next.slug.slice(0, 20);
-  startClaude(session, runDir, xAccountPrompt(next, runDir));
-  xAccountLookups.set(next.slug, { session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: null });
-  console.log(`Started ${session} to find the X account of ${next.name} (attempt ${attempt})`);
-}
-
-// ---------------------------------------------------------------------------
 // The note judge
 // ---------------------------------------------------------------------------
 
@@ -509,7 +461,6 @@ async function tick(first: boolean) {
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPost(run);
   await endAnswers();
   await tickTweets(first);
-  await tickXAccounts();
   await judgeNotes(first);
   if ((await readSettings()).writer !== "claude") return;
   if (!existsSync(PAUSE_FILE)) await startAnswers();
