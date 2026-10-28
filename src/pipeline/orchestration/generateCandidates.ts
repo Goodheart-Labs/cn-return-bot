@@ -275,6 +275,9 @@ export interface ProcessPostsOptions {
    *  what the hard kill already did to never-started posts: its tweets row was
    *  written at selection, so it is not refetched. Unset means no deadline. */
   deadlineMs?: number;
+  /** Why the Claude Code note writer cannot take tweets in this run, or null
+   *  when it can. A tweet that draws Claude then fails. See claudeTweets.ts. */
+  claudeUnavailable?: string | null;
 }
 
 /**
@@ -288,7 +291,7 @@ export interface ProcessPostsOptions {
 export async function processPosts(
   items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { onTweetProcessed, label = "generate", deadlineMs }: ProcessPostsOptions,
+  { onTweetProcessed, label = "generate", deadlineMs, claudeUnavailable = null }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
   if (!items.length) return [];
 
@@ -355,7 +358,7 @@ export async function processPosts(
           return;
         }
         const logs = nestDotKeys(Object.fromEntries(localLog));
-        await handTweetToClaude({ logger: supabaseLogger, runId: pipelineRunId, post: item.post, picks: { ...perPostPicks, bot }, logs });
+        await handTweetToClaude({ logger: supabaseLogger, runId: pipelineRunId, post: item.post, picks: { ...perPostPicks, bot }, logs, claudeUnavailable });
         return;
       }
       const { output } = await requestTweetCheck({
@@ -461,11 +464,13 @@ export interface GenerateCandidatesOptions {
    *  regularFeedTopicCuration.ts. An empty or missing list turns curation off
    *  completely. */
   topicIds?: readonly MisinfoTopicId[];
+  /** See ProcessPostsOptions.claudeUnavailable. */
+  claudeUnavailable?: string | null;
 }
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, deadlineMs, processedThisRun = new Set(), onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
+  { maxPosts, deadlineMs, processedThisRun = new Set(), onTweetProcessed, topicIds, scorer = null, claudeUnavailable }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -593,6 +598,7 @@ export async function generateCandidates(
     onTweetProcessed: onProcessed,
     label: "generate",
     deadlineMs,
+    claudeUnavailable,
   });
   // Tag curated candidates the way pre-pass ones are tagged, so that
   // submitCandidates leaves them out of its velocity-floor backstop. They answer

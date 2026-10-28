@@ -15,7 +15,10 @@
  *   claude_waiting   the X run built the input
  *   claude_running   the runner started a Claude on it
  * and ends as a queued candidate, as rejected with no_correction_needed, or as
- * failed. A row that is still open after CLAUDE_TWEET_MAX_WAIT_MINUTES is
+ * failed. While the X share of Nathan's Claude plan is used up, or the runner
+ * on the ai-box is down, a tweet that draws Claude fails at once with the
+ * reason claude_unavailable, like a tweet whose model provider is out of
+ * credits. A row that is still open after CLAUDE_TWEET_MAX_WAIT_MINUTES is
  * swept as failed by the next X run.
  */
 
@@ -40,23 +43,29 @@ export async function handTweetToClaude(params: {
   post: Post;
   picks: Record<string, string>;
   logs: Record<string, unknown>;
+  /** Set when the X share is used up or the ai-box runner is down. The tweet
+   *  then fails, as it would when a model provider is out of credits. */
+  claudeUnavailable: string | null;
 }): Promise<void> {
-  const { logger, runId, post, picks, logs } = params;
-  try {
-    const { input } = await requestTweetInput({ priority: "x", post });
-    await logger.markRunWaitingForClaude(runId, { picks, logs: { ...logs, claude: { input } } });
-    console.log(`[claude] ${post.id} waits for a Claude on the ai-box`);
-  } catch (err) {
-    const message = (err as Error).message ?? String(err);
-    console.warn(`[claude] could not hand ${post.id} to Claude: ${message}`);
-    await logger.completePipelineRun(runId, {
+  const { logger, runId, post, picks, logs, claudeUnavailable } = params;
+  const fail = (reason: string, message: string) => {
+    console.warn(`[claude] ${post.id} failed: ${message}`);
+    return logger.completePipelineRun(runId, {
       outcome: "failed",
-      outcome_reason: "claude_input_failed",
+      outcome_reason: reason,
       error_message: message.slice(0, 2000),
       final_stage: "error",
       bot_name: CLAUDE_CODE_BOT,
       ab_test_picks: picks,
       logs,
     });
+  };
+  if (claudeUnavailable) return fail("claude_unavailable", claudeUnavailable);
+  try {
+    const { input } = await requestTweetInput({ priority: "x", post });
+    await logger.markRunWaitingForClaude(runId, { picks, logs: { ...logs, claude: { input } } });
+    console.log(`[claude] ${post.id} waits for a Claude on the ai-box`);
+  } catch (err) {
+    await fail("claude_input_failed", `Could not build the input for Claude: ${(err as Error).message ?? String(err)}`);
   }
 }

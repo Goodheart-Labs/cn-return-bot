@@ -77,7 +77,7 @@ import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } fro
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { getForcedPicks, withForcedPicks } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_TWEET_MAX_WAIT_MINUTES, PIPELINE_BOT } from "../pipeline/orchestration/claudeTweets";
-import { claudeMayTakeXTweets } from "../claude-notes/xShare";
+import { claudeUnavailableReason } from "../claude-notes/xShare";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
@@ -360,11 +360,12 @@ async function main() {
         (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    // A third of the tweets may go to the Claude Code note writer on the
-    // ai-box, but only while the X share of Nathan's Claude plan has room. A
-    // local run never hands a tweet to the ai-box.
-    const claudeMayTakeTweets = !isLocal && supabaseLogger !== null && (await claudeMayTakeXTweets());
-    const generatePicks = claudeMayTakeTweets || forcedPicks.bot ? getForcedPicks() : { ...getForcedPicks(), bot: PIPELINE_BOT };
+    // A third of the tweets go to the Claude Code note writer on the ai-box.
+    // While the X share of Nathan's Claude plan has no room, those tweets fail.
+    // A local run writes to the local database, which the ai-box never reads,
+    // so it keeps every tweet with the pipeline.
+    const claudeUnavailable = isLocal || !supabaseLogger ? null : await claudeUnavailableReason();
+    const generatePicks = isLocal && !forcedPicks.bot ? { ...getForcedPicks(), bot: PIPELINE_BOT } : getForcedPicks();
     const regularCandidates = maxPosts === 0 ? [] : await withForcedPicks(generatePicks, () => generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
@@ -376,6 +377,7 @@ async function main() {
       // maxPosts. The code for that lives in regularFeedTopicCuration.ts. Pass
       // an empty array to disable it.
       topicIds: MISINFO_ACTIVE_TOPIC_IDS,
+      claudeUnavailable,
     }));
 
     // This array fixes the submission order, because submitCandidates does not

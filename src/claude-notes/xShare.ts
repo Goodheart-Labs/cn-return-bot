@@ -22,9 +22,10 @@
  * third of all tweets would use up the share in about a day and a half, and X
  * would get no Claude notes for the rest of the week.
  *
- * The X run reads this once at its start. While X is over its allowance, the
- * run sends every tweet to the pipeline by forcing the bot A/B test. Common
- * Notes needs no change: its pacing aims the plan's total at 80%, and X's
+ * The X run reads this once at its start. While X is over its allowance, or
+ * the runner on the ai-box would not start a Claude, a tweet that draws Claude
+ * fails like a tweet whose model provider is out of credits (Jim,
+ * 2026-10-28). It is not moved to the pipeline. Common Notes needs no change: its pacing aims the plan's total at 80%, and X's
  * usage is part of that total, so Common Notes gets whatever X leaves. */
 
 import { getSupabaseClient } from "../api/supabaseClient";
@@ -50,7 +51,6 @@ export type XShare =
   /** The runner on the ai-box would not start a Claude now. */
   | { kind: "runner_down"; reason: string };
 
-export const xShareHasRoom = (share: XShare) => share.kind === "measured" && share.usedPercent < share.allowedPercent;
 
 export function computeXShare(snapshot: XShareSnapshot): XShare {
   const { latest, now } = snapshot;
@@ -68,10 +68,13 @@ export function computeXShare(snapshot: XShareSnapshot): XShare {
   return { kind: "measured", usedPercent, allowedPercent };
 }
 
-export function describeXShare(share: XShare): string {
-  if (share.kind === "runner_down") return `[claude] ${share.reason}, so every tweet goes to the pipeline`;
-  const numbers = `X has used ${share.usedPercent.toFixed(2)}% of Nathan's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARE_PERCENT}% by the reset)`;
-  return xShareHasRoom(share) ? `[claude] ${numbers}, so the bot A/B test may send tweets to Claude` : `[claude] ${numbers}, so every tweet goes to the pipeline`;
+const describeUse = (share: Extract<XShare, { kind: "measured" }>) =>
+  `X has used ${share.usedPercent.toFixed(2)}% of Nathan's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARE_PERCENT}% by the reset)`;
+
+/** Why a tweet that draws Claude cannot go to Claude now, or null when it can. */
+export function xShareProblem(share: XShare): string | null {
+  if (share.kind === "runner_down") return share.reason;
+  return share.usedPercent < share.allowedPercent ? null : describeUse(share);
 }
 
 type CostRow = { at: string; cost: unknown };
@@ -127,9 +130,12 @@ export async function readXShareSnapshot(now = new Date()): Promise<XShareSnapsh
   };
 }
 
-/** Reads the share once, logs it, and says whether this X run may send tweets to Claude. */
-export async function claudeMayTakeXTweets(): Promise<boolean> {
+/** Reads the share once, logs it, and says why this X run cannot send tweets
+ *  to Claude, or null when it can. */
+export async function claudeUnavailableReason(): Promise<string | null> {
   const share = computeXShare(await readXShareSnapshot());
-  console.log(describeXShare(share));
-  return xShareHasRoom(share);
+  const problem = xShareProblem(share);
+  if (problem) console.log(`[claude] ${problem}. Tweets that draw Claude fail in this run.`);
+  else if (share.kind === "measured") console.log(`[claude] ${describeUse(share)}. Tweets that draw Claude go to the ai-box.`);
+  return problem;
 }
