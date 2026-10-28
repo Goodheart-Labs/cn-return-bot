@@ -20,12 +20,15 @@ const DashboardPage = lazy(() => import("./pages/dashboard/DashboardPage").then(
 const JudgeExperimentPage = lazy(() => import("./pages/judgeExperiment/JudgeExperimentPage").then((module) => ({ default: module.JudgeExperimentPage })));
 
 /** The website's frame: the header on every page, the page the route names
- *  below it, and the extension nudge, which counts time across pages. */
+ *  below it, and the extension nudge, which counts time across pages. The
+ *  note picture page of the local posting tool is the one page without the
+ *  frame, because it is only there to be photographed. */
 export function App() {
   const [route, navigate] = useRoute();
   const [loginOpen, setLoginOpen] = useState(false);
   useAuthAnalytics();
 
+  if (route.view === "noteImage") return <NoteImagePage noteId={route.note} />;
   return (
     <LoginPromptProvider value={() => setLoginOpen(true)}>
       <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />
@@ -33,7 +36,6 @@ export function App() {
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
         : route.view === "noteReview" ? <NoteReviewPage />
-        : route.view === "noteImage" ? <NoteImagePage noteId={route.note} />
         : route.view === "dashboard" ? (
           <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
             <DashboardPage navigate={navigate} />
