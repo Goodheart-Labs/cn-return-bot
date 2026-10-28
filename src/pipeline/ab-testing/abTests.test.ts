@@ -1,11 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { runABTests, withForcedPicks, resolvePicks, pickVariantName } from "./abTests";
 import { AB_TESTS, PANGRAM_NOTE_TEST } from "./abTestsData";
+
+// Every draw below pins the bot. A run that draws claude-code skips every test
+// that only the pipeline bot runs, so an unpinned draw would fail a third of
+// the time.
 import { buildAbTestSlots, matchesAbFilters } from "../../dashboard-shared/abFilters";
 
 describe("retired and standalone A/B picks", () => {
   test("ordinary runs neither sample nor backfill a Pangram note label", () => {
-    const { picks, config } = runABTests(AB_TESTS);
+    const { picks, config } = withForcedPicks({ bot: "simple-bot" }, () => runABTests(AB_TESTS));
     expect(picks.pangram_note).toBeUndefined();
     expect(resolvePicks(picks).pangram_note).toBeUndefined();
     expect(resolvePicks(null).pangram_note).toBeUndefined();
@@ -43,7 +47,7 @@ describe("retired and standalone A/B picks", () => {
 
 describe("retired timing tests", () => {
   test("new runs have no timing flag or pick", () => {
-    const { config, picks } = runABTests(AB_TESTS);
+    const { config, picks } = withForcedPicks({ bot: "simple-bot" }, () => runABTests(AB_TESTS));
     expect(config).not.toHaveProperty("time_travel_prompt");
     expect(config).not.toHaveProperty("timing_context");
     expect(picks.timing_treatment).toBeUndefined();
@@ -56,7 +60,7 @@ describe("retired timing tests", () => {
       ["timing_treatment", "off"], ["timing_treatment", "instruction"], ["timing_treatment", "context"],
     ] as const;
     for (const [name, variant] of historical) {
-      expect(() => withForcedPicks({ [name]: variant }, () => runABTests(AB_TESTS)))
+      expect(() => withForcedPicks({ bot: "simple-bot", [name]: variant }, () => runABTests(AB_TESTS)))
         .toThrow("Timing A/B tests are retired");
       expect(resolvePicks({ [name]: variant })[name]).toBe(variant);
     }
@@ -65,7 +69,7 @@ describe("retired timing tests", () => {
 
 describe("retired correction extractor", () => {
   test("new runs have no extractor flag or synthetic off label", () => {
-    const { config, picks } = runABTests(AB_TESTS);
+    const { config, picks } = withForcedPicks({ bot: "simple-bot" }, () => runABTests(AB_TESTS));
     expect(config).not.toHaveProperty("correction_extraction");
     expect(config).not.toHaveProperty("correction_extraction_model");
     expect(resolvePicks(picks).simple_bot_correction_extraction).toBeUndefined();
@@ -113,26 +117,26 @@ describe("forced picks", () => {
   });
 
   test("the cascade arm skips the note-needed prefilter and the precheck arm keeps it", () => {
-    const cascading = withForcedPicks({ search_cascade: "cascading" }, () => runABTests(AB_TESTS));
+    const cascading = withForcedPicks({ bot: "simple-bot", search_cascade: "cascading" }, () => runABTests(AB_TESTS));
     expect(cascading.config).toMatchObject({ search_cascade: true, note_prefilter: false });
     expect(cascading.picks.note_prefilter).toBeUndefined();
-    const precheck = withForcedPicks({ search_cascade: "precheck" }, () => runABTests(AB_TESTS));
+    const precheck = withForcedPicks({ bot: "simple-bot", search_cascade: "precheck" }, () => runABTests(AB_TESTS));
     expect(precheck.config).toMatchObject({ search_cascade: false, note_prefilter: true });
   });
 
   test("the threshold test splits X posts on the cascade 50/50 and leaves Common Notes at the default", () => {
     const test = AB_TESTS.find((t) => t.name === "cascade_threshold")!;
     expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["0.8", 50], ["0.9", 50]]);
-    const post = withForcedPicks({ search_cascade: "cascading", commonnotes_pipeline: "off", cascade_threshold: "0.8" }, () => runABTests(AB_TESTS));
+    const post = withForcedPicks({ bot: "simple-bot", search_cascade: "cascading", commonnotes_pipeline: "off", cascade_threshold: "0.8" }, () => runABTests(AB_TESTS));
     expect(post.config.cascade_note_at_or_above).toBe(0.8);
-    const claim = withForcedPicks({ search_cascade: "cascading", commonnotes_pipeline: "on" }, () => runABTests(AB_TESTS));
+    const claim = withForcedPicks({ bot: "simple-bot", search_cascade: "cascading", commonnotes_pipeline: "on" }, () => runABTests(AB_TESTS));
     expect(claim.picks.cascade_threshold).toBeUndefined();
   });
 
   test("the second round is live on 20% of X posts and never on Common Notes", () => {
     const test = AB_TESTS.find((t) => t.name === "second_round")!;
     expect(test.variants.map((v) => [v.variant.name, v.weight])).toEqual([["off", 80], ["on", 20]]);
-    const claim = withForcedPicks({ commonnotes_pipeline: "on" }, () => runABTests(AB_TESTS));
+    const claim = withForcedPicks({ bot: "simple-bot", commonnotes_pipeline: "on" }, () => runABTests(AB_TESTS));
     expect(claim.picks.second_round).toBeUndefined();
   });
 
@@ -142,7 +146,7 @@ describe("forced picks", () => {
   });
 
   test("a valid topic-only override does not fire on ordinary posts", () => {
-    const { picks } = withForcedPicks({ misinfo_concede_shape: "on" }, () => runABTests(AB_TESTS));
+    const { picks } = withForcedPicks({ bot: "simple-bot", misinfo_concede_shape: "on" }, () => runABTests(AB_TESTS));
     expect(picks.misinfo_concede_shape).toBeUndefined();
   });
 });

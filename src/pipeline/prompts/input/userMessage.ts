@@ -51,9 +51,11 @@ export function buildUserMessage(params: {
   showUnhelpfulHistory?: boolean;
   comments?: string;
   mediaMadeWithAiLabel?: boolean;
+  /** The moment the message describes. A past tweet shown as an example is
+   *  rendered as of the time its note was written. */
+  now?: Date;
 }): string {
-  const { post } = params;
-  const now = new Date();
+  const { post, now = new Date() } = params;
   const parts: string[] = [];
 
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
