@@ -30,16 +30,13 @@ const logPostFailure = (what: string) => (err: Error) => console.error(`[common-
  *  note on the same claim and shows it beside the original. You can copy a deep
  *  link to the note. On a note you wrote yourself there is also a ⋯ menu, and
  *  it holds Delete. */
-export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, readerActions = true, children }: {
+export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   /** The absolute deep link to this note. The website builds it from the
    *  project slug. The extension passes the public site's URL instead. */
   shareUrl: string;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
-  /** False leaves out what only a reader does: Note not needed, Suggest an
-   *  improvement and Share. The admins' review page has its own tools. */
-  readerActions?: boolean;
   /** Extra actions rendered between Share and the ⋯ button. The feed uses this
    *  for the chips that jump between a note and its improvement. */
   children?: React.ReactNode;
@@ -108,23 +105,19 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, readerA
             <QuoteIcon size={ACTION_ICON_SIZE} aria-hidden /> Source details
           </Button>
         )}
-        {readerActions && (
-          <>
-            <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("nnn")}>
-              <SpeechBubbleIcon size={ACTION_ICON_SIZE} aria-hidden /> Note not needed
-            </Button>
-            {/* Improving your own note makes no sense as a second card beside it.
-                An author who wants different wording deletes and rewrites. */}
-            {!mine && (
-              <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("improve")}>
-                <PencilIcon size={ACTION_ICON_SIZE} aria-hidden /> Suggest an improvement
-              </Button>
-            )}
-            <Button variant="link" onClick={share} className={cn(TOUCH_TARGET, copied && "text-positive")}>
-              {copied ? "Link copied" : <><ShareIcon size={ACTION_ICON_SIZE} aria-hidden /> Share</>}
-            </Button>
-          </>
+        <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("nnn")}>
+          <SpeechBubbleIcon size={ACTION_ICON_SIZE} aria-hidden /> Note not needed
+        </Button>
+        {/* Improving your own note makes no sense as a second card beside it.
+            An author who wants different wording deletes and rewrites. */}
+        {!mine && (
+          <Button variant="link" className={TOUCH_TARGET} onClick={() => toggleComposer("improve")}>
+            <PencilIcon size={ACTION_ICON_SIZE} aria-hidden /> Suggest an improvement
+          </Button>
         )}
+        <Button variant="link" onClick={share} className={cn(TOUCH_TARGET, copied && "text-positive")}>
+          {copied ? "Link copied" : <><ShareIcon size={ACTION_ICON_SIZE} aria-hidden /> Share</>}
+        </Button>
         {children}
         {mine && (
           <IconButton

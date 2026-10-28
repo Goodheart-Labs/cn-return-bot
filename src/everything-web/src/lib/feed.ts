@@ -1,4 +1,5 @@
 import type { FeedBand, FeedSummary, NoteFilters, NoteMinimums } from "@cn/core/feedPages";
+import { LARGE_COUNTS, SMALL_COUNTS, type FieldDef, type FieldFilter, type FieldQuery } from "@cn/core/fieldQuery";
 import type { NnnRow, NoteRow } from "@cn/core/types";
 
 /* What the browser still decides about a notes feed. The database ranks and
@@ -106,26 +107,35 @@ export function ageTotal(summary: FeedSummary | undefined, label: string): numbe
   return since(index) - since(index - 1);
 }
 
-export const MINIMUM_KEYS: (keyof NoteMinimums)[] = ["views", "votes", "helpful", "notHelpful"];
+/** The All notes page's Filter menu. Its database function knows only
+ *  minimums of views and votes, and "only notes I haven't voted on", so those
+ *  are the fields. */
+export const ALL_NOTES_FIELDS: FieldDef[] = [
+  { id: "myVote", label: "My vote", kind: "choice", multiple: false, sortable: false, options: [{ value: "none", label: "Not voted yet" }] },
+  { id: "views", label: "Views", hint: "Readers outside our team who were shown the notes on this post", kind: "count", thresholds: LARGE_COUNTS, bound: "atLeast", sortable: false },
+  { id: "votes", label: "Votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", sortable: false },
+  { id: "helpful", label: "Helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", sortable: false },
+  { id: "notHelpful", label: "Not helpful votes", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", sortable: false },
+];
 
 /** Notes on posts that at least a few real readers saw come first by default,
  *  because a vote on those improves what people actually read. Notes the reader
  *  already voted on are hidden by default, so the feed shows what still needs
  *  their vote. */
-export const DEFAULT_NOTE_FILTERS: NoteFilters = { views: 5, votes: 0, helpful: 0, notHelpful: 0, unvotedOnly: true };
+export const DEFAULT_ALL_NOTES_QUERY: FieldQuery = {
+  filters: [
+    { field: "myVote", values: ["none"] },
+    { field: "views", threshold: 5 },
+  ],
+  sorts: [],
+  display: [],
+};
 
-/** Reads remembered filters. A minimum that is missing, or is not a whole
- *  number of at least zero, gets its default. So does a checkbox that is
- *  missing or not true or false. */
-export function parseNoteFilters(stored: string | null, defaults: NoteFilters): NoteFilters {
-  let parsed: Partial<Record<keyof NoteFilters, unknown>> = {};
-  try {
-    parsed = JSON.parse(stored ?? "{}") ?? {};
-  } catch {
-    // Unreadable text means nothing usable was stored.
-  }
-  const validMinimum = (value: unknown): value is number => Number.isInteger(value) && (value as number) >= 0;
-  const minimums = MINIMUM_KEYS.map((key) => [key, validMinimum(parsed[key]) ? parsed[key] : defaults[key]]);
-  const unvotedOnly = typeof parsed.unvotedOnly === "boolean" ? parsed.unvotedOnly : defaults.unvotedOnly;
-  return { ...(Object.fromEntries(minimums) as NoteMinimums), unvotedOnly };
+/** The filters as the feed's database function takes them. */
+export function noteFiltersOf(filters: FieldFilter[]): NoteFilters {
+  const minimum = (field: keyof NoteMinimums) => {
+    const filter = filters.find((f) => f.field === field);
+    return filter && "threshold" in filter ? filter.threshold : 0;
+  };
+  return { views: minimum("views"), votes: minimum("votes"), helpful: minimum("helpful"), notHelpful: minimum("notHelpful"), unvotedOnly: filters.some((f) => f.field === "myVote") };
 }

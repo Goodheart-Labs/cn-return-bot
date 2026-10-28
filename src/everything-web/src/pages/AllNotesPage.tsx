@@ -5,12 +5,12 @@ import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
 import { NoteFeed, type FeedCard } from "../components/NoteFeed";
-import { NoteFiltersButton } from "../components/NoteFiltersButton";
-import { ageLabel, ageTotal, BAND_LABELS, bandTotal, DEFAULT_NOTE_FILTERS, parseNoteFilters, spanStarts } from "../lib/feed";
+import { FilterBar } from "../components/fieldQuery/FilterBar";
+import { ageLabel, ageTotal, ALL_NOTES_FIELDS, BAND_LABELS, bandTotal, DEFAULT_ALL_NOTES_QUERY, noteFiltersOf, spanStarts } from "../lib/feed";
 import { useNoteFeed, type FeedEntry } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
-import { useSettledValue } from "../lib/useSettledValue";
-import { useStoredChoice, useStoredValue } from "../lib/useStoredValue";
+import { useFieldQuery } from "../lib/useFieldQuery";
+import { useStoredChoice } from "../lib/useStoredValue";
 
 const ORDERS: { id: FeedOrder; label: string }[] = [
   { id: "recent", label: "Newest" },
@@ -21,8 +21,9 @@ const ORDERS: { id: FeedOrder; label: string }[] = [
 /** The order the reader picked last time, remembered on this device. */
 const ORDER_KEY = "cn:allNotesOrder";
 
-/** The filters the reader set last time, remembered on this device. */
-const FILTERS_KEY = "cn:allNotesFilters";
+/** The filters the reader set last time, remembered on this device. Renamed
+ *  when the sliders became the Filter menu (GOO-628). */
+const QUERY_KEY = "cn:allNotesQuery";
 
 /** The whole site, as the feed's scope. */
 const EVERY_PROJECT = { projectId: null, itemId: null };
@@ -49,11 +50,11 @@ function CreatorByline({ project, views, navigate }: { project: ProjectHeader; v
  *  that at least 5 readers saw. Each card names its creator. */
 export function AllNotesPage({ navigate }: { navigate: (route: Route) => void }) {
   const [order, setOrder] = useStoredChoice(ORDER_KEY, ORDERS.map((o) => o.id), "recent");
-  const [filters, setFilters] = useStoredValue(FILTERS_KEY, (stored) => parseNoteFilters(stored, DEFAULT_NOTE_FILTERS), JSON.stringify);
+  const [query, setQuery] = useFieldQuery({ storageKey: QUERY_KEY, fields: ALL_NOTES_FIELDS, displayOptions: [], defaults: DEFAULT_ALL_NOTES_QUERY });
   // The Newest order's dividers are drawn on the reader's calendar, from the
   // moment the page opened.
   const [starts] = useState(() => spanStarts(new Date()));
-  const { list, summary } = useNoteFeed(EVERY_PROJECT, order, useSettledValue(filters), order === "recent" ? starts : []);
+  const { list, summary } = useNoteFeed(EVERY_PROJECT, order, noteFiltersOf(query.filters), order === "recent" ? starts : []);
   const counts = summary.data;
   const byline = useCallback(
     ({ entry, project }: FeedCard<FeedEntry>) => project && <CreatorByline project={project} views={entry.views} navigate={navigate} />,
@@ -68,8 +69,11 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
           <h1 className="font-title text-2xl font-bold text-fg">All notes</h1>
           <div className="flex flex-wrap items-center gap-2">
             <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
-            {counts && <NoteFiltersButton filters={filters} onChange={setFilters} largest={counts.largest} matchingNotes={counts.matching} />}
           </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <FilterBar fields={ALL_NOTES_FIELDS} filters={query.filters} onChange={(filters) => setQuery({ ...query, filters })} />
+          {counts && <span className="text-sm text-fg-muted">{counts.matching === 1 ? "1 note" : `${counts.matching} notes`}</span>}
         </div>
       </div>
       <NoteFeed

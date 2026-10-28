@@ -1,8 +1,9 @@
 import { fetchAllRows } from "./paging";
 import { supabase } from "./supabase";
 import type { ProjectHeader } from "./types";
+import { X_MARKS_TABLE } from "./xMarks";
 
-/* The admins' leaderboard of the best notes (migrations 136 to 138). Admins
+/* The admins' leaderboard of the best notes (migrations 136, 137 and 153). Admins
  * add a note from the review page, at the bottom, and order the list by hand.
  * It is ordered by `position`, smallest first, and a move writes only the
  * moved note's row: its new position lies between the positions of its new
@@ -18,8 +19,8 @@ import type { ProjectHeader } from "./types";
 const LEADERBOARD = "leaderboard";
 
 /** One note on a list. `comment` is an admin's note on why it sits where it
- *  does. `posted_at` says when an admin marked a leaderboard note as posted on
- *  X; it is always null for a recommendation. */
+ *  does. `posted_at` says when an admin marked the note as posted on X
+ *  (everything_note_x_marks, migration 153). */
 export interface CuratedNoteRow {
   note_id: string;
   position: number;
@@ -100,8 +101,12 @@ export async function removeFromLeaderboard(noteId: string): Promise<void> {
 /** The whole leaderboard, best note first. Only the reorder mode reads it, to
  *  let an admin drag a note to any place. */
 export async function fetchLeaderboard(): Promise<CuratedNoteRow[]> {
-  const rows = await fetchAllRows<CuratedNoteRow>(() => supabase.from(TABLE).select("note_id, position, comment, posted_at"), "note_id", { label: "leaderboard" });
-  return rows.sort((a, b) => a.position - b.position);
+  const [rows, posted] = await Promise.all([
+    fetchAllRows<Omit<CuratedNoteRow, "posted_at">>(() => supabase.from(TABLE).select("note_id, position, comment"), "note_id", { label: "leaderboard" }),
+    fetchAllRows<{ note_id: string; marked_at: string }>(() => supabase.from(X_MARKS_TABLE).select("note_id, marked_at").eq("mark", "posted"), "note_id", { label: "posted marks" }),
+  ]);
+  const postedAt = new Map(posted.map((mark) => [mark.note_id, mark.marked_at]));
+  return rows.map((row) => ({ ...row, posted_at: postedAt.get(row.note_id) ?? null })).sort((a, b) => a.position - b.position);
 }
 
 /** One page of the leaderboard, starting after the row `after` (migration
@@ -149,6 +154,3 @@ async function updateRow(noteId: string, change: Record<string, unknown>, what: 
 export const setPosition = (noteId: string, position: number) => updateRow(noteId, { position }, "move the note");
 
 export const setComment = (noteId: string, comment: string) => updateRow(noteId, { comment: comment.trim() || null }, "save the comment");
-
-/** Marks a leaderboard note as posted on X, or takes the mark off. */
-export const setPosted = (noteId: string, posted: boolean) => updateRow(noteId, { posted_at: posted ? new Date().toISOString() : null }, "change the posted mark");

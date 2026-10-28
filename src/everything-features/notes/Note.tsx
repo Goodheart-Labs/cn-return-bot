@@ -21,9 +21,8 @@ export function Note({ note, shareUrl, compact, review = false, onVoted, childre
   compact?: boolean;
   /** The absolute deep link the Share button copies. */
   shareUrl: string;
-  /** The admins' review of a note: the pills are their review, and nothing
-   *  that speaks to readers shows (the voting hint, the donation notice, Note
-   *  not needed, Suggest an improvement and Share). */
+  /** The admins' review of a note: the pills are their review, and neither
+   *  the voting hint nor the donation notice shows. */
   review?: boolean;
   /** Called once the viewer's vote is saved, with the vote, or with undefined
    *  when a second click retracted it. */
@@ -71,7 +70,7 @@ export function Note({ note, shareUrl, compact, review = false, onVoted, childre
           onClose={() => setCast(null)}
         />
       )}
-      <NoteMenu note={note} shareUrl={shareUrl} sourcesOpen={sourcesOpen} onToggleSources={() => setSourcesOpen((o) => !o)} readerActions={!review}>
+      <NoteMenu note={note} shareUrl={shareUrl} sourcesOpen={sourcesOpen} onToggleSources={() => setSourcesOpen((o) => !o)}>
         {children}
       </NoteMenu>
     </div>

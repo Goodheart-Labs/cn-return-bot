@@ -10,6 +10,7 @@ import { CreateMinisitePage } from "./pages/minisites/CreateMinisitePage";
 import { MinisitePage } from "./pages/minisites/MinisitePage";
 import { MinisitesPage } from "./pages/minisites/MinisitesPage";
 import { BestNotesPage } from "./pages/bestNotes/BestNotesPage";
+import { NoteImagePage } from "./pages/noteReview/NoteImagePage";
 import { NoteReviewPage } from "./pages/noteReview/NoteReviewPage";
 import { NotesView } from "./pages/NotesView";
 
@@ -31,7 +32,8 @@ export function App() {
       {route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
-        : route.view === "noteReview" ? <NoteReviewPage section={route.section} navigate={navigate} />
+        : route.view === "noteReview" ? <NoteReviewPage />
+        : route.view === "noteImage" ? <NoteImagePage noteId={route.note} />
         : route.view === "dashboard" ? (
           <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
             <DashboardPage navigate={navigate} />

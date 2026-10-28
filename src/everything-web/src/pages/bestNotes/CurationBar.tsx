@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { removeFromLeaderboard, setComment, setPosted } from "@cn/core/bestNotes";
+import { removeFromLeaderboard, setComment } from "@cn/core/bestNotes";
 import type { ProjectHeader } from "@cn/core/types";
+import { setXMark } from "@cn/core/xMarks";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
@@ -125,7 +126,7 @@ export function CurationBar({ rank, noteId, comment, posted, project, navigate, 
         <span className="ml-auto flex items-center gap-1">
           <IconButton
             label={posted ? "Posted on X. Click to unmark" : "Mark as posted on X"}
-            onClick={() => void change(() => setPosted(noteId, !posted))}
+            onClick={() => void change(() => setXMark(noteId, posted ? null : "posted"))}
             className={cn(ICON_BUTTON, posted ? "bg-tint text-fg hover:text-fg" : "")}
           >
             <XLogoIcon size={15} aria-hidden />

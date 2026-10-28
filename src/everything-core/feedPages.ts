@@ -95,9 +95,6 @@ export interface FeedSummary {
   matching: number;
   bands: Record<Exclude<FeedBand, "all">, number>;
   since: number[];
-  /** The largest value each minimum takes among all notes in the scope,
-   *  whatever the filters. */
-  largest: NoteMinimums;
 }
 
 export async function fetchFeedSummary(scope: FeedScope, filters: NoteFilters, votedBefore: Date, since: Date[]): Promise<FeedSummary> {
@@ -106,9 +103,7 @@ export async function fetchFeedSummary(scope: FeedScope, filters: NoteFilters, v
     p_since: since.map((moment) => moment.toISOString()),
   });
   if (error) throw error;
-  const summary = data as unknown as { matching: number; bands: FeedSummary["bands"]; since: number[]; largest: NoteMinimums & { not_helpful: number } };
-  const { not_helpful, ...largest } = summary.largest;
-  return { ...summary, largest: { ...largest, notHelpful: not_helpful } };
+  return data as unknown as FeedSummary;
 }
 
 /** Everything a list of note cards renders: the notes in the order asked for,

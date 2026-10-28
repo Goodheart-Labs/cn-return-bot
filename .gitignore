@@ -151,3 +151,4 @@ storybook-static
 # Xcode's build output and per-user state for the Safari container app
 src/everything-extension/safari/build/
 xcuserdata/
+src/note-tweets/.state/
