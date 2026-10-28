@@ -10,8 +10,8 @@ const pillClass = "inline-flex h-8 items-center gap-1.5 rounded-full border bord
 export const pillButtonClass = cn(pillClass, "px-3 hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus");
 
 /** One active filter or sort level as a pill. A click on it opens its menu
- *  again to change it. The cross that removes it shows on the pill's right
- *  while the pointer rests on the pill or the keyboard is on it. `extra` sits
+ *  again to change it. The cross on the pill's right removes it. It is always
+ *  shown in a muted colour and darkens when the pointer is on it. `extra` sits
  *  between the two, such as a sort's direction. */
 export function QueryChip({ label, menu, menuLabel, removeLabel, onRemove, extra }: {
   label: ReactNode;
@@ -22,7 +22,7 @@ export function QueryChip({ label, menu, menuLabel, removeLabel, onRemove, extra
   extra?: ReactNode;
 }) {
   return (
-    <span className={cn(pillClass, "group pl-3 pr-1")}>
+    <span className={cn(pillClass, "pl-3 pr-1")}>
       <DropdownMenu
         label={menuLabel}
         entries={menu}
@@ -38,7 +38,7 @@ export function QueryChip({ label, menu, menuLabel, removeLabel, onRemove, extra
         onClick={onRemove}
         aria-label={removeLabel}
         title={removeLabel}
-        className="flex h-6 w-6 items-center justify-center rounded-full text-fg-muted opacity-0 transition-opacity hover:bg-surface-hover hover:text-fg focus:outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-focus group-hover:opacity-100 [@media(pointer:coarse)]:opacity-100"
+        className="flex h-6 w-6 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg focus:outline-none focus-visible:text-fg focus-visible:ring-2 focus-visible:ring-focus"
       >
         <CloseIcon size={12} aria-hidden />
       </button>
