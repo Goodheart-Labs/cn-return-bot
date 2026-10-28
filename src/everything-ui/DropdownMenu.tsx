@@ -52,11 +52,13 @@ const SEARCH_FROM_OPTIONS = 12;
 /** Screens narrower than this open submenus in place of the menu. */
 const PHONE_QUERY = "(max-width: 639px)";
 
-/** The floating panel of a menu or submenu. It never grows past the space the
- *  screen has left, and scrolls when its entries need more. */
+/** The floating panel of a menu or submenu. Every panel has the same width,
+ *  so a summary that appears on an entry never widens its panel, and three
+ *  levels fit beside each other. It never grows past the space the screen has
+ *  left, and scrolls when its entries need more. */
 const panelClass = cn(
   cardVariants({ elevation: "floating" }),
-  "z-50 min-w-56 max-w-80 overflow-y-auto p-1.5 text-sm [direction:ltr]",
+  "z-50 w-64 overflow-y-auto p-1.5 text-sm [direction:ltr]",
   "max-h-[min(28rem,var(--radix-dropdown-menu-content-available-height))]",
 );
 
@@ -104,16 +106,18 @@ function OptionLabel({ option }: { option: MenuOption }) {
 
 const optionText = (option: MenuOption) => (option.text ?? (typeof option.label === "string" ? option.label : option.value)).toLowerCase();
 
-/** A search box above a long list of options. It stays at the top while the
- *  list scrolls. The menu reads typed letters as jumps to an entry, so the box
- *  keeps them to itself, except the keys that leave it: the down arrow moves
- *  into the list, and Escape closes the menu. */
+/** A search box above a long list of options. Beside its menu it stays at the
+ *  top while the list scrolls. On a phone the Back row stays there instead.
+ *  The menu reads typed letters as jumps to an entry, so the box keeps them to
+ *  itself, except the keys that leave it: the down arrow moves into the list,
+ *  and Escape closes the menu. */
 function OptionSearch({ query, onChange }: { query: string; onChange: (query: string) => void }) {
+  const onPhone = useContext(DrillDown) !== null;
   const keepKeys = (event: KeyboardEvent) => {
     if (event.key !== "ArrowDown" && event.key !== "Escape") event.stopPropagation();
   };
   return (
-    <div className="sticky -top-1.5 z-10 -mx-1.5 -mt-1.5 mb-1 bg-surface p-1.5">
+    <div className={cn("mb-1", !onPhone && "sticky -top-1.5 z-10 -mx-1.5 -mt-1.5 bg-surface p-1.5")}>
       <input
         type="search"
         autoFocus
@@ -175,7 +179,7 @@ function SubmenuLabel({ entry, arrow }: { entry: SubmenuEntry; arrow: ReactNode 
     <>
       <span className="min-w-0 truncate">{entry.label}</span>
       <EntryEnd>
-        {entry.value !== undefined && <span className="max-w-32 truncate">{entry.value}</span>}
+        {entry.value !== undefined && <span className="max-w-24 truncate">{entry.value}</span>}
         {arrow}
       </EntryEnd>
     </>
@@ -326,7 +330,7 @@ export function DropdownMenu({ trigger, entries, label, open, onOpenChange }: {
         <Radix.Content aria-label={label} align="start" sideOffset={6} collisionPadding={8} className={panelClass}>
           <DrillDown.Provider value={isPhone ? { open: (key) => setPath([...opened.map((s) => s.key), key]) } : null}>
             {shown && (
-              <>
+              <div className="sticky -top-1.5 z-10 -mx-1.5 -mt-1.5 bg-surface px-1.5 pt-1.5">
                 <Radix.Item
                   className={cn(itemClass, "font-semibold text-fg")}
                   onSelect={(event) => {
@@ -338,7 +342,7 @@ export function DropdownMenu({ trigger, entries, label, open, onOpenChange }: {
                   {shown.label}
                 </Radix.Item>
                 <Radix.Separator className="mx-1 my-1 h-px bg-line" />
-              </>
+              </div>
             )}
             <MenuEntries entries={shown ? shown.entries : entries} />
           </DrillDown.Provider>
