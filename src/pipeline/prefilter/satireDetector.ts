@@ -1,16 +1,16 @@
 /**
  * Prefilter step: satire detector
  *
- * A gate that runs before search. It reads the post, the comments, and the
- * author profile without the proposed note, and decides whether the post is
- * overt satire the audience is in on. A positive verdict makes the prefilter
- * answer "no note needed" before the query writer runs. That way we never
- * spend search, analyzer, or judge calls fact-checking a joke.
+ * A gate that runs before search. It reads the post and the author profile
+ * without the proposed note, and decides whether the post is overt satire the
+ * audience is in on. A positive verdict makes the prefilter answer "no note
+ * needed" before the query writer runs. That way we never spend search,
+ * analyzer, or judge calls fact-checking a joke.
  *
  * The detector is high-precision by design. It must fire only when the room is
  * clearly in on the joke. Examples are a comedian or parody account, audience
- * laughter, and replies that treat the post as comedy. It must not fire on
- * fabricated content built to imitate real media, such as fake headlines,
+ * laughter, and an absurd meme format the room plays along with. It must not
+ * fire on fabricated content built to imitate real media, such as fake headlines,
  * doctored quotes, or deepfakes. Those deceive people and still need a note.
  * Misses are acceptable. False "satire" verdicts are not.
  *

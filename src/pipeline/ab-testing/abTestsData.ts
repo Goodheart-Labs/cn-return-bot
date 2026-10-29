@@ -25,10 +25,14 @@ export interface ABTest {
   defaultVariant?: string;
 }
 
+// 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer on
+// Nathan's ai-box. The X run draws this test itself. While the X share of
+// Nathan's Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
+    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 50 },
   ],
 };
 
@@ -45,7 +49,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 7 },
+    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 10 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },

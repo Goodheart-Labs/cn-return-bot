@@ -204,3 +204,37 @@ export async function fetchClaudeUsage(since: string): Promise<ClaudeUsageRow[]>
   );
   return rows.sort((a, b) => a.id - b.id);
 }
+
+// --- Clicks that lead to the extension (migration 154) ---
+
+/** A note whose link was opened, with how often and on how many devices. */
+export interface NoteOpens {
+  note_id: string;
+  opens: number;
+  devices: number;
+  note: string | null;
+  creator: string | null;
+  slug: string | null;
+}
+
+export interface ClickCount {
+  clicks: number;
+  devices: number;
+}
+
+/** Since a moment, outside the admins' own accounts: how often links to single
+ *  notes were opened, the 50 most opened notes, the clicks on each "Get the
+ *  extension" button, and the clicks through to each store. */
+export interface ClickCounts {
+  noteOpens: number;
+  notes: NoteOpens[];
+  getExtension: (ClickCount & { button: string })[];
+  stores: (ClickCount & { browser: string })[];
+}
+
+export async function fetchClickCounts(since: Date): Promise<ClickCounts> {
+  const { data, error } = await supabase.rpc("everything_click_counts", { p_since: since.toISOString() });
+  if (error) throw error;
+  const counts = data as unknown as { note_opens: number; notes: NoteOpens[]; get_extension: ClickCounts["getExtension"]; stores: ClickCounts["stores"] };
+  return { noteOpens: counts.note_opens, notes: counts.notes, getExtension: counts.get_extension, stores: counts.stores };
+}

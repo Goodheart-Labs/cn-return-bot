@@ -3,8 +3,12 @@
 Nathan's ai-box (2.31.1.171) runs the Claude note writer on Nathan's Claude
 subscription. A runner (`src/claude-notes/runner.ts`) watches the queue, takes
 each post, starts one Claude for it in a tmux session named `cn-post-<item>`,
-and finishes or hands back the item when that Claude is done. Each reviewer
-message on the review page gets its own Claude in `cn-msg-<draft>`.
+and finishes the item when that Claude is done. A post it cannot read, or
+whose Claude exits twice without a report, is marked as failed on its row,
+and the next feed run goes red. Nothing goes to the pipeline. Each reviewer
+message on the review page gets its own Claude in `cn-msg-<draft>`. Each X
+tweet the X run hands to Claude (GOO-527) gets its own Claude in
+`cn-x-<run id>`, whatever the Common Notes writer setting says.
 
 ## What is where
 
@@ -13,6 +17,7 @@ message on the review page gets its own Claude in `cn-msg-<draft>`.
 | `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it, and it follows whatever branch is checked out. |
 | `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`. Owned by root, readable by `nathan` only. |
 | `/tmp/cn-notes/<item id>/` | One run folder per post: the prompt, the Claude's output stream, its drafts and `report.json`. |
+| `/tmp/cn-notes/x-<run id>/` | One run folder per X tweet: the prompt, the output stream and `note.json`. |
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
 | `~nathan/.local/share/cn-notes/note-examples.md` | The examples file, rebuilt once a day by the runner. |
 | `/srv/ai-box/PAUSE` | Nathan's pause switch. While it exists, the runner starts nothing. |

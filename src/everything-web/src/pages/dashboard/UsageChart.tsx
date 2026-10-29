@@ -22,7 +22,7 @@ const RANGES: readonly { id: RangeId; label: string; days: number }[] = [
 ];
 
 /** Above this share of the weekly limit the runner on ai-box starts no new
- *  post (MAX_WEEKLY_USAGE_PERCENT in src/claude-notes/runner.ts). */
+ *  post (MAX_WEEKLY_USAGE_PERCENT in src/everything/usagePacing.ts). */
 const RUNNER_STOPS_AT_PERCENT = 90;
 const FULL_PERCENT = 100;
 const DAY_MS = 24 * 3600_000;

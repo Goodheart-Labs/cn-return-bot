@@ -75,7 +75,9 @@ import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitO
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
-import { withForcedPicks } from "../pipeline/ab-testing/abTests";
+import { getForcedPicks, withForcedPicks } from "../pipeline/ab-testing/abTests";
+import { CLAUDE_TWEET_MAX_WAIT_MINUTES, PIPELINE_BOT } from "../pipeline/orchestration/claudeTweets";
+import { claudeUnavailableReason } from "../claude-notes/xShare";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
@@ -199,7 +201,7 @@ async function main() {
     // runs from overlapping, so this can never sweep a live run's rows.
     if (supabaseLogger) {
       try {
-        const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30 });
+        const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30, claudeOlderThanMinutes: CLAUDE_TWEET_MAX_WAIT_MINUTES });
         if (swept > 0) console.log(`[pipeline] Swept ${swept} stuck in_progress run(s)`);
       } catch (err) {
         console.warn("[pipeline] Sweeper failed (continuing anyway):", err);
@@ -358,7 +360,13 @@ async function main() {
         (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    const regularCandidates = maxPosts === 0 ? [] : await generateCandidates(supabaseLogger, {
+    // A third of the tweets go to the Claude Code note writer on the ai-box.
+    // While the X share of Nathan's Claude plan has no room, those tweets fail.
+    // A local run writes to the local database, which the ai-box never reads,
+    // so it keeps every tweet with the pipeline.
+    const claudeUnavailable = isLocal || !supabaseLogger ? null : await claudeUnavailableReason();
+    const generatePicks = isLocal && !forcedPicks.bot ? { ...getForcedPicks(), bot: PIPELINE_BOT } : getForcedPicks();
+    const regularCandidates = maxPosts === 0 ? [] : await withForcedPicks(generatePicks, () => generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
       scorer,
@@ -369,7 +377,8 @@ async function main() {
       // maxPosts. The code for that lives in regularFeedTopicCuration.ts. Pass
       // an empty array to disable it.
       topicIds: MISINFO_ACTIVE_TOPIC_IDS,
-    });
+      claudeUnavailable,
+    }));
 
     // This array fixes the submission order, because submitCandidates does not
     // re-sort it. Misinfo notes get priority, but only up to a bound. The first

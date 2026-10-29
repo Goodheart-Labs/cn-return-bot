@@ -21,24 +21,24 @@
  * every run, so an estimate that was off corrects itself as the reset comes
  * closer.
  *
- * This works while Common Notes is the only paced use of the plan. If we add
- * a second one, for example an X note writer that also runs on Claude Code,
- * do not let both pace themselves against the whole target. Instead, give
- * each use a fixed share of the weekly target, for example 60% of the week to
- * Common Notes and 20% to the X note writer. Each use then paces itself
- * against its own share. For that, each use has to measure its own usage
- * rather than the rise of the whole plan. The usage endpoint only reports the
- * total, so each use would need its own estimate, for example the cost that
- * Claude Code reports at the end of each of its runs. (Jim, 2026-10-26.)
+ * Since GOO-527 the plan has a second user: the X note writer, which also
+ * runs Claude Code on the ai-box. Only Common Notes paces itself against the
+ * 80% target. The X note writer is capped instead, at a fixed share of the
+ * week that it measures from the cost Claude Code reports for each of its
+ * runs (src/claude-notes/xShare.ts). Its usage is part of the plan's rise, so
+ * a Common Notes post looks more expensive while X runs, and Common Notes gets
+ * whatever of the 80% the X note writer leaves. Jim gave X 20% and Common Notes
+ * 60% on 2026-10-27.
  *
  * The interval is stretched by 10%, so the week most likely ends a little
  * under the target rather than over it. Once the week is at the target, the
  * walk adds no new post until the reset. Claude still takes everything that is
- * already in the queue, reader requests included. Only the runner's own stop
- * at 90% (MAX_WEEKLY_USAGE_PERCENT in src/claude-notes/runner.ts) sends queued
- * items to the pipeline. When the runner has not reported for 30 minutes, it
- * is taken to be down, and the feed run hands every item waiting for Claude
- * to the pipeline. Jim set these rules on 2026-10-26. */
+ * already in the queue, reader requests included, until the runner's own stop
+ * at 90% (MAX_WEEKLY_USAGE_PERCENT). Above that, queued items wait for the
+ * reset. When the runner has not reported for 30 minutes, it is taken to be
+ * down, and the feed run goes red. Nothing goes to the pipeline in either
+ * case. Jim set these rules on 2026-10-26, and removed
+ * the pipeline as the fallback on 2026-10-28 (GOO-618). */
 
 import { duration } from "./logFormat";
 
@@ -71,9 +71,15 @@ export const MIN_POSTS_FOR_USAGE_ESTIMATE = 5;
  *  weekly usage rose from 0% to 3% over 29 posts. */
 export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
 
+/** Above this share of Nathan's weekly limit the runner on ai-box starts no
+ *  new Claude. The feed run already stops giving Claude feed posts at the
+ *  target, so this stop holds back mainly reader requests, which Claude takes
+ *  without pacing, and X tweets. Everything queued then waits for the weekly
+ *  reset. */
+export const MAX_WEEKLY_USAGE_PERCENT = 90;
+
 /** The runner reads the usage every 5 minutes. A newest reading older than
- *  this means the runner on ai-box is down, so Claude would not start a post,
- *  and the pipeline takes what waits for Claude. */
+ *  this means the runner on ai-box is down, so Claude would not start a post. */
 export const MAX_USAGE_READING_AGE_MS = 30 * 60_000;
 
 export interface UsageReading {
@@ -96,12 +102,12 @@ export interface UsageSnapshot {
   lastTakenAt: Date | null;
 }
 
-/** When Claude's next feed post is due, or that the runner on ai-box is down
- *  and the pipeline has to step in. At the target the interval is infinite
- *  and the next post is due at the reset. */
+/** When Claude's next feed post is due, or that the runner on ai-box is down.
+ *  At the target the interval is infinite and the next post is due at the
+ *  reset. */
 export type ClaudePacing =
   | {
-      writer: "claude";
+      kind: "paced";
       weekly: number;
       resetsAt: Date;
       usagePerPost: number;
@@ -110,7 +116,7 @@ export type ClaudePacing =
       intervalMs: number;
       dueAt: Date;
     }
-  | { writer: "pipeline"; reason: string };
+  | { kind: "runner_silent"; reason: string };
 
 /** How much the weekly usage rose over the readings. The drop at a weekly
  *  reset is not a negative rise, so only increases count. */
@@ -126,7 +132,7 @@ export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
   const { now } = snapshot;
   const latest = snapshot.readings.at(-1);
   if (!latest?.weeklyResetsAt || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
-    return { writer: "pipeline", reason: "The runner on ai-box has not reported the usage of Nathan's plan in the last 30 minutes" };
+    return { kind: "runner_silent", reason: "The runner on ai-box has not reported the usage of Nathan's plan in the last 30 minutes" };
   }
   const rise = usageRise(snapshot.readings);
   const measured = snapshot.postsTaken >= MIN_POSTS_FOR_USAGE_ESTIMATE && rise > 0;
@@ -135,7 +141,7 @@ export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
   const usageLeft = WEEKLY_USAGE_TARGET_PERCENT - latest.weekly;
   const intervalMs = usageLeft > 0 ? (INTERVAL_SAFETY_FACTOR * msToReset * usagePerPost) / usageLeft : Infinity;
   return {
-    writer: "claude",
+    kind: "paced",
     weekly: latest.weekly,
     resetsAt: latest.weeklyResetsAt,
     usagePerPost,
@@ -148,7 +154,7 @@ export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
 /** The block the run log prints, so the spacing of Claude's posts is always
  *  explainable from the log alone. */
 export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapshot): string {
-  if (pacing.writer === "pipeline") return `CLAUDE · ${pacing.reason} · the pipeline takes what waits for Claude`;
+  if (pacing.kind === "runner_silent") return `CLAUDE · ${pacing.reason} · nothing takes the queued posts`;
   const sample = pacing.usagePerPostIsDefault
     ? `default, fewer than ${MIN_POSTS_FOR_USAGE_ESTIMATE} posts in the last ${USAGE_WINDOW_HOURS}h`
     : `a ${usageRise(snapshot.readings)}% rise over ${snapshot.postsTaken} posts in the last ${USAGE_WINDOW_HOURS}h`;

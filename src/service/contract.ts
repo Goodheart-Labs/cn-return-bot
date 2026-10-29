@@ -18,9 +18,11 @@ import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
 import type { MonitoringContext } from "../pipeline/misinfo-monitoring/monitoringContext";
+import type { UnreadableVideoReason } from "../everything-core/requestProgress";
 
 export const CHECK_CLAIM_PATH = "/check-claim";
 export const CHECK_TWEET_PATH = "/check-tweet";
+export const TWEET_INPUT_PATH = "/tweet-input";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
 export const RATE_CLAIMS_PATH = "/rate-claims";
 export const ITEM_TEXT_PATH = "/item-text";
@@ -105,6 +107,18 @@ export interface CheckTweetRequest {
  *  in-process path wrote, and needs every field to do that faithfully. */
 export interface CheckTweetResponse {
   output: TweetComputeOutput;
+}
+
+/** A tweet that a Claude Code note writer on the ai-box will check (GOO-527).
+ *  The service only builds the input Claude reads, because describing a video
+ *  needs the media tools and keys that live on the services box. */
+export interface TweetInputRequest {
+  priority: WorkPriority;
+  post: Post;
+}
+
+export interface TweetInputResponse {
+  input: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -244,11 +258,26 @@ export interface HealthResponse {
 // Failures
 // ---------------------------------------------------------------------------
 
-/** A service answers with this and a 4xx or 5xx status when it cannot serve the
- *  call. The caller treats it the same way it treats a connection that dropped:
- *  record the failure against the claim and move on. */
-export interface ServiceErrorResponse {
-  error: string;
+/** A service answers with this when it cannot serve the call. `code` says what
+ *  went wrong, so the caller can act on it, and `error` is the message for the
+ *  log. A slow answer is streamed, so its status line has gone out before the
+ *  work fails and is always 200. That is why the code travels in the body.
+ *  - `rejected`: the service refused the request itself, for example a wrong
+ *    key, an unknown path, or a body that is not JSON. The status is 4xx.
+ *  - `unreadable_video`: YouTube answered, and what it said means the video
+ *    cannot be read, for example because it has no captions yet.
+ *  - `failed`: anything else went wrong while serving the call. */
+export type ServiceErrorResponse =
+  | { code: "rejected" | "failed"; error: string }
+  | { code: "unreadable_video"; error: string; video: { reason: UnreadableVideoReason; captionsMayStillCome: boolean; why?: string } };
+
+/** A route throws this to answer with a specific code. The client throws it
+ *  when a service answered with an error, so callers can read the code. */
+export class ServiceError extends Error {
+  constructor(readonly response: ServiceErrorResponse) {
+    super(response.error);
+    this.name = "ServiceError";
+  }
 }
 
 /** Reads one Common Notes item's text the way processing does, for the Claude
