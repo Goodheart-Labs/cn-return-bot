@@ -1,8 +1,12 @@
 import type { ProjectOrder } from "@cn/core/creators";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedProjectRow } from "@cn/core/types";
+import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ExternalLinkIcon, NoteStackIcon } from "@cn/ui/icons";
+import { Page } from "@cn/ui/Page";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
+import { PageTitle } from "@cn/ui/typography";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { ProjectAvatar } from "../components/ProjectAvatar";
@@ -80,7 +84,7 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
               href={project.feed_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative z-10 inline-flex items-center gap-1 rounded-control font-medium text-fg-secondary hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className={cn("relative z-10 inline-flex items-center gap-1 rounded-control font-medium text-fg-secondary hover:text-link", focusRing)}
             >
               {platform}
               <ExternalLinkIcon size={13} aria-hidden="true" />
@@ -103,10 +107,10 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
   const projects = useProjectsList(order);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8">
+    <Page width="wide">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-title text-3xl font-bold text-fg">Notes</h1>
+          <PageTitle>Notes</PageTitle>
           <p className="mt-1 max-w-xl text-base text-fg-muted">The creators we check, and the notes readers are rating on their posts and videos.</p>
         </div>
         <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
@@ -127,6 +131,6 @@ export function ProjectsPage({ navigate }: { navigate: (route: Route) => void })
           <PagedListEnd list={projects} className="mt-4" />
         </>
       )}
-    </main>
+    </Page>
   );
 }

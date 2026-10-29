@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { localPoint } from "@visx/event";
@@ -21,11 +21,12 @@ import {
 } from "@cn/core/dashboard";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ChevronIcon } from "@cn/ui/icons";
 import { Menu, MenuItem } from "@cn/ui/Menu";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { Slider } from "@cn/ui/Slider";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { useDismiss } from "@cn/ui/useDismiss";
 import { LoadState } from "./tableParts";
 import { AXIS_COLOR, SURFACE_COLOR, tickLabel, tooltipClass } from "../../components/chart/chartTheme";
 
@@ -297,18 +298,6 @@ function selectionTitle(key: SelectionKey, times: number): string {
   return metric.kind === "people" ? `${metric.label} at least ${timesLabel(times)}` : metric.label;
 }
 
-/** Closes an open menu on Escape, as the site's other popovers do. */
-function useCloseOnEscape(open: boolean, close: () => void) {
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, close]);
-}
-
 /** One line of the fraction, which is also its picker: a framed heading with
  *  a chevron that opens the list of the eight metrics, plus "1" for the
  *  denominator. A people metric renders its threshold as a nested control:
@@ -318,8 +307,7 @@ function MetricPicker({ selection, allowOne, onChange }: { selection: Selection;
   const [open, setOpen] = useState(false);
   const container = useRef<HTMLDivElement>(null);
   const close = () => setOpen(false);
-  useOutsidePress(container, open, close);
-  useCloseOnEscape(open, close);
+  useDismiss(container, open, close);
   const metric = metricFor(selection.key);
   const keys: SelectionKey[] = [...(allowOne ? [ONE] : []), ...METRICS.map((m) => m.key)];
 
@@ -338,7 +326,8 @@ function MetricPicker({ selection, allowOne, onChange }: { selection: Selection;
           }
         }}
         className={cn(
-          "inline-flex cursor-pointer select-none items-center gap-3 rounded-control border bg-surface px-3 py-2 text-left text-sm font-semibold text-fg hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+          "inline-flex cursor-pointer select-none items-center gap-3 rounded-control border bg-surface px-3 py-2 text-left text-sm font-semibold text-fg hover:bg-surface-hover",
+          focusRing,
           open ? "border-primary" : "border-line-strong",
         )}
       >
@@ -354,7 +343,8 @@ function MetricPicker({ selection, allowOne, onChange }: { selection: Selection;
                 }}
                 title="Change how many times"
                 className={cn(
-                  "rounded-sm border-b border-dotted border-link px-0.5 text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                  "rounded-sm border-b border-dotted border-link px-0.5 text-link",
+                  focusRing,
                   selection.sliderOpen && "bg-tint",
                 )}
               >

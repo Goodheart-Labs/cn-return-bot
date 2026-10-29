@@ -4,6 +4,8 @@ import { buildRequest, type FieldFilter } from "@cn/core/fieldQuery";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
+import { Page } from "@cn/ui/Page";
+import { PageTitle } from "@cn/ui/typography";
 import { AdminOnly } from "../../components/AdminOnly";
 import { CardColumn } from "../../components/ClaimCard";
 import { DisplayMenu } from "@cn/features/fieldQuery/DisplayMenu";
@@ -127,14 +129,14 @@ function NoteReview() {
   const typefully = useTypefullySync();
   const view = useMemo(() => ({ request, sorts: query.sorts, display: query.display, now }), [request, query.sorts, query.display, now]);
   return (
-    <main className="min-w-0 px-4 py-8 md:px-8">
+    <Page width="full">
       {/* The controls span the page's whole width, so the pills have room on
           one line, and the menus open to the left of the buttons at its right
           edge. */}
       <header className="mb-10 space-y-3">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-0.5">
-            <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
+            <PageTitle>Note review</PageTitle>
             <WhoLine summary={summary.data} />
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -153,6 +155,6 @@ function NoteReview() {
         <SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />
       </header>
       <ReviewFeed key={JSON.stringify(request)} view={view} />
-    </main>
+    </Page>
   );
 }

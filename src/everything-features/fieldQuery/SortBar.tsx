@@ -2,6 +2,7 @@ import { directionText, fieldById, type FieldDef, type FieldSort } from "@cn/cor
 import { cn } from "@cn/ui/cn";
 import { DropdownMenu, type MenuEntry } from "@cn/ui/DropdownMenu";
 import { ArrowDownIcon, ArrowUpIcon } from "@cn/ui/icons";
+import { focusRing } from "@cn/ui/focusRing";
 import { pillButtonClass, QueryChip } from "@cn/ui/QueryChip";
 
 /** The sort levels as numbered pills, then a button that adds one more. A
@@ -53,7 +54,7 @@ export function SortBar({ fields, sorts, onChange }: {
                 onClick={() => replace(index, { ...sort, descending: !sort.descending })}
                 aria-label={`${direction}. Switch to ${flipped.toLowerCase()}`}
                 title={`${direction}. Click for ${flipped.toLowerCase()}`}
-                className="flex h-6 w-6 items-center justify-center rounded-full text-fg-secondary hover:bg-surface-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className={cn("flex h-6 w-6 items-center justify-center rounded-full text-fg-secondary hover:bg-surface-hover", focusRing)}
               >
                 {sort.descending ? <ArrowDownIcon size={14} aria-hidden /> : <ArrowUpIcon size={14} aria-hidden />}
               </button>
