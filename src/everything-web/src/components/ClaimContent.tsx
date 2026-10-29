@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { ClaimRef, FeedItemRow } from "@cn/core/types";
 import { extractYoutubeVideoId, sourceLinkLabel } from "@cn/core/pageUrls";
 import { buttonVariants } from "@cn/ui/Button";
+import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { PlayIcon } from "@cn/ui/icons";
 import { Quote } from "@cn/ui/typography";
 import { quoteFragmentUrl } from "../../../dashboard-shared/textFragment";
@@ -225,7 +227,7 @@ function YouTubeClip({ url, quote, restated, updatedQuote, startSeconds, endSeco
               type="button"
               onClick={() => setPlaying(true)}
               aria-label="Play the clip"
-              className="group relative h-full w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className={cn("group relative h-full w-full", focusRing)}
             >
               <img src={thumbnailUrl(videoId)} alt="" loading="lazy" className="h-full w-full object-cover" />
               <span className="absolute inset-0 m-auto flex h-12 w-16 items-center justify-center rounded-card bg-black/70 text-white transition-colors group-hover:bg-black/90">

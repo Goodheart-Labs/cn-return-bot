@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { PublicDumpRatings } from "./types";
-import { humanizeTagName } from "./ratingReasons";
+import { humanizeTagName } from "../everything-core/ratingReasons";
 
 type TagBucket = "helpful" | "not_helpful";
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { buttonVariants } from "@cn/ui/Button";
+import { Button, buttonVariants } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { NextIcon, PreviousIcon } from "@cn/ui/icons";
 import { BrowserLogo, DesktopOnly, StoreButton } from "../../components/StoreButton";
 import { BROWSERS, canInstallExtensions, isListed, trackGetExtensionClick } from "../../lib/extensionStores";
@@ -44,7 +45,8 @@ function Screenshots() {
             aria-label={label}
             onClick={() => step(steps)}
             className={cn(
-              "absolute top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-surface text-fg shadow-raised transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100",
+              "absolute top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-surface text-fg shadow-raised transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100",
+              focusRing,
               side,
             )}
           >
@@ -65,7 +67,7 @@ function Screenshots() {
               aria-current={i === index}
               onClick={() => go(i)}
               // The button is a 32 pixel target around the small dot drawn inside it.
-              className="group grid h-8 min-w-8 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className={cn("group grid h-8 min-w-8 place-items-center rounded-full", focusRing)}
             >
               <span className="h-2 w-2 rounded-full bg-line-strong transition-[width,background-color] duration-300 group-aria-[current=true]:w-6 group-aria-[current=true]:bg-primary" />
             </button>
@@ -89,7 +91,7 @@ function Install({ navigate, desktop }: { navigate: (route: Route) => void; desk
             <button
               key={b.id}
               {...tabProps(i)}
-              className="relative flex flex-col items-center gap-1.5 px-2 py-3 text-base font-medium text-fg-secondary hover:bg-surface-hover hover:text-fg aria-selected:text-fg aria-selected:after:absolute aria-selected:after:inset-x-0 aria-selected:after:bottom-0 aria-selected:after:h-0.5 aria-selected:after:bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus [&+&]:border-l [&+&]:border-line"
+              className={cn("relative flex flex-col items-center gap-1.5 px-2 py-3 text-base font-medium text-fg-secondary hover:bg-surface-hover hover:text-fg aria-selected:text-fg aria-selected:after:absolute aria-selected:after:inset-x-0 aria-selected:after:bottom-0 aria-selected:after:h-0.5 aria-selected:after:bg-primary focus-visible:ring-inset [&+&]:border-l [&+&]:border-line", focusRing)}
             >
               <BrowserLogo browser={b} size={28} />
               {b.name}
@@ -124,16 +126,15 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
           {!desktop ? (
             <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />
           ) : (
-            <button
-              type="button"
+            <Button
+              size="lg"
               onClick={() => {
                 trackGetExtensionClick("home");
                 scrollToInstall();
               }}
-              className={buttonVariants({ variant: "primary", size: "lg" })}
             >
               Get the extension
-            </button>
+            </Button>
           )}
         </div>
         <Screenshots />
