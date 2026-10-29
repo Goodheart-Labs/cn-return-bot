@@ -21,7 +21,7 @@ import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
 import { ServiceError, type ItemTextResponse } from "../service/contract";
-import { fetchForumPost, parsePostUrl } from "./sources/lesswrong";
+import { fetchForumPost, parsePostUrl, SHORTFORM_SKIP_REASON, ShortformPageError } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
 import { MAX_ITEM_RETRIES } from "./autoEnqueue";
@@ -113,6 +113,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
       try {
         return await fetchForumPost(item.url);
       } catch (err: any) {
+        if (err instanceof ShortformPageError) throw err;
         // If the forum's GraphQL API refuses our runner, the web-fetch ladder
         // still has a route to the post through its headless browser render.
         console.log(`  Forum fetch failed (${err?.message}) — trying the web-fetch ladder`);
@@ -222,9 +223,15 @@ async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoE
 
 /** Records on the item's row why it failed. Both the pipeline's workers and
  *  the Claude note writer's runner use this, so a failure looks the same
- *  whichever of them hit it. */
+ *  whichever of them hit it. A video without captions and a shortform page
+ *  are not failures: they end as done without a check. */
 export async function recordItemFailure(item: EverythingItem, err: Error): Promise<ItemOutcome> {
   if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
+  if (err instanceof ShortformPageError) {
+    console.log(`  ${err.message} · finished without checking`);
+    await markItemDone(item.id, SHORTFORM_SKIP_REASON);
+    return "done";
+  }
   await markItemError(item.id, err.message ?? "unknown");
   return "error";
 }
@@ -274,7 +281,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<ItemOutco
     );
     return "done";
   } catch (err: any) {
-    if (!(err instanceof UnreadableVideoError)) console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
+    if (!(err instanceof UnreadableVideoError || err instanceof ShortformPageError)) console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
     return recordItemFailure(item, err);
   }
 }
