@@ -24,8 +24,8 @@
  * Since GOO-527 the plan has a second user: the X note writer, which also
  * runs Claude Code on the ai-box. Only Common Notes paces itself against the
  * 80% target. The X note writer is capped instead, at a fixed share of the
- * week that it measures from the cost Claude Code reports for each of its
- * runs (src/claude-notes/xShare.ts). Its usage is part of the plan's rise, so
+ * week that it measures from the cost Claude Code reports for each Claude run
+ * on the ai-box (src/claude-notes/xShare.ts and usageShare.ts). Its usage is part of the plan's rise, so
  * a Common Notes post looks more expensive while X runs, and Common Notes gets
  * whatever of the 80% the X note writer leaves. Jim gave X 20% and Common Notes
  * 60% on 2026-10-27.

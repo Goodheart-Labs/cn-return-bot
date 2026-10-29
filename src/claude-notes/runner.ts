@@ -38,6 +38,7 @@ import {
   readJudgedNote,
   readSettings,
   endPostRun,
+  recordClaudeRun,
   RUN_ID_ENV,
   startPostRun,
   type PostRunOutcome,
@@ -53,7 +54,8 @@ import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
-import { failXTweet, markXTweetRunning, openXTweets, recordXTweetRun, X_NOTE_MAX_CHARS, xTweetIsOpen, type XTweet } from "./xTweets";
+import { failXTweet, markXTweetRunning, openXTweets, X_NOTE_MAX_CHARS, xTweetIsOpen, type XTweet } from "./xTweets";
+import { CLAUDE_RUN_TAGS, type ClaudeRunTag } from "./usageShare";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 const POLL_MS = 30_000;
@@ -214,16 +216,12 @@ function runFolder(name: string): string {
 }
 
 /** What the run would have cost on the API, as Claude Code reports it in the
- *  last event of its output. xShare.ts splits the plan's usage by these costs.
- *  Null when the run died before it reported. */
+ *  last event of its output: stream.jsonl for the runner's sessions, and
+ *  output.json for a judge. Null when the run died before it reported. */
 function runCost(runDir: string): number | null {
-  let lines: string[];
-  try {
-    lines = readFileSync(path.join(runDir, "stream.jsonl"), "utf8").trim().split("\n");
-  } catch {
-    return null;
-  }
-  for (const line of lines.reverse()) {
+  const output = ["stream.jsonl", "output.json"].map((file) => path.join(runDir, file)).find(existsSync);
+  if (!output) return null;
+  for (const line of readFileSync(output, "utf8").trim().split("\n").reverse()) {
     try {
       const event = JSON.parse(line);
       if (event.type === "result" && typeof event.total_cost_usd === "number") return event.total_cost_usd;
@@ -314,12 +312,19 @@ async function savedDrafts(run: Run & { item: QueueItem }): Promise<boolean> {
   return (await claudeDraftsSince(run.item.id, new Date(run.startedAt).toISOString())) > 0;
 }
 
+/** Records a Claude run that ended in everything_claude_runs. Every attempt
+ *  gets its own row, before a retry overwrites its output. */
+function recordRun(run: Run, tags: ClaudeRunTag[], ref: Parameters<typeof recordClaudeRun>[0]["ref"]) {
+  return recordClaudeRun({ tags, startedAt: run.startedAt, runDir: run.runDir, apiCostUsd: runCost(run.runDir), ref });
+}
+
 async function endPost(run: Run & { item: QueueItem }) {
   posts.delete(run.item.id);
   const report = readReport(run.runDir);
-  const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt, costUsd: runCost(run.runDir) };
-  console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
   const postRun = readPostRun(run.runDir);
+  await recordRun(run, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.post], postRun && { everything_pipeline_run_id: postRun.runId });
+  const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt };
+  console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
   const record = async (outcome: PostRunOutcome) => {
     if (postRun) await endPostRun(postRun.runId, outcome, { runDir: run.runDir, report, ...usageNote });
   };
@@ -378,9 +383,8 @@ async function startTweet(tweet: XTweet, attempt = 1) {
  *  stage guards in xTweets.ts make sure an answer is never saved twice. */
 async function endTweet(run: Run & { tweet: XTweet }) {
   tweets.delete(run.tweet.runId);
-  const minutes = Math.round((Date.now() - run.startedAt) / 60_000);
-  await recordXTweetRun(run.tweet.runId, { costUsd: runCost(run.runDir), minutes });
-  console.log(`${run.session} ended after ${minutes} minutes`);
+  await recordRun(run, [CLAUDE_RUN_TAGS.x, CLAUDE_RUN_TAGS.tweet], { pipeline_run_id: run.tweet.runId });
+  console.log(`${run.session} ended after ${Math.round((Date.now() - run.startedAt) / 60_000)} minutes`);
   if (!(await xTweetIsOpen(run.tweet.runId))) return;
   if (run.attempt < MAX_ATTEMPTS) return startTweet(run.tweet, run.attempt + 1);
   await failXTweet(run.tweet.runId, `The Claude note writer exited twice without an answer; see ${run.runDir} on ai-box`);
@@ -438,6 +442,7 @@ async function endAnswers() {
   for (const [draftId, run] of answers) {
     if (tmuxAlive(run.session)) continue;
     answers.delete(draftId);
+    await recordRun(run, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.reviewAnswer], { draft_id: draftId });
     const message = open.get(draftId);
     if (!message) continue;
     if (run.attempt < MAX_ATTEMPTS) await startAnswer(draftId, message, run.attempt + 1);
@@ -453,16 +458,18 @@ async function endAnswers() {
 // ---------------------------------------------------------------------------
 
 async function judgeOne(draftId: string) {
+  const run = { runDir: runFolder(`judge/${draftId}-${Date.now()}`), startedAt: Date.now() };
   try {
     const note = await readJudgedNote(draftId);
     const examples = examplesForJudge.filter((e) => e.draftId !== draftId);
-    const judgement = await runJudge(runFolder(`judge/${draftId}-${Date.now()}`), judgePrompt(note, examples));
+    const judgement = await runJudge(run.runDir, judgePrompt(note, examples));
     await saveJudgement(draftId, note.note, judgement);
     console.log(`Judged draft ${draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
   } catch (err) {
     judgeFailures.set(draftId, (judgeFailures.get(draftId) ?? 0) + 1);
     console.error(`Could not judge draft ${draftId}: ${(err as Error).message}`);
   }
+  await recordClaudeRun({ tags: [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge], ...run, apiCostUsd: runCost(run.runDir), ref: { draft_id: draftId } });
 }
 
 function queueForJudge(draftId: string) {

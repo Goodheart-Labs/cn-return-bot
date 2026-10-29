@@ -21,6 +21,7 @@ import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
+import type { ClaudeRunTag } from "./usageShare";
 
 export type Actor = "jim" | "nathan" | "claude";
 export type Writer = "pipeline" | "claude";
@@ -345,6 +346,23 @@ export async function nathanNotedItem(itemId: string): Promise<boolean> {
 
 export type PostRunOutcome = "done" | "skipped" | "incomplete" | "failed";
 
+/** Writes one everything_claude_runs row for a Claude run that ended, with
+ *  what it would have cost on the API. usageShare.ts splits the plan's usage
+ *  by these costs. `ref` names what the run was for. */
+export async function recordClaudeRun(run: {
+  tags: ClaudeRunTag[];
+  startedAt: number;
+  runDir: string;
+  apiCostUsd: number | null;
+  ref: { pipeline_run_id: string } | { everything_pipeline_run_id: string } | { draft_id: string } | null;
+}) {
+  check(
+    await db()
+      .from("everything_claude_runs")
+      .insert({ tags: run.tags, started_at: new Date(run.startedAt).toISOString(), run_dir: run.runDir, api_cost_usd: run.apiCostUsd, ...run.ref }),
+  );
+}
+
 /** The environment variable through which a post's Claude, and every command
  *  it runs, knows its run row. The draft command stores it on each draft. */
 export const RUN_ID_ENV = "CN_RUN_ID";
@@ -354,7 +372,7 @@ export const RUN_ID_ENV = "CN_RUN_ID";
  *  readouts can compare the arms. It is written when the Claude starts, so
  *  its drafts can point at it. The cost column stays empty, because the daily
  *  spend cap adds it up in dollars, and Claude spends plan usage, not money.
- *  What the run would have cost on the API goes into logs.costUsd at the end. */
+ *  What each attempt would have cost on the API is in everything_claude_runs. */
 export async function startPostRun(itemId: string, picks: Record<string, string>): Promise<string> {
   const row = unwrap(
     await db()

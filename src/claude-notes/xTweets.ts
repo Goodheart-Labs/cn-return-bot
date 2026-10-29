@@ -106,16 +106,6 @@ export async function failXTweet(runId: string, reason: string) {
   await updateOpenRow(runId, { failure: reason }, { outcome: "failed", outcome_reason: "claude_no_answer", final_stage: "error", error_message: reason });
 }
 
-/** Adds one Claude run's cost and duration to the row, whatever its outcome.
- *  xShare.ts sums these costs. */
-export async function recordXTweetRun(runId: string, run: { costUsd: number | null; minutes: number }) {
-  const { logs, claude } = await readClaudeLog(runId);
-  const costUsd = (Number(claude.costUsd) || 0) + (run.costUsd ?? 0);
-  const minutes = (Number(claude.minutes) || 0) + run.minutes;
-  const { error } = await db().from("pipeline_runs").update({ logs: { ...logs, claude: { ...claude, costUsd, minutes } } as Json }).eq("id", runId);
-  if (error) throw new Error(JSON.stringify(error));
-}
-
 export async function xTweetIsOpen(runId: string): Promise<boolean> {
   const { data, error } = await db().from("pipeline_runs").select("outcome").eq("id", runId).single();
   if (error) throw new Error(JSON.stringify(error));
