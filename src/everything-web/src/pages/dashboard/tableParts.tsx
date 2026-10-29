@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Button } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { focusRing } from "@cn/ui/focusRing";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { useDismiss } from "@cn/ui/useDismiss";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import type { PagedList } from "@cn/features/query/usePagedList";
 
@@ -26,15 +26,7 @@ export interface Column {
 function ColumnHeading({ column }: { column: Column }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLTableCellElement>(null);
-  useOutsidePress(ref, open, () => setOpen(false));
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [open]);
+  useDismiss(ref, open, () => setOpen(false));
 
   return (
     <th ref={ref} scope="col" className={cn(CELL, "relative whitespace-nowrap font-medium text-fg-muted", column.align === "right" ? "text-right" : "text-left")}>
