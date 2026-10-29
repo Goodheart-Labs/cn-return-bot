@@ -6,6 +6,7 @@ import { setXMark } from "@cn/core/xMarks";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { IconButton } from "@cn/ui/IconButton";
 import { CloseIcon, SpeechBubbleIcon, XLogoIcon } from "@cn/ui/icons";
 import { CreatorLink } from "../../components/CreatorLink";
@@ -34,7 +35,7 @@ export function useCurationChange(onError: (message: string) => void) {
 /** Which small form is open under a note's bar. */
 type Panel = "takeOff" | "comment" | null;
 
-const TEXTAREA = "w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
+const TEXTAREA = cn("w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-sm text-fg", focusRing);
 
 /** A box for a short text, with a button that sends it. */
 function TextForm({ label, initial, placeholder, submit, onDone }: {

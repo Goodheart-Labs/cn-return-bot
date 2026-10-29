@@ -1,8 +1,8 @@
 import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchReviewDrafts, type ReviewDraft } from "@cn/core/claudeReview";
 import { cn } from "@cn/ui/cn";
-import { ResizablePanel } from "@cn/ui/ResizablePanel";
 import { RouteLink } from "../../components/RouteLink";
+import { SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
 import type { Route } from "../../lib/routing";
 import { useAdminStatus } from "../../lib/useIsAdmin";
 import { ReviewCard } from "../noteReview/ReviewCard";
@@ -19,7 +19,6 @@ import { JUDGE_SECTIONS, type JudgeSection } from "./sections";
 const DATA_URL = "/__scripts_jim/2026_10_26_note_judge/data";
 /** The database function returns at most this many drafts per call. */
 const MAX_DRAFTS_PER_CALL = 50;
-const SIDEBAR_WIDTH = { default: 280, min: 220, max: 420 };
 
 const SECTION_TITLES: Record<JudgeSection, string> = {
   results: "Results",
@@ -275,10 +274,7 @@ function SectionList({ current, counts, navigate }: { current: JudgeSection; cou
               to={{ view: "judgeExperiment", section }}
               navigate={navigate}
               current={section === current}
-              className={cn(
-                "flex items-center justify-between gap-3 rounded-control px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                section === current ? "bg-tint font-medium text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
-              )}
+              className={cn(sidebarEntry(section === current), "justify-between gap-3")}
             >
               {SECTION_TITLES[section]}
               {counts && section !== "results" && <span className="min-w-6 rounded-full bg-surface-muted px-1.5 py-0.5 text-center text-xs tabular-nums text-fg-secondary">{counts[section]}</span>}
@@ -306,32 +302,25 @@ export function JudgeExperimentPage({ section, navigate }: { section: JudgeSecti
   const counts = dataset.data && (Object.fromEntries(NOTE_SECTIONS.map((s) => [s, dataset.data.filter(inSection(s)).length])) as Record<NoteSection, number>);
   const results = runs.every((run) => run.data) ? runs.map((run) => run.data!) : undefined;
   return (
-    <div className="md:flex">
-      <ResizablePanel
-        storageKey="cn:judgeExperimentSidebarWidth"
-        label="sidebar"
-        defaultWidth={SIDEBAR_WIDTH.default}
-        minWidth={SIDEBAR_WIDTH.min}
-        maxWidth={SIDEBAR_WIDTH.max}
-        className="hidden bg-surface md:block md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]"
-      >
+    <SidebarLayout
+      storageKey="cn:judgeExperimentSidebarWidth"
+      sidebar={
         <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
           <h1 className="px-3 font-title text-lg font-bold text-fg">Note judge experiment</h1>
           <SectionList current={section} counts={counts} navigate={navigate} />
         </div>
-      </ResizablePanel>
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-8">
-        <div className="mx-auto mb-6 max-w-[40rem] space-y-2">
-          <h2 className="font-title text-2xl font-bold text-fg">{SECTION_TITLES[section]}</h2>
-          <p className="text-sm text-fg-secondary">{SECTION_DESCRIPTIONS[section]}{section !== "results" && " Oldest first."}</p>
-        </div>
-        {dataset.isError && <p className="mx-auto max-w-[40rem] text-sm text-negative">{dataset.error.message}</p>}
-        {section === "results" ? (
-          <Results />
-        ) : (
-          dataset.data && results && <SectionFeed key={section} notes={dataset.data.filter(inSection(section))} results={results} />
-        )}
-      </main>
-    </div>
+      }
+    >
+      <div className="mx-auto mb-6 max-w-[40rem] space-y-2">
+        <h2 className="font-title text-2xl font-bold text-fg">{SECTION_TITLES[section]}</h2>
+        <p className="text-sm text-fg-secondary">{SECTION_DESCRIPTIONS[section]}{section !== "results" && " Oldest first."}</p>
+      </div>
+      {dataset.isError && <p className="mx-auto max-w-[40rem] text-sm text-negative">{dataset.error.message}</p>}
+      {section === "results" ? (
+        <Results />
+      ) : (
+        dataset.data && results && <SectionFeed key={section} notes={dataset.data.filter(inSection(section))} results={results} />
+      )}
+    </SidebarLayout>
   );
 }

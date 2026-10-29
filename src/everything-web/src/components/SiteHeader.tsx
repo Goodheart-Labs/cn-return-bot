@@ -1,17 +1,20 @@
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { trackGetExtensionClick } from "../lib/extensionStores";
-import { HOME, INSTALL, MINISITES, NOTES, type Route } from "../lib/routing";
+import { HOME, INSTALL, MINISITES, NOTES, X_NOTEWRITER, type Route } from "../lib/routing";
 import { useIsAdmin } from "../lib/useIsAdmin";
 import { AdminMenu } from "./AdminMenu";
 import { AuthCorner } from "./AuthCorner";
 import { RouteLink } from "./RouteLink";
 
-const navLink =
-  "rounded-control text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2";
+const navLink = cn(
+  "rounded-control text-sm font-medium text-fg-secondary hover:text-fg aria-[current=page]:text-fg focus-visible:ring-offset-2",
+  focusRing,
+);
 
-/** The bar at the top of every page. The name and the four pages sit on the
+/** The bar at the top of every page. The name and the five pages sit on the
  *  left, signing in and getting the extension on the right. Getting the
  *  extension leads to the homepage's install section. Admins also get an
  *  Admin menu with the note review, the best notes and the dashboard. */
@@ -39,6 +42,9 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           </RouteLink>
           <RouteLink to={{ view: "leaderboard" }} navigate={navigate} current={route.view === "leaderboard"} className={navLink}>
             Leaderboard
+          </RouteLink>
+          <RouteLink to={X_NOTEWRITER} navigate={navigate} current={route.view === "xNotewriter"} className={navLink}>
+            X notewriter
           </RouteLink>
           {admin && <AdminMenu route={route} navigate={navigate} className={navLink} />}
         </nav>

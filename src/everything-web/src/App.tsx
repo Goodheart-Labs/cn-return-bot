@@ -15,9 +15,11 @@ import { NoteReviewPage } from "./pages/noteReview/NoteReviewPage";
 import { TWEET_SERVER } from "./pages/noteReview/tweetServer";
 import { NotesView } from "./pages/NotesView";
 
-/** The dashboard's charts pull in a chart library that no reader needs, so
- *  its code loads only when an admin opens the page. */
+/** The dashboard's and the X notewriter page's charts pull in a chart library
+ *  that most readers never need, so their code loads only when someone opens
+ *  one of those pages. */
 const DashboardPage = lazy(() => import("./pages/dashboard/DashboardPage").then((module) => ({ default: module.DashboardPage })));
+const XNotewriterPage = lazy(() => import("./pages/notewriter/XNotewriterPage").then((module) => ({ default: module.XNotewriterPage })));
 const JudgeExperimentPage = lazy(() => import("./pages/judgeExperiment/JudgeExperimentPage").then((module) => ({ default: module.JudgeExperimentPage })));
 
 /** The website's frame: the header on every page, the page the route names
@@ -39,7 +41,12 @@ export function App() {
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
         : route.view === "dashboard" ? (
           <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
-            <DashboardPage navigate={navigate} />
+            <DashboardPage section={route.section} navigate={navigate} />
+          </Suspense>
+        )
+        : route.view === "xNotewriter" ? (
+          <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
+            <XNotewriterPage page={route.page} navigate={navigate} />
           </Suspense>
         )
         : route.view === "judgeExperiment" ? (
