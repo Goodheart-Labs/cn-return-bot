@@ -14,6 +14,9 @@ import { useNoteFacets, useNoteSummary, useXNoteList } from "./queries";
 import { XNoteCard } from "./XNoteCard";
 
 const formatCount = (n: number | undefined) => (n === undefined ? "…" : n.toLocaleString("en-US"));
+/** Views run into the hundreds of millions, which would not fit a tile on a
+ *  phone written out, so they read like "116.4M". */
+const formatViews = (n: number | undefined) => (n === undefined ? "…" : n.toLocaleString("en-US", { notation: "compact", maximumFractionDigits: 1 }));
 
 /** The headline numbers of the notes the filters let through. X counts how
  *  often it showed our notes. Common Notes does not, so there the first tile
@@ -25,7 +28,7 @@ export function Numbers({ source, request }: { source: NotewriterSource; request
     <div className="flex flex-wrap gap-3">
       <StatTile label="Helpful notes" value={formatCount(summary.data?.helpful)} />
       {source === "x" ? (
-        <StatTile label="Views on our notes" value={formatCount(summary.data?.views)} />
+        <StatTile label="Views on our notes" value={formatViews(summary.data?.views)} />
       ) : (
         <StatTile label="Notes" value={formatCount(summary.data?.notes)} />
       )}

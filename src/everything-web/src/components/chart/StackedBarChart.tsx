@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { GridRows } from "@visx/grid";
 import { Group } from "@visx/group";
-import { ParentSize } from "@visx/responsive";
+import { useParentSize } from "@visx/responsive";
 import { scaleBand, scaleLinear } from "@visx/scale";
 import { TooltipWithBounds, useTooltip } from "@visx/tooltip";
 import { AXIS_COLOR, tickLabel, tooltipClass } from "./chartTheme";
@@ -31,22 +31,30 @@ const MARGIN = { top: 10, right: 8, bottom: 28, left: 44 };
 const MAX_VISIBLE_BARS = 28;
 const BAR_PADDING = 0.2;
 const VALUE_TICKS = 5;
-/** How many bar labels the axis shows in one screen width. */
-const LABELS_IN_VIEW = 7;
+/** The room one bar label needs, such as "Wk of Oct 27". */
+const LABEL_SPACING = 90;
+/** Room at both ends of the bars, so the first and last label are not cut. */
+const EDGE = 32;
 
 const sum = (bar: Bar, parts: readonly BarPart[]) => parts.reduce((total, part) => total + (bar.values[part.key] ?? 0), 0);
-const percentText = (fraction: number) => `${Math.round(fraction * 100)}%`;
+/** A share in percent. Shares under 10% keep a decimal, so a small part does
+ *  not read as 0%. */
+const percentText = (fraction: number) => `${(fraction * 100).toFixed(fraction > 0 && fraction < 0.1 ? 1 : 0)}%`;
 
 export function StackedBarChart(props: { bars: Bar[]; up: readonly BarPart[]; down?: readonly BarPart[]; shares?: boolean; emptyText: string }) {
+  // The hook measures the width only, so the chart sets its own height. The
+  // ParentSize component would wrap it in a box of no height.
+  const { parentRef, width } = useParentSize({ debounceTime: 50 });
   if (props.bars.length === 0) return <p className="py-16 text-center text-sm text-fg-muted">{props.emptyText}</p>;
-  return <ParentSize debounceTime={50}>{({ width }) => (width > 0 ? <Chart {...props} width={width} /> : null)}</ParentSize>;
+  return <div ref={parentRef}>{width > 0 && <Chart {...props} width={width} />}</div>;
 }
 
 function Chart({ bars, up, down = [], shares = false, width }: { bars: Bar[]; up: readonly BarPart[]; down?: readonly BarPart[]; shares?: boolean; width: number }) {
   const scroller = useRef<HTMLDivElement>(null);
   const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } = useTooltip<Bar>();
   const visibleBars = Math.min(bars.length, MAX_VISIBLE_BARS);
-  const slot = (width - MARGIN.left - MARGIN.right) / visibleBars;
+  const viewWidth = width - MARGIN.left - MARGIN.right - 2 * EDGE;
+  const slot = viewWidth / visibleBars;
   const innerWidth = slot * bars.length;
   const innerHeight = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
 
@@ -59,7 +67,7 @@ function Chart({ bars, up, down = [], shares = false, width }: { bars: Bar[]; up
   const maxUp = shares ? 1 : Math.max(1, ...bars.map((b) => sum(b, up)));
   const maxDown = shares ? 0 : Math.max(0, ...bars.map((b) => sum(b, down)));
   const y = scaleLinear<number>({ domain: [-maxDown, maxUp], range: [innerHeight, 0], nice: !shares });
-  const labelEvery = Math.max(1, Math.ceil(visibleBars / LABELS_IN_VIEW));
+  const labelEvery = Math.max(1, Math.ceil(visibleBars / Math.max(1, Math.floor(viewWidth / LABEL_SPACING))));
 
   /** The parts of a bar as rectangles, from the zero line outwards. */
   const rects = (bar: Bar) => {
@@ -86,15 +94,15 @@ function Chart({ bars, up, down = [], shares = false, width }: { bars: Bar[]; up
   return (
     <div className="relative">
       <div ref={scroller} className="overflow-x-auto" style={{ marginLeft: MARGIN.left }}>
-        <div className="relative" style={{ width: innerWidth + MARGIN.right }}>
-          <svg width={innerWidth + MARGIN.right} height={CHART_HEIGHT} className="block">
-            <Group top={MARGIN.top}>
-              <GridRows scale={y} width={innerWidth} stroke={AXIS_COLOR} strokeOpacity={0.5} numTicks={VALUE_TICKS} />
+        <div className="relative" style={{ width: innerWidth + 2 * EDGE + MARGIN.right }}>
+          <svg width={innerWidth + 2 * EDGE + MARGIN.right} height={CHART_HEIGHT} className="block">
+            <Group top={MARGIN.top} left={EDGE}>
+              <GridRows scale={y} left={-EDGE} width={innerWidth + 2 * EDGE} stroke={AXIS_COLOR} strokeOpacity={0.5} numTicks={VALUE_TICKS} />
               {bars.map((bar) => (
                 <Group
                   key={bar.key}
                   left={x(bar.key)}
-                  onMouseEnter={() => showTooltip({ tooltipData: bar, tooltipLeft: (x(bar.key) ?? 0) + x.bandwidth() / 2, tooltipTop: MARGIN.top + y(shares ? 1 : sum(bar, up)) })}
+                  onMouseEnter={() => showTooltip({ tooltipData: bar, tooltipLeft: EDGE + (x(bar.key) ?? 0) + x.bandwidth() / 2, tooltipTop: MARGIN.top + y(shares ? 1 : sum(bar, up)) })}
                   onMouseLeave={hideTooltip}
                 >
                   {/* A full-height target, so the pointer finds short bars too. */}

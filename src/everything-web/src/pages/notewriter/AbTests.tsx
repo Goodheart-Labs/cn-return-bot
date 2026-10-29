@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AxisTop } from "@visx/axis";
-import { ParentSize } from "@visx/responsive";
+import { useParentSize } from "@visx/responsive";
 import { scaleLinear } from "@visx/scale";
 import {
   BASE_STAT_OPTIONS,
@@ -110,7 +110,7 @@ function CompareMenu({ tests, chosen, onChange }: { tests: AbTest[]; chosen: str
   const recent = tests.filter((t) => t.recentlyVaried);
   const older = tests.filter((t) => !t.recentlyVaried);
   const entries: MenuEntry[] = [];
-  if (recent.length > 0) entries.push({ type: "heading", key: "recent", label: RECENT_TESTS }, choice("recent", recent));
+  if (recent.length > 0) entries.push({ type: "heading", key: "recent-heading", label: RECENT_TESTS }, choice("recent", recent));
   if (older.length > 0) {
     const chosenOlder = chosen.filter((name) => older.some((t) => t.name === name)).length;
     entries.push({ type: "submenu", key: "older", label: OLDER_TESTS, value: chosenOlder > 0 ? `${chosenOlder} on` : undefined, entries: [choice("older", older)] });
@@ -157,16 +157,36 @@ function IntervalBar({ interval, domain, kind, width }: { interval: Interval; do
 
 /** The label gutter takes this share of the width, within these bounds. */
 const LABEL_SHARE = 0.35;
-const LABEL_WIDTH = { min: 120, max: 240 };
+const LABEL_WIDTH = { min: 160, max: 260 };
 const HIDE_BUTTON_WIDTH = 24;
 const COLUMN_GAP = 12;
+/** Below this width a row's label sits above its interval, which then gets
+ *  the whole width. */
+const STACKED_BELOW = 560;
 
 /** The label gutter, the plot and the hide button, in pixels, shared by the
- *  axis row and every interval row, so the intervals line up under the axis. */
+ *  axis row and every interval row, so the intervals line up under the axis.
+ *  On a narrow screen the label gutter is dropped and labels span the row. */
 function rowColumns(width: number) {
-  const label = Math.min(LABEL_WIDTH.max, Math.max(LABEL_WIDTH.min, width * LABEL_SHARE));
-  const plot = Math.max(0, width - label - HIDE_BUTTON_WIDTH - 2 * COLUMN_GAP);
-  return { plot, style: { display: "grid", alignItems: "center", columnGap: COLUMN_GAP, gridTemplateColumns: `${label}px ${plot}px ${HIDE_BUTTON_WIDTH}px` } };
+  const stacked = width < STACKED_BELOW;
+  const label = stacked ? 0 : Math.min(LABEL_WIDTH.max, Math.max(LABEL_WIDTH.min, width * LABEL_SHARE));
+  const plot = Math.max(0, width - label - HIDE_BUTTON_WIDTH - (stacked ? 1 : 2) * COLUMN_GAP);
+  const columns = stacked ? `${plot}px ${HIDE_BUTTON_WIDTH}px` : `${label}px ${plot}px ${HIDE_BUTTON_WIDTH}px`;
+  return { plot, stacked, style: { display: "grid", alignItems: "center", columnGap: COLUMN_GAP, rowGap: 2, gridTemplateColumns: columns } };
+}
+
+/** A combination's arms, one test per line. */
+function ComboLabel({ tests, picks }: { tests: string[]; picks: Record<string, string> }) {
+  return (
+    <div className="text-sm leading-tight text-fg [overflow-wrap:anywhere]">
+      {tests.map((test) => (
+        <div key={test}>
+          <span className="text-fg-muted">{test} = </span>
+          {picks[test]}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 /** The A/B comparison: pick tests, and every combination of their arms gets a
@@ -198,6 +218,7 @@ export function AbTests({ source }: { source: NotewriterSource }) {
   const label = (picks: Record<string, string>) => chosen.map((test) => `${test}=${picks[test]}`).join(" · ");
   const rows = (combos.data ?? []).map((combo) => ({
     key: label(combo.picks),
+    picks: combo.picks,
     result: statInterval(combo.counts, stat, forceAll || withRuns, Z_BY_LEVEL[level]),
   }));
   const shown = rows
@@ -255,41 +276,58 @@ export function AbTests({ source }: { source: NotewriterSource }) {
         <p className="text-sm text-fg-muted">No notes or runs drew these tests in this window.</p>
       ) : (
         <Card className="p-4">
-          <ParentSize debounceTime={50}>
-            {({ width }) => {
-              const { plot: plotWidth, style } = rowColumns(width);
-              return (
-                <div className="space-y-1">
-                  <div style={style}>
-                    <div className="truncate text-xs font-semibold text-fg-muted">{statLabel(stat)}</div>
-                    <IntervalAxis domain={domain} kind={kind} width={plotWidth} />
-                  </div>
-                  {shown.map((row) => (
-                    <div key={row.key} style={style}>
-                      <div className="min-w-0">
-                        <div className="break-words text-sm leading-tight text-fg">{row.key}</div>
-                        <div className="text-xs text-fg-muted">
-                          {row.result ? (
-                            <>
-                              n={row.result.n} · <span className="font-semibold text-fg-secondary">{formatValue(row.result.interval.point, kind)}</span>
-                            </>
-                          ) : (
-                            "no data"
-                          )}
-                        </div>
-                      </div>
-                      <div>{row.result && <IntervalBar interval={row.result.interval} domain={domain} kind={kind} width={plotWidth} />}</div>
-                      <IconButton label="Hide this combination" onClick={() => setHidden(new Set(hidden).add(row.key))}>
-                        <CloseIcon size={14} aria-hidden />
-                      </IconButton>
-                    </div>
-                  ))}
-                </div>
-              );
-            }}
-          </ParentSize>
+          <IntervalRows rows={shown} tests={chosen} stat={stat} domain={domain} onHide={(key) => setHidden(new Set(hidden).add(key))} />
           {hiddenRows.length > 0 && <HiddenRows keys={hiddenRows.map((row) => row.key)} onRestore={(key) => setHidden(new Set([...hidden].filter((k) => k !== key)))} onRestoreAll={() => setHidden(new Set())} />}
         </Card>
+      )}
+    </div>
+  );
+}
+
+interface IntervalRow {
+  key: string;
+  picks: Record<string, string>;
+  result: ReturnType<typeof statInterval>;
+}
+
+/** The axis and one row per combination: its arms, its sample size and
+ *  estimate, its interval, and a button that hides it. */
+function IntervalRows({ rows, tests, stat, domain, onHide }: { rows: IntervalRow[]; tests: string[]; stat: AbComparisonStat; domain: Domain; onHide: (key: string) => void }) {
+  const { parentRef, width } = useParentSize({ debounceTime: 50 });
+  const kind = statKind(stat);
+  const { plot, stacked, style } = rowColumns(width);
+  const spanRow = stacked ? { gridColumn: "1 / -1" } : undefined;
+  return (
+    <div ref={parentRef} className="space-y-3">
+      {width > 0 && (
+        <>
+          <div style={style}>
+            <div className="truncate text-xs font-semibold text-fg-muted" style={spanRow}>
+              {statLabel(stat)}
+            </div>
+            <IntervalAxis domain={domain} kind={kind} width={plot} />
+          </div>
+          {rows.map((row) => (
+            <div key={row.key} style={style}>
+              <div className="min-w-0" style={spanRow}>
+                <ComboLabel tests={tests} picks={row.picks} />
+                <div className="text-xs text-fg-muted">
+                  {row.result ? (
+                    <>
+                      n={row.result.n} · <span className="font-semibold text-fg-secondary">{formatValue(row.result.interval.point, kind)}</span>
+                    </>
+                  ) : (
+                    "no data"
+                  )}
+                </div>
+              </div>
+              <div>{row.result && <IntervalBar interval={row.result.interval} domain={domain} kind={kind} width={plot} />}</div>
+              <IconButton label="Hide this combination" onClick={() => onHide(row.key)}>
+                <CloseIcon size={14} aria-hidden />
+              </IconButton>
+            </div>
+          ))}
+        </>
       )}
     </div>
   );

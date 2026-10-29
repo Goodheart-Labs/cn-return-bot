@@ -17,7 +17,7 @@ const PARTS = {
   helpful: { key: "helpful", label: "Helpful", color: "var(--cn-positive-solid)" },
   notHelpful: { key: "notHelpful", label: "Not helpful", color: "var(--cn-negative-solid)" },
   needsRatings: { key: "needsRatings", label: "Needs more ratings", color: "var(--cn-fg-subtle)" },
-  notSubmittedRuns: { key: "notSubmittedRuns", label: "Runs that wrote no note", color: "var(--cn-fg)" },
+  notSubmittedRuns: { key: "notSubmittedRuns", label: "Runs that wrote no note", color: "var(--cn-line-strong)" },
   ours: { key: "ours", label: "Our notes", color: "var(--cn-series-1)" },
   otherAi: { key: "otherAi", label: "Top other AI note writers", color: "var(--cn-series-2)" },
   human: { key: "human", label: "Written by people", color: "var(--cn-series-3)" },
@@ -61,7 +61,10 @@ export function NotesOverTime({ source, request, modes }: { source: NotewriterSo
         <SectionTitle>Notes over time</SectionTitle>
         <div className="flex flex-wrap items-center gap-3">
           <SegmentedControl label="Bar size" value={granularity} onChange={setGranularity} options={[{ id: "weekly", label: "Weekly" }, { id: "daily", label: "Daily" }]} />
-          <SegmentedControl label="What the bars show" value={mode} onChange={setMode} options={modes.map((m) => ({ id: m, label: MODE_LABELS[m] }))} />
+          {/* On a phone the modes do not fit in one row, so they scroll. */}
+          <div className="max-w-full overflow-x-auto">
+            <SegmentedControl label="What the bars show" value={mode} onChange={setMode} options={modes.map((m) => ({ id: m, label: MODE_LABELS[m] }))} />
+          </div>
           {mode === "ratio" && (
             <Checkbox checked={withRuns} onChange={setWithRuns} className="text-sm text-fg-secondary">
               Include non-candidate runs

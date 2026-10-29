@@ -31,3 +31,8 @@ test("human notes are what is left of the helpful notes, never below zero", () =
   expect(a!.human).toBe(5);
   expect(b!.human).toBe(0);
 });
+
+test("a day without notes gets an empty bar", () => {
+  const buckets = noteBuckets([day("2026-10-20", 1), day("2026-10-22", 2)], "daily", "2026-10-29");
+  expect(buckets.map((b) => [b.key, b.helpful])).toEqual([["2026-10-20", 1], ["2026-10-21", 0], ["2026-10-22", 2]]);
+});

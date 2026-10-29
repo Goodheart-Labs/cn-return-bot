@@ -105,8 +105,9 @@ function Tick({ checkbox }: { checkbox: boolean }) {
 function OptionLabel({ option }: { option: MenuOption }) {
   return (
     <>
-      <span className="min-w-0 truncate">{option.label}</span>
-      {option.count !== undefined && <EntryEnd>{option.count}</EntryEnd>}
+      {/* A long label takes a second line before it is cut. */}
+      <span className="line-clamp-2 min-w-0 break-words">{option.label}</span>
+      {option.count !== undefined && <EntryEnd>{option.count.toLocaleString("en-US")}</EntryEnd>}
     </>
   );
 }

@@ -25,7 +25,12 @@ function Media({ media }: { media: XMedia[] }) {
         return (
           <a key={url} href={url} target="_blank" rel="noreferrer" className="relative block overflow-hidden rounded-control border border-line">
             {still ? (
-              <img src={still} alt={label} loading="lazy" className="max-h-72 w-full object-cover" />
+              // A post deleted on X takes its images with it. Such an image
+              // hides its whole tile instead of showing a broken picture.
+              <img src={still} alt={label} loading="lazy" className="max-h-72 w-full object-cover" onError={(event) => {
+                  const tile = event.currentTarget.closest("a");
+                  if (tile) tile.hidden = true;
+                }} />
             ) : (
               <span className="block px-3 py-6 text-center text-sm text-link">{label}</span>
             )}

@@ -45,6 +45,14 @@ function withoutRunningWeek<T extends { key: string }>(buckets: T[], granularity
   return buckets.filter((bucket) => bucket.key !== runningWeek);
 }
 
+/** The bucket key that follows `key`: the next day, or the next Monday. */
+function nextKey(key: string, granularity: Granularity): string {
+  const days = granularity === "daily" ? 1 : 7;
+  return new Date(new Date(`${key}T00:00:00Z`).getTime() + days * ONE_DAY_MS).toISOString().slice(0, 10);
+}
+
+/** The days put into buckets, oldest first. A day or week without notes gets
+ *  an empty bucket, so the bars stay evenly spaced in time. */
 function groupDays<D extends { day: string }, B extends { key: string }>(days: D[], granularity: Granularity, today: string, empty: (key: string) => B, add: (bucket: B, day: D) => void): B[] {
   const byKey = new Map<string, B>();
   for (const day of days) {
@@ -53,7 +61,10 @@ function groupDays<D extends { day: string }, B extends { key: string }>(days: D
     if (!bucket) byKey.set(key, (bucket = empty(key)));
     add(bucket, day);
   }
-  return withoutRunningWeek([...byKey.values()].sort((a, b) => a.key.localeCompare(b.key)), granularity, today);
+  const keys = [...byKey.keys()].sort();
+  const buckets: B[] = [];
+  for (let key = keys[0]; key !== undefined && key <= keys.at(-1)!; key = nextKey(key, granularity)) buckets.push(byKey.get(key) ?? empty(key));
+  return withoutRunningWeek(buckets, granularity, today);
 }
 
 const startOf = (key: string) => new Date(`${key}T00:00:00Z`);
