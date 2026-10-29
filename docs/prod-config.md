@@ -387,8 +387,13 @@ in [extension-release.md](extension-release.md). Those credentials are
 `AMO_JWT_ISSUER` and `AMO_JWT_SECRET` from AMO's API key page, and
 `CWS_PUBLISHER_ID` and `CWS_SERVICE_ACCOUNT_KEY_FILE` for a Google Cloud
 service account that the Chrome Web Store dashboard grants API access. The Chrome Web
-Store publisher ID is `386e874a-cc58-4737-9143-c22ec9085c56`. None of the
-four exist yet (2026-10-02). They belong in `~/dev/env/cn-return-bot/env`. Both listings link to
+Store publisher ID is `386e874a-cc58-4737-9143-c22ec9085c56`. All four are
+in `~/dev/env/cn-return-bot/env`. The service account is
+`cws-release@common-notes-release.iam.gserviceaccount.com`, in the Google
+Cloud project `common-notes-release` of jimmaar1@gmail.com, with the Chrome Web
+Store API enabled and no roles. Its JSON key is
+`~/dev/env/cn-return-bot/cws-service-account.json`, and the store dashboard's
+settings page lists it under service accounts (2026-10-29). Both listings link to
 https://commonnotes.net as their homepage.
 
 Microsoft Edge installs from the Chrome Web Store listing. The website's
