@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "./cn";
 import { cardVariants } from "./Card";
+import { focusRing } from "./focusRing";
 
 /** A dropdown menu's floating panel. Its rows are MenuItems. */
 export function Menu({ className, children }: { className?: string; children: ReactNode }) {
@@ -9,7 +10,7 @@ export function Menu({ className, children }: { className?: string; children: Re
 
 /** The look of a menu row. A link in a menu, which cannot be a MenuItem
  *  because it navigates instead of running an action, takes it directly. */
-export const menuItemClass = "flex w-full items-center gap-2 text-left px-2 py-2 rounded-control font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-focus";
+export const menuItemClass = cn("flex w-full items-center gap-2 text-left px-2 py-2 rounded-control font-medium", focusRing);
 
 /** One row of a menu. A row marked as danger turns red, which is how a
  *  destructive action such as Delete is set apart from the rest. `selected`

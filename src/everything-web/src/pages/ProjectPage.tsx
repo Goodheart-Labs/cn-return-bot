@@ -5,6 +5,7 @@ import { creatorPlatform } from "@cn/core/projects";
 import type { FeedItemRow, ProjectHeader } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ChevronIcon } from "@cn/ui/icons";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
@@ -52,7 +53,7 @@ function PageHeading({ project, item, navigate }: { project: ProjectHeader; item
         {/* The title is the link to the original post or video. It reads as a
             plain title and turns blue under the pointer. */}
         <h1 className="mt-2 font-title text-2xl font-bold text-fg text-balance">
-          <a href={item.url} target="_blank" rel="noopener noreferrer" className="rounded-control hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+          <a href={item.url} target="_blank" rel="noopener noreferrer" className={cn("rounded-control hover:text-link", focusRing)}>
             {item.title ?? "Untitled"}
           </a>
         </h1>
@@ -73,7 +74,7 @@ function PageHeading({ project, item, navigate }: { project: ProjectHeader; item
               target="_blank"
               rel="noopener noreferrer"
               title={platform ? `${project.name} on ${platform}` : undefined}
-              className="rounded-control hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className={cn("rounded-control hover:text-link", focusRing)}
             >
               {project.name}
             </a>
@@ -97,7 +98,7 @@ function PhoneItemMenu({ label, children }: { label: string; children: (close: (
         type="button"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-base text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className={cn("flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-base text-fg", focusRing)}
       >
         <span className="min-w-0 truncate">{label}</span>
         <ChevronIcon size={16} aria-hidden className={cn("shrink-0 text-fg-muted", open ? "-rotate-90" : "rotate-90")} />

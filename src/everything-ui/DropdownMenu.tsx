@@ -3,6 +3,7 @@ import { createContext, useContext, useRef, useState, useSyncExternalStore, type
 import { cardVariants } from "./Card";
 import { cn } from "./cn";
 import { CheckIcon, ChevronIcon, PreviousIcon } from "./icons";
+import { focusRing } from "./focusRing";
 import { menuItemClass } from "./Menu";
 
 /* A dropdown menu built from a tree of entries. Radix UI's DropdownMenu, a
@@ -132,7 +133,7 @@ function OptionSearch({ query, onChange }: { query: string; onChange: (query: st
         onKeyDown={keepKeys}
         placeholder="Search"
         aria-label="Search the options"
-        className="w-full rounded-control border border-line-input bg-surface px-2 py-1.5 text-sm text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className={cn("w-full rounded-control border border-line-input bg-surface px-2 py-1.5 text-sm text-fg", focusRing)}
       />
     </div>
   );

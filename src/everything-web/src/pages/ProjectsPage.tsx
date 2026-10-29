@@ -1,6 +1,8 @@
 import type { ProjectOrder } from "@cn/core/creators";
 import { creatorPlatform } from "@cn/core/projects";
 import type { FeedProjectRow } from "@cn/core/types";
+import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ExternalLinkIcon, NoteStackIcon } from "@cn/ui/icons";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
@@ -80,7 +82,7 @@ function ProjectCard({ project, navigate }: { project: FeedProjectRow; navigate:
               href={project.feed_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="relative z-10 inline-flex items-center gap-1 rounded-control font-medium text-fg-secondary hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className={cn("relative z-10 inline-flex items-center gap-1 rounded-control font-medium text-fg-secondary hover:text-link", focusRing)}
             >
               {platform}
               <ExternalLinkIcon size={13} aria-hidden="true" />

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import type { PagedList } from "@cn/features/query/usePagedList";
@@ -41,7 +42,7 @@ function ColumnHeading({ column }: { column: Column }) {
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((wasOpen) => !wasOpen)}
-        className="rounded-control underline decoration-dotted underline-offset-4 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className={cn("rounded-control underline decoration-dotted underline-offset-4 hover:text-fg", focusRing)}
       >
         {column.label}
       </button>

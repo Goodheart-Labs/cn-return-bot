@@ -21,6 +21,7 @@ import {
 } from "@cn/core/dashboard";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ChevronIcon } from "@cn/ui/icons";
 import { Menu, MenuItem } from "@cn/ui/Menu";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
@@ -338,7 +339,8 @@ function MetricPicker({ selection, allowOne, onChange }: { selection: Selection;
           }
         }}
         className={cn(
-          "inline-flex cursor-pointer select-none items-center gap-3 rounded-control border bg-surface px-3 py-2 text-left text-sm font-semibold text-fg hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+          "inline-flex cursor-pointer select-none items-center gap-3 rounded-control border bg-surface px-3 py-2 text-left text-sm font-semibold text-fg hover:bg-surface-hover",
+          focusRing,
           open ? "border-primary" : "border-line-strong",
         )}
       >
@@ -354,7 +356,8 @@ function MetricPicker({ selection, allowOne, onChange }: { selection: Selection;
                 }}
                 title="Change how many times"
                 className={cn(
-                  "rounded-sm border-b border-dotted border-link px-0.5 text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                  "rounded-sm border-b border-dotted border-link px-0.5 text-link",
+                  focusRing,
                   selection.sliderOpen && "bg-tint",
                 )}
               >
