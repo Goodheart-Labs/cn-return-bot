@@ -1,4 +1,6 @@
 import { LoadFailed } from "@cn/features/query/LoadFailed";
+import { Page } from "@cn/ui/Page";
+import { PageTitle } from "@cn/ui/typography";
 import { useProject } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
 import { AllNotesPage } from "./AllNotesPage";
@@ -26,10 +28,10 @@ function ProjectRoutePage({ route, navigate }: { route: ProjectRoute & { project
 export function NotesView({ route, navigate }: { route: NotesRoute; navigate: (next: Route) => void }) {
   if (route.view === "leaderboard") {
     return (
-      <main className="mx-auto w-full max-w-xl px-4 py-10">
-        <h1 className="mb-2 font-title text-3xl font-bold text-fg">Rating leaderboard</h1>
+      <Page width="form">
+        <PageTitle className="mb-2">Rating leaderboard</PageTitle>
         <LeaderboardPage />
-      </main>
+      </Page>
     );
   }
   if (route.view === "allNotes") return <AllNotesPage navigate={navigate} />;
