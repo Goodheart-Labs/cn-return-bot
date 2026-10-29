@@ -114,6 +114,8 @@ The post folder is ${dir}. It holds post.md, meta.json and, for a video, cues.js
 
 Your run folder is ${runDir}. Write every scratch and draft file there, and tell your subagents to do the same.
 
+This session ends as soon as you stop, and every agent still running is cut off with it. So wait until every agent you started has returned before you write the report.
+
 When you are done, write ${runDir}/report.json with this shape and stop. Do not run finish; the runner does that.
 
 { "passages": [{ "passage": "...", "outcome": "note | no_note_needed | too_hard | skipped_existing_note" }],
