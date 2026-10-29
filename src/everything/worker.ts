@@ -21,7 +21,7 @@ import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
 import { ServiceError, type ItemTextResponse } from "../service/contract";
-import { fetchForumPost, parsePostUrl } from "./sources/lesswrong";
+import { fetchForumPost, parsePostUrl, ShortformPageError } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
 import { MAX_ITEM_RETRIES } from "./autoEnqueue";
@@ -113,6 +113,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
       try {
         return await fetchForumPost(item.url);
       } catch (err: any) {
+        if (err instanceof ShortformPageError) throw err;
         // If the forum's GraphQL API refuses our runner, the web-fetch ladder
         // still has a route to the post through its headless browser render.
         console.log(`  Forum fetch failed (${err?.message}) — trying the web-fetch ladder`);

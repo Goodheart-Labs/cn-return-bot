@@ -35,7 +35,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { canonicalizePageUrl } from "../everything-core/pageUrls";
 import { enqueueItems, resolveProjectId, syntheticDocUrl, type EnqueueRow } from "./db";
-import { fetchAuthorPosts, parseAuthorFeedUrl, parsePostUrl } from "./sources/lesswrong";
+import { fetchAuthorPosts, fetchForumPost, parseAuthorFeedUrl, parsePostUrl } from "./sources/lesswrong";
 import { fetchLatestFreePosts, parseProfileHandle } from "./sources/substack";
 import type { SourceKind } from "./types";
 
@@ -57,7 +57,11 @@ async function expandLiveUrl(
 ): Promise<{ items: { source: SourceKind; url: string }[]; projectName?: string }> {
   if (/youtube\.com|youtu\.be/.test(url)) return { items: [{ source: "youtube", url }] };
   if (/\.substack\.com\/p\//.test(url)) return { items: [{ source: "substack", url }] };
-  if (parsePostUrl(url)) return { items: [{ source: "lesswrong", url }] };
+  if (parsePostUrl(url)) {
+    // Reading the post refuses a shortform page before it reaches the queue.
+    await fetchForumPost(url);
+    return { items: [{ source: "lesswrong", url }] };
+  }
   if (parseProfileHandle(url)) {
     const { publicationName, posts } = await fetchLatestFreePosts(url, latest);
     console.log(`Profile ${url} → ${posts.length} latest free posts`);

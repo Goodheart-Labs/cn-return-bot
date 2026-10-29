@@ -113,6 +113,17 @@ export async function fetchAuthorPosts(feedUrl: string, n: number): Promise<{ au
   return { authorName: user.displayName ?? undefined, posts };
 }
 
+/** A shortform page holds one author's short posts as comments under it, with
+ *  replies by other people, and has no text of its own. Checking it would mean
+ *  checking a thread of many authors, so it is refused. The web page shows
+ *  almost nothing either, so a read must not fall back to it (GOO-652). */
+export class ShortformPageError extends Error {
+  constructor(url: string) {
+    super(`${url} is a shortform page. Its short posts are comments, and the page has no text of its own to check`);
+    this.name = "ShortformPageError";
+  }
+}
+
 /** Fetches one post by its URL, for an item that was enqueued without its body.
  *  It comes back as the plain article-text content kind, the same one every
  *  non-YouTube source uses. */
@@ -122,9 +133,10 @@ export async function fetchForumPost(url: string): Promise<FetchedContent> {
   const data = await graphql(
     parsed.origin,
     `{ post(input: {selector: {_id: "${parsed.postId}"}}) {
-        result { _id pageUrl title postedAt htmlBody user { displayName } } } }`,
+        result { _id pageUrl title postedAt htmlBody shortform user { displayName } } } }`,
   );
   const post = data.post?.result;
+  if (post?.shortform) throw new ShortformPageError(url);
   if (!post?.htmlBody) throw new Error(`No post body for ${url}`);
   const entry = postToEntry(post);
   return {
