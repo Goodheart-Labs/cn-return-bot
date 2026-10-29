@@ -1,8 +1,7 @@
 /* The Claude note writer's command line (GOO-507). The runner on Nathan's
  * ai-box and the Claude agents it starts call it to read the queue, save
- * drafts, judge the pipeline's notes, finish items, answer
- * reviewers and change the settings. Every Common Notes write is logged in
- * everything_claude_events. The two x- commands answer an X tweet (GOO-527)
+ * drafts, finish items, answer reviewers and change the settings. Every
+ * Common Notes write is logged in everything_claude_events. The two x- commands answer an X tweet (GOO-527)
  * on its pipeline_runs row.
  *
  * Usage: bun run claude-notes <command> [arguments]
@@ -10,9 +9,6 @@
  *   queue                         queued items Claude is working on or has not taken yet
  *   take <item id>                writes the post's text for the agents, logs the take
  *   draft <draft.json>            saves one draft; a note is posted at once
- *   pipeline-notes <item id>      the pipeline's AI notes on a post, as JSON
- *   keep-pipeline-note <item id> <note id> <reason>
- *   delete-pipeline-note <item id> <note id> <reason>
  *   finish <item id> <summary.json>
  *   skip <item id> <reason>       marks a post checked because nothing in it is worth checking
  *   posted-since <ISO time>       the notes Claude posted since then, newest first
@@ -35,12 +31,9 @@ import {
   type Actor,
   changeWriter,
   claudeQueue,
-  deletePipelineNote,
   finishItem,
   judgeExamples,
-  keepPipelineNote,
   type NewDraft,
-  pipelineNotes,
   postedSince,
   propose,
   readSettings,
@@ -125,12 +118,6 @@ async function main() {
     }
     case "draft":
       return print(await addDraft(readJson(arg(0))));
-    case "pipeline-notes":
-      return print(await pipelineNotes(arg(0)));
-    case "keep-pipeline-note":
-      return keepPipelineNote(arg(0), arg(1), args.slice(2).join(" "));
-    case "delete-pipeline-note":
-      return deletePipelineNote(arg(0), arg(1), args.slice(2).join(" "));
     case "finish":
       return finishItem(arg(0), readJson(arg(1)));
     case "skip":

@@ -25,6 +25,8 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import { requestTweetInput } from "../../service/client";
+import { pickVariantName } from "../ab-testing/abTests";
+import { CLAUDE_X_TESTS } from "../ab-testing/abTestsData";
 
 export const CLAUDE_CODE_BOT = "claude-code";
 /** The bot A/B variant of the pipeline itself. */
@@ -47,7 +49,9 @@ export async function handTweetToClaude(params: {
    *  then fails, as it would when a model provider is out of credits. */
   claudeUnavailable: string | null;
 }): Promise<void> {
-  const { logger, runId, post, picks, logs, claudeUnavailable } = params;
+  const { logger, runId, post, logs, claudeUnavailable } = params;
+  // The runner on ai-box builds the Claude's prompt from these picks.
+  const picks = { ...params.picks, ...Object.fromEntries(CLAUDE_X_TESTS.map((test) => [test.name, pickVariantName(test, params.picks[test.name])])) };
   const fail = (reason: string, message: string) => {
     console.warn(`[claude] ${post.id} failed: ${message}`);
     return logger.completePipelineRun(runId, {

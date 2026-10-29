@@ -22,13 +22,15 @@ export interface XTweet {
   createdAt: string;
   stage: string;
   input: string;
+  /** The A/B picks of the X run, which decide parts of the prompt. */
+  picks: Record<string, string>;
 }
 
 export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTweet[] }> {
-  const rows = await fetchAllRows<{ id: string; tweet_id: string; created_at: string; final_stage: string; input: string }>(
+  const rows = await fetchAllRows<{ id: string; tweet_id: string; created_at: string; final_stage: string; input: string; ab_test_picks: Record<string, string> }>(
     () => db()
       .from("pipeline_runs")
-      .select("id, tweet_id, created_at, final_stage, input:logs->claude->>input")
+      .select("id, tweet_id, created_at, final_stage, input:logs->claude->>input, ab_test_picks")
       .eq("bot_name", CLAUDE_CODE_BOT)
       .eq("outcome", "in_progress")
       .in("final_stage", [CLAUDE_WAITING_STAGE, CLAUDE_RUNNING_STAGE]),
@@ -36,7 +38,7 @@ export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTwee
     { label: "openXTweets" },
   );
   const tweets = rows
-    .map((r) => ({ runId: r.id, tweetId: r.tweet_id, createdAt: r.created_at, stage: r.final_stage, input: r.input }))
+    .map((r) => ({ runId: r.id, tweetId: r.tweet_id, createdAt: r.created_at, stage: r.final_stage, input: r.input, picks: r.ab_test_picks }))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   return { waiting: tweets.filter((t) => t.stage === CLAUDE_WAITING_STAGE), running: tweets.filter((t) => t.stage === CLAUDE_RUNNING_STAGE) };
 }

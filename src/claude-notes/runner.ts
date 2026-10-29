@@ -37,6 +37,8 @@ import {
   readItem,
   readJudgedNote,
   readSettings,
+  recordPostRun,
+  type PostRunOutcome,
   saveJudgement,
   skipItem,
   unansweredMessages,
@@ -46,6 +48,9 @@ import { fetchItem } from "../everything/db";
 import { recordItemFailure } from "../everything/worker";
 import { readUsage, type UsageReading } from "./usage";
 import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import { pickVariantName } from "../pipeline/ab-testing/abTests";
+import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
+import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { failXTweet, markXTweetRunning, openXTweets, recordXTweetRun, X_NOTE_MAX_CHARS, xTweetIsOpen, type XTweet } from "./xTweets";
 
 const REPO = path.resolve(import.meta.dir, "../..");
@@ -107,25 +112,46 @@ const examplesForJudge: JudgeExample[] = JSON.parse(readFileSync(JUDGE_EXAMPLES_
 // Prompts
 // ---------------------------------------------------------------------------
 
-function postPrompt(item: QueueItem, dir: string, runDir: string): string {
-  return `You are the level-1 agent for one Common Notes post. Follow src/claude-notes/agentBrief.md in this checkout, level 1. The examples file is ${EXAMPLES_PATH}.
+/** Jim's sentences on what makes a good note, the variant with_thoughts of the
+ *  taste tests. Without them Claude learns only from the examples. */
+const CN_THOUGHTS = ` (Notes that point out something clearly wrong/misleading are great, notes that point out a minor error can also be good (but there you need some taste to see if it's an actual minor error that the author would be happy to correct) or if the author was just a bit loose in their language as a deliberate choice, notes that add additional context to support the author's point or to explain something with the goal of making readers less confused can be good but this also requires taste: notes in this category can easily be unnecessary for most readers which is bad or the additional detail can add more confusion than clarity)`;
+const X_THOUGHTS = `Basically if you can show that something said in the tweet is clearly not true, this is most likely a good note and otherwise it risks getting rated unhelpful. It's important to recognize when someone is joking. `;
+/** Jim's nudge to research more, the variant on of claude_x_research_nudge.
+ *  Common Notes posts always get their own nudge. */
+const X_RESEARCH_NUDGE = ` Different tweets can require completely different orders of magnitude of research. Please make sure you understand the situation deeply and do the necessary research.`;
+const WITH_THOUGHTS = "with_thoughts";
 
-The post folder is ${dir}. It holds post.md, meta.json and, for a video, cues.json. The item id is ${item.id}.
+function postPrompt(item: QueueItem, dir: string, runDir: string, picks: Record<string, string>): string {
+  return `Hi Claude, we are working on a browser extension called Common Notes. We show notes (similar to Community Notes) on Substack articles, YouTube videos and other sites. In your system prompt we added lots of examples of bad and good notes to give you a feeling of what we are looking for${picks.claude_cn_taste === WITH_THOUGHTS ? CN_THOUGHTS : ""}.
 
-Your run folder is ${runDir}. Write every scratch and draft file there, and tell your subagents to do the same.
+The post that you get might be smaller or larger. The longer the context the easier it is to miss something and the way that you can get around this is by using a lot of subagents. So you can do research to figure out what's true, but you should use subagents to check all the specific passages/points (where there's some chance that something could turn out to be misleading in some way). Please be very thorough.
 
-When you are done, write ${runDir}/report.json with this shape and stop. Do not run finish; the runner does that.
+The post that you get might not be worth checking at all. There's not necessarily clean topics that are not worth checking, e.g. even a music video might have a part where someone makes a wrong claim about the world. But generally when people aren't really making claims about the world worth fact-checking or just telling personal stories and nothing else, just playing a game, just a music video, pure entertainment, then you can just not check anything.
 
-{ "passages": [{ "passage": "...", "outcome": "note | no_note_needed | too_hard | skipped_existing_note" }],
-  "pipelineNotes": [{ "noteId": "...", "decision": "kept | deleted", "reason": "..." }] }
+## How to work here
 
-If the post has nothing worth checking (a game trailer, show highlights, a music video, a comedy sketch, a personal memoir), write { "skipped": true, "reason": "..." } instead.`;
+The post is in ${dir}. post.md is its text, and meta.json holds its item id (${item.id}), address and creator. For a video, cues.json holds the caption timings. Your run folder is ${runDir}. Write every file there, and tell your subagents to do the same.
+
+To save a note, write a JSON file to your run folder and run \`bun run claude-notes draft <file>\` from ${REPO}. A draft with outcome "note" goes up on commonnotes.net at once as an AI note. So run the command exactly once per draft, with no other arguments.
+
+{ "itemId": "${item.id}",
+  "passage": "<copied verbatim from post.md, the shortest span that carries the claim>",
+  "claim": "<the passage's claim in neutral self-contained words>",
+  "kind": "small_mistake | missing_context | wrong_or_misleading",
+  "outcome": "note | no_note_needed | too_hard",
+  "note": "<the note text, without links, or empty>",
+  "reasoning": "<2 to 4 sentences: what you found and why the note says what it says>",
+  "sources": [{ "url": "...", "quote": "<at most 2 sentences copied exactly from the page>", "explanation": "<what it supports>" }] }
+
+Readers see each source's quote under the note, so the quote must appear word for word on the page. WebFetch gives you a summary of a page, not its text. So download each source with curl and check with grep -F that the quote is in it. Also save a draft for each passage you researched and decided against, with outcome no_note_needed or too_hard.
+
+When you are done, write ${runDir}/report.json as { "passages": [{ "passage": "...", "outcome": "note | no_note_needed | too_hard" }] } and stop. Do not run finish; the runner does that. If the post has nothing worth checking, write { "skipped": true, "reason": "..." } instead.`;
 }
 
 function tweetPrompt(tweet: XTweet, runDir: string): string {
-  return `Decide whether this X post needs a Community Note, and write the note if it does. The examples in your system prompt are notes that contributors wrote on other posts, each with the verdict raters gave it.
+  return `Hi Claude, please check if we should write a Community Note on this tweet. Do research on this and think about whether the tweet is misleading or broadly correct. In your system prompt, there are lots of examples of Community Notes that were rated helpful and Community Notes that were rated unhelpful. ${tweet.picks.claude_x_taste === WITH_THOUGHTS ? X_THOUGHTS : ""}You always need to provide at least one source, so you always need to do at least one web search (if you think a note is potentially needed).${tweet.picks.claude_x_research_nudge === "on" ? X_RESEARCH_NUDGE : ""}
 
-Research the post on the web as much as you need. If it has images, download them into your run folder and look at them. Your run folder is ${runDir}; write every file there.
+If the post has images, download them into your run folder and look at them. Your run folder is ${runDir}; write every file there.
 
 If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\`. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\`. Stop once one of the two has succeeded.
 
@@ -144,9 +170,9 @@ The post: ${params.url}
 The post folder: ${params.dir} (it may be missing if the post was checked on another machine; then read the page itself)
 Your run folder: ${params.runDir}
 
-Read src/claude-notes/agentBrief.md and ${EXAMPLES_PATH} first. Research on the web when the question needs it. Then write a JSON file to your run folder and run \`bun run claude-notes answer <file>\`:
+The examples in your system prompt are notes the reviewers judged. Research on the web when the question needs it. Then write a JSON file to your run folder and run \`bun run claude-notes answer <file>\`:
 
-{ "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the improved note text>", "sources": [<only with a new note whose sources changed: sources with Haiku-checked quotes, as in the brief>], "reason": "<only with a new note: why it changed>" }
+{ "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the improved note text>", "sources": [<only with a new note whose sources changed: each { "url", "quote", "explanation" }, where you downloaded the page with curl and found the quote in it word for word with grep -F>], "reason": "<only with a new note: why it changed>" }
 
 If the reviewer asks you to change the note, write the improved text as "note". It does not replace the note: the reviewer sees it on the review page and posts it if they agree. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
 }
@@ -247,9 +273,24 @@ async function startPost(item: QueueItem, attempt = 1) {
   }
   if (taken.kind === "skipped") return console.log(`Skipped ${item.url}: ${taken.reason}`);
   const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
-  startClaude(session, runDir, postPrompt(item, taken.dir, runDir));
+  startClaude(session, runDir, postPrompt(item, taken.dir, runDir, attempt === 1 ? drawPostPicks(runDir) : readPostPicks(runDir)), ["--append-system-prompt-file", EXAMPLES_PATH]);
   posts.set(item.id, { item, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
   console.log(`Started ${session} on ${item.url} (attempt ${attempt})`);
+}
+
+/** A post's A/B picks live in its run folder. The first attempt draws them,
+ *  and a retry reads them, so both attempts get the same prompt. */
+const picksFile = (runDir: string) => path.join(runDir, "picks.json");
+
+function drawPostPicks(runDir: string): Record<string, string> {
+  const picks = { bot: CLAUDE_CODE_BOT, [CLAUDE_CN_TASTE_TEST.name]: pickVariantName(CLAUDE_CN_TASTE_TEST) };
+  writeFileSync(picksFile(runDir), JSON.stringify(picks));
+  return picks;
+}
+
+/** A post whose Claude started before the runner drew picks has no file. */
+function readPostPicks(runDir: string): Record<string, string> {
+  return existsSync(picksFile(runDir)) ? JSON.parse(readFileSync(picksFile(runDir), "utf8")) : { bot: CLAUDE_CODE_BOT };
 }
 
 function readReport(runDir: string): Record<string, unknown> | null {
@@ -271,10 +312,21 @@ async function endPost(run: Run & { item: QueueItem }) {
   const report = readReport(run.runDir);
   const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt, costUsd: runCost(run.runDir) };
   console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
-  if (report?.skipped) return skipItem(run.item.id, String(report.reason ?? "nothing worth checking"));
-  if (report) return finishItem(run.item.id, { ...report, ...usageNote });
-  if (await savedDrafts(run)) return finishItem(run.item.id, { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote });
+  const record = (outcome: PostRunOutcome) => recordPostRun(run.item.id, outcome, readPostPicks(run.runDir), { runDir: run.runDir, report, ...usageNote });
+  if (report?.skipped) {
+    await record("skipped");
+    return skipItem(run.item.id, String(report.reason ?? "nothing worth checking"));
+  }
+  if (report) {
+    await record("done");
+    return finishItem(run.item.id, { ...report, ...usageNote });
+  }
+  if (await savedDrafts(run)) {
+    await record("incomplete");
+    return finishItem(run.item.id, { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote });
+  }
   if (run.attempt < MAX_ATTEMPTS) return startPost(run.item, run.attempt + 1);
+  await record("failed");
   await failPost(run.item, new Error(`Claude exited twice without a report; see ${run.runDir} on ai-box`));
 }
 
@@ -365,7 +417,7 @@ async function startAnswer(draftId: string, message: { text: string; from: strin
   const runDir = runFolder(`message-${draftId}-${Date.now()}`);
   const session = MESSAGE_SESSION_PREFIX + draftId.slice(0, 8);
   const { passage, note, sources, reasoning, outcome, status } = draft;
-  startClaude(session, runDir, messagePrompt({ ...message, draft: { id: draftId, passage, note, sources, reasoning, outcome, status }, url: item.url, dir: postDir(item.url), runDir }));
+  startClaude(session, runDir, messagePrompt({ ...message, draft: { id: draftId, passage, note, sources, reasoning, outcome, status }, url: item.url, dir: postDir(item.url), runDir }), ["--append-system-prompt-file", EXAMPLES_PATH]);
   answers.set(draftId, { session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: null });
   console.log(`Started ${session} to answer ${message.from} on draft ${draftId}`);
 }
