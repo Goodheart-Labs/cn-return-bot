@@ -83,6 +83,7 @@ import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
 import { loadNoteQueue, mergeWithQueue, noteQueueEnabled, submittableQueued } from "../pipeline/orchestration/noteQueue";
 import { raterBar } from "../pipeline/score/raterBar";
+import { syncAbTests } from "../pipeline/ab-testing/syncAbTests";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -182,6 +183,8 @@ async function main() {
     } else {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
+
+    if (!isLocal) await syncAbTests();
 
     // Submission still takes an atomic claim after this generation snapshot.
     let capacity: SubmissionCapacity | undefined;

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ResizablePanel } from "@cn/ui/ResizablePanel";
 
 /** How wide a sidebar starts, and how far it can be dragged. */
@@ -39,6 +40,7 @@ export function SidebarLayout({ storageKey, label = "sidebar", width = SIDEBAR_W
  *  page shown. */
 export const sidebarEntry = (active: boolean) =>
   cn(
-    "flex items-center gap-2 rounded-control px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+    "flex items-center gap-2 rounded-control px-3 py-2 text-sm",
+    focusRing,
     active ? "bg-tint font-medium text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
   );

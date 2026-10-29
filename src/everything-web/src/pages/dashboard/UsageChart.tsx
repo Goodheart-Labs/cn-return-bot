@@ -13,6 +13,7 @@ import { fetchClaudeUsage, type ClaudeUsageRow } from "@cn/core/dashboard";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { LoadState } from "./tableParts";
+import { AXIS_COLOR, SURFACE_COLOR, TICK_FONT_SIZE, tickLabel, tooltipClass } from "../../components/chart/chartTheme";
 
 type RangeId = "7" | "30";
 
@@ -31,13 +32,9 @@ const CHART_HEIGHT = 260;
 const MARGIN = { top: 16, right: 16, bottom: 36, left: 44 };
 const PIXELS_PER_TIME_TICK = 90;
 const VALUE_TICKS = 5;
-const TICK_FONT_SIZE = 11;
 
 const LINE_COLOR = "var(--cn-primary)";
 const LIMIT_COLOR = "var(--cn-caution-solid)";
-const AXIS_COLOR = "var(--cn-line-strong)";
-const LABEL_COLOR = "var(--cn-fg-muted)";
-const SURFACE_COLOR = "var(--cn-surface)";
 
 type Point = { date: Date; weekly: number };
 
@@ -59,7 +56,6 @@ function UsageLines({ points, width }: { points: Point[]; width: number }) {
     [points, innerWidth],
   );
   const yScale = useMemo(() => scaleLinear<number>({ domain: [0, FULL_PERCENT], range: [innerHeight, 0] }), [innerHeight]);
-  const tickLabel = { fill: LABEL_COLOR, fontSize: TICK_FONT_SIZE };
 
   const onMove = (event: React.MouseEvent<SVGRectElement>) => {
     const { x } = localPoint(event) ?? { x: 0 };
@@ -110,7 +106,7 @@ function UsageLines({ points, width }: { points: Point[]; width: number }) {
           left={tooltipLeft}
           top={tooltipTop}
           style={{ position: "absolute", pointerEvents: "none" }}
-          className="rounded-control bg-inverse px-2 py-1 text-xs text-on-inverse shadow-floating"
+          className={tooltipClass}
         >
           <div className="font-semibold">{tooltipData.weekly}% of the week</div>
           <div>{formatTime(tooltipData.date)}</div>
