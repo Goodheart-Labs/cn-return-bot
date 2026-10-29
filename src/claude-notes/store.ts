@@ -19,7 +19,9 @@ import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractC
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
+import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
+import type { ClaudeRunTag } from "./usageShare";
 
 export type Actor = "jim" | "nathan" | "claude";
 export type Writer = "pipeline" | "claude";
@@ -47,9 +49,6 @@ export type Settings = { writer: Writer; updatedAt: string; updatedBy: string };
 
 /** NathanpmYoung's account, whose notes on a post make Claude skip the post. */
 const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
-/** Marks the claims the Claude note writer created, so they can be told apart
- *  from the pipeline's ratings and from readers' own notes ("user"). */
-const CLAUDE_JUDGEMENT = "claude_code";
 
 let client: SupabaseClient<Database> | undefined;
 export function db(): SupabaseClient<Database> {
@@ -217,6 +216,7 @@ export async function addDraft(draft: NewDraft): Promise<DraftRow> {
         // posting fails, the draft stays visible under Not reviewed instead
         // of looking posted.
         status: draft.outcome === "note" ? "posting" : "not_a_note",
+        run_id: process.env[RUN_ID_ENV] ?? null,
         ...(await placeOfPassage(draft.itemId, draft.passage)),
       })
       .select("*")
@@ -342,6 +342,50 @@ export async function readItem(itemId: string): Promise<QueueItem & { full_text:
 export async function nathanNotedItem(itemId: string): Promise<boolean> {
   const claims = unwrap(await db().from("everything_claims").select("everything_notes(author_id)").eq("item_id", itemId));
   return claims.some((c) => (c.everything_notes ?? []).some((n) => n.author_id === NATHAN_ACCOUNT_ID));
+}
+
+export type PostRunOutcome = "done" | "skipped" | "incomplete" | "failed";
+
+/** Writes one everything_claude_runs row for a Claude run that ended, with
+ *  what it would have cost on the API. usageShare.ts splits the plan's usage
+ *  by these costs. `ref` names what the run was for. */
+export async function recordClaudeRun(run: {
+  tags: ClaudeRunTag[];
+  startedAt: number;
+  runDir: string;
+  apiCostUsd: number | null;
+  ref: { pipeline_run_id: string } | { everything_pipeline_run_id: string } | { draft_id: string } | null;
+}) {
+  check(
+    await db()
+      .from("everything_claude_runs")
+      .insert({ tags: run.tags, started_at: new Date(run.startedAt).toISOString(), run_dir: run.runDir, api_cost_usd: run.apiCostUsd, ...run.ref }),
+  );
+}
+
+/** The environment variable through which a post's Claude, and every command
+ *  it runs, knows its run row. The draft command stores it on each draft. */
+export const RUN_ID_ENV = "CN_RUN_ID";
+
+/** Writes the everything_pipeline_runs row of one post's Claude run, with the
+ *  post's A/B picks, the way the pipeline writes one per claim. So the same
+ *  readouts can compare the arms. It is written when the Claude starts, so
+ *  its drafts can point at it. The cost column stays empty, because the daily
+ *  spend cap adds it up in dollars, and Claude spends plan usage, not money.
+ *  What each attempt would have cost on the API is in everything_claude_runs. */
+export async function startPostRun(itemId: string, picks: Record<string, string>): Promise<string> {
+  const row = unwrap(
+    await db()
+      .from("everything_pipeline_runs")
+      .insert({ kind: "claude", item_id: itemId, bot_name: CLAUDE_CODE_BOT, outcome: "running", ab_test_picks: picks })
+      .select("id")
+      .single(),
+  );
+  return row.id;
+}
+
+export async function endPostRun(runId: string, outcome: PostRunOutcome, logs: Record<string, unknown>) {
+  check(await db().from("everything_pipeline_runs").update({ outcome, logs: logs as Json }).eq("id", runId));
 }
 
 /** Marks an item checked once Claude's agents went through all of it. */
@@ -530,33 +574,4 @@ export async function saveJudgement(draftId: string, note: string, judgement: Ju
       .from("everything_claude_judgements")
       .upsert({ draft_id: draftId, note, p_helpful: judgement.pHelpful, p_impactful: judgement.pImpactful, reasoning: judgement.reasoning, judged_at: new Date().toISOString() }),
   );
-}
-
-// ---------------------------------------------------------------------------
-// The pipeline's own notes on a post, which Claude judges after its own pass
-// ---------------------------------------------------------------------------
-
-export async function pipelineNotes(itemId: string) {
-  const claims = unwrap(
-    await db().from("everything_claims").select("id, claim, context_quote, judgement, everything_notes(id, note, author_id, helpful_count, somewhat_helpful_count, not_helpful_count)").eq("item_id", itemId),
-  );
-  return claims
-    .filter((c) => c.judgement !== CLAUDE_JUDGEMENT)
-    .flatMap((c) => (c.everything_notes ?? []).filter((n) => n.author_id === null).map((n) => ({ claimId: c.id, passage: c.context_quote ?? c.claim, ...n })));
-}
-
-export async function keepPipelineNote(itemId: string, noteId: string, reason: string) {
-  await logEvent({ actor: "claude", type: "pipeline_note_kept", itemId, noteId, data: { reason } });
-}
-
-/** Deletes a pipeline note Claude judged bad. Its votes go with it, as Jim
- *  decided. The claim stays, marked as having no note. */
-export async function deletePipelineNote(itemId: string, noteId: string, reason: string) {
-  const note = unwrap(await db().from("everything_notes").select("id, note, claim_id, author_id, everything_claims(item_id, judgement)").eq("id", noteId).single());
-  if (note.author_id !== null) throw new Error(`Note ${noteId} was written by a person, not by the pipeline`);
-  if (note.everything_claims?.item_id !== itemId) throw new Error(`Note ${noteId} is not on item ${itemId}`);
-  if (note.everything_claims.judgement === CLAUDE_JUDGEMENT) throw new Error(`Note ${noteId} is the Claude note writer's own note. Use withdraw for it`);
-  check(await db().from("everything_notes").delete().eq("id", noteId));
-  check(await db().from("everything_claims").update({ status: "no_note", status_reason: `Note removed by the Claude note writer: ${reason}` }).eq("id", note.claim_id));
-  await logEvent({ actor: "claude", type: "pipeline_note_deleted", itemId, noteId, data: { reason, note: note.note } });
 }

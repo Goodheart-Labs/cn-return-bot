@@ -228,6 +228,7 @@ export type Database = {
           review_note_by: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          run_id: string | null
           sources: Json
           status: string
           updated_at: string
@@ -254,6 +255,7 @@ export type Database = {
           review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          run_id?: string | null
           sources?: Json
           status: string
           updated_at?: string
@@ -280,6 +282,7 @@ export type Database = {
           review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          run_id?: string | null
           sources?: Json
           status?: string
           updated_at?: string
@@ -299,6 +302,13 @@ export type Database = {
             columns: ["note_id"]
             isOneToOne: false
             referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_drafts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "everything_pipeline_runs"
             referencedColumns: ["id"]
           },
         ]
@@ -408,6 +418,64 @@ export type Database = {
             columns: ["draft_id"]
             isOneToOne: true
             referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_runs: {
+        Row: {
+          api_cost_usd: number | null
+          draft_id: string | null
+          ended_at: string
+          everything_pipeline_run_id: string | null
+          id: string
+          pipeline_run_id: string | null
+          run_dir: string
+          started_at: string
+          tags: string[]
+        }
+        Insert: {
+          api_cost_usd?: number | null
+          draft_id?: string | null
+          ended_at?: string
+          everything_pipeline_run_id?: string | null
+          id?: string
+          pipeline_run_id?: string | null
+          run_dir: string
+          started_at: string
+          tags: string[]
+        }
+        Update: {
+          api_cost_usd?: number | null
+          draft_id?: string | null
+          ended_at?: string
+          everything_pipeline_run_id?: string | null
+          id?: string
+          pipeline_run_id?: string | null
+          run_dir?: string
+          started_at?: string
+          tags?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_runs_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_runs_everything_pipeline_run_id_fkey"
+            columns: ["everything_pipeline_run_id"]
+            isOneToOne: false
+            referencedRelation: "everything_pipeline_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_runs_pipeline_run_id_fkey"
+            columns: ["pipeline_run_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_runs"
             referencedColumns: ["id"]
           },
         ]

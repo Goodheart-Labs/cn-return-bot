@@ -312,6 +312,40 @@ const PANGRAM_MONITORING_TEST: ABTest = {
   ],
 };
 
+// 2026-10-29 (GOO-612): two halves of the Claude Code note writer's prompt on X
+// tweets. with_thoughts adds Jim's sentences on what makes a good note to the
+// examples in the system prompt; on adds his nudge to research more. The X run
+// draws both for a tweet that drew claude-code (handTweetToClaude), and the
+// runner on ai-box builds the prompt from the picks.
+const CLAUDE_X_TASTE_TEST: ABTest = {
+  name: "claude_x_taste",
+  prerequisites: { botId: "claude-code" },
+  variants: [
+    { variant: { name: "examples_only", overrides: {} }, weight: 50 },
+    { variant: { name: "with_thoughts", overrides: {} }, weight: 50 },
+  ],
+};
+
+const CLAUDE_X_RESEARCH_NUDGE_TEST: ABTest = {
+  name: "claude_x_research_nudge",
+  prerequisites: { botId: "claude-code" },
+  variants: [
+    { variant: { name: "off", overrides: {} }, weight: 50 },
+    { variant: { name: "on",  overrides: {} }, weight: 50 },
+  ],
+};
+
+export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST];
+
+// The same taste test for the Claude note writer's Common Notes posts. The
+// runner on ai-box draws it when it takes a post and records the pick on the
+// post's everything_pipeline_runs row. Not in AB_TESTS, because no pipeline
+// run reads it.
+export const CLAUDE_CN_TASTE_TEST: ABTest = {
+  name: "claude_cn_taste",
+  variants: CLAUDE_X_TASTE_TEST.variants,
+};
+
 // Standalone Pangram wording experiment; sampled in generatePangramCandidates only.
 // Do not add to AB_TESTS: ordinary notes receive neither treatment.
 export const PANGRAM_NOTE_TEST: ABTest = {
@@ -386,4 +420,5 @@ export const AB_TESTS: ABTest[] = [
   PANGRAM_MONITORING_TEST,
   AUTHOR_HISTORY_TEST,
   RANKING_POLICY_TEST,
+  ...CLAUDE_X_TESTS,
 ];

@@ -1,6 +1,7 @@
-// Writes docs/note-examples.md, the judged examples the note-finding agents
-// read first (GOO-504, GOO-507). Everything comes from prod: Nathan's Claude
-// Code notes, which Jim judged very good, Nathan's votes on other notes, and
+// Writes docs/note-examples.md, the judged examples in the system prompt of
+// every Claude that writes Common Notes (GOO-504, GOO-507, GOO-612).
+// Everything comes from prod: Nathan's Claude Code notes, which Jim judged
+// very good, Nathan's votes on other notes, and
 // every decision Jim and Nathan made on the Claude note writer's notes in the
 // review page, with the rewrites their messages led to. Nathan's ratings
 // from his own review page of 20 and 21 October come from a stored table.
@@ -254,9 +255,7 @@ const decisions = keepOld(REVIEW_HEADING, decisionsNew, previous);
 const ratings = keepOld(RATINGS_HEADING, nathanRatings(), previous);
 const document = `# What makes a good Common Note
 
-This file collects judged examples of notes on our Common Notes items. Agents that look for noteworthy passages and write notes read it first. It is generated from prod by \`bun run claude-notes examples\` (\`src/claude-notes/buildExamples.ts\`). Do not edit it by hand.
-
-A good note points out something a careful reader would want to know: a small factual mistake, missing context that makes a passage easy to misread, or a claim that is wrong or misleading. It is short, neutral, and every sentence is backed by a cited source.
+This file collects judged examples of notes on our Common Notes items. Every Claude that writes Common Notes, or answers a reviewer about one, gets it in its system prompt. It is generated from prod by \`bun run claude-notes examples\` (\`src/claude-notes/buildExamples.ts\`). Do not edit it by hand.
 
 ${GOOD_HEADING}
 
