@@ -190,11 +190,18 @@ async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionListing> {
     video.url,
     async (proxyUrl) => {
       const { stdout, stderr } = await dumpVideoJson(video, proxyUrl);
-      const tracks = stdout.trim() ? captionTracksFromDump(JSON.parse(stdout)) : [];
+      const dump = stdout.trim() ? JSON.parse(stdout) : {};
+      const tracks = dump ? captionTracksFromDump(dump) : [];
       if (tracks.length) return { kind: "tracks", tracks };
       const answer = readTracklessAnswer(stderr);
       if (answer.kind === "unreachable") throw new YoutubeUnreachableError(video.url, answer.line.trim().slice(0, MAX_REASON_LENGTH));
-      return answer.kind === "age_restricted" ? answer : { kind: "none", why: `YouTube listed no caption tracks${ytDlpWarnings(stderr)}` };
+      if (answer.kind === "age_restricted") return answer;
+      // Sometimes yt-dlp prints the word null instead of the video's
+      // description. Then it learned nothing about the video. Both times this
+      // happened, on 2026-10-27, the videos had captions. So a null dump means
+      // we did not reach YouTube, and it is never "no captions" (GOO-652).
+      if (dump === null) throw new YoutubeUnreachableError(video.url, `yt-dlp described no video${ytDlpWarnings(stderr)}`.slice(0, MAX_REASON_LENGTH));
+      return { kind: "none", why: `YouTube listed no caption tracks${ytDlpWarnings(stderr)}` };
     },
     (err) => err instanceof YoutubeUnreachableError,
   );

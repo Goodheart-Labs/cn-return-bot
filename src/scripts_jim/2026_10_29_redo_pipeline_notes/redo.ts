@@ -9,7 +9,8 @@ import { deletePipelineNote } from "../../claude-notes/store";
  *  Claude draft. Each of its pipeline notes goes through deletePipelineNote, the path Claude uses for a
  *  pipeline note it judges bad: the note and its votes are deleted, the claim stays with status no_note,
  *  and an event keeps the note's text. A note with votes is left alone, because deleting it also deletes
- *  the voter's donation pledge.
+ *  the voter's donation pledge. The run on 2026-10-29 kept two such notes on rgQykqUMt-o, which a reader
+ *  had voted Not helpful. Jim then had them deleted the same way, pledges included.
  *
  *  The post then gets checked_scope null, which is what the walk reads as "not checked as a whole page"
  *  (unprocessedEntries in autoEnqueue.ts). first_checked_at is cleared, so the trigger of migration 133
