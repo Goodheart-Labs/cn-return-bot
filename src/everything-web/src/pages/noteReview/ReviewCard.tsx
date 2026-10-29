@@ -1,34 +1,39 @@
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addToLeaderboard } from "@cn/core/bestNotes";
 import {
   deleteDraftNote,
   rewriteDraft,
   sendDraftMessage,
+  setFewShotExample,
   setReviewNote,
   skipDraft,
   type Reviewer,
   type ReviewDraft,
   type ReviewVote,
 } from "@cn/core/claudeReview";
+import { setCreatorXHandle } from "@cn/core/creatorX";
 import { mintSelfVoteDonation } from "@cn/core/donations";
+import { bucketChips } from "@cn/core/fieldQuery";
 import { displayName } from "@cn/core/session";
 import type { ClaimRef, FeedItemRow, NoteRow } from "@cn/core/types";
 import type { Vote } from "@cn/core/votes";
+import { setXMark, type XMark } from "@cn/core/xMarks";
 import { useSession } from "@cn/features/auth/useSession";
 import { Note } from "@cn/features/notes/Note";
 import { NoteBox } from "@cn/features/notes/NoteBox";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { DropdownMenu } from "@cn/ui/DropdownMenu";
 import { Textarea } from "@cn/ui/Field";
-import { IconButton } from "@cn/ui/IconButton";
-import { MoreIcon, TrashIcon, TrophyIcon } from "@cn/ui/icons";
-import { Menu, MenuItem } from "@cn/ui/Menu";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { CheckIcon, TrashIcon } from "@cn/ui/icons";
 import { ClaimCard } from "../../components/ClaimCard";
 import { noteUrl } from "../../lib/routing";
-import { draftNoteId, dropDraft, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
+import { PostOnX } from "./PostOnX";
+import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
+import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
+import { TWEET_SERVER } from "./tweetServer";
 
 const KIND_LABELS: Record<ReviewDraft["kind"], string> = {
   small_mistake: "Small mistake",
@@ -109,17 +114,94 @@ function draftAsNote(draft: ReviewDraft): NoteRow {
   };
 }
 
-function CardHeader({ draft }: { draft: ReviewDraft }) {
+/** The buckets the card sits in, one per sort level when there are several,
+ *  so the order of the list can be read off the cards. */
+function BucketChips({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
+  const chips = bucketChips(REVIEW_FIELDS, view.sorts, draft.fields, view.now);
+  if (chips.length === 0) return null;
+  return (
+    <p className="flex flex-wrap gap-1.5">
+      {chips.map((chip) => (
+        <span key={chip} className="rounded-full bg-surface-muted px-2 py-0.5 text-2xs font-medium text-fg-secondary">
+          {chip}
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/** The creator's X account beside their name, which an admin can correct. An
+ *  empty handle records that the creator has no X account. */
+function CreatorXAccount({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
+  const client = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [handle, setHandle] = useState((draft.fields.creator_x_handle as string | null) ?? "");
+  const slug = draft.post.creatorSlug!;
+  const save = useMutation({
+    mutationFn: () => setCreatorXHandle(slug, handle.trim() || null, "Set by hand on the review page"),
+    onSuccess: async () => {
+      setEditing(false);
+      await refreshCreator(client, view.request, slug);
+    },
+  });
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    save.mutate();
+  };
+  if (editing) {
+    return (
+      <form onSubmit={submit} className="flex flex-wrap items-center gap-2 text-xs">
+        <input
+          autoFocus
+          value={handle}
+          onChange={(e) => setHandle(e.currentTarget.value)}
+          placeholder="X handle, empty for none"
+          aria-label="The creator's X handle. Leave it empty if they have none."
+          className="w-44 rounded-control border border-line-input bg-surface px-2 py-1 text-fg"
+        />
+        <Button type="submit" disabled={save.isPending}>
+          Save
+        </Button>
+        <Button type="button" variant="quiet" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
+        <ErrorText error={save.error} />
+      </form>
+    );
+  }
+  const status = draft.fields.creator_x;
+  const evidence = (draft.fields.creator_x_evidence as string | null) ?? undefined;
+  return (
+    <span className="flex shrink-0 items-center gap-2 text-xs text-fg-muted">
+      {status === "found" ? (
+        <a href={`https://x.com/${draft.fields.creator_x_handle}`} target="_blank" rel="noreferrer" title={evidence} className="text-link hover:underline">
+          @{String(draft.fields.creator_x_handle)}
+        </a>
+      ) : (
+        <span title={evidence}>{status === "none" ? "No X account" : "X account not looked up yet"}</span>
+      )}
+      <Button variant="link" onClick={() => setEditing(true)}>
+        Edit
+      </Button>
+    </span>
+  );
+}
+
+function CardHeader({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) {
   const chip = verdictChip(draft);
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-sm font-medium text-fg-secondary">{draft.post.creator}</p>
+        <p className="flex min-w-0 flex-wrap items-center gap-x-2 text-sm font-medium text-fg-secondary">
+          <span className="truncate">{draft.post.creator}</span>
+          {view && draft.post.creatorSlug && <CreatorXAccount draft={draft} view={view} />}
+        </p>
         {chip && <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
       </div>
       <p className="text-xs text-fg-muted" title="The views count readers outside our team who were shown the notes on this post">
         {detailsLine(draft)}
       </p>
+      {view && <BucketChips draft={draft} view={view} />}
     </div>
   );
 }
@@ -129,16 +211,13 @@ type Step =
   | { step: "delete" }
   | { step: "skip"; skip: boolean }
   | { step: "leaderboard" }
+  | { step: "xMark"; mark: XMark | null }
+  | { step: "fewShot"; on: boolean }
   | { step: "reviewNote"; text: string }
   | { step: "message"; text: string };
 
-/** Steps that take the draft out of the section it is shown in. */
-const MOVES_THE_DRAFT = new Set<Step["step"]>(["delete", "skip"]);
-
-/** Sends one reviewer step and updates the page. A step that moves the draft
- *  to another section takes it out of this one. Every other step reads the
- *  draft again, which keeps it in place even when its section changed. Both
- *  refresh the sidebar's counts. */
+/** Sends one reviewer step and reads the draft again. The card stays where it
+ *  is, even when the draft no longer matches the filters. */
 function useReviewStep(draft: ReviewDraft, view: ReviewView, onDone?: () => void) {
   const client = useQueryClient();
   const { session } = useSession();
@@ -156,6 +235,10 @@ function useReviewStep(draft: ReviewDraft, view: ReviewView, onDone?: () => void
         await skipDraft(draft.id, step.skip);
       } else if (step.step === "leaderboard") {
         await addToLeaderboard(draft.noteId!);
+      } else if (step.step === "xMark") {
+        await setXMark(draft.noteId!, step.mark);
+      } else if (step.step === "fewShot") {
+        await setFewShotExample(draft.id, step.on);
       } else if (step.step === "reviewNote") {
         await setReviewNote(draft.id, step.text);
       } else {
@@ -168,9 +251,7 @@ function useReviewStep(draft: ReviewDraft, view: ReviewView, onDone?: () => void
       // which the cached list of their own votes does not know yet.
       if (step.step === "replace" && step.postedAs === "me") await client.invalidateQueries({ queryKey: queryKeys.ownVotes });
       if (step.step === "leaderboard") await client.invalidateQueries({ queryKey: queryKeys.curation });
-      if (MOVES_THE_DRAFT.has(step.step)) dropDraft(client, view, draft.id);
-      else await refreshDrafts(client, view, [draft.id]);
-      await client.invalidateQueries({ queryKey: queryKeys.noteReviewSummaries });
+      await refreshDrafts(client, view.request, [draft.id]);
     },
   });
 }
@@ -442,90 +523,113 @@ function ImprovedVersion({ draft, view, onClose }: { draft: ReviewDraft; view: R
   );
 }
 
-/** The less frequent steps, behind a ⋯ button: Add to leaderboard for an
- *  approved note, and Delete from the site after a confirmation. */
-function MoreMenu({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
-  const [open, setOpen] = useState(false);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const close = () => {
-    setOpen(false);
-    setConfirmingDelete(false);
-  };
-  const act = useReviewStep(draft, view, close);
-  useOutsidePress(ref, open, close);
-  const canAddToLeaderboard = draft.status === "posted" && draft.verdict === "approved" && !draft.onLeaderboard;
+/** Delete from the site, which asks once more in a small menu, because a
+ *  deleted note takes its votes with it. */
+function DeleteButton({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
+  const remove = useReviewStep(draft, view);
   return (
-    <div ref={ref} className="relative">
-      <IconButton label="More steps" onClick={() => (open ? close() : setOpen(true))} className="border border-line-strong text-fg-secondary">
-        <MoreIcon size={18} aria-hidden />
-      </IconButton>
-      {open && (
-        <div className="absolute right-0 top-full z-10 mt-1">
-          <Menu>
-            {confirmingDelete ? (
-              <>
-                <p className="px-2 py-1.5 text-xs text-fg-secondary">Delete this note from the site? Its votes go with it.</p>
-                <MenuItem onClick={() => act.mutate({ step: "delete" })} icon={<TrashIcon size={16} />} danger autoFocus>
-                  Delete
-                </MenuItem>
-                <MenuItem onClick={close}>Cancel</MenuItem>
-              </>
-            ) : (
-              <>
-                {canAddToLeaderboard && (
-                  <MenuItem onClick={() => act.mutate({ step: "leaderboard" })} icon={<TrophyIcon size={16} />} autoFocus>
-                    Add to leaderboard
-                  </MenuItem>
-                )}
-                <MenuItem onClick={() => setConfirmingDelete(true)} icon={<TrashIcon size={16} />} danger autoFocus={!canAddToLeaderboard}>
-                  Delete from the site
-                </MenuItem>
-              </>
-            )}
-            {act.error && <p className="px-2 py-1.5 text-xs text-negative" role="alert">{act.error.message}</p>}
-          </Menu>
-        </div>
-      )}
-    </div>
+    <DropdownMenu
+      label="Delete from the site"
+      entries={[
+        { type: "heading", key: "question", label: "Delete this note from the site? Its votes go with it." },
+        { type: "action", key: "delete", label: "Delete", icon: <TrashIcon size={16} />, danger: true, onSelect: () => remove.mutate({ step: "delete" }) },
+      ]}
+      trigger={
+        <Button variant="secondary" disabled={remove.isPending}>
+          Delete from the site
+        </Button>
+      }
+    />
   );
 }
 
-/** The card's tools in one row: chat, improve and skip, with the rare steps in
- *  the ⋯ menu. The chat and the improved version open below the row. */
+/** A button that switches a mark on or off. It shows a tick while the mark
+ *  is on. */
+const X_TIME_FORMAT: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" };
+
+/** When the note goes out on X or went out, and the tweet's link once it is
+ *  out. A note marked as posted by hand has neither. */
+function XPostLine({ draft }: { draft: ReviewDraft }) {
+  const time = draft.fields.x_time as string | null;
+  const tweetUrl = draft.fields.x_tweet_url as string | null;
+  const when = time && new Date(time).toLocaleString("en-GB", X_TIME_FORMAT);
+  if (draft.xMark === "scheduled") return <span className="text-sm text-fg-muted">{when ? `Scheduled on X for ${when}` : "In Typefully, not scheduled"}</span>;
+  if (draft.xMark !== "posted" || !when) return null;
+  return (
+    <span className="text-sm text-fg-muted">
+      Posted on X {when}
+      {tweetUrl && (
+        <>
+          {" · "}
+          <a href={tweetUrl} target="_blank" rel="noreferrer" className="text-link hover:underline">
+            See the tweet
+          </a>
+        </>
+      )}
+    </span>
+  );
+}
+
+function MarkButton({ on, label, onClick, disabled }: { on: boolean; label: string; onClick: () => void; disabled: boolean }) {
+  return (
+    <Button variant="secondary" aria-pressed={on} disabled={disabled} onClick={onClick} title={on ? `${label}. Click to take the mark off` : undefined} className={cn(on && "border-link text-link")}>
+      {on && <CheckIcon size={14} aria-hidden />}
+      {label}
+    </Button>
+  );
+}
+
+type Panel = "chat" | "improve" | "post";
+
+/** The card's tools in one row. The Display menu picks which of them show.
+ *  The chat, the improved version and the tweet open below the row. */
 function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
-  const [open, setOpen] = useState<"chat" | "improve" | null>(draft.proposal ? "improve" : draft.messages.length > 0 ? "chat" : null);
+  const [open, setOpen] = useState<Panel | null>(draft.proposal ? "improve" : draft.messages.length > 0 ? "chat" : null);
   const [seenProposal, setSeenProposal] = useState(draft.proposal?.note);
-  const skip = useReviewStep(draft, view);
-  const toggle = (panel: "chat" | "improve") => setOpen(open === panel ? null : panel);
+  const act = useReviewStep(draft, view);
+  const shows = (option: DisplayOption) => view.display.includes(option);
+  const toggle = (panel: Panel) => setOpen(open === panel ? null : panel);
   const live = draft.status === "posted";
   // A proposal that arrives while the card is shown opens its box.
   if (draft.proposal && draft.proposal.note !== seenProposal) {
     setSeenProposal(draft.proposal.note);
     setOpen("improve");
   }
+  const panelButton = (panel: Panel, label: string) => (
+    <Button variant={open === panel ? "primary" : "secondary"} aria-expanded={open === panel} onClick={() => toggle(panel)}>
+      {label}
+    </Button>
+  );
+  const markX = (mark: XMark) => act.mutate({ step: "xMark", mark: draft.xMark === mark ? null : mark });
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant={open === "chat" ? "primary" : "secondary"} aria-expanded={open === "chat"} onClick={() => toggle("chat")}>
-          Chat with Claude
-        </Button>
-        {live && (
-          <Button variant={open === "improve" ? "primary" : "secondary"} aria-expanded={open === "improve"} onClick={() => toggle("improve")}>
-            {draft.proposal ? "Improved version" : "Improve the note"}
-          </Button>
-        )}
-        {(reviewOpen(draft) || draft.skipped) && (
-          <Button variant="secondary" disabled={skip.isPending} onClick={() => skip.mutate({ step: "skip", skip: !draft.skipped })}>
+        {live && TWEET_SERVER && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
+        {live && shows(DISPLAY.markPosted.value) && <MarkButton on={draft.xMark === "posted"} label="Posted on X" disabled={act.isPending} onClick={() => markX("posted")} />}
+        {live && shows(DISPLAY.wontPost.value) && <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />}
+        <XPostLine draft={draft} />
+        {shows(DISPLAY.chat.value) && panelButton("chat", "Chat with Claude")}
+        {live && shows(DISPLAY.improve.value) && panelButton("improve", draft.proposal ? "Improved version" : "Improve the note")}
+        {shows(DISPLAY.skip.value) && (reviewOpen(draft) || draft.skipped) && (
+          <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "skip", skip: !draft.skipped })}>
             {draft.skipped ? "Unskip" : "Skip"}
           </Button>
         )}
-        {draft.onLeaderboard && <span className="text-sm text-fg-muted">On the leaderboard</span>}
-        <div className="ml-auto">{(live || draft.status === "posting") && <MoreMenu draft={draft} view={view} />}</div>
-        <ErrorText error={skip.error} />
+        {shows(DISPLAY.fewShot.value) && <MarkButton on={draft.fewShot} label="Few-shot example" disabled={act.isPending} onClick={() => act.mutate({ step: "fewShot", on: !draft.fewShot })} />}
+        {live && shows(DISPLAY.leaderboard.value) &&
+          (draft.onLeaderboard ? (
+            <span className="text-sm text-fg-muted">On the leaderboard</span>
+          ) : (
+            <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" })}>
+              Add to leaderboard
+            </Button>
+          ))}
+        {(live || draft.status === "posting") && shows(DISPLAY.delete.value) && <DeleteButton draft={draft} view={view} />}
+        <ErrorText error={act.error} />
       </div>
       {open === "chat" && <Chat draft={draft} view={view} />}
       {open === "improve" && live && <ImprovedVersion draft={draft} view={view} onClose={() => setOpen(null)} />}
+      {open === "post" && live && <PostOnX draft={draft} view={view} onClose={() => setOpen(null)} />}
     </div>
   );
 }
@@ -546,7 +650,7 @@ function OffSiteNote({ draft, label }: { draft: ReviewDraft; label: string }) {
  *  a vote, and the tools. The verdict sits at the top. Beside the card, or
  *  under it on a narrow screen, are each reviewer's vote with its explanation,
  *  the judge's guess, the agent's reasoning and earlier texts. A card shown
- *  outside a review section, such as on the note judge experiment page, has no
+ *  outside the review page, such as on the note judge experiment page, has no
  *  pills, explanation box or tools, and shows `extra` in the side column. */
 export function ReviewCard({ draft, liveNote, view, extra }: {
   draft: ReviewDraft;
@@ -563,15 +667,14 @@ export function ReviewCard({ draft, liveNote, view, extra }: {
   const onVoted = (vote: Vote | undefined) => {
     if (!view) return;
     setExplaining(vote !== undefined);
-    void refreshDrafts(client, view, [draft.id]);
-    void client.invalidateQueries({ queryKey: queryKeys.noteReviewSummaries });
+    void refreshDrafts(client, view.request, [draft.id]);
   };
   return (
     <ClaimCard
       claim={liveNote?.claim ?? draftClaim(draft)}
       paragraph={liveNote?.claim.context_paragraph ?? draft.contextParagraph}
       post={post}
-      byline={<CardHeader draft={draft} />}
+      byline={<CardHeader draft={draft} view={view} />}
       aside={<SideColumn draft={draft} view={view} extra={extra} />}
     >
       <div className="space-y-4">

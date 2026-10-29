@@ -91,7 +91,7 @@ function NoteCard({ note, shareUrl, nnnEntries, topBar }: {
       {note.claim.image_urls.length > 0 && <div className="mb-3 flex flex-wrap gap-2">
         {note.claim.image_urls.map((url) => <a key={url} href={url} target="_blank" rel="noreferrer"><img src={url} alt="Claim source" loading="lazy" className="max-h-48 max-w-full rounded-control" /></a>)}
       </div>}
-      <Note note={note} shareUrl={shareUrl} compact />
+      <Note note={note} shareUrl={shareUrl} />
       <NoteNotNeeded entries={nnnEntries} />
     </Card>
   );

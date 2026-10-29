@@ -439,13 +439,15 @@ export interface ClaudeFailure {
 const MAX_CLAUDE_FAILURES_PER_RUN = 50;
 
 /** The Claude note writer's failures that no feed run has reported yet. They
- *  are marked as reported here (migration 153), so each failure turns exactly
+ *  are marked as reported here (migration 157), so each failure turns exactly
  *  one run red, however far apart the runs are. */
 export async function takeUnreportedClaudeFailures(): Promise<ClaudeFailure[]> {
   const db = getSupabaseClient();
   const schedule = throwOnError(await db.from("everything_feed_schedule").select("claude_failures_reported_through").single()) as {
     claude_failures_reported_through: string;
   };
+  // The client is untyped, so it takes the embedded item for a list. An event
+  // has one item, and PostgREST sends it as one object.
   const events = throwOnError(
     await db
       .from("everything_claude_events")
@@ -454,7 +456,7 @@ export async function takeUnreportedClaudeFailures(): Promise<ClaudeFailure[]> {
       .gt("at", schedule.claude_failures_reported_through)
       .order("at")
       .limit(MAX_CLAUDE_FAILURES_PER_RUN),
-  ) as { at: string; data: { reason: string }; item: { url: string } }[];
+  ) as unknown as { at: string; data: { reason: string }; item: { url: string } }[];
   if (events.length === 0) return [];
   throwOnError(await db.from("everything_feed_schedule").update({ claude_failures_reported_through: events.at(-1)!.at }).eq("id", true));
   return events.map((e) => ({ at: e.at, url: e.item.url, reason: e.data.reason }));

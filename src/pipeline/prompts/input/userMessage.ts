@@ -2,8 +2,8 @@
  * Prompt — shared bot user message.
  *
  * This file renders a post into the user message that every bot's pipeline
- * reads. The rendering covers the author, the engagement numbers, the media, the
- * comments, and the corrections written on this author's earlier posts.
+ * reads. The rendering covers the author, the engagement numbers, the media and
+ * the corrections written on this author's earlier posts.
  * `buildUserMessage` stays exported for callers that assemble their media
  * somewhere other than a `BotInput`, such as the eval harnesses.
  */
@@ -49,11 +49,12 @@ export function buildUserMessage(params: {
   /** Also show the notes on this author that raters rejected. This is the
    *  `on_with_unhelpful` A/B arm. */
   showUnhelpfulHistory?: boolean;
-  comments?: string;
   mediaMadeWithAiLabel?: boolean;
+  /** The moment the message describes. A past tweet shown as an example is
+   *  rendered as of the time its note was written. */
+  now?: Date;
 }): string {
-  const { post } = params;
-  const now = new Date();
+  const { post, now = new Date() } = params;
   const parts: string[] = [];
 
   parts.push(`Current date: ${now.toISOString().split("T")[0]}`);
@@ -144,10 +145,6 @@ export function buildUserMessage(params: {
     parts.push(`\nMedia was tagged with "Made with AI" on x.com`);
   }
 
-  if (params.comments) {
-    parts.push(`\n## Comments and replies\n\n${params.comments}`);
-  }
-
   return parts.join("\n");
 }
 
@@ -164,7 +161,6 @@ export function buildUserMessageFromInput(post: Post, input: BotInput): string {
     quotedTweetMedia: input.mediaResult.quotedTweetMedia,
     authorNoteHistory: input.authorHistory,
     showUnhelpfulHistory: getBotConfig().author_history_unhelpful,
-    comments: input.comments,
     mediaMadeWithAiLabel: input.mediaMadeWithAiLabel,
   });
 }

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { REVIEW_SECTIONS, type ReviewSection } from "@cn/core/claudeReview";
 import { JUDGE_SECTIONS, type JudgeSection } from "../pages/judgeExperiment/sections";
 import { capturePageview } from "./analytics";
 
@@ -14,14 +13,17 @@ import { capturePageview } from "./analytics";
  *   /minisites/new        an admin creates a minisite from a pasted link
  *   /minisites/<slug>     one minisite: an article with the reader features it switched on
  *   /leaderboard          the rating leaderboard
- *   /admin/notes/<section> admins review the Claude note writer's notes, one
- *                         section at a time
+ *   /admin/notes          admins review the Claude note writer's notes; the
+ *                         filters, sorts and display options are query
+ *                         parameters (lib/useFieldQuery.ts)
  *   /admin/best           the admins' leaderboard of the best notes
  *   /admin/best/<slug>    the same, narrowed to one creator
  *   /admin/dashboard      admins see how the extension is used, the order of
  *                         the next walk and the posts checked last
  *   /admin/judge-experiment/<section>  the labelled notes of the note judge
  *                         experiment, only on the development server
+ *   /note-image/<note>    one note's card alone, which the local posting tool
+ *                         takes a picture of; only in that tool
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
  * The path /notes/all wins over a project whose slug is "all".
@@ -47,17 +49,18 @@ export type Route =
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" }
-  | { view: "noteReview"; section: ReviewSection }
+  | { view: "noteReview" }
   | { view: "bestNotes"; project: string | null }
   | { view: "dashboard" }
-  | { view: "judgeExperiment"; section: JudgeSection };
+  | { view: "judgeExperiment"; section: JudgeSection }
+  | { view: "noteImage"; note: string };
 
 export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
 export const ALL_NOTES: Route = { view: "allNotes" };
 export const MINISITES: Route = { view: "minisites", slug: null };
-export const NOTE_REVIEW: Route = { view: "noteReview", section: "unreviewed" };
+export const NOTE_REVIEW: Route = { view: "noteReview" };
 export const BEST_NOTES: Route = { view: "bestNotes", project: null };
 export const DASHBOARD: Route = { view: "dashboard" };
 
@@ -65,7 +68,6 @@ export const DASHBOARD: Route = { view: "dashboard" };
  *  name before the creator. */
 const OLD_CURATION_SECTIONS: readonly (string | undefined)[] = ["recommendations", "leaderboard", "removed"];
 const isJudgeSection = (value: string | undefined): value is JudgeSection => (JUDGE_SECTIONS as readonly (string | undefined)[]).includes(value);
-const isReviewSection = (value: string | undefined): value is ReviewSection => (REVIEW_SECTIONS as readonly (string | undefined)[]).includes(value);
 
 /** The query parameters of the old addresses. `episode` is the old name for `item`. */
 const LEGACY_PARAMS = ["view", "project", "item", "episode", "section"];
@@ -91,7 +93,9 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "admin" && project === "best") return { view: "bestNotes", project: (OLD_CURATION_SECTIONS.includes(item) ? creator : item) ?? null };
   if (page === "admin" && project === "dashboard") return DASHBOARD;
   if (import.meta.env.DEV && page === "admin" && project === "judge-experiment") return { view: "judgeExperiment", section: isJudgeSection(item) ? item : JUDGE_SECTIONS[0] };
-  if (page === "admin" && project === "notes") return isReviewSection(item) ? { view: "noteReview", section: item } : NOTE_REVIEW;
+  // Links from before GOO-623 name a section after it, which is now a filter.
+  if (page === "admin" && project === "notes") return NOTE_REVIEW;
+  if (import.meta.env.VITE_TWEET_SERVER && page === "note-image" && project) return { view: "noteImage", note: project };
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;
@@ -103,7 +107,8 @@ export function routeHref(route: Route): string {
   if (route.view === "allNotes") return "/notes/all";
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "dashboard") return "/admin/dashboard";
-  if (route.view === "noteReview") return `/admin/notes/${route.section}`;
+  if (route.view === "noteReview") return "/admin/notes";
+  if (route.view === "noteImage") return `/note-image/${encodeURIComponent(route.note)}`;
   if (route.view === "judgeExperiment") return `/admin/judge-experiment/${route.section}`;
   if (route.view === "bestNotes") return "/admin/best" + (route.project ? `/${encodeURIComponent(route.project)}` : "");
   if (route.view === "minisites") return route.slug ? `/minisites/${encodeURIComponent(route.slug)}` : "/minisites";

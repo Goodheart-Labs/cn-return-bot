@@ -1,6 +1,7 @@
 import logoUrl from "@cn/ui/assets/logo.svg";
 import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { trackGetExtensionClick } from "../lib/extensionStores";
 import { HOME, INSTALL, MINISITES, NOTES, type Route } from "../lib/routing";
 import { useIsAdmin } from "../lib/useIsAdmin";
 import { AdminMenu } from "./AdminMenu";
@@ -43,7 +44,14 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <AuthCorner onSignIn={onSignIn} />
-          <RouteLink to={INSTALL} navigate={navigate} className={cn(buttonVariants({ variant: "primary" }), "hidden sm:inline-flex")}>
+          <RouteLink
+            to={INSTALL}
+            navigate={(next) => {
+              trackGetExtensionClick("header");
+              navigate(next);
+            }}
+            className={cn(buttonVariants({ variant: "primary" }), "hidden sm:inline-flex")}
+          >
             Get the extension
           </RouteLink>
         </div>

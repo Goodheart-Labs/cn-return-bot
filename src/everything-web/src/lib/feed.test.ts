@@ -11,7 +11,6 @@ const summary = (matching: number, since: number[], bands = { main: 0, unhelpful
   matching,
   since,
   bands,
-  largest: { views: 0, votes: 0, helpful: 0, notHelpful: 0 },
 });
 
 describe("sectionsOf", () => {

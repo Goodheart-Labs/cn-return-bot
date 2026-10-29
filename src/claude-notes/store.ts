@@ -52,7 +52,7 @@ const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
 const CLAUDE_JUDGEMENT = "claude_code";
 
 let client: SupabaseClient<Database> | undefined;
-function db(): SupabaseClient<Database> {
+export function db(): SupabaseClient<Database> {
   if (!client) {
     loadDotenv({ path: path.join(ENV_DIR, ".env"), quiet: true });
     const url = process.env.SUPABASE_URL;

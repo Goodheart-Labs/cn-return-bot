@@ -1,5 +1,6 @@
 import { buttonVariants } from "@cn/ui/Button";
 import { Modal } from "@cn/ui/Modal";
+import { trackGetExtensionClick } from "../lib/extensionStores";
 import { INSTALL, type Route } from "../lib/routing";
 import { RouteLink } from "./RouteLink";
 
@@ -18,6 +19,7 @@ export function WriteNoteModal({ open, onClose, navigate }: { open: boolean; onC
         <RouteLink
           to={INSTALL}
           navigate={(route) => {
+            trackGetExtensionClick("write_note");
             onClose();
             navigate(route);
           }}
