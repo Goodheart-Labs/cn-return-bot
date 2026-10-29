@@ -377,32 +377,6 @@ export type Database = {
           },
         ]
       }
-      everything_claude_handbacks: {
-        Row: {
-          at: string
-          item_id: string
-          reason: string
-        }
-        Insert: {
-          at?: string
-          item_id: string
-          reason: string
-        }
-        Update: {
-          at?: string
-          item_id?: string
-          reason?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "everything_claude_handbacks_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: true
-            referencedRelation: "everything_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       everything_claude_judgements: {
         Row: {
           draft_id: string
@@ -582,18 +556,21 @@ export type Database = {
       }
       everything_feed_schedule: {
         Row: {
+          claude_failures_reported_through: string
           dispatched_at: string | null
           id: boolean
           next_run_at: string | null
           next_run_reason: string | null
         }
         Insert: {
+          claude_failures_reported_through?: string
           dispatched_at?: string | null
           id?: boolean
           next_run_at?: string | null
           next_run_reason?: string | null
         }
         Update: {
+          claude_failures_reported_through?: string
           dispatched_at?: string | null
           id?: boolean
           next_run_at?: string | null

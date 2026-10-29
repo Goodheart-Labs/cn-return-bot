@@ -20,7 +20,7 @@ import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fi
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
-import type { ItemTextResponse } from "../service/contract";
+import { ServiceError, type ItemTextResponse } from "../service/contract";
 import { fetchForumPost, parsePostUrl } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
@@ -135,13 +135,25 @@ export async function readItemText(item: EverythingItem): Promise<ItemTextRespon
   return { title: content.title, publishedAt: content.publishedAt?.slice(0, 10) ?? null, text: bodyText(content), ...(cues && { cues }) };
 }
 
+/** Reads a video on the services machine, without its stored text, so the
+ *  answer always carries its cues. A video the service says it cannot read
+ *  throws the same UnreadableVideoError a local read throws. */
+async function requestVideoText(item: EverythingItem): Promise<ItemTextResponse> {
+  try {
+    return await requestItemText({ priority: workPriorityOf(item), item: { ...item, full_text: null } });
+  } catch (err) {
+    if (!(err instanceof ServiceError && err.response.code === "unreadable_video")) throw err;
+    const { reason, captionsMayStillCome, why } = err.response.video;
+    throw new UnreadableVideoError(item.url, reason, captionsMayStillCome, why);
+  }
+}
+
 /** Reads an item's text and, unless `keepText`, stores it. A video's captions
  *  need the services machine's proxy, so videos are read there, and every
- *  other page is read here. A video is read without its stored text, so the
- *  answer always carries its cues. */
+ *  other page is read here. */
 export async function fetchAndStoreItemText(itemId: string, options: { keepText: boolean }): Promise<ItemTextResponse> {
   const item = await fetchItem(itemId);
-  const read = item.source === "youtube" ? await requestItemText({ priority: workPriorityOf(item), item: { ...item, full_text: null } }) : await readItemText(item);
+  const read = item.source === "youtube" ? await requestVideoText(item) : await readItemText(item);
   if (!options.keepText) await updateItemMeta(item.id, { title: read.title, published_at: read.publishedAt, full_text: read.text });
   return read;
 }
@@ -189,7 +201,7 @@ export const queuedFeedItemCount = (queue: QueuedItemSummary[]): number =>
 /** Where one item ended. "no_captions_yet" is an error that gets its repeat
  *  attempts like any other, but it is expected, so it does not fail the feed
  *  run. */
-type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
+export type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
 
 /** A video we cannot read is not a failure (GOO-422). A young video without
  *  captions stays in error so the walk tries it again later, because YouTube
@@ -206,6 +218,15 @@ async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoE
   console.log(`  ${err.message} · finished without checking`);
   await markItemDone(item.id, err.reason);
   return "done";
+}
+
+/** Records on the item's row why it failed. Both the pipeline's workers and
+ *  the Claude note writer's runner use this, so a failure looks the same
+ *  whichever of them hit it. */
+export async function recordItemFailure(item: EverythingItem, err: Error): Promise<ItemOutcome> {
+  if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
+  await markItemError(item.id, err.message ?? "unknown");
+  return "error";
 }
 
 /** Runs one claimed item through fetch, extraction and checking, and records
@@ -253,10 +274,8 @@ export async function processQueuedItem(item: EverythingItem): Promise<ItemOutco
     );
     return "done";
   } catch (err: any) {
-    if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
-    console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
-    await markItemError(item.id, err?.message ?? "unknown");
-    return "error";
+    if (!(err instanceof UnreadableVideoError)) console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
+    return recordItemFailure(item, err);
   }
 }
 

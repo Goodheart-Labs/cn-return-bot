@@ -303,29 +303,28 @@ function inPipelineOrder(a: QueueItem, b: QueueItem): number {
 }
 
 /** The queue as the Claude note writer sees it. `waiting` holds the queued
- *  items Claude has neither taken nor handed back. `taken` holds the ones
- *  Claude took and has not finished yet: an item Claude works on stays queued
- *  until it is finished, so the take event is what tells it apart. */
+ *  items Claude has not taken. `taken` holds the ones Claude took and has not
+ *  finished yet: an item Claude works on stays queued until it is finished, so
+ *  the take event is what tells it apart. A post Claude failed on can come
+ *  back to the queue when the walk tries it again, so only a take newer than
+ *  the item's last failure counts. */
 export async function claudeQueue(): Promise<{ waiting: QueueItem[]; taken: QueueItem[] }> {
   const queued = await fetchAllRows<QueueItem>(
     () => db().from("everything_items").select("id, url, title, priority, status, published_at, created_at").eq("status", "queued"),
     "id",
     { label: "queued items" },
   );
-  const ids = queued.map((item) => item.id);
-  const [handbacks, takes] = await Promise.all([
-    fetchInBatches<{ item_id: string }>((chunk) => db().from("everything_claude_handbacks").select("item_id").in("item_id", chunk), ids, "item_id", { label: "claude handbacks" }),
-    fetchInBatches<{ id: number; item_id: string }>(
-      (chunk) => db().from("everything_claude_events").select("id, item_id").eq("type", "item_taken").in("item_id", chunk),
-      ids,
-      "id",
-      { label: "claude takes" },
-    ),
-  ]);
-  const handedBack = new Set(handbacks.map((h) => h.item_id));
-  const taken = new Set(takes.map((e) => e.item_id));
-  const mine = queued.filter((item) => !handedBack.has(item.id)).sort(inPipelineOrder);
-  return { waiting: mine.filter((item) => !taken.has(item.id)), taken: mine.filter((item) => taken.has(item.id)) };
+  const events = await fetchInBatches<{ id: number; item_id: string; type: string }>(
+    (chunk) => db().from("everything_claude_events").select("id, item_id, type").in("type", ["item_taken", "item_failed"]).in("item_id", chunk),
+    queued.map((item) => item.id),
+    "id",
+    { label: "claude takes" },
+  );
+  const lastEventType = new Map<string, string>();
+  for (const e of events.sort((a, b) => a.id - b.id)) lastEventType.set(e.item_id, e.type);
+  const isTaken = (item: QueueItem) => lastEventType.get(item.id) === "item_taken";
+  const ordered = queued.sort(inPipelineOrder);
+  return { waiting: ordered.filter((item) => !isTaken(item)), taken: ordered.filter(isTaken) };
 }
 
 export async function readItem(itemId: string): Promise<QueueItem & { full_text: string | null; project: { name: string; slug: string } | null }> {
@@ -343,12 +342,6 @@ export async function readItem(itemId: string): Promise<QueueItem & { full_text:
 export async function nathanNotedItem(itemId: string): Promise<boolean> {
   const claims = unwrap(await db().from("everything_claims").select("everything_notes(author_id)").eq("item_id", itemId));
   return claims.some((c) => (c.everything_notes ?? []).some((n) => n.author_id === NATHAN_ACCOUNT_ID));
-}
-
-/** Gives an item back to the pipeline, which then processes it as before. */
-export async function handBack(itemId: string, reason: string) {
-  check(await db().from("everything_claude_handbacks").upsert({ item_id: itemId, reason }));
-  await logEvent({ actor: "claude", type: "handed_back", itemId, data: { reason } });
 }
 
 /** Marks an item checked once Claude's agents went through all of it. */
