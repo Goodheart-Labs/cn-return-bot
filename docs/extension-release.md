@@ -171,9 +171,11 @@ the colour of the box's top-left pixel until the shape is 16:10, and only then
 scales evenly. So choose a crop box that cuts away empty page or a black video
 bar, and let the padding handle the rest.
 
-The order as of version 0.4.0:
+The order as of version 0.5.0:
 
 1. A note card next to a Substack post.
 2. A note on a Dwarkesh Podcast video on YouTube.
 3. The "Write a note" form on a highlighted sentence.
-4. The toolbar popup on a page we have not checked yet, offering "Request notes on this page".
+4. The toolbar popup on a TIME article about AI's water use that we have not
+   checked yet, offering "Check this page". The commonnotes.net homepage shows
+   the same picture as `src/everything-web/src/assets/screenshots/request-notes.webp`.
