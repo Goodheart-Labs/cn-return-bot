@@ -2,10 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { browser } from "#imports";
 import { createPortal } from "react-dom";
 import type { PageItem } from "@cn/core/items";
-import { MarginDot, MARKER_FOCUS, pointHandlers } from "@cn/features/margin/MarginDot";
+import { MarginDot, pointHandlers } from "@cn/features/margin/MarginDot";
 import { statusColorClass, statusLabel } from "@cn/features/notes/NoteBox";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import type { ClaimGroup } from "../utils/claimGroups";
 import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
@@ -155,7 +156,7 @@ function Badge({ group, open, onClick, onPoint, style, label, ref }: MarkerProps
       className={cn(
         "absolute flex items-center justify-center rounded-full border border-line-strong bg-surface shadow-raised transition hover:scale-110",
         statusColorClass(group.status),
-        MARKER_FOCUS,
+        focusRing,
         open && "ring-2 ring-focus",
       )}
     >

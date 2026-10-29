@@ -19,7 +19,10 @@ const ROUTES: [string, Route][] = [
   ["/minisites", { view: "minisites", slug: null }],
   ["/minisites/new", { view: "newMinisite" }],
   ["/admin/notes", { view: "noteReview" }],
-  ["/admin/dashboard", { view: "dashboard" }],
+  ["/admin/dashboard", { view: "dashboard", section: "metrics" }],
+  ["/admin/dashboard/ab-tests", { view: "dashboard", section: "ab-tests" }],
+  ["/x-notewriter", { view: "xNotewriter", page: "overview" }],
+  ["/x-notewriter/ab-tests", { view: "xNotewriter", page: "abTests" }],
   ["/minisites/big-tent-or-small-tent", { view: "minisites", slug: "big-tent-or-small-tent" }],
 ];
 

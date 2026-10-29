@@ -7,6 +7,8 @@ import { claimGroups, itemNoteSetQuery, type ClaimGroup } from "../utils/claimGr
 import { listenForDismissingClicks } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
+import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { PlayIcon } from "@cn/ui/icons";
 import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
@@ -94,7 +96,7 @@ function PlayFromButton({ seconds, onPlay }: { seconds: number; onPlay: () => vo
       onClick={onPlay}
       title={`Play the video from ${time}`}
       aria-label={`Play the video from ${time}`}
-      className="inline-flex h-6 items-center gap-0.5 rounded-control px-1.5 text-sm tabular-nums text-fg-muted hover:bg-surface-hover hover:text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      className={cn("inline-flex h-6 items-center gap-0.5 rounded-control px-1.5 text-sm tabular-nums text-fg-muted hover:bg-surface-hover hover:text-fg-secondary", focusRing)}
     >
       <PlayIcon size={14} aria-hidden />
       {time}

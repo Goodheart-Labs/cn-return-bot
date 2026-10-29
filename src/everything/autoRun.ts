@@ -31,8 +31,9 @@
  * when one is due and fewer than 3 feed posts are in the queue, and the
  * alarm wakes the next run when the next one is due. Once Claude's week is at
  * its target, the walk adds nothing until the reset, and Claude still takes
- * what is queued. Only when the runner on ai-box has gone quiet does this run
- * hand what waits for Claude to the pipeline.
+ * what is queued. Nothing goes to the pipeline while Claude writes the notes.
+ * Instead this run goes red when the runner on ai-box has gone quiet, and
+ * when Claude failed on a post since the last run reported its failures.
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -41,17 +42,14 @@
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
-import { handBack } from "../claude-notes/store";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
 import {
   claudeWritesNotes,
   fetchFeedPacing,
-  fetchQueueOverview,
   fetchUsageSnapshot,
   oldestPendingRequestAgeSeconds,
   setFeedAlarm,
-  QUEUE_PRIORITY,
-  sortClaudeQueue,
+  takeUnreportedClaudeFailures,
   type QueuedItemSummary,
 } from "./db";
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
@@ -108,9 +106,9 @@ async function assertMachineHealthy(): Promise<void> {
 
 type FeedRunOutcome = Awaited<ReturnType<typeof processNextFeedItem>> | "budget_reached";
 
-/** How the run's item ended, and when the Claude note writer's next post is
- *  due if the alarm should wake the next run for it. */
-type FeedRunResult = { ended: FeedRunOutcome; claudeDueAt: Date | null };
+/** How the run's item ended, the Claude note writer's pacing, and when its
+ *  next post is due if the alarm should wake the next run for it. */
+type FeedRunResult = { ended: FeedRunOutcome; claude: ClaudePacing | null; claudeDueAt: Date | null };
 
 /** Who gets the next feed post. Null while the pipeline writes the notes. */
 async function claudePacing(): Promise<ClaudePacing | null> {
@@ -131,7 +129,7 @@ const MAX_QUEUED_FEED_POSTS_FOR_CLAUDE = 3;
  *  MAX_QUEUED_FEED_POSTS_FOR_CLAUDE feed posts. Returns when the next post is
  *  due: one interval from now after a walk, the due time when it lies ahead,
  *  and null when the next run should simply come after the idle wait. */
-async function walkForClaude(queue: QueuedItemSummary[], pacing: Extract<ClaudePacing, { writer: "claude" }>): Promise<Date | null> {
+async function walkForClaude(queue: QueuedItemSummary[], pacing: Extract<ClaudePacing, { kind: "paced" }>): Promise<Date | null> {
   if (pacing.dueAt.getTime() > Date.now()) return pacing.dueAt;
   const queued = queuedFeedItemCount(queue);
   if (queued >= MAX_QUEUED_FEED_POSTS_FOR_CLAUDE) {
@@ -142,25 +140,12 @@ async function walkForClaude(queue: QueuedItemSummary[], pacing: Extract<ClaudeP
   return walked && Number.isFinite(pacing.intervalMs) ? new Date(Date.now() + pacing.intervalMs) : null;
 }
 
-/** While the runner on ai-box is down, nobody would take what waits for
- *  Claude. So the pipeline takes it: every waiting item is handed back, reader
- *  requests too, and the walk works for the pipeline as it did before Claude.
- *  A post Claude had already taken stays Claude's, because the runner picks it
- *  up again when it comes back. */
-async function handToPipelineWhileRunnerIsDown(queue: QueuedItemSummary[], reason: string): Promise<void> {
-  const isFeedItem = (item: QueuedItemSummary) => item.priority < QUEUE_PRIORITY.requested;
-  const before = await sortClaudeQueue(queue);
-  if (![...before.waiting, ...before.handedBack].some(isFeedItem)) await runAutoEnqueue();
-  const { waiting } = await sortClaudeQueue(await fetchQueueOverview());
-  for (const item of waiting) await handBack(item.id, reason);
-}
-
 /** Walks for a new feed post when one is due. Returns when the alarm should
  *  wake the next run for Claude's next post. */
 async function walkForNextPost(queue: QueuedItemSummary[], claude: ClaudePacing | null): Promise<Date | null> {
-  if (claude?.writer === "claude") return walkForClaude(queue, claude);
-  if (claude?.writer === "pipeline") await handToPipelineWhileRunnerIsDown(queue, claude.reason);
-  else if (queuedFeedItemCount(queue) === 0) await runAutoEnqueue();
+  if (claude?.kind === "paced") return walkForClaude(queue, claude);
+  // A silent runner takes no post, so the walk adds none for it.
+  if (!claude && queuedFeedItemCount(queue) === 0) await runAutoEnqueue();
   return null;
 }
 
@@ -173,8 +158,8 @@ async function processOneFeedItem(): Promise<FeedRunResult> {
   const claude = await claudePacing();
   if (await feedBudgetExhausted()) {
     console.log(`Feed budget reached (${await describeTodaySpend()}) · the pipeline enqueues and processes nothing more today`);
-    const claudeDueAt = claude?.writer === "claude" ? await walkForClaude(await logQueue(), claude) : null;
-    return { ended: "budget_reached", claudeDueAt };
+    const claudeDueAt = claude?.kind === "paced" ? await walkForClaude(await logQueue(), claude) : null;
+    return { ended: "budget_reached", claude, claudeDueAt };
   }
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   const nextRun = computeNextRun(snapshot, FEED_BUDGET_USD);
@@ -182,9 +167,9 @@ async function processOneFeedItem(): Promise<FeedRunResult> {
   const claudeDueAt = await walkForNextPost(await logQueue(), claude);
   const ended = await processNextFeedItem();
   if (ended === "empty") {
-    console.log(`Nothing for the pipeline to process${claude?.writer === "claude" ? " · feed posts are left for Claude" : ""}`);
+    console.log(`Nothing for the pipeline to process${claude ? " · feed posts are left for Claude" : ""}`);
   }
-  return { ended, claudeDueAt };
+  return { ended, claude, claudeDueAt };
 }
 
 /** Sets the alarm the database starts the next run on. The snapshot is read
@@ -198,6 +183,33 @@ async function setNextAlarm(started: boolean, claudeDueAt: Date | null): Promise
   const alarm: FeedAlarm = claudeDueAt && claudeDueAt < pipelineAlarm.at ? { at: claudeDueAt, reason: "usage" } : pipelineAlarm;
   console.log(`\n${describePacing(nextRun, snapshot, FEED_BUDGET_USD)}\n${describeAlarm(alarm, snapshot)}`);
   await setFeedAlarm(alarm.at, alarm.reason);
+}
+
+/** Why this run must go red. The run fails only at its end, after its item
+ *  and its alarm, so a problem never stops the schedule. */
+async function problemsToReport(result: FeedRunResult): Promise<string[]> {
+  const problems: string[] = [];
+  // An exhausted YouTube quota does not stop the run, because Substack and
+  // LessWrong posts can still be checked. But it must not stay a log line: for
+  // five days in September 2026 the quota ran out every afternoon and nobody
+  // noticed.
+  if (quotaRanOutThisRun()) problems.push("The YouTube Data API quota is used up until 07:00 UTC. No YouTube channel could be listed.");
+  // A failed item is recorded on its row, and the run used to end green. On
+  // 1 October 2026 every item failed for 16 hours while every run stayed
+  // green, and nobody noticed until someone read the logs. A young video that
+  // has no captions yet is the one expected error, and it ends as
+  // "no_captions_yet" instead. On 10 October 2026 such videos made 30 of 31
+  // red runs and buried the failures that mattered (GOO-422).
+  if (result.ended === "error") problems.push("This run's item failed. The reason is in the log above and in everything_items.error.");
+  // Nothing else takes the queued posts while the runner is down, so the
+  // queue only grows until someone sees this.
+  if (result.claude?.kind === "runner_silent") problems.push(`${result.claude.reason}. Nothing takes the queued posts until it reports again.`);
+  // The runner on ai-box has no red run of its own, so its failures turn
+  // this run red, the same way this run's own failed item does.
+  for (const failure of await takeUnreportedClaudeFailures()) {
+    problems.push(`The Claude note writer failed on ${failure.url} at ${failure.at}: ${failure.reason}`);
+  }
+  return problems;
 }
 
 async function main() {
@@ -217,7 +229,6 @@ async function main() {
     const ended = result?.ended;
     await setNextAlarm(ended === "done" || ended === "capped" || ended === "error" || ended === "no_captions_yet", result?.claudeDueAt ?? null);
   }
-  const ended = result.ended;
   // Creator pictures for the website cost no LLM money, so they refresh even
   // on a capped day. They run last, after the alarm is set, so a slow source
   // never delays the item or the schedule.
@@ -226,23 +237,8 @@ async function main() {
   try {
     await closeBrowser();
   } catch {}
-  // An exhausted YouTube quota does not stop the run, because Substack and
-  // LessWrong posts can still be checked. But it must not stay a log line: for
-  // five days in September 2026 the quota ran out every afternoon and nobody
-  // noticed. So the run fails here, after its item and its alarm.
-  if (quotaRanOutThisRun()) {
-    throw new Error("The YouTube Data API quota is used up until 07:00 UTC. No YouTube channel could be listed. Failing the run so this is seen.");
-  }
-  // A failed item is recorded on its row, and the run used to end green. On
-  // 1 October 2026 every item failed for 16 hours while every run stayed
-  // green, and nobody noticed until someone read the logs. So a failed item
-  // fails the run too, after the alarm is set. A young video that has no
-  // captions yet is the one expected error, and it ends as "no_captions_yet"
-  // instead. On 10 October 2026 such videos made 30 of 31 red runs and buried
-  // the failures that mattered (GOO-422).
-  if (ended === "error") {
-    throw new Error("This run's item failed. The reason is in the log above and in everything_items.error. Failing the run so this is seen.");
-  }
+  const problems = await problemsToReport(result);
+  if (problems.length > 0) throw new Error(`${problems.join("\n")}\nFailing the run so this is seen.`);
 }
 
 main().catch((err) => {

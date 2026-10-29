@@ -1,6 +1,6 @@
 import { fieldById, filterFromOption, filterOptions, filterText, selectedOptions, type FieldDef, type FieldFilter } from "@cn/core/fieldQuery";
 import { DropdownMenu, type MenuEntry, type MenuOption } from "@cn/ui/DropdownMenu";
-import { pillButtonClass, QueryChip } from "./QueryChip";
+import { pillButtonClass, QueryChip } from "@cn/ui/QueryChip";
 
 /** One value of a choice field as the data holds it, with how many rows it
  *  would show and, for values that come from the data, its display name. */

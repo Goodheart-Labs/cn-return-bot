@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps } from "react";
 import { cn } from "./cn";
+import { focusRing } from "./focusRing";
 
 /** The button styles. `primary` is the one main action of a view, `secondary`
  *  an outlined alternative, `link` a text-only action and `quiet` a
@@ -9,7 +10,7 @@ import { cn } from "./cn";
  *  controls inside the product, and `lg` for the main action of a whole page. A link that should look like a button uses these too:
  *  `<a className={buttonVariants({ variant: "secondary" })}>`. */
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+  cn("inline-flex items-center justify-center gap-1 disabled:opacity-40", focusRing),
   {
     variants: {
       variant: {

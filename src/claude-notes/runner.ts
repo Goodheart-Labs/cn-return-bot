@@ -2,7 +2,9 @@
  * ai-box as a systemd service, under Nathan's user, because Claude Code uses
  * the login in his home folder. It does what the permanent Claude session on
  * the devbox did by hand: it watches the queue, takes each post, starts one
- * Claude for it, and finishes or hands back the item when that Claude is done.
+ * Claude for it, and finishes the item when that Claude is done. A post it
+ * cannot finish is marked as failed, the way the pipeline marks one. Nothing
+ * goes to the pipeline: a failure stays visible instead of being covered up.
  * It also starts one Claude for each reviewer message on the review page, and
  * one Claude for each X tweet the X run handed to it (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
@@ -28,7 +30,6 @@ import {
   recordUsage,
   claudeQueue,
   finishItem,
-  handBack,
   logEvent,
   type QueueItem,
   postDir,
@@ -41,6 +42,8 @@ import {
   unansweredMessages,
 } from "./store";
 import { take } from "./take";
+import { fetchItem } from "../everything/db";
+import { recordItemFailure } from "../everything/worker";
 import { readUsage, type UsageReading } from "./usage";
 import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 import { failXTweet, markXTweetRunning, openXTweets, recordXTweetRun, X_NOTE_MAX_CHARS, xTweetIsOpen, type XTweet } from "./xTweets";
@@ -56,10 +59,6 @@ const MAX_POSTS_RUNNING = 5;
  *  (src/claude-notes/xShare.ts) decides how many tweets come; this only stops
  *  a burst from one X run from starting all its tweets at the same moment. */
 const MAX_TWEETS_RUNNING = 3;
-/** An item the runner has not started this long after it first saw it goes to
- *  the pipeline. That is the backup for when Claude cannot run: the box is
- *  paused, Nathan's week is nearly used up, or something is broken. */
-const HAND_BACK_AFTER_MS = 30 * 60_000;
 /** The usage endpoint is rate limited, and Nathan's pacer reads it too. */
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 /** A Claude that exits without a report gets one more try. */
@@ -90,8 +89,6 @@ const tweets = new Map<string, Run & { tweet: XTweet }>();
 const answers = new Map<string, Run>();
 /** Drafts whose message Claude failed to answer twice. They wait for a person. */
 const unanswerable = new Set<string>();
-/** When the runner first saw each item waiting. */
-const firstSeen = new Map<string, number>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
 let examplesBuiltAt = 0;
@@ -263,8 +260,7 @@ async function startPost(item: QueueItem, attempt = 1) {
   try {
     taken = await take(item.id);
   } catch (err) {
-    console.log(`Handing back ${item.url}: ${(err as Error).message}`);
-    await handBack(item.id, `The Claude note writer could not read the post: ${(err as Error).message}`);
+    await failPost(item, err as Error);
     return;
   }
   if (taken.kind === "skipped") return console.log(`Skipped ${item.url}: ${taken.reason}`);
@@ -300,7 +296,17 @@ async function endPost(run: Run & { item: QueueItem }) {
   }
   if (await savedDrafts(run)) return finishItem(run.item.id, { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote });
   if (run.attempt < MAX_ATTEMPTS) return startPost(run.item, run.attempt + 1);
-  await handBack(run.item.id, `The Claude note writer exited twice without a report; see ${run.runDir} on ai-box`);
+  await failPost(run.item, new Error(`Claude exited twice without a report; see ${run.runDir} on ai-box`));
+}
+
+/** Records a failed post on its row the way the pipeline does, so the walk
+ *  tries it again after its rest time. The failure is also logged as an
+ *  item_failed event, which turns the next feed run red. A young video
+ *  without captions yet is the one expected failure, and it is not logged. */
+async function failPost(item: QueueItem, err: Error) {
+  console.log(`Failed on ${item.url}: ${err.message}`);
+  const outcome = await recordItemFailure(await fetchItem(item.id), err);
+  if (outcome === "error") await logEvent({ actor: "claude", type: "item_failed", itemId: item.id, data: { reason: err.message } });
 }
 
 /** A report that lists more notes than the post has drafts means some
@@ -333,21 +339,6 @@ async function adoptTakenPosts(taken: QueueItem[]) {
     if (tmuxAlive(session)) posts.set(item.id, run);
     else if (readReport(runDir)) await endPost(run);
     else await startPost(item);
-  }
-}
-
-/** Hands back every item that has waited 30 minutes since the runner first
- *  saw it. The clock does not start at the item's creation, because an item
- *  raised to the request tier keeps its old creation time. */
-async function handBackLongWaits(waiting: QueueItem[]) {
-  const now = Date.now();
-  for (const item of waiting) {
-    const seen = firstSeen.get(item.id) ?? now;
-    firstSeen.set(item.id, seen);
-    if (now - seen < HAND_BACK_AFTER_MS) continue;
-    console.log(`Handing back ${item.url}: it waited 30 minutes`);
-    await handBack(item.id, "It waited 30 minutes in the queue without the Claude note writer starting it");
-    firstSeen.delete(item.id);
   }
 }
 
@@ -509,12 +500,10 @@ async function tick(first: boolean) {
   if (!existsSync(PAUSE_FILE)) await startAnswers();
   const queue = await claudeQueue();
   if (first) await adoptTakenPosts(queue.taken);
-  let waiting = queue.waiting;
-  while (waiting.length > 0 && posts.size < MAX_POSTS_RUNNING && (await mayStartPosts())) {
-    await startPost(waiting[0]!);
-    waiting = waiting.slice(1);
+  for (const item of queue.waiting) {
+    if (posts.size >= MAX_POSTS_RUNNING || !(await mayStartPosts())) break;
+    await startPost(item);
   }
-  await handBackLongWaits(waiting);
 }
 
 async function main() {
