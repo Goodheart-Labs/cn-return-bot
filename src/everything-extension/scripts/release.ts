@@ -353,14 +353,30 @@ function tagRelease(version: string): void {
   console.log(`Tagged the release as ${tag}`);
 }
 
+/** The tag of the newest release, or undefined before the first tagged one. */
+function lastReleaseTag(): string | undefined {
+  return run("git", ["tag", "--list", "extension-v*", "--sort=-v:refname"]).split("\n")[0] || undefined;
+}
+
+/** AMO allows only a handful of listing writes per hour, and replacing four
+ *  screenshots takes eight. So a release replaces them only when the files
+ *  changed since the last release. */
+function screenshotsChangedSinceLastRelease(): boolean {
+  const tag = lastReleaseTag();
+  return !tag || run("git", ["diff", "--name-only", tag, "HEAD", "--", SCREENSHOTS_DIR]).trim() !== "";
+}
+
 /** The whole release in one go. The Chrome listing's screenshots have no API,
  *  so when they change they are replaced in the dashboard first. The submit at
- *  the end then sends that listing draft together with the new package. */
+ *  the end then sends that listing draft together with the new package.
+ *  The Firefox homepage and icon never change, so `firefox-listing` sets them
+ *  only when asked. */
 async function releaseAll(): Promise<void> {
   packageRelease();
   const version = extensionVersion();
   await assertNewerThanStores(version);
-  await updateFirefoxListing();
+  if (screenshotsChangedSinceLastRelease()) await replaceAmoPreviews();
+  else console.log("The screenshots are unchanged since the last release, so AMO keeps its own");
   await submitFirefoxVersion();
   await uploadChromePackage();
   await publishChromeDraft();
