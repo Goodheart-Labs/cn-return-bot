@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { buttonVariants } from "@cn/ui/Button";
+import { Button, buttonVariants } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
 import { focusRing } from "@cn/ui/focusRing";
@@ -126,16 +126,15 @@ export function HomePage({ showInstall, navigate }: { showInstall: boolean; navi
           {!desktop ? (
             <DesktopOnly navigate={navigate} className="mx-auto max-w-[36ch]" />
           ) : (
-            <button
-              type="button"
+            <Button
+              size="lg"
               onClick={() => {
                 trackGetExtensionClick("home");
                 scrollToInstall();
               }}
-              className={buttonVariants({ variant: "primary", size: "lg" })}
             >
               Get the extension
-            </button>
+            </Button>
           )}
         </div>
         <Screenshots />
