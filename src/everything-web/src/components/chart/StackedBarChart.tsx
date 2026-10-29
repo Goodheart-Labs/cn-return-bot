@@ -33,8 +33,9 @@ const BAR_PADDING = 0.2;
 const VALUE_TICKS = 5;
 /** The room one bar label needs, such as "Wk of Oct 27". */
 const LABEL_SPACING = 90;
-/** Room at both ends of the bars, so the first and last label are not cut. */
-const EDGE = 32;
+/** Room at both ends of the bars, so the first and last label are not cut:
+ *  half of LABEL_SPACING. */
+const EDGE = 45;
 
 const sum = (bar: Bar, parts: readonly BarPart[]) => parts.reduce((total, part) => total + (bar.values[part.key] ?? 0), 0);
 /** A share in percent. Shares under 10% keep a decimal, so a small part does
