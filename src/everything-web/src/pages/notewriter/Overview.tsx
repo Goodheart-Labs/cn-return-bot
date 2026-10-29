@@ -83,9 +83,10 @@ export function Overview({ fields, query, onQueryChange, devMode }: {
   const abFilters = useMemo(() => query.filters.filter((filter) => isAbField(filter.field)), [query.filters]);
   const pageRequest = useMemo(() => buildRequest(fields, { filters: abFilters, sorts: [] }, now), [fields, abFilters, now]);
   const listRequest = useMemo(() => buildRequest(fields, query, now), [fields, query, now]);
-  const facets = useNoteFacets("x", fields, listRequest);
-  const abProps = filterScope(abFields, query, onQueryChange, facets);
-  const listProps = filterScope(listFields, query, onQueryChange, facets);
+  // Each Filter button counts its values under the filters that narrow what
+  // it narrows: the A/B filters the whole page, the list's own the list.
+  const abProps = filterScope(abFields, query, onQueryChange, useNoteFacets("x", abFields, pageRequest));
+  const listProps = filterScope(listFields, query, onQueryChange, useNoteFacets("x", listFields, listRequest));
 
   return (
     <div className="space-y-8">

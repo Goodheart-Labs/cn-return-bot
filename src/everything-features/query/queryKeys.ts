@@ -36,7 +36,7 @@ export const queryKeys = {
    *  source: "x" or "commonnotes". */
   noteSummary: (source: string, request: unknown) => ["notewriter", source, "summary", request] as const,
   noteDays: (source: string, request: unknown, withRuns: boolean) => ["notewriter", source, "days", request, withRuns] as const,
-  noteFacets: (source: string, request: unknown) => ["notewriter", source, "facets", request] as const,
+  noteFacets: (source: string, columns: string[], request: unknown) => ["notewriter", source, "facets", columns, request] as const,
   xNoteList: (request: unknown) => ["notewriter", "x", "list", request] as const,
   xOriginDays: ["notewriter", "x", "originDays"] as const,
   abTests: (source: string) => ["notewriter", source, "abTests"] as const,

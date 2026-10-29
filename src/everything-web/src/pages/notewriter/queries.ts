@@ -47,7 +47,7 @@ export const useAbCombos = (source: NotewriterSource, tests: string[], since: st
 export function useNoteFacets(source: NotewriterSource, fields: readonly FieldDef[], request: QueryRequest): Record<string, Facet[]> | undefined {
   const columns = fields.flatMap((field) => (field.kind === "choice" ? [field.id] : []));
   return useQuery({
-    queryKey: queryKeys.noteFacets(source, request),
+    queryKey: queryKeys.noteFacets(source, columns, request),
     queryFn: async () => {
       const byField = await fetchNoteFacets(source, request, columns);
       return Object.fromEntries(Object.entries(byField).map(([field, values]) => [field, values.map((v) => ({ value: v.value, label: null, count: v.count }))]));
