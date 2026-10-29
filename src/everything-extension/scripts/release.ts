@@ -35,6 +35,9 @@ const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 // AMO rejects a token that lives longer than five minutes. Google allows an hour.
 const AMO_TOKEN_LIFETIME_SECONDS = 60;
+const HTTP_TOO_MANY_REQUESTS = 429;
+const AMO_DEFAULT_THROTTLE_SECONDS = 60;
+const AMO_MAX_ATTEMPTS = 5;
 const GOOGLE_TOKEN_LIFETIME_SECONDS = 600;
 const POLL_INTERVAL_MS = 5_000;
 // A package's unpacked code is a few megabytes, more than execFileSync's
@@ -147,16 +150,35 @@ function amoAuthHeader(): string {
   return `JWT ${header}.${payload}.${signature}`;
 }
 
+/** AMO throttles writes after a handful in a row and answers 429 with the
+ *  seconds to wait, for example "Expected available in 57 seconds." Replacing
+ *  four screenshots takes more requests than that. */
+function amoThrottleSeconds(response: Response, text: string): number | undefined {
+  if (response.status !== HTTP_TOO_MANY_REQUESTS) return undefined;
+  const retryAfter = Number(response.headers.get("retry-after"));
+  if (retryAfter > 0) return retryAfter;
+  const stated = /available in (\d+) seconds/.exec(text)?.[1];
+  return stated ? Number(stated) : AMO_DEFAULT_THROTTLE_SECONDS;
+}
+
 async function amoRequest<T>(method: string, apiPath: string, body?: FormData | object): Promise<T> {
   const isForm = body instanceof FormData;
-  const response = await fetch(`${AMO_API}${apiPath}`, {
-    method,
-    headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
-    body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
-  });
-  const text = await response.text();
-  if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);
-  return (text ? JSON.parse(text) : undefined) as T;
+  for (let attempt = 1; ; attempt++) {
+    const response = await fetch(`${AMO_API}${apiPath}`, {
+      method,
+      headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+    });
+    const text = await response.text();
+    const throttleSeconds = amoThrottleSeconds(response, text);
+    if (throttleSeconds !== undefined && attempt < AMO_MAX_ATTEMPTS) {
+      console.log(`AMO throttled ${method} ${apiPath}, waiting ${throttleSeconds} seconds`);
+      await sleep((throttleSeconds + 1) * 1000);
+      continue;
+    }
+    if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
 }
 
 function fileField(filePath: string, type: string): Blob {
