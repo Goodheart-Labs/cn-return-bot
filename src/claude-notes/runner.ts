@@ -149,6 +149,8 @@ To save a note, write a JSON file to your run folder and run \`bun run claude-no
 
 Readers see each source's quote under the note, so the quote must appear word for word on the page. WebFetch gives you a summary of a page, not its text. So download each source with curl and check with grep -F that the quote is in it. Also save a draft for each passage you researched and decided against, with outcome no_note_needed or too_hard.
 
+Use only fork subagents: the Agent tool with subagent_type "fork". A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may save its notes itself with the draft command, or put what it found in its answer to you. Both are fine. Only you write report.json.
+
 When you are done, write ${runDir}/report.json as { "passages": [{ "passage": "...", "outcome": "note | no_note_needed | too_hard" }] } and stop. Do not run finish; the runner does that. If the post has nothing worth checking, write { "skipped": true, "reason": "..." } instead.`;
 }
 
@@ -158,6 +160,8 @@ function tweetPrompt(tweet: XTweet, runDir: string): string {
 If the post has images, download them into your run folder and look at them. Your run folder is ${runDir}; write every file there.
 
 If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\`. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\`. Stop once one of the two has succeeded.
+
+If you use subagents, use only fork subagents: the Agent tool with subagent_type "fork". A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may submit the note itself, or put what it found in its answer to you. Both are fine.
 
 The post, as our pipeline shows it:
 
