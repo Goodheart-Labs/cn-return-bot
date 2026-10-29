@@ -228,6 +228,7 @@ export type Database = {
           review_note_by: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          run_id: string | null
           sources: Json
           status: string
           updated_at: string
@@ -254,6 +255,7 @@ export type Database = {
           review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          run_id?: string | null
           sources?: Json
           status: string
           updated_at?: string
@@ -280,6 +282,7 @@ export type Database = {
           review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          run_id?: string | null
           sources?: Json
           status?: string
           updated_at?: string
@@ -299,6 +302,13 @@ export type Database = {
             columns: ["note_id"]
             isOneToOne: false
             referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_drafts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "everything_pipeline_runs"
             referencedColumns: ["id"]
           },
         ]

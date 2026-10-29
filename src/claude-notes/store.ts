@@ -215,6 +215,7 @@ export async function addDraft(draft: NewDraft): Promise<DraftRow> {
         // posting fails, the draft stays visible under Not reviewed instead
         // of looking posted.
         status: draft.outcome === "note" ? "posting" : "not_a_note",
+        run_id: process.env[RUN_ID_ENV] ?? null,
         ...(await placeOfPassage(draft.itemId, draft.passage)),
       })
       .select("*")
@@ -344,17 +345,29 @@ export async function nathanNotedItem(itemId: string): Promise<boolean> {
 
 export type PostRunOutcome = "done" | "skipped" | "incomplete" | "failed";
 
-/** Writes one everything_pipeline_runs row per post Claude worked on, with the
+/** The environment variable through which a post's Claude, and every command
+ *  it runs, knows its run row. The draft command stores it on each draft. */
+export const RUN_ID_ENV = "CN_RUN_ID";
+
+/** Writes the everything_pipeline_runs row of one post's Claude run, with the
  *  post's A/B picks, the way the pipeline writes one per claim. So the same
- *  readouts can compare the arms. The cost column stays empty, because the
- *  daily spend cap adds it up in dollars, and Claude spends plan usage, not
- *  money. What the run would have cost on the API is in logs.costUsd. */
-export async function recordPostRun(itemId: string, outcome: PostRunOutcome, picks: Record<string, string>, logs: Record<string, unknown>) {
-  check(
+ *  readouts can compare the arms. It is written when the Claude starts, so
+ *  its drafts can point at it. The cost column stays empty, because the daily
+ *  spend cap adds it up in dollars, and Claude spends plan usage, not money.
+ *  What the run would have cost on the API goes into logs.costUsd at the end. */
+export async function startPostRun(itemId: string, picks: Record<string, string>): Promise<string> {
+  const row = unwrap(
     await db()
       .from("everything_pipeline_runs")
-      .insert({ kind: "claude", item_id: itemId, bot_name: CLAUDE_CODE_BOT, outcome, ab_test_picks: picks, logs: logs as Json }),
+      .insert({ kind: "claude", item_id: itemId, bot_name: CLAUDE_CODE_BOT, outcome: "running", ab_test_picks: picks })
+      .select("id")
+      .single(),
   );
+  return row.id;
+}
+
+export async function endPostRun(runId: string, outcome: PostRunOutcome, logs: Record<string, unknown>) {
+  check(await db().from("everything_pipeline_runs").update({ outcome, logs: logs as Json }).eq("id", runId));
 }
 
 /** Marks an item checked once Claude's agents went through all of it. */

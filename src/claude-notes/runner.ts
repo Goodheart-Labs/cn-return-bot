@@ -37,7 +37,9 @@ import {
   readItem,
   readJudgedNote,
   readSettings,
-  recordPostRun,
+  endPostRun,
+  RUN_ID_ENV,
+  startPostRun,
   type PostRunOutcome,
   saveJudgement,
   skipItem,
@@ -187,13 +189,14 @@ const tmuxAlive = (session: string) => spawnSync("tmux", ["has-session", "-t", `
  *  env file inside the session, so they never appear in a process's
  *  arguments. The service secret is removed again, because the agents never
  *  call the services box; only `take` in this runner does. */
-function startClaude(session: string, runDir: string, prompt: string, extraArgs: string[] = []) {
+function startClaude(session: string, runDir: string, prompt: string, extraArgs: string[] = [], env: Record<string, string> = {}) {
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   const script = [
     "set -a",
     `. ${ENV_FILE}`,
     "set +a",
     "unset SERVICE_AUTH_SECRET EXTRACTION_URL",
+    ...Object.entries(env).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
     `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${RUN_SETTINGS} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
@@ -273,24 +276,28 @@ async function startPost(item: QueueItem, attempt = 1) {
   }
   if (taken.kind === "skipped") return console.log(`Skipped ${item.url}: ${taken.reason}`);
   const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
-  startClaude(session, runDir, postPrompt(item, taken.dir, runDir, attempt === 1 ? drawPostPicks(runDir) : readPostPicks(runDir)), ["--append-system-prompt-file", EXAMPLES_PATH]);
+  const postRun = (attempt > 1 && readPostRun(runDir)) || (await startPostRunFor(item, runDir));
+  startClaude(session, runDir, postPrompt(item, taken.dir, runDir, postRun.picks), ["--append-system-prompt-file", EXAMPLES_PATH], { [RUN_ID_ENV]: postRun.runId });
   posts.set(item.id, { item, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
   console.log(`Started ${session} on ${item.url} (attempt ${attempt})`);
 }
 
-/** A post's A/B picks live in its run folder. The first attempt draws them,
- *  and a retry reads them, so both attempts get the same prompt. */
-const picksFile = (runDir: string) => path.join(runDir, "picks.json");
+/** A post's run row and A/B picks, kept in its run folder. The first attempt
+ *  draws the picks and writes the row, and a retry reads them, so both
+ *  attempts get the same prompt and the same row. */
+type PostRun = { runId: string; picks: Record<string, string> };
+const postRunFile = (runDir: string) => path.join(runDir, "run.json");
 
-function drawPostPicks(runDir: string): Record<string, string> {
+async function startPostRunFor(item: QueueItem, runDir: string): Promise<PostRun> {
   const picks = { bot: CLAUDE_CODE_BOT, [CLAUDE_CN_TASTE_TEST.name]: pickVariantName(CLAUDE_CN_TASTE_TEST) };
-  writeFileSync(picksFile(runDir), JSON.stringify(picks));
-  return picks;
+  const postRun = { runId: await startPostRun(item.id, picks), picks };
+  writeFileSync(postRunFile(runDir), JSON.stringify(postRun));
+  return postRun;
 }
 
-/** A post whose Claude started before the runner drew picks has no file. */
-function readPostPicks(runDir: string): Record<string, string> {
-  return existsSync(picksFile(runDir)) ? JSON.parse(readFileSync(picksFile(runDir), "utf8")) : { bot: CLAUDE_CODE_BOT };
+/** A post whose Claude started before the runner wrote run rows has none. */
+function readPostRun(runDir: string): PostRun | null {
+  return existsSync(postRunFile(runDir)) ? JSON.parse(readFileSync(postRunFile(runDir), "utf8")) : null;
 }
 
 function readReport(runDir: string): Record<string, unknown> | null {
@@ -312,7 +319,10 @@ async function endPost(run: Run & { item: QueueItem }) {
   const report = readReport(run.runDir);
   const usageNote = { weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await weeklyUsage(), minutes: Math.round((Date.now() - run.startedAt) / 60_000), attempt: run.attempt, costUsd: runCost(run.runDir) };
   console.log(`${run.session} ended after ${usageNote.minutes} minutes, ${report ? "with" : "without"} a report`);
-  const record = (outcome: PostRunOutcome) => recordPostRun(run.item.id, outcome, readPostPicks(run.runDir), { runDir: run.runDir, report, ...usageNote });
+  const postRun = readPostRun(run.runDir);
+  const record = async (outcome: PostRunOutcome) => {
+    if (postRun) await endPostRun(postRun.runId, outcome, { runDir: run.runDir, report, ...usageNote });
+  };
   if (report?.skipped) {
     await record("skipped");
     return skipItem(run.item.id, String(report.reason ?? "nothing worth checking"));
