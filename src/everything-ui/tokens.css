@@ -41,6 +41,7 @@
   --cn-gray-950: 3 7 18;
   --cn-blue-50: 239 246 255;
   --cn-blue-100: 219 234 254;
+  --cn-blue-200: 191 219 254;
   --cn-blue-300: 147 197 253;
   --cn-blue-400: 96 165 250;
   --cn-blue-500: 59 130 246;
@@ -172,6 +173,12 @@
    * dots, to sit beside the positive and negative ones. */
   --cn-pending-solid: rgb(var(--cn-blue-500));
 
+  /* Three steps of one blue for the parts of a whole in a chart, strongest
+   * first, such as who wrote the notes rated helpful. */
+  --cn-series-1: rgb(var(--cn-blue-600));
+  --cn-series-2: rgb(var(--cn-blue-400));
+  --cn-series-3: rgb(var(--cn-blue-200));
+
   /* Type. The extension uses this scale. The website reads at a larger size,
    * see .cn-reading-scale below. */
   /* The type of Substack, where most of our readers read (Jim, 2026-09-28).
@@ -286,4 +293,7 @@
   --cn-negative-line: rgb(var(--cn-red-700));
   --cn-negative-solid: rgb(var(--cn-red-500));
   --cn-pending-solid: rgb(var(--cn-blue-500));
+  --cn-series-1: rgb(var(--cn-blue-500));
+  --cn-series-2: rgb(var(--cn-blue-700));
+  --cn-series-3: rgb(var(--cn-blue-900));
 }

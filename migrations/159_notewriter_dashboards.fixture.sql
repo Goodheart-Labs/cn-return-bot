@@ -1,13 +1,14 @@
 -- A miniature of production for migration 159: migration 153's miniature with
 -- 153 applied, so the review page's functions can be checked on the new
--- helpers with 153's own verify file, plus the X tables the page reads.
+-- helpers with 153's own verify file, plus the X tables the X page reads and
+-- the Common Notes claim checks.
 --
 --   sudo docker run -d --rm --name cn-migration-test -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:17
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"   (with PGPASSWORD=test)
---   $PSQL -f migrations/159_x_notewriter_page.fixture.sql
---   $PSQL --single-transaction -f migrations/159_x_notewriter_page.sql
+--   $PSQL -f migrations/159_notewriter_dashboards.fixture.sql
+--   $PSQL --single-transaction -f migrations/159_notewriter_dashboards.sql
 --   $PSQL -f migrations/153_review_fields.verify.sql
---   $PSQL -f migrations/159_x_notewriter_page.verify.sql
+--   $PSQL -f migrations/159_notewriter_dashboards.verify.sql
 --
 -- The notes: n1 helpful on 20 Oct by bot a and search s1, n2 not helpful on
 -- 21 Oct by bot a and search s2 with a reviewer's failure mode, n3 needing
@@ -58,3 +59,19 @@ insert into review_dashboard_annotations (source, target_id, seen, failure_modes
   ('production', 'n2', true, '{hallucination}'),
   ('production', 'n3', false, '{}');
 insert into daily_note_origin_counts values ('2026-10-20', 100, 2, 3);
+
+-- Common Notes: every note of 153's miniature is Claude's. A pipeline note on
+-- claim cc1 came from a claim check that drew the search arm s2, so the
+-- search test varied on Common Notes. Another check drew only control arms.
+create table everything_pipeline_runs (
+  id uuid primary key default gen_random_uuid(), claim_id uuid, kind text, outcome text, cost numeric,
+  ab_test_picks jsonb, created_at timestamptz not null default now()
+);
+insert into everything_claims
+select (jsonb_populate_record(c, '{"id": "00000000-0000-0000-0000-000000000cc1", "claim": "A pipeline claim"}')).*
+  from everything_claims c limit 1;
+insert into everything_notes (claim_id, note, status, helpful_count, somewhat_helpful_count, not_helpful_count, p_helpful)
+values ('00000000-0000-0000-0000-000000000cc1', 'A pipeline note', 'published', 3, 0, 0, 0.9);
+insert into everything_pipeline_runs (claim_id, kind, outcome, cost, ab_test_picks) values
+  ('00000000-0000-0000-0000-000000000cc1', 'check', 'candidate', 0.5, '{"bot": "a", "search": "s2"}'),
+  (null, 'check', 'rejected', 0.25, '{"bot": "a", "search": "s1"}');

@@ -32,6 +32,16 @@ export const queryKeys = {
   projectItems: (projectId: string) => ["projectItems", projectId] as const,
   feedItem: (itemId: string) => ["feedItem", itemId] as const,
   leaderboard: ["leaderboard"] as const,
+  /** Everything the X notewriter page and the dashboard's notes read, by
+   *  source: "x" or "commonnotes". */
+  noteSummary: (source: string, request: unknown) => ["notewriter", source, "summary", request] as const,
+  noteDays: (source: string, request: unknown, withRuns: boolean) => ["notewriter", source, "days", request, withRuns] as const,
+  noteFacets: (source: string, request: unknown) => ["notewriter", source, "facets", request] as const,
+  xNoteList: (request: unknown) => ["notewriter", "x", "list", request] as const,
+  xOriginDays: ["notewriter", "x", "originDays"] as const,
+  abTests: (source: string) => ["notewriter", source, "abTests"] as const,
+  abReasons: (source: string) => ["notewriter", source, "abReasons"] as const,
+  abCombos: (source: string, tests: string[], since: string | null) => ["notewriter", source, "abCombos", tests, since] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
   typefullySync: ["typefullySync"] as const,

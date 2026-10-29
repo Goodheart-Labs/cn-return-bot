@@ -27,6 +27,7 @@ import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { Slider } from "@cn/ui/Slider";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { LoadState } from "./tableParts";
+import { AXIS_COLOR, SURFACE_COLOR, tickLabel, tooltipClass } from "../../components/chart/chartTheme";
 
 /** A metric is either a plain count per bucket, or a count of people who did
  *  the thing at least n times, where n comes from the slider. The label of a
@@ -79,15 +80,11 @@ const MAX_POINTS_WITH_DOTS = 90;
 /** Room for one tick label on the time axis. */
 const PIXELS_PER_TIME_TICK = 90;
 const VALUE_TICKS = 4;
-const TICK_FONT_SIZE = 11;
 
 /* The chart draws with the design tokens, so dark mode swaps its colours as it
  * swaps the rest of the page. */
 const LINE_COLOR = "var(--cn-primary)";
 const TOTAL_COLOR = "var(--cn-fg)";
-const AXIS_COLOR = "var(--cn-line-strong)";
-const LABEL_COLOR = "var(--cn-fg-muted)";
-const SURFACE_COLOR = "var(--cn-surface)";
 
 /** The browsers a split metric draws, each in its own fixed colour. Edge and
  *  other Chromium browsers run the Chrome build. */
@@ -211,7 +208,6 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
 
   const defined = (p: Point) => p.value !== null;
   const showDots = points.length <= MAX_POINTS_WITH_DOTS;
-  const tickLabel = { fill: LABEL_COLOR, fontSize: TICK_FONT_SIZE };
 
   return (
     <div className="relative">
@@ -258,7 +254,7 @@ function LineChart({ series, granularity, width }: { series: Series[]; granulari
           left={tooltipLeft}
           top={tooltipTop}
           style={{ position: "absolute", pointerEvents: "none" }}
-          className="rounded-control bg-inverse px-2 py-1 text-xs text-on-inverse shadow-floating"
+          className={tooltipClass}
         >
           <div className={cn(series.length > 1 && "mb-0.5")}>
             {bucketLabel(points[hovered]!.date, granularity)}

@@ -2,7 +2,7 @@ import { directionText, fieldById, type FieldDef, type FieldSort } from "@cn/cor
 import { cn } from "@cn/ui/cn";
 import { DropdownMenu, type MenuEntry } from "@cn/ui/DropdownMenu";
 import { ArrowDownIcon, ArrowUpIcon } from "@cn/ui/icons";
-import { pillButtonClass, QueryChip } from "./QueryChip";
+import { pillButtonClass, QueryChip } from "@cn/ui/QueryChip";
 
 /** The sort levels as numbered pills, then a button that adds one more. A
  *  pill's menu swaps its field, its arrow flips its direction, and its cross

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { DASHBOARD_SECTIONS, isDashboardSection, type DashboardSection } from "../pages/dashboard/sections";
 import { JUDGE_SECTIONS, type JudgeSection } from "../pages/judgeExperiment/sections";
 import { capturePageview } from "./analytics";
 
@@ -13,13 +14,19 @@ import { capturePageview } from "./analytics";
  *   /minisites/new        an admin creates a minisite from a pasted link
  *   /minisites/<slug>     one minisite: an article with the reader features it switched on
  *   /leaderboard          the rating leaderboard
+ *   /x-notewriter         our AI-written notes on X: the numbers, the chart and
+ *                         the notes; its filters and sorts are query parameters
+ *   /x-notewriter/ab-tests  the A/B comparison of the X bot, in developer mode
  *   /admin/notes          admins review the Claude note writer's notes; the
  *                         filters, sorts and display options are query
  *                         parameters (lib/useFieldQuery.ts)
  *   /admin/best           the admins' leaderboard of the best notes
  *   /admin/best/<slug>    the same, narrowed to one creator
- *   /admin/dashboard      admins see how the extension is used, the order of
- *                         the next walk and the posts checked last
+ *   /admin/dashboard      admins see how the extension is used; each other
+ *   /admin/dashboard/<section>  section of the dashboard has its own path:
+ *                         the notes, the A/B tests, the order of the next
+ *                         walk, Claude's usage, the posts checked last and the
+ *                         clicks towards the extension
  *   /admin/judge-experiment/<section>  the labelled notes of the note judge
  *                         experiment, only on the development server
  *   /note-image/<note>    one note's card alone, which the local posting tool
@@ -51,7 +58,8 @@ export type Route =
   | { view: "newMinisite" }
   | { view: "noteReview" }
   | { view: "bestNotes"; project: string | null }
-  | { view: "dashboard" }
+  | { view: "xNotewriter"; page: "overview" | "abTests" }
+  | { view: "dashboard"; section: DashboardSection }
   | { view: "judgeExperiment"; section: JudgeSection }
   | { view: "noteImage"; note: string };
 
@@ -62,7 +70,9 @@ export const ALL_NOTES: Route = { view: "allNotes" };
 export const MINISITES: Route = { view: "minisites", slug: null };
 export const NOTE_REVIEW: Route = { view: "noteReview" };
 export const BEST_NOTES: Route = { view: "bestNotes", project: null };
-export const DASHBOARD: Route = { view: "dashboard" };
+export const DASHBOARD: Route = { view: "dashboard", section: DASHBOARD_SECTIONS[0].id };
+export const X_NOTEWRITER: Route = { view: "xNotewriter", page: "overview" };
+export const X_AB_TESTS: Route = { view: "xNotewriter", page: "abTests" };
 
 /** The sections the best-notes page had until GOO-597, which its old links
  *  name before the creator. */
@@ -91,7 +101,8 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
   if (page === "admin" && project === "best") return { view: "bestNotes", project: (OLD_CURATION_SECTIONS.includes(item) ? creator : item) ?? null };
-  if (page === "admin" && project === "dashboard") return DASHBOARD;
+  if (page === "admin" && project === "dashboard") return isDashboardSection(item) ? { view: "dashboard", section: item } : DASHBOARD;
+  if (page === "x-notewriter") return project === "ab-tests" ? X_AB_TESTS : X_NOTEWRITER;
   if (import.meta.env.DEV && page === "admin" && project === "judge-experiment") return { view: "judgeExperiment", section: isJudgeSection(item) ? item : JUDGE_SECTIONS[0] };
   // Links from before GOO-623 name a section after it, which is now a filter.
   if (page === "admin" && project === "notes") return NOTE_REVIEW;
@@ -106,7 +117,8 @@ export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
   if (route.view === "allNotes") return "/notes/all";
   if (route.view === "newMinisite") return "/minisites/new";
-  if (route.view === "dashboard") return "/admin/dashboard";
+  if (route.view === "dashboard") return route.section === DASHBOARD_SECTIONS[0].id ? "/admin/dashboard" : `/admin/dashboard/${route.section}`;
+  if (route.view === "xNotewriter") return route.page === "abTests" ? "/x-notewriter/ab-tests" : "/x-notewriter";
   if (route.view === "noteReview") return "/admin/notes";
   if (route.view === "noteImage") return `/note-image/${encodeURIComponent(route.note)}`;
   if (route.view === "judgeExperiment") return `/admin/judge-experiment/${route.section}`;

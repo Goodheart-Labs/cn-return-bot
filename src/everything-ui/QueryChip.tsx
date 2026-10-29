@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { cn } from "@cn/ui/cn";
-import { DropdownMenu, type MenuEntry } from "@cn/ui/DropdownMenu";
-import { CloseIcon } from "@cn/ui/icons";
+import { cn } from "./cn";
+import { DropdownMenu, type MenuEntry } from "./DropdownMenu";
+import { CloseIcon } from "./icons";
 
 /** The look of the pills of the Filter and Sort bars, and of their buttons. */
 const pillClass = "inline-flex h-8 items-center gap-1.5 rounded-full border border-line-strong bg-surface text-sm font-medium text-fg";

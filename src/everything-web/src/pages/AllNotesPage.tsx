@@ -6,11 +6,11 @@ import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
 import { NoteFeed, type FeedCard } from "../components/NoteFeed";
-import { FilterButton, FilterPills } from "../components/fieldQuery/Filters";
+import { FilterButton, FilterPills } from "@cn/features/fieldQuery/Filters";
 import { ageLabel, ageTotal, ALL_NOTES_FIELDS, BAND_LABELS, bandTotal, DEFAULT_ALL_NOTES_QUERY, noteFiltersOf, spanStarts } from "../lib/feed";
 import { useNoteFeed, type FeedEntry } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
-import { useFieldQuery } from "../lib/useFieldQuery";
+import { useFieldQuery } from "@cn/features/fieldQuery/useFieldQuery";
 import { useStoredChoice } from "../lib/useStoredValue";
 
 const ORDERS: { id: FeedOrder; label: string }[] = [
