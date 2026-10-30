@@ -1,6 +1,7 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts, isWholePageChecked } from "@cn/core/items";
+import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
+import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
 import { fetchReaderCanonical } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";

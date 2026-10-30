@@ -28,6 +28,7 @@ import { canonicalizePageUrl, extractYoutubeVideoId } from "../everything-core/p
 import { canonicalFeed, substackFeedOfPage, type CanonicalFeed } from "./feedUrls";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { PASSAGE_CHECK } from "../everything-core/requestProgress";
+import { isWholePageChecked } from "../everything-core/wholePageChecked";
 import { group } from "./logFormat";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import { requestBudgetExhausted } from "./spendCap";
@@ -95,10 +96,15 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
   // reads their own words on why, and resolves each request once it is done.
   const passageReason = request.selection ? PASSAGE_CHECK.running : null;
   if (existing) {
-    // Only a finished whole-page check refuses the request. An item that
+    // A worker is holding this item right now. Taking the row away mid-run
+    // would race it, so the request stays pending and the next cycle retries.
+    if (existing.status === "processing") {
+      return { kind: "deferred", detail: `a worker is on it now, request stays pending: ${request.page_url}` };
+    }
+    // Only a page that was read in full refuses the request. An item that
     // exists because a reader wrote a note on the page, or because one
     // paragraph was checked, is promoted to a whole-page check instead.
-    if (existing.status === "done" && existing.checked_scope === "page") {
+    if (isWholePageChecked(existing)) {
       if (!request.selection) {
         await resolveNoteRequest(request.id, "done", "page was already checked", existing.id);
         return { kind: "already_checked", detail: `already checked: ${request.page_url}` };
@@ -110,11 +116,6 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
       await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
       await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
       return { kind: "queued", detail: `requeued a checked page for a selected passage: ${request.page_url}` };
-    }
-    // A worker is holding this item right now. Taking the row away mid-run
-    // would race it, so the request stays pending and the next cycle retries.
-    if (existing.status === "processing") {
-      return { kind: "deferred", detail: `a worker is on it now, request stays pending: ${request.page_url}` };
     }
     if (existing.checked_scope !== "page") {
       // The promotion overwrites full_text. A paragraph item's old text would

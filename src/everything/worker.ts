@@ -18,6 +18,7 @@ import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary, updateItemMeta } from "./db";
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
+import { answerPassageRequests, openPassageRequests } from "./passageRequests";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
 import { ServiceError, type ItemTextResponse } from "../service/contract";
@@ -204,6 +205,14 @@ export const queuedFeedItemCount = (queue: QueuedItemSummary[]): number =>
  *  run. */
 export type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
 
+/** Marks an item done. The passage requests still open on it are answered
+ *  first, because a finished page with a request still open reads as waiting
+ *  on the reader's card. */
+async function finishItem(itemId: string, skipReason: string | null) {
+  await answerPassageRequests(itemId, (await openPassageRequests(itemId)).map((request) => request.id));
+  await markItemDone(itemId, skipReason);
+}
+
 /** A video we cannot read is not a failure (GOO-422). A young video without
  *  captions stays in error so the walk tries it again later, because YouTube
  *  may not have made its automatic captions yet. On its last allowed attempt,
@@ -217,7 +226,7 @@ async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoE
     return "no_captions_yet";
   }
   console.log(`  ${err.message} · finished without checking`);
-  await markItemDone(item.id, err.reason);
+  await finishItem(item.id, err.reason);
   return "done";
 }
 
@@ -229,7 +238,7 @@ export async function recordItemFailure(item: EverythingItem, err: Error): Promi
   if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
   if (err instanceof ShortformPageError) {
     console.log(`  ${err.message} · finished without checking`);
-    await markItemDone(item.id, SHORTFORM_SKIP_REASON);
+    await finishItem(item.id, SHORTFORM_SKIP_REASON);
     return "done";
   }
   await markItemError(item.id, err.message ?? "unknown");
@@ -271,7 +280,7 @@ export async function processQueuedItem(item: EverythingItem): Promise<ItemOutco
       console.log(`  budget reached part way through, put back in the queue with ${tally.capped} claims left`);
       return "capped";
     }
-    await markItemDone(item.id, tally.skipReason);
+    await finishItem(item.id, tally.skipReason);
     // The per-item cost is already recorded per claim; this is the first time
     // it is shown. It is what tells you which items are expensive.
     const cost = (await todaySpendUsd()) - spentBefore;

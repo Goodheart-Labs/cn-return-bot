@@ -24,11 +24,6 @@ import * as path from "path";
 import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
 import {
   claudeDraftsSince,
-  claudeNotePassagesSince,
-  openPassageRequests,
-  requeueItem,
-  resolvePassageRequests,
-  type PassageRequest,
   draftsToJudge,
   latestEventId,
   postedAfter,
@@ -52,7 +47,8 @@ import {
   unansweredMessages,
 } from "./store";
 import { take, type AskedPassages } from "./take";
-import { fetchItem } from "../everything/db";
+import { fetchItem, requeueItem } from "../everything/db";
+import { answerPassageRequests, openPassageRequests, type PassageRequest } from "../everything/passageRequests";
 import { recordItemFailure } from "../everything/worker";
 import { readUsage, type UsageReading } from "./usage";
 import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
@@ -347,7 +343,7 @@ function readPassageRequests(runDir: string): PassageRequest[] {
  *  back in the queue. Answering comes first, because a finished post with a
  *  request still open reads as waiting on the reader's card. */
 async function finishPost(run: Run & { item: QueueItem }, markChecked: () => Promise<void>) {
-  await resolvePassageRequests(readPassageRequests(run.runDir), await claudeNotePassagesSince(run.item.id, new Date(run.startedAt).toISOString()));
+  await answerPassageRequests(run.item.id, readPassageRequests(run.runDir).map((request) => request.id));
   await markChecked();
   if ((await openPassageRequests(run.item.id)).length) await requeueItem(run.item.id);
 }

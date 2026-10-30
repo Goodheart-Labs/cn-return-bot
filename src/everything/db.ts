@@ -61,7 +61,7 @@ export interface NewClaimRow {
   status_reason: string | null;
 }
 
-function throwOnError<T>({ data, error }: { data: T; error: { message: string } | null }): T {
+export function throwOnError<T>({ data, error }: { data: T; error: { message: string } | null }): T {
   if (error) throw new Error(`Supabase: ${error.message}`);
   return data;
 }
@@ -251,28 +251,36 @@ export async function raiseItemPriority(id: string, priority: number): Promise<v
   );
 }
 
+/** What a request needs to know about the item its page already has. */
+export interface PageItemState {
+  id: string;
+  status: string;
+  checked_scope: CheckedScope;
+  first_checked_at: string | null;
+}
+
 /** Finds the item a page URL resolves to, whatever its status. A YouTube page is
  *  matched by its video id, because the stored URL forms vary. Any other URL is
  *  matched exactly, apart from a trailing slash. This mirrors the extension's
  *  fetchItemForUrl. */
 export async function findItemForPageUrl(
   pageUrl: string,
-): Promise<{ id: string; status: string; checked_scope: CheckedScope } | null> {
+): Promise<PageItemState | null> {
   const db = getSupabaseClient();
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
     // ilike reads an underscore in the video id as a wildcard, so this is only a
     // prefilter. Every row it returns is verified by comparing the id exactly.
     const rows = throwOnError(
-      await db.from("everything_items").select("id, status, checked_scope, url").ilike("url", `%${videoId}%`),
-    ) as { id: string; status: string; checked_scope: CheckedScope; url: string }[];
+      await db.from("everything_items").select("id, status, checked_scope, first_checked_at, url").ilike("url", `%${videoId}%`),
+    ) as (PageItemState & { url: string })[];
     const hit = rows.find((r) => extractYoutubeVideoId(r.url) === videoId);
-    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope } : null;
+    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope, first_checked_at: hit.first_checked_at } : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
   const rows = throwOnError(
-    await db.from("everything_items").select("id, status, checked_scope").in("url", [trimmed, `${trimmed}/`]).limit(1),
-  ) as { id: string; status: string; checked_scope: CheckedScope }[];
+    await db.from("everything_items").select("id, status, checked_scope, first_checked_at").in("url", [trimmed, `${trimmed}/`]).limit(1),
+  ) as PageItemState[];
   return rows[0] ?? null;
 }
 
