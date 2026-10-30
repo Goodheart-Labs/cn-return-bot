@@ -16,8 +16,8 @@ tweet the X run hands to Claude (GOO-527) gets its own Claude in
 |---|---|
 | `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it, and it follows whatever branch is checked out. |
 | `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`. Owned by root, readable by `nathan` only. |
-| `/tmp/cn-notes/<item id>/` | One run folder per post: the prompt, the Claude's output stream, its drafts and `report.json`. |
-| `/tmp/cn-notes/x-<run id>/` | One run folder per X tweet: the prompt, the output stream and `note.json`. |
+| `/var/tmp/cn-notes/<item id>/` | One run folder per post: the prompt, the Claude's output stream, its drafts and `report.json`. The runner deletes folders older than 3 days. |
+| `/var/tmp/cn-notes/x-<run id>/` | One run folder per X tweet: the prompt, the output stream and `note.json`. |
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
 | `~nathan/.local/share/cn-notes/note-examples.md` | The examples file, rebuilt once a day by the runner. |
 | `/srv/ai-box/PAUSE` | Nathan's pause switch. While it exists, the runner starts nothing. |
