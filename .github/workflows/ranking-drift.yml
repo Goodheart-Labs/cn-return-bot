@@ -16,12 +16,10 @@ jobs:
   replay:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
@@ -31,6 +29,9 @@ jobs:
           FROM=$(date -u -d '49 days ago' +%F)
           TO=$(date -u -d '7 days ago' +%F)
           bun run replay-ranking --from "$FROM" --to "$TO" --top 40 | tee replay.txt
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       - name: Open an issue with the result
         run: |
           TITLE="Ranking drift check $(date -u +%Y-%m)"
@@ -48,3 +49,5 @@ jobs:
           # whether or not the label already exists.
           gh label create ranking --force --color 5319e7 --description "Monthly ranking drift check results"
           gh issue create --title "$TITLE" --body-file body.md --label ranking
+        env:
+          GH_TOKEN: ${{ github.token }}
