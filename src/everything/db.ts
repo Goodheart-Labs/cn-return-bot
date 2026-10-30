@@ -63,7 +63,7 @@ export interface NewClaimRow {
   status_reason: string | null;
 }
 
-export function throwOnError<T>({ data, error }: { data: T; error: { message: string } | null }): T {
+function throwOnError<T>({ data, error }: { data: T; error: { message: string } | null }): T {
   if (error) throw new Error(`Supabase: ${error.message}`);
   return data;
 }

@@ -4,7 +4,6 @@
 
 import { getSupabaseClient } from "../api/supabaseClient";
 import { PASSAGE_CHECK } from "../everything-core/requestProgress";
-import { throwOnError } from "./db";
 
 /** A reader's request for a note on selected words of a post, with the
  *  reader's reason when they gave one. */
@@ -29,26 +28,24 @@ export function passagesOverlap(a: string, b: string): boolean {
 
 /** The passage requests on an item that nobody has answered yet. */
 export async function openPassageRequests(itemId: string): Promise<PassageRequest[]> {
-  const rows = throwOnError(
-    await getSupabaseClient()
-      .from("everything_note_requests")
-      .select("id, selection, steer")
-      .eq("item_id", itemId)
-      .eq("status", "enqueued")
-      .eq("status_reason", PASSAGE_CHECK.running)
-      .not("selection", "is", null)
-      .order("created_at"),
-  )!;
+  const { data: rows, error } = await getSupabaseClient()
+    .from("everything_note_requests")
+    .select("id, selection, steer")
+    .eq("item_id", itemId)
+    .eq("status", "enqueued")
+    .eq("status_reason", PASSAGE_CHECK.running)
+    .not("selection", "is", null)
+    .order("created_at");
+  if (error) throw new Error(`Supabase: ${error.message}`);
   return rows.map((row) => ({ id: row.id, passage: row.selection!, reason: row.steer }));
 }
 
 /** Answers a request with whether its passage got a note. The reader's
  *  progress card shows the answer. */
 export async function answerPassageRequest(requestId: string, gotNote: boolean): Promise<void> {
-  throwOnError(
-    await getSupabaseClient()
-      .from("everything_note_requests")
-      .update({ status: "done", status_reason: gotNote ? PASSAGE_CHECK.note : PASSAGE_CHECK.noNote })
-      .eq("id", requestId),
-  );
+  const { error } = await getSupabaseClient()
+    .from("everything_note_requests")
+    .update({ status: "done", status_reason: gotNote ? PASSAGE_CHECK.note : PASSAGE_CHECK.noNote })
+    .eq("id", requestId);
+  if (error) throw new Error(`Supabase: ${error.message}`);
 }
