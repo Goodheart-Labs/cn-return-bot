@@ -19,9 +19,10 @@ interface Window {
 
 export interface UsageReading {
   at: string;
-  /** Percent of the rolling 5-hour window. */
-  fiveHour: number;
-  fiveHourResetsAt: string;
+  /** Percent of the rolling 5-hour window. The endpoint sends no 5-hour
+   *  window while none is open, and then both fields are null. */
+  fiveHour: number | null;
+  fiveHourResetsAt: string | null;
   /** Percent of the weekly limit, which is what the note writer budgets. */
   weekly: number;
   weeklyResetsAt: string;
@@ -33,11 +34,11 @@ export async function readUsage(): Promise<UsageReading> {
     headers: { Authorization: `Bearer ${accessToken}`, "anthropic-beta": "oauth-2025-04-20" },
   });
   if (!response.ok) throw new Error(`The usage endpoint answered ${response.status}: ${await response.text()}`);
-  const body: { five_hour: Window; seven_day: Window } = await response.json();
+  const body: { five_hour: Window | null; seven_day: Window } = await response.json();
   const reading: UsageReading = {
     at: new Date().toISOString(),
-    fiveHour: body.five_hour.utilization,
-    fiveHourResetsAt: body.five_hour.resets_at,
+    fiveHour: body.five_hour?.utilization ?? null,
+    fiveHourResetsAt: body.five_hour?.resets_at ?? null,
     weekly: body.seven_day.utilization,
     weeklyResetsAt: body.seven_day.resets_at,
   };
