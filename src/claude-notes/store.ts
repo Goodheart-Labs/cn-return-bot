@@ -411,6 +411,14 @@ export async function recordUsage(reading: { weekly: number; fiveHour: number; w
 }
 
 /** How many drafts Claude saved on an item since a time. */
+/** The passages of the notes Claude saved on an item since a time. */
+export async function claudeNotePassagesSince(itemId: string, since: string): Promise<string[]> {
+  const rows = unwrap(
+    await db().from("everything_claude_drafts").select("passage").eq("item_id", itemId).eq("outcome", "note").gte("created_at", since),
+  );
+  return rows.map((row) => row.passage);
+}
+
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
   if (error) throw new Error(JSON.stringify(error));

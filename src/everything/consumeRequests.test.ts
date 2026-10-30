@@ -128,11 +128,6 @@ describe("consumeNoteRequest", () => {
   });
 });
 
-test("a new steered request preserves the steer beside the queued passage", async () => {
-  await consumeNoteRequest(request({ selection: "A bridge opened in 1932.", steer: "the opening date" }) as never);
-  expect(dbState.calls.insertQueuedItem?.[0]?.[0]).toMatchObject({ request_steer: "the opening date", full_text: "A bridge opened in 1932.", checked_scope: "paragraph" });
-});
-
 /* A newly requested page goes under its creator's project, or under "Around
  * the web" when it has no creator we follow (GOO-290). */
 describe("the project a new requested page goes under", () => {

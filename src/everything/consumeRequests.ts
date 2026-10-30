@@ -170,7 +170,6 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
     full_text: fullText,
     priority: QUEUE_PRIORITY.requested,
     checked_scope: request.selection ? "paragraph" : "page",
-    ...(request.steer ? { request_steer: request.steer } : {}),
   });
   await recordCaptureCost(itemId, captureCostUsd);
   await resolveNoteRequest(request.id, "enqueued", passageReason, itemId);

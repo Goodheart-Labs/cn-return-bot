@@ -5,7 +5,7 @@
 import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
 import { fetchAndStoreItemText } from "../everything/worker";
-import { answerPassageRequests, openPassageRequests, type PassageRequest } from "../everything/passageRequests";
+import { openPassageRequests, type PassageRequest } from "../everything/passageRequests";
 import { isWholePageChecked } from "../everything-core/wholePageChecked";
 import { isVideo, logEvent, nathanNotedItem, postDir, readItem, skipItem } from "./store";
 
@@ -22,8 +22,10 @@ export type Take = { kind: "taken"; dir: string; asked: AskedPassages } | { kind
  *  read first the way the pipeline reads it. If that read fails, this throws,
  *  and the caller records the failure on the item. */
 export async function take(itemId: string): Promise<Take> {
-  if (await nathanNotedItem(itemId)) {
-    await answerPassageRequests(itemId, (await openPassageRequests(itemId)).map((request) => request.id));
+  // A reader's question about a passage is answered even on a post Nathan
+  // fact-checked, because the reader asked for it.
+  const requests = await openPassageRequests(itemId);
+  if (!requests.length && (await nathanNotedItem(itemId))) {
     await skipItem(itemId, NATHAN_SKIP_REASON);
     return { kind: "skipped", reason: NATHAN_SKIP_REASON };
   }
@@ -38,7 +40,6 @@ export async function take(itemId: string): Promise<Take> {
   const creator = item.project?.name ?? "unknown";
   writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
-  const requests = await openPassageRequests(itemId);
   const asked = { requests, onlyThese: requests.length > 0 && isWholePageChecked(item) };
   await logEvent({ actor: "claude", type: "item_taken", itemId });
   return { kind: "taken", dir, asked };

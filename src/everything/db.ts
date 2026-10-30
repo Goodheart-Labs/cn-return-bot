@@ -23,7 +23,6 @@ export const QUEUE_PRIORITY = {
 } as const;
 
 export interface EverythingItem {
-  request_steer?: string | null;
   id: string;
   project_id: string | null;
   source: ItemSource;
@@ -41,9 +40,12 @@ export interface EverythingItem {
   full_text: string | null;
   /** How many repeat attempts this item has been given after failing. */
   retries: number;
+  checked_scope: CheckedScope;
+  /** When the page first finished as a whole-page check (migration 133). */
+  first_checked_at: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer, retries";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, checked_scope, first_checked_at, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -208,7 +210,6 @@ export type CheckedScope = "page" | "paragraph" | null;
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
-  request_steer?: string | null;
   project_id: string;
   source: ItemSource;
   url: string;
@@ -294,7 +295,7 @@ export async function promoteItemToWholePage(id: string, fullText: string | null
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ checked_scope: "page", full_text: fullText, request_steer: null, status: "queued", error: null })
+      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
       .eq("id", id),
   );
   await raiseItemPriority(id, priority);
