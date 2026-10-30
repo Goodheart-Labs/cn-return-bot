@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { PASSAGE_CHECK } from "../everything-core/requestProgress";
 import { dbMock, dbState, resetDbState } from "./dbMock";
 
 /* These tests cover the decision table in consumeNoteRequest: which existing
@@ -11,13 +12,6 @@ mock.module("./pipeline/cleanCapturedText", () => ({
 }));
 let readerBudgetSpent = false;
 mock.module("./spendCap", () => ({ requestBudgetExhausted: () => Promise.resolve(readerBudgetSpent) }));
-let directedCalls: unknown[][] = [];
-mock.module("./directedNoteRequest", () => ({
-  consumeDirectedNoteRequest: (...args: unknown[]) => {
-    directedCalls.push(args);
-    return Promise.resolve({ kind: "queued", detail: "checked requested passage" });
-  },
-}));
 
 const { consumeNoteRequest } = await import("./consumeRequests");
 
@@ -33,7 +27,6 @@ const request = (overrides: Record<string, unknown> = {}) => ({
 beforeEach(() => {
   resetDbState();
   readerBudgetSpent = false;
-  directedCalls = [];
 });
 
 describe("consumeNoteRequest", () => {
@@ -43,16 +36,16 @@ describe("consumeNoteRequest", () => {
     expect(outcome.kind).toBe("already_checked");
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "done", "page was already checked", "item-1"]);
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
-    expect(directedCalls).toEqual([]);
   });
 
-  test("a selected passage on a finished whole-page check is checked on its own", async () => {
+  test("a selected passage on a finished whole-page check puts the page back in the queue", async () => {
     dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page" };
-    const outcome = await consumeNoteRequest(request({ selection: "a passage the page check skipped" }) as never);
+    const outcome = await consumeNoteRequest(request({ selection: "a passage the page check skipped", steer: "the date looks wrong" }) as never);
     expect(outcome.kind).toBe("queued");
-    expect(directedCalls).toHaveLength(1);
-    expect(directedCalls[0]?.[1]).toEqual(dbState.existingItem);
-    expect(dbState.calls.resolveNoteRequest).toBeUndefined();
+    expect(dbState.calls.requeueItem?.[0]).toEqual(["item-1"]);
+    expect(dbState.calls.raiseItemPriority?.[0]).toEqual(["item-1", 2]);
+    expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", PASSAGE_CHECK.running, "item-1"]);
+    expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
   });
 
   test("an item a worker is holding leaves the request pending", async () => {
@@ -72,11 +65,11 @@ describe("consumeNoteRequest", () => {
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", null, "item-1"]);
   });
 
-  test("a paragraph item is promoted and the request row says the whole page was checked instead", async () => {
+  test("a paragraph item is promoted, and the request row still names the passage for the note writer", async () => {
     dbState.existingItem = { id: "item-1", status: "done", checked_scope: "paragraph" };
     await consumeNoteRequest(request({ selection: "some passage" }) as never);
     expect(dbState.calls.promoteItemToWholePage?.[0]?.[0]).toBe("item-1");
-    expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", "checked the whole page instead", "item-1"]);
+    expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", PASSAGE_CHECK.running, "item-1"]);
   });
 
   test("a promoted YouTube item carries no text, so the worker fetches the transcript", async () => {
@@ -124,6 +117,7 @@ describe("consumeNoteRequest", () => {
     expect(row.checked_scope).toBe("paragraph");
     expect(row.full_text).toBe("just this bit");
     expect(dbState.calls.insertItemRun).toBeUndefined();
+    expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", PASSAGE_CHECK.running, "new-item-id"]);
   });
 });
 

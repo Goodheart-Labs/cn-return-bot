@@ -5,18 +5,23 @@
 import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
 import { fetchAndStoreItemText } from "../everything/worker";
-import { isVideo, logEvent, nathanNotedItem, postDir, readItem, skipItem } from "./store";
+import { isVideo, logEvent, nathanNotedItem, openPassageRequests, postDir, readItem, resolvePassageRequests, skipItem, type PassageRequest } from "./store";
 
 /** Nathan's own fact-checks are not redone. */
 const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
 
-export type Take = { kind: "taken"; dir: string } | { kind: "skipped"; reason: string };
+/** The passages readers asked about. `onlyThese` is true when the post was
+ *  already checked in full, so Claude checks these passages and nothing else. */
+export type AskedPassages = { requests: PassageRequest[]; onlyThese: boolean };
+
+export type Take = { kind: "taken"; dir: string; asked: AskedPassages } | { kind: "skipped"; reason: string };
 
 /** A post without stored text, such as a new video or a requested page, is
  *  read first the way the pipeline reads it. If that read fails, this throws,
  *  and the caller records the failure on the item. */
 export async function take(itemId: string): Promise<Take> {
   if (await nathanNotedItem(itemId)) {
+    await resolvePassageRequests(await openPassageRequests(itemId), []);
     await skipItem(itemId, NATHAN_SKIP_REASON);
     return { kind: "skipped", reason: NATHAN_SKIP_REASON };
   }
@@ -31,6 +36,8 @@ export async function take(itemId: string): Promise<Take> {
   const creator = item.project?.name ?? "unknown";
   writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
+  const requests = await openPassageRequests(itemId);
+  const asked = { requests, onlyThese: requests.length > 0 && item.checked_scope === "page" && item.first_checked_at !== null };
   await logEvent({ actor: "claude", type: "item_taken", itemId });
-  return { kind: "taken", dir };
+  return { kind: "taken", dir, asked };
 }

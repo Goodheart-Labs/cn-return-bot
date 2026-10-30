@@ -19,6 +19,7 @@ import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractC
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
+import { PASSAGE_CHECK } from "../everything-core/requestProgress";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
 import type { ClaudeRunTag } from "./usageShare";
@@ -305,9 +306,10 @@ function inPipelineOrder(a: QueueItem, b: QueueItem): number {
 /** The queue as the Claude note writer sees it. `waiting` holds the queued
  *  items Claude has not taken. `taken` holds the ones Claude took and has not
  *  finished yet: an item Claude works on stays queued until it is finished, so
- *  the take event is what tells it apart. A post Claude failed on can come
- *  back to the queue when the walk tries it again, so only a take newer than
- *  the item's last failure counts. */
+ *  the take event is what tells it apart. A post can come back to the queue
+ *  after Claude failed on it, when the walk tries it again, or after Claude
+ *  finished it, when a reader asks about a passage in it. So only a take
+ *  newer than the item's last failure and last finish counts. */
 export async function claudeQueue(): Promise<{ waiting: QueueItem[]; taken: QueueItem[] }> {
   const queued = await fetchAllRows<QueueItem>(
     () => db().from("everything_items").select("id, url, title, priority, status, published_at, created_at").eq("status", "queued"),
@@ -315,7 +317,7 @@ export async function claudeQueue(): Promise<{ waiting: QueueItem[]; taken: Queu
     { label: "queued items" },
   );
   const events = await fetchInBatches<{ id: number; item_id: string; type: string }>(
-    (chunk) => db().from("everything_claude_events").select("id, item_id, type").in("type", ["item_taken", "item_failed"]).in("item_id", chunk),
+    (chunk) => db().from("everything_claude_events").select("id, item_id, type").in("type", ["item_taken", "item_failed", "item_finished"]).in("item_id", chunk),
     queued.map((item) => item.id),
     "id",
     { label: "claude takes" },
@@ -327,11 +329,16 @@ export async function claudeQueue(): Promise<{ waiting: QueueItem[]; taken: Queu
   return { waiting: ordered.filter((item) => !isTaken(item)), taken: ordered.filter(isTaken) };
 }
 
-export async function readItem(itemId: string): Promise<QueueItem & { full_text: string | null; project: { name: string; slug: string } | null }> {
+export async function readItem(itemId: string): Promise<QueueItem & {
+  full_text: string | null;
+  checked_scope: "page" | "paragraph" | null;
+  first_checked_at: string | null;
+  project: { name: string; slug: string } | null;
+}> {
   return unwrap(
     await db()
       .from("everything_items")
-      .select("id, url, title, priority, status, full_text, published_at, created_at, project:everything_projects(name, slug)")
+      .select("id, url, title, priority, status, full_text, checked_scope, first_checked_at, published_at, created_at, project:everything_projects(name, slug)")
       .eq("id", itemId)
       .single(),
   ) as never;
@@ -388,15 +395,61 @@ export async function endPostRun(runId: string, outcome: PostRunOutcome, logs: R
   check(await db().from("everything_pipeline_runs").update({ outcome, logs: logs as Json }).eq("id", runId));
 }
 
-/** Marks an item checked once Claude's agents went through all of it. */
+/** Marks an item checked once Claude's agents went through it. The item keeps
+ *  its scope: a passage a reader requested on a new page stays a paragraph
+ *  check, so a later request for the whole page still checks the rest. */
 export async function finishItem(itemId: string, summary: Record<string, unknown>) {
   check(
     await db()
       .from("everything_items")
-      .update({ status: "done", checked_scope: "page", skip_reason: null, processed_at: new Date().toISOString() })
+      .update({ status: "done", skip_reason: null, processed_at: new Date().toISOString() })
       .eq("id", itemId),
   );
   await logEvent({ actor: "claude", type: "item_finished", itemId, data: summary });
+}
+
+/** Puts a finished item back in the queue, because a reader asked about a
+ *  passage in it while Claude was working on it. */
+export async function requeueItem(itemId: string) {
+  check(await db().from("everything_items").update({ status: "queued" }).eq("id", itemId));
+}
+
+// ---------------------------------------------------------------------------
+// Passages readers asked about
+// ---------------------------------------------------------------------------
+
+/** A reader's request for a note on selected words of a post, with the
+ *  reader's reason when they gave one. */
+export type PassageRequest = { id: string; passage: string; reason: string | null };
+
+/** The passage requests on an item that no Claude has answered yet. Intake
+ *  marks each one as running when it puts the page in the queue. */
+export async function openPassageRequests(itemId: string): Promise<PassageRequest[]> {
+  const rows = unwrap(
+    await db()
+      .from("everything_note_requests")
+      .select("id, selection, steer")
+      .eq("item_id", itemId)
+      .eq("status", "enqueued")
+      .eq("status_reason", PASSAGE_CHECK.running)
+      .not("selection", "is", null)
+      .order("created_at"),
+  );
+  return rows.map((row) => ({ id: row.id, passage: row.selection!, reason: row.steer }));
+}
+
+/** Answers each request with whether Claude saved a note on its passage. The
+ *  reader's progress card shows the answer. */
+export async function resolvePassageRequests(requests: PassageRequest[], notedPassages: string[]) {
+  for (const request of requests) {
+    const noted = notedPassages.some((passage) => passagesOverlap(passage, request.passage));
+    check(
+      await db()
+        .from("everything_note_requests")
+        .update({ status: "done", status_reason: noted ? PASSAGE_CHECK.note : PASSAGE_CHECK.noNote })
+        .eq("id", request.id),
+    );
+  }
 }
 
 /** Marks an item checked without notes, because nothing in it is worth
@@ -419,6 +472,14 @@ export async function recordUsage(reading: { weekly: number; fiveHour: number; w
 }
 
 /** How many drafts Claude saved on an item since a time. */
+/** The passages of the notes Claude saved on an item since a time. */
+export async function claudeNotePassagesSince(itemId: string, since: string): Promise<string[]> {
+  const rows = unwrap(
+    await db().from("everything_claude_drafts").select("passage").eq("item_id", itemId).eq("outcome", "note").gte("created_at", since),
+  );
+  return rows.map((row) => row.passage);
+}
+
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
   if (error) throw new Error(JSON.stringify(error));
