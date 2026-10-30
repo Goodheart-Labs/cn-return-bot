@@ -15,51 +15,20 @@ concurrency:
   group: create-notes-routine
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   fetch-and-submit:
     runs-on: ubuntu-latest
     # Above the 27-min in-process watchdog plus the multi-minute setup steps, so
     # the watchdog (clean exit), not the runner kill, is the normal stop.
     timeout-minutes: 35
-    env:
-      # X API OAuth 1.0a credentials
-      X_API_KEY: ${{ secrets.X_API_KEY }}
-      X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
-      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
-      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
-      # OpenRouter API key for AI models
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      # The claim-check service that runs each tweet's check. The run asks for
-      # its health first and fails when the machine is down or wedged.
-      CLAIM_CHECK_URL: ${{ secrets.CLAIM_CHECK_URL }}
-      SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
-      # Supabase credentials for data storage
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-      CAPACITY_BAR_ENABLED: ${{ vars.CAPACITY_BAR_ENABLED }}
-      # Set the repo variable to "false" to stop forecasting notes before submission.
-      NOTE_RATER_ENABLED: ${{ vars.NOTE_RATER_ENABLED }}
-      # Set the repo variable to "false" to switch the note queue and rater order off.
-      NOTE_QUEUE_ENABLED: ${{ vars.NOTE_QUEUE_ENABLED }}
-      # A note goes out when its calibrated helpful minus not-helpful chance is at least this (default 0.05); "off" means no bar.
-      NOTE_BAR_MIN_NET: ${{ vars.NOTE_BAR_MIN_NET }}
-      # Groq API key for Whisper audio transcription (video analysis)
-      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      # xAI API key for Grok X search
-      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-      # Gemini API key for native Gemini search/writer variants
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      # Serper API key. Serper serves every web search in the pipeline; it
-      # replaced the SearXNG/Brave setup in Sep 2026 (see
-      # src/pipeline/tool-calling/serper.ts).
-      SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
-      # Pangram AI-text-detection key for the XXL-feed pre-pass
-      PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
-      # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
-      YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: oven-sh/setup-bun@v1
         with:
@@ -93,3 +62,39 @@ jobs:
 
       - name: Run pipeline (generate + submit candidates)
         run: bun run src/production/runPipeline.ts
+        env:
+          # X API OAuth 1.0a credentials
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          # OpenRouter API key for AI models
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # The claim-check service that runs each tweet's check. The run asks for
+          # its health first and fails when the machine is down or wedged.
+          CLAIM_CHECK_URL: ${{ secrets.CLAIM_CHECK_URL }}
+          SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
+          # Supabase credentials for data storage
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CAPACITY_BAR_ENABLED: ${{ vars.CAPACITY_BAR_ENABLED }}
+          # Set the repo variable to "false" to stop forecasting notes before submission.
+          NOTE_RATER_ENABLED: ${{ vars.NOTE_RATER_ENABLED }}
+          # Set the repo variable to "false" to switch the note queue and rater order off.
+          NOTE_QUEUE_ENABLED: ${{ vars.NOTE_QUEUE_ENABLED }}
+          # A note goes out when its calibrated helpful minus not-helpful chance is at least this (default 0.05); "off" means no bar.
+          NOTE_BAR_MIN_NET: ${{ vars.NOTE_BAR_MIN_NET }}
+          # Groq API key for Whisper audio transcription (video analysis)
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          # xAI API key for Grok X search
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          # Gemini API key for native Gemini search/writer variants
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Serper API key. Serper serves every web search in the pipeline; it
+          # replaced the SearXNG/Brave setup in Sep 2026 (see
+          # src/pipeline/tool-calling/serper.ts).
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+          # Pangram AI-text-detection key for the XXL-feed pre-pass
+          PANGRAM_API_KEY: ${{ secrets.PANGRAM_API_KEY }}
+          # Residential proxy for yt-dlp YouTube fetches (YouTube bot-checks runner IPs)
+          YTDLP_PROXY_URL: ${{ secrets.YTDLP_PROXY_URL }}
