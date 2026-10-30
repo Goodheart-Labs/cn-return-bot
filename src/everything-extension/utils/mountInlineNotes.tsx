@@ -16,6 +16,7 @@ import { recordPageVisit } from "./linkVisits";
 import { getClosedClaims } from "./closedNotes";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
+import { listenForPassageRequests } from "./passageRequest";
 import { listenForRequestInfo } from "./requestInfo";
 import { getNoteDisplay, getSettings, onNoteDisplayChanged, onSettingsChanged, type ExtensionSettings } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -259,6 +260,7 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
   // The background answers a needless request, for example on an already
   // checked page, with an explanation card through this listener.
   listenForRequestInfo(ctx);
+  listenForPassageRequests(ctx);
   // Listing badges live independently of the per-URL note mounts below. They
   // mark noted posts in whatever listing this site shows, such as a Substack
   // front page, and their own observer follows navigations and lazy loading.
