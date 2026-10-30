@@ -11,7 +11,9 @@
  * priority tier, so the worker takes them before any feed backlog. A request
  * for a page we already ingested resolves against that item instead: a queued
  * item is bumped to the requested tier, a finished item marks the request done,
- * and an errored item is put back in the queue.
+ * and an errored item is put back in the queue. A request on selected words
+ * always puts its page in the queue, even when the page was already checked
+ * in full, because the whole-page check can have passed over those words.
  *
  * A request that cannot be consumed is marked on its own row with the reason.
  * Nothing is retried silently; a human can set a row back to "pending" after
@@ -22,10 +24,10 @@
  */
 
 import "dotenv/config";
-import { consumeDirectedNoteRequest } from "./directedNoteRequest";
 import { canonicalizePageUrl, extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { canonicalFeed, substackFeedOfPage, type CanonicalFeed } from "./feedUrls";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
+import { PASSAGE_CHECK } from "../everything-core/requestProgress";
 import { group } from "./logFormat";
 import { cleanCapturedPageText } from "./pipeline/cleanCapturedText";
 import { requestBudgetExhausted } from "./spendCap";
@@ -89,17 +91,25 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
   // way, the page is never found under its plain address (GOO-507).
   const request = { ...rawRequest, page_url: canonicalizePageUrl(rawRequest.page_url, null) };
   const existing = await findItemForPageUrl(request.page_url);
-  if (existing && (request.steer || request.passage_question_id)) return consumeDirectedNoteRequest(request, existing);
+  // The note writer finds the passages readers asked about by this reason,
+  // reads their own words on why, and resolves each request once it is done.
+  const passageReason = request.selection ? PASSAGE_CHECK.running : null;
   if (existing) {
     // Only a finished whole-page check refuses the request. An item that
     // exists because a reader wrote a note on the page, or because one
     // paragraph was checked, is promoted to a whole-page check instead.
     if (existing.status === "done" && existing.checked_scope === "page") {
-      // The whole-page check may have found no claim in a selected passage,
-      // or rated it true and skipped it, so the passage gets a check of its own.
-      if (request.selection) return consumeDirectedNoteRequest(request, existing);
-      await resolveNoteRequest(request.id, "done", "page was already checked", existing.id);
-      return { kind: "already_checked", detail: `already checked: ${request.page_url}` };
+      if (!request.selection) {
+        await resolveNoteRequest(request.id, "done", "page was already checked", existing.id);
+        return { kind: "already_checked", detail: `already checked: ${request.page_url}` };
+      }
+      // The whole-page check may have found no claim in the selected passage,
+      // or rated it true and skipped it. So the page goes back in the queue,
+      // and the note writer checks only the passages readers asked about.
+      await requeueItem(existing.id);
+      await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
+      await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
+      return { kind: "queued", detail: `requeued a checked page for a selected passage: ${request.page_url}` };
     }
     // A worker is holding this item right now. Taking the row away mid-run
     // would race it, so the request stays pending and the next cycle retries.
@@ -121,10 +131,9 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
       await promoteItemToWholePage(existing.id, fullText, QUEUE_PRIORITY.requested);
       // A paragraph request on an existing item cannot be honoured as a
       // paragraph check, because one item holds one body text. The whole page
-      // contains the paragraph, so it is checked instead, and the request row
-      // says so.
-      const reason = request.selection ? "checked the whole page instead" : null;
-      await resolveNoteRequest(request.id, "enqueued", reason, existing.id);
+      // contains the paragraph, so it is checked instead, and the note writer
+      // still sees which passage the reader asked about.
+      await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
       return { kind: "queued", detail: `promoted existing item to a whole-page check: ${request.page_url}` };
     }
     // A whole-page item that is queued or errored goes back in the queue at
@@ -132,7 +141,7 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
     // body must survive, because CI cannot fetch Substack pages itself.
     if (existing.status === "error") await requeueItem(existing.id);
     await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
-    await resolveNoteRequest(request.id, "enqueued", null, existing.id);
+    await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
     return { kind: "queued", detail: `bumped existing item to requested priority: ${request.page_url}` };
   }
 
@@ -163,7 +172,7 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
     ...(request.steer ? { request_steer: request.steer } : {}),
   });
   await recordCaptureCost(itemId, captureCostUsd);
-  await resolveNoteRequest(request.id, "enqueued", null, itemId);
+  await resolveNoteRequest(request.id, "enqueued", passageReason, itemId);
   return { kind: "queued", detail: `enqueued [${source}]: ${request.page_url}` };
 }
 

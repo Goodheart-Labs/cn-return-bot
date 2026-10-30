@@ -5,6 +5,7 @@ import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines, type RequestProgress } from "@cn/core/requestProgress";
 import { watchRequestProgress, type RequestWatch } from "@cn/core/requestProgressController";
 import { queryKeys } from "@cn/features/query/queryKeys";
+import { RequestReasonForm } from "@cn/features/notes/RequestReasonForm";
 import { Card } from "@cn/ui/Card";
 import { useReader, type ReaderModule, type ReaderNoteRequest } from "../context";
 import { EntryBar } from "../EntryBar";
@@ -30,14 +31,22 @@ export function useNoteRequests(item: PageItem, notify: (message: string) => voi
   const setProgress = (id: string, progress: RequestProgress) =>
     setRequests((current) => current.map((request) => (request.id === id ? { ...request, progress } : request)));
 
-  async function send(id: string, quote: string) {
+  function discard(id: string) {
+    const state = live.current;
+    for (const [quote, request] of state.byQuote) if (request.id === id) state.byQuote.delete(quote);
+    setRequests((current) => current.filter((request) => request.id !== id));
+  }
+
+  async function send(id: string, reason: string) {
+    const quote = requests.find((request) => request.id === id)?.quote;
+    if (quote === undefined) return;
+    setProgress(id, { kind: "saved" });
     const state = live.current;
     let token: string;
     try {
-      token = await submitNoteRequest({ pageUrl: item.url, pageTitle: item.title ?? "", selection: quote });
+      token = await submitNoteRequest({ pageUrl: item.url, pageTitle: item.title ?? "", selection: quote, steer: reason });
     } catch {
-      state.byQuote.delete(quote);
-      setRequests((current) => current.filter((request) => request.id !== id));
+      discard(id);
       notify("Your request did not send. Please try again.");
       return;
     }
@@ -51,6 +60,8 @@ export function useNoteRequests(item: PageItem, notify: (message: string) => voi
     }));
   }
 
+  /** Opens a request card that asks the reader why. Nothing is sent until
+   *  the reader confirms on the card. */
   function request(blockId: string, quote: string): Pick<ReaderNoteRequest, "id" | "blockId"> {
     const state = live.current;
     // The request carries only the words, so the same words in another passage are the same request.
@@ -58,25 +69,26 @@ export function useNoteRequests(item: PageItem, notify: (message: string) => voi
     if (existing) return existing;
     const id = String(state.nextId++);
     state.byQuote.set(quote, { id, blockId });
-    setRequests((current) => [...current, { id, blockId, quote, progress: { kind: "saved" } }]);
-    void send(id, quote);
+    setRequests((current) => [...current, { id, blockId, quote, progress: null }]);
     return { id, blockId };
   }
 
-  return { requests, request };
+  return { requests, request, send: (id: string, reason: string) => void send(id, reason), discard };
 }
 
 function RequestCard({ request }: { request: ReaderNoteRequest }) {
-  const { scope } = useReader();
+  const { scope, sendNoteRequest, discardNoteRequest } = useReader();
   const id = requestCardId(scope, request.id);
-  const lines = progressLines(request.progress);
+  const lines = request.progress ? progressLines(request.progress) : ["not sent yet"];
   return <MarginSlot slotKey={id} colorClass={REQUEST_DOT} priority={SLOT_PRIORITY.request} label={`Note request · ${lines.join(", ")}`}>
     <section id={id} className="reader-entry" aria-label="Note request">
       <Card className="min-w-0 p-4">
         <div className="-mt-1 mb-3 flex items-center"><EntryBar elementId={id} kind="note request" /></div>
         <p className="reader-entry-kind">Note request</p>
         <p className="reader-ask-quote">“{request.quote}”</p>
-        <div role="status" className="reader-request-status">{lines.map((line) => <p key={line}>{line}</p>)}</div>
+        {request.progress
+          ? <div role="status" className="reader-request-status">{lines.map((line) => <p key={line}>{line}</p>)}</div>
+          : <RequestReasonForm onSend={(reason) => sendNoteRequest(request.id, reason)} onCancel={() => discardNoteRequest(request.id)} />}
       </Card>
     </section>
   </MarginSlot>;

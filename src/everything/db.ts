@@ -683,8 +683,8 @@ export interface NoteRequestRow {
   page_title: string;
   selection: string | null;
   page_text: string | null;
+  /** The reader's own words on why the selected passage needs a note. */
   steer?: string | null;
-  passage_question_id?: string | null;
   /** The creator's feed URL as the extension worked it out. Untrusted input:
    *  the consumer uses it only when it parses as a creator feed. */
   feed_url?: string | null;
@@ -711,17 +711,11 @@ export async function markRequestedQueueBudgetExhausted(): Promise<void> {
  *  dead intake service: intake consumes requests within seconds, so an old
  *  pending request means nobody is listening. */
 export async function oldestPendingRequestAgeSeconds(): Promise<number | null> {
-  // A request with a steer or a passage question waits while its page is
-  // queued or being checked, and the Claude note writer can hold a page for
-  // much longer than 15 minutes. So only plain requests show that intake is
-  // alive. Intake turns those into queue items within seconds.
   const row = throwOnError<{ created_at: string } | null>(
     await getSupabaseClient()
       .from("everything_note_requests")
       .select("created_at")
       .eq("status", "pending")
-      .is("steer", null)
-      .is("passage_question_id", null)
       .order("created_at")
       .limit(1)
       .maybeSingle(),
@@ -735,7 +729,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
+      .select("id, page_url, page_title, selection, page_text, steer, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];
