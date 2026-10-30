@@ -12,7 +12,7 @@ export const dbState = {
   /** What fetchItemUrlsIn / fetchItemUrlsContaining answer. */
   knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
   /** What findItemForPageUrl answers. */
-  existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null } | null,
+  existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null; first_checked_at: string | null } | null,
   /** What fetchCreatorProjects answers: every creator we have a project for,
    *  whether or not their priority window is open. */
   creatorProjects: [] as {

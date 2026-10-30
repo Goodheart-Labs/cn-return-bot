@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { isWholePageChecked, type PageItem } from "@cn/core/items";
+import type { PageItem } from "@cn/core/items";
+import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { progressIsTerminal, progressLines, type RequestProgress } from "@cn/core/requestProgress";
 import { watchRequestProgress, type RequestWatch } from "@cn/core/requestProgressController";

@@ -16,10 +16,10 @@ import type { Database, Json } from "../everything-core/database.types";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { buildVideoLink, contextTimeSpan } from "../everything/pipeline/extractClaims";
+import { passagesOverlap } from "../everything/passageRequests";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
-import { PASSAGE_CHECK } from "../everything-core/requestProgress";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
 import type { ClaudeRunTag } from "./usageShare";
@@ -158,23 +158,6 @@ async function placeOfPassage(itemId: string, passage: string) {
 // ---------------------------------------------------------------------------
 // Drafts
 // ---------------------------------------------------------------------------
-
-/** Two passages count as the same place when one contains the other or they
- *  share this many characters in a row. */
-const SHARED_PASSAGE_CHARS = 40;
-
-const normalizedPassage = (text: string) => text.toLowerCase().replace(/\s+/g, " ").trim();
-
-export function passagesOverlap(a: string, b: string): boolean {
-  const [x, y] = [normalizedPassage(a), normalizedPassage(b)];
-  if (!x || !y) return false;
-  if (x.includes(y) || y.includes(x)) return true;
-  const [shorter, longer] = x.length <= y.length ? [x, y] : [y, x];
-  for (let i = 0; i + SHARED_PASSAGE_CHARS <= shorter.length; i += SHARED_PASSAGE_CHARS / 2) {
-    if (longer.includes(shorter.slice(i, i + SHARED_PASSAGE_CHARS))) return true;
-  }
-  return false;
-}
 
 /** A note a person wrote on the same passage of this post, if there is one.
  *  Claude never posts a second note where Jim, Nathan or a reader already
@@ -406,50 +389,6 @@ export async function finishItem(itemId: string, summary: Record<string, unknown
       .eq("id", itemId),
   );
   await logEvent({ actor: "claude", type: "item_finished", itemId, data: summary });
-}
-
-/** Puts a finished item back in the queue, because a reader asked about a
- *  passage in it while Claude was working on it. */
-export async function requeueItem(itemId: string) {
-  check(await db().from("everything_items").update({ status: "queued" }).eq("id", itemId));
-}
-
-// ---------------------------------------------------------------------------
-// Passages readers asked about
-// ---------------------------------------------------------------------------
-
-/** A reader's request for a note on selected words of a post, with the
- *  reader's reason when they gave one. */
-export type PassageRequest = { id: string; passage: string; reason: string | null };
-
-/** The passage requests on an item that no Claude has answered yet. Intake
- *  marks each one as running when it puts the page in the queue. */
-export async function openPassageRequests(itemId: string): Promise<PassageRequest[]> {
-  const rows = unwrap(
-    await db()
-      .from("everything_note_requests")
-      .select("id, selection, steer")
-      .eq("item_id", itemId)
-      .eq("status", "enqueued")
-      .eq("status_reason", PASSAGE_CHECK.running)
-      .not("selection", "is", null)
-      .order("created_at"),
-  );
-  return rows.map((row) => ({ id: row.id, passage: row.selection!, reason: row.steer }));
-}
-
-/** Answers each request with whether Claude saved a note on its passage. The
- *  reader's progress card shows the answer. */
-export async function resolvePassageRequests(requests: PassageRequest[], notedPassages: string[]) {
-  for (const request of requests) {
-    const noted = notedPassages.some((passage) => passagesOverlap(passage, request.passage));
-    check(
-      await db()
-        .from("everything_note_requests")
-        .update({ status: "done", status_reason: noted ? PASSAGE_CHECK.note : PASSAGE_CHECK.noNote })
-        .eq("id", request.id),
-    );
-  }
 }
 
 /** Marks an item checked without notes, because nothing in it is worth

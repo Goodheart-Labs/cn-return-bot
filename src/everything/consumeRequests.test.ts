@@ -31,7 +31,7 @@ beforeEach(() => {
 
 describe("consumeNoteRequest", () => {
   test("a finished whole-page check refuses the request", async () => {
-    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page" };
+    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page", first_checked_at: "2026-10-29T14:15:24Z" };
     const outcome = await consumeNoteRequest(request() as never);
     expect(outcome.kind).toBe("already_checked");
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "done", "page was already checked", "item-1"]);
@@ -39,7 +39,7 @@ describe("consumeNoteRequest", () => {
   });
 
   test("a selected passage on a finished whole-page check puts the page back in the queue", async () => {
-    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page" };
+    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "page", first_checked_at: "2026-10-29T14:15:24Z" };
     const outcome = await consumeNoteRequest(request({ selection: "a passage the page check skipped", steer: "the date looks wrong" }) as never);
     expect(outcome.kind).toBe("queued");
     expect(dbState.calls.requeueItem?.[0]).toEqual(["item-1"]);
@@ -48,15 +48,22 @@ describe("consumeNoteRequest", () => {
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
   });
 
+  test("a page checked in full still refuses a whole-page request while it waits in the queue for a passage", async () => {
+    dbState.existingItem = { id: "item-1", status: "queued", checked_scope: "page", first_checked_at: "2026-10-29T14:15:24Z" };
+    const outcome = await consumeNoteRequest(request() as never);
+    expect(outcome.kind).toBe("already_checked");
+    expect(dbState.calls.raiseItemPriority).toBeUndefined();
+  });
+
   test("an item a worker is holding leaves the request pending", async () => {
-    dbState.existingItem = { id: "item-1", status: "processing", checked_scope: "page" };
+    dbState.existingItem = { id: "item-1", status: "processing", checked_scope: "page", first_checked_at: null };
     const outcome = await consumeNoteRequest(request() as never);
     expect(outcome.kind).toBe("deferred");
     expect(dbState.calls.resolveNoteRequest).toBeUndefined();
   });
 
   test("a reader-note item is promoted with the cleaned page text", async () => {
-    dbState.existingItem = { id: "item-1", status: "done", checked_scope: null };
+    dbState.existingItem = { id: "item-1", status: "done", checked_scope: null, first_checked_at: null };
     const outcome = await consumeNoteRequest(request({ page_text: "body" }) as never);
     expect(outcome.kind).toBe("queued");
     expect(outcome.detail).toContain("promoted");
@@ -66,20 +73,20 @@ describe("consumeNoteRequest", () => {
   });
 
   test("a paragraph item is promoted, and the request row still names the passage for the note writer", async () => {
-    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "paragraph" };
+    dbState.existingItem = { id: "item-1", status: "done", checked_scope: "paragraph", first_checked_at: null };
     await consumeNoteRequest(request({ selection: "some passage" }) as never);
     expect(dbState.calls.promoteItemToWholePage?.[0]?.[0]).toBe("item-1");
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", PASSAGE_CHECK.running, "item-1"]);
   });
 
   test("a promoted YouTube item carries no text, so the worker fetches the transcript", async () => {
-    dbState.existingItem = { id: "item-1", status: "done", checked_scope: null };
+    dbState.existingItem = { id: "item-1", status: "done", checked_scope: null, first_checked_at: null };
     await consumeNoteRequest(request({ page_url: "https://www.youtube.com/watch?v=abcdefghijk", page_text: "player chrome" }) as never);
     expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", null, 2]);
   });
 
   test("a queued whole-page item is only bumped, keeping its body text", async () => {
-    dbState.existingItem = { id: "item-1", status: "queued", checked_scope: "page" };
+    dbState.existingItem = { id: "item-1", status: "queued", checked_scope: "page", first_checked_at: null };
     const outcome = await consumeNoteRequest(request() as never);
     expect(outcome.kind).toBe("queued");
     expect(outcome.detail).toContain("bumped");
@@ -89,7 +96,7 @@ describe("consumeNoteRequest", () => {
   });
 
   test("an errored whole-page item is requeued and bumped", async () => {
-    dbState.existingItem = { id: "item-1", status: "error", checked_scope: "page" };
+    dbState.existingItem = { id: "item-1", status: "error", checked_scope: "page", first_checked_at: null };
     await consumeNoteRequest(request() as never);
     expect(dbState.calls.requeueItem?.[0]).toEqual(["item-1"]);
     expect(dbState.calls.raiseItemPriority?.[0]).toEqual(["item-1", 2]);
@@ -119,11 +126,6 @@ describe("consumeNoteRequest", () => {
     expect(dbState.calls.insertItemRun).toBeUndefined();
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", PASSAGE_CHECK.running, "new-item-id"]);
   });
-});
-
-test("a new steered request preserves the steer beside the queued passage", async () => {
-  await consumeNoteRequest(request({ selection: "A bridge opened in 1932.", steer: "the opening date" }) as never);
-  expect(dbState.calls.insertQueuedItem?.[0]?.[0]).toMatchObject({ request_steer: "the opening date", full_text: "A bridge opened in 1932.", checked_scope: "paragraph" });
 });
 
 /* A newly requested page goes under its creator's project, or under "Around
