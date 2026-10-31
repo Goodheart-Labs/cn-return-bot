@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { isWholePageChecked } from "@cn/core/items";
+import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { enabledFeatures } from "@cn/core/minisiteFeatures";
 import { deleteMinisite, fetchMinisite, startMinisiteCheck, updateMinisite, type Minisite } from "@cn/core/minisites";
 import { deriveRequestProgress, progressIsTerminal, progressLines } from "@cn/core/requestProgress";

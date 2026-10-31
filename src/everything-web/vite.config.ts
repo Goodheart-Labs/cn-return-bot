@@ -65,11 +65,5 @@ export default defineConfig(({ command, mode }) => {
      * bundled mode it sends a handful of bundles instead, which saved about
      * 3 seconds per page load (GOO-561). Vite marks the mode as experimental. */
     experimental: { bundledDev: true },
-    /* Hot reload is off, so after a change the page needs a manual reload.
-     * With hot reload on, the React plugin (6.0.1) adds a check to every
-     * component that a setup script ran first. In bundled mode on Vite 8.0.3
-     * that script's module answers 404, so the check throws and every page
-     * stays white. With hot reload off the plugin leaves the check out. */
-    server: { hmr: false },
   };
 });

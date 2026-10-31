@@ -18,14 +18,17 @@ import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary, updateItemMeta } from "./db";
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
+import { isWholePageChecked } from "../everything-core/wholePageChecked";
+import { answerPassageRequest, openPassageRequests } from "./passageRequests";
+import { checkRequestedPassage } from "./pipeline/checkRequestedPassage";
 import { bodyText, processFetchedContent, resumeItemClaims, workPriorityOf } from "./pipeline/processContent";
 import { requestItemText } from "../service/client";
 import { ServiceError, type ItemTextResponse } from "../service/contract";
-import { fetchForumPost, parsePostUrl } from "./sources/lesswrong";
+import { fetchForumPost, parsePostUrl, SHORTFORM_SKIP_REASON, ShortformPageError } from "./sources/lesswrong";
 import { fetchSubstackPost, imageMarker } from "./sources/substack";
 import { ensureYtDlp, fetchYoutubeContent, fetchYoutubeTranscriptContent, UnreadableVideoError } from "./sources/youtube";
 import { MAX_ITEM_RETRIES } from "./autoEnqueue";
-import { describeTodaySpend, feedBudgetExhausted, todaySpendUsd } from "./spendCap";
+import { describeTodaySpend, feedBudgetExhausted, requestBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
 
 /** How many queued items the log lists before summarising the rest. */
@@ -113,6 +116,7 @@ async function fetchContent(item: EverythingItem): Promise<FetchedContent> {
       try {
         return await fetchForumPost(item.url);
       } catch (err: any) {
+        if (err instanceof ShortformPageError) throw err;
         // If the forum's GraphQL API refuses our runner, the web-fetch ladder
         // still has a route to the post through its headless browser render.
         console.log(`  Forum fetch failed (${err?.message}) — trying the web-fetch ladder`);
@@ -203,6 +207,13 @@ export const queuedFeedItemCount = (queue: QueuedItemSummary[]): number =>
  *  run. */
 export type ItemOutcome = "done" | "capped" | "error" | "no_captions_yet";
 
+/** Marks an item done that could not be read at all. Its passage requests
+ *  get their answer, no note, because nothing could be checked. */
+async function finishUnreadItem(itemId: string, skipReason: string) {
+  for (const request of await openPassageRequests(itemId)) await answerPassageRequest(request.id, false);
+  await markItemDone(itemId, skipReason);
+}
+
 /** A video we cannot read is not a failure (GOO-422). A young video without
  *  captions stays in error so the walk tries it again later, because YouTube
  *  may not have made its automatic captions yet. On its last allowed attempt,
@@ -216,17 +227,41 @@ async function recordUnreadableVideo(item: EverythingItem, err: UnreadableVideoE
     return "no_captions_yet";
   }
   console.log(`  ${err.message} · finished without checking`);
-  await markItemDone(item.id, err.reason);
+  await finishUnreadItem(item.id, err.reason);
   return "done";
 }
 
 /** Records on the item's row why it failed. Both the pipeline's workers and
  *  the Claude note writer's runner use this, so a failure looks the same
- *  whichever of them hit it. */
+ *  whichever of them hit it. A video without captions and a shortform page
+ *  are not failures: they end as done without a check. */
 export async function recordItemFailure(item: EverythingItem, err: Error): Promise<ItemOutcome> {
   if (err instanceof UnreadableVideoError) return recordUnreadableVideo(item, err);
+  if (err instanceof ShortformPageError) {
+    console.log(`  ${err.message} · finished without checking`);
+    await finishUnreadItem(item.id, SHORTFORM_SKIP_REASON);
+    return "done";
+  }
   await markItemError(item.id, err.message ?? "unknown");
   return "error";
+}
+
+/** Checks the whole page. Claims left pending or in error mean an earlier run
+ *  was killed while checking them. We resume exactly those instead of
+ *  fetching the content and extracting all over again. An item whose claims
+ *  are all finished still goes through extraction. That is what makes a
+ *  promoted item work: a page that only carried a reader's note, or a checked
+ *  paragraph, is read in full now, and the duplicate guard inside
+ *  processFetchedContent keeps the finished claims from being extracted a
+ *  second time. */
+async function checkPage(item: EverythingItem) {
+  const claims = await fetchItemClaims(item.id);
+  if (claims.some((c) => c.status === "pending" || c.status === "error")) return resumeItemClaims(item);
+  const content = await fetchContent(item);
+  // The fetch is also where the source's display name comes from, so a
+  // project created knowing only its slug gets its real name here.
+  await fillProjectDisplayName(item.project_id, content.authorName);
+  return processFetchedContent(item, content, claims);
 }
 
 /** Runs one claimed item through fetch, extraction and checking, and records
@@ -237,44 +272,37 @@ export async function processQueuedItem(item: EverythingItem): Promise<ItemOutco
   const startedAt = Date.now();
   const spentBefore = await todaySpendUsd();
   try {
-    // Claims left pending or in error mean an earlier run was killed while
-    // checking them. We resume exactly those instead of fetching the content
-    // and extracting all over again. An item whose claims are all finished
-    // still goes through extraction. That is what makes a promoted item
-    // work: a page that only carried a reader's note, or a checked
-    // paragraph, is read in full now, and the duplicate guard inside
-    // processFetchedContent keeps the finished claims from being extracted
-    // a second time.
-    const claims = await fetchItemClaims(item.id);
-    let tally;
-    if (claims.some((c) => c.status === "pending" || c.status === "error")) {
-      tally = await resumeItemClaims(item);
-    } else {
-      const content = await fetchContent(item);
-      // The fetch is also where the source's display name comes from, so a
-      // project created knowing only its slug gets its real name here.
-      await fillProjectDisplayName(item.project_id, content.authorName);
-      tally = await processFetchedContent(item, content, claims);
-    }
+    // A page that was checked in full is not read again. Only the passages
+    // readers asked about are checked, each on its own. A paragraph item is
+    // nothing but the passage, so it is checked the same way.
+    const passages = await openPassageRequests(item.id);
+    const pageWanted = !passages.length || (item.checked_scope === "page" && !isWholePageChecked(item));
+    const tally = pageWanted ? await checkPage(item) : null;
     // An item cut short by its budget goes back in the queue rather than
     // being marked done. Its unchecked claims are still pending, so the next
     // run resumes exactly those.
-    if (tally.capped > 0) {
+    if (tally && tally.capped > 0) {
       await requeueItem(item.id);
       console.log(`  budget reached part way through, put back in the queue with ${tally.capped} claims left`);
       return "capped";
     }
-    await markItemDone(item.id, tally.skipReason);
+    if (passages.length && (await requestBudgetExhausted())) {
+      await requeueItem(item.id);
+      console.log("  the reader budget is spent, put back in the queue before checking the passages readers asked about");
+      return "capped";
+    }
+    for (const request of passages) await answerPassageRequest(request.id, await checkRequestedPassage(item, request));
+    await markItemDone(item.id, tally?.skipReason ?? null);
     // The per-item cost is already recorded per claim; this is the first time
     // it is shown. It is what tells you which items are expensive.
     const cost = (await todaySpendUsd()) - spentBefore;
-    const checked = tally.notes + tally.no_note + tally.errors;
+    const checked = tally ? tally.notes + tally.no_note + tally.errors : 0;
     console.log(
-      `  finished in ${duration(Date.now() - startedAt)} · cost ${money(cost)} · wrote ${tally.notes} note${tally.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked`,
+      `  finished in ${duration(Date.now() - startedAt)} · cost ${money(cost)} · wrote ${tally?.notes ?? 0} note${tally?.notes === 1 ? "" : "s"} from ${checked} claim${checked === 1 ? "" : "s"} checked · ${passages.length} passage${passages.length === 1 ? "" : "s"} readers asked about`,
     );
     return "done";
   } catch (err: any) {
-    if (!(err instanceof UnreadableVideoError)) console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
+    if (!(err instanceof UnreadableVideoError || err instanceof ShortformPageError)) console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
     return recordItemFailure(item, err);
   }
 }

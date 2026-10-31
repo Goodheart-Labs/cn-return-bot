@@ -13,6 +13,7 @@ import { recordPageVisit } from "../utils/linkVisits";
 import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { timedGroups, YoutubeOverlayApp } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
+import { listenForPassageRequests } from "../utils/passageRequest";
 import { listenForRequestInfo } from "../utils/requestInfo";
 import { listenForLiveRequests } from "../utils/requestLive";
 import { getNoteDisplay } from "../utils/settings";
@@ -151,6 +152,7 @@ export default defineContentScript({
     // The background answers a needless request, for example on an already
     // checked video, with an explanation card through this listener.
     listenForRequestInfo(ctx);
+    listenForPassageRequests(ctx);
     listenForLiveRequests(ctx);
     installMenuRows(ctx, youtubeMenuSite);
     // Listing badges mark noted videos on channel pages and in other video

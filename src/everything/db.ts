@@ -23,7 +23,6 @@ export const QUEUE_PRIORITY = {
 } as const;
 
 export interface EverythingItem {
-  request_steer?: string | null;
   id: string;
   project_id: string | null;
   source: ItemSource;
@@ -41,9 +40,12 @@ export interface EverythingItem {
   full_text: string | null;
   /** How many repeat attempts this item has been given after failing. */
   retries: number;
+  checked_scope: CheckedScope;
+  /** When the page first finished as a whole-page check (migration 133). */
+  first_checked_at: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer, retries";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, checked_scope, first_checked_at, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -208,7 +210,6 @@ export type CheckedScope = "page" | "paragraph" | null;
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
-  request_steer?: string | null;
   project_id: string;
   source: ItemSource;
   url: string;
@@ -251,28 +252,36 @@ export async function raiseItemPriority(id: string, priority: number): Promise<v
   );
 }
 
+/** What a request needs to know about the item its page already has. */
+export interface PageItemState {
+  id: string;
+  status: string;
+  checked_scope: CheckedScope;
+  first_checked_at: string | null;
+}
+
 /** Finds the item a page URL resolves to, whatever its status. A YouTube page is
  *  matched by its video id, because the stored URL forms vary. Any other URL is
  *  matched exactly, apart from a trailing slash. This mirrors the extension's
  *  fetchItemForUrl. */
 export async function findItemForPageUrl(
   pageUrl: string,
-): Promise<{ id: string; status: string; checked_scope: CheckedScope } | null> {
+): Promise<PageItemState | null> {
   const db = getSupabaseClient();
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
     // ilike reads an underscore in the video id as a wildcard, so this is only a
     // prefilter. Every row it returns is verified by comparing the id exactly.
     const rows = throwOnError(
-      await db.from("everything_items").select("id, status, checked_scope, url").ilike("url", `%${videoId}%`),
-    ) as { id: string; status: string; checked_scope: CheckedScope; url: string }[];
+      await db.from("everything_items").select("id, status, checked_scope, first_checked_at, url").ilike("url", `%${videoId}%`),
+    ) as (PageItemState & { url: string })[];
     const hit = rows.find((r) => extractYoutubeVideoId(r.url) === videoId);
-    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope } : null;
+    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope, first_checked_at: hit.first_checked_at } : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
   const rows = throwOnError(
-    await db.from("everything_items").select("id, status, checked_scope").in("url", [trimmed, `${trimmed}/`]).limit(1),
-  ) as { id: string; status: string; checked_scope: CheckedScope }[];
+    await db.from("everything_items").select("id, status, checked_scope, first_checked_at").in("url", [trimmed, `${trimmed}/`]).limit(1),
+  ) as PageItemState[];
   return rows[0] ?? null;
 }
 
@@ -286,7 +295,7 @@ export async function promoteItemToWholePage(id: string, fullText: string | null
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ checked_scope: "page", full_text: fullText, request_steer: null, status: "queued", error: null })
+      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
       .eq("id", id),
   );
   await raiseItemPriority(id, priority);
@@ -683,8 +692,8 @@ export interface NoteRequestRow {
   page_title: string;
   selection: string | null;
   page_text: string | null;
+  /** The reader's own words on why the selected passage needs a note. */
   steer?: string | null;
-  passage_question_id?: string | null;
   /** The creator's feed URL as the extension worked it out. Untrusted input:
    *  the consumer uses it only when it parses as a creator feed. */
   feed_url?: string | null;
@@ -711,17 +720,11 @@ export async function markRequestedQueueBudgetExhausted(): Promise<void> {
  *  dead intake service: intake consumes requests within seconds, so an old
  *  pending request means nobody is listening. */
 export async function oldestPendingRequestAgeSeconds(): Promise<number | null> {
-  // A request with a steer or a passage question waits while its page is
-  // queued or being checked, and the Claude note writer can hold a page for
-  // much longer than 15 minutes. So only plain requests show that intake is
-  // alive. Intake turns those into queue items within seconds.
   const row = throwOnError<{ created_at: string } | null>(
     await getSupabaseClient()
       .from("everything_note_requests")
       .select("created_at")
       .eq("status", "pending")
-      .is("steer", null)
-      .is("passage_question_id", null)
       .order("created_at")
       .limit(1)
       .maybeSingle(),
@@ -735,7 +738,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
+      .select("id, page_url, page_title, selection, page_text, steer, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];
