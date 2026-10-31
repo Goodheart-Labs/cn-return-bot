@@ -41,7 +41,7 @@ export function SafariWaitlist() {
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="min-w-0 flex-1 text-base"
+          className="h-11 min-w-0 flex-1 text-base"
         />
         <input
           type="text"
@@ -53,7 +53,7 @@ export function SafariWaitlist() {
           onChange={(e) => setWebsite(e.target.value)}
           className="absolute -left-[9999px] h-px w-px opacity-0"
         />
-        <Button type="submit" disabled={join.isPending}>
+        <Button type="submit" disabled={join.isPending} className="h-11">
           Email me
         </Button>
       </form>
