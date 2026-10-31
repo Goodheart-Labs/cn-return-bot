@@ -530,24 +530,18 @@ export type Database = {
       everything_claude_usage: {
         Row: {
           at: string
-          five_hour: number | null
-          five_hour_resets_at: string | null
           id: number
           weekly: number
           weekly_resets_at: string | null
         }
         Insert: {
           at?: string
-          five_hour?: number | null
-          five_hour_resets_at?: string | null
           id?: never
           weekly: number
           weekly_resets_at?: string | null
         }
         Update: {
           at?: string
-          five_hour?: number | null
-          five_hour_resets_at?: string | null
           id?: never
           weekly?: number
           weekly_resets_at?: string | null
@@ -1514,6 +1508,24 @@ export type Database = {
           show_on_leaderboard?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      everything_safari_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: never
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: never
         }
         Relationships: []
       }
@@ -3092,6 +3104,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      everything_join_safari_waitlist: {
+        Args: { p_email: string }
+        Returns: undefined
       }
       everything_leaderboard: {
         Args: never
