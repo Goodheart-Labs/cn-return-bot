@@ -155,6 +155,9 @@ function amoAuthHeader(): string {
 const AMO_THROTTLE_STATUS = 429;
 const MAX_AMO_THROTTLE_WAITS = 5;
 const AMO_THROTTLE_MARGIN_MS = 2000;
+// On 2026-10-30 one request to AMO never got an answer, and the release
+// waited for it for 15 hours. So a request that takes longer fails instead.
+const AMO_REQUEST_TIMEOUT_MS = 5 * 60_000;
 
 async function amoRequest<T>(method: string, apiPath: string, body?: FormData | object): Promise<T> {
   const isForm = body instanceof FormData;
@@ -163,6 +166,7 @@ async function amoRequest<T>(method: string, apiPath: string, body?: FormData | 
       method,
       headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+      signal: AbortSignal.timeout(AMO_REQUEST_TIMEOUT_MS),
     });
     const text = await response.text();
     if (response.status === AMO_THROTTLE_STATUS && wait < MAX_AMO_THROTTLE_WAITS) {
