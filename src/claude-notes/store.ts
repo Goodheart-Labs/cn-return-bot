@@ -23,6 +23,7 @@ import { noteStatus } from "../everything-core/noteScore";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
 import type { ClaudeRunTag } from "./usageShare";
+import type { UsageReading } from "./usage";
 
 export type Actor = "jim" | "nathan" | "claude";
 export type Writer = "pipeline" | "claude";
@@ -399,13 +400,11 @@ export async function skipItem(itemId: string, reason: string) {
 }
 
 /** Stores one reading of the plan's usage, for the admin dashboard's chart. */
-export async function recordUsage(reading: { weekly: number; fiveHour: number; weeklyResetsAt: string; fiveHourResetsAt: string }) {
+export async function recordUsage(reading: UsageReading) {
   check(
     await db().from("everything_claude_usage").insert({
       weekly: reading.weekly,
-      five_hour: reading.fiveHour,
       weekly_resets_at: reading.weeklyResetsAt,
-      five_hour_resets_at: reading.fiveHourResetsAt,
     }),
   );
 }
