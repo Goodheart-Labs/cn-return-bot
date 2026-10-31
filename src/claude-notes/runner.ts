@@ -12,13 +12,13 @@
  * review page shows.
  *
  * Every Claude runs in its own tmux session, so a person can attach and watch
- * it. Its files are in its run folder under /tmp/cn-notes, the place Nathan's
- * guard hook lets unattended runs write to.
+ * it. Its files are in its run folder under /var/tmp/cn-notes, a tmp folder
+ * Nathan's guard hook lets unattended runs write to, on the box's main disk.
  *
  * Usage: bun run claude-notes run */
 
 import { spawnSync } from "child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
 import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
@@ -88,7 +88,14 @@ const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? path.join(REPO, "docs/note
  *  appended to its system prompt, so the prompt cache can share it. */
 const X_EXAMPLES_PATH = path.join(REPO, "docs/x-note-examples.md");
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-const RUNS_DIR = "/tmp/cn-notes";
+/** On the main disk. /tmp on ai-box is a small tmpfs in memory with a quota per
+ *  user, and a day of run folders is more than a gigabyte, which filled the
+ *  quota on 2026-10-30 and crashed the runner. */
+const RUNS_DIR = "/var/tmp/cn-notes";
+/** Run folders older than this are deleted. By then their post is finished
+ *  and everything that matters is in the database. */
+const KEEP_RUN_FOLDERS_MS = 3 * 24 * 3600_000;
+const PRUNE_EVERY_MS = 24 * 3600_000;
 const POST_SESSION_PREFIX = "cn-post-";
 const MESSAGE_SESSION_PREFIX = "cn-msg-";
 const TWEET_SESSION_PREFIX = "cn-x-";
@@ -172,6 +179,8 @@ To save a note, write a JSON file to your run folder and run \`bun run claude-no
 Readers see each source's quote under the note, so the quote must appear word for word on the page. WebFetch gives you a summary of a page, not its text. So download each source with curl and check with grep -F that the quote is in it. Also save a draft for each passage you researched and decided against, with outcome no_note_needed or too_hard.
 
 Use only fork subagents: the Agent tool with subagent_type "fork". A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may save its notes itself with the draft command, or put what it found in its answer to you. Both are fine. Only you write report.json.
+
+This session ends as soon as you stop, and every agent still running is cut off with it. So wait until every agent you started has returned before you write the report.
 
 When you are done, write ${runDir}/report.json as { "passages": [{ "passage": "...", "outcome": "note | no_note_needed | too_hard" }] } and stop. Do not run finish; the runner does that. If the post has nothing worth checking, write { "skipped": true, "reason": "..." } instead.`;
 }
@@ -262,6 +271,24 @@ function runCost(runDir: string): number | null {
 // Usage of Nathan's plan
 // ---------------------------------------------------------------------------
 
+/** Claude Code renews its login token only when it runs. While no post runs,
+ *  the token in the credentials file expires, and the usage endpoint answers
+ *  401. A tiny Claude call renews the token. */
+function renewClaudeLogin() {
+  const renewed = spawnSync(CLAUDE_BIN, ["-p", "Reply with OK", "--model", "haiku"], { cwd: RUNS_DIR, encoding: "utf8", timeout: 120_000 });
+  console.log(renewed.status === 0 ? "Renewed the Claude login" : `Could not renew the Claude login: ${renewed.stderr}`);
+}
+
+async function readUsageRenewingLogin(): Promise<UsageReading> {
+  try {
+    return await readUsage();
+  } catch (err) {
+    if (!(err as Error).message.includes(" 401")) throw err;
+    renewClaudeLogin();
+    return readUsage();
+  }
+}
+
 /** The latest reading, at most 5 minutes old. Each new reading is stored for
  *  the admin dashboard's usage chart. A failed read keeps the last one, and
  *  with no reading at all no post starts. */
@@ -269,7 +296,7 @@ async function weeklyUsage(): Promise<number | null> {
   if (Date.now() - usageReadAt > USAGE_READ_EVERY_MS) {
     usageReadAt = Date.now();
     try {
-      usage = await readUsage();
+      usage = await readUsageRenewingLogin();
       await recordUsage(usage);
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
@@ -387,6 +414,7 @@ async function endPost(run: Run & { item: QueueItem }) {
     return finishPost(run, () => skipItem(run.item.id, String(report.reason ?? "nothing worth checking")));
   }
   if (report) {
+    await warnAboutUnsavedNotes(run, report);
     await record("done");
     return finishPost(run, () => finishItem(run.item.id, { ...report, ...usageNote }));
   }
@@ -409,13 +437,35 @@ async function failPost(item: QueueItem, err: Error) {
   if (outcome === "error") await logEvent({ actor: "claude", type: "item_failed", itemId: item.id, data: { reason: err.message } });
 }
 
-/** After a restart, a post that is still taken either has its Claude still
- *  running, which the runner adopts, or lost it, and is taken again. */
+/** A report that lists more notes than the post has drafts means some
+ *  `draft` calls failed, for example because a guard hook refused them. The
+ *  research is then lost unless a person saves the drafts from the run
+ *  folder, so the runner says so in its log and in the events table. */
+async function warnAboutUnsavedNotes(run: Run & { item: QueueItem }, report: Record<string, unknown>) {
+  const passages = (report.passages ?? []) as { outcome?: string }[];
+  const reported = passages.filter((p) => p.outcome === "note").length;
+  const saved = await claudeDraftsSince(run.item.id, new Date(run.startedAt).toISOString());
+  if (saved >= reported) return;
+  console.error(`UNSAVED NOTES on ${run.item.url}: the report lists ${reported} notes but only ${saved} drafts were saved. The draft files are in ${run.runDir}`);
+  await logEvent({ actor: "claude", type: "notes_unsaved", itemId: run.item.id, data: { reported, saved, runDir: run.runDir } });
+}
+
+/** After a restart, a post that is still taken is in one of three states.
+ *  Its Claude is still running, and the runner adopts it. Its Claude finished
+ *  and wrote a report, but the runner died before it marked the item done; the
+ *  runner finishes it from that report, because running it again would post
+ *  its notes a second time. Or its Claude died without a report, and the post
+ *  is taken again. */
 async function adoptTakenPosts(taken: QueueItem[]) {
   for (const item of taken) {
     const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
     const runDir = runFolder(item.id);
-    if (tmuxAlive(session)) posts.set(item.id, { item, session, runDir, attempt: 1, startedAt: Date.now(), weeklyAtStart: null });
+    // The prompt file is written when the post's Claude starts.
+    const promptFile = path.join(runDir, "prompt.md");
+    const startedAt = existsSync(promptFile) ? statSync(promptFile).mtimeMs : Date.now();
+    const run = { item, session, runDir, attempt: 1, startedAt, weeklyAtStart: null };
+    if (tmuxAlive(session)) posts.set(item.id, run);
+    else if (readReport(runDir)) await endPost(run);
     else await startPost(item);
   }
 }
@@ -586,11 +636,26 @@ async function tick(first: boolean) {
   }
 }
 
+let prunedAt = 0;
+
+/** Deletes run folders not touched for three days, once a day. */
+function pruneRunFolders() {
+  if (Date.now() - prunedAt < PRUNE_EVERY_MS) return;
+  prunedAt = Date.now();
+  const cutoff = Date.now() - KEEP_RUN_FOLDERS_MS;
+  const old = readdirSync(RUNS_DIR)
+    .map((name) => path.join(RUNS_DIR, name))
+    .filter((dir) => statSync(dir).mtimeMs < cutoff);
+  for (const dir of old) rmSync(dir, { recursive: true, force: true });
+  if (old.length > 0) console.log(`Deleted ${old.length} run folders older than 3 days`);
+}
+
 async function main() {
   mkdirSync(RUNS_DIR, { recursive: true });
   console.log(`Claude note writer runner started in ${REPO}`);
   for (let first = true; ; first = false) {
     refreshExamples();
+    pruneRunFolders();
     await tick(first);
     await Bun.sleep(POLL_MS);
   }
