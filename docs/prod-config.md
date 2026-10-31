@@ -378,8 +378,8 @@ requests fail.
 
 | Store | Listing | Extension ID |
 |---|---|---|
-| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.4.4 public since 2026-10-07; 0.5.0 submitted for review on 2026-10-29 with `release-ext all`. commonnotes.net is its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
-| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (version 0.4.4 public since 2026-10-07; 0.5.0 submitted for review on 2026-10-29 with `release-ext all`) | `extension@commonnotes.net` |
+| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.5.0 public; 0.5.1 submitted for review on 2026-10-30 with `release-ext`. commonnotes.net is its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
+| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (version 0.5.0 public; 0.5.1 submitted for review on 2026-10-31 with `release-ext`, after AMO had throttled it for a day) | `extension@commonnotes.net` |
 | Safari | no listing yet | |
 
 How to release a new version, and which credentials the store APIs need, is
