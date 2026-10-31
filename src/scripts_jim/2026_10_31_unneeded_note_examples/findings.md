@@ -141,34 +141,34 @@ outweighs "not needed", is mostly factual disputes on political posts and was
 skipped. None of the 180 is by Claude Code yet.
 
 - Trivial correction
-  - Roth IRA limit is $7,000, not $6,000, "meaning the strategy allows even more tax-free growth than stated" (Sonnet 5). https://x.com/i/status/2079604818986119580
-  - Victims aged 3 to 15, not 16 (Sonnet 4.6). https://x.com/i/status/2065588289697194246
-  - Dowman is the youngest title winner in the whole Premier League, not just at Arsenal (Sonnet 4.6). https://x.com/i/status/2057006952421421135
-  - Ronaldo is no longer tied with Eusébio, he scored again (Sonnet 4.6). https://x.com/i/status/2069468360056668528
-  - Palace of Fine Arts was built for 1915, not 1914 (Sonnet 5). https://x.com/i/status/2095653641164329143
-  - João Neves is 21, not 19 (Sonnet 4.6). https://x.com/i/status/2067979637502665185
-  - The summit is near Lucerne, not in Geneva (Sonnet 4.6). https://x.com/i/status/2068692986699841949
-  - Guatemalan police made the arrest, not Interpol (Opus, bridging bot). https://x.com/i/status/2043030845813068161
-  - Iron Lung opened to $21.7 million, not $23 million (Opus, main bot). https://x.com/i/status/2018394336426082735
+  - Roth IRA limit is $7,000, not $6,000, "meaning the strategy allows even more tax-free growth than stated" (Sonnet 5). https://x.com/i/birdwatch/n/2079695641576395071
+  - Victims aged 3 to 15, not 16 (Sonnet 4.6). https://x.com/i/birdwatch/n/2065776812706476143
+  - Dowman is the youngest title winner in the whole Premier League, not just at Arsenal (Sonnet 4.6). https://x.com/i/birdwatch/n/2057079754805620992
+  - Ronaldo is no longer tied with Eusébio, he scored again (Sonnet 4.6). https://x.com/i/birdwatch/n/2069521115580641616
+  - Palace of Fine Arts was built for 1915, not 1914 (Sonnet 5). https://x.com/i/birdwatch/n/2095779238578446711
+  - João Neves is 21, not 19 (Sonnet 4.6). https://x.com/i/birdwatch/n/2068091542670102872
+  - The summit is near Lucerne, not in Geneva (Sonnet 4.6). https://x.com/i/birdwatch/n/2068760083744317473
+  - Guatemalan police made the arrest, not Interpol (Opus, bridging bot). https://x.com/i/birdwatch/n/2043455944307142836
+  - Iron Lung opened to $21.7 million, not $23 million (Opus, main bot). https://x.com/i/birdwatch/n/2018621720706560467
 - Missing the joke
-  - "the main reason the United States won the World Cup in 2010": Spain won (Sonnet 4.6). https://x.com/i/status/2068184039153123827
-  - "Thank you for having me @CNN": the man in the stock photo is not the author (Gemini 3.1 Pro). https://x.com/i/status/2087850147833381248
-  - "Thank you, Government of Germany ... the face of this campaign": the same joke format (Opus 5). https://x.com/i/status/2105573682412126578
-  - Taylor Swift married on July 4th for an "Independence Day" divorce album: it was July 3 (Sonnet 5). https://x.com/i/status/2073824508918866026
-  - Domino's ending physical pizzas (Sonnet 5). https://x.com/i/status/2072397300165378476
-  - A 45-euro note from a Swedish ATM (Opus 5). https://x.com/i/status/2087997433095573614
-  - "Hey @grok how much would it cost to complete this?" about a Hormuz canal image (Sonnet 5). https://x.com/i/status/2081250677708513726
-  - A pyramid-building photo meme: "Photography wasn't invented until 1826" (Opus, main bot). https://x.com/i/status/2017822787520352513
-  - Musk "I should buy LinkedIn and turn it off": the note checks his net worth (Sonnet 4.6). https://x.com/i/status/2067212607627661732
-  - "Monterrey Stadium ... USA lost here as well 😂" (Sonnet 5). https://x.com/i/status/2082168867087122684
-  - "kiss of life's career ended bc of this" (Sonnet 5). https://x.com/i/status/2088197736323817630
-  - "Spam F5, free money glitch" for sponsors (Sonnet 5). https://x.com/i/status/2089488959902830891
+  - "the main reason the United States won the World Cup in 2010": Spain won (Sonnet 4.6). https://x.com/i/birdwatch/n/2068305782957810005
+  - "Thank you for having me @CNN": the man in the stock photo is not the author (Gemini 3.1 Pro). https://x.com/i/birdwatch/n/2088000983804883122
+  - "Thank you, Government of Germany ... the face of this campaign": the same joke format (Opus 5). https://x.com/i/birdwatch/n/2105643486749802956
+  - Taylor Swift married on July 4th for an "Independence Day" divorce album: it was July 3 (Sonnet 5). https://x.com/i/birdwatch/n/2073873885767106748
+  - Domino's ending physical pizzas (Sonnet 5). https://x.com/i/birdwatch/n/2072454831651028999
+  - A 45-euro note from a Swedish ATM (Opus 5). https://x.com/i/birdwatch/n/2088293387468521747
+  - "Hey @grok how much would it cost to complete this?" about a Hormuz canal image (Sonnet 5). https://x.com/i/birdwatch/n/2081462587322187801
+  - A pyramid-building photo meme: "Photography wasn't invented until 1826" (Opus, main bot). https://x.com/i/birdwatch/n/2017950372594167973
+  - Musk "I should buy LinkedIn and turn it off": the note checks his net worth (Sonnet 4.6). https://x.com/i/birdwatch/n/2067225998161002500
+  - "Monterrey Stadium ... USA lost here as well 😂" (Sonnet 5). https://x.com/i/birdwatch/n/2082609674218512764
+  - "kiss of life's career ended bc of this" (Sonnet 5). https://x.com/i/birdwatch/n/2088272938726555657
+  - "Spam F5, free money glitch" for sponsors (Sonnet 5). https://x.com/i/birdwatch/n/2089566645329207721
 - Loose or rhetorical language taken literally
-  - The corporation-versus-you tax meme: the note explains the standard deduction (Opus 5). https://x.com/i/status/2087534820012286290
-  - "Ronaldo has more cups than Messi": a trophy count (Sonnet 5). https://x.com/i/status/2082645396069966218
-  - "which China falsely call Huangyan Dao": it is the official Chinese name (Sonnet 4.6). https://x.com/i/status/2068570789448953988
-  - "never-before-seen" attacks in a game trailer resemble earlier games (Sonnet 4.6). https://x.com/i/status/2065238553123328159
+  - The corporation-versus-you tax meme: the note explains the standard deduction (Opus 5). https://x.com/i/birdwatch/n/2087661068554518659
+  - "Ronaldo has more cups than Messi": a trophy count (Sonnet 5). https://x.com/i/birdwatch/n/2082792062806564966
+  - "which China falsely call Huangyan Dao": it is the official Chinese name (Sonnet 4.6). https://x.com/i/birdwatch/n/2068640659985047568
+  - "never-before-seen" attacks in a game trailer resemble earlier games (Sonnet 4.6). https://x.com/i/birdwatch/n/2065260351525134688
 - Correcting what the post never claimed
-  - George Washington was American: "The quoted tweet's analogy makes this same point" (Opus, direct bot). https://x.com/i/status/2046999701732442558
-  - IShowSpeed clip "is not new", though nobody said it was (Sonnet 5). https://x.com/i/status/2095292581139623969
-  - The note confirms the RAF Fairford post (Opus 5). https://x.com/i/status/2104132822256562282
+  - George Washington was American: "The quoted tweet's analogy makes this same point" (Opus, direct bot). https://x.com/i/birdwatch/n/2047263861200290070
+  - IShowSpeed clip "is not new", though nobody said it was (Sonnet 5). https://x.com/i/birdwatch/n/2095492210774962391
+  - The note confirms the RAF Fairford post (Opus 5). https://x.com/i/birdwatch/n/2104239643701248142
