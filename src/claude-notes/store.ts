@@ -404,9 +404,7 @@ export async function recordUsage(reading: UsageReading) {
   check(
     await db().from("everything_claude_usage").insert({
       weekly: reading.weekly,
-      five_hour: reading.fiveHour,
       weekly_resets_at: reading.weeklyResetsAt,
-      five_hour_resets_at: reading.fiveHourResetsAt,
     }),
   );
 }
