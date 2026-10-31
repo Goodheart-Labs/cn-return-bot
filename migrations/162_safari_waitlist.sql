@@ -1,4 +1,4 @@
--- Migration 161: the Safari waitlist (GOO-677).
+-- Migration 162: the Safari waitlist (GOO-677).
 --
 -- The homepage's install section has a Safari tab, and the Safari version of
 -- the extension is not out yet. A visitor can leave an email address there.

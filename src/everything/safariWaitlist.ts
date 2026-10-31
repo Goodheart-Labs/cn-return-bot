@@ -1,5 +1,5 @@
 /**
- * Prints the Safari waitlist (migration 161, GOO-677): every address that
+ * Prints the Safari waitlist (migration 162, GOO-677): every address that
  * asked for one email when the Safari extension is out, one per line, oldest
  * first. Paste them into the BCC field of one email, or import them into an
  * email service.
