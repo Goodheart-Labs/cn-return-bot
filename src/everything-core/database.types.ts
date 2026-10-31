@@ -1511,6 +1511,24 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_safari_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: never
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: never
+        }
+        Relationships: []
+      }
       everything_slack_announcements: {
         Row: {
           channel: string
@@ -3086,6 +3104,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      everything_join_safari_waitlist: {
+        Args: { p_email: string }
+        Returns: undefined
       }
       everything_leaderboard: {
         Args: never
