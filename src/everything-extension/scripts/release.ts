@@ -155,9 +155,10 @@ function amoAuthHeader(): string {
 const AMO_THROTTLE_STATUS = 429;
 const MAX_AMO_THROTTLE_WAITS = 5;
 const AMO_THROTTLE_MARGIN_MS = 2000;
-// On 2026-10-30 one request to AMO never got an answer, and the release
-// waited for it for 15 hours. So a request that takes longer fails instead.
-const AMO_REQUEST_TIMEOUT_MS = 5 * 60_000;
+// AMO also limits how often an add-on may submit a new version, and then asks
+// for a wait of hours. On 2026-10-30 a release slept through such waits for 15
+// hours. A wait this long stops the release instead, with the time to try again.
+const MAX_AMO_THROTTLE_WAIT_SECONDS = 5 * 60;
 
 async function amoRequest<T>(method: string, apiPath: string, body?: FormData | object): Promise<T> {
   const isForm = body instanceof FormData;
@@ -166,11 +167,13 @@ async function amoRequest<T>(method: string, apiPath: string, body?: FormData | 
       method,
       headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
-      signal: AbortSignal.timeout(AMO_REQUEST_TIMEOUT_MS),
     });
     const text = await response.text();
     if (response.status === AMO_THROTTLE_STATUS && wait < MAX_AMO_THROTTLE_WAITS) {
       const seconds = Number(/available in (\d+) seconds/.exec(text)?.[1] ?? 60);
+      if (seconds > MAX_AMO_THROTTLE_WAIT_SECONDS) {
+        throw new Error(`AMO throttled ${method} ${apiPath} until ${new Date(Date.now() + seconds * 1000).toISOString()}. Run this step again then.`);
+      }
       console.log(`AMO throttled ${method} ${apiPath}, trying again in ${seconds} seconds`);
       await sleep(seconds * 1000 + AMO_THROTTLE_MARGIN_MS);
       continue;
