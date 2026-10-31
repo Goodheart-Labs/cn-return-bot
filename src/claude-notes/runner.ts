@@ -12,13 +12,13 @@
  * review page shows.
  *
  * Every Claude runs in its own tmux session, so a person can attach and watch
- * it. Its files are in its run folder under /tmp/cn-notes, the place Nathan's
- * guard hook lets unattended runs write to.
+ * it. Its files are in its run folder under /var/tmp/cn-notes, a tmp folder
+ * Nathan's guard hook lets unattended runs write to, on the box's main disk.
  *
  * Usage: bun run claude-notes run */
 
 import { spawnSync } from "child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
 import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
@@ -88,7 +88,14 @@ const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? path.join(REPO, "docs/note
  *  appended to its system prompt, so the prompt cache can share it. */
 const X_EXAMPLES_PATH = path.join(REPO, "docs/x-note-examples.md");
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-const RUNS_DIR = "/tmp/cn-notes";
+/** On the main disk. /tmp on ai-box is a small tmpfs in memory with a quota per
+ *  user, and a day of run folders is more than a gigabyte, which filled the
+ *  quota on 2026-10-30 and crashed the runner. */
+const RUNS_DIR = "/var/tmp/cn-notes";
+/** Run folders older than this are deleted. By then their post is finished
+ *  and everything that matters is in the database. */
+const KEEP_RUN_FOLDERS_MS = 3 * 24 * 3600_000;
+const PRUNE_EVERY_MS = 24 * 3600_000;
 const POST_SESSION_PREFIX = "cn-post-";
 const MESSAGE_SESSION_PREFIX = "cn-msg-";
 const TWEET_SESSION_PREFIX = "cn-x-";
@@ -586,11 +593,26 @@ async function tick(first: boolean) {
   }
 }
 
+let prunedAt = 0;
+
+/** Deletes run folders not touched for three days, once a day. */
+function pruneRunFolders() {
+  if (Date.now() - prunedAt < PRUNE_EVERY_MS) return;
+  prunedAt = Date.now();
+  const cutoff = Date.now() - KEEP_RUN_FOLDERS_MS;
+  const old = readdirSync(RUNS_DIR)
+    .map((name) => path.join(RUNS_DIR, name))
+    .filter((dir) => statSync(dir).mtimeMs < cutoff);
+  for (const dir of old) rmSync(dir, { recursive: true, force: true });
+  if (old.length > 0) console.log(`Deleted ${old.length} run folders older than 3 days`);
+}
+
 async function main() {
   mkdirSync(RUNS_DIR, { recursive: true });
   console.log(`Claude note writer runner started in ${REPO}`);
   for (let first = true; ; first = false) {
     refreshExamples();
+    pruneRunFolders();
     await tick(first);
     await Bun.sleep(POLL_MS);
   }
