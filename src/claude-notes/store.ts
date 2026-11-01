@@ -178,17 +178,17 @@ async function personNoteOnPassage(itemId: string, passage: string): Promise<{ n
  *  if any. An agent that saves the same file twice would otherwise post the
  *  same note twice. */
 async function sameDraft(draft: NewDraft): Promise<DraftRow | null> {
-  return unwrap(
-    await db()
-      .from("everything_claude_drafts")
-      .select("*")
-      .eq("item_id", draft.itemId)
-      .eq("passage", draft.passage)
-      .eq("outcome", draft.outcome)
-      .eq("note", draft.note)
-      .limit(1)
-      .maybeSingle(),
-  );
+  const { data, error } = await db()
+    .from("everything_claude_drafts")
+    .select("*")
+    .eq("item_id", draft.itemId)
+    .eq("passage", draft.passage)
+    .eq("outcome", draft.outcome)
+    .eq("note", draft.note)
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(JSON.stringify(error));
+  return data;
 }
 
 /** Saves what a note-finding agent found on one passage. A note is posted as
