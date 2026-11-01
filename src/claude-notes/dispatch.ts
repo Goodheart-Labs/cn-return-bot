@@ -153,15 +153,17 @@ export async function dispatchEnd(key: string) {
   // usage at its end nor its cost is known.
   const end = { weeklyAtEnd: null, apiCostUsd: null };
   const outcome = job.kind === "post" ? await endPost(job, end) : job.kind === "tweet" ? await endTweet(job, end) : await endAnswer(job.draftId, job, end);
-  const others = state.jobs.filter((j) => j.key !== key);
-  if (outcome === "retry") {
-    const retry = { ...job, attempt: job.attempt + 1, startedAt: Date.now() };
-    if (await preparePrompt(retry)) {
-      writeState({ ...state, jobs: [...others, retry] });
-      return console.log(`RETRY ${describe(retry)}: start a subagent on ${retry.prompt}`);
-    }
+  const retry = outcome === "retry" ? { ...job, attempt: job.attempt + 1, startedAt: Date.now() } : null;
+  const retrying = retry !== null && (await preparePrompt(retry));
+  // Closing the job takes a while, and a running dispatch may add new jobs in
+  // the meantime. So the jobs are read again here, or those new jobs would be lost.
+  const current = readState();
+  const others = current.jobs.filter((j) => j.key !== key);
+  if (retrying) {
+    writeState({ ...current, jobs: [...others, retry] });
+    return console.log(`RETRY ${describe(retry)}: start a subagent on ${retry.prompt}`);
   }
-  const gaveUp = outcome === "gave_up" && job.kind === "message" ? [...state.gaveUp, job.draftId] : state.gaveUp;
+  const gaveUp = outcome === "gave_up" && job.kind === "message" ? [...current.gaveUp, job.draftId] : current.gaveUp;
   writeState({ jobs: others, gaveUp });
   console.log(`CLOSED ${describe(job)}`);
 }
