@@ -10,6 +10,11 @@ from analyze import classify_tool
 from window import parse_window, transcripts
 
 CAP_S = 3600
+# The findings page compares weeks by these groups of categories.
+GROUPS = {
+    "checks and tests": ["git commit (pre-commit hook)", "bun run check / typecheck", "tests", "lint / knip / prettier"],
+    "waiting on CI, deploys and loops": ["gh / CI", "sleep / wait loops", "monitor / wait"],
+}
 
 
 def ts(s):
@@ -111,6 +116,9 @@ def main():
         print(f"\n=== {pattern}, {period}: {sessions} sessions, busy {busy/3600:.1f} h, waiting on background tasks {bg_total/3600:.1f} h")
         for k, v in total.most_common(12):
             print(f"  {k:36} {v/3600:6.2f} h {v/busy:5.0%}")
+        for name, keys in GROUPS.items():
+            v = sum(total[k] for k in keys)
+            print(f"  group: {name:29} {v/3600:6.2f} h {v/busy:5.0%}")
         json.dump({"busy": busy, "bg": bg_total, "split": total, "sessions": sessions},
                   open(f"{os.path.dirname(os.path.abspath(__file__))}/split_{pattern}.json", "w"))
 

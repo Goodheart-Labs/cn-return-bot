@@ -14,6 +14,9 @@ import os
 ROOT = os.path.expanduser("~/.claude/projects")
 FIRST_AUDIT_SINCE = "2026-10-12"
 FIRST_AUDIT_UNTIL = "2026-10-26"
+# This audit's own session times the commit hook and the checks every week.
+# Those runs are measurements, not work, so the scripts leave the session out.
+AUDIT_SESSION_DIR = "-home-jim-dev-repos-cn-return-bot--sandbox-claude-implementation-speed"
 
 
 def parse_window(argv):
@@ -32,7 +35,7 @@ def to_timestamp(date):
 def transcripts(dir_prefix, since):
     """Main-thread transcripts of the repos whose session folders start with dir_prefix, written to after since."""
     return [f for f in glob.glob(f"{ROOT}/-home-jim-dev-repos-{dir_prefix}*/*.jsonl")
-            if os.path.getmtime(f) >= since]
+            if os.path.getmtime(f) >= since and os.path.basename(os.path.dirname(f)) != AUDIT_SESSION_DIR]
 
 
 def in_window(record, since, until):
