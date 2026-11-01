@@ -47,7 +47,7 @@ const examplesPlace = (host: Host, file: string) => (host === "ai-box" ? "In you
 function subagentRule(host: Host, submits: string): string {
   return host === "ai-box"
     ? `use only fork subagents: the Agent tool with subagent_type "fork". A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may ${submits} itself, or put what it found in its answer to you. Both are fine.`
-    : `remember that a subagent starts without your context. Give each one the passages it should check, the paths of the files it needs, and the rules on sources and on saving from this prompt. Give each one its own subfolder of your run folder, and tell it to save only the drafts it wrote itself, so no draft is saved twice. A subagent may ${submits} itself, or put what it found in its answer to you. Both are fine.`;
+    : `remember that a subagent starts without your context. Give each one the passages it should check, the paths of the files it needs, and the rules on sources and on saving from this prompt. Give each one its own subfolder of your run folder, tell it to keep every file it writes there, scripts included, and to save only the drafts it wrote itself, so no draft is saved twice. A subagent may ${submits} itself, or put what it found in its answer to you. Both are fine.`;
 }
 
 /** The prompt's section on the passages readers asked about, or nothing when
