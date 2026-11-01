@@ -130,9 +130,13 @@ export async function dispatch() {
     const started: Job[] = [];
     for (const job of await newJobs(state)) if (await preparePrompt(job)) started.push(job);
     if (started.length > 0) {
-      writeState({ ...state, jobs: [...state.jobs, ...started] });
+      // Preparing the prompts can take minutes, and dispatch-end may close a
+      // job in the meantime. So the jobs are read again before the new ones
+      // are added, or a closed job would come back.
+      const current = readState();
+      writeState({ ...current, jobs: [...current.jobs, ...started] });
       const jobs = started.map((job) => ({ key: job.key, kind: job.kind, what: describe(job), prompt: job.prompt }));
-      return console.log(JSON.stringify({ wake: "jobs", jobs, inProgress: state.jobs.length + started.length }, null, 2));
+      return console.log(JSON.stringify({ wake: "jobs", jobs, inProgress: current.jobs.length + started.length }, null, 2));
     }
     if (Date.now() - startedAt > DIGEST_EVERY_MS) return console.log(JSON.stringify({ wake: "digest", inProgress: state.jobs.map((job) => job.key) }));
     await Bun.sleep(POLL_MS);
