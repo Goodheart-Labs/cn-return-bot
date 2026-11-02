@@ -5,7 +5,7 @@
  * answer, which the fork tool copies, and logs what each request cost. */
 
 import type { AgentInputItem, AgentOutputItem, Model, ModelRequest, ModelResponse } from "@openai/agents";
-import { OpenAIResponsesModel } from "@openai/agents";
+import { ModelBehaviorError, OpenAIResponsesModel } from "@openai/agents";
 import OpenAI from "openai";
 import { LONG_CONTEXT_INPUT_TOKENS, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
 
@@ -21,11 +21,15 @@ const CONNECTIONS: Record<Provider, { baseURL?: string; keyName: string; model: 
 /** OpenAI's advice for flex: a flex request may wait a long time for a free
  *  machine, so the client waits up to 15 minutes for an answer. */
 const REQUEST_TIMEOUT_MS = 15 * 60_000;
-/** The OpenAI client retries a busy answer (HTTP 429, which flex gives when
- *  OpenAI has no capacity) and server errors this often, with growing waits.
- *  After that the run fails. It does not fall back to the dearer standard
- *  tier. */
+/** A failed request is retried this often, with growing waits, and then the
+ *  run fails. Every retry runs on the standard tier: OpenAI turns flex
+ *  requests away when it is busy, sometimes for a whole day, and a retry on
+ *  flex would likely be turned away again. The harness does its own retries,
+ *  so the OpenAI client makes none. */
 const MAX_RETRIES = 6;
+const FIRST_RETRY_WAIT_MS = 2_000;
+const MAX_RETRY_WAIT_MS = 60_000;
+const RETRY_TIER: ServiceTier = "default";
 
 /** The examples stay in OpenAI's cache this long after each use. Posts come
  *  about once an hour, so the shorter 30-minute lifetime would often expire
@@ -60,7 +64,7 @@ export function openAIClient(provider: Provider): OpenAI {
   const { baseURL, keyName } = CONNECTIONS[provider];
   const apiKey = process.env[keyName];
   if (!apiKey) throw new Error(`${keyName} is not set. Add it to the root .env (the env file in ~/dev/env/cn-return-bot).`);
-  return new OpenAI({ apiKey, baseURL, timeout: REQUEST_TIMEOUT_MS, maxRetries: MAX_RETRIES, fetch: fetchWithExamplesBreakpoint });
+  return new OpenAI({ apiKey, baseURL, timeout: REQUEST_TIMEOUT_MS, maxRetries: 0, fetch: fetchWithExamplesBreakpoint });
 }
 
 /** One request as the run log stores it. */
@@ -163,8 +167,29 @@ function warnAboutRequest(entry: RequestLog, previousCachedPrefix: number) {
   }
 }
 
+function onTier(request: ModelRequest, tier: ServiceTier): ModelRequest {
+  const { modelSettings } = request;
+  return { ...request, modelSettings: { ...modelSettings, providerData: { ...modelSettings.providerData, service_tier: tier } } };
+}
+
+const RETRYABLE_STATUSES = [408, 409, 429];
+const MIN_SERVER_ERROR_STATUS = 500;
+
+/** Busy answers, server errors and lost connections are worth a retry. A
+ *  response that ended as failed is too: that is how OpenRouter passes on
+ *  OpenAI's "Flex processing is temporarily unavailable". An empty account is
+ *  not, and neither is a request OpenAI refused as invalid. */
+function isRetryable(err: unknown): boolean {
+  if (err instanceof ModelBehaviorError) return err.message.includes("response.failed");
+  if (err instanceof OpenAI.APIConnectionError) return true;
+  if (!(err instanceof OpenAI.APIError) || err.status === undefined) return false;
+  if (err.code === "insufficient_quota" || err.message.includes("no credits")) return false;
+  return RETRYABLE_STATUSES.includes(err.status) || err.status >= MIN_SERVER_ERROR_STATUS;
+}
+
 /** The SDK's model for OpenAI's Responses API, with every answer recorded in
- *  the agent's transcript. The harness never streams. */
+ *  the agent's transcript and failed requests retried on the standard tier.
+ *  The harness never streams. */
 export class TrackedModel implements Model {
   private readonly inner: OpenAIResponsesModel;
 
@@ -177,10 +202,19 @@ export class TrackedModel implements Model {
   }
 
   async getResponse(request: ModelRequest): Promise<ModelResponse> {
-    const startedAt = Date.now();
-    const response = await this.inner.getResponse(request);
-    this.transcript.record(request, response, startedAt);
-    return response;
+    for (let retry = 0; ; retry++) {
+      const startedAt = Date.now();
+      try {
+        const response = await this.inner.getResponse(retry === 0 ? request : onTier(request, RETRY_TIER));
+        this.transcript.record(request, response, startedAt);
+        return response;
+      } catch (err) {
+        if (retry >= MAX_RETRIES || !isRetryable(err)) throw err;
+        const waitMs = Math.min(FIRST_RETRY_WAIT_MS * 2 ** retry, MAX_RETRY_WAIT_MS);
+        console.warn(`[gpt-notes] ${this.transcript.agent}: request failed (${(err as Error).message}). Retry ${retry + 1} of ${MAX_RETRIES} on the standard tier in ${waitMs / 1000}s.`);
+        await Bun.sleep(waitMs);
+      }
+    }
   }
 
   getStreamedResponse(): never {

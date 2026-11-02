@@ -124,3 +124,26 @@ describe("runJob against a fake Responses API", () => {
     }
   });
 });
+
+describe("a refused flex request", () => {
+  test("is retried on the standard tier", async () => {
+    const tiers: string[] = [];
+    const server = Bun.serve({
+      port: 0,
+      fetch: async (request) => {
+        const { service_tier } = (await request.json()) as { service_tier: string };
+        tiers.push(service_tier);
+        const base = { id: "resp", object: "response", created_at: 0, model: "gpt-6.1-terra", usage: { input_tokens: 10, output_tokens: 1, total_tokens: 11 }, service_tier };
+        if (tiers.length === 1) return Response.json({ ...base, status: "failed", output: [], error: { code: "server_error", message: "Flex processing is temporarily unavailable." } });
+        return Response.json({ ...base, status: "completed", output: [{ type: "message", id: "msg", role: "assistant", status: "completed", content: [{ type: "output_text", text: "done", annotations: [] }] }] });
+      },
+    });
+    Object.assign(process.env, { OPENAI_API_KEY: "test", OPENAI_BASE_URL: `http://localhost:${server.port}/v1`, OPENAI_AGENTS_DISABLE_TRACING: "1" });
+    const { runJob } = await import("./harness");
+    const item = { id: "item-1", url: "https://example.com/p", title: "T", full_text: "Text.", published_at: "2026-11-01", project: { name: "C", slug: "c" } };
+    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "low", tier: "flex", provider: "openai" });
+    server.stop();
+    expect(tiers).toEqual(["flex", "default"]);
+    expect(record.requests.map((r) => r.tier)).toEqual(["default"]);
+  });
+});
