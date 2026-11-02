@@ -446,6 +446,13 @@ export async function claudeDraftsSince(itemId: string, since: string): Promise<
   return count ?? 0;
 }
 
+/** How many Claude runs with this tag started since a time. */
+export async function claudeRunsSince(tag: ClaudeRunTag, since: Date): Promise<number> {
+  const { count, error } = await db().from("everything_claude_runs").select("id", { count: "exact", head: true }).contains("tags", [tag]).gte("started_at", since.toISOString());
+  if (error) throw new Error(JSON.stringify(error));
+  return count ?? 0;
+}
+
 /** The notes Claude posted since a time, newest first, for the daily review
  *  on Nathan's ai-box. Withdrawn and rejected notes are not posted, so they
  *  are left out. */

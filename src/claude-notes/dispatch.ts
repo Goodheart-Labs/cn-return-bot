@@ -35,7 +35,8 @@ import {
   waitingMessages,
 } from "./jobs";
 import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt } from "./prompts";
-import { claudeQueue, type QueueItem, readSettings, recordUsage } from "./store";
+import { claudeQueue, claudeRunsSince, type QueueItem, readSettings, recordUsage } from "./store";
+import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
 import { openXTweets, type XTweet } from "./xTweets";
 
@@ -53,6 +54,13 @@ const DIGEST_EVERY_MS = 3 * 60 * 60 * 1000;
  *  subagents, and every one of them counts against the session's limits. */
 const MAX_POSTS_RUNNING = 5;
 const MAX_TWEETS_RUNNING = 3;
+/** Tweets the devbox starts in any 24 hours. A subagent records no cost, so
+ *  the X share in xShare.ts sees none of the devbox's tweets and never stops
+ *  the X run from sending more. Without this limit the tweets used about four
+ *  times their share of the week (Jim, 2026-11-02). A tweet that is not
+ *  started is swept as failed by the X run after CLAUDE_TWEET_MAX_WAIT_MINUTES. */
+const MAX_TWEETS_PER_DAY = 35;
+const DAY_MS = 24 * 3600_000;
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 
 type Job = JobRun & { key: string; prompt: string } & (
@@ -108,7 +116,10 @@ async function newJobs(state: State): Promise<Job[]> {
   const running = (kind: Job["kind"]) => state.jobs.filter((job) => job.kind === kind).length;
   const jobs: Job[] = [];
   const tweets = (await openXTweets()).waiting.filter((tweet) => !open.has(`x-${tweet.runId}`));
-  for (const tweet of tweets.slice(0, Math.max(0, MAX_TWEETS_RUNNING - running("tweet")))) jobs.push({ ...newRun(`x-${tweet.runId}`), kind: "tweet", tweet });
+  // A tweet's run row is written when it ends, so the running ones count separately.
+  const tweetsToday = (await claudeRunsSince(CLAUDE_RUN_TAGS.tweet, new Date(Date.now() - DAY_MS))) + running("tweet");
+  const tweetSlots = Math.min(MAX_TWEETS_RUNNING - running("tweet"), MAX_TWEETS_PER_DAY - tweetsToday);
+  for (const tweet of tweets.slice(0, Math.max(0, tweetSlots))) jobs.push({ ...newRun(`x-${tweet.runId}`), kind: "tweet", tweet });
   if ((await readSettings()).writer !== "claude") return jobs;
   for (const [draftId, message] of await waitingMessages()) {
     if (!open.has(`message-${draftId}`) && !state.gaveUp.includes(draftId)) jobs.push({ ...newRun(`message-${draftId}`), kind: "message", draftId, message });
