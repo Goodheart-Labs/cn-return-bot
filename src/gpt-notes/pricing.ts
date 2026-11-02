@@ -6,8 +6,6 @@
  *  but OpenAI may answer slowly or turn a request away when it is busy. */
 export type ServiceTier = "default" | "flex";
 
-export const MODEL = "gpt-6.1-terra";
-
 const PRICES_PER_MILLION: Record<ServiceTier, { input: number; cachedInput: number; write30m: number; write12h: number; output: number }> = {
   default: { input: 1, cachedInput: 0.05, write30m: 1.25, write12h: 2.5, output: 5 },
   flex: { input: 0.5, cachedInput: 0.025, write30m: 0.625, write12h: 1.25, output: 2.5 },

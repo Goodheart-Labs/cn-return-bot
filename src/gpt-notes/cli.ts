@@ -13,6 +13,7 @@
  * Options:
  *   --effort low|medium|high|xhigh|max   reasoning effort, high by default
  *   --tier flex|default                  OpenAI's service tier, flex by default; "default" is the standard tier
+ *   --provider openrouter|openai         where requests go, OpenRouter by default
  *   --pick <test>=<variant>              fixes a post's A/B pick, for example --pick claude_cn_taste=with_thoughts
  *   --out <folder>                       the run folder, by default under ~/.local/share/gpt-notes/runs */
 
@@ -26,18 +27,25 @@ import { openPassageRequests } from "../everything/passageRequests";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { runJob, type HarnessSettings, type ReasoningEffort, type RunRecord } from "./harness";
+import type { Provider } from "./model";
 import type { ServiceTier } from "./pricing";
 import type { Job } from "./prompts";
 
 const RUNS_DIR = path.join(homedir(), ".local/share/gpt-notes/runs");
+
+// The local copy of OPENROUTER_API_KEY is dead. Local runs use the testing
+// key instead, like the repo's other local scripts.
+if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
 const EFFORTS: ReasoningEffort[] = ["low", "medium", "high", "xhigh", "max"];
 const TIERS: ServiceTier[] = ["flex", "default"];
+const PROVIDERS: Provider[] = ["openai", "openrouter"];
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
   options: {
     effort: { type: "string", default: "high" },
     tier: { type: "string", default: "flex" },
+    provider: { type: "string", default: "openrouter" },
     pick: { type: "string", multiple: true, default: [] },
     out: { type: "string" },
   },
@@ -46,9 +54,11 @@ const { positionals, values } = parseArgs({
 function settingsFromArgs(): HarnessSettings {
   const effort = values.effort as ReasoningEffort;
   const tier = values.tier as ServiceTier;
+  const provider = values.provider as Provider;
   if (!EFFORTS.includes(effort)) throw new Error(`--effort must be one of ${EFFORTS.join(", ")}`);
   if (!TIERS.includes(tier)) throw new Error(`--tier must be one of ${TIERS.join(", ")}`);
-  return { effort, tier };
+  if (!PROVIDERS.includes(provider)) throw new Error(`--provider must be one of ${PROVIDERS.join(", ")}`);
+  return { effort, tier, provider };
 }
 
 async function itemIdFor(itemIdOrUrl: string): Promise<string> {
@@ -110,7 +120,7 @@ async function main() {
   const runDir = values.out ?? path.join(RUNS_DIR, runFolderName(job));
   mkdirSync(runDir, { recursive: true });
   writeFileSync(path.join(runDir, "job.json"), JSON.stringify({ settings, picks: job.picks, ...(job.kind === "post" ? { itemId: job.item.id, url: job.item.url, asked: job.asked } : { runId: job.runId }) }, null, 2));
-  console.log(`Running GPT on ${job.kind === "post" ? job.item.url : `tweet run ${job.runId}`} at ${settings.effort} effort on the ${settings.tier} tier. Run folder: ${runDir}`);
+  console.log(`Running GPT on ${job.kind === "post" ? job.item.url : `tweet run ${job.runId}`} at ${settings.effort} effort on the ${settings.tier} tier through ${settings.provider}. Run folder: ${runDir}`);
   const startedAt = Date.now();
   const record = await runJob(job, settings);
   const summary = summarize(record, Math.round((Date.now() - startedAt) / 60_000));

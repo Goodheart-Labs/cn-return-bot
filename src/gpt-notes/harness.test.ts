@@ -71,9 +71,9 @@ describe("tweetImageLinks", () => {
 });
 
 describe("runJob against a fake Responses API", () => {
-  type Body = { input: { role?: string; type?: string; output?: string; call_id?: string }[]; tools: unknown[]; service_tier: string; prompt_cache_key: string; prompt_cache_options: unknown; reasoning: unknown };
+  type Body = { input: { role?: string; type?: string; output?: string; call_id?: string }[]; tools: unknown[]; service_tier: string; prompt_cache_key: string; reasoning: unknown };
   const PASSAGE = "The moon is made of cheese.";
-  const usage = { input_tokens: 1000, output_tokens: 10, total_tokens: 1010, input_tokens_details: { cached_tokens: 0 }, output_tokens_details: { reasoning_tokens: 0 } };
+  const usage = { input_tokens: 1000, output_tokens: 10, total_tokens: 1010, input_tokens_details: { cached_tokens: 0, cache_write_tokens: 1000 }, output_tokens_details: { reasoning_tokens: 0 } };
   const response = (output: unknown[]) => ({ id: `resp_${Math.random()}`, object: "response", created_at: 0, status: "completed", model: "gpt-6.1-terra", output, usage, service_tier: "flex" });
   const functionCall = (callId: string, name: string, args: unknown) => ({ type: "function_call", id: `fc_${callId}`, call_id: callId, name, arguments: JSON.stringify(args), status: "completed" });
   const message = (text: string) => ({ type: "message", id: `msg_${Math.random()}`, role: "assistant", status: "completed", content: [{ type: "output_text", text, annotations: [] }] });
@@ -102,7 +102,7 @@ describe("runJob against a fake Responses API", () => {
     Object.assign(process.env, { OPENAI_API_KEY: "test", OPENAI_BASE_URL: `http://localhost:${server.port}/v1`, OPENAI_AGENTS_DISABLE_TRACING: "1" });
     const { runJob } = await import("./harness");
     const item = { id: "item-1", url: "https://example.com/p", title: "T", full_text: PASSAGE, published_at: "2026-11-01", project: { name: "C", slug: "c" } };
-    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "xhigh", tier: "flex" });
+    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "xhigh", tier: "flex", provider: "openai" });
     server.stop();
 
     expect(record.forks).toBe(2);
@@ -112,7 +112,7 @@ describe("runJob against a fake Responses API", () => {
     expect(bodies).toHaveLength(4);
     for (const body of bodies) {
       expect(body.tools).toEqual(bodies[0]!.tools);
-      expect([body.service_tier, body.prompt_cache_key, body.prompt_cache_options, body.reasoning]).toEqual(["flex", "cn-notes-post", { mode: "implicit" }, { effort: "xhigh" }]);
+      expect([body.service_tier, body.prompt_cache_key, body.reasoning]).toEqual(["flex", "cn-notes-post", { effort: "xhigh" }]);
       expect(body.input[0]).toMatchObject({ role: "developer", content: [{ prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] });
     }
     // Both forks and the root's second turn continue the root's first turn

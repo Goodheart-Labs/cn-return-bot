@@ -1,14 +1,22 @@
-/* The connection to OpenAI, and the wrapper that records every request.
+/* The connection to GPT-6.1 Terra, and the wrapper that records every request.
  *
- * Every request goes straight to OpenAI's Responses API, not through
- * OpenRouter, because the flex tier, the hosted web search and the cache
- * settings are OpenAI's own. The wrapper keeps each agent's last request and
+ * Requests go to a Responses API: OpenAI's own, or OpenRouter's, which passes
+ * them on to OpenAI (GOO-688). The wrapper keeps each agent's last request and
  * answer, which the fork tool copies, and logs what each request cost. */
 
 import type { AgentInputItem, AgentOutputItem, Model, ModelRequest, ModelResponse } from "@openai/agents";
 import { OpenAIResponsesModel } from "@openai/agents";
 import OpenAI from "openai";
-import { LONG_CONTEXT_INPUT_TOKENS, MODEL, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
+import { LONG_CONTEXT_INPUT_TOKENS, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
+
+export type Provider = "openai" | "openrouter";
+
+/** OpenRouter forwards the request to OpenAI and bills the same list prices.
+ *  It passes on the cache breakpoints, the cache key and the tier. */
+const CONNECTIONS: Record<Provider, { baseURL?: string; keyName: string; model: string }> = {
+  openai: { keyName: "OPENAI_API_KEY", model: "gpt-6.1-terra" },
+  openrouter: { baseURL: "https://openrouter.ai/api/v1", keyName: "OPENROUTER_API_KEY", model: "openai/gpt-6.1-terra" },
+};
 
 /** OpenAI's advice for flex: a flex request may wait a long time for a free
  *  machine, so the client waits up to 15 minutes for an answer. */
@@ -48,10 +56,11 @@ async function fetchWithExamplesBreakpoint(url: string | URL | Request, init?: R
   return fetch(url, { ...init, body: JSON.stringify(addExamplesBreakpoint(JSON.parse(init.body))) });
 }
 
-export function openAIClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set. Add it to the root .env (the env file in ~/dev/env/cn-return-bot).");
-  return new OpenAI({ apiKey, timeout: REQUEST_TIMEOUT_MS, maxRetries: MAX_RETRIES, fetch: fetchWithExamplesBreakpoint });
+export function openAIClient(provider: Provider): OpenAI {
+  const { baseURL, keyName } = CONNECTIONS[provider];
+  const apiKey = process.env[keyName];
+  if (!apiKey) throw new Error(`${keyName} is not set. Add it to the root .env (the env file in ~/dev/env/cn-return-bot).`);
+  return new OpenAI({ apiKey, baseURL, timeout: REQUEST_TIMEOUT_MS, maxRetries: MAX_RETRIES, fetch: fetchWithExamplesBreakpoint });
 }
 
 /** One request as the run log stores it. */
@@ -64,6 +73,9 @@ export interface RequestLog extends RequestUsage {
   /** The tier OpenAI says it served the request on. */
   tier: ServiceTier;
   reasoningTokens: number;
+  /** All input tokens written to the cache. OpenAI also splits them by
+   *  lifetime above; OpenRouter reports only this total. */
+  cacheWriteTokens: number;
   costUsd: number;
 }
 
@@ -71,9 +83,9 @@ export interface RequestLog extends RequestUsage {
 export class Transcript {
   lastInput: AgentInputItem[] = [];
   lastOutput: AgentOutputItem[] = [];
-  /** Input tokens of the agent's previous request, which the next request
-   *  should read from the cache. */
-  private previousInputTokens = 0;
+  /** What the agent's previous request read from the cache and wrote to it.
+   *  The next request should read at least all of that. */
+  private previousCachedPrefix = 0;
   private turn = 0;
 
   constructor(
@@ -86,8 +98,8 @@ export class Transcript {
     this.lastInput = typeof request.input === "string" ? [{ role: "user", content: request.input }] : request.input;
     this.lastOutput = response.output;
     const entry = requestLog(this.agent, this.turn, response, startedAt);
-    warnAboutRequest(entry, this.previousInputTokens);
-    this.previousInputTokens = entry.inputTokens;
+    warnAboutRequest(entry, this.previousCachedPrefix);
+    this.previousCachedPrefix = entry.cachedTokens + entry.cacheWriteTokens;
     this.log.push(entry);
   }
 }
@@ -95,8 +107,10 @@ export class Transcript {
 interface RawUsage {
   input_tokens?: number;
   output_tokens?: number;
-  input_tokens_details?: { cached_tokens?: number; cache_write_tokens_details?: { ttl_30m_tokens?: number; ttl_12h_tokens?: number } };
+  input_tokens_details?: { cached_tokens?: number; cache_write_tokens?: number; cache_write_tokens_details?: { ttl_30m_tokens?: number; ttl_12h_tokens?: number } };
   output_tokens_details?: { reasoning_tokens?: number };
+  /** What OpenRouter billed for the request, web searches included. */
+  cost?: number;
 }
 
 /** A web search the model ran, as opposed to opening a page or searching in
@@ -128,21 +142,24 @@ function requestLog(agent: string, turn: number, response: ModelResponse, starte
     tier,
     ...tokens,
     reasoningTokens: usage.output_tokens_details?.reasoning_tokens ?? 0,
-    costUsd: requestCostUsd(tokens, tier),
+    cacheWriteTokens: usage.input_tokens_details?.cache_write_tokens ?? 0,
+    costUsd: usage.cost ?? requestCostUsd(tokens, tier),
   };
 }
 
 /** Two warnings. A request above 272K input tokens is billed at the
  *  long-context rate as a whole. And from its second turn on, an agent's
- *  request should read at least everything its previous request sent from the
- *  cache. When it reads less, caching broke somewhere. */
-function warnAboutRequest(entry: RequestLog, previousInputTokens: number) {
+ *  request should read from the cache at least everything its previous
+ *  request read or wrote there. When it reads less, caching broke somewhere.
+ *  The previous request's input count is no measure, because it includes the
+ *  search results OpenAI added inside that request, which never come back. */
+function warnAboutRequest(entry: RequestLog, previousCachedPrefix: number) {
   const name = `${entry.agent}, turn ${entry.turn}`;
   if (entry.inputTokens > LONG_CONTEXT_INPUT_TOKENS) {
     console.warn(`[gpt-notes] ${name}: ${entry.inputTokens} input tokens, more than ${LONG_CONTEXT_INPUT_TOKENS}. The whole request is billed at the long-context rate.`);
   }
-  if (entry.turn > 1 && entry.cachedTokens < previousInputTokens) {
-    console.warn(`[gpt-notes] ${name}: read only ${entry.cachedTokens} tokens from the cache, but the previous turn sent ${previousInputTokens}. The cache missed.`);
+  if (entry.turn > 1 && entry.cachedTokens < previousCachedPrefix) {
+    console.warn(`[gpt-notes] ${name}: read only ${entry.cachedTokens} tokens from the cache, but the previous turn had ${previousCachedPrefix} there. The cache missed.`);
   }
 }
 
@@ -153,9 +170,10 @@ export class TrackedModel implements Model {
 
   constructor(
     client: OpenAI,
+    provider: Provider,
     private readonly transcript: Transcript,
   ) {
-    this.inner = new OpenAIResponsesModel(client, MODEL);
+    this.inner = new OpenAIResponsesModel(client, CONNECTIONS[provider].model);
   }
 
   async getResponse(request: ModelRequest): Promise<ModelResponse> {

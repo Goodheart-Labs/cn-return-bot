@@ -9,8 +9,9 @@
  *
  * Prompt caching works at three levels. The examples end in a cache
  * breakpoint, so every post or tweet reads them from the cache (model.ts).
- * OpenAI's implicit mode puts a breakpoint after the latest message or tool
- * results, so every turn reads the turns before it. And a fork's conversation
+ * OpenAI's implicit mode, its default, puts a breakpoint after the latest
+ * message or tool results, so every turn reads the turns before it. The
+ * harness does not name the mode, because OpenRouter refuses the setting. And a fork's conversation
  * starts with its parent's, so the fork reads that from the cache too. This
  * only holds while every agent sends the same tools, in the same order, with
  * the same settings, because those are part of the cached prefix.
@@ -26,7 +27,7 @@ import { z } from "zod";
 import type { NewDraft } from "../claude-notes/store";
 import { xNoteProblems } from "../claude-notes/xTweets";
 import { IMAGE_LINKS_HEADING } from "../pipeline/input/claudeTweetInput";
-import { openAIClient, Transcript, TrackedModel, type RequestLog } from "./model";
+import { openAIClient, Transcript, TrackedModel, type Provider, type RequestLog } from "./model";
 import type { ServiceTier } from "./pricing";
 import { forkBrief, OTHER_CALL_IN_FORK, postMessage, tweetMessage, type Job } from "./prompts";
 
@@ -45,6 +46,7 @@ export interface HarnessSettings {
   /** Flex for normal use. Experiments use the standard tier, which OpenAI
    *  calls "default", so they run faster and never wait for capacity. */
   tier: ServiceTier;
+  provider: Provider;
 }
 
 export type XAnswer = { type: "note"; note: string; reasoning: string } | { type: "no_note"; reason: string };
@@ -221,11 +223,22 @@ function harnessTools(state: HarnessState, transcript: Transcript, isFork: boole
  *  sends the same. GPT-6.1 finds its cache without a cache key. The key only
  *  splits OpenAI's cache accounting, here by post and tweet. */
 function modelSettings(state: HarnessState): ModelSettings {
+  const shared = { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` };
   return {
     reasoning: { effort: state.settings.effort },
     parallelToolCalls: true,
-    promptCacheOptions: { mode: "implicit" },
-    providerData: { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` },
+    ...(state.settings.provider === "openai" ? { providerData: shared } : openRouterSettings(shared)),
+  };
+}
+
+/** OpenRouter keeps no conversations, so it refuses stored responses. The
+ *  model's reasoning then travels back in encrypted form with each request.
+ *  Only OpenAI's own endpoints are allowed, because Azure's copy of the model
+ *  costs 20% more and keeps a cache of its own. */
+function openRouterSettings(shared: Record<string, string>): ModelSettings {
+  return {
+    store: false,
+    providerData: { ...shared, include: ["reasoning.encrypted_content"], provider: { only: ["openai"] } },
   };
 }
 
@@ -233,7 +246,7 @@ function runAgent(state: HarnessState, name: string, input: AgentInputItem[], op
   const transcript = new Transcript(name, state.record.requests);
   const agent = new Agent<HarnessState>({
     name,
-    model: new TrackedModel(state.client, transcript),
+    model: new TrackedModel(state.client, state.settings.provider, transcript),
     modelSettings: modelSettings(state),
     tools: harnessTools(state, transcript, options.isFork),
     // The root agent stops as soon as the post is skipped or the tweet has
@@ -267,6 +280,6 @@ function firstInput(job: Job): AgentInputItem[] {
 
 export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
   const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, requests: [], forks: 0, forkErrors: [] };
-  await runAgent({ job, settings, client: openAIClient(), record }, "root", firstInput(job), { isFork: false });
+  await runAgent({ job, settings, client: openAIClient(settings.provider), record }, "root", firstInput(job), { isFork: false });
   return record;
 }
