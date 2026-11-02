@@ -26,7 +26,7 @@ const started = Date.now();
 const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: effort as ReasoningEffort, tier: tier as ServiceTier, provider: "openrouter" });
 for (const r of record.requests) console.log(`${r.agent} turn ${r.turn}: ${Math.round(r.durationMs / 1000)}s tier=${r.tier} in=${r.inputTokens} cached=${r.cachedTokens} write=${r.cacheWriteTokens} out=${r.outputTokens} searches=${r.webSearches} cost=$${r.costUsd.toFixed(4)}`);
 const total = record.requests.reduce((sum, r) => sum + r.costUsd, 0);
-console.log(`Total $${total.toFixed(3)} in ${Math.round((Date.now() - started) / 1000)}s, ${record.forks} forks, fork errors: ${JSON.stringify(record.forkErrors)}, skip: ${record.skipReason}`);
+console.log(`Total $${total.toFixed(3)} in ${Math.round((Date.now() - started) / 1000)}s, failed requests: ${JSON.stringify(record.failedRequests)}, skip: ${record.skipReason}`);
 for (const d of record.drafts) console.log(`- ${d.outcome}: "${d.passage}" -> ${d.note} | sources: ${d.sources.map((s) => s.url).join(" ")}`);
 mkdirSync(path.join(import.meta.dir, "out"), { recursive: true });
 writeFileSync(path.join(import.meta.dir, "out/e2e.json"), JSON.stringify(record, null, 2));

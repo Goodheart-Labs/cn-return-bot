@@ -1,9 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import type { AgentInputItem, AgentOutputItem } from "@openai/agents";
-import { forkInput, tweetImageLinks } from "./harness";
+import { tweetImageLinks } from "./harness";
 import { addExamplesBreakpoint } from "./model";
 import { requestCostUsd, type RequestUsage } from "./pricing";
-import { forkBrief, OTHER_CALL_IN_FORK } from "./prompts";
+import { subagentBrief } from "./prompts";
 
 const NO_USAGE: RequestUsage = { inputTokens: 0, cachedTokens: 0, write30mTokens: 0, write12hTokens: 0, outputTokens: 0, webSearches: 0 };
 
@@ -43,23 +42,6 @@ describe("addExamplesBreakpoint", () => {
   });
 });
 
-describe("forkInput", () => {
-  const lastInput: AgentInputItem[] = [{ role: "system", content: "EXAMPLES" }, { role: "user", content: "task" }];
-  const call = (callId: string, name: string): AgentOutputItem => ({ type: "function_call", callId, name, arguments: "{}" });
-  const lastOutput: AgentOutputItem[] = [call("a", "fork"), call("b", "fork"), call("c", "save_draft")];
-
-  test("keeps the parent's conversation as the prefix and answers every call of the last turn", () => {
-    const input = forkInput(lastInput, lastOutput, "b", "Check passage 2");
-    expect(input.slice(0, 5)).toEqual([...lastInput, ...lastOutput]);
-    const results = input.slice(5) as { callId: string; output: string }[];
-    expect(results.map((r) => [r.callId, r.output])).toEqual([
-      ["a", OTHER_CALL_IN_FORK],
-      ["b", forkBrief("Check passage 2")],
-      ["c", OTHER_CALL_IN_FORK],
-    ]);
-  });
-});
-
 describe("tweetImageLinks", () => {
   test("reads the links after the images heading", () => {
     expect(tweetImageLinks("Tweet text\n\n## Images on the post\n\nhttps://a.jpg\nhttps://b.png")).toEqual(["https://a.jpg", "https://b.png"]);
@@ -71,25 +53,26 @@ describe("tweetImageLinks", () => {
 });
 
 describe("runJob against a fake Responses API", () => {
-  type Body = { input: { role?: string; type?: string; output?: string; call_id?: string }[]; tools: unknown[]; service_tier: string; prompt_cache_key: string; reasoning: unknown };
+  type Item = { role?: string; type?: string; content?: unknown; output?: string };
+  type Body = { input: Item[]; tools: { type: string; name?: string }[]; service_tier: string; prompt_cache_key: string; reasoning: unknown };
   const PASSAGE = "The moon is made of cheese.";
   const usage = { input_tokens: 1000, output_tokens: 10, total_tokens: 1010, input_tokens_details: { cached_tokens: 0, cache_write_tokens: 1000 }, output_tokens_details: { reasoning_tokens: 0 } };
   const response = (output: unknown[]) => ({ id: `resp_${Math.random()}`, object: "response", created_at: 0, status: "completed", model: "gpt-6.1-terra", output, usage, service_tier: "flex" });
   const functionCall = (callId: string, name: string, args: unknown) => ({ type: "function_call", id: `fc_${callId}`, call_id: callId, name, arguments: JSON.stringify(args), status: "completed" });
   const message = (text: string) => ({ type: "message", id: `msg_${Math.random()}`, role: "assistant", status: "completed", content: [{ type: "output_text", text, annotations: [] }] });
+  const isSubagent = (body: Body) => typeof body.input[1]?.content === "string" && (body.input[1].content as string).startsWith("Another agent");
 
-  /** The root's first turn starts two forks and saves a draft. Each fork
-   *  answers in text, and so does the root's second turn, which ends it. */
+  /** The main agent's first turn starts two subagents and saves a draft. Each
+   *  subagent answers in text, and so does the main agent's second turn,
+   *  which ends the run. */
   function answer(body: Body) {
-    const last = body.input.at(-1)!;
-    const forkResults = body.input.filter((item) => item.type === "function_call_output" && item.output?.startsWith("You are this fork"));
-    if (forkResults.length) return response([message(`found ${forkResults[0]!.call_id}`)]);
-    if (last.type === "function_call_output") return response([message("done")]);
+    if (isSubagent(body)) return response([message("found it")]);
+    if (body.input.at(-1)!.type === "function_call_output") return response([message("done")]);
     const draft = { passage: PASSAGE, claim: "c", kind: "wrong_or_misleading", outcome: "note", note: "n", reasoning: "r", sources: [] };
-    return response([functionCall("f1", "fork", { task: "one" }), functionCall("f2", "fork", { task: "two" }), functionCall("d1", "save_draft", draft)]);
+    return response([functionCall("s1", "subagent", { task: "one" }), functionCall("s2", "subagent", { task: "two" }), functionCall("d1", "save_draft", draft)]);
   }
 
-  test("sends one cached prefix shape to the root and its forks", async () => {
+  test("gives subagents the examples and their task, with the same cache settings", async () => {
     const bodies: Body[] = [];
     const server = Bun.serve({
       port: 0,
@@ -105,23 +88,23 @@ describe("runJob against a fake Responses API", () => {
     const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "xhigh", tier: "flex", provider: "openai" });
     server.stop();
 
-    expect(record.forks).toBe(2);
-    expect(record.forkErrors).toEqual([]);
+    expect(record.failedRequests).toEqual([]);
     expect(record.drafts.map((d) => d.passage)).toEqual([PASSAGE]);
-    expect(record.skipReason).toBeNull();
+    expect(record.requests.map((r) => r.agent).sort()).toEqual(["main 1", "main 1", "subagent 1", "subagent 2"]);
     expect(bodies).toHaveLength(4);
     for (const body of bodies) {
-      expect(body.tools).toEqual(bodies[0]!.tools);
       expect([body.service_tier, body.prompt_cache_key, body.reasoning]).toEqual(["flex", "cn-notes-post", { effort: "xhigh" }]);
       expect(body.input[0]).toMatchObject({ role: "developer", content: [{ prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] });
     }
-    // Both forks and the root's second turn continue the root's first turn
-    // word for word, up to the three function calls.
-    const rootTurn1 = bodies[0]!.input;
-    for (const body of bodies.slice(1)) {
-      expect(body.input.slice(0, rootTurn1.length)).toEqual(rootTurn1);
-      expect(body.input.slice(0, rootTurn1.length + 3)).toEqual(bodies[1]!.input.slice(0, rootTurn1.length + 3));
+    const subagentBodies = bodies.filter(isSubagent);
+    expect(subagentBodies.map((b) => b.input[1]!.content).sort()).toEqual([subagentBrief("one"), subagentBrief("two")]);
+    for (const body of subagentBodies) {
+      expect(body.input).toHaveLength(2);
+      expect(body.tools.map((t) => t.type)).toEqual(["web_search"]);
     }
+    const mainBodies = bodies.filter((b) => !isSubagent(b));
+    expect(mainBodies[1]!.tools).toEqual(mainBodies[0]!.tools);
+    expect(mainBodies[1]!.input.slice(0, mainBodies[0]!.input.length)).toEqual(mainBodies[0]!.input);
   });
 });
 

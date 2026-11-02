@@ -3,33 +3,33 @@
  * the Claude note writer on ai-box and the same examples as its system prompt.
  *
  * The agent's tools are OpenAI's hosted web search, which can also open a page
- * and search inside it, our own tools that save its answers, and a fork tool.
- * A fork is a copy of the agent that starts with the agent's whole
- * conversation so far and does one task, like Claude Code's fork subagents.
+ * and search inside it, our own tools that save its answers, and a subagent
+ * tool. A subagent is the SDK's own: an agent that starts from a fresh
+ * conversation with the examples and the task its parent wrote, does research
+ * with web search, and answers in text.
  *
- * Prompt caching works at three levels. The examples end in a cache
- * breakpoint, so every post or tweet reads them from the cache (model.ts).
- * OpenAI's implicit mode, its default, puts a breakpoint after the latest
- * message or tool results, so every turn reads the turns before it. The
- * harness does not name the mode, because OpenRouter refuses the setting. And a fork's conversation
- * starts with its parent's, so the fork reads that from the cache too. This
- * only holds while every agent sends the same tools, in the same order, with
- * the same settings, because those are part of the cached prefix.
+ * Prompt caching works at two levels. The examples end in a cache breakpoint,
+ * so every post or tweet reads them from the cache (model.ts). And OpenAI's
+ * implicit mode, its default, puts a breakpoint after the latest message or
+ * tool results, so every turn reads the turns before it. The harness does not
+ * name the mode, because OpenRouter refuses the setting. The tools are part of
+ * the cached prefix too. The main agent and the subagents have different
+ * tools, so each keeps its own cached copy of the examples.
  *
  * The harness only records what the agent produced. The caller decides what
  * happens with it: the dry-run command (cli.ts) writes it to a folder. */
 
 import { readFileSync } from "fs";
 import * as path from "path";
-import { Agent, run, tool, webSearchTool, type AgentInputItem, type AgentOutputItem, type ModelSettings, type Tool } from "@openai/agents";
+import { Agent, run, tool, webSearchTool, type AgentInputItem, type ModelSettings, type Tool } from "@openai/agents";
 import type OpenAI from "openai";
 import { z } from "zod";
 import type { NewDraft } from "../claude-notes/store";
 import { xNoteProblems } from "../claude-notes/xTweets";
 import { IMAGE_LINKS_HEADING } from "../pipeline/input/claudeTweetInput";
-import { openAIClient, Transcript, TrackedModel, type Provider, type RequestLog } from "./model";
+import { openAIClient, TrackedModel, type Provider, type RunLog } from "./model";
 import type { ServiceTier } from "./pricing";
-import { forkBrief, OTHER_CALL_IN_FORK, postMessage, tweetMessage, type Job } from "./prompts";
+import { postMessage, subagentBrief, tweetMessage, type Job } from "./prompts";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 const POST_EXAMPLES_PATH = path.join(REPO, "docs/note-examples.md");
@@ -52,16 +52,11 @@ export interface HarnessSettings {
 export type XAnswer = { type: "note"; note: string; reasoning: string } | { type: "no_note"; reason: string };
 
 /** Everything one run produced. */
-export interface RunRecord {
+export interface RunRecord extends RunLog {
   drafts: NewDraft[];
   /** Why the post is not worth checking, when the agent skipped it. */
   skipReason: string | null;
   xAnswer: XAnswer | null;
-  requests: RequestLog[];
-  forks: number;
-  /** Forks that failed, for example by running out of turns. Their parent
-   *  carries on without them, and the run's summary lists them. */
-  forkErrors: string[];
 }
 
 /** What every agent of one run shares. The SDK hands it to every tool as the
@@ -71,6 +66,8 @@ interface HarnessState {
   settings: HarnessSettings;
   client: OpenAI;
   record: RunRecord;
+  /** The examples, as the first message of every conversation. */
+  examples: AgentInputItem;
 }
 
 /** A skipped post and an answered tweet end the run. A checked post ends when
@@ -99,7 +96,7 @@ const draftParameters = z.object({
 
 /** A passage the post does not contain word for word could not be shown on
  *  the page, so the tool refuses it and the model copies it again. */
-function saveDraftTool(state: HarnessState, job: Extract<Job, { kind: "post" }>): Tool {
+function saveDraftTool(state: HarnessState, job: Extract<Job, { kind: "post" }>): Tool<HarnessState> {
   const postText = postMessage(job);
   return tool({
     name: "save_draft",
@@ -113,13 +110,12 @@ function saveDraftTool(state: HarnessState, job: Extract<Job, { kind: "post" }>)
   });
 }
 
-function skipPostTool(state: HarnessState, isFork: boolean): Tool {
+function skipPostTool(state: HarnessState): Tool<HarnessState> {
   return tool({
     name: "skip_post",
     description: "Ends your work on a post that has nothing worth checking.",
     parameters: z.object({ reason: z.string() }),
     execute: async ({ reason }) => {
-      if (isFork) return "Only the agent that started you can skip the post. Put what you found in your answer.";
       state.record.skipReason = reason;
       return "Skipped.";
     },
@@ -128,7 +124,7 @@ function skipPostTool(state: HarnessState, isFork: boolean): Tool {
 
 /** Like the Claude note writer's x-note command, it saves only the first
  *  answer for a tweet. */
-function submitXNoteTool(state: HarnessState): Tool {
+function submitXNoteTool(state: HarnessState): Tool<HarnessState> {
   return tool({
     name: "submit_x_note",
     description: "Submits a Community Note on the tweet.",
@@ -146,7 +142,7 @@ function submitXNoteTool(state: HarnessState): Tool {
   });
 }
 
-function xNoNoteTool(state: HarnessState): Tool {
+function xNoNoteTool(state: HarnessState): Tool<HarnessState> {
   return tool({
     name: "x_no_note",
     description: "Records that the tweet needs no note.",
@@ -160,67 +156,11 @@ function xNoNoteTool(state: HarnessState): Tool {
 }
 
 // ---------------------------------------------------------------------------
-// Forks
-// ---------------------------------------------------------------------------
-
-/** A fork's conversation: the agent's last request and the model's answer to
- *  it, exactly as the agent will send them in its own next request, so the
- *  fork reads all of it from the cache. The API needs a result for every
- *  function call of that answer. The fork's own call gets its task as the
- *  result, and the other calls get a note that its parent handles them. */
-export function forkInput(lastInput: AgentInputItem[], lastOutput: AgentOutputItem[], forkCallId: string, task: string): AgentInputItem[] {
-  const results: AgentInputItem[] = lastOutput
-    .filter((item) => item.type === "function_call")
-    .map((call) => ({
-      type: "function_call_result",
-      name: call.name,
-      callId: call.callId,
-      status: "completed",
-      output: call.callId === forkCallId ? forkBrief(task) : OTHER_CALL_IN_FORK,
-    }));
-  return [...lastInput, ...lastOutput, ...results];
-}
-
-/** Forks start no forks, like Claude Code's. The tool stays in a fork's tool
- *  list all the same, because removing it would change the cached prefix. */
-function forkTool(state: HarnessState, transcript: Transcript, isFork: boolean): Tool {
-  return tool({
-    name: "fork",
-    description: "Starts a fork: a copy of you with your whole context so far, which does one task and answers with what it found. Several forks started in one turn run at the same time.",
-    parameters: z.object({ task: z.string().describe("What the fork should do") }),
-    execute: async ({ task }, _context, details) => {
-      if (isFork) return "A fork cannot start forks. Do the work yourself.";
-      const callId = details?.toolCall?.callId;
-      if (!callId) throw new Error("The fork tool was called without a call id");
-      state.record.forks += 1;
-      const name = `fork ${state.record.forks}`;
-      try {
-        const result = await runAgent(state, name, forkInput(transcript.lastInput, transcript.lastOutput, callId, task), { isFork: true });
-        return String(result.finalOutput ?? "");
-      } catch (err) {
-        const message = `${name} failed: ${(err as Error).message}`;
-        state.record.forkErrors.push(message);
-        return `The fork failed: ${(err as Error).message}`;
-      }
-    },
-  });
-}
-
-// ---------------------------------------------------------------------------
 // Agents
 // ---------------------------------------------------------------------------
 
-/** The same tools, in the same order, for the root agent and every fork. */
-function harnessTools(state: HarnessState, transcript: Transcript, isFork: boolean): Tool[] {
-  const { job } = state;
-  const fork = forkTool(state, transcript, isFork);
-  return job.kind === "post"
-    ? [webSearchTool(), saveDraftTool(state, job), skipPostTool(state, isFork), fork]
-    : [webSearchTool(), submitXNoteTool(state), xNoNoteTool(state), fork];
-}
-
-/** Every setting here is part of the cached prefix, so every agent of a run
- *  sends the same. GPT-6.1 finds its cache without a cache key. The key only
+/** Every setting here is part of the cached prefix, so the main agent and the
+ *  subagents send the same. GPT-6.1 finds its cache without a cache key. The key only
  *  splits OpenAI's cache accounting, here by post and tweet. */
 function modelSettings(state: HarnessState): ModelSettings {
   const shared = { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` };
@@ -242,20 +182,41 @@ function openRouterSettings(shared: Record<string, string>): ModelSettings {
   };
 }
 
-function runAgent(state: HarnessState, name: string, input: AgentInputItem[], options: { isFork: boolean }) {
-  const transcript = new Transcript(name, state.record.requests);
-  const agent = new Agent<HarnessState>({
-    name,
-    model: new TrackedModel(state.client, state.settings.provider, transcript),
+/** The SDK's subagent: an agent run as a tool. Its conversation starts with
+ *  the examples and the task its parent wrote. Several subagents started in
+ *  one turn run at the same time. */
+function subagentTool(state: HarnessState): Tool<HarnessState> {
+  const subagent = new Agent<HarnessState>({
+    name: "subagent",
+    model: new TrackedModel(state.client, state.settings.provider, "subagent", state.record),
     modelSettings: modelSettings(state),
-    tools: harnessTools(state, transcript, options.isFork),
-    // The root agent stops as soon as the post is skipped or the tweet has
-    // its answer. A fork answers its parent in text.
-    toolUseBehavior: options.isFork
-      ? "run_llm_again"
-      : () => (isAnswered(state.record) ? { isFinalOutput: true, isInterrupted: undefined, finalOutput: "Answered" } : { isFinalOutput: false, isInterrupted: undefined }),
+    tools: [webSearchTool()],
   });
-  return run(agent, input, { context: state, maxTurns: MAX_TURNS });
+  return subagent.asTool({
+    toolName: "subagent",
+    toolDescription: "Starts a subagent that does one research task with web search and answers with what it found. It sees only the examples and the task you give it.",
+    parameters: z.object({ task: z.string().describe("What to check, and everything you found that might help, with the facts, quotes and links") }),
+    inputBuilder: ({ params }) => [state.examples, { role: "user", content: subagentBrief(params.task) }],
+    runOptions: { maxTurns: MAX_TURNS },
+  });
+}
+
+/** The main agent stops as soon as the post is skipped or the tweet has its
+ *  answer. */
+function mainAgent(state: HarnessState): Agent<HarnessState> {
+  const { job } = state;
+  const tools =
+    job.kind === "post"
+      ? [webSearchTool(), saveDraftTool(state, job), skipPostTool(state), subagentTool(state)]
+      : [webSearchTool(), submitXNoteTool(state), xNoNoteTool(state), subagentTool(state)];
+  return new Agent<HarnessState>({
+    name: "main",
+    model: new TrackedModel(state.client, state.settings.provider, "main", state.record),
+    modelSettings: modelSettings(state),
+    tools,
+    toolUseBehavior: () =>
+      isAnswered(state.record) ? { isFinalOutput: true, isInterrupted: undefined, finalOutput: "Answered" } : { isFinalOutput: false, isInterrupted: undefined },
+  });
 }
 
 /** The image links the X run puts at the end of a tweet's input. GPT gets the
@@ -265,21 +226,16 @@ export function tweetImageLinks(input: string): string[] {
   return list ? list.split("\n").filter((line) => line.startsWith("http")) : [];
 }
 
-/** The examples as the system prompt, then the task. */
-function firstInput(job: Job): AgentInputItem[] {
-  const examples = readFileSync(job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH, "utf8");
-  const task: AgentInputItem =
-    job.kind === "post"
-      ? { role: "user", content: postMessage(job) }
-      : {
-          role: "user",
-          content: [{ type: "input_text", text: tweetMessage(job) }, ...tweetImageLinks(job.input).map((image) => ({ type: "input_image" as const, image }))],
-        };
-  return [{ role: "system", content: examples }, task];
+function taskMessage(job: Job): AgentInputItem {
+  if (job.kind === "post") return { role: "user", content: postMessage(job) };
+  const images = tweetImageLinks(job.input).map((image) => ({ type: "input_image" as const, image }));
+  return { role: "user", content: [{ type: "input_text", text: tweetMessage(job) }, ...images] };
 }
 
 export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
-  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, requests: [], forks: 0, forkErrors: [] };
-  await runAgent({ job, settings, client: openAIClient(settings.provider), record }, "root", firstInput(job), { isFork: false });
+  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, requests: [], failedRequests: [] };
+  const examples: AgentInputItem = { role: "system", content: readFileSync(job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH, "utf8") };
+  const state = { job, settings, client: openAIClient(settings.provider), record, examples };
+  await run(mainAgent(state), [examples, taskMessage(job)], { context: state, maxTurns: MAX_TURNS });
   return record;
 }

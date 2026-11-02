@@ -1,10 +1,10 @@
 /* The connection to GPT-6.1 Terra, and the wrapper that records every request.
  *
  * Requests go to a Responses API: OpenAI's own, or OpenRouter's, which passes
- * them on to OpenAI (GOO-688). The wrapper keeps each agent's last request and
- * answer, which the fork tool copies, and logs what each request cost. */
+ * them on to OpenAI (GOO-688). The wrapper retries failed requests and logs
+ * what each request cost. */
 
-import type { AgentInputItem, AgentOutputItem, Model, ModelRequest, ModelResponse } from "@openai/agents";
+import type { AgentOutputItem, Model, ModelRequest, ModelResponse } from "@openai/agents";
 import { ModelBehaviorError, OpenAIResponsesModel } from "@openai/agents";
 import OpenAI from "openai";
 import { LONG_CONTEXT_INPUT_TOKENS, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
@@ -83,12 +83,10 @@ export interface RequestLog extends RequestUsage {
   costUsd: number;
 }
 
-/** One agent's conversation as the model last saw it, and its log. */
-export class Transcript {
-  lastInput: AgentInputItem[] = [];
-  lastOutput: AgentOutputItem[] = [];
-  /** What the agent's previous request read from the cache and wrote to it.
-   *  The next request should read at least all of that. */
+/** The requests of one conversation, numbered from 1, in the run's log. */
+class Transcript {
+  /** What the conversation's previous request read from the cache and wrote
+   *  to it. The next request should read at least all of that. */
   private previousCachedPrefix = 0;
   private turn = 0;
 
@@ -97,15 +95,22 @@ export class Transcript {
     private readonly log: RequestLog[],
   ) {}
 
-  record(request: ModelRequest, response: ModelResponse, startedAt: number) {
+  record(response: ModelResponse, startedAt: number) {
     this.turn += 1;
-    this.lastInput = typeof request.input === "string" ? [{ role: "user", content: request.input }] : request.input;
-    this.lastOutput = response.output;
     const entry = requestLog(this.agent, this.turn, response, startedAt);
     warnAboutRequest(entry, this.previousCachedPrefix);
     this.previousCachedPrefix = entry.cachedTokens + entry.cacheWriteTokens;
     this.log.push(entry);
   }
+}
+
+/** Where a model writes what its requests did. */
+export interface RunLog {
+  requests: RequestLog[];
+  /** Requests that still failed after every retry. They end their agent. A
+   *  subagent's failure only reaches its parent as "An error occurred while
+   *  running the tool", so this list is where it shows. */
+  failedRequests: string[];
 }
 
 interface RawUsage {
@@ -192,26 +197,46 @@ function isRetryable(err: unknown): boolean {
  *  The harness never streams. */
 export class TrackedModel implements Model {
   private readonly inner: OpenAIResponsesModel;
+  private readonly transcripts = new Map<string, Transcript>();
 
   constructor(
     client: OpenAI,
     provider: Provider,
-    private readonly transcript: Transcript,
+    private readonly name: string,
+    private readonly runLog: RunLog,
   ) {
     this.inner = new OpenAIResponsesModel(client, CONNECTIONS[provider].model);
   }
 
+  /** One model serves every subagent of a run, and several subagents run at
+   *  the same time. A conversation is told apart by its first message after
+   *  the examples, which holds the subagent's task. */
+  private transcriptFor(request: ModelRequest): Transcript {
+    const key = JSON.stringify(Array.isArray(request.input) ? request.input[1] : request.input);
+    let transcript = this.transcripts.get(key);
+    if (!transcript) {
+      transcript = new Transcript(`${this.name} ${this.transcripts.size + 1}`, this.runLog.requests);
+      this.transcripts.set(key, transcript);
+    }
+    return transcript;
+  }
+
   async getResponse(request: ModelRequest): Promise<ModelResponse> {
+    const transcript = this.transcriptFor(request);
     for (let retry = 0; ; retry++) {
       const startedAt = Date.now();
       try {
         const response = await this.inner.getResponse(retry === 0 ? request : onTier(request, RETRY_TIER));
-        this.transcript.record(request, response, startedAt);
+        transcript.record(response, startedAt);
         return response;
       } catch (err) {
-        if (retry >= MAX_RETRIES || !isRetryable(err)) throw err;
+        const message = `${transcript.agent}: ${(err as Error).message}`;
+        if (retry >= MAX_RETRIES || !isRetryable(err)) {
+          this.runLog.failedRequests.push(message);
+          throw err;
+        }
         const waitMs = Math.min(FIRST_RETRY_WAIT_MS * 2 ** retry, MAX_RETRY_WAIT_MS);
-        console.warn(`[gpt-notes] ${this.transcript.agent}: request failed (${(err as Error).message}). Retry ${retry + 1} of ${MAX_RETRIES} on the standard tier in ${waitMs / 1000}s.`);
+        console.warn(`[gpt-notes] ${transcript.agent}: request failed (${(err as Error).message}). Retry ${retry + 1} of ${MAX_RETRIES} on the standard tier in ${waitMs / 1000}s.`);
         await Bun.sleep(waitMs);
       }
     }

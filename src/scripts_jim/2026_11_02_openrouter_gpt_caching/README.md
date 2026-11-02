@@ -4,8 +4,10 @@ Can the GPT note writer harness (`src/gpt-notes/`) run through OpenRouter
 instead of a direct OpenAI key? Probed on 2026-11-02 with the testing key,
 about $0.50 in all.
 
-- `probe.ts implicit explicit flex websearch recall`: raw requests to
-  OpenRouter's Responses API, printing the cache counters.
+- `probe.ts implicit explicit flex websearch recall parallel subagents`: raw
+  requests to OpenRouter's Responses API, printing the cache counters.
+- `direct.ts`: the memory test against OpenAI directly, comparing a replayed
+  conversation with one continued by `previous_response_id`.
 - `bisect.ts`: finds the field of the Agents SDK's request that OpenRouter
   refuses.
 - `e2e.ts [effort] [tier]`: the real harness on a small made-up post.
@@ -41,3 +43,15 @@ about $0.50 in all.
 - The end-to-end run through OpenRouter: 3 forks, each read its parent's
   conversation from the cache (34,925 of 34,928 tokens), the false claim got a
   correct note, $0.17 in 40 seconds at low effort.
+- OpenRouter refuses `previous_response_id` ("previous_response_id is not
+  supported on this proxy. Each response request is independent.") and
+  `store: true`.
+- Parallel requests read the cache: 8 of 8 after a warm-up.
+- The tools are part of the cached prefix. With the full examples, a request
+  with the main agent's tools cached 34,155 tokens, and one with only web
+  search 34,120. So the SDK subagents, which have only web search, keep their
+  own cached copy of the examples. When several cold subagents start at once,
+  the first one OpenAI processes writes it and the others read it (3 of 4).
+- The direct OpenAI key's organisation may use only 10,000 tokens per minute.
+  A request with web search counts as about 14,000 even with a tiny prompt, so
+  `direct.ts` cannot run until the organisation moves up a usage tier.

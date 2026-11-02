@@ -1,7 +1,9 @@
 /* The GPT harness's prompts. The task comes word for word from the Claude
  * note writer's prompts (src/claude-notes/prompts.ts). Only the part on how to
  * work differs, because GPT saves notes and starts subagents with function
- * tools instead of Claude Code's shell and Agent tool. */
+ * tools instead of Claude Code's shell and Agent tool. Its subagents are the
+ * Agents SDK's own, which start from a fresh conversation, so the prompt asks
+ * GPT to give each one everything it found. */
 
 import { postTask, tweetInputSection, tweetTask } from "../claude-notes/prompts";
 import { postMarkdown, type AskedPassages } from "../claude-notes/take";
@@ -30,7 +32,7 @@ To save a note, call save_draft. A draft with outcome "note" goes up on commonno
 
 Readers see each source's quote under the note, so the quote must appear word for word on the page. Web search can open a page and find text in it. So open each source and check with find in page that the quote is on it.
 
-For subagents, use the fork tool. A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may save its notes itself with save_draft, or put what it found in its answer to you. Both are fine. A fork does not see the text of the pages you read, only what you wrote and thought. So put everything you found that might help it into its task: the facts, the quotes and the links.
+For subagents, use the subagent tool. A subagent starts fresh. It sees the examples in your system prompt, but not this message, the post or the pages you read. So put everything it needs into its task: the passage, what to check, and everything you found that might help it, with the facts, quotes and links. It answers with what it found, and you save the drafts.
 
 If the post has nothing worth checking, call skip_post with the reason.
 
@@ -46,17 +48,13 @@ If the post has images, they are attached to this message after the post.
 
 If the post needs a note, call submit_x_note with the note, with the links to its sources, and a few sentences on why the post needs it. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, call x_no_note with the reason.
 
-If you use subagents, use the fork tool. A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may submit the note itself, or put what it found in its answer to you. Both are fine. A fork does not see the text of the pages you read, only what you wrote and thought. So put everything you found that might help it into its task: the facts, the quotes and the links.
+If you use subagents, use the subagent tool. A subagent starts fresh. It sees the examples in your system prompt, but not this message, the tweet or the pages you read. So put everything it needs into its task: what to check, and everything you found that might help it, with the facts, quotes and links. It answers with what it found, and you submit the answer.
 
 ${tweetInputSection(job.input)}`;
 }
 
-/** The answer a fork sees to its own fork call: its task. */
-export const forkBrief = (task: string) =>
-  `You are this fork. Your task: ${task}
+/** A subagent's message: the task its parent wrote, with a short frame. */
+export const subagentBrief = (task: string) =>
+  `Another agent that writes notes gave you this task. The examples in your system prompt show what good and bad notes look like. Do the research the task asks for, and answer with what you found: the facts, the quotes copied word for word from the pages, and their links.
 
-Do only this task, and start no forks of your own. When you are done, answer with what you found. Your answer goes back to the agent that started you.`;
-
-/** The answer a fork sees to the other calls of the same turn, which the
- *  agent that started it handles. */
-export const OTHER_CALL_IN_FORK = "This call belongs to the agent that started this fork. Its result is not shown here.";
+${task}`;

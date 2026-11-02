@@ -126,5 +126,32 @@ async function recall() {
   console.log("   turn 1 input:", first.usage?.input_tokens, "turn 2 input:", second.usage?.input_tokens, "turn 2 cached:", second.usage?.input_tokens_details?.cached_tokens);
 }
 
-const probes: Record<string, () => Promise<void>> = { implicit, explicit, flex, websearch, recall };
+/** Do requests sent at the same moment all read the cache? One request
+ *  writes the examples to the cache, then 8 requests with different tasks go
+ *  out at once. In a harness run, subagents started in one turn do this. */
+async function parallel() {
+  const PARALLEL_REQUESTS = 8;
+  await call("warm-up", { ...base, prompt_cache_key: "cn-notes-probe", input: [developer(true), user("Reply with OK.")] });
+  const answers = await Promise.all(
+    Array.from({ length: PARALLEL_REQUESTS }, (_, i) => call(`parallel ${i + 1}`, { ...base, prompt_cache_key: "cn-notes-probe", input: [developer(true), user(`Reply with the number ${i + 1}.`)] })),
+  );
+  const hits = answers.filter((a) => (a.usage?.input_tokens_details?.cached_tokens ?? 0) > 0).length;
+  console.log(`   ${hits} of ${PARALLEL_REQUESTS} parallel requests read the cache`);
+}
+
+/** The harness's case: the full examples, written by a request with the main
+ *  agent's tools, then read by 4 requests at once with only web search, like
+ *  subagents started in one turn. */
+async function subagents() {
+  const SUBAGENTS = 4;
+  const full = { role: "developer", content: [{ type: "input_text", text: `Run ${runId}-full.\n\n${readFileSync(path.resolve(import.meta.dir, "../../../docs/note-examples.md"), "utf8")}`, prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] };
+  await call("main", { ...base, prompt_cache_key: "cn-notes-probe", tools: [{ type: "web_search" }, saveQuote], input: [full, user("Reply with OK.")] });
+  const answers = await Promise.all(
+    Array.from({ length: SUBAGENTS }, (_, i) => call(`subagent ${i + 1}`, { ...base, prompt_cache_key: "cn-notes-probe", tools: [{ type: "web_search" }], input: [full, user(`Reply with the number ${i + 1}.`)] })),
+  );
+  const hits = answers.filter((a) => (a.usage?.input_tokens_details?.cached_tokens ?? 0) > 0).length;
+  console.log(`   ${hits} of ${SUBAGENTS} subagent requests read the cache`);
+}
+
+const probes: Record<string, () => Promise<void>> = { implicit, explicit, flex, websearch, recall, parallel, subagents };
 for (const name of process.argv.slice(2)) await probes[name]!();
