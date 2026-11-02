@@ -218,13 +218,14 @@ function harnessTools(state: HarnessState, transcript: Transcript, isFork: boole
 }
 
 /** Every setting here is part of the cached prefix, so every agent of a run
- *  sends the same. */
+ *  sends the same. GPT-6.1 finds its cache without a cache key. The key only
+ *  splits OpenAI's cache accounting, here by post and tweet. */
 function modelSettings(state: HarnessState): ModelSettings {
   return {
     reasoning: { effort: state.settings.effort },
     parallelToolCalls: true,
     promptCacheOptions: { mode: "implicit" },
-    providerData: { service_tier: state.settings.tier },
+    providerData: { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` },
   };
 }
 
