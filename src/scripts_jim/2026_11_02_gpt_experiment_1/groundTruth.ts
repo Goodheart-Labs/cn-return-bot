@@ -23,7 +23,13 @@ async function claudeRunsOn(itemId: string) {
   return costs;
 }
 
-async function notesOf(url: string) {
+async function textOf(url: string) {
+  const { data, error } = await db().from("everything_items").select("full_text").eq("url", url).single();
+  if (error) throw new Error(JSON.stringify(error));
+  return data.full_text;
+}
+
+async function notesOf(url: string, textUrl: string) {
   const { data: item, error } = await db().from("everything_items").select("id, title, url, full_text").eq("url", url).maybeSingle();
   if (error) throw new Error(JSON.stringify(error));
   if (!item) return { url, missing: true };
@@ -44,12 +50,12 @@ async function notesOf(url: string) {
       rating: noteStatus(note),
     })),
   );
-  return { url, itemId: item.id, title: item.title, fullText: item.full_text, notes, claudeRuns: await claudeRunsOn(item.id) };
+  return { url, itemId: item.id, title: item.title, fullText: textUrl === url ? item.full_text : await textOf(textUrl), notes, claudeRuns: await claudeRunsOn(item.id) };
 }
 
 mkdirSync(OUT, { recursive: true });
 const posts = [];
-for (const post of POSTS) posts.push({ slug: post.slug, ...(await notesOf(post.url)) });
+for (const post of POSTS) posts.push({ slug: post.slug, ...(await notesOf(post.url, "textUrl" in post ? post.textUrl : post.url)) });
 writeFileSync(path.join(OUT, "ground-truth.json"), JSON.stringify(posts, null, 2));
 for (const post of posts) {
   if ("missing" in post) {

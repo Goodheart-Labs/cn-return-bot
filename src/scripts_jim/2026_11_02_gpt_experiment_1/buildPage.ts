@@ -54,6 +54,8 @@ function locate(text: string, passage: string | null): { start: number | null; e
 const TABLE_NOTES = [
   "A note rated helpful counts as found when one of GPT's notes makes the same main point. Partly means GPT's note touches the issue but misses the main point.",
   "Claude judged each of GPT's other notes: good means correct and helpful to most readers, bad means wrong, a misreading of the author, pedantic or unnecessary.",
+  "The examples in GPT's system prompt contained some of the notes on the Pinker and sex cult posts. For those two posts GPT got the examples without any note on the same post, so it could not copy the answers.",
+  "The notes on the sex cult post were written on its September version. The author later published a longer revised version that lacks most of the noted passages, so GPT read the September text.",
   "GPT cost is what OpenRouter billed, including $0.01 per web search. Claude Code cost is what Claude Code reports the same run would have cost on the API. It is recorded only since late October, so only one post has it.",
 ];
 
