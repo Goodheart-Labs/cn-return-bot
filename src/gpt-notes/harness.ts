@@ -47,14 +47,13 @@ export interface HarnessSettings {
   tier: ServiceTier;
 }
 
-type DraftOutcome = NewDraft["outcome"];
-export type Report = { skipped: true; reason: string } | { passages: { passage: string; outcome: DraftOutcome }[] };
 export type XAnswer = { type: "note"; note: string; reasoning: string } | { type: "no_note"; reason: string };
 
 /** Everything one run produced. */
 export interface RunRecord {
   drafts: NewDraft[];
-  report: Report | null;
+  /** Why the post is not worth checking, when the agent skipped it. */
+  skipReason: string | null;
   xAnswer: XAnswer | null;
   requests: RequestLog[];
   forks: number;
@@ -72,7 +71,9 @@ interface HarnessState {
   record: RunRecord;
 }
 
-const isAnswered = (record: RunRecord) => record.report !== null || record.xAnswer !== null;
+/** A skipped post and an answered tweet end the run. A checked post ends when
+ *  the agent stops. */
+const isAnswered = (record: RunRecord) => record.skipReason !== null || record.xAnswer !== null;
 
 // ---------------------------------------------------------------------------
 // Tools that save the agent's answers
@@ -110,21 +111,15 @@ function saveDraftTool(state: HarnessState, job: Extract<Job, { kind: "post" }>)
   });
 }
 
-const reportParameters = z.object({
-  skipped: z.boolean().describe("True only when the post has nothing worth checking"),
-  reason: z.string().describe("Why the post was skipped, or empty"),
-  passages: z.array(z.object({ passage: z.string(), outcome: z.enum(["note", "no_note_needed", "too_hard"]) })).describe("Every passage you checked, or empty when skipped"),
-});
-
-function writeReportTool(state: HarnessState, isFork: boolean): Tool {
+function skipPostTool(state: HarnessState, isFork: boolean): Tool {
   return tool({
-    name: "write_report",
-    description: "Ends your work on the post with the list of passages you checked.",
-    parameters: reportParameters,
-    execute: async (report) => {
-      if (isFork) return "Only the agent that started you writes the report. Put what you found in your answer.";
-      state.record.report = report.skipped ? { skipped: true, reason: report.reason } : { passages: report.passages };
-      return "Report saved.";
+    name: "skip_post",
+    description: "Ends your work on a post that has nothing worth checking.",
+    parameters: z.object({ reason: z.string() }),
+    execute: async ({ reason }) => {
+      if (isFork) return "Only the agent that started you can skip the post. Put what you found in your answer.";
+      state.record.skipReason = reason;
+      return "Skipped.";
     },
   });
 }
@@ -218,19 +213,18 @@ function harnessTools(state: HarnessState, transcript: Transcript, isFork: boole
   const { job } = state;
   const fork = forkTool(state, transcript, isFork);
   return job.kind === "post"
-    ? [webSearchTool(), saveDraftTool(state, job), writeReportTool(state, isFork), fork]
+    ? [webSearchTool(), saveDraftTool(state, job), skipPostTool(state, isFork), fork]
     : [webSearchTool(), submitXNoteTool(state), xNoNoteTool(state), fork];
 }
 
 /** Every setting here is part of the cached prefix, so every agent of a run
- *  sends the same. The cache key only sorts OpenAI's cache accounting by
- *  harness; GPT-6.1 routes requests to their cache without it. */
+ *  sends the same. */
 function modelSettings(state: HarnessState): ModelSettings {
   return {
     reasoning: { effort: state.settings.effort },
     parallelToolCalls: true,
     promptCacheOptions: { mode: "implicit" },
-    providerData: { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` },
+    providerData: { service_tier: state.settings.tier },
   };
 }
 
@@ -241,8 +235,8 @@ function runAgent(state: HarnessState, name: string, input: AgentInputItem[], op
     model: new TrackedModel(state.client, transcript),
     modelSettings: modelSettings(state),
     tools: harnessTools(state, transcript, options.isFork),
-    // The root agent stops as soon as the post or tweet has its answer. A
-    // fork answers its parent in text.
+    // The root agent stops as soon as the post is skipped or the tweet has
+    // its answer. A fork answers its parent in text.
     toolUseBehavior: options.isFork
       ? "run_llm_again"
       : () => (isAnswered(state.record) ? { isFinalOutput: true, isInterrupted: undefined, finalOutput: "Answered" } : { isFinalOutput: false, isInterrupted: undefined }),
@@ -271,7 +265,7 @@ function firstInput(job: Job): AgentInputItem[] {
 }
 
 export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
-  const record: RunRecord = { drafts: [], report: null, xAnswer: null, requests: [], forks: 0, forkErrors: [] };
+  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, requests: [], forks: 0, forkErrors: [] };
   await runAgent({ job, settings, client: openAIClient(), record }, "root", firstInput(job), { isFork: false });
   return record;
 }

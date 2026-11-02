@@ -71,7 +71,7 @@ describe("tweetImageLinks", () => {
 });
 
 describe("runJob against a fake Responses API", () => {
-  type Body = { input: { role?: string; type?: string; output?: string; call_id?: string }[]; tools: unknown[]; service_tier: string; prompt_cache_key: string; prompt_cache_options: unknown; reasoning: unknown };
+  type Body = { input: { role?: string; type?: string; output?: string; call_id?: string }[]; tools: unknown[]; service_tier: string; prompt_cache_options: unknown; reasoning: unknown };
   const PASSAGE = "The moon is made of cheese.";
   const usage = { input_tokens: 1000, output_tokens: 10, total_tokens: 1010, input_tokens_details: { cached_tokens: 0 }, output_tokens_details: { reasoning_tokens: 0 } };
   const response = (output: unknown[]) => ({ id: `resp_${Math.random()}`, object: "response", created_at: 0, status: "completed", model: "gpt-6.1-terra", output, usage, service_tier: "flex" });
@@ -79,12 +79,12 @@ describe("runJob against a fake Responses API", () => {
   const message = (text: string) => ({ type: "message", id: `msg_${Math.random()}`, role: "assistant", status: "completed", content: [{ type: "output_text", text, annotations: [] }] });
 
   /** The root's first turn starts two forks and saves a draft. Each fork
-   *  answers in text. The root's second turn writes the report. */
+   *  answers in text, and so does the root's second turn, which ends it. */
   function answer(body: Body) {
     const last = body.input.at(-1)!;
     const forkResults = body.input.filter((item) => item.type === "function_call_output" && item.output?.startsWith("You are this fork"));
     if (forkResults.length) return response([message(`found ${forkResults[0]!.call_id}`)]);
-    if (last.type === "function_call_output") return response([functionCall("report", "write_report", { skipped: false, reason: "", passages: [{ passage: PASSAGE, outcome: "note" }] })]);
+    if (last.type === "function_call_output") return response([message("done")]);
     const draft = { passage: PASSAGE, claim: "c", kind: "wrong_or_misleading", outcome: "note", note: "n", reasoning: "r", sources: [] };
     return response([functionCall("f1", "fork", { task: "one" }), functionCall("f2", "fork", { task: "two" }), functionCall("d1", "save_draft", draft)]);
   }
@@ -108,11 +108,11 @@ describe("runJob against a fake Responses API", () => {
     expect(record.forks).toBe(2);
     expect(record.forkErrors).toEqual([]);
     expect(record.drafts.map((d) => d.passage)).toEqual([PASSAGE]);
-    expect(record.report).toEqual({ passages: [{ passage: PASSAGE, outcome: "note" }] });
+    expect(record.skipReason).toBeNull();
     expect(bodies).toHaveLength(4);
     for (const body of bodies) {
       expect(body.tools).toEqual(bodies[0]!.tools);
-      expect([body.service_tier, body.prompt_cache_key, body.prompt_cache_options, body.reasoning]).toEqual(["flex", "cn-notes-post", { mode: "implicit" }, { effort: "xhigh" }]);
+      expect([body.service_tier, body.prompt_cache_options, body.reasoning]).toEqual(["flex", { mode: "implicit" }, { effort: "xhigh" }]);
       expect(body.input[0]).toMatchObject({ role: "developer", content: [{ prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] });
     }
     // Both forks and the root's second turn continue the root's first turn

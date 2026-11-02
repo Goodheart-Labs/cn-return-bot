@@ -30,9 +30,9 @@ To save a note, call save_draft. A draft with outcome "note" goes up on commonno
 
 Readers see each source's quote under the note, so the quote must appear word for word on the page. Web search can open a page and find text in it. So open each source and check with find in page that the quote is on it.
 
-For subagents, use the fork tool. A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may save its notes itself with save_draft, or put what it found in its answer to you. Both are fine. Only you call write_report.
+For subagents, use the fork tool. A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may save its notes itself with save_draft, or put what it found in its answer to you. Both are fine.
 
-When you are done, call write_report with every passage you checked and its outcome. If the post has nothing worth checking, call write_report with skipped set to true and the reason instead.
+If the post has nothing worth checking, call skip_post with the reason.
 
 ## The post
 
@@ -44,7 +44,7 @@ export function tweetMessage(job: Extract<Job, { kind: "tweet" }>): string {
 
 If the post has images, they are attached to this message after the post.
 
-If the post needs a note, call submit_x_note with the note, with the links to its sources, and a few sentences on why the post needs it. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, call x_no_note with the reason. Stop once one of the two has succeeded.
+If the post needs a note, call submit_x_note with the note, with the links to its sources, and a few sentences on why the post needs it. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, call x_no_note with the reason.
 
 If you use subagents, use the fork tool. A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may submit the note itself, or put what it found in its answer to you. Both are fine.
 

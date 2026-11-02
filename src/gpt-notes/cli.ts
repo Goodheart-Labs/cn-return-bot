@@ -1,7 +1,7 @@
 /* Runs the GPT note writer on one post or one X tweet as a dry run (GOO-682).
  * It reads its input from prod and writes nothing there. Everything the run
- * produced goes into a run folder: the drafts or the X answer, the report,
- * one line per model request, and a summary with the cost.
+ * produced goes into a run folder: the drafts or the X answer, one line per
+ * model request, and a summary with the cost.
  *
  * Usage:
  *   bun run gpt-notes post <item id or post URL> [options]
@@ -98,7 +98,7 @@ function summarize(record: RunRecord, minutes: number) {
     tiersServed: [...new Set(record.requests.map((r) => r.tier))],
     notes: record.drafts.filter((d) => d.outcome === "note").length,
     drafts: record.drafts.length,
-    answered: record.report !== null || record.xAnswer !== null,
+    skipReason: record.skipReason,
   };
 }
 
@@ -115,11 +115,11 @@ async function main() {
   const record = await runJob(job, settings);
   const summary = summarize(record, Math.round((Date.now() - startedAt) / 60_000));
   writeFileSync(path.join(runDir, "drafts.json"), JSON.stringify(record.drafts, null, 2));
-  writeFileSync(path.join(runDir, "answer.json"), JSON.stringify(record.report ?? record.xAnswer, null, 2));
+  if (job.kind === "tweet") writeFileSync(path.join(runDir, "x-answer.json"), JSON.stringify(record.xAnswer, null, 2));
   writeFileSync(path.join(runDir, "requests.jsonl"), record.requests.map((r) => JSON.stringify(r)).join("\n") + "\n");
   writeFileSync(path.join(runDir, "summary.json"), JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));
-  if (!summary.answered) throw new Error(`The agent stopped without an answer. See ${runDir}`);
+  if (job.kind === "tweet" && !record.xAnswer) throw new Error(`The agent stopped without answering the tweet. See ${runDir}`);
 }
 
 await main();
