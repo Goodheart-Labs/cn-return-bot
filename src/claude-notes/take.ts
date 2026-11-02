@@ -18,6 +18,12 @@ export type AskedPassages = { requests: PassageRequest[]; onlyThese: boolean };
 
 export type Take = { kind: "taken"; dir: string; asked: AskedPassages } | { kind: "skipped"; reason: string };
 
+/** The post as the note writer reads it: its title, creator, day and address,
+ *  then its text. */
+export function postMarkdown(item: Awaited<ReturnType<typeof readItem>>): string {
+  return `# ${item.title ?? item.url}\n\nBy ${item.project?.name ?? "unknown"}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`;
+}
+
 /** A post without stored text, such as a new video or a requested page, is
  *  read first the way the pipeline reads it. If that read fails, this throws,
  *  and the caller records the failure on the item. */
@@ -38,7 +44,7 @@ export async function take(itemId: string): Promise<Take> {
   mkdirSync(dir, { recursive: true });
   if (read?.cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(read.cues));
   const creator = item.project?.name ?? "unknown";
-  writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
+  writeFileSync(path.join(dir, "post.md"), postMarkdown(item));
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
   const asked = { requests, onlyThese: requests.length > 0 && isWholePageChecked(item) };
   await logEvent({ actor: "claude", type: "item_taken", itemId });

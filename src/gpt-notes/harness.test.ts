@@ -1,0 +1,126 @@
+import { describe, expect, test } from "bun:test";
+import type { AgentInputItem, AgentOutputItem } from "@openai/agents";
+import { forkInput, tweetImageLinks } from "./harness";
+import { addExamplesBreakpoint } from "./model";
+import { requestCostUsd, type RequestUsage } from "./pricing";
+import { forkBrief, OTHER_CALL_IN_FORK } from "./prompts";
+
+const NO_USAGE: RequestUsage = { inputTokens: 0, cachedTokens: 0, write30mTokens: 0, write12hTokens: 0, outputTokens: 0, webSearches: 0 };
+
+describe("requestCostUsd", () => {
+  test("bills each input token once, at the read, write or ordinary rate", () => {
+    const usage = { ...NO_USAGE, inputTokens: 100_000, cachedTokens: 60_000, write30mTokens: 10_000, write12hTokens: 10_000, outputTokens: 4_000 };
+    // 20K ordinary at $1, 60K read at $0.05, 10K at $1.25, 10K at $2.50, 4K output at $5.
+    expect(requestCostUsd(usage, "default")).toBeCloseTo(0.02 + 0.003 + 0.0125 + 0.025 + 0.02, 6);
+    expect(requestCostUsd(usage, "flex")).toBeCloseTo((0.02 + 0.003 + 0.0125 + 0.025 + 0.02) / 2, 6);
+  });
+
+  test("bills a request above 272K input tokens at the long-context rate as a whole", () => {
+    const usage = { ...NO_USAGE, inputTokens: 300_000, outputTokens: 10_000 };
+    expect(requestCostUsd(usage, "default")).toBeCloseTo(0.6 + 0.075, 6);
+  });
+
+  test("adds the fee of each web search on every tier", () => {
+    expect(requestCostUsd({ ...NO_USAGE, webSearches: 3 }, "flex")).toBeCloseTo(0.03, 6);
+  });
+});
+
+describe("addExamplesBreakpoint", () => {
+  test("turns the leading system message into a developer message with a breakpoint", () => {
+    const body = { model: "m", input: [{ role: "system", content: "EXAMPLES" }, { role: "user", content: "task" }] };
+    expect(addExamplesBreakpoint(body)).toEqual({
+      model: "m",
+      input: [
+        { role: "developer", content: [{ type: "input_text", text: "EXAMPLES", prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] },
+        { role: "user", content: "task" },
+      ],
+    });
+  });
+
+  test("leaves a request without a leading system message alone", () => {
+    const body = { input: [{ role: "user", content: "task" }] };
+    expect(addExamplesBreakpoint(body)).toBe(body);
+  });
+});
+
+describe("forkInput", () => {
+  const lastInput: AgentInputItem[] = [{ role: "system", content: "EXAMPLES" }, { role: "user", content: "task" }];
+  const call = (callId: string, name: string): AgentOutputItem => ({ type: "function_call", callId, name, arguments: "{}" });
+  const lastOutput: AgentOutputItem[] = [call("a", "fork"), call("b", "fork"), call("c", "save_draft")];
+
+  test("keeps the parent's conversation as the prefix and answers every call of the last turn", () => {
+    const input = forkInput(lastInput, lastOutput, "b", "Check passage 2");
+    expect(input.slice(0, 5)).toEqual([...lastInput, ...lastOutput]);
+    const results = input.slice(5) as { callId: string; output: string }[];
+    expect(results.map((r) => [r.callId, r.output])).toEqual([
+      ["a", OTHER_CALL_IN_FORK],
+      ["b", forkBrief("Check passage 2")],
+      ["c", OTHER_CALL_IN_FORK],
+    ]);
+  });
+});
+
+describe("tweetImageLinks", () => {
+  test("reads the links after the images heading", () => {
+    expect(tweetImageLinks("Tweet text\n\n## Images on the post\n\nhttps://a.jpg\nhttps://b.png")).toEqual(["https://a.jpg", "https://b.png"]);
+  });
+
+  test("finds none in a tweet without images", () => {
+    expect(tweetImageLinks("Tweet text")).toEqual([]);
+  });
+});
+
+describe("runJob against a fake Responses API", () => {
+  type Body = { input: { role?: string; type?: string; output?: string; call_id?: string }[]; tools: unknown[]; service_tier: string; prompt_cache_key: string; prompt_cache_options: unknown; reasoning: unknown };
+  const PASSAGE = "The moon is made of cheese.";
+  const usage = { input_tokens: 1000, output_tokens: 10, total_tokens: 1010, input_tokens_details: { cached_tokens: 0 }, output_tokens_details: { reasoning_tokens: 0 } };
+  const response = (output: unknown[]) => ({ id: `resp_${Math.random()}`, object: "response", created_at: 0, status: "completed", model: "gpt-6.1-terra", output, usage, service_tier: "flex" });
+  const functionCall = (callId: string, name: string, args: unknown) => ({ type: "function_call", id: `fc_${callId}`, call_id: callId, name, arguments: JSON.stringify(args), status: "completed" });
+  const message = (text: string) => ({ type: "message", id: `msg_${Math.random()}`, role: "assistant", status: "completed", content: [{ type: "output_text", text, annotations: [] }] });
+
+  /** The root's first turn starts two forks and saves a draft. Each fork
+   *  answers in text. The root's second turn writes the report. */
+  function answer(body: Body) {
+    const last = body.input.at(-1)!;
+    const forkResults = body.input.filter((item) => item.type === "function_call_output" && item.output?.startsWith("You are this fork"));
+    if (forkResults.length) return response([message(`found ${forkResults[0]!.call_id}`)]);
+    if (last.type === "function_call_output") return response([functionCall("report", "write_report", { skipped: false, reason: "", passages: [{ passage: PASSAGE, outcome: "note" }] })]);
+    const draft = { passage: PASSAGE, claim: "c", kind: "wrong_or_misleading", outcome: "note", note: "n", reasoning: "r", sources: [] };
+    return response([functionCall("f1", "fork", { task: "one" }), functionCall("f2", "fork", { task: "two" }), functionCall("d1", "save_draft", draft)]);
+  }
+
+  test("sends one cached prefix shape to the root and its forks", async () => {
+    const bodies: Body[] = [];
+    const server = Bun.serve({
+      port: 0,
+      fetch: async (request) => {
+        const body = (await request.json()) as Body;
+        bodies.push(body);
+        return Response.json(answer(body));
+      },
+    });
+    Object.assign(process.env, { OPENAI_API_KEY: "test", OPENAI_BASE_URL: `http://localhost:${server.port}/v1`, OPENAI_AGENTS_DISABLE_TRACING: "1" });
+    const { runJob } = await import("./harness");
+    const item = { id: "item-1", url: "https://example.com/p", title: "T", full_text: PASSAGE, published_at: "2026-11-01", project: { name: "C", slug: "c" } };
+    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "xhigh", tier: "flex" });
+    server.stop();
+
+    expect(record.forks).toBe(2);
+    expect(record.forkErrors).toEqual([]);
+    expect(record.drafts.map((d) => d.passage)).toEqual([PASSAGE]);
+    expect(record.report).toEqual({ passages: [{ passage: PASSAGE, outcome: "note" }] });
+    expect(bodies).toHaveLength(4);
+    for (const body of bodies) {
+      expect(body.tools).toEqual(bodies[0]!.tools);
+      expect([body.service_tier, body.prompt_cache_key, body.prompt_cache_options, body.reasoning]).toEqual(["flex", "cn-notes-post", { mode: "implicit" }, { effort: "xhigh" }]);
+      expect(body.input[0]).toMatchObject({ role: "developer", content: [{ prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] });
+    }
+    // Both forks and the root's second turn continue the root's first turn
+    // word for word, up to the three function calls.
+    const rootTurn1 = bodies[0]!.input;
+    for (const body of bodies.slice(1)) {
+      expect(body.input.slice(0, rootTurn1.length)).toEqual(rootTurn1);
+      expect(body.input.slice(0, rootTurn1.length + 3)).toEqual(bodies[1]!.input.slice(0, rootTurn1.length + 3));
+    }
+  });
+});
