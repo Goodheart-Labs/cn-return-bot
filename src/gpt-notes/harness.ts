@@ -47,6 +47,9 @@ export interface HarnessSettings {
    *  calls "default", so they run faster and never wait for capacity. */
   tier: ServiceTier;
   provider: Provider;
+  /** The examples file for the system prompt, when an experiment replaces the
+   *  usual one. */
+  examplesPath?: string;
 }
 
 export type XAnswer = { type: "note"; note: string; reasoning: string } | { type: "no_note"; reason: string };
@@ -234,7 +237,8 @@ function taskMessage(job: Job): AgentInputItem {
 
 export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
   const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, requests: [], failedRequests: [] };
-  const examples: AgentInputItem = { role: "system", content: readFileSync(job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH, "utf8") };
+  const examplesPath = settings.examplesPath ?? (job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH);
+  const examples: AgentInputItem = { role: "system", content: readFileSync(examplesPath, "utf8") };
   const state = { job, settings, client: openAIClient(settings.provider), record, examples };
   await run(mainAgent(state), [examples, taskMessage(job)], { context: state, maxTurns: MAX_TURNS });
   return record;

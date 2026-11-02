@@ -15,6 +15,7 @@
  *   --tier flex|default                  OpenAI's service tier, flex by default; "default" is the standard tier
  *   --provider openrouter|openai         where requests go, OpenRouter by default
  *   --pick <test>=<variant>              fixes a post's A/B pick, for example --pick claude_cn_taste=with_thoughts
+ *   --examples <file>                    replaces the examples in the system prompt, for experiments
  *   --out <folder>                       the run folder, by default under ~/.local/share/gpt-notes/runs */
 
 import { mkdirSync, writeFileSync } from "fs";
@@ -48,6 +49,7 @@ const { positionals, values } = parseArgs({
     provider: { type: "string", default: "openrouter" },
     pick: { type: "string", multiple: true, default: [] },
     out: { type: "string" },
+    examples: { type: "string" },
   },
 });
 
@@ -58,7 +60,7 @@ function settingsFromArgs(): HarnessSettings {
   if (!EFFORTS.includes(effort)) throw new Error(`--effort must be one of ${EFFORTS.join(", ")}`);
   if (!TIERS.includes(tier)) throw new Error(`--tier must be one of ${TIERS.join(", ")}`);
   if (!PROVIDERS.includes(provider)) throw new Error(`--provider must be one of ${PROVIDERS.join(", ")}`);
-  return { effort, tier, provider };
+  return { effort, tier, provider, examplesPath: values.examples };
 }
 
 async function itemIdFor(itemIdOrUrl: string): Promise<string> {
