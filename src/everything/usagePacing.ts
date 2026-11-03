@@ -116,7 +116,7 @@ export type ClaudePacing =
       intervalMs: number;
       dueAt: Date;
     }
-  | { kind: "runner_silent"; reason: string };
+  | { kind: "runner_silent"; reason: string; lastReadingAt: Date | null };
 
 /** How much the weekly usage rose over the readings. The drop at a weekly
  *  reset is not a negative rise, so only increases count. */
@@ -132,7 +132,11 @@ export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
   const { now } = snapshot;
   const latest = snapshot.readings.at(-1);
   if (!latest?.weeklyResetsAt || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
-    return { kind: "runner_silent", reason: "The runner on ai-box has not reported the usage of Nathan's plan in the last 30 minutes" };
+    return {
+      kind: "runner_silent",
+      reason: "The Claude note writer has not reported the usage of its Claude plan in the last 30 minutes",
+      lastReadingAt: latest?.at ?? null,
+    };
   }
   const rise = usageRise(snapshot.readings);
   const measured = snapshot.postsTaken >= MIN_POSTS_FOR_USAGE_ESTIMATE && rise > 0;

@@ -619,6 +619,7 @@ export type Database = {
       everything_feed_schedule: {
         Row: {
           claude_failures_reported_through: string
+          claude_silence_warned_for: string | null
           dispatched_at: string | null
           id: boolean
           next_run_at: string | null
@@ -626,6 +627,7 @@ export type Database = {
         }
         Insert: {
           claude_failures_reported_through?: string
+          claude_silence_warned_for?: string | null
           dispatched_at?: string | null
           id?: boolean
           next_run_at?: string | null
@@ -633,6 +635,7 @@ export type Database = {
         }
         Update: {
           claude_failures_reported_through?: string
+          claude_silence_warned_for?: string | null
           dispatched_at?: string | null
           id?: boolean
           next_run_at?: string | null
