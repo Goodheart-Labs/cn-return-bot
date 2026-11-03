@@ -6,20 +6,20 @@ import { fetchAllRows } from "../../everything-core/paging";
  *
  *  Every Claude the ai-box runner started wrote one everything_claude_runs row with the cost Claude Code
  *  reported for it. Claude Code reports what the run would have cost at API prices, even when it ran on
- *  a subscription. Anthropic put Nathan's account on hold at 2026-10-31 22:17 UTC, so the window ends
- *  there. The script prints the cost per UTC day and per tag set, so we can price the option of running
+ *  a subscription. The runner's last Claude ended at 2026-10-31 22:17 UTC, so the window ends there.
+ *  The script prints the cost per UTC day and per tag set, so we can price the option of running
  *  the note writer on an API key instead of a personal subscription.
  *
  *    bun run src/scripts_jim/2026_11_03_nathan_claude_account/apiCost.ts */
 const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
-const ACCOUNT_PUT_ON_HOLD = "2026-10-31T22:17:00Z";
+const RUNNER_STOPPED = "2026-10-31T22:17:00Z";
 const DAYS_PER_WEEK = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 type Run = { id: string; ended_at: string; tags: string[]; api_cost_usd: number | null };
 
 const runs = await fetchAllRows<Run>(
-  () => db.from("everything_claude_runs").select("id, ended_at, tags, api_cost_usd").lt("ended_at", ACCOUNT_PUT_ON_HOLD),
+  () => db.from("everything_claude_runs").select("id, ended_at, tags, api_cost_usd").lt("ended_at", RUNNER_STOPPED),
   "id",
   { label: "claude runs" },
 );
