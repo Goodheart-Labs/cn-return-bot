@@ -118,6 +118,24 @@ export type ClaudePacing =
     }
   | { kind: "runner_silent"; reason: string; lastReadingAt: Date | null };
 
+/* When the Slack channel hears that the note writer is silent or back
+ * (claudeSilenceWarning.ts, GOO-695). */
+
+/** Stands in for the newest reading when there is none at all, so a silence
+ *  without any reading is still warned about only once. */
+export const NO_READING = new Date(0);
+
+export type SilenceNotice = { kind: "warn"; newestReadingAt: Date } | { kind: "back" } | null;
+
+/** What to post, given this run's pacing and the outage already warned about. */
+export function silenceNotice(pacing: ClaudePacing, warnedFor: Date | null): SilenceNotice {
+  if (pacing.kind === "runner_silent") {
+    const newestReadingAt = pacing.lastReadingAt ?? NO_READING;
+    return warnedFor?.getTime() === newestReadingAt.getTime() ? null : { kind: "warn", newestReadingAt };
+  }
+  return warnedFor ? { kind: "back" } : null;
+}
+
 /** How much the weekly usage rose over the readings. The drop at a weekly
  *  reset is not a negative rise, so only increases count. */
 export function usageRise(readings: UsageReading[]): number {

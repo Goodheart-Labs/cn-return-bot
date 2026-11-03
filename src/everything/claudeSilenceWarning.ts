@@ -12,32 +12,17 @@
 
 import { postToSlack } from "../pipeline/utils/slack";
 import { readClaudeSilenceWarnedFor, setClaudeSilenceWarnedFor } from "./db";
-import type { ClaudePacing } from "./usagePacing";
+import { type ClaudePacing, NO_READING, type SilenceNotice, silenceNotice } from "./usagePacing";
 
 /** The channel the Claude note writer reports to, the same one the devbox's
  *  slack-bridge forwards to the note writer's session. */
 const CLAUDE_NOTES_SLACK_CHANNEL = "C0CATM96UR1";
 
-/** Stands in for the newest reading when there is none at all, so a silence
- *  without any reading is still warned about only once. */
-const NO_READING = new Date(0);
-
-export type SilenceNotice = { kind: "warn"; newestReadingAt: Date } | { kind: "back" } | null;
-
-/** What to post, given this run's pacing and the outage already warned about. */
-export function silenceNotice(pacing: ClaudePacing, warnedFor: Date | null): SilenceNotice {
-  if (pacing.kind === "runner_silent") {
-    const newestReadingAt = pacing.lastReadingAt ?? NO_READING;
-    return warnedFor?.getTime() === newestReadingAt.getTime() ? null : { kind: "warn", newestReadingAt };
-  }
-  return warnedFor ? { kind: "back" } : null;
-}
-
 const utcTime = (d: Date) => `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
 
 function noticeText(notice: NonNullable<SilenceNotice>): string {
   if (notice.kind === "back") return "The Claude note writer reports again and takes the queued work again.";
-  const since = notice.newestReadingAt === NO_READING ? "in the last 7 days" : `since ${utcTime(notice.newestReadingAt)}`;
+  const since = notice.newestReadingAt.getTime() === NO_READING.getTime() ? "in the last 7 days" : `since ${utcTime(notice.newestReadingAt)}`;
   return [
     `:warning: The Claude note writer has not reported the usage of its Claude plan ${since}.`,
     "Nothing takes the queued posts, reader requests or X tweets until it reports again.",

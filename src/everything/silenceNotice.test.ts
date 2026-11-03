@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { silenceNotice } from "./claudeSilenceWarning";
-import type { ClaudePacing } from "./usagePacing";
+import { type ClaudePacing, silenceNotice } from "./usagePacing";
 
 const silent = (lastReadingAt: Date | null): ClaudePacing => ({ kind: "runner_silent", reason: "silent", lastReadingAt });
 const paced: ClaudePacing = {
