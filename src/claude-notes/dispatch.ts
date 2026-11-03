@@ -10,9 +10,14 @@
  * wakes the session up. It also exits every few hours without jobs, so the
  * session posts its digest. When a subagent has returned, the session runs
  * `dispatch-end` for its job, which closes the job or prints the prompt of
- * one more try. `dispatch-services` runs all the time next to it: it reads
- * the plan's usage every 5 minutes, runs the note judge and rebuilds the
- * examples once a day, the way the runner does.
+ * one more try. `dispatch-services` runs all the time next to it: it runs the
+ * note judge and rebuilds the examples once a day, the way the runner does.
+ *
+ * `dispatch` also reads the plan's usage every 5 minutes while it waits. The
+ * feed run and the X run take a reading older than 30 minutes to mean that
+ * no Claude takes their work. The session starts `dispatch` again after every
+ * wake, so the readings stop soon after the session stops answering. In
+ * dispatch-services they would go on while the session is dead.
  *
  * The open jobs are kept in a file, so they survive a restart of the session.
  *
@@ -42,6 +47,9 @@ import { openXTweets, type XTweet } from "./xTweets";
 
 const STATE_DIR = path.join(homedir(), ".local/share/claude-note-finder/dispatch");
 const JOBS_FILE = path.join(STATE_DIR, "jobs.json");
+/** When `dispatch` last read the usage. `dispatch` starts again after every
+ *  wake, so the time is kept in a file. */
+const USAGE_READ_AT_FILE = path.join(STATE_DIR, "usage-read-at");
 const RUNS_DIR = path.join(STATE_DIR, "runs");
 /** The devbox's judges run without the ai-box guard hook. */
 const JUDGE_SETTINGS = path.join(STATE_DIR, "judge-settings.json");
@@ -132,11 +140,28 @@ async function newJobs(state: State): Promise<Job[]> {
 const describe = (job: Job) =>
   job.kind === "post" ? job.item.title ?? job.item.url : job.kind === "tweet" ? `X tweet ${job.tweet.tweetId}` : `${job.message.from}'s message on draft ${job.draftId}`;
 
+/** Reads the plan's usage when the last reading is 5 minutes old. A failed
+ *  reading is only logged: the next one is due in 5 minutes, and only half an
+ *  hour without a reading counts as the note writer being down. */
+async function readUsageWhenDue() {
+  const readAt = existsSync(USAGE_READ_AT_FILE) ? Number(readFileSync(USAGE_READ_AT_FILE, "utf8")) : 0;
+  if (Date.now() - readAt < USAGE_READ_EVERY_MS) return;
+  writeFileSync(USAGE_READ_AT_FILE, String(Date.now()));
+  try {
+    const reading = await readUsage();
+    await recordUsage(reading);
+    console.error(`${reading.at} the plan is at ${reading.weekly}% of its week`);
+  } catch (err) {
+    console.error(`Could not read the usage: ${(err as Error).message}`);
+  }
+}
+
 /** Waits until jobs are ready, starts them, prints them and exits. */
 export async function dispatch() {
   mkdirSync(RUNS_DIR, { recursive: true });
   const startedAt = Date.now();
   for (;;) {
+    await readUsageWhenDue();
     const state = readState();
     const started: Job[] = [];
     for (const job of await newJobs(state)) if (await preparePrompt(job)) started.push(job);
@@ -179,25 +204,12 @@ export async function dispatchEnd(key: string) {
   console.log(`CLOSED ${describe(job)}`);
 }
 
-/** Reads the plan's usage every 5 minutes, which also tells the feed run and
- *  the X run that a Claude takes their work. Runs the note judge and rebuilds
- *  the examples once a day. */
+/** Runs the note judge and rebuilds the examples once a day. */
 export async function dispatchServices() {
   mkdirSync(RUNS_DIR, { recursive: true });
   if (!existsSync(JUDGE_SETTINGS)) writeFileSync(JUDGE_SETTINGS, "{}");
   const judge = noteJudge({ runFolder, mayStart: async () => true, runSettings: JUDGE_SETTINGS });
-  let usageReadAt = 0;
   for (let first = true; ; first = false) {
-    if (Date.now() - usageReadAt > USAGE_READ_EVERY_MS) {
-      usageReadAt = Date.now();
-      try {
-        const reading = await readUsage();
-        await recordUsage(reading);
-        console.log(`${reading.at} the plan is at ${reading.weekly}% of its week`);
-      } catch (err) {
-        console.error(`Could not read the usage: ${(err as Error).message}`);
-      }
-    }
     refreshExamples(DEVBOX_EXAMPLES_PATH);
     await judge.tick(first);
     await Bun.sleep(POLL_MS);
