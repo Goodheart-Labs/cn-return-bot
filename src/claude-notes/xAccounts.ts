@@ -1,6 +1,7 @@
 /* The X accounts of the creators (GOO-639, migration 154). The runner on
- * Nathan's ai-box starts a Claude for every creator that has a posted Claude
- * note and whose X account nobody has looked up yet. That Claude searches the
+ * Nathan's ai-box, or the dispatcher on the devbox while the ai-box is down,
+ * starts a Claude for every creator that has a posted Claude note and whose X
+ * account nobody has looked up yet. That Claude searches the
  * web, asks Grok, which can search X itself, and saves what it found with
  * `bun run claude-notes x-handle`. The posting tool then names the creator by
  * that handle in the tweet. The first run of the runner after this shipped
@@ -38,6 +39,13 @@ export async function creatorsToLookUp(): Promise<CreatorToLookUp[]> {
     { label: "creators without an X account" },
   );
   return projects.map((p) => ({ slug: p.slug, name: p.name, feedUrl: p.feed_url, postUrls: [...postsByProject.get(p.id)!].slice(0, POSTS_PER_CREATOR) }));
+}
+
+/** Whether anyone has saved an answer for the creator, a handle or "none". */
+export async function xHandleChecked(slug: string): Promise<boolean> {
+  const { data, error } = await db().from("everything_projects").select("x_handle_status").eq("slug", slug).single();
+  if (error) throw new Error(error.message);
+  return data.x_handle_status !== null;
 }
 
 /** Records a creator's X handle, or with null that they have no X account. */
