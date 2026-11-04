@@ -147,7 +147,7 @@ Their feed: ${creator.feedUrl ?? "unknown"}
 Posts of theirs we wrote notes on:
 ${creator.postUrls.map((url) => `- ${url}`).join("\n")}
 
-Search the web, and ask Grok, which can search X itself: \`bun run trending-on-x --ask "<your question>"\` from ${REPO}. Make sure the account is really theirs: their site or channel links to it, or its name, bio and posts match their work. A fan account, a namesake or a parody is not theirs.
+Search the web first. Only if that finds no account, ask Grok, which can search X itself, exactly once: \`bun run trending-on-x --ask "<your question>"\` from ${REPO}. Grok costs money, so do not ask it a second time. Make sure the account is really theirs: their site or channel links to it, or its name, bio and posts match their work. A fan account, a namesake or a parody is not theirs.
 
 When you have found it, run \`bun run claude-notes x-handle ${creator.slug} <handle> "<one or two sentences of evidence>"\` from ${REPO}. If you cannot confirm an account, run \`bun run claude-notes x-handle ${creator.slug} none "<what you checked>"\`. Your run folder is ${runDir}; write every file there. Stop once the command has succeeded.`;
 }

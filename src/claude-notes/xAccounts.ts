@@ -8,6 +8,7 @@
  * looks up the creators of every Claude note written so far. */
 
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
+import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { db } from "./store";
 
 /** How many of a creator's posts the Claude gets as a starting point. */
@@ -21,7 +22,8 @@ export interface CreatorToLookUp {
 }
 
 /** The creators with a posted Claude note whose X account nobody looked up
- *  yet, each with a few of the posts Claude wrote notes on. */
+ *  yet, each with a few of the posts Claude wrote notes on. The project "web"
+ *  collects one-off pages and has no single creator, so it is left out. */
 export async function creatorsToLookUp(): Promise<CreatorToLookUp[]> {
   const drafts = await fetchAllRows<{ id: string; everything_items: { url: string; project_id: string | null } | null }>(
     () => db().from("everything_claude_drafts").select("id, everything_items(url, project_id)").eq("status", "posted"),
@@ -33,7 +35,7 @@ export async function creatorsToLookUp(): Promise<CreatorToLookUp[]> {
     if (item?.project_id) postsByProject.set(item.project_id, (postsByProject.get(item.project_id) ?? new Set()).add(item.url));
   }
   const projects = await fetchInBatches<{ id: string; slug: string; name: string; feed_url: string | null }>(
-    (ids) => db().from("everything_projects").select("id, slug, name, feed_url").in("id", ids).is("x_handle_status", null),
+    (ids) => db().from("everything_projects").select("id, slug, name, feed_url").in("id", ids).is("x_handle_status", null).neq("slug", WEB_PROJECT_SLUG),
     [...postsByProject.keys()],
     "id",
     { label: "creators without an X account" },
