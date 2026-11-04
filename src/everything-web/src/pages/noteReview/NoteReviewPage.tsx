@@ -1,17 +1,26 @@
-import { useMemo } from "react";
+import { useMemo, type ComponentProps, type ReactNode } from "react";
 import type { ReviewDraft, ReviewSummary } from "@cn/core/claudeReview";
-import { buildRequest, type FieldFilter } from "@cn/core/fieldQuery";
+import { buildRequest, type FieldDef, type FieldFilter } from "@cn/core/fieldQuery";
+import type { NotewriterSource } from "@cn/core/notewriter";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
+import { Page } from "@cn/ui/Page";
+import { PageTitle } from "@cn/ui/typography";
 import { AdminOnly } from "../../components/AdminOnly";
+import { SidebarPagesLayout, type SidebarPage } from "../../components/SidebarLayout";
 import { CardColumn } from "../../components/ClaimCard";
-import { DisplayMenu } from "../../components/fieldQuery/DisplayMenu";
-import { FilterButton, FilterPills } from "../../components/fieldQuery/Filters";
-import { SortBar } from "../../components/fieldQuery/SortBar";
+import { DisplayMenu } from "@cn/features/fieldQuery/DisplayMenu";
+import { FilterButton, FilterPills } from "@cn/features/fieldQuery/Filters";
+import { SortBar } from "@cn/features/fieldQuery/SortBar";
 import { useMomentFor } from "../../lib/feedQueries";
-import { useFieldQuery } from "../../lib/useFieldQuery";
-import { PERSON, ReviewCard } from "./ReviewCard";
+import { useFieldQuery } from "@cn/features/fieldQuery/useFieldQuery";
+import { NOTE_REVIEW, X_NOTE_REVIEW, type Route } from "../../lib/routing";
+import { abTestFields, DEFAULT_X_REVIEW_QUERY, X_REVIEW_FIELDS } from "../notewriter/noteFields";
+import { NoteList } from "../notewriter/Overview";
+import { useAbTests, useNoteFacets, useNoteSummary } from "../notewriter/queries";
+import { ReviewCard } from "./ReviewCard";
+import { PERSON } from "./ReviewerVotes";
 import { DEFAULT_REVIEW_QUERY, DISPLAY, REVIEW_FIELDS } from "./reviewFields";
 import { useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewFacets, useReviewList, useReviewSummary, type ReviewView } from "./reviewQueries";
 import { TWEET_SERVER } from "./tweetServer";
@@ -22,6 +31,7 @@ import { useTypefullySync } from "./typefullySync";
 const DISPLAY_OPTIONS = Object.values(DISPLAY).filter((option) => option !== DISPLAY.postOnX || TWEET_SERVER);
 
 const QUERY_KEY = "cn:noteReviewQuery";
+const X_QUERY_KEY = "cn:xNoteReviewQuery";
 
 /** Who is reviewing, who writes the notes, and how many notes match. */
 function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
@@ -95,17 +105,63 @@ function ReviewFeed({ view }: { view: ReviewView }) {
   );
 }
 
-/** The admins' review of the Claude note writer's notes, which is also where
- *  Nathan picks notes to post on X. A Filter button narrows the list by any
- *  field, a Sort bar orders it by any number of fields, and a Display button
- *  picks the buttons each card shows. All three live in the page address and
- *  are remembered on the device. The drafts load page by page as the admin
- *  scrolls. Anyone who is not an admin sees only a short message, and the
- *  database refuses them every draft and every step. */
-export function NoteReviewPage() {
+const SOURCES: SidebarPage<NotewriterSource>[] = [
+  { id: "commonnotes", label: "Common Notes", route: NOTE_REVIEW },
+  { id: "x", label: "X", route: X_NOTE_REVIEW },
+];
+
+/** The page's header: the title with a line on what is shown, the Filter
+ *  button and any menus beside it, any notices, the filter pills and the
+ *  sort bar. */
+function ReviewHeader({ who, filterProps, menus, notices, sortBar }: {
+  who: ReactNode;
+  filterProps: ComponentProps<typeof FilterButton>;
+  menus?: ReactNode;
+  notices?: ReactNode;
+  sortBar: ReactNode;
+}) {
+  return (
+    // The controls span the page's whole width, so the pills have room on one
+    // line, and the menus open to the left of the buttons at its right edge.
+    <header className="mb-10 space-y-3">
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-0.5">
+          <PageTitle>Note review</PageTitle>
+          {who}
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <FilterButton {...filterProps} />
+          {menus}
+        </div>
+      </div>
+      {notices}
+      <FilterPills {...filterProps} />
+      {sortBar}
+    </header>
+  );
+}
+
+/** The admins' review of the notes of both notewriters, one page each in a
+ *  sidebar. The Common Notes page holds the Claude note writer's notes, which
+ *  is also where Nathan picks notes to post on X. The X page holds every note
+ *  we submitted to X, where our votes go on the note's twin. The local
+ *  posting tool posts only Common Notes, so it shows that page alone. On
+ *  both, a Filter button narrows the list
+ *  by any field and a Sort bar orders it by any number of fields, and both
+ *  live in the page address and are remembered on the device. The notes load
+ *  page by page as the admin scrolls. Anyone who is not an admin sees only a
+ *  short message, and the database refuses them every draft and every step. */
+export function NoteReviewPage({ source, navigate }: { source: NotewriterSource; navigate: (route: Route) => void }) {
+  const content = source === "x" ? <XReview /> : <NoteReview />;
   return (
     <AdminOnly>
-      <NoteReview />
+      {TWEET_SERVER ? (
+        <Page width="full">{content}</Page>
+      ) : (
+        <SidebarPagesLayout storageKey="cn:noteReviewSidebarWidth" label="Note review pages" pages={SOURCES} current={source} navigate={navigate}>
+          {content}
+        </SidebarPagesLayout>
+      )}
     </AdminOnly>
   );
 }
@@ -127,32 +183,55 @@ function NoteReview() {
   const typefully = useTypefullySync();
   const view = useMemo(() => ({ request, sorts: query.sorts, display: query.display, now }), [request, query.sorts, query.display, now]);
   return (
-    <main className="min-w-0 px-4 py-8 md:px-8">
-      {/* The controls span the page's whole width, so the pills have room on
-          one line, and the menus open to the left of the buttons at its right
-          edge. */}
-      <header className="mb-10 space-y-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-0.5">
-            <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
-            <WhoLine summary={summary.data} />
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <FilterButton {...filterProps} />
-            <DisplayMenu options={DISPLAY_OPTIONS} shown={query.display} onChange={(display) => setQuery({ ...query, display })} />
-          </div>
-        </div>
-        {summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
-        {typefully.isError && <p className="text-sm text-negative">Could not check Typefully: {typefully.error.message}</p>}
-        {!!typefully.data?.failed && (
-          <p className="text-sm text-negative">
-            Typefully could not publish {typefully.data.failed === 1 ? "1 tweet" : `${typefully.data.failed} tweets`}. Fix them in Typefully.
-          </p>
-        )}
-        <FilterPills {...filterProps} />
-        <SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />
-      </header>
+    <>
+      <ReviewHeader
+        who={<WhoLine summary={summary.data} />}
+        filterProps={filterProps}
+        menus={<DisplayMenu options={DISPLAY_OPTIONS} shown={query.display} onChange={(display) => setQuery({ ...query, display })} />}
+        notices={
+          <>
+            {summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
+            {typefully.isError && <p className="text-sm text-negative">Could not check Typefully: {typefully.error.message}</p>}
+            {!!typefully.data?.failed && (
+              <p className="text-sm text-negative">
+                Typefully could not publish {typefully.data.failed === 1 ? "1 tweet" : `${typefully.data.failed} tweets`}. Fix them in Typefully.
+              </p>
+            )}
+          </>
+        }
+        sortBar={<SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />}
+      />
       <ReviewFeed key={JSON.stringify(request)} view={view} />
-    </main>
+    </>
+  );
+}
+
+/** The X side waits for the A/B tests, because each test is a field and the
+ *  fields are fixed for the life of the query. */
+function XReview() {
+  const tests = useAbTests("x");
+  if (tests.isError) return <LoadFailed what="The A/B tests" onRetry={() => void tests.refetch()} />;
+  if (!tests.data) return <p className="text-sm text-fg-muted">Loading…</p>;
+  return <XReviewWithFields fields={[...X_REVIEW_FIELDS, ...abTestFields(tests.data)]} />;
+}
+
+function XReviewWithFields({ fields }: { fields: FieldDef[] }) {
+  const [query, setQuery] = useFieldQuery({ storageKey: X_QUERY_KEY, fields, displayOptions: [], defaults: DEFAULT_X_REVIEW_QUERY });
+  const now = useMomentFor(JSON.stringify([query.filters, query.sorts]));
+  const request = useMemo(() => buildRequest(fields, query, now), [fields, query, now]);
+  const summary = useNoteSummary("x", request);
+  const facets = useNoteFacets("x", fields, request);
+  const filterProps = { fields, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), facets };
+  const matching = summary.data?.notes;
+  return (
+    <>
+      <ReviewHeader
+        who={matching !== undefined && <p className="text-sm text-fg-muted">{matching === 1 ? "1 matching note" : `${matching.toLocaleString("en-US")} matching notes`}</p>}
+        filterProps={filterProps}
+        notices={summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
+        sortBar={<SortBar fields={fields} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />}
+      />
+      <NoteList key={JSON.stringify(request)} request={request} showReviewers />
+    </>
   );
 }

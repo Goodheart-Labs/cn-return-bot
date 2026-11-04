@@ -1,8 +1,6 @@
 # What makes a good Common Note
 
-This file collects judged examples of notes on our Common Notes items. Agents that look for noteworthy passages and write notes read it first. It is generated from prod by `bun run claude-notes examples` (`src/claude-notes/buildExamples.ts`). Do not edit it by hand.
-
-A good note points out something a careful reader would want to know: a small factual mistake, missing context that makes a passage easy to misread, or a claim that is wrong or misleading. It is short, neutral, and every sentence is backed by a cited source.
+This file collects judged examples of notes on our Common Notes items. Every Claude that writes Common Notes, or answers a reviewer about one, gets it in its system prompt. It is generated from prod by `bun run claude-notes examples` (`src/claude-notes/buildExamples.ts`). Do not edit it by hand.
 
 ## Nathan's Claude Code notes (all judged very good by Jim)
 

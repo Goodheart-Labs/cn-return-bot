@@ -1,4 +1,6 @@
 import { useId } from "react";
+import { cn } from "./cn";
+import { focusRing } from "./focusRing";
 
 /** A labelled slider that picks a whole number from 0 to `max`, drawn by the
  *  browser's own range input in the product's primary colour. The current
@@ -26,7 +28,7 @@ export function Slider({ label, value, max, onChange, formatValue = String }: {
         step={1}
         value={value}
         onChange={(event) => onChange(event.currentTarget.valueAsNumber)}
-        className="block w-full accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className={cn("block w-full accent-primary", focusRing)}
       />
     </div>
   );

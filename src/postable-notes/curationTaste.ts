@@ -22,7 +22,6 @@ interface LeaderboardRow {
   note_id: string;
   position: number;
   comment: string | null;
-  posted_at: string | null;
 }
 
 interface RemovedRow {
@@ -64,8 +63,17 @@ function noteBlock(heading: string, context: NoteContext | undefined, said: stri
 
 async function main() {
   const leaderboard = (
-    await fetchAllRows<LeaderboardRow>(() => db.from("everything_best_notes").select("note_id, position, comment, posted_at"), "note_id")
+    await fetchAllRows<LeaderboardRow>(() => db.from("everything_best_notes").select("note_id, position, comment"), "note_id")
   ).sort((a, b) => a.position - b.position);
+  const postedOnX = new Set(
+    (
+      await fetchInBatches<{ note_id: string }>(
+        (ids) => db.from("everything_note_x_marks").select("note_id").eq("mark", "posted").in("note_id", ids),
+        leaderboard.map((row) => row.note_id),
+        "note_id",
+      )
+    ).map((row) => row.note_id),
+  );
   const removed = (
     await fetchAllRows<RemovedRow>(
       () => db.from("everything_note_recommendations").select("note_id, removed_at, removed_reason, comment").not("removed_at", "is", null),
@@ -84,7 +92,7 @@ async function main() {
     `## Our leaderboard (${leaderboard.length} notes, best first)`,
     "",
     ...leaderboard.map((row, i) =>
-      noteBlock(`${i + 1}.${row.posted_at ? " (posted on X)" : ""}`, contexts.get(row.note_id), row.comment ? [`Their comment: ${row.comment}`] : []),
+      noteBlock(`${i + 1}.${postedOnX.has(row.note_id) ? " (posted on X)" : ""}`, contexts.get(row.note_id), row.comment ? [`Their comment: ${row.comment}`] : []),
     ),
     `## Removed from the recommendations (${removed.length} notes, most recent first)`,
     "",

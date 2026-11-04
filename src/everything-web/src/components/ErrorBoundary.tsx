@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "@cn/ui/Button";
+import { Page } from "@cn/ui/Page";
+import { PageTitle } from "@cn/ui/typography";
 
 /* The last line of defence against a blank page. React unmounts the whole tree
  * when a render throws, and with nothing in its place the reader is left
@@ -23,13 +25,13 @@ export class ErrorBoundary extends React.Component<
   render() {
     if (!this.state.failed) return this.props.children;
     return (
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-3">
-        <h1 className="text-xl font-extrabold">Common Notes could not load</h1>
+      <Page width="form" className="space-y-3">
+        <PageTitle>Common Notes could not load</PageTitle>
         <p className="text-sm text-fg-secondary">
           Something went wrong while showing this page. Reloading usually fixes it.
         </p>
         <Button onClick={() => window.location.reload()}>Reload</Button>
-      </div>
+      </Page>
     );
   }
 }

@@ -16,6 +16,7 @@ import { extractClaims } from "../../everything/pipeline/extractClaims";
 import { rateClaims } from "../../everything/pipeline/rateClaims";
 import { readItemText } from "../../everything/worker";
 import { fetchFeedXml } from "../../everything/sources/substack";
+import { UnreadableVideoError } from "../../everything/sources/youtube";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
 import {
   EXTRACT_CLAIMS_PATH,
@@ -23,6 +24,7 @@ import {
   ITEM_TEXT_PATH,
   RATE_CLAIMS_PATH,
   SUBSTACK_FEED_PATH,
+  ServiceError,
   type ExtractClaimsRequest,
   type FetchUrlRequest,
   type SubstackFeedXml,
@@ -104,9 +106,15 @@ const itemTextRoute: ServiceRoute<ItemTextRequest, ItemTextResponse> = {
   priorityOf: (body) => body.priority,
   handle: async (body) => {
     if (!body?.item?.url) throw new Error("Reading an item needs the item");
-    const read = await readItemText(body.item);
-    console.log(`[extraction] ${body.priority} read ${body.item.url}: ${read.text.length} characters`);
-    return read;
+    try {
+      const read = await readItemText(body.item);
+      console.log(`[extraction] ${body.priority} read ${body.item.url}: ${read.text.length} characters`);
+      return read;
+    } catch (err) {
+      if (!(err instanceof UnreadableVideoError)) throw err;
+      const { reason, captionsMayStillCome, why } = err;
+      throw new ServiceError({ code: "unreadable_video", error: err.message, video: { reason, captionsMayStillCome, why } });
+    }
   },
 };
 

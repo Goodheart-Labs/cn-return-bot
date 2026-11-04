@@ -5,7 +5,9 @@ import { creatorPlatform } from "@cn/core/projects";
 import type { FeedItemRow, ProjectHeader } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { ChevronIcon } from "@cn/ui/icons";
+import { PageTitle } from "@cn/ui/typography";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
 import { ItemList } from "../components/ItemList";
@@ -51,11 +53,11 @@ function PageHeading({ project, item, navigate }: { project: ProjectHeader; item
         <CreatorLink project={project} navigate={navigate} />
         {/* The title is the link to the original post or video. It reads as a
             plain title and turns blue under the pointer. */}
-        <h1 className="mt-2 font-title text-2xl font-bold text-fg text-balance">
-          <a href={item.url} target="_blank" rel="noopener noreferrer" className="rounded-control hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
+        <PageTitle className="mt-2">
+          <a href={item.url} target="_blank" rel="noopener noreferrer" className={cn("rounded-control hover:text-link", focusRing)}>
             {item.title ?? "Untitled"}
           </a>
-        </h1>
+        </PageTitle>
       </div>
     );
   }
@@ -63,7 +65,7 @@ function PageHeading({ project, item, navigate }: { project: ProjectHeader; item
     <div className="flex min-w-0 items-center gap-3">
       <ProjectAvatar project={project} size={48} />
       <div className="min-w-0">
-        <h1 className="font-title text-2xl font-bold leading-tight text-fg text-balance">
+        <PageTitle className="leading-tight">
           {/* Like an item's title, the project's name is the link to the
               creator's own page. It reads as a plain title and turns blue
               under the pointer. */}
@@ -73,14 +75,14 @@ function PageHeading({ project, item, navigate }: { project: ProjectHeader; item
               target="_blank"
               rel="noopener noreferrer"
               title={platform ? `${project.name} on ${platform}` : undefined}
-              className="rounded-control hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className={cn("rounded-control hover:text-link", focusRing)}
             >
               {project.name}
             </a>
           ) : (
             project.name
           )}
-        </h1>
+        </PageTitle>
       </div>
     </div>
   );
@@ -97,7 +99,7 @@ function PhoneItemMenu({ label, children }: { label: string; children: (close: (
         type="button"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-base text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className={cn("flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-base text-fg", focusRing)}
       >
         <span className="min-w-0 truncate">{label}</span>
         <ChevronIcon size={16} aria-hidden className={cn("shrink-0 text-fg-muted", open ? "-rotate-90" : "rotate-90")} />

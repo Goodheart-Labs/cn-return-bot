@@ -3,6 +3,7 @@
  * The steps, the credentials and what still needs a browser are described in
  * docs/extension-release.md.
  *
+ *   bun run release-ext all              every step below in order, then tag the release in git
  *   bun run release-ext package          build the store packages and the AMO source archive
  *   bun run release-ext chrome-store-copy  add a store copy next to every built Chrome zip (used by CI)
  *   bun run release-ext firefox-listing  set AMO's homepage, icon and screenshots (live at once)
@@ -146,16 +147,40 @@ function amoAuthHeader(): string {
   return `JWT ${header}.${payload}.${signature}`;
 }
 
+/** AMO throttles a burst of requests with HTTP 429 and says how many seconds
+ *  to wait. A release replaces several screenshots in a row, which ran into
+ *  it on 2026-10-30 halfway through and left the listing with half its
+ *  screenshots. So a throttled request waits as long as AMO asks and tries
+ *  again. */
+const AMO_THROTTLE_STATUS = 429;
+const MAX_AMO_THROTTLE_WAITS = 5;
+const AMO_THROTTLE_MARGIN_MS = 2000;
+// AMO also limits how often an add-on may submit a new version, and then asks
+// for a wait of hours. On 2026-10-30 a release slept through such waits for 15
+// hours. A wait this long stops the release instead, with the time to try again.
+const MAX_AMO_THROTTLE_WAIT_SECONDS = 5 * 60;
+
 async function amoRequest<T>(method: string, apiPath: string, body?: FormData | object): Promise<T> {
   const isForm = body instanceof FormData;
-  const response = await fetch(`${AMO_API}${apiPath}`, {
-    method,
-    headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
-    body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
-  });
-  const text = await response.text();
-  if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);
-  return (text ? JSON.parse(text) : undefined) as T;
+  for (let wait = 0; ; wait++) {
+    const response = await fetch(`${AMO_API}${apiPath}`, {
+      method,
+      headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+    });
+    const text = await response.text();
+    if (response.status === AMO_THROTTLE_STATUS && wait < MAX_AMO_THROTTLE_WAITS) {
+      const seconds = Number(/available in (\d+) seconds/.exec(text)?.[1] ?? 60);
+      if (seconds > MAX_AMO_THROTTLE_WAIT_SECONDS) {
+        throw new Error(`AMO throttled ${method} ${apiPath} until ${new Date(Date.now() + seconds * 1000).toISOString()}. Run this step again then.`);
+      }
+      console.log(`AMO throttled ${method} ${apiPath}, trying again in ${seconds} seconds`);
+      await sleep(seconds * 1000 + AMO_THROTTLE_MARGIN_MS);
+      continue;
+    }
+    if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
 }
 
 function fileField(filePath: string, type: string): Blob {
@@ -248,6 +273,27 @@ async function chromeRequest(method: string, url: string, body?: BodyInit, conte
 
 const chromeItemName = () => `publishers/${requireEnv("CWS_PUBLISHER_ID")}/items/${CHROME_ITEM_ID}`;
 
+type ChromeRevision = { distributionChannels?: { crxVersion: string }[] };
+type ChromeStatus = {
+  lastAsyncUploadState?: string;
+  publishedItemRevisionStatus?: ChromeRevision;
+  submittedItemRevisionStatus?: ChromeRevision;
+};
+
+const fetchChromeStatus = async () => (await chromeRequest("GET", `${CHROME_API}/v2/${chromeItemName()}:fetchStatus`)) as ChromeStatus;
+
+/** The store may still be processing a package when the upload call returns.
+ *  A submit before it has finished would submit the previous draft. */
+async function waitForChromeUpload(): Promise<void> {
+  for (let poll = 0; poll < MAX_POLLS; poll++) {
+    const { lastAsyncUploadState } = await fetchChromeStatus();
+    if (lastAsyncUploadState === "SUCCEEDED") return;
+    if (lastAsyncUploadState !== "IN_PROGRESS") throw new Error(`The Chrome Web Store upload ended as ${lastAsyncUploadState}`);
+    await sleep(POLL_INTERVAL_MS);
+  }
+  throw new Error(`The Chrome Web Store had not processed the upload after ${(MAX_POLLS * POLL_INTERVAL_MS) / 1000} seconds`);
+}
+
 async function uploadChromePackage(): Promise<void> {
   const result = await chromeRequest(
     "POST",
@@ -257,7 +303,8 @@ async function uploadChromePackage(): Promise<void> {
   );
   console.log(JSON.stringify(result, null, 2));
   if (result.uploadState === "FAILED") throw new Error("The Chrome Web Store refused the package");
-  console.log(`Check the draft with: bun run release-ext chrome-status`);
+  if (result.uploadState === "IN_PROGRESS") await waitForChromeUpload();
+  console.log("The Chrome package is uploaded as a draft");
 }
 
 async function publishChromeDraft(): Promise<void> {
@@ -266,10 +313,64 @@ async function publishChromeDraft(): Promise<void> {
 }
 
 async function printChromeStatus(): Promise<void> {
-  console.log(JSON.stringify(await chromeRequest("GET", `${CHROME_API}/v2/${chromeItemName()}:fetchStatus`), null, 2));
+  console.log(JSON.stringify(await fetchChromeStatus(), null, 2));
+}
+
+/** Compares two versions such as "0.4.10" and "0.5.0" number by number. */
+function isNewerVersion(candidate: string, current: string): boolean {
+  const candidateParts = candidate.split(".").map(Number);
+  const currentParts = current.split(".").map(Number);
+  for (let index = 0; index < Math.max(candidateParts.length, currentParts.length); index++) {
+    const difference = (candidateParts[index] ?? 0) - (currentParts[index] ?? 0);
+    if (difference !== 0) return difference > 0;
+  }
+  return false;
+}
+
+/** The newest version each store holds, whether it is live or still in review. */
+async function storeVersions(): Promise<{ firefox: string; chrome: string }> {
+  const amoVersions = await amoRequest<{ results: { version: string }[] }>("GET", `${amoAddonPath}/versions/?filter=all_with_unlisted`);
+  const chromeStatus = await fetchChromeStatus();
+  const chromeRevision = chromeStatus.submittedItemRevisionStatus ?? chromeStatus.publishedItemRevisionStatus;
+  return { firefox: amoVersions.results[0]?.version ?? "0", chrome: chromeRevision?.distributionChannels?.[0]?.crxVersion ?? "0" };
+}
+
+/** Both stores refuse a version they already have. Checking before any upload
+ *  stops a forgotten version bump before it half-releases to one store. */
+async function assertNewerThanStores(version: string): Promise<void> {
+  const versions = await storeVersions();
+  for (const [store, storeVersion] of Object.entries(versions)) {
+    if (!isNewerVersion(version, storeVersion)) {
+      throw new Error(`The ${store} store already has version ${storeVersion}. Raise the version in wxt.config.ts above it and commit.`);
+    }
+  }
+}
+
+/** The tag marks the commit each store version was built from, so the changes
+ *  since the last release are `git log extension-v<version>..origin/main`. */
+function tagRelease(version: string): void {
+  const tag = `extension-v${version}`;
+  run("git", ["tag", tag]);
+  run("git", ["push", "origin", tag]);
+  console.log(`Tagged the release as ${tag}`);
+}
+
+/** The whole release in one go. The Chrome listing's screenshots have no API,
+ *  so when they change they are replaced in the dashboard first. The submit at
+ *  the end then sends that listing draft together with the new package. */
+async function releaseAll(): Promise<void> {
+  packageRelease();
+  const version = extensionVersion();
+  await assertNewerThanStores(version);
+  await updateFirefoxListing();
+  await submitFirefoxVersion();
+  await uploadChromePackage();
+  await publishChromeDraft();
+  tagRelease(version);
 }
 
 const COMMANDS: Record<string, () => void | Promise<void>> = {
+  all: releaseAll,
   package: packageRelease,
   "chrome-store-copy": writeChromeStoreCopies,
   "firefox-listing": updateFirefoxListing,

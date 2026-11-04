@@ -59,12 +59,12 @@ export function startFetchService(socketPath: string) {
       const { pathname } = new URL(request.url);
       const route = routes[pathname];
       if (!route || request.method !== "POST") {
-        return Response.json({ error: `No such route: ${request.method} ${pathname}` } satisfies ServiceErrorResponse, { status: 404 });
+        return Response.json({ code: "rejected", error: `No such route: ${request.method} ${pathname}` } satisfies ServiceErrorResponse, { status: 404 });
       }
       try {
         return Response.json(await route(await request.json()));
       } catch (err: any) {
-        return Response.json({ error: err?.message ?? String(err) } satisfies ServiceErrorResponse, { status: 500 });
+        return Response.json({ code: "failed", error: err?.message ?? String(err) } satisfies ServiceErrorResponse, { status: 500 });
       }
     },
   });

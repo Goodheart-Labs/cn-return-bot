@@ -57,6 +57,22 @@ CWS_PUBLISHER_ID=...
 CWS_SERVICE_ACCOUNT_KEY_FILE=/home/jim/dev/env/cn-return-bot/cws-service-account.json
 ```
 
+## Quick release
+
+1. Raise the version in `src/everything-extension/wxt.config.ts`, merge it to
+   main, and check out main.
+2. If the screenshots changed, replace them in the Chrome Web Store dashboard
+   first and save the draft (step 7 below). The Chrome listing has no API.
+3. Run `bun run release-ext all`.
+
+`all` runs steps 2, 4, 5, 6 and 8 below in that order. Before it uploads
+anything it checks that the new version is above the newest version in each
+store, live or in review, so a forgotten bump stops the release before it
+reaches either store. At the end it tags the commit as
+`extension-v<version>` and pushes the tag. The changes since the last
+release are then `git log extension-v<version>..origin/main`. Version 0.4.4
+was released before the tags existed, from commit `5b810aaf`.
+
 ## Steps
 
 1. **Bump the version** in `src/everything-extension/wxt.config.ts`. Both
@@ -155,9 +171,11 @@ the colour of the box's top-left pixel until the shape is 16:10, and only then
 scales evenly. So choose a crop box that cuts away empty page or a black video
 bar, and let the padding handle the rest.
 
-The order as of version 0.4.0:
+The order as of version 0.5.0:
 
 1. A note card next to a Substack post.
 2. A note on a Dwarkesh Podcast video on YouTube.
 3. The "Write a note" form on a highlighted sentence.
-4. The toolbar popup on a page we have not checked yet, offering "Request notes on this page".
+4. The toolbar popup on a TIME article about AI's water use that we have not
+   checked yet, offering "Check this page". The commonnotes.net homepage shows
+   the same picture as `src/everything-web/src/assets/screenshots/request-notes.webp`.

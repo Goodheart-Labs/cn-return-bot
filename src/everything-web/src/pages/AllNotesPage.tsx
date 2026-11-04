@@ -2,15 +2,17 @@ import { useCallback, useState } from "react";
 import type { FeedOrder } from "@cn/core/feedPages";
 import type { FieldFilter } from "@cn/core/fieldQuery";
 import type { ProjectHeader } from "@cn/core/types";
+import { Page } from "@cn/ui/Page";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
+import { PageTitle } from "@cn/ui/typography";
 import { BackToProjects } from "../components/BackToProjects";
 import { CreatorLink } from "../components/CreatorLink";
 import { NoteFeed, type FeedCard } from "../components/NoteFeed";
-import { FilterButton, FilterPills } from "../components/fieldQuery/Filters";
+import { FilterButton, FilterPills } from "@cn/features/fieldQuery/Filters";
 import { ageLabel, ageTotal, ALL_NOTES_FIELDS, BAND_LABELS, bandTotal, DEFAULT_ALL_NOTES_QUERY, noteFiltersOf, spanStarts } from "../lib/feed";
 import { useNoteFeed, type FeedEntry } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
-import { useFieldQuery } from "../lib/useFieldQuery";
+import { useFieldQuery } from "@cn/features/fieldQuery/useFieldQuery";
 import { useStoredChoice } from "../lib/useStoredValue";
 
 const ORDERS: { id: FeedOrder; label: string }[] = [
@@ -64,11 +66,11 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   );
 
   return (
-    <main className="min-w-0 px-4 py-8 md:px-8">
+    <Page width="full">
       <div className="mx-auto mb-6 max-w-[40rem] space-y-4">
         <BackToProjects navigate={navigate} />
         <div className="relative flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h1 className="font-title text-2xl font-bold text-fg">All notes</h1>
+          <PageTitle>All notes</PageTitle>
           <div className="flex flex-wrap items-center gap-2">
             <SegmentedControl label="Order" options={ORDERS} value={order} onChange={setOrder} />
             <FilterButton {...filterProps} />
@@ -84,6 +86,6 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
         byline={byline}
         emptyText="No notes match these filters."
       />
-    </main>
+    </Page>
   );
 }

@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { cva } from "class-variance-authority";
 import type { Vote } from "@cn/core/votes";
+import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { CheckIcon, CloseIcon, WaveIcon } from "@cn/ui/icons";
 import { PillPaletteContext } from "./pillPalette";
 
@@ -10,7 +12,7 @@ import { PillPaletteContext } from "./pillPalette";
  * note-not-needed entries, where an icon without a label would read as pressed
  * if it were coloured, so they stay grey until chosen in either palette. */
 const votePillVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 rounded-control border font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+  cn("inline-flex items-center justify-center gap-1.5 rounded-control border font-semibold transition-colors", focusRing),
   {
     variants: {
       size: {

@@ -3,6 +3,7 @@ import { createContext, useContext, useRef, useState, useSyncExternalStore, type
 import { cardVariants } from "./Card";
 import { cn } from "./cn";
 import { CheckIcon, ChevronIcon, PreviousIcon } from "./icons";
+import { focusRing } from "./focusRing";
 import { menuItemClass } from "./Menu";
 
 /* A dropdown menu built from a tree of entries. Radix UI's DropdownMenu, a
@@ -104,8 +105,9 @@ function Tick({ checkbox }: { checkbox: boolean }) {
 function OptionLabel({ option }: { option: MenuOption }) {
   return (
     <>
-      <span className="min-w-0 truncate">{option.label}</span>
-      {option.count !== undefined && <EntryEnd>{option.count}</EntryEnd>}
+      {/* A long label takes a second line before it is cut. */}
+      <span className="line-clamp-2 min-w-0 break-words">{option.label}</span>
+      {option.count !== undefined && <EntryEnd>{option.count.toLocaleString("en-US")}</EntryEnd>}
     </>
   );
 }
@@ -132,7 +134,7 @@ function OptionSearch({ query, onChange }: { query: string; onChange: (query: st
         onKeyDown={keepKeys}
         placeholder="Search"
         aria-label="Search the options"
-        className="w-full rounded-control border border-line-input bg-surface px-2 py-1.5 text-sm text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+        className={cn("w-full rounded-control border border-line-input bg-surface px-2 py-1.5 text-sm text-fg", focusRing)}
       />
     </div>
   );

@@ -15,9 +15,11 @@ import { NoteReviewPage } from "./pages/noteReview/NoteReviewPage";
 import { TWEET_SERVER } from "./pages/noteReview/tweetServer";
 import { NotesView } from "./pages/NotesView";
 
-/** The dashboard's charts pull in a chart library that no reader needs, so
- *  its code loads only when an admin opens the page. */
+/** The dashboard's and the X notewriter page's charts pull in a chart library
+ *  that most readers never need, so their code loads only when someone opens
+ *  one of those pages. */
 const DashboardPage = lazy(() => import("./pages/dashboard/DashboardPage").then((module) => ({ default: module.DashboardPage })));
+const XNotewriterPage = lazy(() => import("./pages/notewriter/XNotewriterPage").then((module) => ({ default: module.XNotewriterPage })));
 const JudgeExperimentPage = lazy(() => import("./pages/judgeExperiment/JudgeExperimentPage").then((module) => ({ default: module.JudgeExperimentPage })));
 
 /** The website's frame: the header on every page, the page the route names
@@ -33,13 +35,18 @@ export function App() {
     <LoginPromptProvider value={() => setLoginOpen(true)}>
       {!TWEET_SERVER && <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />}
       {route.view === "noteImage" ? <NoteImagePage noteId={route.note} />
-        : TWEET_SERVER || route.view === "noteReview" ? <NoteReviewPage />
+        : TWEET_SERVER || route.view === "noteReview" ? <NoteReviewPage source={route.view === "noteReview" && !TWEET_SERVER ? route.source : "commonnotes"} navigate={navigate} />
         : route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
         : route.view === "dashboard" ? (
           <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
-            <DashboardPage navigate={navigate} />
+            <DashboardPage section={route.section} navigate={navigate} />
+          </Suspense>
+        )
+        : route.view === "xNotewriter" ? (
+          <Suspense fallback={<p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>}>
+            <XNotewriterPage page={route.page} navigate={navigate} />
           </Suspense>
         )
         : route.view === "judgeExperiment" ? (

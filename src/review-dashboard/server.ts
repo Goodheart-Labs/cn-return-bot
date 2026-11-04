@@ -14,6 +14,11 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const PORT = 8001;
+/** A hostile website can make its own domain name point at 127.0.0.1 and then
+ *  read this page as if it were part of that website. The browser still sends
+ *  the hostile domain name in the Host header, so answering only requests for
+ *  our own names keeps the page, and the key in it, away from such a website. */
+const ALLOWED_HOSTS = new Set([`localhost:${PORT}`, `127.0.0.1:${PORT}`]);
 
 // WARNING: This injects the Supabase service role key into the page. That key has
 // full access to the database. So this server must only ever run on localhost.
@@ -36,6 +41,9 @@ serve({
   // Mac reaches this port through the tunnel, which connects to loopback.
   hostname: "127.0.0.1",
   async fetch(req) {
+    if (!ALLOWED_HOSTS.has(req.headers.get("host") ?? "")) {
+      return new Response("Open the review dashboard at http://localhost:8001/", { status: 403 });
+    }
     const url = new URL(req.url);
 
     if (url.pathname !== "/" && url.pathname !== "/index.html") {

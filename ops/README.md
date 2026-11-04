@@ -128,11 +128,15 @@ is the line to look for in `journalctl -u cn-intake`.
 ## Deploys
 
 The machine pulls; GitHub never pushes to it and holds no SSH key for it. A
-systemd timer (`cn-autodeploy.timer`, every 5 minutes) runs `ops/autodeploy.sh`,
-which fetches the branch the checkout is on and, when there is a new commit AND
-both services answer their health endpoint with nothing in flight and nothing
-waiting, resets to it, reinstalls dependencies, refreshes the unit files, and
-restarts the three services. A busy machine simply deploys a few minutes later
+systemd timer (`cn-autodeploy.timer`, every 5 minutes) runs
+`/usr/local/sbin/cn-autodeploy`, root's own copy of `ops/autodeploy.sh`. It asks
+GitHub which commit is on `main` and, when that commit is new AND both services
+answer their health endpoint with nothing in flight and nothing waiting, has
+the service user reset the checkout to it and reinstall dependencies. Then it
+installs the unit files and its own new copy, downloaded from GitHub at that
+same commit, and restarts the services. Root never runs or installs a file
+from the checkout, because the checkout belongs to the service user and a
+process running as that user could change it. A busy machine simply deploys a few minutes later
 when it drains; a service that does not answer health counts as idle, because
 the new commit may be the fix. So a merge to main is live within about five
 minutes of the machine going quiet.
@@ -144,7 +148,7 @@ player. The time of the last upgrade is the modification time of
 next tick. A failed upgrade fails the `cn-autodeploy` unit, which
 `journalctl -u cn-autodeploy` shows.
 
-The checkout tracks whichever branch it is on, which is `main`.
+The machine always deploys `main`, whatever branch the checkout is on.
 
 ## Moving to a new machine
 

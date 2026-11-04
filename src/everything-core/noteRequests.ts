@@ -5,6 +5,10 @@ import { supabase } from "./supabase";
  *  cannot make the insert fail. */
 export const MAX_PAGE_TEXT_LENGTH = 500_000;
 
+/** The database caps everything_note_requests.steer at this length
+ *  (migration 108). */
+export const MAX_REQUEST_STEER_LENGTH = 500;
+
 /** Records that a reader asked for Common Notes on a page. The request lands in
  *  everything_note_requests, which the pipeline's request consumer turns into a
  *  queue entry at the highest priority tier. A request on a whole page carries
@@ -13,8 +17,9 @@ export const MAX_PAGE_TEXT_LENGTH = 500_000;
  *  fact-check pages it cannot fetch itself, so send it whenever the caller can
  *  read the page. `creatorFeedUrl` is the feed of the creator the page belongs
  *  to, when the caller could tell. The pipeline files the page under that
- *  creator's project instead of the catch-all "Around the web". Anonymous
- *  requests are allowed.
+ *  creator's project instead of the catch-all "Around the web". `steer` is
+ *  the reader's own words on why the passage needs a note. The note writer
+ *  reads it as a hint. Anonymous requests are allowed.
  *
  *  Returns the request's client token (migration 087), the device's only
  *  handle on its own request: exchanging it via everything_request_status is
@@ -26,6 +31,7 @@ export async function submitNoteRequest(params: {
   selection: string | null;
   pageText?: string | null;
   creatorFeedUrl?: string | null;
+  steer?: string | null;
 }): Promise<string> {
   const { data } = await supabase.auth.getSession();
   const token = crypto.randomUUID();
@@ -35,6 +41,7 @@ export async function submitNoteRequest(params: {
     selection: params.selection,
     page_text: params.pageText?.slice(0, MAX_PAGE_TEXT_LENGTH) || null,
     feed_url: params.creatorFeedUrl ?? null,
+    steer: params.steer?.trim().slice(0, MAX_REQUEST_STEER_LENGTH) || null,
     user_id: data.session?.user.id ?? null,
     client_token: token,
   });

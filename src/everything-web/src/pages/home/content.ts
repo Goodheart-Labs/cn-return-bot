@@ -40,7 +40,7 @@ export const SCREENSHOTS: readonly Screenshot[] = [
   },
   {
     src: requestNotes,
-    alt: "A Substack post we have not checked yet. The extension's toolbar menu offers to request notes on this page and to check the author's new posts.",
+    alt: "A TIME article about AI's water use that we have not checked yet. The extension's toolbar menu offers to check this page.",
     caption: "Check any webpage",
   },
 ];

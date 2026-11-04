@@ -128,15 +128,22 @@ describe("deriveRequestProgress", () => {
   });
 });
 
-/* A passage checked on its own on an already-checked page: the item is done
- * throughout, so the request row decides what the card shows. */
-describe("deriveRequestProgress for a passage on an already-checked page", () => {
+/* A passage readers asked about: the page's item can already be done, or can
+ * hold notes from an earlier check, so the request row decides what the card
+ * shows. */
+describe("deriveRequestProgress for a requested passage", () => {
   const done = item({ status: "done" });
   const pageNotes = [claim("note"), claim("note", "n2"), claim("note", "n3")];
+  const running = request({ status: "enqueued", status_reason: PASSAGE_CHECK.running });
 
-  test("a running check reads as checking one claim, not as the page's notes", () => {
-    const progress = deriveRequestProgress(done, pageNotes, request({ status: "enqueued", status_reason: PASSAGE_CHECK.running }));
-    expect(progress).toEqual({ kind: "checking", done: 0, total: 1, notes: 0 });
+  test("a passage still waiting for the note writer reads as waiting, whatever its page's state", () => {
+    for (const status of ["queued", "processing", "done"] as const) {
+      expect(deriveRequestProgress(item({ status }), pageNotes, running)).toEqual({ kind: "queued" });
+    }
+  });
+
+  test("a passage whose page failed is failed", () => {
+    expect(deriveRequestProgress(item({ status: "error" }), pageNotes, running)).toEqual({ kind: "failed" });
   });
 
   test("a finished check counts only the passage's note", () => {

@@ -33,14 +33,13 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: oven-sh/setup-bun@v1
         with:
@@ -51,6 +50,9 @@ jobs:
 
       - name: Snapshot Supabase to stats-data.json
         run: bun run build-stats-data
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
       - name: Build stats SPA
         run: cd src/stats-dashboard && bunx vite build
@@ -73,7 +75,10 @@ jobs:
         # Until 2026-10-16 only a run started by hand deployed the site (Nathan,
         # 2026-07-10). Jim changed that, so merged work reaches readers at once.
         if: github.event_name != 'schedule'
-        run: bunx wrangler pages deploy src/everything-web/dist --project-name=commonnotes --branch=main --commit-dirty=true
+        # wrangler is not a dependency of the repo, so bunx downloads it here.
+        # The exact version keeps a newly published release out of the step
+        # that holds the Cloudflare token.
+        run: bunx wrangler@4.151.0 pages deploy src/everything-web/dist --project-name=commonnotes --branch=main --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

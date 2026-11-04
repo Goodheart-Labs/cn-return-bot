@@ -4,6 +4,7 @@ import { WEB_PROJECT_SLUG } from "./projects";
 import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
 import type { FeedItemRow, ItemRow, ProjectHeader } from "./types";
+import { isWholePageChecked } from "./wholePageChecked";
 
 /* An item is one post, video or page: a row of everything_items. */
 
@@ -61,14 +62,7 @@ export async function fetchFeedItem(id: string): Promise<FeedItemRow | null> {
 export type PageItem = ItemRow & { full_text: string | null; projectSlug: string | null };
 
 export const PAGE_ITEM_SELECT =
-  "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, project:everything_projects(slug)";
-
-/** Whether the pipeline has read this page in full. Only such a page refuses a
- *  new "check this page" request. An item that exists because a reader wrote
- *  a note, or because one paragraph was checked, is not a checked page. */
-export function isWholePageChecked(item: Pick<ItemRow, "status" | "checked_scope"> | null): boolean {
-  return item?.status === "done" && item.checked_scope === "page";
-}
+  "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, first_checked_at, project:everything_projects(slug)";
 
 /** Resolves a page URL to its everything_items row. Returns null when the page
  *  has never been ingested, and throws when the lookup itself failed. Treating
@@ -112,9 +106,9 @@ export interface CoveredPages {
  *  that has no notes must never reach our backend. Returns null when the query
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
 export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
-  let allRows: Pick<ItemRow, "id" | "url" | "status" | "checked_scope">[];
+  let allRows: Pick<ItemRow, "id" | "url" | "checked_scope" | "first_checked_at">[];
   try {
-    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, status, checked_scope"), "id", { label: "coveredPages" });
+    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, checked_scope, first_checked_at"), "id", { label: "coveredPages" });
   } catch {
     return null;
   }

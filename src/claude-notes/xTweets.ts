@@ -22,13 +22,15 @@ export interface XTweet {
   createdAt: string;
   stage: string;
   input: string;
+  /** The A/B picks of the X run, which decide parts of the prompt. */
+  picks: Record<string, string>;
 }
 
 export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTweet[] }> {
-  const rows = await fetchAllRows<{ id: string; tweet_id: string; created_at: string; final_stage: string; input: string }>(
+  const rows = await fetchAllRows<{ id: string; tweet_id: string; created_at: string; final_stage: string; input: string; ab_test_picks: Record<string, string> }>(
     () => db()
       .from("pipeline_runs")
-      .select("id, tweet_id, created_at, final_stage, input:logs->claude->>input")
+      .select("id, tweet_id, created_at, final_stage, input:logs->claude->>input, ab_test_picks")
       .eq("bot_name", CLAUDE_CODE_BOT)
       .eq("outcome", "in_progress")
       .in("final_stage", [CLAUDE_WAITING_STAGE, CLAUDE_RUNNING_STAGE]),
@@ -36,7 +38,7 @@ export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTwee
     { label: "openXTweets" },
   );
   const tweets = rows
-    .map((r) => ({ runId: r.id, tweetId: r.tweet_id, createdAt: r.created_at, stage: r.final_stage, input: r.input }))
+    .map((r) => ({ runId: r.id, tweetId: r.tweet_id, createdAt: r.created_at, stage: r.final_stage, input: r.input, picks: r.ab_test_picks }))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   return { waiting: tweets.filter((t) => t.stage === CLAUDE_WAITING_STAGE), running: tweets.filter((t) => t.stage === CLAUDE_RUNNING_STAGE) };
 }
@@ -102,16 +104,6 @@ export async function declineXTweet(runId: string, reason: string) {
 
 export async function failXTweet(runId: string, reason: string) {
   await updateOpenRow(runId, { failure: reason }, { outcome: "failed", outcome_reason: "claude_no_answer", final_stage: "error", error_message: reason });
-}
-
-/** Adds one Claude run's cost and duration to the row, whatever its outcome.
- *  xShare.ts sums these costs. */
-export async function recordXTweetRun(runId: string, run: { costUsd: number | null; minutes: number }) {
-  const { logs, claude } = await readClaudeLog(runId);
-  const costUsd = (Number(claude.costUsd) || 0) + (run.costUsd ?? 0);
-  const minutes = (Number(claude.minutes) || 0) + run.minutes;
-  const { error } = await db().from("pipeline_runs").update({ logs: { ...logs, claude: { ...claude, costUsd, minutes } } as Json }).eq("id", runId);
-  if (error) throw new Error(JSON.stringify(error));
 }
 
 export async function xTweetIsOpen(runId: string): Promise<boolean> {

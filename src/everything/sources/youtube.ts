@@ -33,7 +33,7 @@ export class UnreadableVideoError extends Error {
     url: string,
     readonly reason: UnreadableVideoReason,
     readonly captionsMayStillCome: boolean,
-    why?: string,
+    readonly why?: string,
   ) {
     super(`${url}: ${reason}${captionsMayStillCome ? ", but the video is young enough to still get captions" : ""}${why ? `. ${why}` : ""}`);
     this.name = "UnreadableVideoError";

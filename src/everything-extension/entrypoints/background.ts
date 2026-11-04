@@ -1,6 +1,7 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts, isWholePageChecked } from "@cn/core/items";
+import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
+import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
 import { fetchReaderCanonical } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";
@@ -179,13 +180,15 @@ async function showRequestInfo(tab: { id?: number }, headline: string) {
   if (!delivered) flashBadge(tab.id, "✓");
 }
 
-/** Submits a note request for the selected paragraph. The menu click grants
- *  activeTab, so the page's canonical link and body text can be read even on a
- *  site the user never enabled; the pipeline fact-checks the page from that
- *  text. A restricted page falls back to the tab's url and title alone. A page
- *  that is already checked, or whose author we already follow, submits nothing
- *  and gets an explanatory card instead. */
-async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: string }, selection: string) {
+/** Submits a note request for the selected paragraph, or for the whole page
+ *  when nothing is selected. `steer` is the reader's reason for a selected
+ *  passage. The menu click grants activeTab, so the page's canonical link and
+ *  body text can be read even on a site the user never enabled; the pipeline
+ *  fact-checks the page from that text. A restricted page falls back to the
+ *  tab's url and title alone. A whole page that is already checked, or whose
+ *  author we already follow, submits nothing and gets an explanatory card
+ *  instead. */
+async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: string }, selection: string, steer: string | null = null) {
   const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
   const href = captured?.href ?? tab.url;
   if (!href) return;
@@ -229,6 +232,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
       selection: passage,
       pageText: captured?.text,
       creatorFeedUrl: authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null,
+      steer,
     });
     // This is only a local reminder. The request itself is already saved.
     await addRequestedPage(pageUrl).catch(() => {});
@@ -249,6 +253,15 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     console.warn("[common-notes] note request failed:", err);
     flashBadge(tab.id, "!");
   }
+}
+
+/** Opens the card in the page that asks the reader why the selected words
+ *  need a note. The card sends the request itself once the reader confirms.
+ *  A page that cannot host the card, such as a browser-internal page, sends
+ *  the request at once without a reason. */
+async function askWhyThenRequest(tab: { id?: number; url?: string; title?: string }, selection: string) {
+  const delivered = tab.id != null && (await sendToTabWithInjection(tab.id, { type: "cn-passage-request-ask", selection }));
+  if (!delivered) await requestNoteOnSelection(tab, selection);
 }
 
 /** Dev builds reload themselves when a fresh build lands on disk, so
@@ -348,8 +361,12 @@ export default defineBackground(() => {
   });
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
-    if ((info.menuItemId === REQUEST_MENU_ID || info.menuItemId === REQUEST_PAGE_MENU_ID) && tab != null) {
-      void requestNoteOnSelection(tab, info.selectionText ?? "");
+    if (info.menuItemId === REQUEST_MENU_ID && tab != null) {
+      void askWhyThenRequest(tab, info.selectionText ?? "");
+      return;
+    }
+    if (info.menuItemId === REQUEST_PAGE_MENU_ID && tab != null) {
+      void requestNoteOnSelection(tab, "");
       return;
     }
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
@@ -398,6 +415,12 @@ export default defineBackground(() => {
       const { tabId, pageUrl, token } = message as { tabId: number; pageUrl: string; token: string };
       sendToTabWithInjection(tabId, { type: "cn-request-live", pageUrl, token }).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === "cn-passage-request-send" && sender.tab) {
+      // The card that asked the reader why sends the passage and the reason.
+      const { selection, steer } = message as { selection: string; steer: string };
+      void requestNoteOnSelection(sender.tab, selection, steer);
+      return undefined; // Nothing to answer. The card has already closed.
     }
     if ((message as { type?: string })?.type === "cn-check-open-page" && sender.tab) {
       // A three-dot menu row asks for the page its tab has open. That is the

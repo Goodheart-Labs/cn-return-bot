@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@cn/ui/cn";
 import { ChevronIcon } from "@cn/ui/icons";
 import { Menu, menuItemClass } from "@cn/ui/Menu";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { useDismiss } from "@cn/ui/useDismiss";
 import { BEST_NOTES, DASHBOARD, NOTE_REVIEW, type Route } from "../lib/routing";
 import { RouteLink } from "./RouteLink";
 
@@ -22,17 +22,7 @@ export function AdminMenu({ route, navigate, className }: { route: Route; naviga
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  useOutsidePress(ref, open, () => setOpen(false));
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      buttonRef.current?.focus();
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [open]);
+  useDismiss(ref, open, () => setOpen(false), buttonRef);
 
   const openPage = (page: Route) => {
     setOpen(false);

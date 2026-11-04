@@ -10,8 +10,8 @@ import {
 /* Covers the usage pacing of the Claude note writer (GOO-587): the interval
  * between posts is 1.1 times the time until the weekly reset times the usage
  * per post, divided by the usage left below 80%; the usage per post is
- * measured; no new post comes at the target; and the pipeline steps in only
- * when the runner is quiet. */
+ * measured; no new post comes at the target; and a runner that has stopped
+ * reporting is recognised. */
 
 const HOUR_MS = 3600_000;
 const NOW = new Date("2026-10-26T12:00:00Z");
@@ -33,7 +33,7 @@ const snapshot = (overrides: Partial<UsageSnapshot> = {}): UsageSnapshot => ({
 
 const claude = (snap: UsageSnapshot) => {
   const pacing = computeClaudePacing(snap);
-  if (pacing.writer !== "claude") throw new Error(`expected Claude to write, got: ${pacing.reason}`);
+  if (pacing.kind !== "paced") throw new Error(`expected a paced post, got: ${pacing.reason}`);
   return pacing;
 };
 
@@ -93,15 +93,15 @@ describe("computeClaudePacing", () => {
     expect(pacing.dueAt).toEqual(RESET);
   });
 
-  test("when the runner has not reported for over 30 minutes the pipeline takes the posts", () => {
-    expect(computeClaudePacing(snapshot({ readings: [reading(48, 10), reading(1, 20)] })).writer).toBe("pipeline");
+  test("when the runner has not reported for over 30 minutes it counts as silent", () => {
+    expect(computeClaudePacing(snapshot({ readings: [reading(48, 10), reading(1, 20)] })).kind).toBe("runner_silent");
   });
 
-  test("with no reading at all the pipeline takes the posts", () => {
-    expect(computeClaudePacing(snapshot({ readings: [] })).writer).toBe("pipeline");
+  test("with no reading at all the runner counts as silent", () => {
+    expect(computeClaudePacing(snapshot({ readings: [] })).kind).toBe("runner_silent");
   });
 
   test("a reading that does not say when the week resets cannot pace", () => {
-    expect(computeClaudePacing(snapshot({ readings: [reading(0, 20, null)] })).writer).toBe("pipeline");
+    expect(computeClaudePacing(snapshot({ readings: [reading(0, 20, null)] })).kind).toBe("runner_silent");
   });
 });

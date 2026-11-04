@@ -22,14 +22,9 @@ import { BarChart } from "./components/BarChart";
 import { NoteList } from "./components/NoteList";
 import { AbFilterPanel } from "../../dashboard-shared/AbFilterPanel";
 import { AbComparisonPanel } from "./components/AbComparisonPanel";
-import {
-  buildAbCombos,
-  buildFailureModeCatalog,
-  buildRatingReasonCatalog,
-  windowStartDate,
-  type AbComparisonStat,
-} from "./lib/abComparison";
-import type { ConfidenceLevel } from "./lib/confidenceIntervals";
+import { buildAbCombos, buildFailureModeCatalog, buildRatingReasonCatalog } from "./lib/abComparison";
+import { windowStartDate, type AbComparisonStat } from "../../everything-core/abStats";
+import type { ConfidenceLevel } from "../../everything-core/confidenceIntervals";
 import { WritingLimitPanel } from "./components/WritingLimitPanel";
 import { useResizeWidth } from "./lib/useResizeWidth";
 

@@ -23,7 +23,6 @@ export const QUEUE_PRIORITY = {
 } as const;
 
 export interface EverythingItem {
-  request_steer?: string | null;
   id: string;
   project_id: string | null;
   source: ItemSource;
@@ -41,9 +40,12 @@ export interface EverythingItem {
   full_text: string | null;
   /** How many repeat attempts this item has been given after failing. */
   retries: number;
+  checked_scope: CheckedScope;
+  /** When the page first finished as a whole-page check (migration 133). */
+  first_checked_at: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer, retries";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, checked_scope, first_checked_at, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -208,7 +210,6 @@ export type CheckedScope = "page" | "paragraph" | null;
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
-  request_steer?: string | null;
   project_id: string;
   source: ItemSource;
   url: string;
@@ -251,28 +252,36 @@ export async function raiseItemPriority(id: string, priority: number): Promise<v
   );
 }
 
+/** What a request needs to know about the item its page already has. */
+export interface PageItemState {
+  id: string;
+  status: string;
+  checked_scope: CheckedScope;
+  first_checked_at: string | null;
+}
+
 /** Finds the item a page URL resolves to, whatever its status. A YouTube page is
  *  matched by its video id, because the stored URL forms vary. Any other URL is
  *  matched exactly, apart from a trailing slash. This mirrors the extension's
  *  fetchItemForUrl. */
 export async function findItemForPageUrl(
   pageUrl: string,
-): Promise<{ id: string; status: string; checked_scope: CheckedScope } | null> {
+): Promise<PageItemState | null> {
   const db = getSupabaseClient();
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
     // ilike reads an underscore in the video id as a wildcard, so this is only a
     // prefilter. Every row it returns is verified by comparing the id exactly.
     const rows = throwOnError(
-      await db.from("everything_items").select("id, status, checked_scope, url").ilike("url", `%${videoId}%`),
-    ) as { id: string; status: string; checked_scope: CheckedScope; url: string }[];
+      await db.from("everything_items").select("id, status, checked_scope, first_checked_at, url").ilike("url", `%${videoId}%`),
+    ) as (PageItemState & { url: string })[];
     const hit = rows.find((r) => extractYoutubeVideoId(r.url) === videoId);
-    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope } : null;
+    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope, first_checked_at: hit.first_checked_at } : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
   const rows = throwOnError(
-    await db.from("everything_items").select("id, status, checked_scope").in("url", [trimmed, `${trimmed}/`]).limit(1),
-  ) as { id: string; status: string; checked_scope: CheckedScope }[];
+    await db.from("everything_items").select("id, status, checked_scope, first_checked_at").in("url", [trimmed, `${trimmed}/`]).limit(1),
+  ) as PageItemState[];
   return rows[0] ?? null;
 }
 
@@ -286,7 +295,7 @@ export async function promoteItemToWholePage(id: string, fullText: string | null
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ checked_scope: "page", full_text: fullText, request_steer: null, status: "queued", error: null })
+      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
       .eq("id", id),
   );
   await raiseItemPriority(id, priority);
@@ -421,10 +430,45 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
 }
 
 /** While the Claude note writer is on (everything_claude_settings.writer =
- *  'claude'), the pipeline takes only the items Claude handed back to it. */
+ *  'claude'), Claude takes every queued item and the pipeline takes none. */
 export async function claudeWritesNotes(): Promise<boolean> {
   const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer").single()) as { writer: string };
   return settings.writer === "claude";
+}
+
+/** A post the Claude note writer failed on, from its item_failed event. */
+export interface ClaudeFailure {
+  at: string;
+  url: string;
+  reason: string;
+}
+
+/** A run reports at most this many failures. Any more wait for the next run,
+ *  which is red anyway. */
+const MAX_CLAUDE_FAILURES_PER_RUN = 50;
+
+/** The Claude note writer's failures that no feed run has reported yet. They
+ *  are marked as reported here (migration 157), so each failure turns exactly
+ *  one run red, however far apart the runs are. */
+export async function takeUnreportedClaudeFailures(): Promise<ClaudeFailure[]> {
+  const db = getSupabaseClient();
+  const schedule = throwOnError(await db.from("everything_feed_schedule").select("claude_failures_reported_through").single()) as {
+    claude_failures_reported_through: string;
+  };
+  // The client is untyped, so it takes the embedded item for a list. An event
+  // has one item, and PostgREST sends it as one object.
+  const events = throwOnError(
+    await db
+      .from("everything_claude_events")
+      .select("at, data, item:everything_items(url)")
+      .eq("type", "item_failed")
+      .gt("at", schedule.claude_failures_reported_through)
+      .order("at")
+      .limit(MAX_CLAUDE_FAILURES_PER_RUN),
+  ) as unknown as { at: string; data: { reason: string }; item: { url: string } }[];
+  if (events.length === 0) return [];
+  throwOnError(await db.from("everything_feed_schedule").update({ claude_failures_reported_through: events.at(-1)!.at }).eq("id", true));
+  return events.map((e) => ({ at: e.at, url: e.item.url, reason: e.data.reason }));
 }
 
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
@@ -455,31 +499,6 @@ export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   };
 }
 
-/** Sorts the queued items while the Claude note writer is on. Claude works on
- *  an item it took while the item stays queued, so a queued item is one of
- *  three things: handed back to the pipeline, taken by Claude, or still
- *  waiting for Claude to take it. */
-export async function sortClaudeQueue(queue: QueuedItemSummary[]): Promise<{ waiting: QueuedItemSummary[]; handedBack: QueuedItemSummary[] }> {
-  const queued = queue.filter((item) => item.status === "queued");
-  const ids = queued.map((item) => item.id);
-  const db = getSupabaseClient();
-  const [handbacks, takes] = await Promise.all([
-    fetchInBatches<{ item_id: string }>((chunk) => db.from("everything_claude_handbacks").select("item_id").in("item_id", chunk), ids, "item_id", { label: "claudeHandbacks" }),
-    fetchInBatches<{ id: number; item_id: string }>(
-      (chunk) => db.from("everything_claude_events").select("id, item_id").eq("type", "item_taken").in("item_id", chunk),
-      ids,
-      "id",
-      { label: "claudeTakes" },
-    ),
-  ]);
-  const handedBack = new Set(handbacks.map((h) => h.item_id));
-  const taken = new Set(takes.map((t) => t.item_id));
-  return {
-    waiting: queued.filter((item) => !handedBack.has(item.id) && !taken.has(item.id)),
-    handedBack: queued.filter((item) => handedBack.has(item.id)),
-  };
-}
-
 /** Moves the next queued item to `processing` and returns it. The highest
  *  priority tier wins, and within a tier the newest published content comes
  *  first. An item with no published date yet, which is typically a freshly
@@ -490,16 +509,12 @@ export async function sortClaudeQueue(queue: QueuedItemSummary[]): Promise<{ wai
  *  safe because each tier has exactly one worker: the intake service on the
  *  machine takes only the requested tier, and the Actions feed run takes only
  *  the tiers below it. Two workers exist, but they can never want the same
- *  row. While the Claude note writer is on, both take only what it handed
- *  back, and Claude takes the rest. */
+ *  row. While the Claude note writer is on, neither takes anything, and
+ *  Claude takes every item. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
+  if (await claudeWritesNotes()) return null;
   const db = getSupabaseClient();
-  // The inner join keeps only items with a hand-back row. A list of handed-back
-  // ids in the request would grow with every hand-back and break the URL.
-  let query = db
-    .from("everything_items")
-    .select((await claudeWritesNotes()) ? `${ITEM_COLUMNS}, everything_claude_handbacks!inner(item_id)` : ITEM_COLUMNS)
-    .eq("status", "queued");
+  let query = db.from("everything_items").select(ITEM_COLUMNS).eq("status", "queued");
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)
@@ -514,8 +529,7 @@ export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<E
   );
   if (!item) return null;
   throwOnError(await db.from("everything_items").update({ status: "processing" }).eq("id", item.id));
-  const { everything_claude_handbacks: _handback, ...claimed } = item as EverythingItem & { everything_claude_handbacks?: unknown };
-  return { ...claimed, status: "processing" };
+  return { ...item, status: "processing" };
 }
 
 export async function fetchItem(id: string): Promise<EverythingItem> {
@@ -678,8 +692,8 @@ export interface NoteRequestRow {
   page_title: string;
   selection: string | null;
   page_text: string | null;
+  /** The reader's own words on why the selected passage needs a note. */
   steer?: string | null;
-  passage_question_id?: string | null;
   /** The creator's feed URL as the extension worked it out. Untrusted input:
    *  the consumer uses it only when it parses as a creator feed. */
   feed_url?: string | null;
@@ -706,17 +720,11 @@ export async function markRequestedQueueBudgetExhausted(): Promise<void> {
  *  dead intake service: intake consumes requests within seconds, so an old
  *  pending request means nobody is listening. */
 export async function oldestPendingRequestAgeSeconds(): Promise<number | null> {
-  // A request with a steer or a passage question waits while its page is
-  // queued or being checked, and the Claude note writer can hold a page for
-  // much longer than 15 minutes. So only plain requests show that intake is
-  // alive. Intake turns those into queue items within seconds.
   const row = throwOnError<{ created_at: string } | null>(
     await getSupabaseClient()
       .from("everything_note_requests")
       .select("created_at")
       .eq("status", "pending")
-      .is("steer", null)
-      .is("passage_question_id", null)
       .order("created_at")
       .limit(1)
       .maybeSingle(),
@@ -730,7 +738,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
+      .select("id, page_url, page_title, selection, page_text, steer, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];

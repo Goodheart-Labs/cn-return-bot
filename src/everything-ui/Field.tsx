@@ -1,11 +1,13 @@
 import type { ComponentProps, KeyboardEvent, ReactNode } from "react";
 import { cn } from "./cn";
+import { focusRing } from "./focusRing";
 
-const FIELD = "rounded-control border border-line-input bg-surface px-3 py-1.5 text-sm text-fg placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
+/** The look of a text field, and of a button that shows a field's value. */
+export const fieldClass = cn("rounded-control border border-line-input bg-surface px-3 py-1.5 text-sm text-fg placeholder:text-fg-muted", focusRing);
 
 /** A one-line text field. */
 export function Input({ className, ...props }: ComponentProps<"input">) {
-  return <input className={cn(FIELD, className)} {...props} />;
+  return <input className={cn(fieldClass, className)} {...props} />;
 }
 
 /** A phone keyboard has no Shift key to hold, so on a touch screen Enter
@@ -43,7 +45,7 @@ export function Textarea({ autoGrow, className, ...props }: ComponentProps<"text
         el.style.height = "auto";
         if (el.scrollHeight > 0) el.style.height = `${el.scrollHeight}px`;
       } : undefined}
-      className={cn(FIELD, "w-full", autoGrow && "resize-none overflow-hidden", className)}
+      className={cn(fieldClass, "w-full", autoGrow && "resize-none overflow-hidden", className)}
       {...props}
     />
   );
@@ -64,7 +66,7 @@ export function Checkbox({ checked, onChange, disabled, className, children }: {
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
-        className="accent-primary"
+        className={cn("accent-primary", focusRing)}
       />
       {children}
     </label>

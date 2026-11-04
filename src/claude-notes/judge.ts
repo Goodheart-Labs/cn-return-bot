@@ -128,7 +128,7 @@ export const judgePrompt = (note: JudgedNote, examples: JudgeExample[] = []) =>
 
 /** Runs one judge in its own empty folder and returns its answer. The folder
  *  keeps the prompt and Claude Code's full output for later reading. */
-export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { costUsd: number; turns: number }> {
+export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { turns: number }> {
   mkdirSync(runDir, { recursive: true });
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   const child = Bun.spawn(
@@ -165,5 +165,5 @@ export async function runJudge(runDir: string, prompt: string): Promise<Judgemen
   const output = JSON.parse(stdout);
   const answer = output.structured_output;
   if (output.is_error || !answer) throw new Error(`The judge gave no answer: ${String(output.result).slice(0, 500)}`);
-  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful, costUsd: output.total_cost_usd, turns: output.num_turns };
+  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful, turns: output.num_turns };
 }

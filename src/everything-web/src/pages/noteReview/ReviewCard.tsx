@@ -8,9 +8,7 @@ import {
   setFewShotExample,
   setReviewNote,
   skipDraft,
-  type Reviewer,
   type ReviewDraft,
-  type ReviewVote,
 } from "@cn/core/claudeReview";
 import { setCreatorXHandle } from "@cn/core/creatorX";
 import { mintSelfVoteDonation } from "@cn/core/donations";
@@ -31,6 +29,7 @@ import { CheckIcon, TrashIcon } from "@cn/ui/icons";
 import { ClaimCard } from "../../components/ClaimCard";
 import { noteUrl } from "../../lib/routing";
 import { PostOnX } from "./PostOnX";
+import { PERSON, ReviewerVotes } from "./ReviewerVotes";
 import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
 import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
 import { TWEET_SERVER } from "./tweetServer";
@@ -44,14 +43,6 @@ const NO_NOTE_LABELS: Record<Exclude<ReviewDraft["outcome"], "note">, string> = 
   no_note_needed: "No note needed",
   too_hard: "Too hard to source",
   withdrawn: "Withdrawn by Claude",
-};
-export const PERSON: Record<Reviewer | "claude", string> = { jim: "Jim", nathan: "Nathan", claude: "Claude" };
-const REVIEWERS: Reviewer[] = ["jim", "nathan"];
-const VOTE_LABELS: Record<ReviewVote, string> = { 1: "Helpful", 0: "Somewhat helpful", [-1]: "Not helpful" };
-const VOTE_TONES: Record<ReviewVote, string> = {
-  1: "bg-positive-soft text-positive",
-  0: "bg-caution-soft text-caution",
-  [-1]: "bg-negative-soft text-negative",
 };
 
 const isNote = (draft: ReviewDraft) => draft.status !== "not_a_note";
@@ -269,26 +260,6 @@ function AsideHeading({ children }: { children: ReactNode }) {
   return <h3 className="font-semibold text-fg-secondary">{children}</h3>;
 }
 
-/** Jim's and Nathan's votes on the note. */
-function Votes({ draft }: { draft: ReviewDraft }) {
-  if (draft.reviewerVotes.length === 0) return null;
-  return (
-    <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {REVIEWERS.flatMap((reviewer) => {
-        const vote = draft.reviewerVotes.find((v) => v.reviewer === reviewer)?.vote;
-        return vote === undefined
-          ? []
-          : [
-              <span key={reviewer} className="flex items-center gap-1.5">
-                <span className="font-medium text-fg-secondary">{PERSON[reviewer]}</span>
-                <span className={cn("rounded-full px-2 py-0.5 font-semibold", VOTE_TONES[vote])}>{VOTE_LABELS[vote]}</span>
-              </span>,
-            ];
-      })}
-    </p>
-  );
-}
-
 /** The box that edits the shared review note, both after a vote and from the
  *  side column. It starts from the note as it is. */
 function ReviewNoteForm({ draft, view, placeholder, onClose }: { draft: ReviewDraft; view: ReviewView; placeholder: string; onClose: () => void }) {
@@ -323,7 +294,7 @@ function Reviews({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) {
   return (
     <section className="space-y-2">
       <AsideHeading>Our review</AsideHeading>
-      <Votes draft={draft} />
+      <ReviewerVotes votes={draft.reviewerVotes} />
       {editing && view ? (
         <ReviewNoteForm draft={draft} view={view} placeholder="Why is this note good or bad?" onClose={() => setEditing(false)} />
       ) : note ? (

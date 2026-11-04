@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Button } from "@cn/ui/Button";
 import { cardVariants } from "@cn/ui/Card";
 import { cn } from "@cn/ui/cn";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { useDismiss } from "@cn/ui/useDismiss";
 
 /** A Filters button that opens a popover with the page's filter controls.
  *  A second click on the button, a press outside the popover, or Escape closes
@@ -16,17 +16,7 @@ export function FiltersPopover({ activeCount, children }: { activeCount: number;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  useOutsidePress(ref, open, () => setOpen(false));
-  useEffect(() => {
-    if (!open) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setOpen(false);
-      buttonRef.current?.focus();
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
-  }, [open]);
+  useDismiss(ref, open, () => setOpen(false), buttonRef);
 
   return (
     <div ref={ref}>

@@ -25,6 +25,9 @@ export interface ItemRow {
    *  article or transcript, `paragraph` only a highlighted passage. Null means
    *  no run was ever intended: a reader's note created the row. */
   checked_scope: "page" | "paragraph" | null;
+  /** When the page first finished as a whole-page check (migration 133), or
+   *  null while it never did. */
+  first_checked_at: string | null;
 }
 
 /** What the website shows of a project wherever it names one: the name, the

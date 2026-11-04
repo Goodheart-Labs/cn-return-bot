@@ -53,10 +53,12 @@ export interface RequestStatusRow {
   item_id: string | null;
 }
 
-/** The status_reason of a request whose selected passage is checked on its
- *  own, on a page that was already checked in full. The page's item stays done
- *  throughout, so only the request row tells the card the check is running,
- *  and whether it wrote a note. */
+/** The status_reason of a request on selected words. Intake marks it running
+ *  when it puts the page in the queue. The note writer finds the passages
+ *  readers asked about by that mark, and replaces it with note or noNote once
+ *  it has checked the passage. The page's item may hold notes from an earlier
+ *  check, so only the request row tells the card whether this passage got a
+ *  note. */
 export const PASSAGE_CHECK = {
   running: "checking the selected passage",
   note: "the selected passage got a note",
@@ -127,6 +129,11 @@ export function deriveRequestProgress(
     // reached us yet. Either way the reader is waiting.
     return { kind: "saved" };
   }
+  if (request?.status_reason === PASSAGE_CHECK.note) return { kind: "done", notes: 1 };
+  if (request?.status_reason === PASSAGE_CHECK.noNote) return { kind: "done", notes: 0 };
+  // The page can be done from an earlier check while the passage still waits
+  // for its own, so a running passage only fails with its item.
+  if (request?.status_reason === PASSAGE_CHECK.running) return item.status === "error" ? { kind: "failed" } : { kind: "queued" };
   if (item.status === "queued") {
     if (item.progress?.stage === "budget_exhausted") return { kind: "budget" };
     return { kind: "queued" };
@@ -143,9 +150,6 @@ export function deriveRequestProgress(
   if (item.status === "done") {
     if (request?.status === "error") return { kind: "failed" };
     if (isUnreadableVideoReason(item.skip_reason)) return { kind: "unreadable", reason: item.skip_reason };
-    if (request?.status_reason === PASSAGE_CHECK.running) return { kind: "checking", done: 0, total: 1, notes: 0 };
-    if (request?.status_reason === PASSAGE_CHECK.note) return { kind: "done", notes: 1 };
-    if (request?.status_reason === PASSAGE_CHECK.noNote) return { kind: "done", notes: 0 };
     return { kind: "done", notes: claims.filter((c) => c.status === "note").length };
   }
   // The item errored. The pipeline requeues errored requested items, so the
