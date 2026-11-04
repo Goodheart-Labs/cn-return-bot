@@ -36,24 +36,27 @@ export const BOT_TEST: ABTest = {
   ],
 };
 
+// 2026-11-04 (GOO-698): the research step costs twice what it did in summer, so Jim moved it
+// to Sonnet 5.5 (35), GPT 6.1 Terra (35), GLM 5.3 Flash (20) and Haiku 5.5 (10), each new one at
+// medium reasoning. Every other arm goes to 0.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
-    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 25 },
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 0 },
     { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
-    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 30 },
-    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 15 },
+    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 0 },
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 10 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 6 },
+    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
@@ -66,7 +69,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm52-serper",            overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 0 },
-    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 7 },
+    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 20 },
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
     { variant: { name: "musespark13c-native",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "openrouter_native" }}, weight: 0 },
     { variant: { name: "gpt6luna-native",         overrides: { search_model: "openai/gpt-6-luna",                 web_search: "openrouter_native" }}, weight: 0 },
@@ -78,6 +81,9 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "serper" }},       weight: 0 },
+    { variant: { name: "haiku55-native-medium",   overrides: { search_model: "anthropic/claude-haiku-5.5",        web_search: "native", search_reasoning_effort: "medium" }}, weight: 10 },
+    { variant: { name: "sonnet55-native-medium",  overrides: { search_model: "anthropic/claude-sonnet-5.5",       web_search: "native", search_reasoning_effort: "medium" }}, weight: 35 },
+    { variant: { name: "gpt6_1terra-native-medium", overrides: { search_model: "openai/gpt-6.1-terra",            web_search: "native_openai", search_reasoning_effort: "medium" }}, weight: 35 },
   ],
 };
 
@@ -187,12 +193,14 @@ const TOPIC_FILTER_TEST: ABTest = {
 // The cascade replaces the note-needed prefilter, so it has to run before it.
 // The "precheck" arm is the search step as it was before the cascade existed,
 // with the prefilter where one is configured.
+// 2026-11-04 (GOO-698): every X post takes the cascading path, so the strong
+// research model runs only when the cheap step is unsure.
 const SEARCH_CASCADE_TEST: ABTest = {
   name: "search_cascade",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 20 },
-    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 80 },
+    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 100 },
+    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 0 },
   ],
 };
 
