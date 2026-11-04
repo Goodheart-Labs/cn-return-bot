@@ -75,9 +75,12 @@ const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
 /** Tweets the devbox starts in any 24 hours. A subagent records no cost, so
  *  the X share in xShare.ts sees none of the devbox's tweets and never stops
  *  the X run from sending more. Without this limit the tweets used about four
- *  times their share of the week (Jim, 2026-11-02). A tweet that is not
- *  started is swept as failed by the X run after CLAUDE_TWEET_MAX_WAIT_MINUTES. */
-const MAX_TWEETS_PER_DAY = 35;
+ *  times their share of the week (Jim, 2026-11-02). The limit was 35 at first,
+ *  and Jim raised it to 100 on 2026-11-04. At about $0.61 of API cost per tweet
+ *  and about $25 per percent of the plan's week, 100 tweets use about 2.5% a day.
+ *  A tweet that is not started is swept as failed by the X run after
+ *  CLAUDE_TWEET_MAX_WAIT_MINUTES. */
+const MAX_TWEETS_PER_DAY = 100;
 const DAY_MS = 24 * 3600_000;
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 
