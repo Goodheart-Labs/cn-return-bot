@@ -34,6 +34,9 @@ type RawNote = QueryData<ReturnType<typeof noteQuery>>[number];
 function toNoteRow({ detailed, claim, ...note }: RawNote): NoteRow {
   return {
     ...note,
+    // The select joins the claim, so a note read here always has one. Only
+    // an X note's twin has none, and these reads never return a twin.
+    claim_id: claim.id,
     status: note.status as NoteRow["status"],
     // image_urls is a jsonb column, which the generated types cannot narrow.
     claim: { ...claim, image_urls: (claim.image_urls as string[] | null) ?? [] },
