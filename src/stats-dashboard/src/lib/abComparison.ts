@@ -59,6 +59,7 @@ function emptyCounts(): AbComboCounts {
     candidate: 0,
     total: 0,
     cost: 0,
+    costSquares: 0,
     helpfulRatings: 0,
     somewhatHelpfulRatings: 0,
     notHelpfulRatings: 0,
@@ -142,6 +143,7 @@ export function buildAbCombos(
     counts.candidate += agg.candidate;
     counts.total += agg.total;
     counts.cost += agg.cost;
+    counts.costSquares += agg.cost_squares;
   }
 
   return [...byKey.values()].sort((a, b) => a.label.localeCompare(b.label));
