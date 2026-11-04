@@ -174,9 +174,31 @@ async function personNoteOnPassage(itemId: string, passage: string): Promise<{ n
   return null;
 }
 
+/** The draft the post already has with this passage, outcome and note text,
+ *  if any. An agent that saves the same file twice would otherwise post the
+ *  same note twice. */
+async function sameDraft(draft: NewDraft): Promise<DraftRow | null> {
+  const { data, error } = await db()
+    .from("everything_claude_drafts")
+    .select("*")
+    .eq("item_id", draft.itemId)
+    .eq("passage", draft.passage)
+    .eq("outcome", draft.outcome)
+    .eq("note", draft.note)
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(JSON.stringify(error));
+  return data;
+}
+
 /** Saves what a note-finding agent found on one passage. A note is posted as
- *  an AI note at once. */
+ *  an AI note at once. A draft saved before is not saved again. */
 export async function addDraft(draft: NewDraft): Promise<DraftRow> {
+  const existing = await sameDraft(draft);
+  if (existing) {
+    console.warn(`This draft is already saved as ${existing.id}, so it was not saved again.`);
+    return existing;
+  }
   const covering = draft.outcome === "note" ? await personNoteOnPassage(draft.itemId, draft.passage) : null;
   if (covering) {
     draft = {
@@ -420,6 +442,13 @@ export async function claudeNotePassagesSince(itemId: string, since: string): Pr
 
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
+  if (error) throw new Error(JSON.stringify(error));
+  return count ?? 0;
+}
+
+/** How many Claude runs with this tag started since a time. */
+export async function claudeRunsSince(tag: ClaudeRunTag, since: Date): Promise<number> {
+  const { count, error } = await db().from("everything_claude_runs").select("id", { count: "exact", head: true }).contains("tags", [tag]).gte("started_at", since.toISOString());
   if (error) throw new Error(JSON.stringify(error));
   return count ?? 0;
 }

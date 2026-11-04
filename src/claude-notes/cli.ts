@@ -13,7 +13,6 @@
  *   skip <item id> <reason>       marks a post checked because nothing in it is worth checking
  *   posted-since <ISO time>       the notes Claude posted since then, newest first
  *   messages                      reviewer messages still waiting for an answer
- *   watch                         waits for reviewer messages, queued items or a due digest, prints it and exits
  *   answer <answer.json>          { draftId, reply, note?, sources?, reason? }; a note is a proposal the reviewer posts
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
@@ -21,9 +20,13 @@
  *   x-note <note.json>            { runId, note, reasoning }: queues a note on an X tweet for the next X run
  *   x-no-note <run id> <reason>   records that an X tweet needs no note
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
- *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
+ *   run                           the runner on ai-box (src/claude-notes/runner.ts)
+ *   dispatch                      on the devbox: waits for jobs, starts them, prints their prompts and exits (src/claude-notes/dispatch.ts)
+ *   dispatch-end <job key>        on the devbox: closes a job after its subagent returned, or prints its retry prompt
+ *   dispatch-services             on the devbox: usage readings, the note judge and the examples, all the time */
 
 import { readFileSync, writeFileSync } from "fs";
+import { dispatch, dispatchEnd, dispatchServices } from "./dispatch";
 import { JUDGE_EXAMPLES_PATH } from "./judge";
 import {
   addDraft,
@@ -80,29 +83,6 @@ async function answer(file: string) {
   console.log(a.note ? "Answered and proposed a new text" : "Answered");
 }
 
-/** How often `watch` looks for work. */
-const WATCH_POLL_MS = 30_000;
-/** `watch` also ends after this long without work, so Claude posts its digest
- *  to Slack every few hours. */
-const DIGEST_EVERY_MS = 3 * 60 * 60 * 1000;
-
-/** Runs until there is something to do, prints what and exits: reviewer
- *  messages waiting for an answer, queued items while Claude writes the notes,
- *  or a digest that is due. Claude runs it as a background task, whose end
- *  wakes Claude up. */
-async function watch() {
-  const startedAt = Date.now();
-  for (;;) {
-    const messages = await unansweredMessages();
-    if (messages.length > 0) return print({ wake: "messages", messages: messages.map((m) => ({ draftId: m.draft_id, from: m.actor, text: (m.data as { text: string }).text })) });
-    const { writer } = await readSettings();
-    const items = writer === "claude" ? (await claudeQueue()).waiting : [];
-    if (items.length > 0) return print({ wake: "queue", items });
-    if (Date.now() - startedAt > DIGEST_EVERY_MS) return print({ wake: "digest" });
-    await Bun.sleep(WATCH_POLL_MS);
-  }
-}
-
 async function main() {
   switch (command) {
     case "settings": {
@@ -128,8 +108,12 @@ async function main() {
       return import("./runner");
     case "messages":
       return print(await unansweredMessages());
-    case "watch":
-      return watch();
+    case "dispatch":
+      return dispatch();
+    case "dispatch-end":
+      return dispatchEnd(arg(0));
+    case "dispatch-services":
+      return dispatchServices();
     case "answer":
       return answer(arg(0));
     case "withdraw":

@@ -59,7 +59,8 @@ const JUDGE_SCHEMA = {
 export const JUDGE_EXAMPLES_PATH = path.join(import.meta.dir, "judge-examples.json");
 
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
+/** Nathan's guard hook, which every unattended Claude on the ai-box runs under.
+ *  The devbox passes its own settings to runJudge. */
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 /** A judge that researches for longer than this is stuck. */
 const JUDGE_TIMEOUT_MS = 20 * 60_000;
@@ -128,7 +129,7 @@ export const judgePrompt = (note: JudgedNote, examples: JudgeExample[] = []) =>
 
 /** Runs one judge in its own empty folder and returns its answer. The folder
  *  keeps the prompt and Claude Code's full output for later reading. */
-export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { turns: number }> {
+export async function runJudge(runDir: string, prompt: string, settings = RUN_SETTINGS): Promise<Judgement & { turns: number }> {
   mkdirSync(runDir, { recursive: true });
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   const child = Bun.spawn(
@@ -141,7 +142,7 @@ export async function runJudge(runDir: string, prompt: string): Promise<Judgemen
       "--permission-mode",
       "bypassPermissions",
       "--settings",
-      RUN_SETTINGS,
+      settings,
       "--disallowedTools",
       ...BLOCKED_TOOLS,
       "--output-format",
