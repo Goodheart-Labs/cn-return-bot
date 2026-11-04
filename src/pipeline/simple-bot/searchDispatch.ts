@@ -365,7 +365,12 @@ async function searchWithOpenaiNative(
       { role: "user" as const, content: `${systemPrompt}\n\n${userMessage}${promptedJsonInstruction()}` },
       ...followUpTurns(followUp),
     ],
-    createOptions: { model, tools: [{ type: "web_search_preview" }], max_tokens: OPENAI_MAX_TOKENS },
+    createOptions: {
+      model,
+      tools: [{ type: "web_search_preview" }],
+      max_tokens: OPENAI_MAX_TOKENS,
+      ...(config.search_reasoning_effort ? { reasoning_effort: config.search_reasoning_effort } : {}),
+    },
     extractJson: stripJsonFences,
   });
   log?.set(`${STEP.search}.messages.1`, { content: { findings, ...answerFields({ correctionNeeded }) } });
