@@ -8,6 +8,7 @@ export const DASHBOARD_SECTIONS = [
   { id: "claude-usage", label: "Claude note writer usage" },
   { id: "recent-posts", label: "Recently checked posts" },
   { id: "clicks", label: "Clicks towards the extension" },
+  { id: "donations", label: "Donations" },
 ] as const;
 
 export type DashboardSection = (typeof DASHBOARD_SECTIONS)[number]["id"];
