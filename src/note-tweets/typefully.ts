@@ -10,8 +10,11 @@ import type { TypefullyDraftState } from "../everything-core/xMarks";
 const MEDIA_READY_TIMEOUT_MS = 30_000;
 const MEDIA_POLL_MS = 1_000;
 
-/** The account's settings, read at every send, so the tool runs without them
- *  and only sending says what is missing. */
+/** Whether the repository's .env has the account's settings. The tool runs
+ *  without them, and only sending says what is missing. */
+export const typefullyIsSetUp = () => !!process.env.TYPEFULLY_API_KEY && !!process.env.TYPEFULLY_SOCIAL_SET_ID;
+
+/** The account's settings, read at every send. */
 function settings(): { api: string; headers: Record<string, string> } {
   const key = process.env.TYPEFULLY_API_KEY;
   const socialSet = process.env.TYPEFULLY_SOCIAL_SET_ID;
