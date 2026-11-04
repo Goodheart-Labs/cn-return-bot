@@ -471,6 +471,20 @@ export async function takeUnreportedClaudeFailures(): Promise<ClaudeFailure[]> {
   return events.map((e) => ({ at: e.at, url: e.item.url, reason: e.data.reason }));
 }
 
+/** The newest usage reading at the time of the Slack warning that the Claude
+ *  note writer is silent, or null while no warning is outstanding
+ *  (claudeSilenceWarning.ts). */
+export async function readClaudeSilenceWarnedFor(): Promise<Date | null> {
+  const schedule = throwOnError(await getSupabaseClient().from("everything_feed_schedule").select("claude_silence_warned_for").single()) as {
+    claude_silence_warned_for: string | null;
+  };
+  return schedule.claude_silence_warned_for ? new Date(schedule.claude_silence_warned_for) : null;
+}
+
+export async function setClaudeSilenceWarnedFor(warnedFor: Date | null): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_feed_schedule").update({ claude_silence_warned_for: warnedFor?.toISOString() ?? null }).eq("id", true));
+}
+
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
  *  the usage readings and the posts Claude took over the window, which starts
  *  no earlier than USAGE_WINDOW_NOT_BEFORE. */
