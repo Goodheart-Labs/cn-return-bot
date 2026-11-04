@@ -1,4 +1,4 @@
--- 163: the feed run tells the Claude notes Slack channel when the Claude note
+-- 165: the feed run tells the Claude notes Slack channel when the Claude note
 -- writer stops reporting the usage of its Claude plan, and again when it
 -- reports again (GOO-695). This column holds the time of the newest usage
 -- reading when the warning went out. Every later run of the same outage sees
