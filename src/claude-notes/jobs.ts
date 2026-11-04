@@ -1,5 +1,5 @@
 /* What happens before and after a Claude works on one job of the note writer:
- * a post, an X tweet or a reviewer message. Both hosts share it: the runner
+ * a post, an X tweet, a reviewer message or a creator's X account. Both hosts share it: the runner
  * on Nathan's ai-box (runner.ts), which starts a `claude -p` per job, and the
  * dispatcher on the devbox (dispatch.ts), which hands each job to the
  * permanent Claude session there. The host only starts the Claude and notices
@@ -39,6 +39,7 @@ import { recordItemFailure } from "../everything/worker";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
+import { type CreatorToLookUp, xHandleChecked } from "./xAccounts";
 import { failXTweet, markXTweetRunning, xTweetIsOpen, type XTweet } from "./xTweets";
 import { CLAUDE_RUN_TAGS, type ClaudeRunTag } from "./usageShare";
 
@@ -240,6 +241,22 @@ export async function endAnswer(draftId: string, run: JobRun, end: JobEnd): Prom
   if (!(await waitingMessages()).has(draftId)) return "closed";
   if (run.attempt < MAX_ATTEMPTS) return "retry";
   await logEvent({ actor: "claude", type: "answer_failed", draftId, data: { runDir: run.runDir } });
+  return "gave_up";
+}
+
+// ---------------------------------------------------------------------------
+// Creators' X accounts
+// ---------------------------------------------------------------------------
+
+/** A lookup that ended without saving an answer gets one more try. After that
+ *  the creator waits for a person, who can enter the handle on the review card. */
+export async function endXAccountLookup(run: JobRun & { creator: CreatorToLookUp }, end: JobEnd): Promise<JobOutcome | "gave_up"> {
+  // The ledger has no column for a project, and the run folder names the creator.
+  await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.xAccount], null);
+  console.log(`The Claude looking up ${run.creator.name}'s X account ended after ${Math.round((Date.now() - run.startedAt) / 60_000)} minutes`);
+  if (await xHandleChecked(run.creator.slug)) return "closed";
+  if (run.attempt < MAX_ATTEMPTS) return "retry";
+  console.error(`Gave up on the X account of ${run.creator.name}: two Claudes ended without an answer; see ${run.runDir}`);
   return "gave_up";
 }
 

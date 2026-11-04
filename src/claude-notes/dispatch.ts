@@ -3,7 +3,8 @@
  * on Jim's plan. The dispatcher does the runner's bookkeeping (jobs.ts) and
  * hands every job to that session, which starts one ordinary subagent per
  * job with the job's prompt. A job is a queued post, an X tweet the X run
- * handed to Claude, or a reviewer message on the review page.
+ * handed to Claude, a reviewer message on the review page, or a creator whose
+ * X account nobody has looked up yet.
  *
  * `dispatch` runs as a background task of the session. It waits until jobs
  * are ready, starts them, prints them and exits, and the end of the task
@@ -32,6 +33,8 @@ import {
   endAnswer,
   endPost,
   endTweet,
+  endXAccountLookup,
+  type JobEnd,
   type JobRun,
   messageContext,
   noteJudge,
@@ -39,10 +42,11 @@ import {
   type ReviewerMessage,
   waitingMessages,
 } from "./jobs";
-import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt } from "./prompts";
+import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt, xAccountPrompt } from "./prompts";
 import { claudeQueue, claudeRunsSince, type QueueItem, readSettings, recordUsage } from "./store";
 import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
+import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { openXTweets, type XTweet } from "./xTweets";
 
 const STATE_DIR = path.join(homedir(), ".local/share/claude-note-finder/dispatch");
@@ -58,10 +62,16 @@ const POLL_MS = 30_000;
 /** `dispatch` also ends after this long without jobs, so the session posts
  *  its digest to Slack every few hours. */
 const DIGEST_EVERY_MS = 3 * 60 * 60 * 1000;
+/** Printed with every batch of jobs, so the session does not depend on
+ *  remembering its brief after a restart or a summarised context. */
+const JOBS_INSTRUCTION =
+  "Start one ordinary subagent per job. Tell it to read the job's prompt file and follow it. When the subagent has returned, run `bun run claude-notes dispatch-end <key>` for its job.";
 /** Jobs in progress at once. The session's subagents start their own
  *  subagents, and every one of them counts against the session's limits. */
 const MAX_POSTS_RUNNING = 5;
 const MAX_TWEETS_RUNNING = 3;
+/** X account lookups are small, so one at a time keeps them from crowding out posts. */
+const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
 /** Tweets the devbox starts in any 24 hours. A subagent records no cost, so
  *  the X share in xShare.ts sees none of the devbox's tweets and never stops
  *  the X run from sending more. Without this limit the tweets used about four
@@ -75,10 +85,12 @@ type Job = JobRun & { key: string; prompt: string } & (
     | { kind: "post"; item: QueueItem }
     | { kind: "tweet"; tweet: XTweet }
     | { kind: "message"; draftId: string; message: ReviewerMessage }
+    | { kind: "x-account"; creator: CreatorToLookUp }
   );
 
-/** The open jobs, and the drafts whose message Claude gave up on. Those wait
- *  for a person and are not started again. */
+/** The open jobs, and the keys of the jobs Claude gave up on: reviewer
+ *  messages and X account lookups. Those wait for a person and are not
+ *  started again. */
 type State = { jobs: Job[]; gaveUp: string[] };
 
 function readState(): State {
@@ -106,6 +118,8 @@ async function preparePrompt(job: Job): Promise<boolean> {
   } else if (job.kind === "tweet") {
     await beginTweet(job.tweet, job.attempt);
     prompt = tweetPrompt({ host: "devbox", tweet: job.tweet, runDir: job.runDir });
+  } else if (job.kind === "x-account") {
+    prompt = xAccountPrompt({ creator: job.creator, runDir: job.runDir });
   } else {
     prompt = messagePrompt({ host: "devbox", ...job.message, ...(await messageContext(job.draftId)), runDir: job.runDir });
   }
@@ -128,17 +142,33 @@ async function newJobs(state: State): Promise<Job[]> {
   const tweetsToday = (await claudeRunsSince(CLAUDE_RUN_TAGS.tweet, new Date(Date.now() - DAY_MS))) + running("tweet");
   const tweetSlots = Math.min(MAX_TWEETS_RUNNING - running("tweet"), MAX_TWEETS_PER_DAY - tweetsToday);
   for (const tweet of tweets.slice(0, Math.max(0, tweetSlots))) jobs.push({ ...newRun(`x-${tweet.runId}`), kind: "tweet", tweet });
+  if (running("x-account") < MAX_X_ACCOUNT_LOOKUPS_RUNNING) {
+    const creator = (await creatorsToLookUp()).find((c) => !open.has(`xacct-${c.slug}`) && !state.gaveUp.includes(`xacct-${c.slug}`));
+    if (creator) jobs.push({ ...newRun(`xacct-${creator.slug}`), kind: "x-account", creator });
+  }
   if ((await readSettings()).writer !== "claude") return jobs;
   for (const [draftId, message] of await waitingMessages()) {
-    if (!open.has(`message-${draftId}`) && !state.gaveUp.includes(draftId)) jobs.push({ ...newRun(`message-${draftId}`), kind: "message", draftId, message });
+    const key = `message-${draftId}`;
+    if (!open.has(key) && !state.gaveUp.includes(key)) jobs.push({ ...newRun(key), kind: "message", draftId, message });
   }
   const items = (await claudeQueue()).waiting.filter((item) => !open.has(item.id));
   for (const item of items.slice(0, Math.max(0, MAX_POSTS_RUNNING - running("post")))) jobs.push({ ...newRun(item.id), kind: "post", item });
   return jobs;
 }
 
-const describe = (job: Job) =>
-  job.kind === "post" ? job.item.title ?? job.item.url : job.kind === "tweet" ? `X tweet ${job.tweet.tweetId}` : `${job.message.from}'s message on draft ${job.draftId}`;
+function describe(job: Job): string {
+  if (job.kind === "post") return job.item.title ?? job.item.url;
+  if (job.kind === "tweet") return `X tweet ${job.tweet.tweetId}`;
+  if (job.kind === "x-account") return `the X account of ${job.creator.name}`;
+  return `${job.message.from}'s message on draft ${job.draftId}`;
+}
+
+function endJob(job: Job, end: JobEnd) {
+  if (job.kind === "post") return endPost(job, end);
+  if (job.kind === "tweet") return endTweet(job, end);
+  if (job.kind === "x-account") return endXAccountLookup(job, end);
+  return endAnswer(job.draftId, job, end);
+}
 
 /** Reads the plan's usage when the last reading is 5 minutes old. A failed
  *  reading is only logged: the next one is due in 5 minutes, and only half an
@@ -172,7 +202,7 @@ export async function dispatch() {
       const current = readState();
       writeState({ ...current, jobs: [...current.jobs, ...started] });
       const jobs = started.map((job) => ({ key: job.key, kind: job.kind, what: describe(job), prompt: job.prompt }));
-      return console.log(JSON.stringify({ wake: "jobs", jobs, inProgress: current.jobs.length + started.length }, null, 2));
+      return console.log(JSON.stringify({ wake: "jobs", instruction: JOBS_INSTRUCTION, jobs, inProgress: current.jobs.length + started.length }, null, 2));
     }
     if (Date.now() - startedAt > DIGEST_EVERY_MS) return console.log(JSON.stringify({ wake: "digest", inProgress: state.jobs.map((job) => job.key) }));
     await Bun.sleep(POLL_MS);
@@ -187,8 +217,7 @@ export async function dispatchEnd(key: string) {
   if (!job) throw new Error(`No open job ${key}. The open jobs are: ${state.jobs.map((j) => j.key).join(", ") || "none"}`);
   // A subagent of the session writes no Claude Code output, so neither the
   // usage at its end nor its cost is known.
-  const end = { weeklyAtEnd: null, apiCostUsd: null };
-  const outcome = job.kind === "post" ? await endPost(job, end) : job.kind === "tweet" ? await endTweet(job, end) : await endAnswer(job.draftId, job, end);
+  const outcome = await endJob(job, { weeklyAtEnd: null, apiCostUsd: null });
   const retry = outcome === "retry" ? { ...job, attempt: job.attempt + 1, startedAt: Date.now() } : null;
   const retrying = retry !== null && (await preparePrompt(retry));
   // Closing the job takes a while, and a running dispatch may add new jobs in
@@ -199,7 +228,7 @@ export async function dispatchEnd(key: string) {
     writeState({ ...current, jobs: [...others, retry] });
     return console.log(`RETRY ${describe(retry)}: start a subagent on ${retry.prompt}`);
   }
-  const gaveUp = outcome === "gave_up" && job.kind === "message" ? [...current.gaveUp, job.draftId] : current.gaveUp;
+  const gaveUp = outcome === "gave_up" ? [...current.gaveUp, key] : current.gaveUp;
   writeState({ jobs: others, gaveUp });
   console.log(`CLOSED ${describe(job)}`);
 }

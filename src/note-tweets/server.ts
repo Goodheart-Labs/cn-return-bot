@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { mkdir } from "node:fs/promises";
 import { chromium, type Browser } from "playwright";
-import { createDraft, draftStates } from "./typefully";
+import { createDraft, draftStates, typefullyIsSetUp } from "./typefully";
 
 /* The local posting tool (GOO-629). `bun run note-tweets` starts two servers
  * on the admin's computer:
@@ -14,8 +14,8 @@ import { createDraft, draftStates } from "./typefully";
  * The browser marks the note as scheduled on X after a send, with the
  * admin's own sign-in. Every few minutes it asks this server what Typefully
  * says about each scheduled note, and marks a published one as posted.
- * Without the Typefully settings everything works except the send and that
- * check, which say what is missing. The pictures stay in .state/, which git
+ * Without the Typefully settings everything works except the send, which
+ * says what is missing, and the browser skips the check. The pictures stay in .state/, which git
  * ignores. Playwright needs its browser once: `bunx playwright install
  * chromium`. */
 
@@ -113,7 +113,7 @@ Bun.serve({
 
 const site = Bun.spawn(["bunx", "vite", "--port", String(SITE_PORT), "--host", "127.0.0.1", "--strictPort", "--mode", "prod-backend"], {
   cwd: new URL("../everything-web/", import.meta.url).pathname,
-  env: { ...process.env, VITE_TWEET_SERVER: SERVER },
+  env: { ...process.env, VITE_TWEET_SERVER: SERVER, VITE_TYPEFULLY_SET_UP: String(typefullyIsSetUp()) },
   stdout: "inherit",
   stderr: "inherit",
 });

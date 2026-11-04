@@ -25,6 +25,7 @@ export const CLAUDE_RUN_TAGS = {
   tweet: "tweet",
   judge: "judge",
   reviewAnswer: "review-answer",
+  xAccount: "x-account",
 } as const;
 export type ClaudeRunTag = (typeof CLAUDE_RUN_TAGS)[keyof typeof CLAUDE_RUN_TAGS];
 

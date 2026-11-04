@@ -9,7 +9,8 @@
  * one Claude for each X tweet the X run handed to it (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
  * every note as soon as it is posted (GOO-591), whose two probabilities the
- * review page shows.
+ * review page shows. And it starts one Claude for each creator with a Claude
+ * note whose X account nobody has looked up yet (GOO-639).
  *
  * Every Claude runs in its own tmux session, so a person can attach and watch
  * it. Its files are in its run folder under /var/tmp/cn-notes, a tmp folder
@@ -27,6 +28,7 @@ import {
   endAnswer,
   endPost,
   endTweet,
+  endXAccountLookup,
   type JobEnd,
   messageContext,
   noteJudge,
@@ -36,7 +38,7 @@ import {
   runCost,
   waitingMessages,
 } from "./jobs";
-import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH } from "./prompts";
+import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
 import {
   claudeQueue,
   type QueueItem,
@@ -46,6 +48,7 @@ import {
 } from "./store";
 import { readUsage, type UsageReading } from "./usage";
 import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { openXTweets, type XTweet } from "./xTweets";
 
 const POLL_MS = 30_000;
@@ -76,14 +79,21 @@ const PRUNE_EVERY_MS = 24 * 3600_000;
 const POST_SESSION_PREFIX = "cn-post-";
 const MESSAGE_SESSION_PREFIX = "cn-msg-";
 const TWEET_SESSION_PREFIX = "cn-x-";
+const X_ACCOUNT_SESSION_PREFIX = "cn-xacct-";
+/** X account lookups at once. They are small, so one at a time keeps them
+ *  from crowding out posts. */
+const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
 
 type Run = { session: string; runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null };
 
 const posts = new Map<string, Run & { item: QueueItem }>();
 const tweets = new Map<string, Run & { tweet: XTweet }>();
 const answers = new Map<string, Run>();
-/** Drafts whose message Claude failed to answer twice. They wait for a person. */
+const xAccountLookups = new Map<string, Run & { creator: CreatorToLookUp }>();
+/** Drafts whose message Claude failed to answer twice, and creators whose X
+ *  account two Claudes could not settle. They wait for a person or a restart. */
 const unanswerable = new Set<string>();
+const xAccountsGivenUp = new Set<string>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
 const judge = noteJudge({ runFolder, mayStart: mayStartPosts });
@@ -282,6 +292,34 @@ async function endAnswers() {
 }
 
 // ---------------------------------------------------------------------------
+// Creators' X accounts
+// ---------------------------------------------------------------------------
+
+async function startXAccountLookup(creator: CreatorToLookUp, attempt: number) {
+  const runDir = runFolder(`xacct-${creator.slug}-${Date.now()}`);
+  const session = X_ACCOUNT_SESSION_PREFIX + creator.slug.slice(0, 20);
+  startClaude(session, runDir, xAccountPrompt({ creator, runDir }));
+  xAccountLookups.set(creator.slug, { creator, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
+  console.log(`Started ${session} to find the X account of ${creator.name} (attempt ${attempt})`);
+}
+
+/** Closes the lookups that ended, then starts one for the next creator nobody
+ *  has looked up, while the plan allows Claude runs. A creator whose X account
+ *  is saved drops out of the list by itself. */
+async function tickXAccounts() {
+  for (const [slug, run] of xAccountLookups) {
+    if (tmuxAlive(run.session)) continue;
+    xAccountLookups.delete(slug);
+    const outcome = await endXAccountLookup(run, await ended(run));
+    if (outcome === "gave_up") xAccountsGivenUp.add(slug);
+    if (outcome === "retry") await startXAccountLookup(run.creator, run.attempt + 1);
+  }
+  if (xAccountLookups.size >= MAX_X_ACCOUNT_LOOKUPS_RUNNING || !(await mayStartPosts())) return;
+  const next = (await creatorsToLookUp()).find((c) => !xAccountLookups.has(c.slug) && !xAccountsGivenUp.has(c.slug));
+  if (next) await startXAccountLookup(next, 1);
+}
+
+// ---------------------------------------------------------------------------
 // The loop
 // ---------------------------------------------------------------------------
 
@@ -290,6 +328,7 @@ async function tick(first: boolean) {
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPostSession(run);
   await endAnswers();
   await tickTweets(first);
+  await tickXAccounts();
   await judge.tick(first);
   if ((await readSettings()).writer !== "claude") return;
   if (!existsSync(PAUSE_FILE)) await startAnswers();

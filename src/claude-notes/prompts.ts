@@ -1,5 +1,6 @@
-/* The prompts of the Claude note writer: one per post, one per X tweet and
- * one per reviewer message. Two hosts use them.
+/* The prompts of the Claude note writer: one per post, one per X tweet, one
+ * per reviewer message and one per creator whose X account we look up. Two
+ * hosts use them.
  *
  * On Nathan's ai-box the runner (runner.ts) starts one `claude -p` per job.
  * The examples are appended to that Claude's system prompt, so the prompt
@@ -17,6 +18,7 @@ import * as path from "path";
 import type { QueueItem } from "./store";
 import { RUN_ID_ENV } from "./store";
 import type { AskedPassages } from "./take";
+import type { CreatorToLookUp } from "./xAccounts";
 import { X_NOTE_MAX_CHARS, type XTweet } from "./xTweets";
 
 export const REPO = path.resolve(import.meta.dir, "../..");
@@ -134,4 +136,16 @@ ${examples} notes the reviewers judged. Research on the web when the question ne
 { "draftId": "<draft id>", "reply": "<your answer, a few plain sentences>", "note": "<only if the note should change: the improved note text>", "sources": [<only with a new note whose sources changed: each { "url", "quote", "explanation" }, where you downloaded the page with curl and found the quote in it word for word with grep -F>], "reason": "<only with a new note: why it changed>" }
 
 If the reviewer asks you to change the note, write the improved text as "note". It does not replace the note: the reviewer sees it on the review page and posts it if they agree. Declining a suggestion is fine when your research shows it is wrong; say why in the reply.`;
+}
+
+/** The same on both hosts: the lookup needs neither the examples nor subagents. */
+export function xAccountPrompt(params: { creator: CreatorToLookUp; runDir: string }): string {
+  const { creator, runDir } = params;
+  return `Find the X (Twitter) account of the creator behind the Common Notes project "${creator.name}" (slug ${creator.slug}).
+
+Their feed: ${creator.feedUrl ?? "unknown"}
+
+Search the web first. Only if that finds no account, ask Grok, which can search X itself, exactly once: \`bun run trending-on-x --ask "<your question>"\` from ${REPO}. Grok costs money, so do not ask it a second time. Make sure the account is really theirs: their site or channel links to it, or its name, bio and posts match their work. A fan account, a namesake or a parody is not theirs.
+
+When you have found it, run \`bun run claude-notes x-handle ${creator.slug} <handle> "<one or two sentences of evidence>"\` from ${REPO}. If you cannot confirm an account, run \`bun run claude-notes x-handle ${creator.slug} none "<what you checked>"\`. Your run folder is ${runDir}; write every file there. Stop once the command has succeeded.`;
 }
