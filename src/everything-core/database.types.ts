@@ -3452,6 +3452,7 @@ export type Database = {
         Returns: {
           candidate_runs: number
           cost: number
+          cost_squares: number
           failure_modes: Json
           helpful: number
           helpful_ratings: number
