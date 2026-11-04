@@ -1,7 +1,9 @@
 import type { AbComboCounts } from "./abStats";
+import type { Reviewer } from "./claudeReview";
 import type { Database, Json } from "./database.types";
 import type { QueryRequest } from "./fieldQuery";
 import { supabase } from "./supabase";
+import type { Vote } from "./votes";
 
 /* What the X notewriter page and the admin dashboard's notes read: notes, the
  * pipeline runs behind them, and the A/B tests those runs drew. Every read is
@@ -27,6 +29,8 @@ export interface XMedia {
 /** One note with the post it is on. */
 export interface XNote {
   noteId: string;
+  /** The note's twin in everything_notes, which takes our votes. */
+  twinNoteId: string;
   noteText: string;
   status: NoteRating;
   written: string;
@@ -51,6 +55,8 @@ export interface XNote {
     /** The post this one quotes or replies to. */
     referenced: { kind: "quoted" | "replied_to" | "retweeted" | null; text: string | null; media: XMedia[] } | null;
   } | null;
+  /** Jim's and Nathan's votes on the twin. Only an admin gets them. */
+  reviewerVotes: { reviewer: Reviewer; vote: Vote }[];
   /** Every field of the note's field row, for the chips of a bucketed sort. */
   fields: Record<string, unknown>;
   sortKey: number[] | null;
@@ -63,11 +69,17 @@ export interface XNoteCursor {
 
 type CardRow = Database["public"]["CompositeTypes"]["x_note_card"];
 
+/** A vote as the field row names it. "none" means no vote. */
+const VOTE_OF_FIELD: Record<string, Vote> = { helpful: 1, somewhat: 0, not_helpful: -1 };
+
+const REVIEWERS: Reviewer[] = ["jim", "nathan"];
+
 function toXNote(row: CardRow): XNote {
   const fields = row.fields as Record<string, unknown>;
   const referenced = row.referenced_post as { text?: string; media?: XMedia[] } | null;
   return {
     noteId: row.note_id!,
+    twinNoteId: row.twin_note_id!,
     noteText: row.note_text ?? "",
     status: fields.status as NoteRating,
     written: fields.written as string,
@@ -98,6 +110,10 @@ function toXNote(row: CardRow): XNote {
               media: referenced.media ?? [],
             },
           },
+    reviewerVotes: REVIEWERS.flatMap((reviewer) => {
+      const vote = VOTE_OF_FIELD[fields[`${reviewer}_vote`] as string];
+      return vote === undefined ? [] : [{ reviewer, vote }];
+    }),
     fields,
     sortKey: row.sort_key,
   };

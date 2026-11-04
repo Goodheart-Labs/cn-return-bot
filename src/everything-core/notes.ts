@@ -1,6 +1,7 @@
 import type { QueryData } from "@supabase/supabase-js";
 import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
+import type { NoteTallyFields } from "./noteBelief";
 import type { NoteRow, NoteSourceDetail } from "./types";
 
 /* Every read of notes goes through the two selects below, so every caller gets
@@ -60,6 +61,19 @@ export async function fetchNotesByIds(ids: string[]): Promise<NoteRow[]> {
 export async function fetchNotesForItem(itemId: string): Promise<NoteRow[]> {
   const notes = await fetchAllRows<RawNote>(() => noteQuery().eq("claim.item_id", itemId).neq("status", "hidden"), "id", { label: "itemNotes" });
   return notes.map(toNoteRow);
+}
+
+/** A note's vote counts, which is all a card needs to show and take votes. */
+export type NoteTally = NoteTallyFields & Pick<NoteRow, "id" | "created_at">;
+
+/** The vote counts of these notes. The X notewriter's cards read their twins'
+ *  counts this way, because a twin has no claim and so no NoteRow. */
+export async function fetchNoteTallies(ids: string[]): Promise<NoteTally[]> {
+  return fetchByIds<NoteTally>(
+    (chunk) => supabase.from("everything_notes").select("id, helpful_count, somewhat_helpful_count, not_helpful_count, author_id, created_at").in("id", chunk),
+    ids,
+    { label: "noteTallies" },
+  );
 }
 
 /** The quote and the explanation behind one note's "Source details"

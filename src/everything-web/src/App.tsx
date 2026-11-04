@@ -35,7 +35,7 @@ export function App() {
     <LoginPromptProvider value={() => setLoginOpen(true)}>
       {!TWEET_SERVER && <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />}
       {route.view === "noteImage" ? <NoteImagePage noteId={route.note} />
-        : TWEET_SERVER || route.view === "noteReview" ? <NoteReviewPage />
+        : TWEET_SERVER || route.view === "noteReview" ? <NoteReviewPage source={route.view === "noteReview" && !TWEET_SERVER ? route.source : "commonnotes"} navigate={navigate} />
         : route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
         : route.view === "minisites" ? (route.slug ? <MinisitePage key={route.slug} slug={route.slug} navigate={navigate} /> : <MinisitesPage navigate={navigate} />)
         : route.view === "newMinisite" ? <CreateMinisitePage navigate={navigate} />
