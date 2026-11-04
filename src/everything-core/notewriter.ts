@@ -236,6 +236,7 @@ export async function fetchAbCombos(source: NotewriterSource, tests: string[], s
       candidate: row.candidate_runs,
       total: row.runs,
       cost: row.cost,
+      costSquares: row.cost_squares,
       helpfulRatings: row.helpful_ratings,
       somewhatHelpfulRatings: row.somewhat_helpful_ratings,
       notHelpfulRatings: row.not_helpful_ratings,
