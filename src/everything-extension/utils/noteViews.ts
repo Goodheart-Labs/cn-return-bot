@@ -12,6 +12,7 @@ import { track } from "@cn/core/analytics";
 export type NoteSurface = "inline" | "youtube";
 
 export const SEEN_AFTER_MS = 1000;
+const SEEN_RATIO = 0.5;
 const FLUSH_MS = 5000;
 const IDS_PER_EVENT = 30;
 
@@ -41,8 +42,21 @@ export function flushNoteViews() {
 }
 
 if (typeof document !== "undefined") {
+  // A hidden tab stops every running second; showing it again observes every
+  // marker afresh, which reports what is on screen now.
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") flushNoteViews();
+    if (document.visibilityState === "hidden") {
+      for (const w of watched.values()) {
+        if (w.timer) clearTimeout(w.timer);
+        w.timer = null;
+      }
+      flushNoteViews();
+    } else {
+      for (const el of watched.keys()) {
+        observer?.unobserve(el);
+        observer?.observe(el);
+      }
+    }
   });
 }
 
@@ -54,7 +68,7 @@ export function noteSeen(surface: NoteSurface, noteIds: string[]) {
     seenOnPageUrl = page;
     seenOnPage.clear();
   }
-  const fresh = noteIds.filter((id) => !seenOnPage.has(id));
+  const fresh = [...new Set(noteIds)].filter((id) => !seenOnPage.has(id));
   fresh.forEach((id) => seenOnPage.add(id));
   enqueue("note_seen", surface, fresh);
 }
@@ -71,7 +85,7 @@ function onIntersect(entries: IntersectionObserverEntry[]) {
   for (const entry of entries) {
     const w = watched.get(entry.target);
     if (!w) continue;
-    if (entry.isIntersecting) {
+    if (entry.intersectionRatio >= SEEN_RATIO && document.visibilityState === "visible") {
       w.timer ??= setTimeout(() => {
         w.timer = null;
         noteSeen(w.surface, w.noteIds);
@@ -90,7 +104,7 @@ function onIntersect(entries: IntersectionObserverEntry[]) {
  *  restart the second. */
 export function watchSeen(el: Element | null, surface: NoteSurface, noteIds: string[]): (() => void) | undefined {
   if (!el || typeof IntersectionObserver === "undefined") return;
-  observer ??= new IntersectionObserver(onIntersect, { threshold: 0.5 });
+  observer ??= new IntersectionObserver(onIntersect, { threshold: SEEN_RATIO });
   const existing = watched.get(el);
   if (existing) {
     existing.noteIds = noteIds;
