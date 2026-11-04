@@ -35,9 +35,9 @@ describe("native-API arms have a pricing row", () => {
     }
   });
 
+  // No Gemini search arm is live since GOO-698, so this list may be empty.
   test("every live native_gemini arm is priced", () => {
     const models = searchModelsFor("native_gemini", "google/", true);
-    expect(models.length).toBeGreaterThan(0);
     for (const model of models) {
       expect(GEMINI_PRICING[model], `no GEMINI_PRICING row for "${model}"`).toBeDefined();
     }
