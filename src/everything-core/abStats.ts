@@ -74,7 +74,9 @@ export interface AbComboCounts {
 /**
  * Turn a combination's counts and the chosen metric into an interval and the
  * sample size behind it. Returns null when the sample size is zero, and the
- * caller then draws a "no data" row.
+ * caller then draws a "no data" row. A cost metric also returns null when the
+ * runs recorded no cost at all. The Claude Code note writer's X runs are like
+ * that, because their cost is recorded elsewhere.
  *
  * By default the denominator is the submitted notes. It becomes every finished
  * run when includeNonCandidate is set.
@@ -111,7 +113,7 @@ export function statInterval(
       return { interval: costPerCountCI(counts.cost, nSubmitted, z), n: nSubmitted };
     }
     case "cost_per_run": {
-      if (nAll === 0) return null;
+      if (nAll === 0 || counts.cost <= 0) return null;
       return { interval: nonNegativeMeanCI(counts.cost, counts.costSquares, nAll, z), n: nAll };
     }
     case "failure_mode": {
