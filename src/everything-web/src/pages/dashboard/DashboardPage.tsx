@@ -1,9 +1,7 @@
 import { Card } from "@cn/ui/Card";
-import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { PageTitle } from "@cn/ui/typography";
 import { AdminOnly } from "../../components/AdminOnly";
-import { RouteLink } from "../../components/RouteLink";
-import { SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
+import { SidebarPagesLayout } from "../../components/SidebarLayout";
 import type { Route } from "../../lib/routing";
 import { AbTests } from "../notewriter/AbTests";
 import { Clicks } from "./Clicks";
@@ -49,30 +47,16 @@ function SectionContent({ section, navigate }: { section: DashboardSection; navi
   }
 }
 
+const PAGES = DASHBOARD_SECTIONS.map((s) => ({ ...s, route: sectionRoute(s.id) }));
+
 function Dashboard({ section, navigate }: { section: DashboardSection; navigate: (route: Route) => void }) {
   const current = DASHBOARD_SECTIONS.find((s) => s.id === section)!;
   return (
-    <SidebarLayout
-      storageKey="cn:dashboardSidebarWidth"
-      label="dashboard sections"
-      sidebar={
-        <nav aria-label="Dashboard sections" className="space-y-0.5 px-3 py-5">
-          {DASHBOARD_SECTIONS.map((s) => (
-            <RouteLink key={s.id} to={sectionRoute(s.id)} navigate={navigate} current={s.id === section} className={sidebarEntry(s.id === section)}>
-              {s.label}
-            </RouteLink>
-          ))}
-        </nav>
-      }
-    >
+    <SidebarPagesLayout storageKey="cn:dashboardSidebarWidth" label="Dashboard sections" pages={PAGES} current={section} navigate={navigate}>
       <div className="mx-auto max-w-5xl space-y-6">
-        {/* A phone hides the sidebar, so the sections are a menu above. */}
-        <div className="overflow-x-auto md:hidden">
-          <SegmentedControl label="Dashboard sections" value={section} onChange={(id) => navigate(sectionRoute(id))} options={DASHBOARD_SECTIONS} />
-        </div>
         <PageTitle>{current.label}</PageTitle>
         <SectionContent section={section} navigate={navigate} />
       </div>
-    </SidebarLayout>
+    </SidebarPagesLayout>
   );
 }

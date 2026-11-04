@@ -160,13 +160,15 @@ function buildAbOutcomeAggregates(runs: RawPipelineRunRow[]): AbOutcomeAggregate
     const key = `${date}|${picks}`;
     let agg = byKey.get(key);
     if (!agg) {
-      agg = { date, ab_test_picks_key: picks, ab_test_picks: run.ab_test_picks, total: 0, candidate: 0, submitted: 0, cost: 0 };
+      agg = { date, ab_test_picks_key: picks, ab_test_picks: run.ab_test_picks, total: 0, candidate: 0, submitted: 0, cost: 0, cost_squares: 0 };
       byKey.set(key, agg);
     }
     agg.total++;
     if (run.outcome === "candidate" || run.outcome === "submitted") agg.candidate++;
     if (run.outcome === "submitted") agg.submitted++;
-    agg.cost += Number(run.cost ?? 0);
+    const cost = Number(run.cost ?? 0);
+    agg.cost += cost;
+    agg.cost_squares += cost * cost;
   }
   return [...byKey.values()];
 }
