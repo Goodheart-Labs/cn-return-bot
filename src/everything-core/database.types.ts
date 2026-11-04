@@ -1131,7 +1131,7 @@ export type Database = {
         Row: {
           author_id: string | null
           author_name: string | null
-          claim_id: string
+          claim_id: string | null
           created_at: string
           feed_band: string | null
           feed_best_key: number[] | null
@@ -1151,11 +1151,12 @@ export type Database = {
           p_helpful_after_helpful: number | null
           somewhat_helpful_count: number
           status: string
+          x_note_id: string | null
         }
         Insert: {
           author_id?: string | null
           author_name?: string | null
-          claim_id: string
+          claim_id?: string | null
           created_at?: string
           feed_band?: string | null
           feed_best_key?: number[] | null
@@ -1175,11 +1176,12 @@ export type Database = {
           p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
           status?: string
+          x_note_id?: string | null
         }
         Update: {
           author_id?: string | null
           author_name?: string | null
-          claim_id?: string
+          claim_id?: string | null
           created_at?: string
           feed_band?: string | null
           feed_best_key?: number[] | null
@@ -1199,6 +1201,7 @@ export type Database = {
           p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
           status?: string
+          x_note_id?: string | null
         }
         Relationships: [
           {
@@ -1214,6 +1217,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "everything_notes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_notes_x_note_id_fkey"
+            columns: ["x_note_id"]
+            isOneToOne: true
+            referencedRelation: "notes"
+            referencedColumns: ["note_id"]
           },
         ]
       }
@@ -3141,7 +3151,7 @@ export type Database = {
         Returns: {
           author_id: string | null
           author_name: string | null
-          claim_id: string
+          claim_id: string | null
           created_at: string
           feed_band: string | null
           feed_best_key: number[] | null
@@ -3161,6 +3171,7 @@ export type Database = {
           p_helpful_after_helpful: number | null
           somewhat_helpful_count: number
           status: string
+          x_note_id: string | null
         }
         SetofOptions: {
           from: "everything_notes"
@@ -3700,6 +3711,11 @@ export type Database = {
         views: number | null
         ratings: number | null
         picks: Json | null
+        our_rating: string | null
+        our_votes: number | null
+        my_vote: string | null
+        jim_vote: string | null
+        nathan_vote: string | null
       }
       x_note_card: {
         note_id: string | null
@@ -3719,6 +3735,7 @@ export type Database = {
         referenced_kind: string | null
         fields: Json | null
         sort_key: number[] | null
+        twin_note_id: string | null
       }
     }
   }

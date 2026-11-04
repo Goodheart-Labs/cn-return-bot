@@ -12,7 +12,7 @@ const YES_NO: FieldOption[] = [
   { value: "false", label: "No" },
 ];
 
-const VOTES: FieldOption[] = [
+export const VOTES: FieldOption[] = [
   { value: "helpful", label: "Helpful" },
   { value: "somewhat", label: "Somewhat helpful" },
   { value: "not_helpful", label: "Not helpful" },

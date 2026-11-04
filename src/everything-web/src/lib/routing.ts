@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { NotewriterSource } from "@cn/core/notewriter";
 import { DASHBOARD_SECTIONS, isDashboardSection, type DashboardSection } from "../pages/dashboard/sections";
 import { JUDGE_SECTIONS, type JudgeSection } from "../pages/judgeExperiment/sections";
 import { capturePageview } from "./analytics";
@@ -20,6 +21,7 @@ import { capturePageview } from "./analytics";
  *   /admin/notes          admins review the Claude note writer's notes; the
  *                         filters, sorts and display options are query
  *                         parameters (lib/useFieldQuery.ts)
+ *   /admin/notes/x        admins review our notes on X the same way
  *   /admin/best           the admins' leaderboard of the best notes
  *   /admin/best/<slug>    the same, narrowed to one creator
  *   /admin/dashboard      admins see how the extension is used; each other
@@ -56,7 +58,7 @@ export type Route =
   | { view: "leaderboard" }
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" }
-  | { view: "noteReview" }
+  | { view: "noteReview"; source: NotewriterSource }
   | { view: "bestNotes"; project: string | null }
   | { view: "xNotewriter"; page: "overview" | "abTests" }
   | { view: "dashboard"; section: DashboardSection }
@@ -68,7 +70,8 @@ export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
 export const ALL_NOTES: Route = { view: "allNotes" };
 export const MINISITES: Route = { view: "minisites", slug: null };
-export const NOTE_REVIEW: Route = { view: "noteReview" };
+export const NOTE_REVIEW: Route = { view: "noteReview", source: "commonnotes" };
+export const X_NOTE_REVIEW: Route = { view: "noteReview", source: "x" };
 export const BEST_NOTES: Route = { view: "bestNotes", project: null };
 export const DASHBOARD: Route = { view: "dashboard", section: DASHBOARD_SECTIONS[0].id };
 export const X_NOTEWRITER: Route = { view: "xNotewriter", page: "overview" };
@@ -105,7 +108,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (page === "x-notewriter") return project === "ab-tests" ? X_AB_TESTS : X_NOTEWRITER;
   if (import.meta.env.DEV && page === "admin" && project === "judge-experiment") return { view: "judgeExperiment", section: isJudgeSection(item) ? item : JUDGE_SECTIONS[0] };
   // Links from before GOO-623 name a section after it, which is now a filter.
-  if (page === "admin" && project === "notes") return NOTE_REVIEW;
+  if (page === "admin" && project === "notes") return item === "x" ? X_NOTE_REVIEW : NOTE_REVIEW;
   if (import.meta.env.VITE_TWEET_SERVER && page === "note-image" && project) return { view: "noteImage", note: project };
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
@@ -119,7 +122,7 @@ export function routeHref(route: Route): string {
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "dashboard") return route.section === DASHBOARD_SECTIONS[0].id ? "/admin/dashboard" : `/admin/dashboard/${route.section}`;
   if (route.view === "xNotewriter") return route.page === "abTests" ? "/x-notewriter/ab-tests" : "/x-notewriter";
-  if (route.view === "noteReview") return "/admin/notes";
+  if (route.view === "noteReview") return route.source === "x" ? "/admin/notes/x" : "/admin/notes";
   if (route.view === "noteImage") return `/note-image/${encodeURIComponent(route.note)}`;
   if (route.view === "judgeExperiment") return `/admin/judge-experiment/${route.section}`;
   if (route.view === "bestNotes") return "/admin/best" + (route.project ? `/${encodeURIComponent(route.project)}` : "");
