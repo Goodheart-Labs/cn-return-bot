@@ -62,6 +62,10 @@ const POLL_MS = 30_000;
 /** `dispatch` also ends after this long without jobs, so the session posts
  *  its digest to Slack every few hours. */
 const DIGEST_EVERY_MS = 3 * 60 * 60 * 1000;
+/** Printed with every batch of jobs, so the session does not depend on
+ *  remembering its brief after a restart or a summarised context. */
+const JOBS_INSTRUCTION =
+  "Start one ordinary subagent per job. Tell it to read the job's prompt file and follow it. When the subagent has returned, run `bun run claude-notes dispatch-end <key>` for its job.";
 /** Jobs in progress at once. The session's subagents start their own
  *  subagents, and every one of them counts against the session's limits. */
 const MAX_POSTS_RUNNING = 5;
@@ -198,7 +202,7 @@ export async function dispatch() {
       const current = readState();
       writeState({ ...current, jobs: [...current.jobs, ...started] });
       const jobs = started.map((job) => ({ key: job.key, kind: job.kind, what: describe(job), prompt: job.prompt }));
-      return console.log(JSON.stringify({ wake: "jobs", jobs, inProgress: current.jobs.length + started.length }, null, 2));
+      return console.log(JSON.stringify({ wake: "jobs", instruction: JOBS_INSTRUCTION, jobs, inProgress: current.jobs.length + started.length }, null, 2));
     }
     if (Date.now() - startedAt > DIGEST_EVERY_MS) return console.log(JSON.stringify({ wake: "digest", inProgress: state.jobs.map((job) => job.key) }));
     await Bun.sleep(POLL_MS);
