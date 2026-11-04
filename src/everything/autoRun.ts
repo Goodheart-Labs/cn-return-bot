@@ -32,8 +32,10 @@
  * alarm wakes the next run when the next one is due. Once Claude's week is at
  * its target, the walk adds nothing until the reset, and Claude still takes
  * what is queued. Nothing goes to the pipeline while Claude writes the notes.
- * Instead this run goes red when the runner on ai-box has gone quiet, and
- * when Claude failed on a post since the last run reported its failures.
+ * Instead this run goes red when the note writer has gone quiet, and when
+ * Claude failed on a post since the last run reported its failures. A note
+ * writer that goes quiet is also told to Slack, once per outage
+ * (claudeSilenceWarning.ts).
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -65,6 +67,7 @@ import {
   type FeedAlarm,
 } from "./pacing";
 import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
+import { announceClaudeSilence } from "./claudeSilenceWarning";
 import { computeClaudePacing, describeClaudePacing, type ClaudePacing } from "./usagePacing";
 import { logQueue, processNextFeedItem, queuedFeedItemCount } from "./worker";
 
@@ -233,6 +236,11 @@ async function main() {
   // on a capped day. They run last, after the alarm is set, so a slow source
   // never delays the item or the schedule.
   await refreshStaleAvatars(AVATARS_PER_RUN);
+  // A red run is seen only in the next morning's CI report. A silent note
+  // writer leaves every post and reader request waiting, so it is told to
+  // Slack at once. This runs after the alarm, so a Slack failure never stops
+  // the schedule.
+  if (result?.claude) await announceClaudeSilence(result.claude);
   console.log(`\nrun done · today so far: ${await describeTodaySpend()}`);
   try {
     await closeBrowser();
