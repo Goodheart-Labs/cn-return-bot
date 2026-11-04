@@ -1,4 +1,4 @@
--- Checks for migration 163, run after it against 163_x_note_twins.fixture.sql
+-- Checks for migration 164, run after it against 164_x_note_twins.fixture.sql
 -- (the commands are at the top of the fixture). The block ends by raising an
 -- error that carries every result, so nothing it wrote stays. Each result
 -- should be true, and a null counts as a failure.

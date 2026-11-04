@@ -1,4 +1,4 @@
--- Migration 163: one rating system for both notewriters (GOO-676).
+-- Migration 164: one rating system for both notewriters (GOO-676).
 --
 -- Our team and our readers rate our X notes with the same Yes, Somewhat and
 -- No votes as Common Notes, in the same table. A vote in everything_votes must
