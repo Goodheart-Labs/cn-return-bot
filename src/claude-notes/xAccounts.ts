@@ -11,36 +11,29 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
 import { db } from "./store";
 
-/** How many of a creator's posts the Claude gets as a starting point. */
-const POSTS_PER_CREATOR = 3;
-
 export interface CreatorToLookUp {
   slug: string;
   name: string;
   feedUrl: string | null;
-  postUrls: string[];
 }
 
 /** The creators with a posted Claude note whose X account nobody looked up
- *  yet, each with a few of the posts Claude wrote notes on. The project "web"
+ *  yet. The project "web"
  *  collects one-off pages and has no single creator, so it is left out. */
 export async function creatorsToLookUp(): Promise<CreatorToLookUp[]> {
-  const drafts = await fetchAllRows<{ id: string; everything_items: { url: string; project_id: string | null } | null }>(
-    () => db().from("everything_claude_drafts").select("id, everything_items(url, project_id)").eq("status", "posted"),
+  const drafts = await fetchAllRows<{ id: string; everything_items: { project_id: string | null } | null }>(
+    () => db().from("everything_claude_drafts").select("id, everything_items(project_id)").eq("status", "posted"),
     "id",
     { label: "posted Claude drafts" },
   );
-  const postsByProject = new Map<string, Set<string>>();
-  for (const { everything_items: item } of drafts) {
-    if (item?.project_id) postsByProject.set(item.project_id, (postsByProject.get(item.project_id) ?? new Set()).add(item.url));
-  }
+  const projectIds = new Set(drafts.flatMap(({ everything_items: item }) => (item?.project_id ? [item.project_id] : [])));
   const projects = await fetchInBatches<{ id: string; slug: string; name: string; feed_url: string | null }>(
     (ids) => db().from("everything_projects").select("id, slug, name, feed_url").in("id", ids).is("x_handle_status", null).neq("slug", WEB_PROJECT_SLUG),
-    [...postsByProject.keys()],
+    [...projectIds],
     "id",
     { label: "creators without an X account" },
   );
-  return projects.map((p) => ({ slug: p.slug, name: p.name, feedUrl: p.feed_url, postUrls: [...postsByProject.get(p.id)!].slice(0, POSTS_PER_CREATOR) }));
+  return projects.map((p) => ({ slug: p.slug, name: p.name, feedUrl: p.feed_url }));
 }
 
 /** Whether anyone has saved an answer for the creator, a handle or "none". */

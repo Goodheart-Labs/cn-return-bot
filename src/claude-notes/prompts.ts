@@ -144,8 +144,6 @@ export function xAccountPrompt(params: { creator: CreatorToLookUp; runDir: strin
   return `Find the X (Twitter) account of the creator behind the Common Notes project "${creator.name}" (slug ${creator.slug}).
 
 Their feed: ${creator.feedUrl ?? "unknown"}
-Posts of theirs we wrote notes on:
-${creator.postUrls.map((url) => `- ${url}`).join("\n")}
 
 Search the web first. Only if that finds no account, ask Grok, which can search X itself, exactly once: \`bun run trending-on-x --ask "<your question>"\` from ${REPO}. Grok costs money, so do not ask it a second time. Make sure the account is really theirs: their site or channel links to it, or its name, bio and posts match their work. A fan account, a namesake or a parody is not theirs.
 
