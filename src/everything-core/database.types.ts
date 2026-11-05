@@ -3015,6 +3015,16 @@ export type Database = {
           visitors_per_post: number
         }[]
       }
+      everything_donation_series: {
+        Args: never
+        Returns: {
+          charity: string
+          day: string
+          outstanding: number
+          paid: number
+          team_vote: boolean
+        }[]
+      }
       everything_curation_page: {
         Args: {
           p_after_key?: number

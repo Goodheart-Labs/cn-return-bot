@@ -238,3 +238,26 @@ export async function fetchClickCounts(since: Date): Promise<ClickCounts> {
   const counts = data as unknown as { note_opens: number; notes: NoteOpens[]; get_extension: ClickCounts["getExtension"]; stores: ClickCounts["stores"] };
   return { noteOpens: counts.note_opens, notes: counts.notes, getExtension: counts.get_extension, stores: counts.stores };
 }
+
+// --- The vote donations over time (migration 167) ---
+
+/** The donations of the votes first cast on one UTC day, for one charity,
+ *  from either team or outside accounts. Each note is priced by its rating of
+ *  today, as the payout script prices it. */
+export interface DonationDayRow {
+  /** YYYY-MM-DD. */
+  day: string;
+  charity: string;
+  /** Whether the voter's email is in everything_admins. */
+  team_vote: boolean;
+  /** What was paid, from the amounts written into amount_usd. */
+  paid: number;
+  /** What is owed and not paid yet: the side of the pair that matches the
+   *  note's rating. Donations on notes that still need ratings owe nothing. */
+  outstanding: number;
+}
+
+/** Every day with donations, oldest first. Only admins may call it. */
+export function fetchDonationSeries(): Promise<DonationDayRow[]> {
+  return rpcAllRows<DonationDayRow>("everything_donation_series", {});
+}
