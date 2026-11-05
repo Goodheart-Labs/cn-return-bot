@@ -56,7 +56,8 @@ describe("computeClaudePacing", () => {
   test("the next post is due one interval after Claude last took one", () => {
     const lastTakenAt = new Date(NOW.getTime() - 5 * 60_000);
     const pacing = claude(snapshot({ lastTakenAt }));
-    expect(pacing.dueAt.getTime()).toBe(lastTakenAt.getTime() + pacing.intervalMs);
+    // A Date holds whole milliseconds and drops the fraction of the interval.
+    expect(pacing.dueAt.getTime()).toBe(Math.trunc(lastTakenAt.getTime() + pacing.intervalMs));
   });
 
   test("with no post taken yet the next one is due at once", () => {
