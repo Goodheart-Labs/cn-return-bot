@@ -46,7 +46,7 @@ function SectionContent({ section, navigate }: { section: DashboardSection; navi
     case "clicks":
       return <Card className="p-4 sm:p-5"><Clicks /></Card>;
     case "donations":
-      return <Card className="p-4 sm:p-5"><DonationsChart /></Card>;
+      return <DonationsChart />;
   }
 }
 

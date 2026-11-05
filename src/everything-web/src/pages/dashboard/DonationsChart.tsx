@@ -3,7 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchDonationSeries, type DonationDayRow } from "@cn/core/dashboard";
 import { CHARITIES, type CharityId } from "@cn/core/donations";
 import { queryKeys } from "@cn/features/query/queryKeys";
+import { Card } from "@cn/ui/Card";
 import { SegmentedControl } from "@cn/ui/SegmentedControl";
+import { StatTile } from "@cn/ui/StatTile";
 import { LoadState } from "./tableParts";
 import { isoDay, LineChart, type Series } from "../../components/chart/LineChart";
 
@@ -62,13 +64,16 @@ function seriesFor(rows: DonationDayRow[], amount: Amount): Series[] {
   return [line("All charities", TOTAL_COLOR, () => true), ...charities.map((c) => line(c.label, CHARITY_COLORS[c.id], (row) => row.charity === c.id))];
 }
 
-function Summary({ rows }: { rows: DonationDayRow[] }) {
+/** Today's amounts under the chosen team switch. */
+function Totals({ rows }: { rows: DonationDayRow[] }) {
   const paid = rows.reduce((sum, row) => sum + row.paid, 0);
   const outstanding = rows.reduce((sum, row) => sum + row.outstanding, 0);
   return (
-    <p className="text-sm text-fg-secondary">
-      {dollars(paid + outstanding)} owed so far: {dollars(paid)} paid and {dollars(outstanding)} still to pay.
-    </p>
+    <div className="flex flex-wrap gap-3">
+      <StatTile label="Outstanding" value={dollars(outstanding)} />
+      <StatTile label="Paid" value={dollars(paid)} />
+      <StatTile label="Overall" value={dollars(paid + outstanding)} />
+    </div>
   );
 }
 
@@ -85,17 +90,21 @@ export function DonationsChart() {
   const lines = useMemo(() => (rows?.length ? seriesFor(rows, amount) : []), [rows, amount]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {rows ? <Summary rows={rows} /> : <span />}
-        <div className="flex flex-wrap gap-3">
-          <SegmentedControl label="Which donations" options={AMOUNTS} value={amount} onChange={setAmount} />
-          <SegmentedControl label="Team votes" options={TEAM_VOTE_CHOICES} value={teamVotes} onChange={setTeamVotes} />
-        </div>
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-3">
+        <SegmentedControl label="Which donations" options={AMOUNTS} value={amount} onChange={setAmount} />
+        <SegmentedControl label="Team votes" options={TEAM_VOTE_CHOICES} value={teamVotes} onChange={setTeamVotes} />
       </div>
       {!rows && <LoadState error={query.error} onRetry={() => void query.refetch()} />}
       {rows?.length === 0 && <p className="text-sm text-fg-muted">No donations yet.</p>}
-      {rows && rows.length > 0 && <LineChart series={lines} granularity="day" formatValue={dollars} />}
+      {rows && rows.length > 0 && (
+        <>
+          <Totals rows={rows} />
+          <Card className="p-4 sm:p-5">
+            <LineChart series={lines} granularity="day" formatValue={dollars} />
+          </Card>
+        </>
+      )}
     </div>
   );
 }
