@@ -95,16 +95,7 @@ export function DonationsChart() {
       </div>
       {!rows && <LoadState error={query.error} onRetry={() => void query.refetch()} />}
       {rows?.length === 0 && <p className="text-sm text-fg-muted">No donations yet.</p>}
-      {rows && rows.length > 0 && (
-        <div>
-          <LineChart series={lines} granularity="day" formatValue={dollars} />
-          <p className="mt-1 text-xs text-fg-muted">
-            Each day shows the running total of the donations from votes cast up to that day. A donation counts once its note is rated helpful
-            or not helpful, at the amount for today's rating. So when a note gets rated later, the earlier days rise too. Outstanding is what we
-            still have to pay. Overall adds what was already paid. Team votes are the votes of the admin accounts. Days are UTC days.
-          </p>
-        </div>
-      )}
+      {rows && rows.length > 0 && <LineChart series={lines} granularity="day" formatValue={dollars} />}
     </div>
   );
 }
