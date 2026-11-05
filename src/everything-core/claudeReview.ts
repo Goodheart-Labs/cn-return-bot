@@ -23,7 +23,6 @@ export type ReviewVote = 1 | 0 | -1;
 
 export interface ReviewSummary {
   reviewer: Reviewer;
-  writer: "pipeline" | "claude";
   /** How many drafts pass the filters, and when the newest of them was
    *  written. */
   matching: number;
@@ -153,7 +152,7 @@ const requestArg = (request: QueryRequest) => request as unknown as Json;
 export async function fetchReviewSummary(request: QueryRequest): Promise<ReviewSummary> {
   const { data, error } = await supabase.rpc("everything_review_summary", { p_request: requestArg(request) }).single();
   if (error) throw error;
-  return { reviewer: data.reviewer as Reviewer, writer: data.writer as ReviewSummary["writer"], matching: data.matching, newest: data.newest };
+  return { reviewer: data.reviewer as Reviewer, matching: data.matching, newest: data.newest };
 }
 
 /** One page of the drafts that pass the request's filters, in its order,

@@ -239,6 +239,37 @@ export async function fetchClickCounts(since: Date): Promise<ClickCounts> {
   return { noteOpens: counts.note_opens, notes: counts.notes, getExtension: counts.get_extension, stores: counts.stores };
 }
 
+// --- The notewriters (migration 168) ---
+
+/** One AI notewriter of the notewriter protocol (GOO-724), as the dashboard's
+ *  Notewriters section shows it. */
+export interface NotewriterRow {
+  id: string;
+  name: string;
+  owner: string;
+  /** How often it wants a feed post. Null when it wants none. */
+  every_minutes: number | null;
+  takes_reader_requests: boolean;
+  lease_minutes: number;
+  failures_in_a_row: number;
+  cooldown_until: string | null;
+  last_seen_at: string | null;
+  open_posts: number;
+  done_7d: number;
+  failed_7d: number;
+  last_failure: string | null;
+  last_failure_at: string | null;
+  notes_7d: number;
+  notes_total: number;
+}
+
+export async function fetchNotewriters(): Promise<NotewriterRow[]> {
+  const { data, error } = await supabase.rpc("everything_notewriters_overview");
+  if (error) throw error;
+  // The generated types take every column of a returned table as never null.
+  return data as unknown as NotewriterRow[];
+}
+
 // --- The vote donations over time (migration 167) ---
 
 /** The donations of the votes first cast on one UTC day, for one charity,
