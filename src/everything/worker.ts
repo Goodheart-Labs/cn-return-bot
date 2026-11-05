@@ -16,7 +16,7 @@
 import "dotenv/config";
 import { fetchWebPage } from "../pipeline/tool-calling/tools";
 import { closeBrowser } from "../pipeline/utils/browserManager";
-import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, type QueuedItemSummary, updateItemMeta } from "./db";
+import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, updateItemMeta } from "./db";
 import { age, clip, duration, money, ordinal, table } from "./logFormat";
 import { isWholePageChecked } from "../everything-core/wholePageChecked";
 import { answerPassageRequest, openPassageRequests } from "./passageRequests";
@@ -169,16 +169,14 @@ function tierName(priority: number): string {
   return "visits";
 }
 
-/** Prints what is waiting, in the order this worker will take it, and returns
- *  it. The worker itself only ever holds one item at a time, so without this
- *  read a run never says how much work is queued or why one item goes before
- *  another. The feed run also reads the rows to decide whether to walk for
- *  new posts. */
-export async function logQueue(): Promise<QueuedItemSummary[]> {
+/** Prints what is waiting, in the order the queue hands it out. The worker
+ *  itself only ever holds one item at a time, so without this read a run
+ *  never says how much work is queued or why one item goes before another. */
+export async function logQueue(): Promise<void> {
   const queue = await fetchQueueOverview();
   if (queue.length === 0) {
     console.log("\nQUEUE · empty right now");
-    return queue;
+    return;
   }
   const oldest = queue.reduce((a, b) => (a.created_at < b.created_at ? a : b));
   console.log(`\nQUEUE · ${queue.length} waiting right now, in the order the worker takes them · oldest waiting ${age(oldest.created_at)}`);
@@ -193,14 +191,7 @@ export async function logQueue(): Promise<QueuedItemSummary[]> {
     ]);
   for (const line of table(["", "tier", "source", "title", ""], rows, ["right"])) console.log(line);
   if (queue.length > QUEUE_LINES) console.log(`     … and ${queue.length - QUEUE_LINES} more`);
-  return queue;
 }
-
-/** Whether a feed item is waiting: the post the last walk picked, or an item a
- *  killed run left half done. The feed run walks only when this is false, so
- *  whatever waits is finished before the walk picks the next post. */
-export const queuedFeedItemCount = (queue: QueuedItemSummary[]): number =>
-  queue.filter((item) => item.status === "queued" && item.priority < QUEUE_PRIORITY.requested).length;
 
 /** Where one item ended. "no_captions_yet" is an error that gets its repeat
  *  attempts like any other, but it is expected, so it does not fail the feed

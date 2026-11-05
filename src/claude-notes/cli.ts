@@ -1,16 +1,12 @@
 /* The Claude note writer's command line (GOO-507). The runner on Nathan's
  * ai-box and the Claude agents it starts call it to read the queue, save
- * drafts, finish items, answer reviewers and change the settings. Every
+ * drafts and answer reviewers. Posts come from the notewriter protocol
+ * (src/notewriters/, `bun run notewriter`). Every
  * Common Notes write is logged in everything_claude_events. The two x- commands answer an X tweet (GOO-527)
  * on its pipeline_runs row.
  *
  * Usage: bun run claude-notes <command> [arguments]
- *   settings [writer=pipeline|claude] [by=jim|nathan|claude]
- *   queue                         queued items Claude is working on or has not taken yet
- *   take <item id>                writes the post's text for the agents, logs the take
  *   draft <draft.json>            saves one draft; a note is posted at once
- *   finish <item id> <summary.json>
- *   skip <item id> <reason>       marks a post checked because nothing in it is worth checking
  *   posted-since <ISO time>       the notes Claude posted since then, newest first
  *   messages                      reviewer messages still waiting for an answer
  *   answer <answer.json>          { draftId, reply, note?, sources?, reason? }; a note is a proposal the reviewer posts
@@ -30,24 +26,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import { dispatch, dispatchEnd, dispatchServices } from "./dispatch";
 import { JUDGE_EXAMPLES_PATH } from "./judge";
-import {
-  addDraft,
-  answerMessage,
-  type Actor,
-  changeWriter,
-  claudeQueue,
-  finishItem,
-  judgeExamples,
-  type NewDraft,
-  postedSince,
-  propose,
-  readSettings,
-  skipItem,
-  unansweredMessages,
-  withdraw,
-  type Writer,
-} from "./store";
-import { take } from "./take";
+import { addDraft, answerMessage, judgeExamples, type NewDraft, postedSince, propose, unansweredMessages, withdraw } from "./store";
 import { readUsage } from "./usage";
 import { saveXHandle } from "./xAccounts";
 import { declineXTweet, saveXNote } from "./xTweets";
@@ -67,18 +46,6 @@ const readJson = (file: string) => JSON.parse(readFileSync(file, "utf8"));
 const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
 
 
-function parseSettingsArgs(list: string[]): { writer: Writer | undefined; by: Actor } {
-  let writer: Writer | undefined;
-  let by: Actor = "claude";
-  for (const entry of list) {
-    const [key, value] = entry.split("=");
-    if (key === "writer" && (value === "pipeline" || value === "claude")) writer = value;
-    else if (key === "by" && (value === "jim" || value === "nathan" || value === "claude")) by = value;
-    else throw new Error(`Unknown setting: ${entry}`);
-  }
-  return { writer, by };
-}
-
 async function answer(file: string) {
   const a: { draftId: string; reply: string; note?: string; sources?: NewDraft["sources"]; reason?: string } = readJson(file);
   if (a.note) await propose(a.draftId, { note: a.note, sources: a.sources, reason: a.reason ?? a.reply });
@@ -88,23 +55,8 @@ async function answer(file: string) {
 
 async function main() {
   switch (command) {
-    case "settings": {
-      const { writer, by } = parseSettingsArgs(args);
-      if (writer) await changeWriter(by, writer);
-      return print(await readSettings());
-    }
-    case "queue":
-      return print(await claudeQueue());
-    case "take": {
-      const taken = await take(arg(0));
-      return console.log(taken.kind === "taken" ? taken.dir : `SKIPPED: ${taken.reason}. The item is marked checked.`);
-    }
     case "draft":
       return print(await addDraft(readJson(arg(0))));
-    case "finish":
-      return finishItem(arg(0), readJson(arg(1)));
-    case "skip":
-      return skipItem(arg(0), args.slice(1).join(" "));
     case "posted-since":
       return print(await postedSince(arg(0)));
     case "run":
