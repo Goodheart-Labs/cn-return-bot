@@ -25,6 +25,8 @@ PROJECT_ROOT = HERE.parents[2]
 DATA_DIR = PROJECT_ROOT / "src" / "scripts_jim" / "cn_data"
 AI_AUTHOR_IDS_FILE = PROJECT_ROOT / "datasets" / "big_eval" / "ai_author_ids.txt"
 RESULTS_DIR = HERE / "results"
+# Reading the 2.5 GB of TSVs takes minutes, so the joined table is cached here.
+JOINED_CACHE = RESULTS_DIR / "notes_with_status.pkl"
 
 HELPFUL = "CURRENTLY_RATED_HELPFUL"
 MISLEADING = "MISINFORMED_OR_POTENTIALLY_MISLEADING"
@@ -41,6 +43,9 @@ DUMP_DATE = pd.Timestamp("2026-11-05", tz="UTC")
 WRITER_AI_API = "ai_api"
 WRITER_COLLABORATIVE = "collaborative"
 WRITER_HUMAN = "human"
+# By April 2026 the API writers were past their ramp-up, so the comparison of
+# writer types starts there.
+WRITER_TYPE_COMPARISON_START = pd.Timestamp("2026-04-01", tz="UTC")
 
 csv.field_size_limit(sys.maxsize)
 
@@ -85,11 +90,19 @@ def load_status() -> pd.DataFrame:
 
 
 def tweet_created_millis(tweet_ids: pd.Series) -> pd.Series:
-    return (tweet_ids >> SNOWFLAKE_TIMESTAMP_SHIFT) + TWITTER_EPOCH_MILLIS
+    return tweet_ids // (1 << SNOWFLAKE_TIMESTAMP_SHIFT) + TWITTER_EPOCH_MILLIS
+
+
+def load_notes_with_status() -> pd.DataFrame:
+    if JOINED_CACHE.exists():
+        return pd.read_pickle(JOINED_CACHE)
+    notes = load_notes().merge(load_status(), on="noteId", how="left")
+    notes.to_pickle(JOINED_CACHE)
+    return notes
 
 
 def build_misleading_notes(ai_author_ids: set[str]) -> pd.DataFrame:
-    notes = load_notes().merge(load_status(), on="noteId", how="left")
+    notes = load_notes_with_status()
     notes = notes[notes["classification"] == MISLEADING].copy()
     notes["isAi"] = notes["noteAuthorParticipantId"].isin(ai_author_ids)
     notes["isCollaborative"] = notes["isCollaborativeNote"] == "1"
@@ -181,6 +194,40 @@ def per_writer(notes: pd.DataFrame, first_helpful: pd.DataFrame) -> pd.DataFrame
     return pd.DataFrame(rows).sort_values("helpful_notes", ascending=False)
 
 
+def timing_by_writer_type(notes: pd.DataFrame) -> pd.DataFrame:
+    """Splits the time to a helpful note into writing time and rating time."""
+    recent = notes[pd.to_datetime(notes["createdAtMillis"], unit="ms", utc=True) >= WRITER_TYPE_COMPARISON_START]
+    rows = []
+    for writer_type, group in recent.groupby("writerType"):
+        helpful = group[group["hoursToHelpful"].between(0, MAX_HOURS_TO_HELPFUL)]
+        rows.append({
+            "writer_type": writer_type,
+            "misleading_notes": len(group),
+            "helpful_notes": len(helpful),
+            "median_hours_tweet_to_helpful_note_written": round(helpful["hoursToNote"].median(), 1),
+            "median_hours_note_written_to_helpful": round(((helpful["helpfulAtMillis"] - helpful["createdAtMillis"]) / MILLIS_PER_HOUR).median(), 1),
+        })
+    return pd.DataFrame(rows)
+
+
+def ai_vs_human_on_same_tweets(notes: pd.DataFrame) -> pd.DataFrame:
+    """On tweets where both an API writer and a human got a helpful note, who got there first?"""
+    recent = notes[pd.to_datetime(notes["createdAtMillis"], unit="ms", utc=True) >= WRITER_TYPE_COMPARISON_START]
+    helpful = recent[recent["hoursToHelpful"].between(0, MAX_HOURS_TO_HELPFUL)]
+    first_per_type = helpful.sort_values("helpfulAtMillis").drop_duplicates(["tweetId", "writerType"])
+    hours = first_per_type.pivot(index="tweetId", columns="writerType", values="hoursToHelpful")
+    both = hours.dropna(subset=[WRITER_AI_API, WRITER_HUMAN])
+    ai_lead_hours = both[WRITER_HUMAN] - both[WRITER_AI_API]
+    return pd.DataFrame([{
+        "tweets_with_ai_api_helpful": hours[WRITER_AI_API].notna().sum(),
+        "of_which_also_human_helpful": len(both),
+        "share_ai_first": round((ai_lead_hours > 0).mean(), 3),
+        "share_tie": round((ai_lead_hours == 0).mean(), 3),
+        "share_human_first": round((ai_lead_hours < 0).mean(), 3),
+        "median_ai_lead_hours": round(ai_lead_hours.median(), 1),
+    }])
+
+
 def main() -> None:
     RESULTS_DIR.mkdir(exist_ok=True)
     notes = build_misleading_notes(load_ai_author_ids())
@@ -189,6 +236,8 @@ def main() -> None:
         "monthly_speed": monthly_speed(first_helpful),
         "monthly_ai_share": monthly_ai_share(notes),
         "per_writer": per_writer(notes, first_helpful),
+        "timing_by_writer_type": timing_by_writer_type(notes),
+        "ai_vs_human_on_same_tweets": ai_vs_human_on_same_tweets(notes),
     }
     pd.set_option("display.width", 250)
     pd.set_option("display.max_columns", 20)
