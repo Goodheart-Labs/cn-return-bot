@@ -1,10 +1,12 @@
 /* The Claude note writer's runner (GOO-580). It runs all the time on Nathan's
  * ai-box as a systemd service, under Nathan's user, because Claude Code uses
- * the login in his home folder. It does what the permanent Claude session on
- * the devbox did by hand: it watches the queue, takes each post, starts one
- * Claude for it, and finishes the item when that Claude is done. A post it
- * cannot finish is marked as failed, the way the pipeline marks one. Nothing
- * goes to the pipeline: a failure stays visible instead of being covered up.
+ * the login in his home folder. It is the notewriter claude-ai-box of the
+ * notewriter protocol (GOO-724, src/notewriters/): it asks the queue for a
+ * post whenever it has a free slot, starts one Claude for each post it gets,
+ * and finishes the post when that Claude is done. A post it cannot finish it
+ * fails on, so the queue gives it to another notewriter and the feed run goes
+ * red. Every 5 minutes it turns the plan's usage into its subscription: how
+ * often it wants a feed post, and whether it takes reader requests.
  * It also starts one Claude for each reviewer message on the review page, and
  * one Claude for each X tweet the X run handed to it (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
@@ -29,33 +31,31 @@ import {
   endPost,
   endTweet,
   endXAccountLookup,
+  heldClaudePosts,
+  type HeldPost,
   type JobEnd,
   messageContext,
+  nextClaudePost,
   noteJudge,
   readReport,
   refreshExamples,
   type ReviewerMessage,
   runCost,
+  updateClaudeSubscription,
   waitingMessages,
 } from "./jobs";
 import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
-import {
-  claudeQueue,
-  type QueueItem,
-  readSettings,
-  recordUsage,
-  RUN_ID_ENV,
-} from "./store";
+import { recordUsage, RUN_ID_ENV } from "./store";
 import { readUsage, type UsageReading } from "./usage";
 import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { openXTweets, type XTweet } from "./xTweets";
 
 const POLL_MS = 30_000;
-/** Posts in progress at once. The queue puts reader requests first, so a
- *  request takes the next free slot. The feed run spaces Claude's feed posts
- *  by the weekly usage (src/everything/usagePacing.ts), so this limit is
- *  rarely reached. */
+/** Posts in progress at once. The queue hands out reader requests first, so a
+ *  request takes the next free slot. The queue spaces Claude's feed posts by
+ *  its subscription, which follows the weekly usage
+ *  (src/everything/usagePacing.ts), so this limit is rarely reached. */
 const MAX_POSTS_RUNNING = 5;
 /** X tweets in progress at once, on top of the posts. The X share of the week
  *  (src/claude-notes/xShare.ts) decides how many tweets come; this only stops
@@ -86,7 +86,7 @@ const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
 
 type Run = { session: string; runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null };
 
-const posts = new Map<string, Run & { item: QueueItem }>();
+const posts = new Map<string, Run & HeldPost>();
 const tweets = new Map<string, Run & { tweet: XTweet }>();
 const answers = new Map<string, Run>();
 const xAccountLookups = new Map<string, Run & { creator: CreatorToLookUp }>();
@@ -155,8 +155,8 @@ async function readUsageRenewingLogin(): Promise<UsageReading> {
 }
 
 /** The latest reading, at most 5 minutes old. Each new reading is stored for
- *  the admin dashboard's usage chart. A failed read keeps the last one, and
- *  with no reading at all no post starts. */
+ *  the admin dashboard's usage chart and turned into Claude's subscription. A
+ *  failed read keeps the last one, and with no reading at all no post starts. */
 async function weeklyUsage(): Promise<number | null> {
   if (Date.now() - usageReadAt > USAGE_READ_EVERY_MS) {
     usageReadAt = Date.now();
@@ -166,6 +166,7 @@ async function weeklyUsage(): Promise<number | null> {
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
     }
+    await updateClaudeSubscription(usage?.weekly ?? null, existsSync(PAUSE_FILE));
   }
   return usage?.weekly ?? null;
 }
@@ -182,40 +183,42 @@ async function mayStartPosts(): Promise<boolean> {
 
 const ended = async (run: Run): Promise<JobEnd> => ({ weeklyAtEnd: await weeklyUsage(), apiCostUsd: runCost(run.runDir) });
 
-async function startPost(item: QueueItem, attempt = 1) {
+async function startPost(post: HeldPost, attempt = 1) {
+  const { item } = post;
   const runDir = runFolder(item.id);
   console.log(`Taking ${item.url}`);
-  const start = await beginPost(item, runDir, attempt);
+  const start = await beginPost(post, runDir, attempt);
   if (start.kind !== "ready") return;
   const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
   const { postRun } = start;
   startClaude(session, runDir, postPrompt({ host: "ai-box", item, dir: start.dir, runDir, runId: postRun.runId, picks: postRun.picks, asked: start.asked }), ["--append-system-prompt-file", EXAMPLES_PATH], { [RUN_ID_ENV]: postRun.runId });
-  posts.set(item.id, { item, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
+  posts.set(item.id, { ...post, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
   console.log(`Started ${session} on ${item.url} (attempt ${attempt})`);
 }
 
-async function endPostSession(run: Run & { item: QueueItem }) {
+async function endPostSession(run: Run & HeldPost) {
   posts.delete(run.item.id);
-  if ((await endPost(run, await ended(run))) === "retry") await startPost(run.item, run.attempt + 1);
+  if ((await endPost(run, await ended(run))) === "retry") await startPost(run, run.attempt + 1);
 }
 
-/** After a restart, a post that is still taken is in one of three states.
+/** After a restart, a post Claude still holds is in one of three states.
  *  Its Claude is still running, and the runner adopts it. Its Claude finished
  *  and wrote a report, but the runner died before it marked the item done; the
  *  runner finishes it from that report, because running it again would post
  *  its notes a second time. Or its Claude died without a report, and the post
  *  is taken again. */
-async function adoptTakenPosts(taken: QueueItem[]) {
-  for (const item of taken) {
+async function adoptHeldPosts(held: HeldPost[]) {
+  for (const post of held) {
+    const { item } = post;
     const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
     const runDir = runFolder(item.id);
     // The prompt file is written when the post's Claude starts.
     const promptFile = path.join(runDir, "prompt.md");
     const startedAt = existsSync(promptFile) ? statSync(promptFile).mtimeMs : Date.now();
-    const run = { item, session, runDir, attempt: 1, startedAt, weeklyAtStart: null };
+    const run = { ...post, session, runDir, attempt: 1, startedAt, weeklyAtStart: null };
     if (tmuxAlive(session)) posts.set(item.id, run);
     else if (readReport(runDir)) await endPostSession(run);
-    else await startPost(item);
+    else await startPost(post);
   }
 }
 
@@ -247,8 +250,8 @@ async function adoptRunningTweets(running: XTweet[]) {
   }
 }
 
-/** X tweets run whatever the Common Notes writer setting says, because the X
- *  run already decided that they go to Claude. */
+/** X tweets are not part of Claude's subscription, because the X run already
+ *  decided that they go to Claude. */
 async function tickTweets(first: boolean) {
   for (const run of [...tweets.values()]) if (!tmuxAlive(run.session)) await endTweetSession(run);
   const open = await openXTweets();
@@ -330,13 +333,12 @@ async function tick(first: boolean) {
   await tickTweets(first);
   await tickXAccounts();
   await judge.tick(first);
-  if ((await readSettings()).writer !== "claude") return;
   if (!existsSync(PAUSE_FILE)) await startAnswers();
-  const queue = await claudeQueue();
-  if (first) await adoptTakenPosts(queue.taken);
-  for (const item of queue.waiting) {
-    if (posts.size >= MAX_POSTS_RUNNING || !(await mayStartPosts())) break;
-    await startPost(item);
+  if (first) await adoptHeldPosts(await heldClaudePosts());
+  while (posts.size < MAX_POSTS_RUNNING && (await mayStartPosts())) {
+    const post = await nextClaudePost();
+    if (!post) break;
+    await startPost(post);
   }
 }
 

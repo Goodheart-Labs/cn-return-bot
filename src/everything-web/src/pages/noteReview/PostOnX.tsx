@@ -8,7 +8,7 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 import { Textarea } from "@cn/ui/Field";
 import { routeHref } from "../../lib/routing";
 import { refreshDrafts, type ReviewView } from "./reviewQueries";
-import { EXTENSION_REPLY, MISSING_HANDLE, tweetText } from "./tweetText";
+import { EXTENSION_REPLY, MISSING_HANDLE, taggedForX, tweetText } from "./tweetText";
 import { fetchNoteImage, sendTweet, type TweetTiming } from "./tweetServer";
 
 const TIMINGS: { value: TweetTiming; label: string }[] = [
@@ -18,7 +18,7 @@ const TIMINGS: { value: TweetTiming; label: string }[] = [
 
 /** The note's link on commonnotes.net, also when the tool runs locally. */
 const publicNoteLink = (draft: ReviewDraft) =>
-  COMMONNOTES_ORIGIN + routeHref({ view: "notes", project: draft.post.creatorSlug, item: null, note: draft.noteId });
+  taggedForX(COMMONNOTES_ORIGIN + routeHref({ view: "notes", project: draft.post.creatorSlug, item: null, note: draft.noteId }), draft.noteId!);
 
 /** The local posting tool's panel on a card: the proposed tweet and its reply,
  *  both editable, and a picture of the note's card that goes with the tweet.
