@@ -70,6 +70,7 @@ export const queryKeys = {
   dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
   dashboardClaudeUsage: (sinceDays: number) => ["dashboard", "claudeUsage", sinceDays] as const,
   dashboardClicks: (sinceDays: number) => ["dashboard", "clicks", sinceDays] as const,
+  dashboardNotewriters: ["dashboard", "notewriters"] as const,
   dashboardDonations: ["dashboard", "donations"] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };

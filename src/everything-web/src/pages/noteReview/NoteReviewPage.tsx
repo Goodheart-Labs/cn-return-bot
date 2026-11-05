@@ -33,12 +33,12 @@ const DISPLAY_OPTIONS = Object.values(DISPLAY).filter((option) => option !== DIS
 const QUERY_KEY = "cn:noteReviewQuery";
 const X_QUERY_KEY = "cn:xNoteReviewQuery";
 
-/** Who is reviewing, who writes the notes, and how many notes match. */
+/** Who is reviewing, and how many notes match. */
 function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
   if (!summary) return null;
   return (
     <p className="text-sm text-fg-muted">
-      Reviewing as {PERSON[summary.reviewer]} · {summary.writer === "claude" ? "Claude writes the notes" : "The pipeline writes the notes"} ·{" "}
+      Reviewing as {PERSON[summary.reviewer]} ·{" "}
       {summary.matching === 1 ? "1 matching note" : `${summary.matching} matching notes`}
     </p>
   );

@@ -14,9 +14,10 @@
  * one more try. `dispatch-services` runs all the time next to it: it runs the
  * note judge and rebuilds the examples once a day, the way the runner does.
  *
- * `dispatch` also reads the plan's usage every 5 minutes while it waits. The
- * feed run and the X run take a reading older than 30 minutes to mean that
- * no Claude takes their work. The session starts `dispatch` again after every
+ * `dispatch` also reads the plan's usage every 5 minutes while it waits, and
+ * turns it into Claude's subscription to the queue. The X run takes a reading
+ * older than 30 minutes to mean that no Claude takes its tweets, and the feed
+ * run goes red when Claude stops asking for posts. The session starts `dispatch` again after every
  * wake, so the readings stop soon after the session stops answering. In
  * dispatch-services they would go on while the session is dead.
  *
@@ -34,16 +35,19 @@ import {
   endPost,
   endTweet,
   endXAccountLookup,
+  type HeldPost,
   type JobEnd,
   type JobRun,
   messageContext,
+  nextClaudePost,
   noteJudge,
   refreshExamples,
   type ReviewerMessage,
+  updateClaudeSubscription,
   waitingMessages,
 } from "./jobs";
 import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt, xAccountPrompt } from "./prompts";
-import { claudeQueue, claudeRunsSince, type QueueItem, readSettings, recordUsage } from "./store";
+import { claudeRunsSince, recordUsage } from "./store";
 import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
@@ -85,7 +89,7 @@ const DAY_MS = 24 * 3600_000;
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 
 type Job = JobRun & { key: string; prompt: string } & (
-    | { kind: "post"; item: QueueItem }
+    | ({ kind: "post" } & HeldPost)
     | { kind: "tweet"; tweet: XTweet }
     | { kind: "message"; draftId: string; message: ReviewerMessage }
     | { kind: "x-account"; creator: CreatorToLookUp }
@@ -115,7 +119,7 @@ function runFolder(name: string): string {
 async function preparePrompt(job: Job): Promise<boolean> {
   let prompt: string;
   if (job.kind === "post") {
-    const start = await beginPost(job.item, job.runDir, job.attempt);
+    const start = await beginPost(job, job.runDir, job.attempt);
     if (start.kind !== "ready") return false;
     prompt = postPrompt({ host: "devbox", item: job.item, dir: start.dir, runDir: job.runDir, runId: start.postRun.runId, picks: start.postRun.picks, asked: start.asked });
   } else if (job.kind === "tweet") {
@@ -149,13 +153,16 @@ async function newJobs(state: State): Promise<Job[]> {
     const creator = (await creatorsToLookUp()).find((c) => !open.has(`xacct-${c.slug}`) && !state.gaveUp.includes(`xacct-${c.slug}`));
     if (creator) jobs.push({ ...newRun(`xacct-${creator.slug}`), kind: "x-account", creator });
   }
-  if ((await readSettings()).writer !== "claude") return jobs;
   for (const [draftId, message] of await waitingMessages()) {
     const key = `message-${draftId}`;
     if (!open.has(key) && !state.gaveUp.includes(key)) jobs.push({ ...newRun(key), kind: "message", draftId, message });
   }
-  const items = (await claudeQueue()).waiting.filter((item) => !open.has(item.id));
-  for (const item of items.slice(0, Math.max(0, MAX_POSTS_RUNNING - running("post")))) jobs.push({ ...newRun(item.id), kind: "post", item });
+  // The queue never hands out a post that Claude already holds.
+  for (let slots = MAX_POSTS_RUNNING - running("post"); slots > 0; slots--) {
+    const post = await nextClaudePost();
+    if (!post) break;
+    jobs.push({ ...newRun(post.item.id), kind: "post", ...post });
+  }
   return jobs;
 }
 
@@ -173,9 +180,9 @@ function endJob(job: Job, end: JobEnd) {
   return endAnswer(job.draftId, job, end);
 }
 
-/** Reads the plan's usage when the last reading is 5 minutes old. A failed
- *  reading is only logged: the next one is due in 5 minutes, and only half an
- *  hour without a reading counts as the note writer being down. */
+/** Reads the plan's usage when the last reading is 5 minutes old, and turns it
+ *  into Claude's subscription to the queue. A failed reading is only logged
+ *  and keeps the subscription: the next one is due in 5 minutes. */
 async function readUsageWhenDue() {
   const readAt = existsSync(USAGE_READ_AT_FILE) ? Number(readFileSync(USAGE_READ_AT_FILE, "utf8")) : 0;
   if (Date.now() - readAt < USAGE_READ_EVERY_MS) return;
@@ -184,6 +191,7 @@ async function readUsageWhenDue() {
     const reading = await readUsage();
     await recordUsage(reading);
     console.error(`${reading.at} the plan is at ${reading.weekly}% of its week`);
+    await updateClaudeSubscription(reading.weekly, false);
   } catch (err) {
     console.error(`Could not read the usage: ${(err as Error).message}`);
   }

@@ -9,7 +9,7 @@
 
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { WEB_PROJECT_SLUG } from "../everything-core/projects";
-import { db } from "./store";
+import { db } from "../serviceDb";
 
 export interface CreatorToLookUp {
   slug: string;

@@ -9,6 +9,7 @@ import { CreatorRanking } from "./CreatorRanking";
 import { DonationsChart } from "./DonationsChart";
 import { MetricsChart } from "./MetricsChart";
 import { NotesSection } from "./NotesSection";
+import { Notewriters } from "./Notewriters";
 import { RecentPosts } from "./RecentPosts";
 import { DASHBOARD_SECTIONS, type DashboardSection } from "./sections";
 import { UsageChart } from "./UsageChart";
@@ -39,6 +40,8 @@ function SectionContent({ section, navigate }: { section: DashboardSection; navi
       return <AbTests source="commonnotes" />;
     case "creators":
       return <Card className="p-4 sm:p-5"><CreatorRanking navigate={navigate} /></Card>;
+    case "notewriters":
+      return <Card className="p-4 sm:p-5"><Notewriters /></Card>;
     case "claude-usage":
       return <Card className="p-4 sm:p-5"><UsageChart /></Card>;
     case "recent-posts":

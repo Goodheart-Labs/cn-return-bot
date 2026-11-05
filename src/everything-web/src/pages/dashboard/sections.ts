@@ -5,6 +5,7 @@ export const DASHBOARD_SECTIONS = [
   { id: "notes", label: "Notes" },
   { id: "ab-tests", label: "A/B tests" },
   { id: "creators", label: "Creator ranking" },
+  { id: "notewriters", label: "Notewriters" },
   { id: "claude-usage", label: "Claude note writer usage" },
   { id: "recent-posts", label: "Recently checked posts" },
   { id: "clicks", label: "Clicks towards the extension" },

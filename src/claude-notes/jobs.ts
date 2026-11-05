@@ -11,10 +11,8 @@ import { copyFileSync, existsSync, readFileSync, rmSync, writeFileSync } from "f
 import * as path from "path";
 import {
   claudeDraftsSince,
-  claudeNotePassagesSince,
   draftsToJudge,
   endPostRun,
-  finishItem,
   latestEventId,
   logEvent,
   postDir,
@@ -26,16 +24,17 @@ import {
   readJudgedNote,
   recordClaudeRun,
   saveJudgement,
-  skipItem,
   startPostRun,
   unansweredMessages,
 } from "./store";
 import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
 import { REPO } from "./prompts";
 import { take, type AskedPassages } from "./take";
-import { fetchItem, requeueItem } from "../everything/db";
-import { answerPassageRequest, openPassageRequests, passagesOverlap, type PassageRequest } from "../everything/passageRequests";
-import { recordItemFailure } from "../everything/worker";
+import { fetchUsageSnapshot } from "../everything/db";
+import { computeClaudePacing, describeClaudePacing, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import type { Json } from "../everything-core/database.types";
+import { CLAUDE_NOTEWRITER } from "../notewriters/ids";
+import { fail, finish, nextPost, status, subscribe } from "../notewriters/protocol";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
@@ -58,8 +57,49 @@ function recordRun(run: JobRun, end: JobEnd, tags: ClaudeRunTag[], ref: Paramete
 }
 
 // ---------------------------------------------------------------------------
+// The subscription
+// ---------------------------------------------------------------------------
+
+/** Turns the plan's weekly usage into Claude's subscription to the queue
+ *  (GOO-724). Below the target, Claude wants a feed post as often as the usage
+ *  pacing allows, and it takes reader requests. At the target it takes reader
+ *  requests only. Above MAX_WEEKLY_USAGE_PERCENT, while paused, or without a
+ *  reading, it takes nothing. A notewriter with nothing to take is never
+ *  counted as silent, so the feed run stays green while Claude rests. */
+export async function updateClaudeSubscription(weekly: number | null, paused: boolean): Promise<void> {
+  if (paused || weekly === null || weekly >= MAX_WEEKLY_USAGE_PERCENT) {
+    await subscribe(CLAUDE_NOTEWRITER, null, false);
+    console.log(`Subscription: nothing, because ${paused ? "the runner is paused" : weekly === null ? "the usage is unknown" : `the plan is at ${weekly}%`}`);
+    return;
+  }
+  const snapshot = await fetchUsageSnapshot();
+  const pacing = computeClaudePacing(snapshot);
+  if (pacing) console.log(describeClaudePacing(pacing, snapshot));
+  const everyMinutes = pacing && Number.isFinite(pacing.intervalMs) ? Math.max(1, Math.ceil(pacing.intervalMs / 60_000)) : null;
+  await subscribe(CLAUDE_NOTEWRITER, everyMinutes, true);
+  console.log(`Subscription: ${everyMinutes ? `a feed post every ${everyMinutes} minutes` : "no feed posts"}, and reader requests`);
+}
+
+// ---------------------------------------------------------------------------
 // Posts
 // ---------------------------------------------------------------------------
+
+/** A post the notewriter protocol handed to Claude, by its assignment. */
+export type HeldPost = { assignment: string; item: QueueItem };
+
+/** Asks the queue for one more post. Null when none is due. */
+export async function nextClaudePost(): Promise<HeldPost | null> {
+  const answer = await nextPost(CLAUDE_NOTEWRITER);
+  if (answer.kind !== "post") return null;
+  return { assignment: answer.assignment, item: await readItem(answer.item.id) };
+}
+
+/** The posts Claude holds now, for a host that starts again. */
+export async function heldClaudePosts(): Promise<HeldPost[]> {
+  const held: HeldPost[] = [];
+  for (const open of (await status(CLAUDE_NOTEWRITER)).open) held.push({ assignment: open.assignment, item: await readItem(open.item.id) });
+  return held;
+}
 
 /** A post's run row and A/B picks, kept in its run folder. The first attempt
  *  draws the picks and writes the row, and a retry reads them, so both
@@ -81,50 +121,29 @@ function readPostRun(runDir: string): PostRun | null {
 
 export const reportFile = (runDir: string) => path.join(runDir, "report.json");
 
-/** The passage requests a post's Claude was given, kept in its run folder so
- *  the host answers exactly those once the Claude ends. A request that
- *  arrives while the Claude works waits for the next run. */
-const passageRequestsFile = (runDir: string) => path.join(runDir, "passage-requests.json");
-
-function readPassageRequests(runDir: string): PassageRequest[] {
-  return existsSync(passageRequestsFile(runDir)) ? JSON.parse(readFileSync(passageRequestsFile(runDir), "utf8")) : [];
-}
-
 export type PostStart = { kind: "ready"; dir: string; asked: AskedPassages; postRun: PostRun } | { kind: "not_started" };
 
-/** Takes the post and prepares its run folder. A post that is skipped, or
- *  whose take failed, gets no Claude; a failed take is recorded on the item. */
-export async function beginPost(item: QueueItem, runDir: string, attempt: number): Promise<PostStart> {
+/** Takes the post and prepares its run folder. A post Nathan fact-checked is
+ *  finished as skipped, and a post that cannot be taken is failed. Neither
+ *  gets a Claude. */
+export async function beginPost(post: HeldPost, runDir: string, attempt: number): Promise<PostStart> {
   let taken;
   try {
-    taken = await take(item.id);
+    taken = await take(post.item.id);
   } catch (err) {
-    await failPost(item, err as Error);
+    await failPost(post, (err as Error).message);
     return { kind: "not_started" };
   }
   if (taken.kind === "skipped") {
-    console.log(`Skipped ${item.url}: ${taken.reason}`);
+    console.log(`Skipped ${post.item.url}: ${taken.reason}`);
+    await finish(post.assignment, { skipReason: taken.reason });
     return { kind: "not_started" };
   }
   // A post Claude checked before has its last report in the same folder. It
   // must not pass for this run's report.
   if (attempt === 1) rmSync(reportFile(runDir), { force: true });
-  writeFileSync(passageRequestsFile(runDir), JSON.stringify(taken.asked.requests));
-  const postRun = (attempt > 1 && readPostRun(runDir)) || (await startPostRunFor(item, runDir));
+  const postRun = (attempt > 1 && readPostRun(runDir)) || (await startPostRunFor(post.item, runDir));
   return { kind: "ready", dir: taken.dir, asked: taken.asked, postRun };
-}
-
-/** Answers the passage requests the run was given, then marks the post
- *  checked. A request that arrived during the run puts the post straight
- *  back in the queue. Answering comes first, because a finished post with a
- *  request still open reads as waiting on the reader's card. */
-async function finishPost(run: JobRun & { item: QueueItem }, markChecked: () => Promise<void>) {
-  const notePassages = await claudeNotePassagesSince(run.item.id, new Date(run.startedAt).toISOString());
-  for (const request of readPassageRequests(run.runDir)) {
-    await answerPassageRequest(request.id, notePassages.some((passage) => passagesOverlap(passage, request.passage)));
-  }
-  await markChecked();
-  if ((await openPassageRequests(run.item.id)).length) await requeueItem(run.item.id);
 }
 
 export function readReport(runDir: string): Record<string, unknown> | null {
@@ -137,13 +156,15 @@ export function readReport(runDir: string): Record<string, unknown> | null {
 
 /** Whether the post's Claude saved any draft after it started. A retry of
  *  such a post could post the same notes twice. */
-async function savedDrafts(run: JobRun & { item: QueueItem }): Promise<boolean> {
+async function savedDrafts(run: JobRun & HeldPost): Promise<boolean> {
   return (await claudeDraftsSince(run.item.id, new Date(run.startedAt).toISOString())) > 0;
 }
 
-/** Closes the post from its Claude's report. Without a report and without
- *  drafts the post gets one more try, and after that it is marked failed. */
-export async function endPost(run: JobRun & { item: QueueItem }, end: JobEnd): Promise<JobOutcome> {
+/** Closes the post from its Claude's report. Finishing it also answers the
+ *  passages readers asked about. Without a report and without drafts the
+ *  post gets one more try, and after that Claude fails on it, and the queue
+ *  gives it to another notewriter. */
+export async function endPost(run: JobRun & HeldPost, end: JobEnd): Promise<JobOutcome> {
   const report = readReport(run.runDir);
   const postRun = readPostRun(run.runDir);
   await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.post], postRun && { everything_pipeline_run_id: postRun.runId });
@@ -154,41 +175,38 @@ export async function endPost(run: JobRun & { item: QueueItem }, end: JobEnd): P
   };
   if (report?.skipped) {
     await record("skipped");
-    await finishPost(run, () => skipItem(run.item.id, String(report.reason ?? "nothing worth checking")));
+    await finish(run.assignment, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
     return "closed";
   }
   if (report) {
     await warnAboutUnsavedNotes(run, report);
     await record("done");
-    await finishPost(run, () => finishItem(run.item.id, { ...report, ...usageNote }));
+    await finish(run.assignment, { summary: { ...report, ...usageNote } as Json });
     return "closed";
   }
   if (await savedDrafts(run)) {
     await record("incomplete");
-    await finishPost(run, () => finishItem(run.item.id, { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote }));
+    await finish(run.assignment, { summary: { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote } });
     return "closed";
   }
   if (run.attempt < MAX_ATTEMPTS) return "retry";
   await record("failed");
-  await failPost(run.item, new Error(`Claude exited twice without a report; see ${run.runDir}`));
+  await failPost(run, `Claude exited twice without a report; see ${run.runDir}`);
   return "closed";
 }
 
-/** Records a failed post on its row the way the pipeline does, so the walk
- *  tries it again after its rest time. The failure is also logged as an
- *  item_failed event, which turns the next feed run red. A young video
- *  without captions yet is the one expected failure, and it is not logged. */
-async function failPost(item: QueueItem, err: Error) {
-  console.log(`Failed on ${item.url}: ${err.message}`);
-  const outcome = await recordItemFailure(await fetchItem(item.id), err);
-  if (outcome === "error") await logEvent({ actor: "claude", type: "item_failed", itemId: item.id, data: { reason: err.message } });
+/** Claude fails on the post. It gets a break, the post goes to the next
+ *  notewriter, and the next feed run goes red. */
+async function failPost(post: HeldPost, reason: string) {
+  const failed = await fail(post.assignment, reason);
+  console.log(`Failed on ${post.item.url}: ${reason}. A break until ${failed.cooldown_until}, and the post ${failed.post === "failed" ? "failed, because no notewriter is left for it" : "went back to the queue"}`);
 }
 
 /** A report that lists more notes than the post has drafts means some
  *  `draft` calls failed, for example because a guard hook refused them. The
  *  research is then lost unless a person saves the drafts from the run
  *  folder, so the host says so in its log and in the events table. */
-async function warnAboutUnsavedNotes(run: JobRun & { item: QueueItem }, report: Record<string, unknown>) {
+async function warnAboutUnsavedNotes(run: JobRun & HeldPost, report: Record<string, unknown>) {
   const passages = (report.passages ?? []) as { outcome?: string }[];
   const reported = passages.filter((p) => p.outcome === "note").length;
   const saved = await claudeDraftsSince(run.item.id, new Date(run.startedAt).toISOString());

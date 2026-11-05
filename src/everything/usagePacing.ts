@@ -5,7 +5,10 @@
  * subscription, not by OpenRouter money. Anthropic's usage endpoint says how
  * much of the plan's weekly limit is used, as a whole percent, and when the
  * week resets. The runner on ai-box (src/claude-notes/runner.ts) reads it every
- * 5 minutes and stores each reading in everything_claude_usage.
+ * 5 minutes and stores each reading in everything_claude_usage. Since the
+ * notewriter protocol (GOO-724), the runner also turns the interval below into
+ * its subscription to the queue, in whole minutes, and the queue hands it a
+ * feed post at most that often.
  *
  * The rule mirrors the money pacing in pacing.ts, with usage in place of
  * dollars and the weekly reset in place of midnight:
@@ -32,13 +35,10 @@
  *
  * The interval is stretched by 10%, so the week most likely ends a little
  * under the target rather than over it. Once the week is at the target, the
- * walk adds no new post until the reset. Claude still takes everything that is
- * already in the queue, reader requests included, until the runner's own stop
- * at 90% (MAX_WEEKLY_USAGE_PERCENT). Above that, queued items wait for the
- * reset. When the runner has not reported for 30 minutes, it is taken to be
- * down, and the feed run goes red. Nothing goes to the pipeline in either
- * case. Jim set these rules on 2026-10-26, and removed
- * the pipeline as the fallback on 2026-10-28 (GOO-618). */
+ * runner takes no new feed post until the reset, and it still takes reader
+ * requests until its own stop at 90% (MAX_WEEKLY_USAGE_PERCENT). Above that it
+ * takes nothing, and queued items wait for the reset. Jim set these rules on
+ * 2026-10-26. */
 
 import { duration } from "./logFormat";
 
@@ -56,13 +56,6 @@ export const INTERVAL_SAFETY_FACTOR = 1.1;
  *  or short. Jim chose 7 days over 48 hours on 2026-10-26. */
 export const USAGE_WINDOW_HOURS = 7 * 24;
 
-/** The window never reaches back before the runner started on ai-box. Before
- *  then the note writer ran on the devbox, partly on Jim's plan, so its 618
- *  posts barely show in the readings of Nathan's plan. Counting them made a
- *  post look three times cheaper than it is. From 2026-10-31 the 7 days lie
- *  wholly after this, and the date no longer matters. */
-export const USAGE_WINDOW_NOT_BEFORE = new Date("2026-10-24T05:27:00Z");
-
 /** Below this many posts in the window the measured usage per post says
  *  little, and DEFAULT_USAGE_PER_POST_PERCENT stands in. */
 export const MIN_POSTS_FOR_USAGE_ESTIMATE = 5;
@@ -79,7 +72,8 @@ export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
 export const MAX_WEEKLY_USAGE_PERCENT = 90;
 
 /** The runner reads the usage every 5 minutes. A newest reading older than
- *  this means the runner on ai-box is down, so Claude would not start a post. */
+ *  this means the runner on ai-box is down, so the X run hands it no tweet
+ *  (src/claude-notes/xShare.ts). */
 export const MAX_USAGE_READING_AGE_MS = 30 * 60_000;
 
 export interface UsageReading {
@@ -98,43 +92,18 @@ export interface UsageSnapshot {
   /** How many posts Claude took in the same hours. Reader requests count,
    *  because they use the plan too. */
   postsTaken: number;
-  /** When Claude last took a post, a reader request included. */
-  lastTakenAt: Date | null;
 }
 
-/** When Claude's next feed post is due, or that the runner on ai-box is down.
- *  At the target the interval is infinite and the next post is due at the
- *  reset. */
-export type ClaudePacing =
-  | {
-      kind: "paced";
-      weekly: number;
-      resetsAt: Date;
-      usagePerPost: number;
-      /** True when the default stood in for a missing measurement. */
-      usagePerPostIsDefault: boolean;
-      intervalMs: number;
-      dueAt: Date;
-    }
-  | { kind: "runner_silent"; reason: string; lastReadingAt: Date | null };
-
-/* When the Slack channel hears that the note writer is silent or back
- * (claudeSilenceWarning.ts, GOO-695). */
-
-/** Stands in for the newest reading when there is none at all, so a silence
- *  without any reading is still warned about only once. */
-export const NO_READING = new Date(0);
-
-export type SilenceNotice = { kind: "warn"; newestReadingAt: Date } | { kind: "back" } | null;
-
-/** What to post, given this run's pacing and the outage already warned about. */
-export function silenceNotice(pacing: ClaudePacing, warnedFor: Date | null): SilenceNotice {
-  if (pacing.kind === "runner_silent") {
-    const newestReadingAt = pacing.lastReadingAt ?? NO_READING;
-    return warnedFor?.getTime() === newestReadingAt.getTime() ? null : { kind: "warn", newestReadingAt };
-  }
-  return warnedFor ? { kind: "back" } : null;
-}
+/** How far apart Claude's feed posts should be. At the target the interval is
+ *  infinite: no new feed post until the reset. */
+export type ClaudePacing = {
+  weekly: number;
+  resetsAt: Date;
+  usagePerPost: number;
+  /** True when the default stood in for a missing measurement. */
+  usagePerPostIsDefault: boolean;
+  intervalMs: number;
+};
 
 /** How much the weekly usage rose over the readings. The drop at a weekly
  *  reset is not a negative rise, so only increases count. */
@@ -146,46 +115,30 @@ export function usageRise(readings: UsageReading[]): number {
 
 const utcTime = (d: Date) => `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
 
-export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing {
-  const { now } = snapshot;
+/** Null without a reading that says when the week resets. */
+export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing | null {
   const latest = snapshot.readings.at(-1);
-  if (!latest?.weeklyResetsAt || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
-    return {
-      kind: "runner_silent",
-      reason: "The Claude note writer has not reported the usage of its Claude plan in the last 30 minutes",
-      lastReadingAt: latest?.at ?? null,
-    };
-  }
+  if (!latest?.weeklyResetsAt) return null;
   const rise = usageRise(snapshot.readings);
   const measured = snapshot.postsTaken >= MIN_POSTS_FOR_USAGE_ESTIMATE && rise > 0;
   const usagePerPost = measured ? rise / snapshot.postsTaken : DEFAULT_USAGE_PER_POST_PERCENT;
-  const msToReset = Math.max(0, latest.weeklyResetsAt.getTime() - now.getTime());
+  const msToReset = Math.max(0, latest.weeklyResetsAt.getTime() - snapshot.now.getTime());
   const usageLeft = WEEKLY_USAGE_TARGET_PERCENT - latest.weekly;
   const intervalMs = usageLeft > 0 ? (INTERVAL_SAFETY_FACTOR * msToReset * usagePerPost) / usageLeft : Infinity;
-  return {
-    kind: "paced",
-    weekly: latest.weekly,
-    resetsAt: latest.weeklyResetsAt,
-    usagePerPost,
-    usagePerPostIsDefault: !measured,
-    intervalMs,
-    dueAt: usageLeft <= 0 ? latest.weeklyResetsAt : snapshot.lastTakenAt ? new Date(snapshot.lastTakenAt.getTime() + intervalMs) : now,
-  };
+  return { weekly: latest.weekly, resetsAt: latest.weeklyResetsAt, usagePerPost, usagePerPostIsDefault: !measured, intervalMs };
 }
 
-/** The block the run log prints, so the spacing of Claude's posts is always
- *  explainable from the log alone. */
+/** The block the runner's log prints, so the spacing of Claude's posts is
+ *  always explainable from the log alone. */
 export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapshot): string {
-  if (pacing.kind === "runner_silent") return `CLAUDE · ${pacing.reason} · nothing takes the queued posts`;
   const sample = pacing.usagePerPostIsDefault
     ? `default, fewer than ${MIN_POSTS_FOR_USAGE_ESTIMATE} posts in the last ${USAGE_WINDOW_HOURS}h`
     : `a ${usageRise(snapshot.readings)}% rise over ${snapshot.postsTaken} posts in the last ${USAGE_WINDOW_HOURS}h`;
-  const lastTaken = snapshot.lastTakenAt ? utcTime(snapshot.lastTakenAt) : "never";
   return [
     `CLAUDE · Nathan's plan at ${pacing.weekly}% of its weekly limit, aiming at ${WEEKLY_USAGE_TARGET_PERCENT}% by the reset at ${utcTime(pacing.resetsAt)}`,
     `         ${pacing.usagePerPost.toFixed(3)}% per post (${sample})`,
     pacing.intervalMs === Infinity
-      ? `         the target is reached · no new feed post until the reset · last taken ${lastTaken}`
-      : `         one post every ${duration(pacing.intervalMs)}, ${INTERVAL_SAFETY_FACTOR}× the even spacing · last taken ${lastTaken}`,
+      ? "         the target is reached · no new feed post until the reset"
+      : `         one post every ${duration(pacing.intervalMs)}, ${INTERVAL_SAFETY_FACTOR}× the even spacing`,
   ].join("\n");
 }

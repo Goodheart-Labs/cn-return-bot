@@ -7,7 +7,8 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
-import { USAGE_WINDOW_HOURS, USAGE_WINDOW_NOT_BEFORE, type UsageSnapshot } from "./usagePacing";
+import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
+import { CLAUDE_NOTEWRITER, PIPELINE_NOTEWRITER } from "../notewriters/ids";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -429,87 +430,163 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
-/** While the Claude note writer is on (everything_claude_settings.writer =
- *  'claude'), Claude takes every queued item and the pipeline takes none. */
-export async function claudeWritesNotes(): Promise<boolean> {
-  const settings = throwOnError(await getSupabaseClient().from("everything_claude_settings").select("writer").single()) as { writer: string };
-  return settings.writer === "claude";
+/** Whether the pipeline writes notes on this tier of the queue. The pipeline
+ *  is the notewriter `pipeline` (GOO-724). Any subscription means it takes
+ *  feed posts, and takes_reader_requests means it takes reader requests. Its
+ *  pace comes from the money pacing in pacing.ts, not from its interval. */
+async function pipelineTakes(tier: "requested" | "feed"): Promise<boolean> {
+  const row = throwOnError(
+    await getSupabaseClient().from("everything_notewriters").select("every_minutes, takes_reader_requests").eq("id", PIPELINE_NOTEWRITER).single(),
+  ) as { every_minutes: number | null; takes_reader_requests: boolean };
+  return tier === "feed" ? row.every_minutes !== null : row.takes_reader_requests;
 }
 
-/** A post the Claude note writer failed on, from its item_failed event. */
-export interface ClaudeFailure {
-  at: string;
+/** The items a notewriter holds now. The pipeline never takes one of them. */
+async function heldItemIds(): Promise<string[]> {
+  const rows = throwOnError(await getSupabaseClient().from("everything_assignments").select("item_id").is("ended_at", null)) as { item_id: string }[];
+  return rows.map((row) => row.item_id);
+}
+
+/** A post a notewriter failed on, or held past its deadline. */
+export interface NotewriterFailure {
+  notewriter: string;
+  endedAt: string;
   url: string;
   reason: string;
 }
 
 /** A run reports at most this many failures. Any more wait for the next run,
  *  which is red anyway. */
-const MAX_CLAUDE_FAILURES_PER_RUN = 50;
+const MAX_FAILURES_PER_RUN = 50;
 
-/** The Claude note writer's failures that no feed run has reported yet. They
- *  are marked as reported here (migration 157), so each failure turns exactly
- *  one run red, however far apart the runs are. */
-export async function takeUnreportedClaudeFailures(): Promise<ClaudeFailure[]> {
+/** The failed and expired assignments that no feed run has reported yet. They
+ *  are marked as reported here, so each failure turns exactly one run red,
+ *  however far apart the runs are. */
+export async function takeUnreportedFailures(): Promise<NotewriterFailure[]> {
   const db = getSupabaseClient();
-  const schedule = throwOnError(await db.from("everything_feed_schedule").select("claude_failures_reported_through").single()) as {
-    claude_failures_reported_through: string;
+  const schedule = throwOnError(await db.from("everything_feed_schedule").select("failures_reported_through").single()) as {
+    failures_reported_through: string;
   };
-  // The client is untyped, so it takes the embedded item for a list. An event
-  // has one item, and PostgREST sends it as one object.
-  const events = throwOnError(
+  // The client is untyped, so it takes the embedded item for a list. An
+  // assignment has one item, and PostgREST sends it as one object.
+  const rows = throwOnError(
     await db
-      .from("everything_claude_events")
-      .select("at, data, item:everything_items(url)")
-      .eq("type", "item_failed")
-      .gt("at", schedule.claude_failures_reported_through)
-      .order("at")
-      .limit(MAX_CLAUDE_FAILURES_PER_RUN),
-  ) as unknown as { at: string; data: { reason: string }; item: { url: string } }[];
-  if (events.length === 0) return [];
-  throwOnError(await db.from("everything_feed_schedule").update({ claude_failures_reported_through: events.at(-1)!.at }).eq("id", true));
-  return events.map((e) => ({ at: e.at, url: e.item.url, reason: e.data.reason }));
+      .from("everything_assignments")
+      .select("notewriter_id, ended_at, reason, item:everything_items(url)")
+      .in("outcome", ["failed", "expired"])
+      .gt("ended_at", schedule.failures_reported_through)
+      .order("ended_at")
+      .limit(MAX_FAILURES_PER_RUN),
+  ) as unknown as { notewriter_id: string; ended_at: string; reason: string; item: { url: string } }[];
+  if (rows.length === 0) return [];
+  throwOnError(await db.from("everything_feed_schedule").update({ failures_reported_through: rows.at(-1)!.ended_at }).eq("id", true));
+  return rows.map((row) => ({ notewriter: row.notewriter_id, endedAt: row.ended_at, url: row.item.url, reason: row.reason }));
 }
 
-/** The newest usage reading at the time of the Slack warning that the Claude
- *  note writer is silent, or null while no warning is outstanding
- *  (claudeSilenceWarning.ts). */
-export async function readClaudeSilenceWarnedFor(): Promise<Date | null> {
-  const schedule = throwOnError(await getSupabaseClient().from("everything_feed_schedule").select("claude_silence_warned_for").single()) as {
-    claude_silence_warned_for: string | null;
-  };
-  return schedule.claude_silence_warned_for ? new Date(schedule.claude_silence_warned_for) : null;
+/** What the silence watch needs about each notewriter (notewriterSilence.ts). */
+export interface WatchedNotewriter {
+  id: string;
+  name: string;
+  owner: string;
+  every_minutes: number | null;
+  takes_reader_requests: boolean;
+  last_seen_at: string | null;
+  silence_warned_for: string | null;
+  holdsPost: boolean;
 }
 
-export async function setClaudeSilenceWarnedFor(warnedFor: Date | null): Promise<void> {
-  throwOnError(await getSupabaseClient().from("everything_feed_schedule").update({ claude_silence_warned_for: warnedFor?.toISOString() ?? null }).eq("id", true));
+export async function fetchWatchedNotewriters(): Promise<WatchedNotewriter[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_notewriters")
+      .select("id, name, owner, every_minutes, takes_reader_requests, last_seen_at, silence_warned_for, everything_assignments(id)")
+      .is("everything_assignments.ended_at", null),
+  ) as (Omit<WatchedNotewriter, "holdsPost"> & { everything_assignments: { id: string }[] })[];
+  return rows.map(({ everything_assignments, ...row }) => ({ ...row, holdsPost: everything_assignments.length > 0 }));
+}
+
+export async function setSilenceWarnedFor(notewriter: string, warnedFor: Date | null): Promise<void> {
+  throwOnError(
+    await getSupabaseClient().from("everything_notewriters").update({ silence_warned_for: warnedFor?.toISOString() ?? null }).eq("id", notewriter),
+  );
+}
+
+/** The posts the notewriters want waiting, one for each subscribed notewriter
+ *  that is not on a break, and how many feed posts wait that nobody holds. */
+export async function fetchFeedPostsWanted(): Promise<{ wanted: number; waiting: number }> {
+  const rows = throwOnError(await getSupabaseClient().rpc("notewriter_feed_posts_wanted")) as { wanted: number; waiting: number }[];
+  return rows[0]!;
+}
+
+/** Takes back every post held past its deadline, as a failure of its holder. */
+export async function takeBackOverduePosts(): Promise<number> {
+  return throwOnError(await getSupabaseClient().rpc("notewriter_take_back_overdue")) as number;
+}
+
+/** How many queued posts one pass of the intake service's preparer reads. */
+const ITEMS_PREPARED_PER_PASS = 20;
+
+/** Queued posts no notewriter can get yet: ones without stored text, and
+ *  videos without their caption timings. Reader requests come first. */
+export async function fetchItemsToPrepare(): Promise<EverythingItem[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select(ITEM_COLUMNS)
+      .eq("status", "queued")
+      .or("full_text.is.null,and(source.eq.youtube,caption_cues.is.null)")
+      .order("priority", { ascending: false })
+      .order("created_at")
+      .limit(ITEMS_PREPARED_PER_PASS),
+  ) as EverythingItem[];
+}
+
+export async function storeCaptionCues(id: string, cues: unknown[]): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ caption_cues: cues }).eq("id", id));
+}
+
+export async function recordReadFailure(itemId: string, reason: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_read_failures").insert({ item_id: itemId, reason }));
+}
+
+/** The posts the preparer could not read that no feed run has reported yet.
+ *  They are marked as reported here, so each turns exactly one run red. */
+export async function takeUnreportedReadFailures(): Promise<{ at: string; url: string; reason: string }[]> {
+  const db = getSupabaseClient();
+  const rows = throwOnError(
+    await db.from("everything_read_failures").select("id, at, reason, item:everything_items(url)").is("reported_at", null).order("id").limit(MAX_FAILURES_PER_RUN),
+  ) as unknown as { id: number; at: string; reason: string; item: { url: string } }[];
+  if (rows.length === 0) return [];
+  throwOnError(await db.from("everything_read_failures").update({ reported_at: new Date().toISOString() }).in("id", rows.map((row) => row.id)));
+  return rows.map((row) => ({ at: row.at, url: row.item.url, reason: row.reason }));
 }
 
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
- *  the usage readings and the posts Claude took over the window, which starts
- *  no earlier than USAGE_WINDOW_NOT_BEFORE. */
+ *  the usage readings and the posts Claude took over the window. Before the
+ *  notewriter protocol (GOO-724), Claude logged each post it took as an
+ *  item_taken event, and since then each post is an assignment. For the 7
+ *  days after the switch the window holds both, so both are counted. */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const now = new Date();
-  const since = new Date(Math.max(now.getTime() - USAGE_WINDOW_HOURS * 3600_000, USAGE_WINDOW_NOT_BEFORE.getTime())).toISOString();
+  const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
   const db = getSupabaseClient();
-  const [readings, taken, last] = await Promise.all([
+  const [readings, assigned, takenBefore] = await Promise.all([
     fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
       () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
       "id",
       { label: "claudeUsage" },
     ),
+    db.from("everything_assignments").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
     db.from("everything_claude_events").select("id", { count: "exact", head: true }).eq("type", "item_taken").gte("at", since),
-    db.from("everything_claude_events").select("at").eq("type", "item_taken").order("at", { ascending: false }).limit(1).maybeSingle(),
   ]);
-  if (taken.error) throw new Error(`Supabase: ${taken.error.message}`);
-  const lastTaken = throwOnError(last) as { at: string } | null;
+  if (assigned.error) throw new Error(`Supabase: ${assigned.error.message}`);
+  if (takenBefore.error) throw new Error(`Supabase: ${takenBefore.error.message}`);
   return {
     now,
     readings: readings
       .sort((a, b) => a.at.localeCompare(b.at))
       .map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
-    postsTaken: taken.count ?? 0,
-    lastTakenAt: lastTaken ? new Date(lastTaken.at) : null,
+    postsTaken: (assigned.count ?? 0) + (takenBefore.count ?? 0),
   };
 }
 
@@ -523,12 +600,14 @@ export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
  *  safe because each tier has exactly one worker: the intake service on the
  *  machine takes only the requested tier, and the Actions feed run takes only
  *  the tiers below it. Two workers exist, but they can never want the same
- *  row. While the Claude note writer is on, neither takes anything, and
- *  Claude takes every item. */
+ *  row. Both take items only while the notewriter `pipeline` is subscribed,
+ *  and never an item another notewriter holds. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
-  if (await claudeWritesNotes()) return null;
+  if (!(await pipelineTakes(tier))) return null;
   const db = getSupabaseClient();
   let query = db.from("everything_items").select(ITEM_COLUMNS).eq("status", "queued");
+  const held = await heldItemIds();
+  if (held.length > 0) query = query.not("id", "in", `(${held.join(",")})`);
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)

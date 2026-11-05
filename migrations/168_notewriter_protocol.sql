@@ -77,6 +77,21 @@ alter table everything_items add column caption_cues jsonb;
 comment on column everything_items.caption_cues is
   'A video''s caption timings, [{start, end, text}], stored by the intake service before any notewriter gets the video.';
 
+-- A post the intake service could not read before any notewriter got it,
+-- such as a dead page. The item itself is marked failed the way the pipeline
+-- marks one. The feed run reports each row once and goes red, as it did for
+-- the reads the Claude note writer used to do itself.
+create table everything_read_failures (
+  id bigserial primary key,
+  item_id uuid not null references everything_items (id) on delete cascade,
+  at timestamptz not null default now(),
+  reason text not null,
+  reported_at timestamptz
+);
+create index everything_read_failures_unreported on everything_read_failures (id) where reported_at is null;
+alter table everything_read_failures enable row level security;
+revoke all on everything_read_failures from anon, authenticated;
+
 alter table everything_feed_schedule add column failures_reported_through timestamptz not null default now();
 comment on column everything_feed_schedule.failures_reported_through is
   'The ended_at of the newest failed or expired assignment that a feed run has reported. Later ones turn the next run red.';
