@@ -1,3 +1,5 @@
 images/
+media/
 *.json
 draft_list.md
+__pycache__/

@@ -5,30 +5,19 @@ post. Without --apply it only prints what it would change.
   uv run --no-project --with supabase --with python-dotenv python src/scripts_jim/2026_11_05_nathan_posted_notes/04_mark_posted.py [--apply]
 """
 
-import json
 import os
-import re
 import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 from supabase import create_client
 
+from note_posts import first_post_per_note
+
 HERE = Path(__file__).resolve().parent
 PROJECT_ROOT = HERE.parents[2]
-NOTE_ID_IN_URL = re.compile(r"[?&]note=([0-9a-f-]{36})")
 MARKS_TABLE = "everything_note_x_marks"
 
-
-def first_post_per_note() -> dict[str, dict]:
-    posts = sorted(json.loads((HERE / "x_posts.json").read_text()), key=lambda post: post["created_at"])
-    first: dict[str, dict] = {}
-    for post in posts:
-        for link in post["links"]:
-            match = NOTE_ID_IN_URL.search(link or "")
-            if match:
-                first.setdefault(match.group(1), post)
-    return first
 
 
 def planned_change(existing: dict | None, post: dict) -> dict | None:
