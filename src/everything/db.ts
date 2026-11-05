@@ -9,6 +9,7 @@ import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
 import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
 import { CLAUDE_NOTEWRITER, PIPELINE_NOTEWRITER } from "../notewriters/ids";
+import type { WatchedNotewriter } from "./notewriterSilence";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -481,18 +482,6 @@ export async function takeUnreportedFailures(): Promise<NotewriterFailure[]> {
   if (rows.length === 0) return [];
   throwOnError(await db.from("everything_feed_schedule").update({ failures_reported_through: rows.at(-1)!.ended_at }).eq("id", true));
   return rows.map((row) => ({ notewriter: row.notewriter_id, endedAt: row.ended_at, url: row.item.url, reason: row.reason }));
-}
-
-/** What the silence watch needs about each notewriter (notewriterSilence.ts). */
-export interface WatchedNotewriter {
-  id: string;
-  name: string;
-  owner: string;
-  every_minutes: number | null;
-  takes_reader_requests: boolean;
-  last_seen_at: string | null;
-  silence_warned_for: string | null;
-  holdsPost: boolean;
 }
 
 export async function fetchWatchedNotewriters(): Promise<WatchedNotewriter[]> {

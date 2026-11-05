@@ -31,7 +31,7 @@
  * over. This run also goes red for every post a notewriter failed on or held
  * past its deadline since the last run, and while a notewriter that has
  * something to take has not asked for 30 minutes. A silent notewriter is also
- * told to Slack, once per silence (notewriterSilence.ts).
+ * told to Slack, once per silence (silenceWarning.ts).
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -63,7 +63,7 @@ import {
   type FeedAlarm,
 } from "./pacing";
 import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
-import { watchNotewriterSilence } from "./notewriterSilence";
+import { watchNotewriterSilence } from "./silenceWarning";
 import { logQueue, processNextFeedItem } from "./worker";
 
 /** How long a reader request may sit unconsumed before this run fails. Intake

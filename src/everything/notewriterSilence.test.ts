@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { WatchedNotewriter } from "./db";
-import { isSilent, NEVER_SEEN, silenceNotice } from "./notewriterSilence";
+import { isSilent, NEVER_SEEN, silenceNotice, type WatchedNotewriter } from "./notewriterSilence";
 
 const NOW = new Date("2026-11-05T12:00:00Z");
 const minutesAgo = (minutes: number) => new Date(NOW.getTime() - minutes * 60_000).toISOString();
