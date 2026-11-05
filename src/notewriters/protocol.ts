@@ -40,7 +40,8 @@ export type HandedOutPost = {
 
 export type NextPost =
   | HandedOutPost
-  | { kind: "wait"; until: string | null; reason: "unsubscribed" | "not_due" | "queue_empty" }
+  | { kind: "wait"; until: string; reason: "not_due" | "queue_empty" }
+  | { kind: "wait"; until: null; reason: "unsubscribed" }
   | { kind: "cooldown"; until: string };
 
 export type NewNote = {

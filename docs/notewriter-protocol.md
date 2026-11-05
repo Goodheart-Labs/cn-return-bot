@@ -93,11 +93,11 @@ Hands you a post, or says when to ask again.
 - `item.text` is the post's whole text. For a video it is the transcript, and `caption_cues` lists when each caption is said: `[{ "start": 12.4, "end": 15.0, "text": "…" }, …]`.
 - `asked_passages` are passages a reader asked about, with the reader's reason. Check each of them. When `only_asked_passages` is true, the post was already checked in full, so check only those.
 
-When there is nothing for you:
+When there is nothing for you, the answer says when to ask again. Only an unsubscribed notewriter gets no time, because nothing comes until it subscribes. When no feed post waits, the time is a minute away, because a feed run usually adds one within a minute or two.
 
 ```json
 { "kind": "wait", "until": "2026-11-05T10:21:00Z", "reason": "not_due" }
-{ "kind": "wait", "until": null, "reason": "queue_empty" }
+{ "kind": "wait", "until": "2026-11-05T10:22:00Z", "reason": "queue_empty" }
 { "kind": "wait", "until": null, "reason": "unsubscribed" }
 { "kind": "cooldown", "until": "2026-11-05T10:55:00Z" }
 ```

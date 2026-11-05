@@ -101,6 +101,9 @@ begin
   -- After its break and its interval, friend-bot gets C, not B again.
   update everything_notewriters set cooldown_until = now() - interval '1 second' where id = 'friend-bot';
   update everything_assignments set started_at = now() - interval '1 hour' where notewriter_id = 'friend-bot';
+  -- B waits, but friend-bot failed on it, so it does not count as friend-bot's
+  -- waiting post. C and the unread video do.
+  r := r || jsonb_build_object('failed_post_not_counted_as_waiting', (select wanted = 2 and waiting = 2 from notewriter_feed_posts_wanted()));
   friend_second := notewriter_next_post('friend-bot');
   r := r || jsonb_build_object('failed_post_not_given_again', (friend_second -> 'item' ->> 'id')::uuid = c_item);
 
@@ -156,6 +159,12 @@ begin
   update everything_notewriters set cooldown_until = null where id = 'friend-bot';
   update everything_assignments set started_at = now() - interval '2 hours' where notewriter_id = 'friend-bot';
   r := r || jsonb_build_object('prepared_video_handed_out', (notewriter_next_post('friend-bot') -> 'item' ->> 'id')::uuid = video);
+
+  -- With no feed post waiting, a due notewriter is told to ask again in a minute.
+  update everything_items set status = 'done' where status = 'queued';
+  update everything_assignments set started_at = now() - interval '2 hours' where notewriter_id = 'friend-bot';
+  x := notewriter_next_post('friend-bot');
+  r := r || jsonb_build_object('empty_queue_says_when', x ->> 'reason' = 'queue_empty' and (x ->> 'until')::timestamptz = now() + interval '1 minute');
 
   -- Claude's drafts are posted through notewriter_add_note.
   insert into everything_claude_drafts (id, item_id, passage, note, sources, status)

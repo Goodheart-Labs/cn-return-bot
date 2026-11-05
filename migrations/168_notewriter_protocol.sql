@@ -301,10 +301,14 @@ $$;
 -- ---------------------------------------------------------------------------
 
 -- Called whenever a notewriter has room for one more post. Answers with a
--- post, or with when to ask again.
+-- post, or with when to ask again. Only an unsubscribed notewriter gets no
+-- time, because nothing comes until it subscribes.
 create function notewriter_next_post(p_notewriter text) returns jsonb
 language plpgsql set search_path = public as $$
 declare
+  -- When no feed post waits, a feed run usually adds one within a minute or
+  -- two, or the intake service is still reading the one that waits.
+  ask_again_when_empty constant interval := interval '1 minute';
   w everything_notewriters;
   i everything_items;
   v_due timestamptz;
@@ -342,7 +346,7 @@ begin
    limit 1
      for update skip locked;
   if found then return everything_notewriter_assign(w, i); end if;
-  return jsonb_build_object('kind', 'wait', 'until', null, 'reason', 'queue_empty');
+  return jsonb_build_object('kind', 'wait', 'until', now() + ask_again_when_empty, 'reason', 'queue_empty');
 end;
 $$;
 
@@ -497,14 +501,21 @@ $$;
 -- ---------------------------------------------------------------------------
 
 -- How many feed posts the notewriters want waiting, one for each subscribed
--- notewriter that is not on a break, and how many wait now.
+-- notewriter that is not on a break, and how many wait now. A waiting post
+-- counts only when every one of those notewriters could take it, so a post one
+-- of them failed on does not stand in for a post of its own. A post the intake
+-- service has not read yet counts, because it will be read within a minute.
 create function notewriter_feed_posts_wanted() returns table (wanted int, waiting int)
 language sql stable set search_path = public as $$
-  select (select count(*)::int from everything_notewriters
-           where every_minutes is not null and (cooldown_until is null or cooldown_until <= now())),
+  with available as (
+    select id from everything_notewriters
+     where every_minutes is not null and (cooldown_until is null or cooldown_until <= now())
+  )
+  select (select count(*)::int from available),
          (select count(*)::int from everything_items i
            where i.status = 'queued' and not everything_is_reader_request(i)
-             and not exists (select 1 from everything_assignments a where a.item_id = i.id and a.ended_at is null))
+             and not exists (select 1 from everything_assignments a where a.item_id = i.id and a.ended_at is null)
+             and not exists (select 1 from available w where everything_notewriter_failed_on(w.id, i)))
 $$;
 
 -- The dashboard's Notewriters section. Admins only.
