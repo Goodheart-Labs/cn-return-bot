@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { computeXShare, xShareProblem, type XShareSnapshot } from "./xShare";
+import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 
 const HOUR = 3600_000;
 const now = new Date("2026-10-27T12:00:00Z");
@@ -51,6 +52,6 @@ describe("computeXShare", () => {
   });
 
   test("is unavailable when the runner would not start a Claude", () => {
-    expect(computeXShare(snapshot({ weekly: 90 })).kind).toBe("runner_down");
+    expect(computeXShare(snapshot({ weekly: MAX_WEEKLY_USAGE_PERCENT })).kind).toBe("runner_down");
   });
 });

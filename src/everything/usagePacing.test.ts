@@ -9,7 +9,7 @@ import {
 
 /* Covers the usage pacing of the Claude note writer (GOO-587): the interval
  * between posts is 1.1 times the time until the weekly reset times the usage
- * per post, divided by the usage left below 80%; the usage per post is
+ * per post, divided by the usage left below 90%; the usage per post is
  * measured; and no new post comes at the target. */
 
 const HOUR_MS = 3600_000;
@@ -43,12 +43,12 @@ describe("usageRise", () => {
 
 describe("computeClaudePacing", () => {
   test("spreads the usage left over the time until the reset", () => {
-    // 10 points over 100 posts is 0.1 per post. 60 points are left below 80%,
-    // which is 600 posts in the 144 hours until the reset: one every 14.4
-    // minutes, stretched by 10% to 15.84.
+    // 10 points over 100 posts is 0.1 per post. 70 points are left below 90%,
+    // which is 700 posts in the 144 hours until the reset: one about every
+    // 12.3 minutes, stretched by 10% to 13.6.
     const pacing = claude(snapshot());
     expect(pacing.usagePerPost).toBeCloseTo(0.1);
-    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 600, -3);
+    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 700, -3);
   });
 
   test("more usage by other work makes a post look dearer, so posts slow down", () => {
@@ -76,7 +76,7 @@ describe("computeClaudePacing", () => {
   });
 
   test("at the target no new feed post is due until the reset", () => {
-    expect(claude(snapshot({ readings: [reading(1, 79), reading(0, 80)] })).intervalMs).toBe(Infinity);
+    expect(claude(snapshot({ readings: [reading(1, 89), reading(0, 90)] })).intervalMs).toBe(Infinity);
   });
 
   test("with no reading at all there is no pacing", () => {
