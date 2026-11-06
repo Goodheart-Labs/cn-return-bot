@@ -172,12 +172,11 @@ export function useLeaderboardPages(filters: Omit<CurationFilters, "votedBefore"
 export const useCurationSummary = () => useQuery({ queryKey: queryKeys.curationSummary, queryFn: fetchCurationSummary });
 
 /** The whole leaderboard with its cards, which only the reorder mode loads. */
-export const useWholeLeaderboard = (enabled: boolean) =>
+export const useWholeLeaderboard = () =>
   useQuery({
     queryKey: queryKeys.wholeLeaderboard,
     queryFn: async (): Promise<CardPage<{ noteId: string; row: CuratedNoteRow }>> =>
       loadCardPage((await fetchLeaderboard()).map((row) => ({ noteId: row.note_id, row }))),
-    enabled,
   });
 
 /** Keeps the notes of an open project current over a realtime channel, a

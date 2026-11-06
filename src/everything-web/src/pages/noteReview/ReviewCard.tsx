@@ -24,9 +24,11 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { DropdownMenu } from "@cn/ui/DropdownMenu";
+import { Modal } from "@cn/ui/Modal";
 import { Textarea } from "@cn/ui/Field";
 import { CheckIcon, TrashIcon } from "@cn/ui/icons";
 import { ClaimCard } from "../../components/ClaimCard";
+import { LeaderboardReorder } from "../bestNotes/BestNotesReorder";
 import { noteUrl } from "../../lib/routing";
 import { PostOnX } from "./PostOnX";
 import { PERSON, ReviewerVotes } from "./ReviewerVotes";
@@ -551,6 +553,19 @@ function XPostLine({ draft }: { draft: ReviewDraft }) {
   );
 }
 
+/** The whole leaderboard in drag mode, with the note just added highlighted
+ *  at the bottom, so the admin can move it to its place right away. */
+function LeaderboardModal({ noteId, onClose }: { noteId: string; onClose: () => void }) {
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <Modal title="Our leaderboard" widthClassName="max-w-3xl" onClose={onClose}>
+      <p className="text-sm text-fg-muted">Drag the note to its place.</p>
+      {error && <p className="text-sm text-negative">{error}</p>}
+      <LeaderboardReorder projectSlug={null} highlightId={noteId} onError={setError} />
+    </Modal>
+  );
+}
+
 function MarkButton({ on, label, onClick, disabled }: { on: boolean; label: string; onClick: () => void; disabled: boolean }) {
   return (
     <Button variant="secondary" aria-pressed={on} disabled={disabled} onClick={onClick} title={on ? `${label}. Click to take the mark off` : undefined} className={cn(on && "border-link text-link")}>
@@ -567,6 +582,7 @@ type Panel = "chat" | "improve" | "post";
 function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   const [open, setOpen] = useState<Panel | null>(draft.proposal ? "improve" : draft.messages.length > 0 ? "chat" : null);
   const [seenProposal, setSeenProposal] = useState(draft.proposal?.note);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const act = useReviewStep(draft, view);
   const shows = (option: DisplayOption) => view.display.includes(option);
   const toggle = (panel: Panel) => setOpen(open === panel ? null : panel);
@@ -600,10 +616,15 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
         {claude && shows(DISPLAY.fewShot.value) && <MarkButton on={draft.fewShot} label="Few-shot example" disabled={act.isPending} onClick={() => act.mutate({ step: "fewShot", on: !draft.fewShot })} />}
         {live && shows(DISPLAY.leaderboard.value) &&
           (draft.leaderboard === "on" ? (
-            <span className="text-sm text-fg-muted">On the leaderboard</span>
+            <span className="text-sm text-fg-muted">
+              On the leaderboard ·{" "}
+              <Button variant="link" onClick={() => setLeaderboardOpen(true)}>
+                Reorder
+              </Button>
+            </span>
           ) : (
             <>
-              <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" })}>
+              <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" }, { onSuccess: () => setLeaderboardOpen(true) })}>
                 Add to leaderboard
               </Button>
               <MarkButton
@@ -620,6 +641,7 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
       {open === "chat" && claude && <Chat draft={draft} view={view} />}
       {open === "improve" && claude && live && <ImprovedVersion draft={draft} view={view} onClose={() => setOpen(null)} />}
       {open === "post" && live && <PostOnX draft={draft} view={view} onClose={() => setOpen(null)} />}
+      {leaderboardOpen && <LeaderboardModal noteId={draft.noteId!} onClose={() => setLeaderboardOpen(false)} />}
     </div>
   );
 }

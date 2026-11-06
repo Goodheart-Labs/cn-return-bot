@@ -1,18 +1,17 @@
 import { useCallback, useState, type ReactNode } from "react";
-import { setPosition, type CurationCreator } from "@cn/core/bestNotes";
+import type { CurationCreator } from "@cn/core/bestNotes";
 import { Button } from "@cn/ui/Button";
 import { Checkbox } from "@cn/ui/Field";
-import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { AdminOnly } from "../../components/AdminOnly";
 import { FiltersPopover } from "../../components/FiltersPopover";
 import { NoteFeed, type FeedCard } from "../../components/NoteFeed";
 import { ProjectAvatar } from "../../components/ProjectAvatar";
 import { RouteLink } from "../../components/RouteLink";
 import { SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
-import { useCurationSummary, useLeaderboardPages, useWholeLeaderboard, type CurationEntry } from "../../lib/feedQueries";
+import { useCurationSummary, useLeaderboardPages, type CurationEntry } from "../../lib/feedQueries";
 import type { Route } from "../../lib/routing";
-import { BestNotesReorder } from "./BestNotesReorder";
-import { CurationBar, useCurationChange } from "./CurationBar";
+import { LeaderboardReorder } from "./BestNotesReorder";
+import { CurationBar } from "./CurationBar";
 
 function Sidebar({ projectSlug, count, creators, navigate }: {
   projectSlug: string | null;
@@ -67,10 +66,8 @@ function Leaderboard({ projectSlug, navigate }: { projectSlug: string | null; na
   const [reordering, setReordering] = useState(false);
   const [notPostedOnly, setNotPostedOnly] = useState(false);
   const [unvotedOnly, setUnvotedOnly] = useState(false);
-  const change = useCurationChange(setError);
   const summary = useCurationSummary();
   const list = useLeaderboardPages({ projectSlug, notPostedOnly, unvotedOnly });
-  const wholeLeaderboard = useWholeLeaderboard(reordering);
   const creators = summary.data?.creators ?? [];
   const selectedProject = creators.find((p) => p.slug === projectSlug);
   const byline = useCallback(
@@ -80,32 +77,11 @@ function Leaderboard({ projectSlug, navigate }: { projectSlug: string | null; na
     [navigate],
   );
 
-  let feed: ReactNode;
-  if (reordering) {
-    const whole = wholeLeaderboard.data;
-    if (wholeLeaderboard.isError) feed = <LoadFailed what="The leaderboard" onRetry={() => void wholeLeaderboard.refetch()} className="mx-auto max-w-[40rem]" />;
-    else if (!whole) feed = <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>;
-    else {
-      // In a list narrowed to one creator, only that creator's notes are
-      // dragged, and the notes of other creators keep their places.
-      const entries = whole.entries.flatMap(({ row }) => {
-        const note = whole.notes.get(row.note_id);
-        const post = note && whole.items.get(note.claim.item_id);
-        const project = post?.project_id ? whole.projects.get(post.project_id) : undefined;
-        return note && (!projectSlug || project?.slug === projectSlug) ? [{ row, note, project }] : [];
-      });
-      feed = (
-        <BestNotesReorder
-          key={projectSlug}
-          entries={entries}
-          list={whole.entries.map(({ row }) => row)}
-          onMove={(noteId, position) => void change(() => setPosition(noteId, position))}
-        />
-      );
-    }
-  } else {
-    feed = <NoteFeed list={list} byline={byline} emptyText="Nothing is on our leaderboard yet. Add notes from the note review page." />;
-  }
+  const feed: ReactNode = reordering ? (
+    <LeaderboardReorder projectSlug={projectSlug} onError={setError} className="mx-auto max-w-[40rem]" />
+  ) : (
+    <NoteFeed list={list} byline={byline} emptyText="Nothing is on our leaderboard yet. Add notes from the note review page." />
+  );
 
   return (
     <SidebarLayout
