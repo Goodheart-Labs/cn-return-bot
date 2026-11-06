@@ -122,7 +122,18 @@ export const REVIEW_FIELDS: FieldDef[] = [
   },
   { id: "jim_vote", group: "Jim and Nathan", label: "Jim's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
   { id: "nathan_vote", group: "Jim and Nathan", label: "Nathan's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
-  { id: "leaderboard", label: "On our leaderboard", kind: "choice", multiple: false, sortable: false, options: YES_NO },
+  {
+    id: "leaderboard",
+    label: "Leaderboard",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "on", label: "On the leaderboard" },
+      { value: "declined", label: "Won't add", hint: "We decided not to add it" },
+      { value: "undecided", label: "Undecided" },
+    ],
+  },
   { id: "few_shot", label: "Few-shot example", hint: "Notes we picked to show the note writer as examples", kind: "choice", multiple: false, sortable: false, options: YES_NO },
   {
     id: "outcome", group: "Note",
@@ -200,7 +211,7 @@ export const DISPLAY = {
   improve: { value: "improve", label: "Improve the note" },
   skip: { value: "skip", label: "Skip" },
   fewShot: { value: "few_shot", label: "Few-shot example" },
-  leaderboard: { value: "leaderboard", label: "Add to leaderboard" },
+  leaderboard: { value: "leaderboard", label: "Add to leaderboard", hint: "Also shows Won't add to leaderboard" },
   delete: { value: "delete", label: "Delete from the site" },
 } satisfies Record<string, FieldOption>;
 

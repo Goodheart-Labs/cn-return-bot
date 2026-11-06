@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addToLeaderboard } from "@cn/core/bestNotes";
+import { addToLeaderboard, setLeaderboardDecline } from "@cn/core/bestNotes";
 import {
   deleteDraftNote,
   rewriteDraft,
@@ -207,6 +207,7 @@ type Step =
   | { step: "delete" }
   | { step: "skip"; skip: boolean }
   | { step: "leaderboard" }
+  | { step: "declineLeaderboard"; on: boolean }
   | { step: "xMark"; mark: XMark | null }
   | { step: "fewShot"; on: boolean }
   | { step: "reviewNote"; text: string }
@@ -231,6 +232,8 @@ function useReviewStep(draft: ReviewDraft, view: ReviewView, onDone?: () => void
         await skipDraft(draft.id, step.skip);
       } else if (step.step === "leaderboard") {
         await addToLeaderboard(draft.noteId!);
+      } else if (step.step === "declineLeaderboard") {
+        await setLeaderboardDecline(draft.noteId!, step.on);
       } else if (step.step === "xMark") {
         await setXMark(draft.noteId!, step.mark);
       } else if (step.step === "fewShot") {
@@ -596,12 +599,20 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
         )}
         {claude && shows(DISPLAY.fewShot.value) && <MarkButton on={draft.fewShot} label="Few-shot example" disabled={act.isPending} onClick={() => act.mutate({ step: "fewShot", on: !draft.fewShot })} />}
         {live && shows(DISPLAY.leaderboard.value) &&
-          (draft.onLeaderboard ? (
+          (draft.leaderboard === "on" ? (
             <span className="text-sm text-fg-muted">On the leaderboard</span>
           ) : (
-            <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" })}>
-              Add to leaderboard
-            </Button>
+            <>
+              <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" })}>
+                Add to leaderboard
+              </Button>
+              <MarkButton
+                on={draft.leaderboard === "declined"}
+                label="Won't add to leaderboard"
+                disabled={act.isPending}
+                onClick={() => act.mutate({ step: "declineLeaderboard", on: draft.leaderboard !== "declined" })}
+              />
+            </>
           ))}
         {claude && (live || draft.status === "posting") && shows(DISPLAY.delete.value) && <DeleteButton draft={draft} view={view} />}
         <ErrorText error={act.error} />

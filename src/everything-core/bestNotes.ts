@@ -91,6 +91,13 @@ export async function addToLeaderboard(noteId: string): Promise<void> {
   if (insertError) throw new Error(`could not add the note to the leaderboard: ${insertError.message}`);
 }
 
+/** Marks a note as not for the leaderboard, or takes the mark off
+ *  (migration 171). A note on the leaderboard counts as on it either way. */
+export async function setLeaderboardDecline(noteId: string, on: boolean): Promise<void> {
+  const { error } = await supabase.rpc("everything_set_leaderboard_decline", { p_note: noteId, p_on: on });
+  if (error) throw error;
+}
+
 /** Takes a note off the leaderboard. */
 export async function removeFromLeaderboard(noteId: string): Promise<void> {
   const { data, error } = await supabase.from(TABLE).delete().eq("note_id", noteId).select("note_id");
