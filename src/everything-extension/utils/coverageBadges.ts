@@ -9,6 +9,8 @@ import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./
 import { isPageDark } from "./pageTheme";
 import type { NoteStatus } from "@cn/core/noteScore";
 import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
+import { STATIC_SITE_HOSTNAME } from "./staticSites";
+import { forumOrigin, readSubstackPublicationFromPage } from "./creatorTarget";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
@@ -328,15 +330,31 @@ function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
   return null;
 }
 
+/** Whether this site gets listing badges at all. Only the sites whose listings
+ *  we know get them: Substack, including newsletters on their own domain such
+ *  as astralcodexten.com, YouTube, LessWrong and the Alignment Forum.
+ *  The extension also runs on any other site that has one checked page. A
+ *  reader once checked claude.ai/new, so it ran on every Claude chat. There
+ *  each bullet of an answer is an li, and a bullet that cited a noted page got
+ *  a badge on top of its text (GOO-742). Such sites show chats, articles and
+ *  link lists that our card rules were never built for. */
+function isBadgeSite(): boolean {
+  return (
+    STATIC_SITE_HOSTNAME.test(location.hostname) ||
+    forumOrigin(location.href) !== null ||
+    readSubstackPublicationFromPage() !== null
+  );
+}
+
 /** Marks every listing link that leads to a noted page with a note-count
  *  badge, placed where spotFor says. The scan re-runs debounced on DOM changes,
  *  which covers infinite scroll and single-page-app navigations. Every card
  *  that links a noted page gets one badge, however often the page is listed.
  *  A badge the host page threw away in a re-render is simply placed again on
- *  the next scan. Returns a teardown
- *  function, or null when the counts have never been synced. */
+ *  the next scan. Returns a teardown function, or null when this site gets no
+ *  badges or the counts have never been synced. */
 export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<(() => void) | null> {
-  if (!(await getSettings()).showThumbnailBadges) return null;
+  if (!isBadgeSite() || !(await getSettings()).showThumbnailBadges) return null;
   const statusCounts = (await getNotedPageStatusCounts()) ?? {};
   // A checked page with no notes at all gets its own badge saying we looked
   // and found nothing. Pages whose notes exist but are all hidden by the
