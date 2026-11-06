@@ -34,7 +34,7 @@ import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
 import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
 import { TWEET_SERVER } from "./tweetServer";
 
-const KIND_LABELS: Record<ReviewDraft["kind"], string> = {
+const KIND_LABELS: Record<NonNullable<ReviewDraft["kind"]>, string> = {
   small_mistake: "Small mistake",
   missing_context: "Missing context",
   wrong_or_misleading: "Wrong or misleading",
