@@ -36,6 +36,18 @@ export const REVIEW_FIELDS: FieldDef[] = [
       { value: "wont_post", label: "Won't post", hint: "We decided not to post it" },
     ],
   },
+  {
+    id: "source",
+    label: "Written by",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "claude", label: "Claude Code", hint: "Also Claude's notes that Jim or Nathan posted under their own name" },
+      { value: "pipeline", label: "Pipeline", hint: "The older AI note writer" },
+      { value: "human", label: "A person" },
+    ],
+  },
   { id: "my_vote", label: "My vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
   {
     id: "rating",
@@ -93,7 +105,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   { id: "creator", group: "Creator", label: "Specific creators", kind: "choice", multiple: true, sortable: false, labelColumn: "creator_name" },
-  { id: "written", label: "Written", hint: "When Claude wrote the note", kind: "date", sortable: true },
+  { id: "written", label: "Written", hint: "When the note was written", kind: "date", sortable: true },
   { id: "published", label: "Post published", kind: "date", sortable: true },
   {
     id: "approval",
