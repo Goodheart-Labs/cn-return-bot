@@ -3562,6 +3562,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      everything_set_leaderboard_decline: {
+        Args: { p_note: string; p_on: boolean }
+        Returns: undefined
+      }
       everything_set_x_mark: {
         Args: {
           p_mark: string
@@ -3870,7 +3874,7 @@ export type Database = {
         on_site: string | null
         posted_as: string | null
         skipped: boolean | null
-        leaderboard: boolean | null
+        leaderboard: string | null
         few_shot: boolean | null
         chat: string | null
         review_note: boolean | null
