@@ -47,6 +47,8 @@ import {
   waitingMessages,
 } from "./jobs";
 import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt, xAccountPrompt } from "./prompts";
+import { judgeMayStartAt } from "../everything/usagePacing";
+import { db } from "../serviceDb";
 import { claudeRunsSince, recordUsage } from "./store";
 import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
@@ -244,11 +246,20 @@ export async function dispatchEnd(key: string) {
   console.log(`CLOSED ${describe(job)}`);
 }
 
+async function judgeMayStart(): Promise<boolean> {
+  const { data, error } = await db().from("everything_claude_usage").select("at, weekly").order("at", { ascending: false }).limit(1).maybeSingle();
+  if (error) {
+    console.error(`Could not read the usage for the judge: ${error.message}`);
+    return false;
+  }
+  return judgeMayStartAt(data && { at: new Date(data.at), weekly: data.weekly }, new Date());
+}
+
 /** Runs the note judge and rebuilds the examples once a day. */
 export async function dispatchServices() {
   mkdirSync(RUNS_DIR, { recursive: true });
   if (!existsSync(JUDGE_SETTINGS)) writeFileSync(JUDGE_SETTINGS, "{}");
-  const judge = noteJudge({ runFolder, mayStart: async () => true, runSettings: JUDGE_SETTINGS });
+  const judge = noteJudge({ runFolder, mayStart: judgeMayStart, runSettings: JUDGE_SETTINGS });
   for (let first = true; ; first = false) {
     refreshExamples(DEVBOX_EXAMPLES_PATH);
     await judge.tick(first);
