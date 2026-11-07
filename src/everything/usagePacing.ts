@@ -142,3 +142,13 @@ export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapsh
       : `         one post every ${duration(pacing.intervalMs)}, ${INTERVAL_SAFETY_FACTOR}× the even spacing`,
   ].join("\n");
 }
+
+/** Whether a judge may start, by the plan's newest usage reading. The judges
+ *  stop where the runner on the ai-box stops them: at MAX_WEEKLY_USAGE_PERCENT,
+ *  or when no reading is recent, because the devbox's `dispatch` reads the usage only while
+ *  the session answers. Without this they ran on past the stop and used the
+ *  week that reader requests and tweets wait for. */
+export function judgeMayStartAt(reading: { at: Date; weekly: number } | null, now: Date): boolean {
+  if (!reading || now.getTime() - reading.at.getTime() > MAX_USAGE_READING_AGE_MS) return false;
+  return reading.weekly < MAX_WEEKLY_USAGE_PERCENT;
+}
