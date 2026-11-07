@@ -62,7 +62,10 @@ function recordRun(run: JobRun, end: JobEnd, tags: ClaudeRunTag[], ref: Paramete
 
 /** The plan's weekly usage at which this runner starts nothing new:
  *  CN_STOP_AT_PERCENT for a second runner on a plan its owner also uses. */
-export const stopAtPercent = () => Number(process.env.CN_STOP_AT_PERCENT) || MAX_WEEKLY_USAGE_PERCENT;
+export function stopAtPercent(): number {
+  const set = process.env.CN_STOP_AT_PERCENT;
+  return set ? Math.min(Number(set), MAX_WEEKLY_USAGE_PERCENT) : MAX_WEEKLY_USAGE_PERCENT;
+}
 
 /** Turns the plan's weekly usage into Claude's subscription to the queue
  *  (GOO-724). Below the target, Claude wants a feed post as often as the usage
@@ -79,7 +82,7 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
   // A second runner (CN_EVERY_MINUTES) asks for a feed post at a fixed
   // interval and leaves reader requests to claude-ai-box: the shared pacing
   // below reads claude-ai-box's plan, not this one.
-  const fixedMinutes = Number(process.env.CN_EVERY_MINUTES);
+  const fixedMinutes = Number(process.env.CN_EVERY_MINUTES) || (process.env.CN_POSTS_ONLY === "1" ? 10 : 0);
   if (fixedMinutes > 0) {
     await subscribe(CLAUDE_NOTEWRITER, fixedMinutes, false);
     console.log(`Subscription: a feed post every ${fixedMinutes} minutes, no reader requests (plan at ${weekly}%)`);
