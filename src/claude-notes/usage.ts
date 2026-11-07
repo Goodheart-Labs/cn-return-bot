@@ -8,7 +8,7 @@ import { appendFileSync, mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
 
-const CREDENTIALS_PATH = path.join(homedir(), ".claude/.credentials.json");
+const CREDENTIALS_PATH = path.join(process.env.CLAUDE_CONFIG_DIR ?? path.join(homedir(), ".claude"), ".credentials.json");
 const USAGE_URL = "https://api.anthropic.com/api/oauth/usage";
 const USAGE_LOG_PATH = path.join(homedir(), ".local/share/claude-note-finder/usage.jsonl");
 
