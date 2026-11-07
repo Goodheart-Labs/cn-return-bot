@@ -80,12 +80,13 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
     return;
   }
   // A second runner (CN_EVERY_MINUTES) asks for a feed post at a fixed
-  // interval and leaves reader requests to claude-ai-box: the shared pacing
-  // below reads claude-ai-box's plan, not this one.
+  // interval, because the shared pacing below reads claude-ai-box's plan, not
+  // this one. It takes reader requests only with CN_READER_REQUESTS=1.
   const fixedMinutes = Number(process.env.CN_EVERY_MINUTES) || (process.env.CN_POSTS_ONLY === "1" ? 10 : 0);
   if (fixedMinutes > 0) {
-    await subscribe(CLAUDE_NOTEWRITER, fixedMinutes, false);
-    console.log(`Subscription: a feed post every ${fixedMinutes} minutes, no reader requests (plan at ${weekly}%)`);
+    const requests = process.env.CN_READER_REQUESTS === "1";
+    await subscribe(CLAUDE_NOTEWRITER, fixedMinutes, requests);
+    console.log(`Subscription: a feed post every ${fixedMinutes} minutes, ${requests ? "and" : "no"} reader requests (plan at ${weekly}%)`);
     return;
   }
   const snapshot = await fetchUsageSnapshot();
