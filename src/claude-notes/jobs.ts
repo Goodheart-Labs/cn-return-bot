@@ -60,6 +60,10 @@ function recordRun(run: JobRun, end: JobEnd, tags: ClaudeRunTag[], ref: Paramete
 // The subscription
 // ---------------------------------------------------------------------------
 
+/** The plan's weekly usage at which this runner starts nothing new:
+ *  CN_STOP_AT_PERCENT for a second runner on a plan its owner also uses. */
+export const stopAtPercent = () => Number(process.env.CN_STOP_AT_PERCENT) || MAX_WEEKLY_USAGE_PERCENT;
+
 /** Turns the plan's weekly usage into Claude's subscription to the queue
  *  (GOO-724). Below the target, Claude wants a feed post as often as the usage
  *  pacing allows, and it takes reader requests. At the target it takes reader
@@ -67,9 +71,18 @@ function recordRun(run: JobRun, end: JobEnd, tags: ClaudeRunTag[], ref: Paramete
  *  reading, it takes nothing. A notewriter with nothing to take is never
  *  counted as silent, so the feed run stays green while Claude rests. */
 export async function updateClaudeSubscription(weekly: number | null, paused: boolean): Promise<void> {
-  if (paused || weekly === null || weekly >= MAX_WEEKLY_USAGE_PERCENT) {
+  if (paused || weekly === null || weekly >= stopAtPercent()) {
     await subscribe(CLAUDE_NOTEWRITER, null, false);
     console.log(`Subscription: nothing, because ${paused ? "the runner is paused" : weekly === null ? "the usage is unknown" : `the plan is at ${weekly}%`}`);
+    return;
+  }
+  // A second runner (CN_EVERY_MINUTES) asks for a feed post at a fixed
+  // interval and leaves reader requests to claude-ai-box: the shared pacing
+  // below reads claude-ai-box's plan, not this one.
+  const fixedMinutes = Number(process.env.CN_EVERY_MINUTES);
+  if (fixedMinutes > 0) {
+    await subscribe(CLAUDE_NOTEWRITER, fixedMinutes, false);
+    console.log(`Subscription: a feed post every ${fixedMinutes} minutes, no reader requests (plan at ${weekly}%)`);
     return;
   }
   const snapshot = await fetchUsageSnapshot();
