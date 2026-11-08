@@ -48,9 +48,19 @@ function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
  *  drafts, so loading the next page never reloads the notes above it. */
 function DraftPage({ drafts, view }: { drafts: ReviewDraft[]; view: ReviewView }) {
   const liveNotes = useLiveNotes(drafts);
-  return drafts.map((draft) => (
-    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} view={view} />
-  ));
+  return drafts.map((draft) => {
+    const liveNote = draft.noteId ? liveNotes?.get(draft.noteId) : undefined;
+    const originalId = liveNote?.improved_from_note_id;
+    return (
+      <ReviewCard
+        key={draft.id}
+        draft={draft}
+        liveNote={liveNote}
+        improvesOn={originalId ? (liveNotes?.get(originalId) ?? null) : undefined}
+        view={view}
+      />
+    );
+  });
 }
 
 /** The pages with every draft shown once. A draft an admin changed keeps its

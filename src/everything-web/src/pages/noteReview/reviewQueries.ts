@@ -11,6 +11,7 @@ import {
 } from "@cn/core/claudeReview";
 import type { FieldDef, FieldSort, QueryRequest } from "@cn/core/fieldQuery";
 import { fetchNotesByIds } from "@cn/core/notes";
+import type { NoteRow } from "@cn/core/types";
 import { noteSetOf } from "@cn/features/notes/noteSet";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { usePagedList } from "@cn/features/query/usePagedList";
@@ -149,12 +150,24 @@ export function usePollWaitingChats(request: QueryRequest, drafts: ReviewDraft[]
   }, [client, request, waitingIds]);
 }
 
-/** The live notes of the drafts on screen, with their current votes. */
+/** The ids of the notes these notes suggest an improvement to, each once,
+ *  leaving out the ones already among them. */
+export function missingOriginals(notes: Pick<NoteRow, "id" | "improved_from_note_id">[]): string[] {
+  const have = new Set(notes.map((n) => n.id));
+  return [...new Set(notes.flatMap((n) => (n.improved_from_note_id && !have.has(n.improved_from_note_id) ? [n.improved_from_note_id] : [])))];
+}
+
+/** The live notes of the drafts on screen, with their current votes, and the
+ *  notes they suggest an improvement to, so a card can show what it answers. */
 export function useLiveNotes(drafts: ReviewDraft[]) {
   const noteIds = drafts.flatMap((d) => (d.noteId ? [d.noteId] : []));
   return useQuery({
     queryKey: queryKeys.noteReviewNoteSet(noteIds),
-    queryFn: async () => noteSetOf(await fetchNotesByIds(noteIds), []),
+    queryFn: async () => {
+      const notes = await fetchNotesByIds(noteIds);
+      const originals = missingOriginals(notes);
+      return noteSetOf(originals.length ? [...notes, ...(await fetchNotesByIds(originals))] : notes, []);
+    },
     enabled: noteIds.length > 0,
     placeholderData: (previous) => previous,
   }).data?.notes;
