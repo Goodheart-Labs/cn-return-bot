@@ -37,6 +37,18 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   {
+    id: "suggested_x",
+    label: "Suggested for X",
+    hint: "The five notes that look most worth posting next (migration 175): no X mark, no Not helpful vote from Jim or Nathan, on the leaderboard or written in the last 14 days with a crowd chance of 0.74 or more, one per post",
+    kind: "choice",
+    multiple: false,
+    sortable: true,
+    options: [
+      { value: "true", label: "Suggested" },
+      { value: "false", label: "Not suggested" },
+    ],
+  },
+  {
     id: "source",
     label: "Written by",
     kind: "choice",
@@ -206,13 +218,14 @@ export const DISPLAY = {
 
 export type DisplayOption = (typeof DISPLAY)[keyof typeof DISPLAY]["value"];
 
-/** Not posted notes first, the crowd's best rated first, then by helpful
- *  votes, the creator's readers and the judge's two guesses. */
+/** Not posted notes, the ones suggested for X first, then the crowd's best
+ *  rated first, then by helpful votes, the creator's readers and the judge's
+ *  two guesses. */
 export const DEFAULT_REVIEW_QUERY: FieldQuery = {
   filters: [
     { field: "on_x", values: ["not_posted"] },
     { field: "outcome", values: ["note"] },
   ],
-  sorts: ["rating", "helpful_votes", "creator_views", "p_helpful", "p_impactful"].map((field) => ({ field, descending: true })),
+  sorts: ["suggested_x", "rating", "helpful_votes", "creator_views", "p_helpful", "p_impactful"].map((field) => ({ field, descending: true })),
   display: [DISPLAY.postOnX, DISPLAY.markPosted, DISPLAY.wontPost, DISPLAY.chat, DISPLAY.improve, DISPLAY.delete].map((option) => option.value),
 };
