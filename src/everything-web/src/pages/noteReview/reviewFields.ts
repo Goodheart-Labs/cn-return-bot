@@ -39,7 +39,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
   {
     id: "suggested_x",
     label: "Suggested for X",
-    hint: "The five notes that look most worth posting next (migration 175): no X mark, no Not helpful vote from Jim or Nathan, on the leaderboard or written in the last 14 days with a crowd chance of 0.74 or more, one per post",
+    hint: "The five notes that look most worth posting next (migration 175): no X mark, no Not helpful vote from Jim or Nathan, on the leaderboard or written in the last 14 days with a crowd chance of 0.74 or more",
     kind: "choice",
     multiple: false,
     sortable: true,
