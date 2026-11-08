@@ -95,7 +95,7 @@ export async function handleRequest(deps: WorkerDeps, request: PostRequest): Pro
     return `request ${request.id} failed before Typefully made a draft: ${String(error)}`;
   }
   // Kept on the request first: from here on it is only ever marked, never sent again.
-  await check("keeping the draft's id", deps.db.from(REQUESTS_TABLE).update({ typefully_draft_id: draft.draftId }).eq("id", request.id));
+  await check(`keeping the id of Typefully draft ${draft.draftId}`, deps.db.from(REQUESTS_TABLE).update({ typefully_draft_id: draft.draftId }).eq("id", request.id));
   await markScheduled(deps, { ...request, typefully_draft_id: draft.draftId }, draft.scheduledFor);
   return `note ${request.note_id} scheduled as Typefully draft ${draft.draftId} for ${draft.scheduledFor ?? "no time"}`;
 }
@@ -136,7 +136,10 @@ export async function handleRequests(deps: WorkerDeps): Promise<string[]> {
   const unmarked = await check("reading unmarked drafts", deps.db.from(REQUESTS_TABLE).select(COLUMNS).eq("status", "sending").not("typefully_draft_id", "is", null).limit(20));
   for (const request of (unmarked ?? []) as (PostRequest & { typefully_draft_id: string })[]) {
     try {
-      await markScheduled(deps, request, null);
+      // A mark written before the close failed, or set by an admin or the sync since, stays as it is.
+      const mark = await check("reading the mark", deps.db.from(MARKS_TABLE).select("mark").eq("note_id", request.note_id).maybeSingle());
+      if (mark) await close(deps, request.id, { status: "sent", error: null });
+      else await markScheduled(deps, request, null);
       log.push(`note ${request.note_id} marked for Typefully draft ${request.typefully_draft_id}`);
     } catch (error) {
       log.push(`request ${request.id}: ${error instanceof Error ? error.message : String(error)}`);
