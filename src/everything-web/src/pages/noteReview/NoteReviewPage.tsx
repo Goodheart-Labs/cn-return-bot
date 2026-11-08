@@ -28,7 +28,7 @@ import { useTypefullySync } from "./typefullySync";
 
 /** The Display menu offers Post on X only in the local posting tool, which
  *  has a server that can reach Typefully. */
-const DISPLAY_OPTIONS = Object.values(DISPLAY).filter((option) => option !== DISPLAY.postOnX || TWEET_SERVER);
+const DISPLAY_OPTIONS = Object.values(DISPLAY);
 
 const QUERY_KEY = "cn:noteReviewQuery";
 const X_QUERY_KEY = "cn:xNoteReviewQuery";
