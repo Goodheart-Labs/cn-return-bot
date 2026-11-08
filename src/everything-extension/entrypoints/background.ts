@@ -97,10 +97,10 @@ async function syncNotedSites() {
       const added = await fetchCoveredPageUrlsSince(plan.since);
       if (!added) return;
       const merged = mergeCoveredUrls(cached, added);
-      if (merged) {
-        await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: merged });
-        await addGenericHosts(merged);
-      }
+      // The cache first, so a tab the new script is injected into finds its page covered. Hosts are
+      // checked on every tick, so one whose registration failed is retried next time.
+      if (merged) await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: merged });
+      await addGenericHosts(merged ?? cached);
       await browser.storage.local.set({ [SYNC_STATE_KEY]: { fullAt: state.fullAt, lastAt: startedAt } });
       return;
     }
@@ -127,8 +127,8 @@ async function syncNotedSites() {
       if (toRemove.length) {
         await browser.scripting.unregisterContentScripts({ ids: toRemove.map(genericScriptId) });
       }
-      // Only a sync that got the whole list counts as full; a failed one is retried on the next tick.
-      await browser.storage.local.set({ [SYNC_STATE_KEY]: { fullAt: startedAt, lastAt: startedAt } });
+      // Only a sync that got both whole lists counts as full; otherwise the next tick is full again.
+      if (counts) await browser.storage.local.set({ [SYNC_STATE_KEY]: { fullAt: startedAt, lastAt: startedAt } });
     }
   } catch (err) {
     console.warn("[common-notes] noted-sites sync failed:", err);
