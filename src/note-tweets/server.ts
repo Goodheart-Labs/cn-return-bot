@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { mkdir } from "node:fs/promises";
-import { chromium, type Browser } from "playwright";
+import { closeBrowser, NOTE_ID, takeNoteImage } from "./noteImage";
 import { createDraft, draftStates, typefullyIsSetUp } from "./typefully";
 
 /* The local posting tool (GOO-629). `bun run note-tweets` starts two servers
@@ -24,30 +24,9 @@ const SERVER_PORT = 8010;
 const SITE = `http://127.0.0.1:${SITE_PORT}`;
 const SERVER = `http://127.0.0.1:${SERVER_PORT}`;
 const IMAGE_DIR = new URL("./.state/images/", import.meta.url).pathname;
-/** The picture is taken at twice the CSS size, for sharp text. */
-const IMAGE_SCALE = 2;
-const IMAGE_TIMEOUT_MS = 20_000;
-const NOTE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 await mkdir(IMAGE_DIR, { recursive: true });
 const imagePath = (noteId: string) => `${IMAGE_DIR}${noteId}.png`;
-
-let browser: Browser | null = null;
-
-/** Opens the note's picture page and saves a picture of its card. */
-async function takeImage(noteId: string): Promise<void> {
-  if (!browser?.isConnected()) browser = await chromium.launch();
-  const page = await browser.newPage({ deviceScaleFactor: IMAGE_SCALE });
-  try {
-    await page.goto(`${SITE}/note-image/${noteId}`);
-    const card = page.locator("[data-note-image]");
-    await card.waitFor({ timeout: IMAGE_TIMEOUT_MS });
-    await page.waitForLoadState("networkidle");
-    await card.screenshot({ path: imagePath(noteId) });
-  } finally {
-    await page.close();
-  }
-}
 
 /** The website may be opened under either name of this computer. The browser
  *  keeps a separate sign-in for each. */
@@ -84,7 +63,7 @@ Bun.serve({
       if (image && request.method === "GET") return answer(request, Bun.file(imagePath(image[1]!)), { headers: { "content-type": "image/png" } });
       if (pathname === "/image" && request.method === "POST") {
         const { noteId } = await noteIdOf(request);
-        await takeImage(noteId);
+        await takeNoteImage(SITE, noteId, imagePath(noteId));
         return answer(request, JSON.stringify({ url: `/images/${noteId}.png?at=${Date.now()}` }), { headers: { "content-type": "application/json" } });
       }
       if (pathname === "/send" && request.method === "POST") {
@@ -119,7 +98,7 @@ const site = Bun.spawn(["bunx", "vite", "--port", String(SITE_PORT), "--host", "
 });
 const stop = () => {
   site.kill();
-  void browser?.close();
+  void closeBrowser();
   process.exit(0);
 };
 process.on("SIGINT", stop);

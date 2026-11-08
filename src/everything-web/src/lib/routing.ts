@@ -31,8 +31,9 @@ import { capturePageview } from "./analytics";
  *                         clicks towards the extension
  *   /admin/judge-experiment/<section>  the labelled notes of the note judge
  *                         experiment, only on the development server
- *   /note-image/<note>    one note's card alone, which the local posting tool
- *                         takes a picture of; only in that tool
+ *   /note-image/<note>    one note's card alone, without the site's frame,
+ *                         which the posting tool and the posting worker take
+ *                         a picture of for the tweet
  * The old article reader at /read?url=… is gone (GOO-374); its articles are
  * minisites now, and its old links show the homepage like any unknown path.
  * The path /notes/all wins over a project whose slug is "all".
@@ -109,7 +110,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (import.meta.env.DEV && page === "admin" && project === "judge-experiment") return { view: "judgeExperiment", section: isJudgeSection(item) ? item : JUDGE_SECTIONS[0] };
   // Links from before GOO-623 name a section after it, which is now a filter.
   if (page === "admin" && project === "notes") return item === "x" ? X_NOTE_REVIEW : NOTE_REVIEW;
-  if (import.meta.env.VITE_TWEET_SERVER && page === "note-image" && project) return { view: "noteImage", note: project };
+  if (page === "note-image" && project) return { view: "noteImage", note: project };
   if (page === "notes" && project === "all") return ALL_NOTES;
   if (page === "notes") return { view: "notes", project: project ?? null, item: item ?? null, note: q.get("note") };
   return HOME;

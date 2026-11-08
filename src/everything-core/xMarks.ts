@@ -46,6 +46,29 @@ export async function setXMark(noteId: string, mark: XMark | null, post?: Typefu
   if (error) throw new Error(`could not change the X mark: ${error.message}`);
 }
 
+/** How a request to the posting worker ended (migration 173). */
+export type XPostRequestOutcome = { status: "sent" } | { status: "failed"; error: string } | { status: "waiting" };
+
+const REQUEST_POLL_MS = 3_000;
+const REQUEST_WAIT_MS = 120_000;
+
+/** Asks the posting worker on the team's server to schedule the note on X in
+ *  the next free slot of Typefully's queue, and waits up to two minutes for
+ *  it. The worker takes the note's picture, makes the draft and marks the
+ *  note as scheduled. */
+export async function requestXPost(noteId: string, text: string, reply: string): Promise<XPostRequestOutcome> {
+  const { data: requestId, error } = await supabase.rpc("everything_request_x_post", { p_note: noteId, p_text: text, p_reply: reply });
+  if (error) throw new Error(error.message);
+  for (let waited = 0; waited < REQUEST_WAIT_MS; waited += REQUEST_POLL_MS) {
+    await new Promise((resolve) => setTimeout(resolve, REQUEST_POLL_MS));
+    const { data, error: readError } = await supabase.from("everything_x_post_requests").select("status, error").eq("id", requestId).single();
+    if (readError) throw new Error(readError.message);
+    if (data.status === "sent") return { status: "sent" };
+    if (data.status === "failed") return { status: "failed", error: data.error ?? "The server gave no reason" };
+  }
+  return { status: "waiting" };
+}
+
 export async function fetchScheduledPosts(): Promise<ScheduledPost[]> {
   const rows = await fetchAllRows<{ note_id: string; typefully_draft_id: string; scheduled_for: string | null }>(
     () => supabase.from(X_MARKS_TABLE).select("note_id, typefully_draft_id, scheduled_for").eq("mark", "scheduled"),

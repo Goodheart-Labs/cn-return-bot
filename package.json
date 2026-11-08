@@ -116,6 +116,7 @@
     "minisite-create": "bun run src/everything/minisites/createMinisite.ts",
     "commonnotes": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort --mode prod-backend",
     "note-tweets": "bun run src/note-tweets/server.ts",
+    "note-tweets-worker": "bun run src/note-tweets/worker.ts",
     "commonnotes-local": "cd src/everything-web && bunx vite --port 8003 --host 127.0.0.1 --strictPort",
     "claude-notes": "bun run src/claude-notes/cli.ts",
     "notewriter": "bun run src/notewriters/cli.ts",
