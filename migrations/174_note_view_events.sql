@@ -1,4 +1,4 @@
--- 171: per-note view events from the extension. notes_shown says how many
+-- 174: per-note view events from the extension. notes_shown says how many
 -- notes a page showed; these say which ones (src/everything-extension/utils/noteViews.ts).
 --   note_seen    a note's marker or card was at least half on screen for a
 --                second, once per note per page address
