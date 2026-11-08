@@ -119,6 +119,22 @@ export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
   };
 }
 
+/** The URLs of pages ingested since `since` (an ISO time), for the
+ *  extension's five-minute delta between hourly full syncs. Null when the query
+ *  failed. */
+export async function fetchCoveredPageUrlsSince(since: string): Promise<string[] | null> {
+  try {
+    const rows = await fetchAllRows<{ id: string; url: string }>(
+      () => supabase.from("everything_items").select("id, url").gte("created_at", since),
+      "id",
+      { label: "coveredPagesSince" },
+    );
+    return rows.map((r) => r.url).filter((url) => !url.startsWith("local:"));
+  } catch {
+    return null;
+  }
+}
+
 /** How many notes of each rating status each ingested page has, keyed by the
  *  item's URL. The extension caches this next to the coverage list; its listing
  *  badges and count cards sum whichever statuses the user's note filters show.

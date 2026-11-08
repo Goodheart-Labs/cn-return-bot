@@ -1,6 +1,6 @@
 import { defineBackground } from "#imports";
 import { browser } from "#imports";
-import { fetchCoveredPageUrls, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
+import { fetchCoveredPageUrls, fetchCoveredPageUrlsSince, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
 import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
 import { fetchReaderCanonical } from "@cn/core/pageUrls";
@@ -10,7 +10,8 @@ import { signInWithTwitterInPopup } from "@cn/core/auth";
 import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
 import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } from "../utils/authorFeed";
-import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
+import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, getCoveredPageUrls, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
+import { mergeCoveredUrls, parseSyncState, planSync } from "../utils/notedSitesSync";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { saveLiveRequest } from "../utils/liveRequests";
@@ -27,6 +28,7 @@ const INJECT_RETRY_DELAY_MS = 150;
 const INJECT_RETRY_ATTEMPTS = 10;
 const SYNC_ALARM = "cn-sync-noted-sites";
 const SYNC_PERIOD_MINUTES = 5;
+const SYNC_STATE_KEY = "cn:notedSitesSyncState";
 
 /** The hostnames of covered pages that are not static sites. These are the
  *  hostnames the generic content script belongs on. */
@@ -66,13 +68,42 @@ async function injectIntoOpenTabs(hostnames: string[]) {
   }
 }
 
+/** Registers the generic content script on every covered host that lacks it,
+ *  and returns the hosts that were registered before. */
+async function addGenericHosts(urls: string[]): Promise<string[]> {
+  const existing = await registeredGenericHostnames();
+  const have = new Set(existing);
+  const toAdd = genericHostnames(urls).filter((hostname) => !have.has(hostname));
+  if (toAdd.length) {
+    await registerGenericScripts(toAdd);
+    await injectIntoOpenTabs(toAdd);
+  }
+  return existing;
+}
+
 /** Keep the generic content-script registrations in step with the covered
  *  sites. A newly covered site goes live on existing installs on the next
  *  sync, straight from the database, without a store update. This also caches
  *  the list of covered pages and the note counts behind the listing badges.
- *  The content scripts use both for their on-device checks. */
+ *  The content scripts use both for their on-device checks. Between hourly
+ *  full syncs a tick fetches only newly ingested pages (utils/notedSitesSync.ts). */
 async function syncNotedSites() {
   try {
+    const startedAt = Date.now();
+    const cached = await getCoveredPageUrls();
+    const state = parseSyncState((await browser.storage.local.get(SYNC_STATE_KEY))[SYNC_STATE_KEY]);
+    const plan = planSync(state, cached !== null, startedAt);
+    if (plan.kind === "delta" && state && cached) {
+      const added = await fetchCoveredPageUrlsSince(plan.since);
+      if (!added) return;
+      const merged = mergeCoveredUrls(cached, added);
+      // The cache first, so a tab the new script is injected into finds its page covered. Hosts are
+      // checked on every tick, so one whose registration failed is retried next time.
+      if (merged) await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: merged });
+      await addGenericHosts(merged ?? cached);
+      await browser.storage.local.set({ [SYNC_STATE_KEY]: { fullAt: state.fullAt, lastAt: startedAt } });
+      return;
+    }
     const [covered, counts, prioritized] = await Promise.all([
       fetchCoveredPageUrls(),
       fetchNotedPageCounts(),
@@ -91,16 +122,13 @@ async function syncNotedSites() {
         [CHECKED_PAGE_URLS_KEY]: covered.wholePageChecked,
       });
       const wanted = new Set(genericHostnames(urls));
-      const existing = new Set(await registeredGenericHostnames());
-      const toAdd = [...wanted].filter((hostname) => !existing.has(hostname));
-      const toRemove = [...existing].filter((hostname) => !wanted.has(hostname));
-      if (toAdd.length) {
-        await registerGenericScripts(toAdd);
-        await injectIntoOpenTabs(toAdd);
-      }
+      const existing = await addGenericHosts(urls);
+      const toRemove = existing.filter((hostname) => !wanted.has(hostname));
       if (toRemove.length) {
         await browser.scripting.unregisterContentScripts({ ids: toRemove.map(genericScriptId) });
       }
+      // Only a sync that got both whole lists counts as full; otherwise the next tick is full again.
+      if (counts) await browser.storage.local.set({ [SYNC_STATE_KEY]: { fullAt: startedAt, lastAt: startedAt } });
     }
   } catch (err) {
     console.warn("[common-notes] noted-sites sync failed:", err);
