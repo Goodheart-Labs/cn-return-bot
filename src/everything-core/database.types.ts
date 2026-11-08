@@ -1168,6 +1168,7 @@ export type Database = {
       }
       everything_x_post_requests: {
         Row: {
+          claimed_at: string | null
           done_at: string | null
           error: string | null
           id: string
@@ -1180,6 +1181,7 @@ export type Database = {
           typefully_draft_id: string | null
         }
         Insert: {
+          claimed_at?: string | null
           done_at?: string | null
           error?: string | null
           id?: string
@@ -1192,6 +1194,7 @@ export type Database = {
           typefully_draft_id?: string | null
         }
         Update: {
+          claimed_at?: string | null
           done_at?: string | null
           error?: string | null
           id?: string

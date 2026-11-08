@@ -20,13 +20,16 @@ import { createDraft, draftStates } from "./typefully";
  *   bun run note-tweets-worker            run until stopped
  *   bun run note-tweets-worker --once     one pass of requests and the sync, then exit
  *
- * A request is claimed ('sending') before anything is sent, and a request
- * that fails after Typefully made its draft says so, so a request is never
- * sent twice. */
+ * A request is claimed ('sending') before anything is sent, and keeps the
+ * draft's id as soon as Typefully made it, so a request is never sent twice:
+ * a note whose mark could not be written is marked on a later pass. */
 
-const SITE = process.env.CN_NOTE_IMAGE_SITE ?? "https://commonnotes.net";
-const IMAGE_DIR = process.env.CN_NOTE_IMAGE_DIR ?? new URL("./.state/worker-images/", import.meta.url).pathname;
+const SITE = "https://commonnotes.net";
+const IMAGE_DIR = new URL("./.state/worker-images/", import.meta.url).pathname;
 const REQUEST_POLL_MS = 15_000;
+/** A request still 'sending' this long after it was claimed was left
+ *  halfway by a worker that stopped. */
+const STUCK_AFTER_MS = 10 * 60_000;
 const SYNC_EVERY_MS = 5 * 60_000;
 /** A request is taken only while it is this fresh, so a backlog after an
  *  outage does not flood the queue with notes nobody remembers asking for. */
@@ -35,6 +38,8 @@ const MAX_REQUEST_AGE_MS = 24 * 3600_000;
 export const REQUESTS_TABLE = "everything_x_post_requests";
 const MARKS_TABLE = "everything_note_x_marks";
 
+const COLUMNS = "id, note_id, tweet_text, reply_text, requested_by, requested_at, typefully_draft_id";
+
 interface PostRequest {
   id: string;
   note_id: string;
@@ -42,6 +47,7 @@ interface PostRequest {
   reply_text: string;
   requested_by: string;
   requested_at: string;
+  typefully_draft_id?: string | null;
 }
 
 export interface WorkerDeps {
@@ -64,7 +70,7 @@ const close = (deps: WorkerDeps, id: string, fields: Record<string, unknown>) =>
 /** Carries out one request. Returns what happened, for the log. */
 export async function handleRequest(deps: WorkerDeps, request: PostRequest): Promise<string> {
   // Claim it first: only one worker, and only once, ever sends a request.
-  const claimed = await check("claiming", deps.db.from(REQUESTS_TABLE).update({ status: "sending" }).eq("id", request.id).eq("status", "pending").select("id"));
+  const claimed = await check("claiming", deps.db.from(REQUESTS_TABLE).update({ status: "sending", claimed_at: deps.now().toISOString() }).eq("id", request.id).eq("status", "pending").select("id"));
   if (!claimed?.length) return `request ${request.id} was taken already`;
   if (deps.now().getTime() - Date.parse(request.requested_at) > MAX_REQUEST_AGE_MS) {
     await close(deps, request.id, { status: "failed", error: "The request waited more than a day; ask again" });
@@ -88,36 +94,62 @@ export async function handleRequest(deps: WorkerDeps, request: PostRequest): Pro
     await close(deps, request.id, { status: "failed", error: String(error instanceof Error ? error.message : error) });
     return `request ${request.id} failed before Typefully made a draft: ${String(error)}`;
   }
-  try {
-    await check(
-      "marking the note scheduled",
-      deps.db.from(MARKS_TABLE).upsert({
-        note_id: request.note_id,
-        mark: "scheduled",
-        typefully_draft_id: draft.draftId,
-        scheduled_for: draft.scheduledFor,
-        marked_by: request.requested_by,
-        marked_at: deps.now().toISOString(),
-        published_at: null,
-        tweet_url: null,
-      }),
-    );
-  } catch (error) {
-    await close(deps, request.id, { status: "failed", typefully_draft_id: draft.draftId, error: `Typefully made draft ${draft.draftId}, but the note could not be marked: ${String(error)}` });
-    return `request ${request.id}: draft ${draft.draftId} made, mark failed`;
-  }
-  await close(deps, request.id, { status: "sent", typefully_draft_id: draft.draftId, error: null });
+  // Kept on the request first: from here on it is only ever marked, never sent again.
+  await check("keeping the draft's id", deps.db.from(REQUESTS_TABLE).update({ typefully_draft_id: draft.draftId }).eq("id", request.id));
+  await markScheduled(deps, { ...request, typefully_draft_id: draft.draftId }, draft.scheduledFor);
   return `note ${request.note_id} scheduled as Typefully draft ${draft.draftId} for ${draft.scheduledFor ?? "no time"}`;
 }
 
-/** Takes every pending request, oldest first. */
+/** Marks the note as scheduled for the request's draft and closes the
+ *  request. The sync later sets the time of a draft marked without one. */
+async function markScheduled(deps: WorkerDeps, request: PostRequest & { typefully_draft_id: string }, scheduledFor: string | null): Promise<void> {
+  await check(
+    "marking the note scheduled",
+    deps.db.from(MARKS_TABLE).upsert({
+      note_id: request.note_id,
+      mark: "scheduled",
+      typefully_draft_id: request.typefully_draft_id,
+      scheduled_for: scheduledFor,
+      marked_by: request.requested_by,
+      marked_at: deps.now().toISOString(),
+      published_at: null,
+      tweet_url: null,
+    }),
+  );
+  await close(deps, request.id, { status: "sent", error: null });
+}
+
+/** Closes the requests a worker left halfway, so their notes can be asked for
+ *  again, then takes every pending request, oldest first. */
 export async function handleRequests(deps: WorkerDeps): Promise<string[]> {
-  const pending = await check(
-    "reading requests",
-    deps.db.from(REQUESTS_TABLE).select("id, note_id, tweet_text, reply_text, requested_by, requested_at").eq("status", "pending").order("requested_at").limit(20),
+  const stale = new Date(deps.now().getTime() - STUCK_AFTER_MS).toISOString();
+  await check(
+    "closing stuck requests",
+    deps.db
+      .from(REQUESTS_TABLE)
+      .update({ status: "failed", error: "The server stopped while sending this. Look in Typefully's drafts before asking again.", done_at: deps.now().toISOString() })
+      .eq("status", "sending")
+      .is("typefully_draft_id", null)
+      .lt("claimed_at", stale),
   );
   const log: string[] = [];
-  for (const request of (pending ?? []) as PostRequest[]) log.push(await handleRequest(deps, request));
+  const unmarked = await check("reading unmarked drafts", deps.db.from(REQUESTS_TABLE).select(COLUMNS).eq("status", "sending").not("typefully_draft_id", "is", null).limit(20));
+  for (const request of (unmarked ?? []) as (PostRequest & { typefully_draft_id: string })[]) {
+    try {
+      await markScheduled(deps, request, null);
+      log.push(`note ${request.note_id} marked for Typefully draft ${request.typefully_draft_id}`);
+    } catch (error) {
+      log.push(`request ${request.id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  const pending = await check("reading requests", deps.db.from(REQUESTS_TABLE).select(COLUMNS).eq("status", "pending").order("requested_at").limit(20));
+  for (const request of (pending ?? []) as PostRequest[]) {
+    try {
+      log.push(await handleRequest(deps, request));
+    } catch (error) {
+      log.push(`request ${request.id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
   return log;
 }
 

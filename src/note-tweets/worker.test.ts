@@ -33,6 +33,9 @@ function fakeDb(tables: Record<string, Row[]>) {
       delete: () => ((op = { kind: "delete" }), builder),
       upsert: (row: Row) => ((op = { kind: "upsert", row }), builder),
       eq: (column: string, value: unknown) => (filters.push((row) => row[column] === value), builder),
+      is: (column: string, value: null) => (filters.push((row) => (row[column] ?? null) === value), builder),
+      not: (column: string, _op: "is", value: null) => (filters.push((row) => (row[column] ?? null) !== value), builder),
+      lt: (column: string, value: string) => (filters.push((row) => typeof row[column] === "string" && (row[column] as string) < value), builder),
       match: (values: Row) => (filters.push((row) => Object.entries(values).every(([k, v]) => row[k] === v)), builder),
       order: () => builder,
       limit: (n: number) => ((limit = n), builder),
@@ -124,4 +127,20 @@ test("the sync follows Typefully, but never overrides a mark an admin changed", 
     ["b", "posted", "https://x.com/NathanpmYoung/status/1"],
     ["c", "wont_post", null],
   ]);
+});
+
+test("a draft whose mark failed is marked on the next pass, never sent again", async () => {
+  const { deps, drafts, tables } = setup({ everything_x_post_requests: [request({ status: "sending", typefully_draft_id: "d0", claimed_at: "2026-11-08T10:00:00Z" })], everything_note_x_marks: [] });
+  await handleRequests(deps);
+  expect(drafts).toHaveLength(0);
+  expect(tables.everything_note_x_marks).toEqual([expect.objectContaining({ note_id: NOTE, mark: "scheduled", typefully_draft_id: "d0" })]);
+  expect(tables.everything_x_post_requests![0]).toMatchObject({ status: "sent" });
+});
+
+test("a request left halfway without a draft is closed, so the note can be asked for again", async () => {
+  const { deps, tables } = setup({
+    everything_x_post_requests: [request({ status: "sending", claimed_at: "2026-11-08T11:00:00Z" }), request({ id: "r2", status: "sending", claimed_at: "2026-11-08T11:59:30Z" })],
+  });
+  await handleRequests(deps);
+  expect(tables.everything_x_post_requests!.map((r) => r.status)).toEqual(["failed", "sending"]);
 });

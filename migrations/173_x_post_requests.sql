@@ -12,9 +12,11 @@
 -- which only admins may call.
 --
 -- A request is 'pending' until the worker takes it, 'sending' while it works
--- on it, then 'sent' or 'failed' with the reason. A request that was taking
--- longer than the worker allows stays 'sending', and is never sent twice: an
--- admin looks in Typefully and asks again.
+-- on it, then 'sent' or 'failed' with the reason. A request whose draft
+-- Typefully made stays 'sending' until the worker has marked the note, so it
+-- never makes a second draft. One left 'sending' without a draft for ten
+-- minutes, because the worker stopped halfway, is closed as failed by the
+-- worker's next pass, so the note can be asked for again.
 -- This migration only adds, so it goes live before the website that uses it.
 
 create table everything_x_post_requests (
@@ -26,6 +28,7 @@ create table everything_x_post_requests (
   requested_at timestamptz not null default now(),
   status text not null default 'pending' check (status in ('pending', 'sending', 'sent', 'failed')),
   error text,
+  claimed_at timestamptz,
   typefully_draft_id text,
   done_at timestamptz
 );
