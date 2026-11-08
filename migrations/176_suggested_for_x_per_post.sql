@@ -27,7 +27,7 @@ language sql stable security definer set search_path = public as $$
        select 1 from everything_votes v
         where v.note_id = n.id and v.vote < 0 and everything_reviewer_of(v.voter_id) is not null
      )
-   order by n.p_helpful desc, n.helpful_count desc, n.created_at desc
+   order by n.p_helpful desc nulls last, n.helpful_count desc, n.created_at desc
    limit 5;
 $$;
 
