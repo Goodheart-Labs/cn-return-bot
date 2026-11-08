@@ -622,6 +622,28 @@ function OffSiteNote({ draft, label }: { draft: ReviewDraft; label: string }) {
   );
 }
 
+/** The note a reader's suggested improvement answers, so the card reads as the
+ *  reply it is. `null`: the original is no longer on the site. */
+function ImprovesOn({ original, creatorSlug }: { original: NoteRow | null; creatorSlug: string | null | undefined }) {
+  return (
+    <div className="space-y-1 rounded-control bg-surface-muted px-3 py-2 text-sm">
+      <p className="text-xs font-semibold text-fg-muted">Suggested improvement to:</p>
+      {original ? (
+        <>
+          <p className="whitespace-pre-wrap text-fg-secondary">{original.note}</p>
+          {creatorSlug && (
+            <a className="text-xs underline" href={noteUrl(creatorSlug, original.id)}>
+              Open the original note
+            </a>
+          )}
+        </>
+      ) : (
+        <p className="text-fg-secondary">A note that is no longer on the site.</p>
+      )}
+    </div>
+  );
+}
+
 /** One entry of the review page as a reviewer's card: a passage the Claude
  *  note writer's agents looked at, or a note by the pipeline or a person.
  *  A note without a Claude draft has only the tools that work on the note
@@ -632,9 +654,11 @@ function OffSiteNote({ draft, label }: { draft: ReviewDraft; label: string }) {
  *  the judge's guess, the agent's reasoning and earlier texts. A card shown
  *  outside the review page, such as on the note judge experiment page, has no
  *  pills, explanation box or tools, and shows `extra` in the side column. */
-export function ReviewCard({ draft, liveNote, view, extra }: {
+export function ReviewCard({ draft, liveNote, improvesOn, view, extra }: {
   draft: ReviewDraft;
   liveNote: NoteRow | undefined;
+  /** The note this one suggests an improvement to; null when it is no longer on the site. */
+  improvesOn?: NoteRow | null;
   view?: ReviewView;
   extra?: ReactNode;
 }) {
@@ -658,6 +682,7 @@ export function ReviewCard({ draft, liveNote, view, extra }: {
       aside={<SideColumn draft={draft} view={view} extra={extra} />}
     >
       <div className="space-y-4">
+        {improvesOn !== undefined && <ImprovesOn original={improvesOn} creatorSlug={draft.post.creatorSlug} />}
         {!isNote(draft) ? (
           <p className="text-sm text-fg-secondary">{draft.reasoning}</p>
         ) : liveNote ? (
