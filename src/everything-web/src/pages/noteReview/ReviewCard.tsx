@@ -32,7 +32,6 @@ import { PostOnX } from "./PostOnX";
 import { PERSON, ReviewerVotes } from "./ReviewerVotes";
 import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
 import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
-import { TWEET_SERVER } from "./tweetServer";
 
 const KIND_LABELS: Record<NonNullable<ReviewDraft["kind"]>, string> = {
   small_mistake: "Small mistake",
@@ -583,7 +582,7 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        {live && TWEET_SERVER && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
+        {live && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
         {live && shows(DISPLAY.markPosted.value) && <MarkButton on={draft.xMark === "posted"} label="Posted on X" disabled={act.isPending} onClick={() => markX("posted")} />}
         {live && shows(DISPLAY.wontPost.value) && <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />}
         <XPostLine draft={draft} />
