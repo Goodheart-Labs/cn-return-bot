@@ -191,7 +191,14 @@ function CardHeader({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) 
           <span className="truncate">{draft.post.creator}</span>
           {view && draft.post.creatorSlug && <CreatorXAccount draft={draft} view={view} />}
         </p>
-        {chip && <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
+        <span className="flex shrink-0 gap-1.5">
+          {draft.fields.suggested_x === true && (
+            <span className="rounded-full border border-link px-2.5 py-0.5 text-xs font-semibold text-link" title="One of the five notes that look most worth posting on X next">
+              Suggested for X
+            </span>
+          )}
+          {chip && <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
+        </span>
       </div>
       <p className="text-xs text-fg-muted" title="The views count readers outside our team who were shown the notes on this post">
         {detailsLine(draft)}
