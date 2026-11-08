@@ -1,5 +1,6 @@
-import { LARGE_COUNTS, type FieldDef, type FieldQuery } from "@cn/core/fieldQuery";
+import { LARGE_COUNTS, SMALL_COUNTS, type FieldDef, type FieldQuery } from "@cn/core/fieldQuery";
 import type { AbTest, NotewriterSource } from "@cn/core/notewriter";
+import { VOTES } from "../noteReview/reviewFields";
 
 /* What the X notewriter page and the dashboard's notes filter and sort by.
  * Each field's id is a column of the database's notewriter_field_row
@@ -23,15 +24,12 @@ const STATUS: FieldDef = {
 };
 
 const WRITTEN: FieldDef = { id: "written", label: "Written", kind: "date", sortable: true };
+const X_VIEWS: FieldDef = { id: "views", label: "Views", hint: "How often X showed the note, as the notewriter page last counted", kind: "count", thresholds: VIEW_COUNTS, bound: "atLeast", offerNone: true, sortable: true };
+const X_RATINGS: FieldDef = { id: "ratings", label: "Ratings", hint: "Every rating in X's public data, which lags about 3 days", kind: "count", thresholds: LARGE_COUNTS, bound: "atLeast", offerNone: true, sortable: true };
 
 /** The fields of each source's notes, without the A/B tests. */
 export const NOTE_FIELDS: Record<NotewriterSource, FieldDef[]> = {
-  x: [
-    STATUS,
-    WRITTEN,
-    { id: "views", label: "Views", hint: "How often X showed the note, as the notewriter page last counted", kind: "count", thresholds: VIEW_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
-    { id: "ratings", label: "Ratings", hint: "Every rating in X's public data, which lags about 3 days", kind: "count", thresholds: LARGE_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
-  ],
+  x: [STATUS, WRITTEN, X_VIEWS, X_RATINGS],
   commonnotes: [
     STATUS,
     WRITTEN,
@@ -76,5 +74,38 @@ export const isAbField = (id: string) => id.startsWith("picks.");
 export const DEFAULT_NOTE_QUERY: FieldQuery = {
   filters: [{ field: "status", values: ["helpful"] }],
   sorts: [{ field: "views", descending: true }],
+  display: [],
+};
+
+/** The fields of the review page's X side, without the A/B tests: our votes
+ *  on each note first, then X's own fields. Jim's and Nathan's votes reach
+ *  only admins, which the review page is for. */
+export const X_REVIEW_FIELDS: FieldDef[] = [
+  { id: "my_vote", label: "My vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
+  { ...STATUS, id: "our_rating", label: "Our rating", hint: "How the votes on commonnotes.net rate the note, by the rule Common Notes uses" },
+  { ...STATUS, label: "Status on X" },
+  {
+    id: "writer",
+    label: "Writer",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "simple-bot", label: "Pipeline bot" },
+      { value: "claude-code", label: "Claude" },
+    ],
+  },
+  { id: "our_votes", label: "Our votes", hint: "Every vote on the note on commonnotes.net", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
+  { id: "jim_vote", group: "Jim and Nathan", label: "Jim's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
+  { id: "nathan_vote", group: "Jim and Nathan", label: "Nathan's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
+  WRITTEN,
+  X_VIEWS,
+  { ...X_RATINGS, label: "Ratings on X" },
+];
+
+/** The notes the admin has not voted on yet, newest first. */
+export const DEFAULT_X_REVIEW_QUERY: FieldQuery = {
+  filters: [{ field: "my_vote", values: ["none"] }],
+  sorts: [{ field: "written", descending: true }],
   display: [],
 };

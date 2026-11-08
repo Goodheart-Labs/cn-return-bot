@@ -9,9 +9,7 @@
 import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { config as loadDotenv } from "dotenv";
-import { ENV_DIR } from "../cnEnv";
+import { db } from "../serviceDb";
 import type { Database, Json } from "../everything-core/database.types";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
@@ -26,7 +24,6 @@ import type { ClaudeRunTag } from "./usageShare";
 import type { UsageReading } from "./usage";
 
 export type Actor = "jim" | "nathan" | "claude";
-export type Writer = "pipeline" | "claude";
 
 export interface DraftSource {
   url: string;
@@ -47,22 +44,9 @@ export interface NewDraft {
 
 export type DraftRow = Database["public"]["Tables"]["everything_claude_drafts"]["Row"];
 export type EventRow = Database["public"]["Tables"]["everything_claude_events"]["Row"];
-export type Settings = { writer: Writer; updatedAt: string; updatedBy: string };
 
 /** NathanpmYoung's account, whose notes on a post make Claude skip the post. */
 const NATHAN_ACCOUNT_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
-
-let client: SupabaseClient<Database> | undefined;
-export function db(): SupabaseClient<Database> {
-  if (!client) {
-    loadDotenv({ path: path.join(ENV_DIR, ".env"), quiet: true });
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_KEY;
-    if (!url || !key) throw new Error("SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in the root .env");
-    client = createClient<Database>(url, key);
-  }
-  return client;
-}
 
 /** For a query that returns rows. */
 function unwrap<T>({ data, error }: { data: T; error: unknown }): NonNullable<T> {
@@ -84,15 +68,6 @@ export async function logEvent(event: { actor: Actor; type: string; draftId?: st
   );
 }
 
-export async function readSettings(): Promise<Settings> {
-  const row = unwrap(await db().from("everything_claude_settings").select("writer, updated_at, updated_by").single());
-  return { writer: row.writer as Writer, updatedAt: row.updated_at, updatedBy: row.updated_by };
-}
-
-export async function changeWriter(actor: Actor, writer: Writer) {
-  check(await db().rpc("everything_claude_change_settings", { p_writer: writer, p_actor: actor }));
-}
-
 // ---------------------------------------------------------------------------
 // Where a passage sits in its post
 // ---------------------------------------------------------------------------
@@ -104,8 +79,6 @@ const POSTS_DIR = path.join(homedir(), ".local/share/claude-note-finder/posts");
 export function postDir(url: string): string {
   return path.join(POSTS_DIR, url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 80).replace(/-$/, ""));
 }
-
-export const isVideo = (url: string) => extractYoutubeVideoId(url) !== null;
 
 /** Where a claim sits in a video: its seconds and a link that starts the
  *  video there. The extension pins a video's notes on the player by these.
@@ -174,9 +147,31 @@ async function personNoteOnPassage(itemId: string, passage: string): Promise<{ n
   return null;
 }
 
+/** The draft the post already has with this passage, outcome and note text,
+ *  if any. An agent that saves the same file twice would otherwise post the
+ *  same note twice. */
+async function sameDraft(draft: NewDraft): Promise<DraftRow | null> {
+  const { data, error } = await db()
+    .from("everything_claude_drafts")
+    .select("*")
+    .eq("item_id", draft.itemId)
+    .eq("passage", draft.passage)
+    .eq("outcome", draft.outcome)
+    .eq("note", draft.note)
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(JSON.stringify(error));
+  return data;
+}
+
 /** Saves what a note-finding agent found on one passage. A note is posted as
- *  an AI note at once. */
+ *  an AI note at once. A draft saved before is not saved again. */
 export async function addDraft(draft: NewDraft): Promise<DraftRow> {
+  const existing = await sameDraft(draft);
+  if (existing) {
+    console.warn(`This draft is already saved as ${existing.id}, so it was not saved again.`);
+    return existing;
+  }
   const covering = draft.outcome === "note" ? await personNoteOnPassage(draft.itemId, draft.passage) : null;
   if (covering) {
     draft = {
@@ -261,7 +256,7 @@ export async function unansweredMessages(): Promise<EventRow[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Items: what the note writer takes from the queue, and what it gives back
+// Items: the posts the note writer gets from the notewriter protocol
 // ---------------------------------------------------------------------------
 
 export interface QueueItem {
@@ -274,55 +269,17 @@ export interface QueueItem {
   created_at: string;
 }
 
-/** The pipeline's order, so both writers agree: the highest tier first, then
- *  items without a published date, then the newest, then the oldest in the
- *  queue. */
-function inPipelineOrder(a: QueueItem, b: QueueItem): number {
-  if (a.priority !== b.priority) return b.priority - a.priority;
-  if (a.published_at !== b.published_at) {
-    if (a.published_at === null) return -1;
-    if (b.published_at === null) return 1;
-    return a.published_at < b.published_at ? 1 : -1;
-  }
-  return a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0;
-}
-
-/** The queue as the Claude note writer sees it. `waiting` holds the queued
- *  items Claude has not taken. `taken` holds the ones Claude took and has not
- *  finished yet: an item Claude works on stays queued until it is finished, so
- *  the take event is what tells it apart. A post can come back to the queue
- *  after Claude failed on it, when the walk tries it again, or after Claude
- *  finished it, when a reader asks about a passage in it. So only a take
- *  newer than the item's last failure and last finish counts. */
-export async function claudeQueue(): Promise<{ waiting: QueueItem[]; taken: QueueItem[] }> {
-  const queued = await fetchAllRows<QueueItem>(
-    () => db().from("everything_items").select("id, url, title, priority, status, published_at, created_at").eq("status", "queued"),
-    "id",
-    { label: "queued items" },
-  );
-  const events = await fetchInBatches<{ id: number; item_id: string; type: string }>(
-    (chunk) => db().from("everything_claude_events").select("id, item_id, type").in("type", ["item_taken", "item_failed", "item_finished"]).in("item_id", chunk),
-    queued.map((item) => item.id),
-    "id",
-    { label: "claude takes" },
-  );
-  const lastEventType = new Map<string, string>();
-  for (const e of events.sort((a, b) => a.id - b.id)) lastEventType.set(e.item_id, e.type);
-  const isTaken = (item: QueueItem) => lastEventType.get(item.id) === "item_taken";
-  const ordered = queued.sort(inPipelineOrder);
-  return { waiting: ordered.filter((item) => !isTaken(item)), taken: ordered.filter(isTaken) };
-}
-
 export async function readItem(itemId: string): Promise<QueueItem & {
   full_text: string | null;
   checked_scope: "page" | "paragraph" | null;
   first_checked_at: string | null;
+  caption_cues: SubtitleCue[] | null;
   project: { name: string; slug: string } | null;
 }> {
   return unwrap(
     await db()
       .from("everything_items")
-      .select("id, url, title, priority, status, full_text, checked_scope, first_checked_at, published_at, created_at, project:everything_projects(name, slug)")
+      .select("id, url, title, priority, status, full_text, checked_scope, first_checked_at, caption_cues, published_at, created_at, project:everything_projects(name, slug)")
       .eq("id", itemId)
       .single(),
   ) as never;
@@ -379,26 +336,6 @@ export async function endPostRun(runId: string, outcome: PostRunOutcome, logs: R
   check(await db().from("everything_pipeline_runs").update({ outcome, logs: logs as Json }).eq("id", runId));
 }
 
-/** Marks an item checked once Claude's agents went through it. The item keeps
- *  its scope: a passage a reader requested on a new page stays a paragraph
- *  check, so a later request for the whole page still checks the rest. */
-export async function finishItem(itemId: string, summary: Record<string, unknown>) {
-  check(
-    await db()
-      .from("everything_items")
-      .update({ status: "done", skip_reason: null, processed_at: new Date().toISOString() })
-      .eq("id", itemId),
-  );
-  await logEvent({ actor: "claude", type: "item_finished", itemId, data: summary });
-}
-
-/** Marks an item checked without notes, because nothing in it is worth
- *  checking, such as a music video or a game trailer. */
-export async function skipItem(itemId: string, reason: string) {
-  await logEvent({ actor: "claude", type: "item_skipped", itemId, data: { reason } });
-  await finishItem(itemId, { skipped: true, reason });
-}
-
 /** Stores one reading of the plan's usage, for the admin dashboard's chart. */
 export async function recordUsage(reading: UsageReading) {
   check(
@@ -410,16 +347,15 @@ export async function recordUsage(reading: UsageReading) {
 }
 
 /** How many drafts Claude saved on an item since a time. */
-/** The passages of the notes Claude saved on an item since a time. */
-export async function claudeNotePassagesSince(itemId: string, since: string): Promise<string[]> {
-  const rows = unwrap(
-    await db().from("everything_claude_drafts").select("passage").eq("item_id", itemId).eq("outcome", "note").gte("created_at", since),
-  );
-  return rows.map((row) => row.passage);
-}
-
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
+  if (error) throw new Error(JSON.stringify(error));
+  return count ?? 0;
+}
+
+/** How many Claude runs with this tag started since a time. */
+export async function claudeRunsSince(tag: ClaudeRunTag, since: Date): Promise<number> {
+  const { count, error } = await db().from("everything_claude_runs").select("id", { count: "exact", head: true }).contains("tags", [tag]).gte("started_at", since.toISOString());
   if (error) throw new Error(JSON.stringify(error));
   return count ?? 0;
 }

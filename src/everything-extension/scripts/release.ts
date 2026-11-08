@@ -147,16 +147,40 @@ function amoAuthHeader(): string {
   return `JWT ${header}.${payload}.${signature}`;
 }
 
+/** AMO throttles a burst of requests with HTTP 429 and says how many seconds
+ *  to wait. A release replaces several screenshots in a row, which ran into
+ *  it on 2026-10-30 halfway through and left the listing with half its
+ *  screenshots. So a throttled request waits as long as AMO asks and tries
+ *  again. */
+const AMO_THROTTLE_STATUS = 429;
+const MAX_AMO_THROTTLE_WAITS = 5;
+const AMO_THROTTLE_MARGIN_MS = 2000;
+// AMO also limits how often an add-on may submit a new version, and then asks
+// for a wait of hours. On 2026-10-30 a release slept through such waits for 15
+// hours. A wait this long stops the release instead, with the time to try again.
+const MAX_AMO_THROTTLE_WAIT_SECONDS = 5 * 60;
+
 async function amoRequest<T>(method: string, apiPath: string, body?: FormData | object): Promise<T> {
   const isForm = body instanceof FormData;
-  const response = await fetch(`${AMO_API}${apiPath}`, {
-    method,
-    headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
-    body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
-  });
-  const text = await response.text();
-  if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);
-  return (text ? JSON.parse(text) : undefined) as T;
+  for (let wait = 0; ; wait++) {
+    const response = await fetch(`${AMO_API}${apiPath}`, {
+      method,
+      headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+    });
+    const text = await response.text();
+    if (response.status === AMO_THROTTLE_STATUS && wait < MAX_AMO_THROTTLE_WAITS) {
+      const seconds = Number(/available in (\d+) seconds/.exec(text)?.[1] ?? 60);
+      if (seconds > MAX_AMO_THROTTLE_WAIT_SECONDS) {
+        throw new Error(`AMO throttled ${method} ${apiPath} until ${new Date(Date.now() + seconds * 1000).toISOString()}. Run this step again then.`);
+      }
+      console.log(`AMO throttled ${method} ${apiPath}, trying again in ${seconds} seconds`);
+      await sleep(seconds * 1000 + AMO_THROTTLE_MARGIN_MS);
+      continue;
+    }
+    if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
 }
 
 function fileField(filePath: string, type: string): Blob {

@@ -14,6 +14,7 @@ import {
   type XNote,
   type XNoteCursor,
 } from "@cn/core/notewriter";
+import { fetchNoteTallies } from "@cn/core/notes";
 import type { Facet } from "@cn/features/fieldQuery/Filters";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { usePagedList } from "@cn/features/query/usePagedList";
@@ -69,3 +70,15 @@ export const useXNoteList = (request: QueryRequest) =>
     firstBookmark: null as XNoteCursor | null,
     nextBookmark: nextCursor,
   });
+
+/** The vote counts of these X notes' twins, by twin id. A vote on an X note
+ *  reads them again. */
+export const useNoteTallies = (notes: XNote[]) => {
+  const ids = notes.map((note) => note.twinNoteId);
+  return useQuery({
+    queryKey: queryKeys.noteTalliesOf(ids),
+    queryFn: async () => new Map((await fetchNoteTallies(ids)).map((tally) => [tally.id, tally])),
+    enabled: ids.length > 0,
+    placeholderData: (previous) => previous,
+  }).data;
+};

@@ -246,6 +246,7 @@ hides it in logs. The names below were checked against the live repository on
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
 | YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine. |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
+| Slack | `SLACK_BOT_TOKEN`, the bot token of the Slack app "Claudy" (it starts `xoxb-`), the same token the devbox's standing jobs post with. Added on 2026-11-03 (GOO-695). | Everything Priority Feeds, which tells the Claude notes channel when the Claude note writer goes silent. |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
 limited to that probe's own table. When it is unset, the probe falls back to
@@ -378,8 +379,8 @@ requests fail.
 
 | Store | Listing | Extension ID |
 |---|---|---|
-| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.4.4 public since 2026-10-07; 0.5.0 submitted for review on 2026-10-29 with `release-ext all`. commonnotes.net is its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
-| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (version 0.4.4 public since 2026-10-07; 0.5.0 submitted for review on 2026-10-29 with `release-ext all`) | `extension@commonnotes.net` |
+| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.5.1 public since 2026-11-03 at the latest, submitted on 2026-10-30. commonnotes.net is its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
+| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (version 0.5.1 public since 2026-10-31, submitted the same day after AMO had throttled new versions for a day) | `extension@commonnotes.net` |
 | Safari | no listing yet | |
 
 How to release a new version, and which credentials the store APIs need, is

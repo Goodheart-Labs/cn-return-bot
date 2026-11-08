@@ -50,7 +50,7 @@ async function fetchCues(video: YoutubeVideo): Promise<SubtitleCue[]> {
   const captions = await fetchYoutubeCaptions(video);
   if (captions.kind === "captions") return captions.cues;
   if (captions.kind === "age_restricted") throw new UnreadableVideoError(video.url, "age-restricted", false);
-  throw new UnreadableVideoError(video.url, "no captions", ageHours(video.publishedAt) < CAPTIONS_GRACE_HOURS, captions.why);
+  throw new UnreadableVideoError(video.url, "no captions", ageHours(video.publishedTime) < CAPTIONS_GRACE_HOURS, captions.why);
 }
 
 export async function fetchYoutubeContent(url: string): Promise<FetchedContent> {

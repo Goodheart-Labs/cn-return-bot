@@ -103,6 +103,9 @@ jobs:
           # Google's WebSub hub with each subscription, and the hub signs every
           # notification with it.
           YOUTUBE_WEBSUB_SECRET: ${{ secrets.YOUTUBE_WEBSUB_SECRET }}
+          # The bot token of the Slack app "Claudy". The run tells the Claude notes
+          # channel when the Claude note writer goes silent and when it is back.
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           # The two services that do the claim extraction and the claim checking.
           # This run asks each one for its health before starting, and fails if it
           # cannot reach them, which is how a machine that is down becomes visible.

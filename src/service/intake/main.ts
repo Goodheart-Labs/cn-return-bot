@@ -9,9 +9,12 @@
  * its business; the Actions feed run owns those tiers, which is what makes the
  * two workers unable to want the same row.
  *
- * It also answers readers' Ask Opus questions (passageQuestions.ts) and works
- * the jobs the website writes for minisites (minisiteJobs.ts), each in a loop
- * of its own.
+ * It also answers readers' Ask Opus questions (passageQuestions.ts), works
+ * the jobs the website writes for minisites (minisiteJobs.ts), and reads every
+ * queued post that the notewriters cannot get yet because its text is missing
+ * (prepareItems.ts), each in a loop of its own. The requested tier is
+ * processed here only while the notewriter `pipeline` takes reader requests.
+ * Otherwise a notewriter takes those items from the queue.
  *
  * It hears about a new request in about a second over Supabase Realtime, and
  * additionally re-reads the inbox on a timer. The timer is not optional:
@@ -29,6 +32,7 @@
 import "dotenv/config";
 import { consumeMinisiteJobs } from "./minisiteJobs";
 import { consumePassageQuestions } from "./passageQuestions";
+import { prepareQueuedItems } from "./prepareItems";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { consumeNoteRequests } from "../../everything/consumeRequests";
 import { triageOrphanedItems } from "../../everything/autoEnqueue";
@@ -49,6 +53,7 @@ const POLL_INTERVAL_MS = 60_000;
 let wake: () => void = () => {};
 let wakeQuestions: () => void = () => {};
 let wakeMinisiteJobs: () => void = () => {};
+let wakePreparer: () => void = () => {};
 
 function sleepUntilWoken(): Promise<void> {
   return new Promise((resolve) => {
@@ -81,6 +86,9 @@ function subscribeToRequests(): void {
  *  extension why nothing is moving. */
 async function handlePendingWork(): Promise<void> {
   await consumeNoteRequests();
+  // A new request is a new queue item, which needs its text before a
+  // notewriter can take it.
+  wakePreparer();
   for (;;) {
     if (await requestBudgetExhausted()) {
       console.log(`[intake] request budget spent (${await describeTodaySpend()}) — marking the queue`);
@@ -107,7 +115,7 @@ async function main() {
   await triageOrphanedItems("requested");
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
-  await Promise.all([questionLoop(), minisiteJobLoop(), noteLoop()]);
+  await Promise.all([questionLoop(), minisiteJobLoop(), noteLoop(), preparerLoop()]);
 }
 
 async function questionLoop() {
@@ -124,6 +132,14 @@ async function minisiteJobLoop() {
   for (;;) {
     await consumeMinisiteJobs(() => wake());
     await sleepUntilPolled((waker) => { wakeMinisiteJobs = waker; });
+  }
+}
+
+/** Feed posts the walk adds wait at most one poll interval for their text. */
+async function preparerLoop() {
+  for (;;) {
+    await prepareQueuedItems();
+    await sleepUntilPolled((waker) => { wakePreparer = waker; });
   }
 }
 

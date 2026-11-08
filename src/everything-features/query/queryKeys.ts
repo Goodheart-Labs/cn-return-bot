@@ -38,6 +38,10 @@ export const queryKeys = {
   noteDays: (source: string, request: unknown, withRuns: boolean) => ["notewriter", source, "days", request, withRuns] as const,
   noteFacets: (source: string, columns: string[], request: unknown) => ["notewriter", source, "facets", columns, request] as const,
   xNoteList: (request: unknown) => ["notewriter", "x", "list", request] as const,
+  /** The vote counts of the X notes' twins on screen. A vote on an X note
+   *  reads them all again under the prefix. */
+  noteTallies: ["noteTallies"] as const,
+  noteTalliesOf: (noteIds: string[]) => ["noteTallies", ...noteIds] as const,
   xOriginDays: ["notewriter", "x", "originDays"] as const,
   abTests: (source: string) => ["notewriter", source, "abTests"] as const,
   abReasons: (source: string) => ["notewriter", source, "abReasons"] as const,
@@ -66,6 +70,8 @@ export const queryKeys = {
   dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
   dashboardClaudeUsage: (sinceDays: number) => ["dashboard", "claudeUsage", sinceDays] as const,
   dashboardClicks: (sinceDays: number) => ["dashboard", "clicks", sinceDays] as const,
+  dashboardNotewriters: ["dashboard", "notewriters"] as const,
+  dashboardDonations: ["dashboard", "donations"] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

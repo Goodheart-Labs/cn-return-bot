@@ -12,7 +12,7 @@ const YES_NO: FieldOption[] = [
   { value: "false", label: "No" },
 ];
 
-const VOTES: FieldOption[] = [
+export const VOTES: FieldOption[] = [
   { value: "helpful", label: "Helpful" },
   { value: "somewhat", label: "Somewhat helpful" },
   { value: "not_helpful", label: "Not helpful" },
@@ -34,6 +34,18 @@ export const REVIEW_FIELDS: FieldDef[] = [
       { value: "scheduled", label: "Scheduled", hint: "Sent to Typefully, not published yet" },
       { value: "posted", label: "Posted" },
       { value: "wont_post", label: "Won't post", hint: "We decided not to post it" },
+    ],
+  },
+  {
+    id: "source",
+    label: "Written by",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "claude", label: "Claude Code", hint: "Also Claude's notes that Jim or Nathan posted under their own name" },
+      { value: "pipeline", label: "Pipeline", hint: "The older AI note writer" },
+      { value: "human", label: "A person" },
     ],
   },
   { id: "my_vote", label: "My vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
@@ -93,7 +105,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   { id: "creator", group: "Creator", label: "Specific creators", kind: "choice", multiple: true, sortable: false, labelColumn: "creator_name" },
-  { id: "written", label: "Written", hint: "When Claude wrote the note", kind: "date", sortable: true },
+  { id: "written", label: "Written", hint: "When the note was written", kind: "date", sortable: true },
   { id: "published", label: "Post published", kind: "date", sortable: true },
   {
     id: "approval",
@@ -181,7 +193,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
 
 /** The buttons a card can show, each switched on or off in the Display menu. */
 export const DISPLAY = {
-  postOnX: { value: "post_on_x", label: "Post on X", hint: "Opens the tweet and sends it to Typefully. Only in the local posting tool." },
+  postOnX: { value: "post_on_x", label: "Post on X", hint: "Opens the tweet and schedules it in Typefully's next free slot." },
   markPosted: { value: "mark_posted", label: "Posted on X", hint: "Marks a note that was posted on X without the posting tool" },
   wontPost: { value: "wont_post", label: "We won't post this" },
   chat: { value: "chat", label: "Chat with Claude" },
