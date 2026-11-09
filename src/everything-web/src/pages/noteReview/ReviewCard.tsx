@@ -32,9 +32,8 @@ import { PostOnX } from "./PostOnX";
 import { PERSON, ReviewerVotes } from "./ReviewerVotes";
 import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
 import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
-import { TWEET_SERVER } from "./tweetServer";
 
-const KIND_LABELS: Record<ReviewDraft["kind"], string> = {
+const KIND_LABELS: Record<NonNullable<ReviewDraft["kind"]>, string> = {
   small_mistake: "Small mistake",
   missing_context: "Missing context",
   wrong_or_misleading: "Wrong or misleading",
@@ -46,6 +45,9 @@ const NO_NOTE_LABELS: Record<Exclude<ReviewDraft["outcome"], "note">, string> = 
 };
 
 const isNote = (draft: ReviewDraft) => draft.status !== "not_a_note";
+/** Whether the entry is a Claude draft. Only a draft has a chat, a review
+ *  note, a better text to post, a skip and a few-shot mark. */
+const isClaudeDraft = (draft: ReviewDraft) => draft.source === "claude";
 const reviewOpen = (draft: ReviewDraft) => draft.verdict === null && (draft.status === "posted" || draft.status === "posting");
 
 /** The review's state, the loudest label on the card. */
@@ -61,9 +63,11 @@ function verdictChip(draft: ReviewDraft): { text: string; tone: string } | null 
 function detailsLine(draft: ReviewDraft): string {
   const views = draft.views === 1 ? "1 view" : `${draft.views} views`;
   if (!isNote(draft)) return `${NO_NOTE_LABELS[draft.outcome as Exclude<ReviewDraft["outcome"], "note">]} · ${views}`;
+  if (draft.source === "pipeline") return `Written by the pipeline · ${views}`;
+  if (draft.source === "human") return `Written by ${draft.postedAs && draft.postedAs !== "ai" ? PERSON[draft.postedAs] : "a reader"} · ${views}`;
   const where =
     draft.status === "removed" ? "Not on the site" : draft.status === "posting" ? "Saved, not on the site yet" : !draft.postedAs || draft.postedAs === "ai" ? "Posted as an AI note" : `Posted by ${PERSON[draft.postedAs]}`;
-  return `${KIND_LABELS[draft.kind]} · ${where} · ${views}`;
+  return `${KIND_LABELS[draft.kind!]} · ${where} · ${views}`;
 }
 
 /** The claim the card shows: the live note's own, or one made from the draft
@@ -187,7 +191,14 @@ function CardHeader({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) 
           <span className="truncate">{draft.post.creator}</span>
           {view && draft.post.creatorSlug && <CreatorXAccount draft={draft} view={view} />}
         </p>
-        {chip && <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
+        <span className="flex shrink-0 gap-1.5">
+          {draft.fields.suggested_x === true && (
+            <span className="rounded-full border border-link px-2.5 py-0.5 text-xs font-semibold text-link" title="One of the five notes that look most worth posting on X next">
+              Suggested for X
+            </span>
+          )}
+          {chip && <span className={cn("rounded-full px-2.5 py-0.5 text-xs font-semibold", chip.tone)}>{chip.text}</span>}
+        </span>
       </div>
       <p className="text-xs text-fg-muted" title="The views count readers outside our team who were shown the notes on this post">
         {detailsLine(draft)}
@@ -290,24 +301,26 @@ function ReviewNoteForm({ draft, view, placeholder, onClose }: { draft: ReviewDr
 function Reviews({ draft, view }: { draft: ReviewDraft; view?: ReviewView }) {
   const [editing, setEditing] = useState(false);
   const note = draft.reviewNote;
-  if (!note && draft.reviewerVotes.length === 0 && !view) return null;
+  // The shared review note belongs to a Claude draft.
+  const editable = view && isClaudeDraft(draft) ? view : undefined;
+  if (!note && draft.reviewerVotes.length === 0 && !editable) return null;
   return (
     <section className="space-y-2">
       <AsideHeading>Our review</AsideHeading>
       <ReviewerVotes votes={draft.reviewerVotes} />
-      {editing && view ? (
-        <ReviewNoteForm draft={draft} view={view} placeholder="Why is this note good or bad?" onClose={() => setEditing(false)} />
+      {editing && editable ? (
+        <ReviewNoteForm draft={draft} view={editable} placeholder="Why is this note good or bad?" onClose={() => setEditing(false)} />
       ) : note ? (
         <div className="space-y-0.5">
           <p className="whitespace-pre-wrap text-fg-secondary">{note.text}</p>
-          {view && (
+          {editable && (
             <Button variant="link" className="text-2xs" onClick={() => setEditing(true)}>
               Edit
             </Button>
           )}
         </div>
       ) : (
-        view && (
+        editable && (
           <Button variant="link" className="text-2xs" onClick={() => setEditing(true)}>
             Add a note
           </Button>
@@ -386,7 +399,7 @@ function SideColumn({ draft, view, extra }: { draft: ReviewDraft; view?: ReviewV
     <div className="space-y-4 text-2xs text-fg-muted [overflow-wrap:anywhere]">
       {isNote(draft) && <Reviews draft={draft} view={view} />}
       {view && <Judge draft={draft} />}
-      {isNote(draft) && <AgentReasoning reasoning={draft.reasoning} />}
+      {isNote(draft) && draft.reasoning && <AgentReasoning reasoning={draft.reasoning} />}
       <EarlierVersions draft={draft} />
       {extra}
     </div>
@@ -561,6 +574,7 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   const shows = (option: DisplayOption) => view.display.includes(option);
   const toggle = (panel: Panel) => setOpen(open === panel ? null : panel);
   const live = draft.status === "posted";
+  const claude = isClaudeDraft(draft);
   // A proposal that arrives while the card is shown opens its box.
   if (draft.proposal && draft.proposal.note !== seenProposal) {
     setSeenProposal(draft.proposal.note);
@@ -575,18 +589,18 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        {live && TWEET_SERVER && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
+        {live && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
         {live && shows(DISPLAY.markPosted.value) && <MarkButton on={draft.xMark === "posted"} label="Posted on X" disabled={act.isPending} onClick={() => markX("posted")} />}
         {live && shows(DISPLAY.wontPost.value) && <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />}
         <XPostLine draft={draft} />
-        {shows(DISPLAY.chat.value) && panelButton("chat", "Chat with Claude")}
-        {live && shows(DISPLAY.improve.value) && panelButton("improve", draft.proposal ? "Improved version" : "Improve the note")}
-        {shows(DISPLAY.skip.value) && (reviewOpen(draft) || draft.skipped) && (
+        {claude && shows(DISPLAY.chat.value) && panelButton("chat", "Chat with Claude")}
+        {claude && live && shows(DISPLAY.improve.value) && panelButton("improve", draft.proposal ? "Improved version" : "Improve the note")}
+        {claude && shows(DISPLAY.skip.value) && (reviewOpen(draft) || draft.skipped) && (
           <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "skip", skip: !draft.skipped })}>
             {draft.skipped ? "Unskip" : "Skip"}
           </Button>
         )}
-        {shows(DISPLAY.fewShot.value) && <MarkButton on={draft.fewShot} label="Few-shot example" disabled={act.isPending} onClick={() => act.mutate({ step: "fewShot", on: !draft.fewShot })} />}
+        {claude && shows(DISPLAY.fewShot.value) && <MarkButton on={draft.fewShot} label="Few-shot example" disabled={act.isPending} onClick={() => act.mutate({ step: "fewShot", on: !draft.fewShot })} />}
         {live && shows(DISPLAY.leaderboard.value) &&
           (draft.onLeaderboard ? (
             <span className="text-sm text-fg-muted">On the leaderboard</span>
@@ -595,11 +609,11 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
               Add to leaderboard
             </Button>
           ))}
-        {(live || draft.status === "posting") && shows(DISPLAY.delete.value) && <DeleteButton draft={draft} view={view} />}
+        {claude && (live || draft.status === "posting") && shows(DISPLAY.delete.value) && <DeleteButton draft={draft} view={view} />}
         <ErrorText error={act.error} />
       </div>
-      {open === "chat" && <Chat draft={draft} view={view} />}
-      {open === "improve" && live && <ImprovedVersion draft={draft} view={view} onClose={() => setOpen(null)} />}
+      {open === "chat" && claude && <Chat draft={draft} view={view} />}
+      {open === "improve" && claude && live && <ImprovedVersion draft={draft} view={view} onClose={() => setOpen(null)} />}
       {open === "post" && live && <PostOnX draft={draft} view={view} onClose={() => setOpen(null)} />}
     </div>
   );
@@ -615,17 +629,43 @@ function OffSiteNote({ draft, label }: { draft: ReviewDraft; label: string }) {
   );
 }
 
-/** One passage the Claude note writer's agents looked at, as a reviewer's
- *  card. The card holds the passage in its post, the note with "Your review"
+/** The note a reader's suggested improvement answers, so the card reads as the
+ *  reply it is. `null`: the original is no longer on the site. */
+function ImprovesOn({ original, creatorSlug }: { original: NoteRow | null; creatorSlug: string | null | undefined }) {
+  return (
+    <div className="space-y-1 rounded-control bg-surface-muted px-3 py-2 text-sm">
+      <p className="text-xs font-semibold text-fg-muted">Suggested improvement to:</p>
+      {original ? (
+        <>
+          <p className="whitespace-pre-wrap text-fg-secondary">{original.note}</p>
+          {creatorSlug && (
+            <a className="text-xs underline" href={noteUrl(creatorSlug, original.id)}>
+              Open the original note
+            </a>
+          )}
+        </>
+      ) : (
+        <p className="text-fg-secondary">A note that is no longer on the site.</p>
+      )}
+    </div>
+  );
+}
+
+/** One entry of the review page as a reviewer's card: a passage the Claude
+ *  note writer's agents looked at, or a note by the pipeline or a person.
+ *  A note without a Claude draft has only the tools that work on the note
+ *  itself: the X marks, Post on X and the leaderboard. The card holds the passage in its post, the note with "Your review"
  *  pills (Jim's or Nathan's vote is the review), an optional explanation after
  *  a vote, and the tools. The verdict sits at the top. Beside the card, or
  *  under it on a narrow screen, are each reviewer's vote with its explanation,
  *  the judge's guess, the agent's reasoning and earlier texts. A card shown
  *  outside the review page, such as on the note judge experiment page, has no
  *  pills, explanation box or tools, and shows `extra` in the side column. */
-export function ReviewCard({ draft, liveNote, view, extra }: {
+export function ReviewCard({ draft, liveNote, improvesOn, view, extra }: {
   draft: ReviewDraft;
   liveNote: NoteRow | undefined;
+  /** The note this one suggests an improvement to; null when it is no longer on the site. */
+  improvesOn?: NoteRow | null;
   view?: ReviewView;
   extra?: ReactNode;
 }) {
@@ -649,6 +689,7 @@ export function ReviewCard({ draft, liveNote, view, extra }: {
       aside={<SideColumn draft={draft} view={view} extra={extra} />}
     >
       <div className="space-y-4">
+        {improvesOn !== undefined && <ImprovesOn original={improvesOn} creatorSlug={draft.post.creatorSlug} />}
         {!isNote(draft) ? (
           <p className="text-sm text-fg-secondary">{draft.reasoning}</p>
         ) : liveNote ? (
@@ -658,7 +699,7 @@ export function ReviewCard({ draft, liveNote, view, extra }: {
         ) : (
           <NoteBox note={draftAsNote(draft)} status="needs_ratings" sourcesOpen />
         )}
-        {view && explaining && <ReviewNoteForm draft={draft} view={view} placeholder="Optional: Explain your decision" onClose={() => setExplaining(false)} />}
+        {view && explaining && isClaudeDraft(draft) && <ReviewNoteForm draft={draft} view={view} placeholder="Optional: Explain your decision" onClose={() => setExplaining(false)} />}
         {view && isNote(draft) && draft.status !== "removed" && <Tools draft={draft} view={view} />}
       </div>
     </ClaimCard>

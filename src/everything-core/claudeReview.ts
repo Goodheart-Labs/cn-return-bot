@@ -3,7 +3,7 @@ import type { QueryRequest } from "./fieldQuery";
 import { supabase } from "./supabase";
 import type { XMark } from "./xMarks";
 
-/* The admins' review of the Claude note writer's notes (GOO-518). Every call
+/* The admins' review of the notes on the site (GOO-518). Every call
  * goes through a database function, and each of them refuses anyone who is
  * not an admin. The tables behind them are closed to the website's key.
  *
@@ -14,7 +14,12 @@ import type { XMark } from "./xMarks";
  * on the votes table records it.
  *
  * Since migration 153 (GOO-623) the page filters and sorts by any field of a
- * draft's field row. The page sends a QueryRequest, and the database runs it. */
+ * draft's field row. The page sends a QueryRequest, and the database runs it.
+ *
+ * Since migration 170 (GOO-735) the page lists every note, not only Claude's.
+ * Each entry is a draft of the Claude note writer or a note without a draft,
+ * written by the pipeline or by a person. Only a Claude draft has a chat, a
+ * review note, a judge's guess and the other steps that belong to a draft. */
 
 export type Reviewer = "jim" | "nathan";
 
@@ -42,17 +47,25 @@ export interface FacetValue {
   drafts: number;
 }
 
-/** One passage the Claude note writer's agents looked at, as the review page
- *  shows it. */
+/** Who wrote an entry of the review page. A Claude note that an admin posted
+ *  under their own account still counts as Claude's. */
+type ReviewSource = "claude" | "pipeline" | "human";
+
+/** One entry of the review page: a passage the Claude note writer's agents
+ *  looked at, or a note by the pipeline or a person. The id is the draft's
+ *  id for a Claude draft and the note's id for any other note. */
 export interface ReviewDraft {
   id: string;
+  source: ReviewSource;
   itemId: string;
   passage: string;
   claim: string;
-  kind: "small_mistake" | "missing_context" | "wrong_or_misleading";
+  /** Null for a note without a Claude draft. */
+  kind: "small_mistake" | "missing_context" | "wrong_or_misleading" | null;
   outcome: "note" | "no_note_needed" | "too_hard" | "withdrawn";
   note: string;
-  reasoning: string;
+  /** The note writer's reasoning. Null for a note without a Claude draft. */
+  reasoning: string | null;
   sources: ReviewDraftSource[];
   /** Whether the note is on the site. A posting note was saved but its post
    *  has not finished, or failed. A removed note was deleted from the site,
@@ -114,13 +127,14 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
   const pHelpful = fields.p_helpful as number | null;
   return {
     id: row.id!,
+    source: fields.source as ReviewSource,
     itemId: row.item_id!,
     passage: row.passage!,
     claim: row.claim!,
     kind: row.kind as ReviewDraft["kind"],
     outcome: row.outcome as ReviewDraft["outcome"],
     note: row.note!,
-    reasoning: row.reasoning!,
+    reasoning: row.reasoning,
     sources: row.sources as unknown as ReviewDraftSource[],
     status: row.status as ReviewDraft["status"],
     verdict: row.verdict as ReviewDraft["verdict"],

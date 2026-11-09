@@ -58,6 +58,12 @@ const JUDGE_SCHEMA = {
 /** The judge's examples, committed with the code. */
 export const JUDGE_EXAMPLES_PATH = path.join(import.meta.dir, "judge-examples.json");
 
+/** Sonnet, not Opus, since 2026-11-06: the judge runs on the same Claude plan
+ *  as the note writer, and on Opus it cost about as much as the writing
+ *  ($0.54 a note over the week to 2026-11-06) while separating publicly
+ *  Helpful from Not Helpful notes only weakly (AUC 0.65 on 163 notes). */
+export const JUDGE_MODEL = "sonnet";
+
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
 /** Nathan's guard hook, which every unattended Claude on the ai-box runs under.
  *  The devbox passes its own settings to runJudge. */
@@ -127,6 +133,31 @@ You may research the passage, the post and the sources on the web. Do not look t
 export const judgePrompt = (note: JudgedNote, examples: JudgeExample[] = []) =>
   [JUDGE_INTRO, ...(examples.length > 0 ? [examplesBlock(examples), "## The note to judge"] : []), noteBlock(note, true), JUDGE_QUESTIONS].join("\n\n");
 
+/** The file a judge subagent of the devbox session writes its answer to, in
+ *  its run folder. */
+export const JUDGEMENT_FILE = "judgement.json";
+
+/** The prompt of a judge that runs as a subagent of the devbox session. Such a
+ *  judge works in the session's checkout and could read the votes, so the
+ *  prompt forbids it. It answers in a file, because a subagent has no JSON
+ *  output mode. */
+export const judgeSubagentPrompt = (note: JudgedNote, examples: JudgeExample[], runDir: string) =>
+  [
+    judgePrompt(note, examples),
+    "Do not read the Common Notes database, the repository or the claude-notes tool either.",
+    `When you are done, write your answer to ${path.join(runDir, JUDGEMENT_FILE)} as JSON with the keys "reasoning" (written first), "p_helpful" and "p_impactful" (numbers from 0 to 1).`,
+  ].join("\n\n");
+
+/** Reads a judge subagent's answer file. Throws when it is not a valid answer. */
+export function parseJudgement(text: string): Judgement {
+  const answer = JSON.parse(text);
+  const isProbability = (p: unknown) => typeof p === "number" && p >= 0 && p <= 1;
+  if (typeof answer.reasoning !== "string" || !isProbability(answer.p_helpful) || !isProbability(answer.p_impactful)) {
+    throw new Error(`Not a judgement: ${text.slice(0, 300)}`);
+  }
+  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful };
+}
+
 /** Runs one judge in its own empty folder and returns its answer. The folder
  *  keeps the prompt and Claude Code's full output for later reading. */
 export async function runJudge(runDir: string, prompt: string, settings = RUN_SETTINGS): Promise<Judgement & { turns: number }> {
@@ -138,7 +169,7 @@ export async function runJudge(runDir: string, prompt: string, settings = RUN_SE
       "-p",
       prompt,
       "--model",
-      "opus",
+      JUDGE_MODEL,
       "--permission-mode",
       "bypassPermissions",
       "--settings",

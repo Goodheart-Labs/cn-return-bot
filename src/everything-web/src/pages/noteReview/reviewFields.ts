@@ -36,6 +36,30 @@ export const REVIEW_FIELDS: FieldDef[] = [
       { value: "wont_post", label: "Won't post", hint: "We decided not to post it" },
     ],
   },
+  {
+    id: "suggested_x",
+    label: "Suggested for X",
+    hint: "The five notes that look most worth posting next (migrations 175 and 176): no X mark, no Not helpful vote from Jim or Nathan, on the leaderboard or written in the last 14 days with a crowd chance of 0.74 or more",
+    kind: "choice",
+    multiple: false,
+    sortable: true,
+    options: [
+      { value: "true", label: "Suggested" },
+      { value: "false", label: "Not suggested" },
+    ],
+  },
+  {
+    id: "source",
+    label: "Written by",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "claude", label: "Claude Code", hint: "Also Claude's notes that Jim or Nathan posted under their own name" },
+      { value: "pipeline", label: "Pipeline", hint: "The older AI note writer" },
+      { value: "human", label: "A person" },
+    ],
+  },
   { id: "my_vote", label: "My vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
   {
     id: "rating",
@@ -93,7 +117,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
     ],
   },
   { id: "creator", group: "Creator", label: "Specific creators", kind: "choice", multiple: true, sortable: false, labelColumn: "creator_name" },
-  { id: "written", label: "Written", hint: "When Claude wrote the note", kind: "date", sortable: true },
+  { id: "written", label: "Written", hint: "When the note was written", kind: "date", sortable: true },
   { id: "published", label: "Post published", kind: "date", sortable: true },
   {
     id: "approval",
@@ -181,7 +205,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
 
 /** The buttons a card can show, each switched on or off in the Display menu. */
 export const DISPLAY = {
-  postOnX: { value: "post_on_x", label: "Post on X", hint: "Opens the tweet and sends it to Typefully. Only in the local posting tool." },
+  postOnX: { value: "post_on_x", label: "Post on X", hint: "Opens the tweet and schedules it in Typefully's next free slot." },
   markPosted: { value: "mark_posted", label: "Posted on X", hint: "Marks a note that was posted on X without the posting tool" },
   wontPost: { value: "wont_post", label: "We won't post this" },
   chat: { value: "chat", label: "Chat with Claude" },
@@ -194,13 +218,14 @@ export const DISPLAY = {
 
 export type DisplayOption = (typeof DISPLAY)[keyof typeof DISPLAY]["value"];
 
-/** Not posted notes first, the crowd's best rated first, then by helpful
- *  votes, the creator's readers and the judge's two guesses. */
+/** Not posted notes, the ones suggested for X first, then the crowd's best
+ *  rated first, then by helpful votes, the creator's readers and the judge's
+ *  two guesses. */
 export const DEFAULT_REVIEW_QUERY: FieldQuery = {
   filters: [
     { field: "on_x", values: ["not_posted"] },
     { field: "outcome", values: ["note"] },
   ],
-  sorts: ["rating", "helpful_votes", "creator_views", "p_helpful", "p_impactful"].map((field) => ({ field, descending: true })),
+  sorts: ["suggested_x", "rating", "helpful_votes", "creator_views", "p_helpful", "p_impactful"].map((field) => ({ field, descending: true })),
   display: [DISPLAY.postOnX, DISPLAY.markPosted, DISPLAY.wontPost, DISPLAY.chat, DISPLAY.improve, DISPLAY.delete].map((option) => option.value),
 };

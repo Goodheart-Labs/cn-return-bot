@@ -1166,6 +1166,56 @@ export type Database = {
           },
         ]
       }
+      everything_x_post_requests: {
+        Row: {
+          claimed_at: string | null
+          done_at: string | null
+          error: string | null
+          id: string
+          note_id: string
+          reply_text: string
+          requested_at: string
+          requested_by: string
+          status: string
+          tweet_text: string
+          typefully_draft_id: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id: string
+          reply_text?: string
+          requested_at?: string
+          requested_by: string
+          status?: string
+          tweet_text: string
+          typefully_draft_id?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id?: string
+          reply_text?: string
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          tweet_text?: string
+          typefully_draft_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_x_post_requests_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_notewriters: {
         Row: {
           cooldown_until: string | null
@@ -3445,6 +3495,10 @@ export type Database = {
           status_reason: string
         }[]
       }
+      everything_request_x_post: {
+        Args: { p_note: string; p_reply?: string; p_text: string }
+        Returns: string
+      }
       everything_return_to_recommendations: {
         Args: { p_note_id: string }
         Returns: undefined
@@ -3458,6 +3512,35 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      everything_review_entries: {
+        Args: { p_ids?: string[] }
+        Returns: {
+          claim: string
+          context_paragraph: string
+          created_at: string
+          draft_id: string
+          id: string
+          item_id: string
+          kind: string
+          note: string
+          note_id: string
+          outcome: string
+          passage: string
+          posted_as: string
+          proposed_note: string
+          proposed_sources: Json
+          reasoning: string
+          review_note: string
+          review_note_at: string
+          review_note_by: string
+          reviewed_at: string
+          reviewed_by: string
+          source: string
+          sources: Json
+          status: string
+          verdict: string
+        }[]
       }
       everything_review_facets: {
         Args: { p_facets: Json; p_request: Json }
@@ -3852,6 +3935,7 @@ export type Database = {
         creator_x_evidence: string | null
         x_time: string | null
         x_tweet_url: string | null
+        source: string | null
       }
       notewriter_field_row: {
         note_id: string | null

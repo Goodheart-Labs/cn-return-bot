@@ -27,7 +27,7 @@ import {
   startPostRun,
   unansweredMessages,
 } from "./store";
-import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
+import { JUDGE_EXAMPLES_PATH, type JudgedNote, JUDGEMENT_FILE, judgePrompt, parseJudgement, runJudge, type JudgeExample } from "./judge";
 import { REPO } from "./prompts";
 import { take, type AskedPassages } from "./take";
 import { fetchUsageSnapshot } from "../everything/db";
@@ -60,6 +60,13 @@ function recordRun(run: JobRun, end: JobEnd, tags: ClaudeRunTag[], ref: Paramete
 // The subscription
 // ---------------------------------------------------------------------------
 
+/** The plan's weekly usage at which this runner starts nothing new:
+ *  CN_STOP_AT_PERCENT for a second runner on a plan its owner also uses. */
+export function stopAtPercent(): number {
+  const set = process.env.CN_STOP_AT_PERCENT;
+  return set ? Math.min(Number(set), MAX_WEEKLY_USAGE_PERCENT) : MAX_WEEKLY_USAGE_PERCENT;
+}
+
 /** Turns the plan's weekly usage into Claude's subscription to the queue
  *  (GOO-724). Below the target, Claude wants a feed post as often as the usage
  *  pacing allows, and it takes reader requests. At the target it takes reader
@@ -67,9 +74,19 @@ function recordRun(run: JobRun, end: JobEnd, tags: ClaudeRunTag[], ref: Paramete
  *  reading, it takes nothing. A notewriter with nothing to take is never
  *  counted as silent, so the feed run stays green while Claude rests. */
 export async function updateClaudeSubscription(weekly: number | null, paused: boolean): Promise<void> {
-  if (paused || weekly === null || weekly >= MAX_WEEKLY_USAGE_PERCENT) {
+  if (paused || weekly === null || weekly >= stopAtPercent()) {
     await subscribe(CLAUDE_NOTEWRITER, null, false);
     console.log(`Subscription: nothing, because ${paused ? "the runner is paused" : weekly === null ? "the usage is unknown" : `the plan is at ${weekly}%`}`);
+    return;
+  }
+  // A second runner (CN_EVERY_MINUTES) asks for a feed post at a fixed
+  // interval, because the shared pacing below reads claude-ai-box's plan, not
+  // this one. It takes reader requests only with CN_READER_REQUESTS=1.
+  const fixedMinutes = Number(process.env.CN_EVERY_MINUTES) || (process.env.CN_POSTS_ONLY === "1" ? 10 : 0);
+  if (fixedMinutes > 0) {
+    const requests = process.env.CN_READER_REQUESTS === "1";
+    await subscribe(CLAUDE_NOTEWRITER, fixedMinutes, requests);
+    console.log(`Subscription: a feed post every ${fixedMinutes} minutes, ${requests ? "and" : "no"} reader requests (plan at ${weekly}%)`);
     return;
   }
   const snapshot = await fetchUsageSnapshot();
@@ -298,6 +315,22 @@ export function runCost(runDir: string): number | null {
     }
   }
   return null;
+}
+
+/** After a judge subagent of the devbox session returned: saves its answer
+ *  for the text it judged. A judge without a valid answer gets one more try,
+ *  and after that its note waits for a restart of the queue. */
+export async function endJudge(run: JobRun & { draftId: string; note: JudgedNote }, end: JobEnd): Promise<JobOutcome | "gave_up"> {
+  await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge], { draft_id: run.draftId });
+  try {
+    const judgement = parseJudgement(readFileSync(path.join(run.runDir, JUDGEMENT_FILE), "utf8"));
+    await saveJudgement(run.draftId, run.note.note, judgement);
+    console.log(`Judged draft ${run.draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
+    return "closed";
+  } catch (err) {
+    console.error(`The judge of draft ${run.draftId} gave no answer: ${(err as Error).message}`);
+  }
+  return run.attempt < MAX_ATTEMPTS ? "retry" : "gave_up";
 }
 
 /** Judges running at once. They share the plan's weekly limit with the posts,
