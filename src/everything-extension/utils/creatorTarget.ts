@@ -77,16 +77,22 @@ export function substackTargetFromPublication(pub: { subdomain: string; name: st
   return { feedType: "substack", feedUrl: `https://${pub.subdomain}.substack.com`, kind: "author", title: pub.name };
 }
 
-/** LessWrong and the Alignment Forum both run ForumMagnum, the same forum
- *  codebase, and share their user accounts. One feed type covers both; the
- *  host in the feed URL says which site's posts the pipeline walks. */
+/** LessWrong, the Alignment Forum and the EA Forum all run ForumMagnum, the
+ *  same forum codebase. One feed type covers all three; the host in the feed
+ *  URL says which site's posts the pipeline walks. LessWrong and the Alignment
+ *  Forum share their user accounts. The EA Forum has accounts of its own, so
+ *  the same slug there may be someone else. */
 const FORUM_HOSTNAMES: Record<string, string> = {
   "lesswrong.com": "https://www.lesswrong.com",
   "alignmentforum.org": "https://www.alignmentforum.org",
+  "forum.effectivealtruism.org": "https://forum.effectivealtruism.org",
 };
 
-/** The canonical origin for a LessWrong or Alignment Forum URL, or null when
- *  the URL belongs to neither site. */
+/** The EA Forum, whose visits have a setting of their own (utils/settings.ts). */
+export const EA_FORUM_ORIGIN = "https://forum.effectivealtruism.org";
+
+/** The canonical origin for a forum URL, or null when the URL belongs to none
+ *  of the forums. */
 export function forumOrigin(pageUrl: string): string | null {
   try {
     const hostname = new URL(pageUrl).hostname.replace(/^www\./, "");
@@ -96,7 +102,7 @@ export function forumOrigin(pageUrl: string): string | null {
   }
 }
 
-/** True for a forum post page, so a /posts/<id>/... path on either site. */
+/** True for a forum post page, so a /posts/<id>/... path on any of the forums. */
 export function isForumPostPage(pageUrl: string): boolean {
   try {
     return forumOrigin(pageUrl) !== null && new URL(pageUrl).pathname.startsWith("/posts/");
@@ -119,7 +125,9 @@ export function forumAuthorTarget(pageUrl: string, title?: string): CreatorTarge
 
 /** Resolves a forum post page to its author's creator target by asking the
  *  site's own GraphQL API for the post's author. The post id sits in the URL
- *  path. Null when the URL is not a post or the API call failed. */
+ *  path. Null when the URL is not a post or the API call failed. The EA Forum
+ *  can answer such a request with its bot check, so callers then read the
+ *  author from the page itself (readForumPostAuthorFromPage). */
 export async function forumPostAuthorTarget(pageUrl: string): Promise<CreatorTarget | null> {
   const origin = forumOrigin(pageUrl);
   const postId = isForumPostPage(pageUrl) ? new URL(pageUrl).pathname.match(/^\/posts\/(\w+)/)?.[1] : null;
@@ -140,6 +148,23 @@ export async function forumPostAuthorTarget(pageUrl: string): Promise<CreatorTar
   } catch {
     return null;
   }
+}
+
+/** Runs inside a forum post page, so it must stay self-contained: the
+ *  background passes it to executeScript, which serializes the function, and
+ *  the visit recorder calls it directly, because its content script IS the
+ *  page. Every forum marks the link to the post's author in the post header
+ *  with "from=post_header". */
+export function readForumPostAuthorFromPage(): { href: string; name: string } | null {
+  const link = document.querySelector<HTMLAnchorElement>('a[href^="/users/"][href*="from=post_header"]');
+  if (!link) return null;
+  const name = link.textContent?.trim() || document.querySelector<HTMLMetaElement>('meta[name="author"]')?.content || "";
+  return { href: link.href.split("?")[0]!, name };
+}
+
+/** The creator target for an author link read out of a post page. */
+export function forumAuthorFromPageLink(link: { href: string; name: string } | null): CreatorTarget | null {
+  return link ? forumAuthorTarget(link.href, link.name) : null;
 }
 
 /** The handle of a Substack profile page such as substack.com/@thezvi, or null

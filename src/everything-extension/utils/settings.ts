@@ -114,7 +114,7 @@ export const onSettingsChanged = (callback: () => void) => onSyncKeyChanged(SETT
 const SETTINGS_KEY = "cn:settings";
 
 /** The site kinds whose page visits can be recorded (see utils/linkVisits.ts). */
-export type VisitSiteKind = "substack" | "youtube" | "lesswrong";
+export type VisitSiteKind = "substack" | "youtube" | "lesswrong" | "eaforum";
 
 /** How notes render on article pages. "margin" is the default: a small marker
  *  in the right margin, and the note card opens beside the text. "classic" is
@@ -140,7 +140,13 @@ export type ExtensionSettings = {
 };
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
-  saveVisits: { substack: true, youtube: true, lesswrong: true },
+  // The EA Forum was added after many readers had answered the welcome page,
+  // which then named only the other sites. Its default is off, so none of
+  // those readers is recorded there until they switch it on. The welcome page
+  // stores every site's answer explicitly, so a new install that says yes gets
+  // the EA Forum too. Turning this default on would record the earlier readers
+  // without their consent.
+  saveVisits: { substack: true, youtube: true, lesswrong: true, eaforum: false },
   showThumbnailBadges: true,
   noteStyle: "margin",
   pillPalette: DEFAULT_PILL_PALETTE,

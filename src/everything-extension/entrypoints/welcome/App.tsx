@@ -21,7 +21,7 @@ export function WelcomeApp() {
 
   const answer = async (shareVisits: boolean) => {
     setAnswered(shareVisits);
-    await updateSettings({ saveVisits: { substack: shareVisits, youtube: shareVisits, lesswrong: shareVisits } });
+    await updateSettings({ saveVisits: { substack: shareVisits, youtube: shareVisits, lesswrong: shareVisits, eaforum: shareVisits } });
     await markWelcomeSeen();
     // The tab closes itself once the answer is saved. window.close works here
     // because the background opened this tab.
@@ -52,7 +52,7 @@ export function WelcomeApp() {
           <h2 className="text-sm font-semibold text-fg">One question before you start</h2>
           <p className="text-sm leading-relaxed text-fg-secondary">
             We generate notes (fact checks or other useful context) on all new posts from specific
-            authors and creators on YouTube, Substack, LessWrong, and the Alignment Forum. If you want, we can save the
+            authors and creators on YouTube, Substack, LessWrong, the Alignment Forum, and the EA Forum. If you want, we can save the
             posts you visit, without your account attached, and then automatically generate notes on
             the authors you read and the channels you watch.
           </p>
