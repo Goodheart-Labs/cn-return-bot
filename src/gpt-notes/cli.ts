@@ -29,6 +29,7 @@ import { openPassageRequests } from "../everything/passageRequests";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { SERPER_COST_PER_SEARCH } from "../pipeline/cost-tracking/pricing";
+import { closeBrowser } from "../pipeline/utils/browserManager";
 import { runJob, type HarnessSettings, type ReasoningEffort, type RunRecord } from "./harness";
 import type { Provider } from "./model";
 import type { ServiceTier } from "./pricing";
@@ -141,4 +142,10 @@ async function main() {
   if (job.kind === "tweet" && !record.xAnswer) throw new Error(`The agent stopped without answering the tweet. See ${runDir}`);
 }
 
-await main();
+// The fetch ladder may have started a headless browser, which would keep the
+// process alive after the run.
+try {
+  await main();
+} finally {
+  await closeBrowser();
+}
