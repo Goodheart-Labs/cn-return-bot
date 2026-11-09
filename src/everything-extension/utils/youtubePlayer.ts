@@ -3,11 +3,18 @@
 
 export const PLAYER_SELECTOR = "#movie_player";
 const VIDEO_SELECTOR = "video.html5-main-video";
+const WATCH_TITLE_SELECTOR = "ytd-watch-metadata h1";
 const WATCH_PATH = "/watch";
 
 /** The video element of the watch page's player, or null while there is none. */
 export function mainVideo(): HTMLVideoElement | null {
   return document.querySelector<HTMLVideoElement>(VIDEO_SELECTOR);
+}
+
+/** The title of the video a watch page plays, without the " - YouTube" that
+ *  the tab's title adds. */
+export function watchPageTitle(): string {
+  return document.querySelector(WATCH_TITLE_SELECTOR)?.textContent?.trim() || document.title;
 }
 
 /** The id of the video a watch page plays. Null on every other page, Shorts

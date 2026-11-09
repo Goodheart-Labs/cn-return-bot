@@ -9,7 +9,7 @@ import { TAB_CREATOR_MESSAGE_TYPE } from "./authorFeed";
 import { showNotesAfterFirstNote } from "./mountWriteAnywhere";
 import { createOverlayUi } from "./overlayUi";
 import { isPageDark } from "./pageTheme";
-import { writableVideo } from "./youtubePlayer";
+import { watchPageTitle, writableVideo } from "./youtubePlayer";
 
 /** Opens the note editor for the playing video at `atSeconds`, or at the
  *  current time when it is left out. */
@@ -56,7 +56,7 @@ export function installVideoNoteWriter(ctx: ContentScriptContext, onPosted: () =
               videoId={videoId}
               atSeconds={startAt}
               durationSeconds={video.duration}
-              page={{ url: pageUrl, title: document.title, creatorFeedUrl }}
+              page={{ url: pageUrl, title: watchPageTitle(), creatorFeedUrl }}
               onClose={close}
               onPosted={() => void showNotesAfterFirstNote(pageUrl, onPosted)}
             />

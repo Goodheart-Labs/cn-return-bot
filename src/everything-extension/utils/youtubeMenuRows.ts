@@ -4,7 +4,7 @@ import { readWatchPageChannel } from "./authorFeed";
 import { youtubeChannelPath, youtubeChannelTarget, type CreatorTarget } from "./creatorTarget";
 import type { MenuRow, MenuSite, MenuSubject } from "./menuRows";
 import type { OpenVideoNoteEditor } from "./videoNoteWriter";
-import { writableVideo } from "./youtubePlayer";
+import { watchPageTitle, writableVideo } from "./youtubePlayer";
 
 // YouTube's three-dot menus: the one on every video card in a listing, and the
 // one under the playing video. Every selector they depend on lives here. Most
@@ -22,7 +22,6 @@ const WATCH_TRIGGER_SELECTOR = "ytd-watch-metadata #actions ytd-menu-renderer > 
 const CARD_SELECTOR =
   "ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer, yt-lockup-view-model";
 const CARD_TITLE_SELECTOR = "#video-title, .ytLockupMetadataViewModelTitle, h3";
-const WATCH_TITLE_SELECTOR = "ytd-watch-metadata h1";
 // Both generations of YouTube's popup menu. Only one is open at a time.
 const MENU_SELECTOR = 'ytd-popup-container yt-list-view-model[role="menu"], ytd-popup-container ytd-menu-popup-renderer #items';
 
@@ -47,7 +46,7 @@ function watchPageSubject(openEditor: OpenVideoNoteEditor): MenuSubject | null {
   if (!videoId) return null;
   return {
     pageUrl: youtubeWatchUrl(videoId),
-    title: document.querySelector(WATCH_TITLE_SELECTOR)?.textContent?.trim() ?? document.title,
+    title: watchPageTitle(),
     noun: "video",
     currentPage: true,
     creator: async () => {
