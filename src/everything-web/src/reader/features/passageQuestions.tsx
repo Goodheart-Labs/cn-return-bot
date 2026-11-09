@@ -105,7 +105,7 @@ export function useNotePost(item: PageItem) {
       const session = await ensureSession();
       if (!session) { setLogin(true); return null; }
       return await postClaimWithNote.mutateAsync({
-        item, page: { url: item.url, title: item.title ?? "" }, anchorText: anchor.text, contextParagraph: anchor.paragraph,
+        item, page: { url: item.url, title: item.title ?? "" }, anchor: { kind: "text", text: anchor.text, contextParagraph: anchor.paragraph },
         note, session, signed: signed && !session.user.is_anonymous,
       });
     } catch {

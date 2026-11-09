@@ -1,7 +1,10 @@
-import { extractYoutubeVideoId } from "@cn/core/pageUrls";
+import { extractYoutubeVideoId, youtubeWatchUrl } from "@cn/core/pageUrls";
+import { formatVideoTime } from "@cn/core/videoTime";
 import { readWatchPageChannel } from "./authorFeed";
 import { youtubeChannelPath, youtubeChannelTarget, type CreatorTarget } from "./creatorTarget";
-import type { MenuSite, MenuSubject } from "./menuRows";
+import type { MenuRow, MenuSite, MenuSubject } from "./menuRows";
+import type { OpenVideoNoteEditor } from "./videoNoteWriter";
+import { writableVideo } from "./youtubePlayer";
 
 // YouTube's three-dot menus: the one on every video card in a listing, and the
 // one under the playing video. Every selector they depend on lives here. Most
@@ -23,13 +26,27 @@ const WATCH_TITLE_SELECTOR = "ytd-watch-metadata h1";
 // Both generations of YouTube's popup menu. Only one is open at a time.
 const MENU_SELECTOR = 'ytd-popup-container yt-list-view-model[role="menu"], ytd-popup-container ytd-menu-popup-renderer #items';
 
-const watchUrl = (videoId: string) => `https://www.youtube.com/watch?v=${videoId}`;
+/** The row that opens the note editor at the time the video is at when the
+ *  menu opens. The label and the editor name the same time. A live stream
+ *  gets no row. */
+function writeRow(openEditor: OpenVideoNoteEditor): MenuRow | undefined {
+  const playing = writableVideo();
+  if (!playing) return undefined;
+  const atSeconds = playing.video.currentTime;
+  return {
+    label: `Write a note at ${formatVideoTime(atSeconds)}`,
+    run: async () => {
+      openEditor(atSeconds);
+      return null;
+    },
+  };
+}
 
-function watchPageSubject(): MenuSubject | null {
+function watchPageSubject(openEditor: OpenVideoNoteEditor): MenuSubject | null {
   const videoId = extractYoutubeVideoId(location.href);
   if (!videoId) return null;
   return {
-    pageUrl: watchUrl(videoId),
+    pageUrl: youtubeWatchUrl(videoId),
     title: document.querySelector(WATCH_TITLE_SELECTOR)?.textContent?.trim() ?? document.title,
     noun: "video",
     currentPage: true,
@@ -37,6 +54,7 @@ function watchPageSubject(): MenuSubject | null {
       const channel = readWatchPageChannel();
       return channel ? youtubeChannelTarget(channel.href, channel.name.trim()) : null;
     },
+    writeRow: writeRow(openEditor),
   };
 }
 
@@ -54,7 +72,7 @@ function cardSubject(card: Element): MenuSubject | null {
   );
   const creator: CreatorTarget | null = channelLink ? youtubeChannelTarget(channelLink.href, channelLink.textContent!.trim()) : null;
   return {
-    pageUrl: watchUrl(videoId),
+    pageUrl: youtubeWatchUrl(videoId),
     title: card.querySelector(CARD_TITLE_SELECTOR)?.textContent?.trim() ?? "",
     noun: "video",
     currentPage: false,
@@ -62,14 +80,16 @@ function cardSubject(card: Element): MenuSubject | null {
   };
 }
 
-export const youtubeMenuSite: MenuSite = {
+/** YouTube's menus. The menu under the playing video also gets a row that
+ *  opens `openEditor`. */
+export const youtubeMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite => ({
   name: "youtube",
   triggerFor(target) {
     if (!target.closest('button, yt-icon-button, [role="button"]')) return null;
     return target.closest<HTMLElement>(WATCH_TRIGGER_SELECTOR) ?? target.closest<HTMLElement>(TRIGGER_SELECTOR);
   },
   subjectFor(trigger) {
-    if (trigger.matches(WATCH_TRIGGER_SELECTOR)) return watchPageSubject();
+    if (trigger.matches(WATCH_TRIGGER_SELECTOR)) return watchPageSubject(openEditor);
     // The watch page's other buttons, such as Like and Share, sit in the same
     // ytd-menu-renderer and match the general selector. They open no menu of
     // ours.
@@ -89,4 +109,4 @@ export const youtubeMenuSite: MenuSite = {
   refit(menu) {
     menu.closest("tp-yt-iron-dropdown")?.dispatchEvent(new CustomEvent("iron-resize"));
   },
-};
+});

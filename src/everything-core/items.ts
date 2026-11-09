@@ -1,5 +1,5 @@
 import { noteStatus } from "./noteScore";
-import { extractYoutubeVideoId } from "./pageUrls";
+import { extractYoutubeVideoId, youtubeWatchUrl } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
 import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
@@ -195,22 +195,25 @@ async function projectIdForPage(creatorFeedUrl: string | null | undefined): Prom
   return project.id;
 }
 
-/** Finds or creates the everything_items row for any web page, and returns its
- *  id. The write-anywhere flow needs this first, because a note hangs off a
- *  claim and a claim hangs off an item. Row level security only lets a client
- *  insert rows with source='web' (migrations 068 and 081). `creatorFeedUrl` is
- *  the feed of the page's creator when the caller could tell, and decides the
- *  project. The `url` column is unique, so when two clients race, the loser
- *  simply reads the winner's row. */
-export async function ensureWebItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
-  const url = params.url.replace(/\/$/, "");
-  const existing = await supabase.from("everything_items").select("id").in("url", [url, `${url}/`]).limit(1);
-  if (existing.data?.[0]) return existing.data[0].id;
+/** Finds or creates the everything_items row for a web page or a YouTube video,
+ *  and returns its id. The write-anywhere flow needs this first, because a note
+ *  hangs off a claim and a claim hangs off an item. Row level security only
+ *  lets a client insert a finished item with the source 'web', or 'youtube' at
+ *  a video's plain watch address (migrations 114 and 178). A video is looked up
+ *  by its video id, because older items store other address forms.
+ *  `creatorFeedUrl` is the feed of the page's creator when the caller could
+ *  tell, and decides the project. The `url` column is unique, so when two
+ *  clients race, the loser simply reads the winner's row. */
+export async function ensurePageItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
+  const existing = await fetchItemForUrl(params.url);
+  if (existing) return existing.id;
 
+  const videoId = extractYoutubeVideoId(params.url);
+  const url = videoId ? youtubeWatchUrl(videoId) : params.url.replace(/\/$/, "");
   const projectId = await projectIdForPage(params.creatorFeedUrl);
   const inserted = await supabase
     .from("everything_items")
-    .insert({ project_id: projectId, source: "web", url, title: params.title || null, status: "done" })
+    .insert({ project_id: projectId, source: videoId ? "youtube" : "web", url, title: params.title || null, status: "done" })
     .select("id")
     .single();
   if (inserted.data) return inserted.data.id;

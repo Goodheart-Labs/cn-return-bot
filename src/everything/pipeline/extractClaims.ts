@@ -30,6 +30,7 @@ import { describeImageFromUrl, type GeminiMediaDescription } from "../../pipelin
 import { IMAGE_MARKER_RE } from "../sources/substack";
 import type { ClaimAnchor, ContentPart, ExtractedClaim, ExtractionResult, FetchedContent } from "../types";
 import { normalizeText } from "../../everything-core/normalizeText";
+import { buildVideoLink } from "../../everything-core/pageUrls";
 import { cutCues, cutText, gateAndSplit, joinCues, type GateSplitVerdict, type PartStart } from "./gateAndSplit";
 import { extractionModels } from "./model";
 import { FORECAST_TYPE, MIN_COVERAGE, OTHER_TYPE, PASSAGE_TYPES, PassageFormatError, STATEMENT_TYPE, claimsOfPassages, describeProblems, hasTextOutsideImages, parsePassages, type Passage, type PassageClaim } from "./passages";
@@ -182,10 +183,6 @@ export async function runPassageExtraction(content: string, options: ExtractionO
 export async function runExtraction(content: string, hasNextChunk = false): Promise<{ claims: PassageClaim[]; carry: string }> {
   const { passages, carry } = await runPassageExtraction(content, { hasNextChunk });
   return { claims: claimsOfPassages(passages, bodyOfChunkMessage(content)), carry };
-}
-
-export function buildVideoLink(videoId: string, seconds: number): string {
-  return `https://www.youtube.com/watch?v=${videoId}&t=${Math.max(0, Math.floor(seconds))}s`;
 }
 
 /**

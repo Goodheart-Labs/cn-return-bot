@@ -35,6 +35,10 @@ export interface MenuSubject {
   currentPage: boolean;
   /** The page's creator. On Substack this can need a lookup. */
   creator: () => Promise<CreatorTarget | null>;
+  /** A row that opens our note editor on this page, such as "Write a note at
+   *  12:34" under a YouTube video. It sits after the check row and is never
+   *  left out. */
+  writeRow?: MenuRow;
 }
 
 /** How one site's menus work. Every selector lives in the site's file. */
@@ -58,7 +62,7 @@ export interface MenuSite {
   dress?(row: HTMLElement, icon: HTMLElement, label: HTMLElement, native: HTMLElement): void;
 }
 
-interface MenuRow {
+export interface MenuRow {
   label: string;
   /** Runs the row's action and returns the confirmation to show, or null
    *  when the background shows its own. */
@@ -92,6 +96,7 @@ async function rowsFor(subject: MenuSubject): Promise<MenuRow[]> {
     pageIsCovered(subject.pageUrl, requested);
   const rows: MenuRow[] = [];
   if (!pageHandled) rows.push({ label: `Check this ${subject.noun}`, run: () => checkPage(subject, creator) });
+  if (subject.writeRow) rows.push(subject.writeRow);
   if (pressable) rows.push({ label: priorityButtonLabel(pressable), run: () => pressCreator(pressable) });
   return rows;
 }

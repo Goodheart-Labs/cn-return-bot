@@ -10,6 +10,7 @@ import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
 import { cn } from "@cn/ui/cn";
 import { focusRing } from "@cn/ui/focusRing";
 import { PlayIcon } from "@cn/ui/icons";
+import { formatVideoTime } from "@cn/core/videoTime";
 import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { FloatingWindow, type Box } from "./FloatingWindow";
@@ -73,18 +74,6 @@ function popsUpDuringPlayback(group: TimedGroup): boolean {
 /** Whether playback at `seconds` is inside the claim's part of the video. */
 function playheadInClaim(group: TimedGroup, seconds: number): boolean {
   return seconds >= group.startSeconds && seconds <= group.endSeconds + TRAILING_GRACE_SECONDS;
-}
-
-const SECONDS_PER_MINUTE = 60;
-const SECONDS_PER_HOUR = 3600;
-
-/** A time in the video as YouTube writes it, such as 4:05 or 1:02:03. */
-function formatVideoTime(totalSeconds: number): string {
-  const whole = Math.floor(totalSeconds);
-  const hours = Math.floor(whole / SECONDS_PER_HOUR);
-  const minutes = Math.floor((whole % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  const seconds = String(whole % SECONDS_PER_MINUTE).padStart(2, "0");
-  return hours ? `${hours}:${String(minutes).padStart(2, "0")}:${seconds}` : `${minutes}:${seconds}`;
 }
 
 /** The top bar's button that moves the video to the claim, labelled with the

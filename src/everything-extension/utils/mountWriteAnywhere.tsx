@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { browser } from "#imports";
 import type { ContentScriptContext } from "#imports";
 import { queryClient } from "@cn/features/query/queryClient";
+import { Quote } from "@cn/ui/typography";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { TAB_CREATOR_MESSAGE_TYPE } from "./authorFeed";
 import { addCoveredPageUrl } from "./coveredPages";
@@ -42,13 +43,15 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
     <WriteNoteOverlay
       item={null}
       pageForItem={{ url: pageUrl, title: document.title, creatorFeedUrl }}
-      selection={selection}
+      anchor={{ kind: "text", text: selection }}
       onClose={() => setSelection(null)}
       onPosted={() => {
         setSelection(null);
         onPosted();
       }}
-    />
+    >
+      <Quote>“{selection}”</Quote>
+    </WriteNoteOverlay>
   );
 }
 
