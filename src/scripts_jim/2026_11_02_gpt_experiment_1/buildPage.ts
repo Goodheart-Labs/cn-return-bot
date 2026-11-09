@@ -9,7 +9,6 @@
 
 import { readFileSync, writeFileSync } from "fs";
 import * as path from "path";
-import { WEB_SEARCH_CALL_USD } from "../../gpt-notes/pricing";
 import { POSTS } from "./posts";
 
 const DIR = import.meta.dir;
@@ -60,6 +59,9 @@ const EFFORTS = [
   { key: "xhigh", runs: "runs", judgements: "judgements" },
   { key: "medium", runs: "runs/medium", judgements: "judgements/medium" },
 ];
+
+/** What OpenAI charged per hosted web search in experiment 1, on every tier. */
+const WEB_SEARCH_CALL_USD = 0.01;
 
 /** Flex halves every token price, but each web search costs the same on
  *  every tier. The estimate assumes flex would serve every request. */

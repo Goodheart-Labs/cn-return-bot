@@ -18,10 +18,6 @@ export const LONG_CONTEXT_INPUT_TOKENS = 272_000;
 const LONG_CONTEXT_INPUT_FACTOR = 2;
 const LONG_CONTEXT_OUTPUT_FACTOR = 1.5;
 
-/** Each web search costs this on top of its tokens, on every tier. Opening a
- *  page and searching inside it cost no call fee. */
-export const WEB_SEARCH_CALL_USD = 0.01;
-
 export interface RequestUsage {
   inputTokens: number;
   /** Input tokens read from the cache. */
@@ -31,7 +27,6 @@ export interface RequestUsage {
   write12hTokens: number;
   /** Output tokens, including the hidden reasoning. */
   outputTokens: number;
-  webSearches: number;
 }
 
 export function requestCostUsd(usage: RequestUsage, tier: ServiceTier): number {
@@ -44,6 +39,5 @@ export function requestCostUsd(usage: RequestUsage, tier: ServiceTier): number {
   const uncachedTokens = usage.inputTokens - usage.cachedTokens - usage.write30mTokens - usage.write12hTokens;
   const inputUsd =
     uncachedTokens * price.input + usage.cachedTokens * price.cachedInput + usage.write30mTokens * price.write30m + usage.write12hTokens * price.write12h;
-  const tokensUsd = (inputUsd * inputFactor + usage.outputTokens * price.output * outputFactor) / 1_000_000;
-  return tokensUsd + usage.webSearches * WEB_SEARCH_CALL_USD;
+  return (inputUsd * inputFactor + usage.outputTokens * price.output * outputFactor) / 1_000_000;
 }

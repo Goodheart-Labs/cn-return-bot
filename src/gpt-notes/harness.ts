@@ -2,11 +2,12 @@
  * built with the OpenAI Agents SDK on GPT-6.1 Terra. It gets the same task as
  * the Claude note writer on ai-box and the same examples as its system prompt.
  *
- * The agent's tools are OpenAI's hosted web search, which can also open a page
- * and search inside it, our own tools that save its answers, and a subagent
- * tool. A subagent is the SDK's own: an agent that starts from a fresh
- * conversation with the examples and the task its parent wrote, does research
- * with web search, and answers in text.
+ * The agent's tools are our web tools (webTools.ts: a Serper search, and
+ * opening a page and finding text in it through the pipeline's fetch ladder),
+ * our own tools that save its answers, and a subagent tool. A subagent is the
+ * SDK's own: an agent that starts from a fresh conversation with the examples
+ * and the task its parent wrote, does research with the web tools, and answers
+ * in text.
  *
  * Prompt caching works at two levels. The examples end in a cache breakpoint,
  * so every post or tweet reads them from the cache (model.ts). And OpenAI's
@@ -21,7 +22,7 @@
 
 import { readFileSync } from "fs";
 import * as path from "path";
-import { Agent, run, tool, webSearchTool, type AgentInputItem, type ModelSettings, type Tool } from "@openai/agents";
+import { Agent, run, tool, type AgentInputItem, type ModelSettings, type Tool } from "@openai/agents";
 import type OpenAI from "openai";
 import { z } from "zod";
 import type { NewDraft } from "../claude-notes/store";
@@ -30,6 +31,7 @@ import { IMAGE_LINKS_HEADING } from "../pipeline/input/claudeTweetInput";
 import { openAIClient, TrackedModel, type Provider, type RunLog } from "./model";
 import type { ServiceTier } from "./pricing";
 import { postMessage, subagentBrief, tweetMessage, type Job } from "./prompts";
+import { webTools, type WebToolUse } from "./webTools";
 
 const REPO = path.resolve(import.meta.dir, "../..");
 const POST_EXAMPLES_PATH = path.join(REPO, "docs/note-examples.md");
@@ -60,6 +62,7 @@ export interface RunRecord extends RunLog {
   /** Why the post is not worth checking, when the agent skipped it. */
   skipReason: string | null;
   xAnswer: XAnswer | null;
+  web: WebToolUse;
 }
 
 /** What every agent of one run shares. The SDK hands it to every tool as the
@@ -71,6 +74,8 @@ interface HarnessState {
   record: RunRecord;
   /** The examples, as the first message of every conversation. */
   examples: AgentInputItem;
+  /** One set for the whole run, so every agent shares the fetched pages. */
+  webTools: Tool[];
 }
 
 /** A skipped post and an answered tweet end the run. A checked post ends when
@@ -193,11 +198,11 @@ function subagentTool(state: HarnessState): Tool<HarnessState> {
     name: "subagent",
     model: new TrackedModel(state.client, state.settings.provider, "subagent", state.record),
     modelSettings: modelSettings(state),
-    tools: [webSearchTool()],
+    tools: state.webTools,
   });
   return subagent.asTool({
     toolName: "subagent",
-    toolDescription: "Starts a subagent that does one research task with web search and answers with what it found. It sees only the examples and the task you give it.",
+    toolDescription: "Starts a subagent that does one research task with search, open_page and find_in_page, and answers with what it found. It sees only the examples and the task you give it.",
     parameters: z.object({ task: z.string().describe("What to check, and everything you found that might help, with the facts, quotes and links") }),
     inputBuilder: ({ params }) => [state.examples, { role: "user", content: subagentBrief(params.task) }],
     runOptions: { maxTurns: MAX_TURNS },
@@ -210,8 +215,8 @@ function mainAgent(state: HarnessState): Agent<HarnessState> {
   const { job } = state;
   const tools =
     job.kind === "post"
-      ? [webSearchTool(), saveDraftTool(state, job), skipPostTool(state), subagentTool(state)]
-      : [webSearchTool(), submitXNoteTool(state), xNoNoteTool(state), subagentTool(state)];
+      ? [...state.webTools, saveDraftTool(state, job), skipPostTool(state), subagentTool(state)]
+      : [...state.webTools, submitXNoteTool(state), xNoNoteTool(state), subagentTool(state)];
   return new Agent<HarnessState>({
     name: "main",
     model: new TrackedModel(state.client, state.settings.provider, "main", state.record),
@@ -236,10 +241,10 @@ function taskMessage(job: Job): AgentInputItem {
 }
 
 export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
-  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, requests: [], failedRequests: [] };
+  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, web: { searches: 0, pagesFetched: 0, calls: [] }, requests: [], failedRequests: [] };
   const examplesPath = settings.examplesPath ?? (job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH);
   const examples: AgentInputItem = { role: "system", content: readFileSync(examplesPath, "utf8") };
-  const state = { job, settings, client: openAIClient(settings.provider), record, examples };
+  const state = { job, settings, client: openAIClient(settings.provider), record, examples, webTools: webTools(record.web) };
   await run(mainAgent(state), [examples, taskMessage(job)], { context: state, maxTurns: MAX_TURNS });
   return record;
 }

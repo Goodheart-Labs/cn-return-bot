@@ -4,7 +4,7 @@ import { addExamplesBreakpoint } from "./model";
 import { requestCostUsd, type RequestUsage } from "./pricing";
 import { subagentBrief } from "./prompts";
 
-const NO_USAGE: RequestUsage = { inputTokens: 0, cachedTokens: 0, write30mTokens: 0, write12hTokens: 0, outputTokens: 0, webSearches: 0 };
+const NO_USAGE: RequestUsage = { inputTokens: 0, cachedTokens: 0, write30mTokens: 0, write12hTokens: 0, outputTokens: 0 };
 
 describe("requestCostUsd", () => {
   test("bills each input token once, at the read, write or ordinary rate", () => {
@@ -17,10 +17,6 @@ describe("requestCostUsd", () => {
   test("bills a request above 272K input tokens at the long-context rate as a whole", () => {
     const usage = { ...NO_USAGE, inputTokens: 300_000, outputTokens: 10_000 };
     expect(requestCostUsd(usage, "default")).toBeCloseTo(0.6 + 0.075, 6);
-  });
-
-  test("adds the fee of each web search on every tier", () => {
-    expect(requestCostUsd({ ...NO_USAGE, webSearches: 3 }, "flex")).toBeCloseTo(0.03, 6);
   });
 });
 
@@ -100,7 +96,7 @@ describe("runJob against a fake Responses API", () => {
     expect(subagentBodies.map((b) => b.input[1]!.content).sort()).toEqual([subagentBrief("one"), subagentBrief("two")]);
     for (const body of subagentBodies) {
       expect(body.input).toHaveLength(2);
-      expect(body.tools.map((t) => t.type)).toEqual(["web_search"]);
+      expect(body.tools.map((t) => t.name)).toEqual(["search", "open_page", "find_in_page"]);
     }
     const mainBodies = bodies.filter((b) => !isSubagent(b));
     expect(mainBodies[1]!.tools).toEqual(mainBodies[0]!.tools);

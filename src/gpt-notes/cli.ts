@@ -28,6 +28,7 @@ import { isWholePageChecked } from "../everything-core/wholePageChecked";
 import { openPassageRequests } from "../everything/passageRequests";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
+import { SERPER_COST_PER_SEARCH } from "../pipeline/cost-tracking/pricing";
 import { runJob, type HarnessSettings, type ReasoningEffort, type RunRecord } from "./harness";
 import type { Provider } from "./model";
 import type { ServiceTier } from "./pricing";
@@ -98,13 +99,17 @@ function runFolderName(job: Job): string {
 function summarize(record: RunRecord, minutes: number) {
   const sum = (pick: (r: RunRecord["requests"][number]) => number) => record.requests.reduce((total, r) => total + pick(r), 0);
   const inputTokens = sum((r) => r.inputTokens);
+  const modelUsd = sum((r) => r.costUsd);
+  const searchUsd = record.web.searches * SERPER_COST_PER_SEARCH;
   return {
-    costUsd: Number(sum((r) => r.costUsd).toFixed(4)),
+    costUsd: Number((modelUsd + searchUsd).toFixed(4)),
+    searchCostUsd: Number(searchUsd.toFixed(4)),
     minutes,
     requests: record.requests.length,
     subagents: new Set(record.requests.map((r) => r.agent).filter((agent) => agent.startsWith("subagent"))).size,
     failedRequests: record.failedRequests,
-    webSearches: sum((r) => r.webSearches),
+    searches: record.web.searches,
+    pagesFetched: record.web.pagesFetched,
     inputTokens,
     cachedShareOfInput: inputTokens ? Number((sum((r) => r.cachedTokens) / inputTokens).toFixed(3)) : 0,
     outputTokens: sum((r) => r.outputTokens),
@@ -130,6 +135,7 @@ async function main() {
   writeFileSync(path.join(runDir, "drafts.json"), JSON.stringify(record.drafts, null, 2));
   if (job.kind === "tweet") writeFileSync(path.join(runDir, "x-answer.json"), JSON.stringify(record.xAnswer, null, 2));
   writeFileSync(path.join(runDir, "requests.jsonl"), record.requests.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  writeFileSync(path.join(runDir, "web-tools.jsonl"), record.web.calls.map((call) => JSON.stringify(call)).join("\n") + "\n");
   writeFileSync(path.join(runDir, "summary.json"), JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));
   if (job.kind === "tweet" && !record.xAnswer) throw new Error(`The agent stopped without answering the tweet. See ${runDir}`);

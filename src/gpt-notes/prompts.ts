@@ -32,7 +32,7 @@ The post is at the end of this message.
 
 To save a note, call save_draft. A draft with outcome "note" goes up on commonnotes.net at once as an AI note. So call it exactly once per draft. Also save a draft for each passage you researched and decided against, with outcome no_note_needed or too_hard.
 
-Readers see each source's quote under the note, so the quote must appear word for word on the page. Web search can open a page and find text in it. So open each source and check with find in page that the quote is on it.
+Readers see each source's quote under the note, so the quote must appear word for word on the page. So check each quote with find_in_page on its source.
 
 For subagents, use the subagent tool. A subagent starts fresh. It sees the examples in your system prompt, but not this message, the post or the pages you read. So put everything it needs into its task: the passage, what to check, and everything you found that might help it, with the facts, quotes and links. It answers with what it found, and you save the drafts.
 

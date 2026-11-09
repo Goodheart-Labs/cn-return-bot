@@ -4,7 +4,7 @@
  * them on to OpenAI (GOO-688). The wrapper retries failed requests and logs
  * what each request cost. */
 
-import type { AgentOutputItem, Model, ModelRequest, ModelResponse } from "@openai/agents";
+import type { Model, ModelRequest, ModelResponse } from "@openai/agents";
 import { ModelBehaviorError, OpenAIResponsesModel } from "@openai/agents";
 import OpenAI from "openai";
 import { LONG_CONTEXT_INPUT_TOKENS, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
@@ -118,16 +118,8 @@ interface RawUsage {
   output_tokens?: number;
   input_tokens_details?: { cached_tokens?: number; cache_write_tokens?: number; cache_write_tokens_details?: { ttl_30m_tokens?: number; ttl_12h_tokens?: number } };
   output_tokens_details?: { reasoning_tokens?: number };
-  /** What OpenRouter billed for the request, web searches included. */
+  /** What OpenRouter billed for the request. */
   cost?: number;
-}
-
-/** A web search the model ran, as opposed to opening a page or searching in
- *  one. Only searches have a call fee. */
-function isWebSearch(item: AgentOutputItem): boolean {
-  if (item.type !== "hosted_tool_call" || item.name !== "web_search_call") return false;
-  const action = (item.providerData as { action?: { type?: string } } | undefined)?.action;
-  return action?.type === undefined || action.type === "search";
 }
 
 function requestLog(agent: string, turn: number, response: ModelResponse, startedAt: number): RequestLog {
@@ -141,7 +133,6 @@ function requestLog(agent: string, turn: number, response: ModelResponse, starte
     write30mTokens: writes?.ttl_30m_tokens ?? 0,
     write12hTokens: writes?.ttl_12h_tokens ?? 0,
     outputTokens: usage.output_tokens ?? 0,
-    webSearches: response.output.filter(isWebSearch).length,
   };
   return {
     agent,
