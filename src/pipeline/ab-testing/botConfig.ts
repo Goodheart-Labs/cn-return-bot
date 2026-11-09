@@ -86,13 +86,6 @@ export interface BotConfig {
    */
   cascade_note_at_or_above?: number;
   /**
-   * When this is true, a page that every free step of the fetch ladder failed
-   * on is read through Jina Reader, a paid service, as a last resort. It applies
-   * to the source verifier and the research loops of this run. JINA_FETCH_TEST
-   * sets it and it defaults to false.
-   */
-  jina_fetch?: boolean;
-  /**
    * When this is true and the source verifier rejects the note, the research
    * step gets one more turn. It is told what the verifier said, writes revised
    * findings, and the writer and the verifier run again on them. The same

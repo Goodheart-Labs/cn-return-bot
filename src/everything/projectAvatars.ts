@@ -16,7 +16,7 @@
 import "dotenv/config";
 import { fetchProjectsDueForAvatar, fillProjectDisplayName, recordAvatarAttempt, type AvatarDue } from "./db";
 import { canonicalFeed } from "./feedUrls";
-import { fetchAuthorProfile } from "./sources/lesswrong";
+import { readForumListing } from "../pipeline/fetch/readListing";
 import { fetchFeedPosts } from "./sources/substack";
 import { resolveChannel } from "../pipeline/media/youtubeDataApi";
 
@@ -25,6 +25,10 @@ const REFRESH_AFTER_DAYS = 30;
 /** How soon a failed attempt is tried again. */
 const RETRY_AFTER_FAILURE_DAYS = 1;
 const DAY_MS = 24 * 3600 * 1000;
+
+/** A forum author's picture comes with their listing, which must name at least
+ *  one post. */
+const AUTHOR_POSTS_LISTED = 1;
 
 /** How many pictures one feed run refreshes. The first runs after the
  *  migration catch up on every project this many at a time. */
@@ -43,8 +47,8 @@ export async function fetchCreatorProfile(feedUrl: string): Promise<{ avatarUrl:
     const publication = await fetchFeedPosts(feed.feed_url);
     return { avatarUrl: publication.imageUrl ?? null, name: publication.title };
   }
-  const author = await fetchAuthorProfile(feed.feed_url);
-  return { avatarUrl: author.imageUrl, name: author.displayName };
+  const author = await readForumListing(feed.feed_url, AUTHOR_POSTS_LISTED);
+  return { avatarUrl: author.imageUrl, name: author.authorName ?? undefined };
 }
 
 async function refreshOne(project: AvatarDue): Promise<void> {

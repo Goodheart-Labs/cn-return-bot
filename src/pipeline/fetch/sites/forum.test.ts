@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { canonicalFeed, canonicalLesswrongFeed } from "../feedUrls";
-import { forumOrigin, parseAuthorFeedUrl, parsePostUrl } from "./lesswrong";
+import { canonicalFeed, canonicalLesswrongFeed } from "../../../everything/feedUrls";
+import { forumOrigin, parseAuthorFeedUrl, parsePostUrl } from "./forum";
 
 /* These tests cover the URL parsing only. The GraphQL fetches are exercised
  * against the live sites by running the enqueue and auto-enqueue commands. */

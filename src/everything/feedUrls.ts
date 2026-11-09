@@ -4,7 +4,7 @@
  *  feed is the author's profile URL. The follow-request consumer, the creator
  *  ranking, and the prioritize script all normalize through here. */
 
-import { parseAuthorFeedUrl } from "./sources/lesswrong";
+import { parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
 
 export type FeedType = "substack" | "youtube" | "lesswrong";
 

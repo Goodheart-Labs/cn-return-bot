@@ -13,7 +13,8 @@
  */
 
 import type { Post } from "../api/fetchEligiblePosts";
-import type { EverythingItem } from "../everything/db";
+import type { ForumListing } from "../pipeline/fetch/sites/forum";
+import type { SubstackPost } from "../pipeline/fetch/sites/substack";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { ExtractedClaim, ExtractionResult, FetchedContent, ClaimCheck, ItemSource, RatedClaim } from "../everything/types";
 import type { TweetComputeOutput } from "../pipeline/orchestration/processTweet";
@@ -25,7 +26,6 @@ export const CHECK_TWEET_PATH = "/check-tweet";
 export const TWEET_INPUT_PATH = "/tweet-input";
 export const EXTRACT_CLAIMS_PATH = "/extract-claims";
 export const RATE_CLAIMS_PATH = "/rate-claims";
-export const ITEM_TEXT_PATH = "/item-text";
 export const HEALTH_PATH = "/health";
 
 /** Callers prove themselves with a shared secret in this header. The services
@@ -179,15 +179,18 @@ export interface RateClaimsResponse {
 // Fetching an outside page or image, through the sandboxed fetcher
 // ---------------------------------------------------------------------------
 
+/** The fetch ladder for one page (fetchPageWithLadder). */
 export const FETCH_PAGE_PATH = "/fetch-page";
-/** Reads a whole article for a minisite (readPageForMinisite), so the page's
- *  HTML is parsed inside the sandbox and never in a service that holds keys. */
-export const READ_PAGE_PATH = "/read-page";
+/** One plain request to an API address (fetchApiPlain). */
+export const FETCH_API_PATH = "/fetch-api";
+/** The same request, made from inside a headless browser page on the site, for
+ *  a site whose bot check stopped the plain request (fetchApiInBrowser). */
+export const FETCH_API_IN_BROWSER_PATH = "/fetch-api-in-browser";
+/** Turns a page that readPage read into a minisite's article
+ *  (minisitePageAnswer), so the page's HTML is parsed inside the sandbox and
+ *  never in a service that holds keys. */
+export const MINISITE_PAGE_PATH = "/minisite-page";
 export const FETCH_IMAGE_PATH = "/fetch-image";
-/** A Substack publication's RSS feed. Substack refuses GitHub's machines but
- *  serves this one, so the feed run asks the extraction service for it, and
- *  the service asks the fetcher. Both use this path. */
-export const SUBSTACK_FEED_PATH = "/substack-feed";
 
 /** The environment variable that names the fetcher's Unix socket. The fetcher
  *  listens on it. In any other process it means: do not fetch outside pages
@@ -195,29 +198,89 @@ export const SUBSTACK_FEED_PATH = "/substack-feed";
  *  service on the machine (ops/cn-*.service). */
 export const FETCH_SERVICE_SOCKET_VARIABLE = "FETCH_SERVICE_SOCKET";
 
-export interface FetchPageRequest {
-  url: string;
-}
-
 export interface FetchUrlRequest {
   url: string;
 }
 
-/** A page's HTML as the fetch ladder accepted it. `fetchedUrl` has the same
- *  meaning as in WebFetchResult: the archive snapshot when the ladder fell back
- *  to one, and the requested address otherwise. */
-export type FetchedPageHtml =
-  | { ok: true; html: string; fetchedUrl: string }
-  | { ok: false; reason: string };
+/** A page as the fetch ladder accepted it, or the ladder's best guess at why
+ *  it could not. `fetchedUrl` is the archive snapshot when the ladder fell back
+ *  to one, and the requested address otherwise. `via` names the fallback step
+ *  that produced the page, and is null when a plain request did. */
+export type LadderAnswer =
+  | { ok: true; html: string; markdown: string; fetchedUrl: string; via: string | null }
+  | { ok: false; diagnostic: string };
 
-export interface SubstackFeedXml {
-  xml: string;
+/** What one request to an API address got back. `bot_check` means the site
+ *  answered with a challenge page meant to stop programs, such as Vercel's
+ *  Security Checkpoint, so a request from a real browser may still pass. */
+export type ApiAnswer =
+  | { type: "answer"; body: string }
+  | { type: "bot_check" }
+  | { type: "failed"; reason: string };
+
+export interface MinisitePageRequest {
+  url: string;
+  page: ReadPage;
 }
 
-/** A JSON answer from one plain request, without the ladder's fallbacks. */
-export type FetchedJson =
-  | { ok: true; json: unknown }
-  | { ok: false; reason: string };
+// ---------------------------------------------------------------------------
+// Reading pages and listings for a caller in GitHub Actions
+// ---------------------------------------------------------------------------
+
+/** GitHub Actions never fetches an outside address itself. Its readPage and
+ *  readListing ask the extraction service, which reads on the services machine
+ *  the same way the services do. */
+export const READ_PAGE_PATH = "/read-page";
+export const READ_LISTING_PATH = "/read-listing";
+
+/** What readPage made of an address.
+ *  - `page`: the text, from a site's API, the fetch ladder or Jina Reader.
+ *  - `shortform`: a forum's shortform page, whose short posts are comments
+ *    and which has no text of its own.
+ *  - `unreadable`: every stage failed, and `reason` says how. */
+export type PageRead =
+  | { type: "page"; page: ReadPage }
+  | { type: "unreadable_video"; reason: UnreadableVideoReason; captionsMayStillCome: boolean; why?: string }
+  | { type: "shortform" }
+  | { type: "unreadable"; reason: string };
+
+/** One page that readPage read. `text` is plain text with inline image
+ *  markers when it came from a site's API, a transcript for a video, and
+ *  markdown when it came from the ladder or Jina. Its title is never part of
+ *  it. */
+export interface ReadPage {
+  /** Where the text came from: the post's own address for an API answer, the
+   *  archive snapshot when the ladder read one, otherwise the requested
+   *  address. A note that cites the page must cite this. */
+  url: string;
+  title: string | null;
+  text: string;
+  publishedAt: string | null;
+  authorName: string | null;
+  source: PageSource;
+}
+
+/** The stage that read the page, with what each caller may need beyond the
+ *  text: a video's caption timings, and the raw HTML that a minisite is built
+ *  from. */
+export type PageSource =
+  | { kind: "youtube"; videoId: string; cues: SubtitleCue[] }
+  | { kind: "forum"; htmlBody: string; authorFeedUrl: string | null }
+  | { kind: "substack"; post: SubstackPost }
+  | { kind: "ladder"; html: string; via: string | null }
+  | { kind: "jina" };
+
+/** A listing request names the creator's feed in the form
+ *  everything_projects.feed_url stores it. `limit` caps a forum author's
+ *  posts. A Substack feed always lists its own latest posts, about 20. */
+export interface ListingRequest {
+  feedUrl: string;
+  limit: number;
+}
+
+export type Listing =
+  | { kind: "substack"; xml: string }
+  | { kind: "forum"; listing: ForumListing };
 
 /** An image as Gemini takes it inline: its media type and its bytes in
  *  base64. */
@@ -264,12 +327,11 @@ export interface HealthResponse {
  *  work fails and is always 200. That is why the code travels in the body.
  *  - `rejected`: the service refused the request itself, for example a wrong
  *    key, an unknown path, or a body that is not JSON. The status is 4xx.
- *  - `unreadable_video`: YouTube answered, and what it said means the video
- *    cannot be read, for example because it has no captions yet.
  *  - `failed`: anything else went wrong while serving the call. */
-export type ServiceErrorResponse =
-  | { code: "rejected" | "failed"; error: string }
-  | { code: "unreadable_video"; error: string; video: { reason: UnreadableVideoReason; captionsMayStillCome: boolean; why?: string } };
+export interface ServiceErrorResponse {
+  code: "rejected" | "failed";
+  error: string;
+}
 
 /** A route throws this to answer with a specific code. The client throws it
  *  when a service answered with an error, so callers can read the code. */
@@ -278,21 +340,4 @@ export class ServiceError extends Error {
     super(response.error);
     this.name = "ServiceError";
   }
-}
-
-/** Reads one Common Notes item's text the way processing does, for the Claude
- *  note writer on the devbox (GOO-507). The services machine has the
- *  residential proxy and the PO token server that YouTube captions need, and
- *  the devbox has neither. Nothing is written; the caller stores the text. */
-export interface ItemTextRequest {
-  priority: WorkPriority;
-  item: EverythingItem;
-}
-
-export interface ItemTextResponse {
-  title: string;
-  publishedAt: string | null;
-  text: string;
-  /** A video's caption cues, which give each passage its time in the video. */
-  cues?: SubtitleCue[];
 }

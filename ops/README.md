@@ -9,7 +9,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
 | `cn-extraction` | text in, the claims in it out | 8788 |
 | `cn-intake` | watches reader requests and drives them through the other two | none |
-| `cn-fetch` | fetches outside pages and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
+| `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 
 The first two are pure functions behind HTTP and hold no database credentials.
@@ -22,9 +22,15 @@ so a big reader page makes the paced feed run go quiet for the rest of the day.
 
 ## The sandboxed fetcher
 
-Pages and images from addresses a stranger or a model chose are fetched only
-by `cn-fetch`. The other services send it the address over a Unix socket and
-get the page text back. Its unit file builds a sandbox around it: a throwaway
+Pages, API answers and images from addresses a stranger or a model chose are
+fetched only by `cn-fetch`. The other services send it the address over a Unix
+socket and get the answer back. Every service reads pages through one function,
+`readPage` in `src/pipeline/fetch/readPage.ts`: it asks the fetcher for a
+site's API answer or for the fetch ladder, and adds the two steps that need
+keys itself, YouTube captions and Jina Reader. A page's HTML is parsed only
+inside the fetcher, so a minisite's article is built there too. The extraction
+service also reads pages and the walk's listings for GitHub Actions, which
+never fetches an outside address itself. Its unit file builds a sandbox around it: a throwaway
 user, no environment file and so no keys, no view of `/home`, the secret files
 or other processes, and a kernel rule that lets it reach public internet
 addresses only. So a hostile page that tricks the fetch code into reading
@@ -60,9 +66,10 @@ GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
 # Jina Reader: a paid last resort for a page that every free fetch step failed
-# on. Only runs of the jina_fetch A/B arm use it, in the services that run a
-# claim check. With the arm off nothing reads this key. With the arm on, a
-# missing key throws on the first page that fails every free step.
+# on, and for an API that a bot check keeps closed even to headless Chromium,
+# such as the EA Forum's. Every service that reads pages uses it while
+# JINA_FALLBACK in src/pipeline/fetch/jinaReader.ts is on. A missing key throws
+# on the first read that needs Jina.
 JINA_API_KEY=
 
 # The scoring step inside a claim check calls X's evaluate-note API

@@ -25,8 +25,9 @@ import {
   type HealthResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
-  type ServiceErrorResponse, ServiceError, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse,
-  SUBSTACK_FEED_PATH, type FetchUrlRequest, type SubstackFeedXml } from "./contract";
+  type ServiceErrorResponse, ServiceError,
+  FETCH_SERVICE_SOCKET_VARIABLE, READ_LISTING_PATH, READ_PAGE_PATH,
+  type FetchUrlRequest, type Listing, type ListingRequest, type PageRead } from "./contract";
 
 /** How long a caller waits for an answer. A check takes about a minute and a
  *  half of its own, and it may queue behind other work first, so this is a
@@ -68,12 +69,12 @@ export async function requestClaimRating(body: RateClaimsRequest): Promise<RateC
   return call<RateClaimsResponse>(serviceUrl("EXTRACTION_URL"), RATE_CLAIMS_PATH, body);
 }
 
-export async function requestItemText(body: ItemTextRequest): Promise<ItemTextResponse> {
-  return call<ItemTextResponse>(serviceUrl("EXTRACTION_URL"), ITEM_TEXT_PATH, body);
+export async function requestPageRead(body: FetchUrlRequest): Promise<PageRead> {
+  return call<PageRead>(serviceUrl("EXTRACTION_URL"), READ_PAGE_PATH, body);
 }
 
-export async function requestSubstackFeed(body: FetchUrlRequest): Promise<SubstackFeedXml> {
-  return call<SubstackFeedXml>(serviceUrl("EXTRACTION_URL"), SUBSTACK_FEED_PATH, body);
+export async function requestListing(body: ListingRequest): Promise<Listing> {
+  return call<Listing>(serviceUrl("EXTRACTION_URL"), READ_LISTING_PATH, body);
 }
 
 export async function fetchClaimCheckHealth(): Promise<HealthResponse> {
@@ -108,6 +109,14 @@ async function getHealth(baseUrl: string): Promise<HealthResponse> {
 /** The fetch ladder needs about two minutes in the worst case, when every step
  *  runs into its own timeout. This ceiling is for a fetcher that has hung. */
 const FETCH_SERVICE_TIMEOUT_MS = 5 * 60_000;
+
+/** Runs one fetcher route: over the fetcher's socket on the services machine,
+ *  and in this process, with `here`, where there is no fetcher, as on a local
+ *  machine. `here` must be the function the fetcher's route runs. */
+export async function askFetcher<Answer>(path: string, body: unknown, here: () => Promise<Answer>): Promise<Answer> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  return socket ? callFetchService<Answer>(socket, path, body) : here();
+}
 
 /** Asks the fetcher over its Unix socket. It holds no secrets, so it takes no
  *  key, and only processes on the same machine can reach it. */

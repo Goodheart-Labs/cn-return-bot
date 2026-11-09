@@ -35,7 +35,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { canonicalizePageUrl } from "../everything-core/pageUrls";
 import { enqueueItems, resolveProjectId, syntheticDocUrl, type EnqueueRow } from "./db";
-import { fetchAuthorPosts, parseAuthorFeedUrl, parsePostUrl } from "./sources/lesswrong";
+import { readForumListing } from "../pipeline/fetch/readListing";
+import { parseAuthorFeedUrl, parsePostUrl } from "../pipeline/fetch/sites/forum";
 import { fetchLatestFreePosts, parseProfileHandle } from "./sources/substack";
 import type { SourceKind } from "./types";
 
@@ -64,9 +65,9 @@ async function expandLiveUrl(
     return { items: posts.map((post) => ({ source: "substack" as const, url: post.url })), projectName: publicationName };
   }
   if (parseAuthorFeedUrl(url)) {
-    const { authorName, posts } = await fetchAuthorPosts(url, latest);
+    const { authorName, posts } = await readForumListing(url, latest);
     console.log(`Author ${url} → ${posts.length} latest posts`);
-    return { items: posts.map((post) => ({ source: "lesswrong" as const, url: post.url })), projectName: authorName };
+    return { items: posts.map((post) => ({ source: "lesswrong" as const, url: post.url })), projectName: authorName ?? undefined };
   }
   throw new Error(`Unsupported URL (need a YouTube video, Substack post or profile, or a LessWrong/Alignment Forum post or author): ${url}`);
 }

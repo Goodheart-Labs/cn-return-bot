@@ -1,9 +1,11 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PageReadError, readPageForMinisite } from "../../everything/minisites/readPage";
-import { fetchWebPage, fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
+import { fetchApiPlain } from "../../pipeline/fetch/fetchApi";
+import { fetchPageWithLadder } from "../../pipeline/fetch/fetchLadder";
+import { readPage, readPageForModel } from "../../pipeline/fetch/readPage";
 import { callFetchService } from "../client";
 import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchedImage } from "../contract";
 import { startFetchService } from "./main";
@@ -12,6 +14,15 @@ import { startFetchService } from "./main";
 // thin, so the test article is long enough to count as a real page.
 const ARTICLE_TEXT = "The fetcher returned this article. ".repeat(20);
 const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+// In GitHub Actions the page reader would ask the services machine. These
+// tests read in this process and through the test's own fetcher, so they run
+// the same everywhere.
+const ciVariable = process.env.GITHUB_ACTIONS;
+beforeEach(() => delete process.env.GITHUB_ACTIONS);
+afterEach(() => {
+  if (ciVariable !== undefined) process.env.GITHUB_ACTIONS = ciVariable;
+});
 
 describe("the fetcher", () => {
   const dir = mkdtempSync(join(tmpdir(), "cn-fetch-test-"));
@@ -40,10 +51,10 @@ describe("the fetcher", () => {
     rmSync(dir, { recursive: true, force: true });
   });
 
-  test("fetchWebPage goes through the fetcher when the socket is set", async () => {
+  test("the page reader goes through the fetcher when the socket is set", async () => {
     process.env[FETCH_SERVICE_SOCKET_VARIABLE] = socket;
     try {
-      const result = await fetchWebPage(`http://127.0.0.1:${site.port}/article`);
+      const result = await readPageForModel(`http://127.0.0.1:${site.port}/article`);
       expect(result.ok).toBe(true);
       expect(result.content).toContain("The fetcher returned this article.");
     } finally {
@@ -81,10 +92,10 @@ describe("the fetcher", () => {
   });
 });
 
-describe("fetchWebPageInProcess", () => {
-  test("refuses an address that is not http or https", async () => {
-    const result = await fetchWebPageInProcess("file:///etc/hostname");
-    expect(result.ok).toBe(false);
-    expect(result.content).toStartWith("Fetch refused:");
+describe("an address that is not http or https", () => {
+  test("is refused by the page reader, the ladder and the API request", async () => {
+    expect(await readPage("file:///etc/hostname")).toEqual({ type: "unreadable", reason: "only http and https addresses are read" });
+    expect(await fetchPageWithLadder("file:///etc/hostname")).toEqual({ ok: false, diagnostic: "only http and https addresses are fetched" });
+    expect(await fetchApiPlain("file:///etc/hostname")).toEqual({ type: "failed", reason: "only http and https addresses are fetched" });
   });
 });
