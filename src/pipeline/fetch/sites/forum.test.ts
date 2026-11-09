@@ -1,19 +1,24 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, spyOn, test } from "bun:test";
 import { canonicalFeed, canonicalLesswrongFeed } from "../../../everything/feedUrls";
-import { forumOrigin, parseAuthorFeedUrl, parsePostUrl } from "./forum";
+import * as client from "../../../service/client";
+import type { ApiAnswer } from "../../../service/contract";
+import { forumOrigin, parseAuthorFeedUrl, parsePostUrl, readForumAuthor } from "./forum";
 
-/* These tests cover the URL parsing only. The GraphQL fetches are exercised
- * against the live sites by running the enqueue and auto-enqueue commands. */
+/* These tests cover the URL parsing and what the listing keeps. The real
+ * GraphQL answers are exercised against the live sites by running the enqueue
+ * and auto-enqueue commands. */
 
 describe("forumOrigin", () => {
-  test("both sites resolve to their canonical www origin", () => {
+  test("each forum resolves to its canonical origin", () => {
     expect(forumOrigin("https://lesswrong.com/posts/abc/x")).toBe("https://www.lesswrong.com");
     expect(forumOrigin("https://www.alignmentforum.org/users/zvi")).toBe("https://www.alignmentforum.org");
+    expect(forumOrigin("https://forum.effectivealtruism.org/posts/abc/x")).toBe("https://forum.effectivealtruism.org");
   });
 
   test("other hosts and junk give null", () => {
     expect(forumOrigin("https://example.com/posts/abc")).toBeNull();
     expect(forumOrigin("https://notlesswrong.com/posts/abc")).toBeNull();
+    expect(forumOrigin("https://effectivealtruism.org/posts/abc")).toBeNull();
     expect(forumOrigin("not a url")).toBeNull();
   });
 });
@@ -58,9 +63,32 @@ describe("canonicalLesswrongFeed", () => {
     });
   });
 
+  test("an EA Forum author keeps the host without www, which migration 179 accepts", () => {
+    expect(canonicalLesswrongFeed("https://forum.effectivealtruism.org/users/Toby-Tremlett")?.feed_url).toBe("https://forum.effectivealtruism.org/users/toby-tremlett");
+  });
+
   test("canonicalFeed recognizes a forum author alongside the other feed types", () => {
     expect(canonicalFeed("https://www.alignmentforum.org/users/zvi")?.feed_type).toBe("lesswrong");
     expect(canonicalFeed("https://thezvi.substack.com")?.feed_type).toBe("substack");
     expect(canonicalFeed("https://www.lesswrong.com/posts/abc/x")).toBeNull();
+  });
+});
+
+describe("readForumAuthor", () => {
+  const spies: Array<{ mockRestore: () => void }> = [];
+  afterEach(() => spies.splice(0).forEach((spy) => spy.mockRestore()));
+
+  const graphqlAnswer = (data: object): ApiAnswer => ({ type: "answer", body: JSON.stringify({ data }) });
+  const post = (id: string, fmCrosspost: object | null) => ({ _id: id, pageUrl: `https://forum.effectivealtruism.org/posts/${id}`, title: id, postedAt: "2026-11-01T00:00:00Z", htmlBody: "<p>Body</p>", fmCrosspost });
+
+  test("leaves out a copy of a post whose original lives on the other forum, and uses the EA Forum's picture account", async () => {
+    const answers = [
+      graphqlAnswer({ user: { result: { _id: "u1", displayName: "Toby", profileImageId: "Profile/abc" } } }),
+      graphqlAnswer({ posts: { results: [post("own", null), post("copy", { isCrosspost: true, hostedHere: false }), post("original", { isCrosspost: true, hostedHere: true })] } }),
+    ];
+    spies.push(spyOn(client, "askFetcher").mockImplementation((async () => answers.shift()!) as typeof client.askFetcher));
+    const listing = await readForumAuthor({ origin: "https://forum.effectivealtruism.org", slug: "toby" }, 3);
+    expect(listing.posts.map((p) => p.postId)).toEqual(["own", "original"]);
+    expect(listing.imageUrl).toBe("https://res.cloudinary.com/cea/image/upload/c_crop,g_custom/c_fill,dpr_2,q_100,f_auto,g_auto:faces,w_96,h_96,b_white/Profile/abc");
   });
 });

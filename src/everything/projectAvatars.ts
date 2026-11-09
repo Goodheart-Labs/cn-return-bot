@@ -2,7 +2,8 @@
  * Creator pictures for the website's projects overview (migration 106). Each
  * source already has an endpoint the pipeline uses, and each carries the
  * picture: the YouTube channel lookup (one API unit), the Substack RSS feed's
- * channel image, and the LessWrong or Alignment Forum user query.
+ * channel image, and the forum's user query for a LessWrong, Alignment Forum
+ * or EA Forum author.
  *
  * The same answer carries the creator's name. A project created from a reader
  * request knows only its slug (GOO-290), so its name is filled in here, on

@@ -1,7 +1,7 @@
 /** The one canonical shape of a creator feed. A Substack feed must be in its
- *  *.substack.com form, because that is the only shape the RSS relay accepts
- *  in CI. A YouTube feed is the channel URL. A LessWrong or Alignment Forum
- *  feed is the author's profile URL. The follow-request consumer, the creator
+ *  *.substack.com form, because that is the only shape the walk's listing
+ *  accepts. A YouTube feed is the channel URL. A LessWrong, Alignment Forum or
+ *  EA Forum feed is the author's profile URL. The follow-request consumer, the creator
  *  ranking, and the prioritize script all normalize through here. */
 
 import { parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
@@ -57,10 +57,12 @@ export function canonicalYoutubeFeed(url: string): CanonicalFeed | null {
   };
 }
 
-/** The canonical feed for a LessWrong or Alignment Forum author URL, or null
- *  when the URL is not one. The two sites share their user accounts, so the
- *  same slug on both sites is the same person and lands in one project; the
- *  host in the feed URL decides which site's posts are walked. */
+/** The canonical feed for a forum author URL, or null when the URL is not
+ *  one. The host in the feed URL decides which site's posts are walked.
+ *  LessWrong and the Alignment Forum share their user accounts, so the same
+ *  slug on both is the same person. The EA Forum's accounts are its own, so
+ *  its slug may belong to someone else; projects are matched by feed URL, and
+ *  such an author gets a slug of their own (migration 179). */
 export function canonicalLesswrongFeed(url: string): CanonicalFeed | null {
   const author = parseAuthorFeedUrl(url);
   if (!author) return null;
