@@ -28,7 +28,7 @@ import { useTypefullySync } from "./typefullySync";
 
 /** The Display menu offers Post on X only in the local posting tool, which
  *  has a server that can reach Typefully. */
-const DISPLAY_OPTIONS = Object.values(DISPLAY).filter((option) => option !== DISPLAY.postOnX || TWEET_SERVER);
+const DISPLAY_OPTIONS = Object.values(DISPLAY);
 
 const QUERY_KEY = "cn:noteReviewQuery";
 const X_QUERY_KEY = "cn:xNoteReviewQuery";
@@ -48,9 +48,19 @@ function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
  *  drafts, so loading the next page never reloads the notes above it. */
 function DraftPage({ drafts, view }: { drafts: ReviewDraft[]; view: ReviewView }) {
   const liveNotes = useLiveNotes(drafts);
-  return drafts.map((draft) => (
-    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} view={view} />
-  ));
+  return drafts.map((draft) => {
+    const liveNote = draft.noteId ? liveNotes?.get(draft.noteId) : undefined;
+    const originalId = liveNote?.improved_from_note_id;
+    return (
+      <ReviewCard
+        key={draft.id}
+        draft={draft}
+        liveNote={liveNote}
+        improvesOn={originalId ? (liveNotes?.get(originalId) ?? null) : undefined}
+        view={view}
+      />
+    );
+  });
 }
 
 /** The pages with every draft shown once. A draft an admin changed keeps its
