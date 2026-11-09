@@ -9,22 +9,38 @@ import {
 import type { MenuSite, MenuSubject } from "./menuRows";
 import { isSubstackPostPage } from "./pageShape";
 
-// Substack's three-dot menus: the one on a post in the substack.com feed, and
-// the one in an open post's action bar. Every selector they depend on lives
-// here. Substack builds its menus with Radix, a React component library whose
-// menu button names its open menu in `aria-controls`. Tidy Web's
-// src/content/substack-menu.ts finds the menu the same way.
+// Substack's three-dot menus: the one on a post in the substack.com feed, the
+// one in an open post's action bar, and the one at the top of a post opened as
+// an overlay in substack.com's reader. Every selector they depend on lives
+// here. Substack builds its menus with Base UI, a React component library. Its
+// menu button names its open menu in `aria-controls`, and the menu names its
+// button in `aria-labelledby`. Substack used Radix before, which sets the same
+// attributes. Tidy Web's src/content/substack-menu.ts finds the
+// menu the same way.
+//
+// Which post a menu is about follows one rule. From the menu button we walk up
+// to the nearest element that holds one item of the page, such as a post or a
+// Note in the feed or a comment. A post item names its post through the one
+// post link inside it. Any other item gets no rows. A button outside every item
+// belongs to the page itself, so it is about the open post when the page is a
+// post, and gets no rows otherwise, as on a profile's own menu.
 
 const TRIGGER_SELECTOR = 'button[aria-haspopup="menu"]:is(:has(svg.lucide-ellipsis), [class*="moreButton-"])';
 // Comments have the same three-dot menu, and we do not check comments.
 const COMMENT_SELECTOR = '[class*="comment-menu"]';
 // substack.com itself hosts the reader, never a publication's posts.
 const READER_HOST = /^(www\.)?substack\.com$/;
-// The open post's action bar sits above and below the post.
-const POST_ACTION_BAR_TRIGGER_CLASS = "post-ufi-button";
-const FEED_ITEM_SELECTOR = '[role="article"]';
-// A feed item that links to a Note is a Note, or quotes a post inside one.
-const NOTE_LINK_SELECTOR = 'a[href*="/note/"]';
+// The elements that hold one item of a page. The feed tags each item with an
+// entity key, a post card on a publication's pages is a .post-preview, an inbox
+// row is a .reader2-post-container, and a comment is a .comment.
+const ITEM_SELECTOR = "[data-entity-key], .post-preview, .reader2-post-container, .comment";
+// A feed item's entity key starts with "p-" for a post. Notes start with "c-"
+// and video clips with "m-".
+const POST_ENTITY_KEY_PREFIX = "p-";
+const POST_CARD_SELECTOR = ".post-preview, .reader2-post-container";
+// A post's own address ends in /p/<slug>, and the address of one of its
+// comments continues with /comment/<id>.
+const COMMENT_PATH = /\/comment\//;
 // The item's author is the profile behind their avatar, which Substack tags
 // with this parameter. The first profile link can be someone who only
 // restacked the post.
@@ -56,15 +72,35 @@ function postTitle(post: HTMLAnchorElement): string {
   return "";
 }
 
-/** A post in the feed links to its own address on the publication's site. A
- *  publication on its own domain is named by the author's profile link
- *  instead, which Substack's profile API turns into the publication. */
-function feedPostSubject(item: Element): MenuSubject | null {
-  if (item.querySelector(NOTE_LINK_SELECTOR)) return null;
-  const post = [...item.querySelectorAll<HTMLAnchorElement>("a[href]")].find(
-    (link) => !READER_HOST.test(link.hostname) && isSubstackPostPage(link.href),
-  );
-  if (!post) return null;
+function isPostItem(item: Element): boolean {
+  const entityKey = item.getAttribute("data-entity-key");
+  if (entityKey !== null) return entityKey.startsWith(POST_ENTITY_KEY_PREFIX);
+  return item.matches(POST_CARD_SELECTOR);
+}
+
+/** The links inside an item that lead to a post on its publication's site,
+ *  one per post. A card often links its post twice, through the picture and
+ *  through the title. */
+function distinctPostLinks(item: Element): HTMLAnchorElement[] {
+  const byPage = new Map<string, HTMLAnchorElement>();
+  for (const link of item.querySelectorAll<HTMLAnchorElement>("a[href]")) {
+    const { hostname, pathname } = new URL(link.href);
+    if (READER_HOST.test(hostname) || !isSubstackPostPage(link.href) || COMMENT_PATH.test(pathname)) continue;
+    const pageUrl = normalizePageUrl(link.href);
+    if (!byPage.has(pageUrl)) byPage.set(pageUrl, link);
+  }
+  return [...byPage.values()];
+}
+
+/** A post item links to its own address on the publication's site. An item
+ *  that links two different posts, such as a post quoting another, gets no
+ *  rows, because we cannot tell which one the menu is about. A publication on
+ *  its own domain is named by the author's profile link instead, which
+ *  Substack's profile API turns into the publication. */
+function postItemSubject(item: Element): MenuSubject | null {
+  const posts = distinctPostLinks(item);
+  if (posts.length !== 1) return null;
+  const post = posts[0]!;
   const authorLink = item.querySelector<HTMLAnchorElement>(AUTHOR_LINK_SELECTOR);
   const handle = authorLink ? substackProfileHandle(authorLink.href) : null;
   const pageUrl = normalizePageUrl(post.href);
@@ -84,14 +120,22 @@ export const substackMenuSite: MenuSite = {
     return trigger && !trigger.closest(COMMENT_SELECTOR) ? trigger : null;
   },
   subjectFor(trigger) {
-    if (trigger.classList.contains(POST_ACTION_BAR_TRIGGER_CLASS)) return openPostSubject();
-    const item = trigger.closest(FEED_ITEM_SELECTOR);
-    return item ? feedPostSubject(item) : null;
+    const item = trigger.closest(ITEM_SELECTOR);
+    if (!item) return openPostSubject();
+    return isPostItem(item) ? postItemSubject(item) : null;
   },
   menuFor(trigger) {
     const id = trigger.getAttribute("aria-controls");
-    const menu = id ? document.getElementById(id) : null;
-    return menu?.getAttribute("role") === "menu" ? menu : null;
+    const controlled = id ? document.getElementById(id) : null;
+    if (controlled?.getAttribute("role") === "menu") return controlled;
+    // When the button does not name its menu, the menu may still name the
+    // button. Tidy Web reads both for that reason. The attribute holds a list
+    // of ids separated by spaces.
+    return (
+      [...document.querySelectorAll<HTMLElement>('[role="menu"][aria-labelledby]')].find(
+        (menu) => !!trigger.id && menu.getAttribute("aria-labelledby")!.split(/\s+/).includes(trigger.id),
+      ) ?? null
+    );
   },
   // Inside the column that holds Substack's own rows, so our rows take the
   // menu's padding and width.
