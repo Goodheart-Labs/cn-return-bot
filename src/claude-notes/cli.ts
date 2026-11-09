@@ -21,7 +21,7 @@
  *   run                           the runner on ai-box (src/claude-notes/runner.ts)
  *   dispatch                      on the devbox: waits for jobs, starts them, prints their prompts and exits (src/claude-notes/dispatch.ts)
  *   dispatch-end <job key>        on the devbox: closes a job after its subagent returned, or prints its retry prompt
- *   dispatch-services             on the devbox: usage readings, the note judge and the examples, all the time */
+ *   dispatch-services             on the devbox: rebuilds the examples once a day, all the time */
 
 import { readFileSync, writeFileSync } from "fs";
 import { dispatch, dispatchEnd, dispatchServices } from "./dispatch";
