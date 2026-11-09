@@ -40,6 +40,9 @@ const X_THOUGHTS = `Basically if you can show that something said in the tweet i
 /** Jim's nudge to research more, the variant on of claude_x_research_nudge.
  *  Common Notes posts always get their own nudge. */
 const X_RESEARCH_NUDGE = ` Different tweets can require completely different orders of magnitude of research. Please make sure you understand the situation deeply and do the necessary research.`;
+// 2026-11-09: three Claude accounts were banned after outside images reached the model; until a CSAM screen
+// sits in front of them, the writer never fetches or opens an image.
+export const NO_IMAGES = "Never download, save or open an image, screenshot or PDF from the post or any other page, and never pass one to a subagent. Work from text only: the post, its captions and alt text, and the text of your sources. If a claim can only be checked by looking at an image, treat that passage as too_hard.";
 const WITH_THOUGHTS = "with_thoughts";
 
 /** Where the examples are, in the words of the prompt's first paragraph. */
@@ -83,7 +86,7 @@ The post that you get might not be worth checking at all. There's not necessaril
 
 ## How to work here
 
-The post is in ${dir}. post.md is its text, and meta.json holds its item id (${item.id}), address and creator. For a video, cues.json holds the caption timings. Your run folder is ${runDir}. Write every file there, and tell your subagents to do the same.
+The post is in ${dir}. post.md is its text, and meta.json holds its item id (${item.id}), address and creator. For a video, cues.json holds the caption timings. Your run folder is ${runDir}. Write every file there, and tell your subagents to do the same. ${NO_IMAGES}
 
 To save a note, write a JSON file to your run folder and run \`${draftCommand}\` from ${REPO}. A draft with outcome "note" goes up on commonnotes.net at once as an AI note. So run the command exactly once per draft, with no other arguments.
 
@@ -109,7 +112,7 @@ export function tweetPrompt(params: { host: Host; tweet: XTweet; runDir: string 
   const { host, tweet, runDir } = params;
   return `Hi Claude, please check if we should write a Community Note on this tweet. Do research on this and think about whether the tweet is misleading or broadly correct. ${examplesPlace(host, X_EXAMPLES_PATH)} there are lots of examples of Community Notes that were rated helpful and Community Notes that were rated unhelpful. ${tweet.picks.claude_x_taste === WITH_THOUGHTS ? X_THOUGHTS : ""}You always need to provide at least one source, so you always need to do at least one web search (if you think a note is potentially needed).${tweet.picks.claude_x_research_nudge === "on" ? X_RESEARCH_NUDGE : ""}
 
-If the post has images, download them into your run folder and look at them. Your run folder is ${runDir}; write every file there.
+${NO_IMAGES} Your run folder is ${runDir}; write every file there.
 
 If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\`. Stop once one of the two has succeeded.
 
