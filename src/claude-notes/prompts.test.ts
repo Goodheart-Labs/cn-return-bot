@@ -10,12 +10,12 @@ describe("writer prompts never ask for images", () => {
     test(`post prompt on ${host}`, () => {
       const p = postPrompt({ host, item, dir: "/d", runDir: "/r", runId: "run-1", picks: {}, asked: { requests: [] } as any });
       expect(p).toContain(NO_IMAGES);
-      expect(p).not.toMatch(/download them|look at them/);
+      expect(p).not.toMatch(/download (them|the images)|look at (them|the images)|If the post has images/);
     });
     test(`tweet prompt on ${host}`, () => {
       const p = tweetPrompt({ host, tweet, runDir: "/r" });
       expect(p).toContain(NO_IMAGES);
-      expect(p).not.toMatch(/download them|look at them/);
+      expect(p).not.toMatch(/download (them|the images)|look at (them|the images)|If the post has images/);
     });
   }
 });
