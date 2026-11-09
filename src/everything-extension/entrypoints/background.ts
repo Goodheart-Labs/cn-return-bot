@@ -57,8 +57,8 @@ async function registeredGenericHostnames(): Promise<string[]> {
 /** Registering a script only affects future page loads. So tabs that are
  *  already open on a newly covered host get the script injected directly, and
  *  a sync triggered from the popup shows notes in the current tab without a
- *  reload. The script sets a flag on `window`, so a second copy arriving does
- *  nothing. */
+ *  reload. A tab may already run a copy of the script. The new copy then takes
+ *  over, and WXT retires the old one. */
 async function injectIntoOpenTabs(hostnames: string[]) {
   for (const hostname of hostnames) {
     const tabs = await browser.tabs.query({ url: hostnamePattern(hostname) }).catch(() => []);
@@ -398,7 +398,10 @@ export default defineBackground(() => {
       return;
     }
     if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
-      void sendToTabWithInjection(tab.id, { type: "cn-write-note", selection: info.selectionText ?? "" });
+      const tabId = tab.id;
+      void sendToTabWithInjection(tabId, { type: "cn-write-note", selection: info.selectionText ?? "" }).then((delivered) => {
+        if (!delivered) flashBadge(tabId, "!");
+      });
     }
   });
 

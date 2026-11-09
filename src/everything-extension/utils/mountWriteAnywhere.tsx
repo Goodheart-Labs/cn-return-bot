@@ -6,6 +6,7 @@ import type { ContentScriptContext } from "#imports";
 import { queryClient } from "@cn/features/query/queryClient";
 import { WriteNoteOverlay } from "../components/WriteNoteOverlay";
 import { TAB_CREATOR_MESSAGE_TYPE } from "./authorFeed";
+import { addCoveredPageUrl } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
 import { createOverlayUi } from "./overlayUi";
 
@@ -51,20 +52,26 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
   );
 }
 
+/** Makes a page whose first note was just posted show its notes at once. The
+ *  page goes into the local covered list, and `onCoverageChanged` remounts the
+ *  full notes flow, which then finds the page covered. The background's sync,
+ *  which also registers the generic script for a new site, runs without being
+ *  waited for. Waiting for it held the new note back for about 7 seconds. */
+export async function showNotesAfterFirstNote(pageUrl: string, onCoverageChanged: () => void): Promise<void> {
+  void browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
+  await addCoveredPageUrl(pageUrl).catch((err) => console.warn("[common-notes] could not cache the newly covered page:", err));
+  onCoverageChanged();
+}
+
 /** Mounted in place of the notes UI when the local coverage check says this page has
  *  no item. It causes no backend traffic until the user actually writes something.
- *  Once a note is posted the page is covered. We then ask the background to sync, so
- *  that the covered list includes this page, and we call `onCoverageChanged`. The
- *  caller remounts the full notes flow, so the new note appears without a reload. */
+ *  Once a note is posted the page is covered, and the full notes flow takes over
+ *  without a reload. */
 export async function mountWriteAnywhere(
   ctx: ContentScriptContext,
   pageUrl: string,
   onCoverageChanged: () => void,
 ): Promise<() => void> {
-  const handlePosted = async () => {
-    await browser.runtime.sendMessage({ type: "cn-sync-noted-sites" }).catch(() => {});
-    onCoverageChanged();
-  };
   let root: Root | null = null;
   const ui = await createOverlayUi(ctx, {
     name: "common-notes-ui",
@@ -76,7 +83,7 @@ export async function mountWriteAnywhere(
       root = createRoot(container);
       root.render(
         <QueryClientProvider client={queryClient}>
-          <WriteAnywhereApp pageUrl={pageUrl} onPosted={() => void handlePosted()} />
+          <WriteAnywhereApp pageUrl={pageUrl} onPosted={() => void showNotesAfterFirstNote(pageUrl, onCoverageChanged)} />
         </QueryClientProvider>,
       );
       return root;
