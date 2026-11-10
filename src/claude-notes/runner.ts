@@ -49,7 +49,7 @@ import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES
 import { recordUsage, RUN_ID_ENV } from "./store";
 import { readUsage, type UsageReading } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
-import { openXTweets, type XTweet } from "./xTweets";
+import { openXTweets, tweetsToStart, type XTweet } from "./xTweets";
 
 const POLL_MS = 30_000;
 /** Posts in progress at once. The queue hands out reader requests first, so a
@@ -262,7 +262,7 @@ async function tickTweets(first: boolean) {
   for (const run of [...tweets.values()]) if (!tmuxAlive(run.session)) await endTweetSession(run);
   const open = await openXTweets();
   if (first) await adoptRunningTweets(open.running);
-  for (const tweet of open.waiting) {
+  for (const tweet of tweetsToStart(open.waiting, new Date())) {
     if (tweets.size >= MAX_TWEETS_RUNNING || !(await mayStartPosts())) break;
     await startTweet(tweet);
   }
