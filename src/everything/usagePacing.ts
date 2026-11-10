@@ -32,7 +32,7 @@
  * a Common Notes post looks more expensive while X runs, and Common Notes gets
  * whatever of the target the X note writer leaves. Jim gave X 20% on 2026-10-27,
  * raised the target from 80% to 90% on 2026-11-05, and on 2026-11-10 lowered
- * it to 70% and stopped the Claude tweets, so that the week keeps room for his
+ * it to 60% and stopped the Claude tweets, so that the week keeps room for his
  * own work on the weekend.
  *
  * The interval is stretched by 10%, so the week most likely ends a little
@@ -46,8 +46,8 @@ import { duration } from "./logFormat";
 
 /** The share of the weekly limit the posts should use up by the reset. Jim
  *  picked 80% on 2026-10-26, raised it to 90% on 2026-11-05 and lowered it to
- *  70% on 2026-11-10, to keep usage for the weekend. */
-export const WEEKLY_USAGE_TARGET_PERCENT = 70;
+ *  60% on 2026-11-10, to keep usage for the weekend. */
+export const WEEKLY_USAGE_TARGET_PERCENT = 60;
 
 /** The interval is stretched by this factor, so that an estimate a little too
  *  low does not carry the week past the target. */
