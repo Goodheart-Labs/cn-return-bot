@@ -61,7 +61,7 @@ import { claudeRunsSince, draftsToJudge, latestEventId, postedAfter, readJudgedN
 import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
-import { openXTweets, type XTweet } from "./xTweets";
+import { openXTweets, tweetsToStart, type XTweet } from "./xTweets";
 
 const STATE_DIR = path.join(homedir(), ".local/share/claude-note-finder/dispatch");
 const JOBS_FILE = path.join(STATE_DIR, "jobs.json");
@@ -176,7 +176,7 @@ async function newJobs(state: State): Promise<Job[]> {
   const open = new Set(state.jobs.map((job) => job.key));
   const running = (kind: Job["kind"]) => state.jobs.filter((job) => job.kind === kind).length;
   const jobs: Job[] = [];
-  const tweets = (await openXTweets()).waiting.filter((tweet) => !open.has(`x-${tweet.runId}`));
+  const tweets = tweetsToStart((await openXTweets()).waiting, new Date()).filter((tweet) => !open.has(`x-${tweet.runId}`));
   // A tweet's run row is written when it ends, so the running ones count separately.
   const tweetsToday = (await claudeRunsSince(CLAUDE_RUN_TAGS.tweet, new Date(Date.now() - DAY_MS))) + running("tweet");
   const tweetSlots = Math.min(MAX_TWEETS_RUNNING - running("tweet"), MAX_TWEETS_PER_DAY - tweetsToday);

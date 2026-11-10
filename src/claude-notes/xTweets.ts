@@ -6,7 +6,7 @@
 
 import type { Json } from "../everything-core/database.types";
 import { fetchAllRows } from "../everything-core/paging";
-import { CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
+import { CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_TWEET_MAX_WAIT_MINUTES, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
 import { countNoteLength } from "../pipeline/utils/noteLength";
 import { db } from "../serviceDb";
 
@@ -15,6 +15,15 @@ export const X_NOTE_MAX_CHARS = 280;
 const URL_PATTERN = /https?:\/\/\S+/g;
 /** The status the pipeline gives a note it wants to submit. */
 const NOTE_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
+/** How much of a tweet's wait a Claude needs to answer it. The X run sweeps a
+ *  tweet as failed once its row is CLAUDE_TWEET_MAX_WAIT_MINUTES old, and it
+ *  sweeps whenever it starts. It starts every 30 minutes, but it may start a
+ *  moment after a tweet passed that age, so the gap between X runs gives no
+ *  extra time we can count on. A tweet's subagent took 1.5 to 2.6 minutes on
+ *  2026-11-10. A Claude that ends without its answer gets a second try, and the
+ *  session may take a while to start its subagents when it is busy. Thirty
+ *  minutes is ten times the slowest tweet, so even two slow tries finish in time. */
+const TWEET_ANSWER_MARGIN_MINUTES = 30;
 
 export interface XTweet {
   runId: string;
@@ -41,6 +50,16 @@ export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTwee
     .map((r) => ({ runId: r.id, tweetId: r.tweet_id, createdAt: r.created_at, stage: r.final_stage, input: r.input, picks: r.ab_test_picks }))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   return { waiting: tweets.filter((t) => t.stage === CLAUDE_WAITING_STAGE), running: tweets.filter((t) => t.stage === CLAUDE_RUNNING_STAGE) };
+}
+
+/** The waiting tweets a Claude can still answer before the X run sweeps them,
+ *  newest first. A tweet that is too old would be swept while its Claude
+ *  works, and its answer would be refused. Newest first, because a note is
+ *  worth more the fresher its tweet is, and because after a backlog the oldest
+ *  tweets are the ones closest to being swept. */
+export function tweetsToStart(waiting: XTweet[], now: Date): XTweet[] {
+  const oldestStartable = new Date(now.getTime() - (CLAUDE_TWEET_MAX_WAIT_MINUTES - TWEET_ANSWER_MARGIN_MINUTES) * 60_000);
+  return waiting.filter((tweet) => new Date(tweet.createdAt) > oldestStartable).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 async function readClaudeLog(runId: string): Promise<{ logs: Record<string, unknown>; claude: Record<string, unknown> }> {
