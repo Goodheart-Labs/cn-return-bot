@@ -169,6 +169,7 @@ bun run dev-ext            # dev mode against PROD (load .output/chrome-mv3-prod
 bun run dev-ext-local      # dev mode against the local Supabase (.output/chrome-mv3)
 bun run build-ext-dev      # dev build against PROD with the self-reload hook: what Jim's Mac runs
 bun run build-ext-safari-dev
+bun run build-ext-firefox-dev
 bun run build-ext          # Chrome, Firefox and Safari production builds
 bun run zip-ext            # store zips
 ```
@@ -179,6 +180,8 @@ bun run zip-ext            # store zips
 3. Run `~/.local/bin/cn-ext-push`. The dev build reloads itself within 30 seconds when a newer build lands.
 
 Quote the push output and tell Jim the build id (HH:MM:SS). A freshly loaded page logs it at debug level as `[common-notes] dev build <id>`, and every open tab carries the running background's id as `data-cn-dev-build-bg` on `<html>`. Open tabs keep their old content scripts until refreshed, so tell Jim to refresh. Never run `cn-ext-push --verify` without asking: it opens a tab and pulls focus to Chrome on Jim's laptop.
+
+For Firefox, run `bun run build-ext-firefox-dev`, then `cn-ext-push --firefox`. Release Firefox loads an unsigned extension only as a temporary add-on, so the push installs it into a separate development Firefox on the Mac over Firefox's remote debugging protocol, and starts that Firefox, with its own profile, when it is not running. Installing again is the reload, and the add-on is gone when that Firefox quits.
 
 For Safari, run `bun run build-ext-safari-dev`, then `cn-ext-push --safari <worktree>/src/everything-extension`, which builds the container app on the Mac. Safari loads the locally signed app only while "Allow unsigned extensions" is on, and Safari turns it off on every quit.
 
