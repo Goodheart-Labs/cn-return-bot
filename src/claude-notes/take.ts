@@ -18,6 +18,13 @@ export type AskedPassages = { requests: PassageRequest[]; onlyThese: boolean };
 
 export type Take = { kind: "taken"; dir: string; asked: AskedPassages } | { kind: "skipped"; reason: string };
 
+/** The post as the note writer reads it: its title, creator, day and address,
+ *  then its text. */
+export function postMarkdown(item: Awaited<ReturnType<typeof readItem>>): string {
+  return `# ${item.title ?? item.url}\n\nBy ${item.project?.name ?? "unknown"}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`;
+}
+
+
 /** A skipped post gets no Claude, and the caller finishes it with the reason. */
 export async function take(itemId: string): Promise<Take> {
   // A reader's question about a passage is answered even on a post Nathan
@@ -29,7 +36,7 @@ export async function take(itemId: string): Promise<Take> {
   mkdirSync(dir, { recursive: true });
   if (item.caption_cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(item.caption_cues));
   const creator = item.project?.name ?? "unknown";
-  writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
+  writeFileSync(path.join(dir, "post.md"), postMarkdown(item));
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
   return { kind: "taken", dir, asked: { requests, onlyThese: requests.length > 0 && isWholePageChecked(item) } };
 }

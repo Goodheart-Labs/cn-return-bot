@@ -93,6 +93,8 @@ export const X_REVIEW_FIELDS: FieldDef[] = [
     options: [
       { value: "simple-bot", label: "Pipeline bot" },
       { value: "claude-code", label: "Claude" },
+      { value: "gpt61terra-agent", label: "GPT-6.1 Terra agent" },
+      { value: "sonnet55-agent", label: "Sonnet 5.5 agent" },
     ],
   },
   { id: "our_votes", label: "Our votes", hint: "Every vote on the note on commonnotes.net", kind: "count", thresholds: SMALL_COUNTS, bound: "atLeast", offerNone: true, sortable: true },
