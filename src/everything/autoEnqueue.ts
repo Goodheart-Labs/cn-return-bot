@@ -23,6 +23,9 @@
  * the lowest-ranked creator went ahead of a failed post by the highest
  * (GOO-487).
  *
+ * A post published more than two weeks before the walk is not a candidate
+ * (MAX_CANDIDATE_AGE_DAYS): such posts drew almost no Helpful notes.
+ *
  * Only a feed's three newest posts are ever candidates. A newly ranked creator
  * therefore backfills at most three posts rather than their whole archive. A
  * gap deeper than that stays unfilled on purpose. A post counts as checked
@@ -385,6 +388,24 @@ export function orderCandidates(unchecked: UnprocessedEntry[], retries: Retryabl
   return [...posts, ...tops];
 }
 
+/** A candidate published more than this many days before the walk is passed
+ *  over, so the walk goes on to the next creator's new post instead. In the 30
+ *  days to 2026-11-12 the walk checked 836 posts that were 14 or more days old
+ *  when checked, and they gave 18 publicly Helpful notes (2.2 per 100 posts);
+ *  the 831 younger posts gave 144 (17 per 100). Old YouTube posts gave none in
+ *  427. Most were all-time top posts (GOO-81) and the newest posts of creators
+ *  who rarely publish. An undated candidate is kept. */
+export const MAX_CANDIDATE_AGE_DAYS = 14;
+
+/** The candidates young enough to check. Exported for the tests. */
+export function freshCandidates(candidates: Candidate[], now: Date = new Date()): Candidate[] {
+  const cutoff = new Date(now.getTime() - MAX_CANDIDATE_AGE_DAYS * 86_400_000).toISOString().slice(0, 10);
+  return candidates.filter((c) => {
+    const date = candidateDate(c).slice(0, 10);
+    return date === "" || date >= cutoff;
+  });
+}
+
 /** The failed feed posts due another attempt, grouped by the normalised feed
  *  address of their creator. A post whose project follows no feed is never
  *  walked, so it is left out. */
@@ -511,7 +532,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         CREATOR_ALIGN,
       ),
     );
-    return { feed, sourceName: listing.sourceName, candidates: orderCandidates(unchecked, retries) };
+    return { feed, sourceName: listing.sourceName, candidates: freshCandidates(orderCandidates(unchecked, retries)) };
   };
 
   const { walked, unlisted, found } = await walkToFirstCandidate(ranked, walkCreator);
