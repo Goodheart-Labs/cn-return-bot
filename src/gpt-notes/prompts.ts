@@ -50,8 +50,6 @@ If the post has images, they are attached to this message after the post.
 
 If the post needs a note, call submit_x_note with the note, with the links to its sources, and a few sentences on why the post needs it. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, call x_no_note with the reason.
 
-If you use subagents, use the subagent tool. A subagent starts fresh. It sees the examples in your system prompt, but not this message, the tweet or the pages you read. So put everything it needs into its task: what to check, and everything you found that might help it, with the facts, quotes and links. It answers with what it found, and you submit the answer.
-
 ${tweetInputSection(job.input)}`;
 }
 

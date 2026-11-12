@@ -4,10 +4,12 @@
  *
  * The agent's tools are our web tools (webTools.ts: a Serper search, and
  * opening a page and finding text in it through the pipeline's fetch ladder),
- * our own tools that save its answers, and a subagent tool. A subagent is the
- * SDK's own: an agent that starts from a fresh conversation with the examples
- * and the task its parent wrote, does research with the web tools, and answers
- * in text.
+ * our own tools that save its answers, and for posts a subagent tool. A
+ * subagent is the SDK's own: an agent that starts from a fresh conversation
+ * with the examples and the task its parent wrote, does research with the web
+ * tools, and answers in text. A tweet's agent researches alone: on the Kevin
+ * Hart tweet a subagent spent 56 searches on a side question the note never
+ * used (GOO-734).
  *
  * Prompt caching works at two levels. The examples end in a cache breakpoint,
  * so every post or tweet reads them from the cache (model.ts). And OpenAI's
@@ -218,7 +220,7 @@ function mainAgent(state: HarnessState): Agent<HarnessState> {
   const tools =
     job.kind === "post"
       ? [...state.webTools, saveDraftTool(state, job), skipPostTool(state), subagentTool(state)]
-      : [...state.webTools, submitXNoteTool(state), xNoNoteTool(state), subagentTool(state)];
+      : [...state.webTools, submitXNoteTool(state), xNoNoteTool(state)];
   return new Agent<HarnessState>({
     name: "main",
     model: new TrackedModel(state.client, state.settings.provider, "main", state.record),
