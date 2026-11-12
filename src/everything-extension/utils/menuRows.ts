@@ -464,14 +464,12 @@ html[dark] [${GROUP_ATTRIBUTE}] {
 [data-cn-site="substack"] .cn-menu-row:focus-visible {
   background: var(--color-bg-secondary, #80808020);
 }
-/* YouTube's player menu is dark whatever the page's theme, and sets its own
-   text colour and font, which our rows take over. */
+/* YouTube's player menu is dark whatever the page's theme. Our group sits
+   above the menu's own list, which has its own top padding. */
 [${GROUP_ATTRIBUTE}][data-cn-site="youtube-player"] {
+  padding: 8px 0;
+  margin: 0;
   border-color: rgba(255, 255, 255, 0.2);
-}
-[data-cn-site="youtube-player"] .cn-menu-row {
-  color: inherit;
-  font: inherit;
 }
 [data-cn-site="youtube-player"] .cn-menu-row:hover,
 [data-cn-site="youtube-player"] .cn-menu-row:focus-visible {

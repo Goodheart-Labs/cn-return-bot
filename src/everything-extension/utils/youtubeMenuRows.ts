@@ -128,19 +128,29 @@ export const youtubePlayerMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite
   menuFor() {
     return document.querySelector<HTMLElement>(PLAYER_MENU_SELECTOR);
   },
+  // The menu lays its rows out as a table. Our group inside it would become a
+  // cell of the table's first column and squeeze YouTube's labels, so it sits
+  // just above the table instead.
   mount(group, menu) {
-    menu.prepend(group);
+    menu.before(group);
+  },
+  // Outside the table our rows inherit nothing of YouTube's label style, so
+  // they copy its font and colour.
+  dress(row, _icon, _label, native) {
+    const style = getComputedStyle(native.querySelector(".ytp-menuitem-label") ?? native);
+    row.style.font = style.font;
+    row.style.color = style.color;
   },
   // YouTube sizes the menu and places it for its own rows before ours exist.
-  // So we size it again around all rows, and move it up when it would now
-  // reach past the bottom of the window.
+  // So we size it again around both, and move it up when it would now reach
+  // past the bottom of the window.
   refit(menu) {
     const popup = menu.closest<HTMLElement>(".ytp-popup");
     const panel = menu.closest<HTMLElement>(".ytp-panel");
-    if (!popup || !panel) return;
-    menu.style.height = "auto";
-    const width = Math.max(popup.offsetWidth, menu.scrollWidth);
-    const height = menu.scrollHeight;
+    const group = menu.previousElementSibling as HTMLElement | null;
+    if (!popup || !panel || !group) return;
+    const width = Math.max(popup.offsetWidth, group.scrollWidth);
+    const height = group.offsetHeight + menu.offsetHeight;
     for (const box of [popup, panel]) {
       box.style.width = `${width}px`;
       box.style.height = `${height}px`;
