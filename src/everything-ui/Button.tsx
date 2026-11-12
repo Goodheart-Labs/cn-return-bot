@@ -4,8 +4,9 @@ import { cn } from "./cn";
 import { focusRing } from "./focusRing";
 
 /** The button styles. `primary` is the one main action of a view, `secondary`
- *  an outlined alternative, `link` a text-only action and `quiet` a
- *  low-emphasis text action. The text-only variants take their size from the
+ *  an outlined alternative, `link` a text-only action, `quiet` a
+ *  low-emphasis text action and `danger` a text-only action that destroys
+ *  something, such as a confirmed Delete. The text-only variants take their size from the
  *  surrounding text. The two boxed variants come in two sizes: `md` for
  *  controls inside the product, and `lg` for the main action of a whole page. A link that should look like a button uses these too:
  *  `<a className={buttonVariants({ variant: "secondary" })}>`. */
@@ -18,6 +19,7 @@ export const buttonVariants = cva(
         secondary: "rounded-control font-medium border border-line-strong text-fg hover:bg-surface-hover",
         link: "text-link hover:underline",
         quiet: "text-fg-muted hover:underline",
+        danger: "font-medium text-negative hover:underline",
       },
       size: { md: "", lg: "" },
     },

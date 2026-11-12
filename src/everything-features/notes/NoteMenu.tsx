@@ -1,12 +1,10 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { displayName } from "@cn/core/session";
 import type { NoteRow } from "@cn/core/types";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
-import { IconButton } from "@cn/ui/IconButton";
-import { MoreIcon, PencilIcon, QuoteIcon, ShareIcon, SpeechBubbleIcon, TrashIcon } from "@cn/ui/icons";
-import { Menu, MenuItem } from "@cn/ui/Menu";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
+import { ConfirmDelete } from "@cn/ui/ConfirmDelete";
+import { PencilIcon, QuoteIcon, ShareIcon, SpeechBubbleIcon } from "@cn/ui/icons";
 import { useActingUser } from "../auth/useActingUser";
 import { useSession } from "../auth/useSession";
 import { Composer } from "./Composer";
@@ -28,8 +26,8 @@ const logPostFailure = (what: string) => (err: Error) => console.error(`[common-
 /** The row of actions under a note. You can argue that the claim needs no note.
  *  You can suggest an improvement, which posts your rewrite as your own draft
  *  note on the same claim and shows it beside the original. You can copy a deep
- *  link to the note. On a note you wrote yourself there is also a ⋯ menu, and
- *  it holds Delete. */
+ *  link to the note. On a note you wrote yourself there is also a trash button,
+ *  which asks once before it deletes. */
 export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, children }: {
   note: NoteRow;
   /** The absolute deep link to this note. The website builds it from the
@@ -37,7 +35,7 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   shareUrl: string;
   sourcesOpen?: boolean;
   onToggleSources?: () => void;
-  /** Extra actions rendered between Share and the ⋯ button. The feed uses this
+  /** Extra actions rendered between Share and the trash button. The feed uses this
    *  for the chips that jump between a note and its improvement. */
   children?: React.ReactNode;
 }) {
@@ -46,26 +44,17 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   const deleteNote = useDeleteNote();
   const postImprovement = usePostImprovement();
   const postNnn = usePostNnn();
-  /* Only one block is expanded at a time. The ⋯ menu and the two composers
-   * replace each other. The source details toggle is not part of this group and
-   * opens on its own. A hidden editor unmounts, so its draft text is held here
-   * in the parent and survives a switch to the other composer. */
-  const [expanded, setExpanded] = useState<"menu" | "improve" | "nnn" | null>(null);
+  /* Only one composer is open at a time. The source details toggle is not part
+   * of this group and opens on its own. A hidden editor unmounts, so its draft
+   * text is held here in the parent and survives a switch to the other
+   * composer. */
+  const [expanded, setExpanded] = useState<"improve" | "nnn" | null>(null);
   const [improveDraft, setImproveDraft] = useState("");
   const [nnnDraft, setNnnDraft] = useState("");
   const [copied, setCopied] = useState(false);
-  // Delete asks once more before it acts, because a deleted note is gone.
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
   const mine = !!session && session.user.id === note.author_id;
 
-  // A press anywhere outside the action row, which includes the rest of the
-  // note, closes the ⋯ menu. The composers are not closed this way. Only an
-  // explicit action closes those.
-  useOutsidePress(ref, expanded === "menu", () => setExpanded(null));
-
   const share = async () => {
-    setExpanded((prev) => (prev === "menu" ? null : prev));
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
@@ -74,11 +63,6 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
   const closeComposer = (clearDraft: (text: string) => void) => () => {
     clearDraft("");
     setExpanded(null);
-  };
-  const del = () => {
-    setExpanded(null);
-    setConfirmingDelete(false);
-    void deleteNote.mutateAsync(note.id).catch(() => {});
   };
   // A reader with no session gets an invisible anonymous account on the spot,
   // and the composer renders as soon as the new session reaches this
@@ -93,11 +77,12 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
 
   return (
     <div className="mt-2">
-      <div ref={ref} className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-fg-muted">
+      <div className="relative flex flex-wrap justify-end items-center gap-x-3 gap-y-1 text-xs text-fg-muted">
         {/* The sources, improve and share actions are visible on every card.
-            The ⋯ menu only holds Delete, and only on your own notes. Nathan
-            moved the other actions out of it on 2026-07-14, because the menu
-            was hiding the whole improvement flow. */}
+            Your own notes also get the trash button. Until 2026-11-12 it
+            was a ⋯ menu holding only Delete. Nathan had moved the other
+            actions out of that menu on 2026-07-14, because it was hiding the
+            whole improvement flow. */}
         {showSourcesButton && (
           // The label stays the same when the details open. A label that changed
           // width made the row wrap differently in the two states.
@@ -120,36 +105,11 @@ export function NoteMenu({ note, shareUrl, sourcesOpen, onToggleSources, childre
         </Button>
         {children}
         {mine && (
-          <IconButton
-            label="Note actions"
-            onClick={() => {
-              setConfirmingDelete(false);
-              setExpanded((prev) => (prev === "menu" ? null : "menu"));
-            }}
-          >
-            <MoreIcon size={ACTION_ICON_SIZE} aria-hidden />
-          </IconButton>
-        )}
-        {expanded === "menu" && mine && (
-          /* The menu sits in the normal flow and wraps onto its own line. It is
-           * deliberately not positioned absolutely. In the extension the card
-           * lives inside a scrolling popover with a maximum height, and a
-           * dropdown hanging below the action row spilled past that edge. The
-           * reader then saw a scrollbar instead of the menu. Sitting in the
-           * flow grows the card instead, the same way the two composers do. */
-          <div className="w-full flex justify-end mt-1">
-            <Menu>
-              {confirmingDelete ? (
-                <>
-                  <p className="px-3 py-1.5 text-xs text-fg-secondary">Delete this note?</p>
-                  <MenuItem onClick={del} icon={<TrashIcon size={ACTION_ICON_SIZE} />} danger autoFocus>Delete</MenuItem>
-                  <MenuItem onClick={() => setExpanded(null)}>Cancel</MenuItem>
-                </>
-              ) : (
-                <MenuItem onClick={() => setConfirmingDelete(true)} icon={<TrashIcon size={ACTION_ICON_SIZE} />} danger autoFocus>Delete</MenuItem>
-              )}
-            </Menu>
-          </div>
+          <ConfirmDelete
+            label="Delete note"
+            iconSize={ACTION_ICON_SIZE}
+            onDelete={() => void deleteNote.mutateAsync(note.id).catch(() => {})}
+          />
         )}
       </div>
       {expanded === "improve" && session && (
