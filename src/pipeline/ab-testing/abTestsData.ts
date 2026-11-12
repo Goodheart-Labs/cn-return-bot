@@ -29,11 +29,16 @@ export interface ABTest {
 // Nathan's ai-box. The X run draws this test itself. While the X share of
 // Nathan's Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
 // On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work.
+// 2026-11-12 (GOO-734): the agent note writer of src/agent-notes/ on GPT-6.1 Terra and on
+// Sonnet 5.5, with our Serper search and page fetch (src/bots/agentBots.ts). Each gets a
+// sixth of the tweets, the weight of 25 Jim chose for GPT on 2026-11-09.
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
-    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
-    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 0 },
+    { variant: { name: "simple-bot",       overrides: { botId: "simple-bot" }},       weight: 100 },
+    { variant: { name: "claude-code",      overrides: { botId: "claude-code" }},      weight: 0 },
+    { variant: { name: "gpt61terra-agent", overrides: { botId: "gpt61terra-agent" }}, weight: 25 },
+    { variant: { name: "sonnet55-agent",   overrides: { botId: "sonnet55-agent" }},   weight: 25 },
   ],
 };
 
@@ -316,10 +321,13 @@ const PANGRAM_MONITORING_TEST: ABTest = {
 // tweets. with_thoughts adds Jim's sentences on what makes a good note to the
 // examples in the system prompt; on adds his nudge to research more. The X run
 // draws both for a tweet that drew claude-code (handTweetToClaude), and the
-// runner on ai-box builds the prompt from the picks.
+// runner on ai-box builds the prompt from the picks. Since 2026-11-12 (GOO-734)
+// the agent bots, which share Claude's tweet prompt, draw them too.
+const CLAUDE_PROMPT_BOTS = ["claude-code", "gpt61terra-agent", "sonnet55-agent"];
+
 const CLAUDE_X_TASTE_TEST: ABTest = {
   name: "claude_x_taste",
-  prerequisites: { botId: "claude-code" },
+  prerequisites: { botId: CLAUDE_PROMPT_BOTS },
   variants: [
     { variant: { name: "examples_only", overrides: {} }, weight: 50 },
     { variant: { name: "with_thoughts", overrides: {} }, weight: 50 },
@@ -328,7 +336,7 @@ const CLAUDE_X_TASTE_TEST: ABTest = {
 
 const CLAUDE_X_RESEARCH_NUDGE_TEST: ABTest = {
   name: "claude_x_research_nudge",
-  prerequisites: { botId: "claude-code" },
+  prerequisites: { botId: CLAUDE_PROMPT_BOTS },
   variants: [
     { variant: { name: "off", overrides: {} }, weight: 50 },
     { variant: { name: "on",  overrides: {} }, weight: 50 },
