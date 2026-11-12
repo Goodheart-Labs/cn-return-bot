@@ -1,8 +1,8 @@
 /* The connection to GPT-6.1 Terra, and the wrapper that records every request.
  *
  * Requests go to a Responses API: OpenAI's own, or OpenRouter's, which passes
- * them on to OpenAI (GOO-688). The wrapper retries failed requests and logs
- * what each request cost. */
+ * them on to OpenAI (GOO-688). The wrapper retries failed requests, logs
+ * what each request cost, and keeps the whole conversation of every agent. */
 
 import type { Model, ModelRequest, ModelResponse } from "@openai/agents";
 import { ModelBehaviorError, OpenAIResponsesModel } from "@openai/agents";
@@ -83,30 +83,53 @@ export interface RequestLog extends RequestUsage {
   costUsd: number;
 }
 
+/** One request of a conversation in full: the input items that are new since
+ *  the conversation's previous request, and the items the model answered with.
+ *  The new input holds the tool results of the previous turn, so one step after
+ *  another reads as the whole conversation. */
+export interface TrajectoryStep {
+  agent: string;
+  turn: number;
+  newInput: unknown[];
+  output: unknown[];
+}
+
+/** The SDK keeps the encrypted reasoning, which only OpenAI can read, in each
+ *  item's providerData. The log leaves it out, because it is large and says
+ *  nothing to a reader. */
+const readable = (items: readonly object[]) => items.map(({ providerData: _, ...item }: { providerData?: unknown }) => item);
+
 /** The requests of one conversation, numbered from 1, in the run's log. */
 class Transcript {
   /** What the conversation's previous request read from the cache and wrote
    *  to it. The next request should read at least all of that. */
   private previousCachedPrefix = 0;
   private turn = 0;
+  /** The input items already in the trajectory. The first one is the
+   *  examples, which the log leaves out. */
+  private inputItemsLogged = 1;
 
   constructor(
     readonly agent: string,
-    private readonly log: RequestLog[],
+    private readonly log: RunLog,
   ) {}
 
-  record(response: ModelResponse, startedAt: number) {
+  record(request: ModelRequest, response: ModelResponse, startedAt: number) {
     this.turn += 1;
     const entry = requestLog(this.agent, this.turn, response, startedAt);
     warnAboutRequest(entry, this.previousCachedPrefix);
     this.previousCachedPrefix = entry.cachedTokens + entry.cacheWriteTokens;
-    this.log.push(entry);
+    this.log.requests.push(entry);
+    const input = Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }];
+    this.log.trajectory.push({ agent: this.agent, turn: this.turn, newInput: readable(input.slice(this.inputItemsLogged)), output: readable(response.output) });
+    this.inputItemsLogged = input.length;
   }
 }
 
 /** Where a model writes what its requests did. */
 export interface RunLog {
   requests: RequestLog[];
+  trajectory: TrajectoryStep[];
   /** Requests that still failed after every retry. They end their agent. A
    *  subagent's failure only reaches its parent as "An error occurred while
    *  running the tool", so this list is where it shows. */
@@ -206,7 +229,7 @@ export class TrackedModel implements Model {
     const key = JSON.stringify(Array.isArray(request.input) ? request.input[1] : request.input);
     let transcript = this.transcripts.get(key);
     if (!transcript) {
-      transcript = new Transcript(`${this.name} ${this.transcripts.size + 1}`, this.runLog.requests);
+      transcript = new Transcript(`${this.name} ${this.transcripts.size + 1}`, this.runLog);
       this.transcripts.set(key, transcript);
     }
     return transcript;
@@ -218,7 +241,7 @@ export class TrackedModel implements Model {
       const startedAt = Date.now();
       try {
         const response = await this.inner.getResponse(retry === 0 ? request : onTier(request, RETRY_TIER));
-        transcript.record(response, startedAt);
+        transcript.record(request, response, startedAt);
         return response;
       } catch (err) {
         const message = `${transcript.agent}: ${(err as Error).message}`;

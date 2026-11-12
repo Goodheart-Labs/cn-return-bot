@@ -89,7 +89,7 @@ describe("runJob against a fake Responses API", () => {
     expect(record.requests.map((r) => r.agent).sort()).toEqual(["main 1", "main 1", "subagent 1", "subagent 2"]);
     expect(bodies).toHaveLength(4);
     for (const body of bodies) {
-      expect([body.service_tier, body.prompt_cache_key, body.reasoning]).toEqual(["flex", "cn-notes-post", { effort: "xhigh" }]);
+      expect([body.service_tier, body.prompt_cache_key, body.reasoning]).toEqual(["flex", "cn-notes-post", { effort: "xhigh", summary: "auto" }]);
       expect(body.input[0]).toMatchObject({ role: "developer", content: [{ prompt_cache_breakpoint: { mode: "explicit", ttl: "12h" } }] });
     }
     const subagentBodies = bodies.filter(isSubagent);

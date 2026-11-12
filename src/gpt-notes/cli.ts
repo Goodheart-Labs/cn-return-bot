@@ -1,7 +1,8 @@
 /* Runs the GPT note writer on one post or one X tweet as a dry run (GOO-682).
  * It reads its input from prod and writes nothing there. Everything the run
  * produced goes into a run folder: the drafts or the X answer, one line per
- * model request, and a summary with the cost.
+ * model request with its cost, every agent's conversation in trajectory.jsonl,
+ * and a summary with the cost.
  *
  * Usage:
  *   bun run gpt-notes post <item id or post URL> [options]
@@ -136,6 +137,7 @@ async function main() {
   writeFileSync(path.join(runDir, "drafts.json"), JSON.stringify(record.drafts, null, 2));
   if (job.kind === "tweet") writeFileSync(path.join(runDir, "x-answer.json"), JSON.stringify(record.xAnswer, null, 2));
   writeFileSync(path.join(runDir, "requests.jsonl"), record.requests.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  writeFileSync(path.join(runDir, "trajectory.jsonl"), record.trajectory.map((step) => JSON.stringify(step)).join("\n") + "\n");
   writeFileSync(path.join(runDir, "web-tools.jsonl"), record.web.calls.map((call) => JSON.stringify(call)).join("\n") + "\n");
   writeFileSync(path.join(runDir, "summary.json"), JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));

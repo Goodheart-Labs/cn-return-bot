@@ -173,7 +173,9 @@ function xNoNoteTool(state: HarnessState): Tool<HarnessState> {
 function modelSettings(state: HarnessState): ModelSettings {
   const shared = { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` };
   return {
-    reasoning: { effort: state.settings.effort },
+    // The summary of its reasoning shows in the trajectory why the model made
+    // each tool call.
+    reasoning: { effort: state.settings.effort, summary: "auto" },
     parallelToolCalls: true,
     ...(state.settings.provider === "openai" ? { providerData: shared } : openRouterSettings(shared)),
   };
@@ -241,7 +243,7 @@ function taskMessage(job: Job): AgentInputItem {
 }
 
 export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
-  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, web: { searches: 0, pagesFetched: 0, calls: [] }, requests: [], failedRequests: [] };
+  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, web: { searches: 0, pagesFetched: 0, calls: [] }, requests: [], trajectory: [], failedRequests: [] };
   const examplesPath = settings.examplesPath ?? (job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH);
   const examples: AgentInputItem = { role: "system", content: readFileSync(examplesPath, "utf8") };
   const state = { job, settings, client: openAIClient(settings.provider), record, examples, webTools: webTools(record.web) };
