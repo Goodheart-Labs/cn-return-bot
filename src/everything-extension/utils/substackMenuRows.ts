@@ -22,8 +22,9 @@ import { isSubstackPostPage } from "./pageShape";
 // to the nearest element that holds one item of the page, such as a post or a
 // Note in the feed or a comment. A post item names its post through the one
 // post link inside it. Any other item gets no rows. A button outside every item
-// belongs to the page itself, so it is about the open post when the page is a
-// post, and gets no rows otherwise, as on a profile's own menu.
+// belongs to the page itself. It is about the open post when the page is a
+// post, and about the author when the page is a profile, which gets only the
+// author's row. Elsewhere it gets no rows.
 
 const TRIGGER_SELECTOR = 'button[aria-haspopup="menu"]:is(:has(svg.lucide-ellipsis), [class*="moreButton-"])';
 // Comments have the same three-dot menu, and we do not check comments.
@@ -52,10 +53,7 @@ const AUTHOR_LINK_SELECTOR = 'a[href*="utm_source=substack-feed-item"]';
 function openPostSubject(): MenuSubject | null {
   if (!isSubstackPostPage(location.href) && !isSubstackReaderUrl(location.href)) return null;
   return {
-    pageUrl: normalizePageUrl(location.href, document),
-    title: document.title,
-    noun: "post",
-    currentPage: true,
+    page: { url: normalizePageUrl(location.href, document), title: document.title, noun: "post", current: true },
     creator: async () =>
       substackCreatorTarget(location.href) ?? substackTargetFromPublication(readSubstackPublicationFromPage()),
   };
@@ -105,12 +103,17 @@ function postItemSubject(item: Element): MenuSubject | null {
   const handle = authorLink ? substackProfileHandle(authorLink.href) : null;
   const pageUrl = normalizePageUrl(post.href);
   return {
-    pageUrl,
-    title: postTitle(post),
-    noun: "post",
-    currentPage: false,
+    page: { url: pageUrl, title: postTitle(post), noun: "post", current: false },
     creator: async () => substackCreatorTarget(pageUrl) ?? (handle ? resolveProfileCreatorTarget(handle) : null),
   };
+}
+
+/** A profile page such as substack.com/@thezvi. Its own menu offers the
+ *  author's new posts, through the publication Substack's profile API names. */
+function profileSubject(): MenuSubject | null {
+  const handle = substackProfileHandle(location.href);
+  if (!handle) return null;
+  return { page: null, creator: () => resolveProfileCreatorTarget(handle) };
 }
 
 export const substackMenuSite: MenuSite = {
@@ -121,7 +124,7 @@ export const substackMenuSite: MenuSite = {
   },
   subjectFor(trigger) {
     const item = trigger.closest(ITEM_SELECTOR);
-    if (!item) return openPostSubject();
+    if (!item) return openPostSubject() ?? profileSubject();
     return isPostItem(item) ? postItemSubject(item) : null;
   },
   menuFor(trigger) {

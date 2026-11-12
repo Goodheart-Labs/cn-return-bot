@@ -9,7 +9,7 @@ import { createOverlayUi } from "./overlayUi";
 
 /** Opens the card that asks why the selected words need a note. The
  *  background sends cn-passage-request-ask when the reader picks "Check these
- *  words with Common Notes". The card sends the answer back as
+ *  words". The card sends the answer back as
  *  cn-passage-request-send, and the background submits the request.
  *  Registered once per content script, whatever else is mounted on the page. */
 export function listenForPassageRequests(ctx: ContentScriptContext): void {

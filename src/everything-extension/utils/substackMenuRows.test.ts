@@ -37,8 +37,8 @@ describe("which post a Substack menu is about", () => {
         ${MORE_BUTTON}</div></div>`,
     );
     const subject = substackMenuSite.subjectFor(trigger);
-    expect(subject?.pageUrl).toBe("https://garymarcus.substack.com/p/the-markets-dropped-25-trillion-yesterday");
-    expect(subject?.currentPage).toBe(false);
+    expect(subject?.page?.url).toBe("https://garymarcus.substack.com/p/the-markets-dropped-25-trillion-yesterday");
+    expect(subject?.page?.current).toBe(false);
   });
 
   test("a Note in the feed gets no rows, even when it links posts", () => {
@@ -75,7 +75,7 @@ describe("which post a Substack menu is about", () => {
         <a href="https://a.substack.com/p/first/comment/326281587">a comment</a>
         ${MORE_BUTTON}</div>`,
     );
-    expect(substackMenuSite.subjectFor(trigger)?.pageUrl).toBe("https://a.substack.com/p/first");
+    expect(substackMenuSite.subjectFor(trigger)?.page?.url).toBe("https://a.substack.com/p/first");
   });
 
   test("the action bar of an open post is about that post, whatever it links", () => {
@@ -88,8 +88,8 @@ describe("which post a Substack menu is about", () => {
       </article></div>`,
     );
     const subject = substackMenuSite.subjectFor(trigger);
-    expect(subject?.pageUrl).toBe("https://jessesingal.substack.com/p/see-you-this-tuesday");
-    expect(subject?.currentPage).toBe(true);
+    expect(subject?.page?.url).toBe("https://jessesingal.substack.com/p/see-you-this-tuesday");
+    expect(subject?.page?.current).toBe(true);
   });
 
   test("the header of a post opened as an overlay in the reader is about that post", () => {
@@ -102,8 +102,8 @@ describe("which post a Substack menu is about", () => {
       </div></div>`,
     );
     const subject = substackMenuSite.subjectFor(trigger);
-    expect(subject?.pageUrl).toBe("https://substack.com/home/post/p-223167042");
-    expect(subject?.currentPage).toBe(true);
+    expect(subject?.page?.url).toBe("https://substack.com/home/post/p-223167042");
+    expect(subject?.page?.current).toBe(true);
   });
 
   test("a comment's menu gets no rows", () => {
@@ -116,13 +116,15 @@ describe("which post a Substack menu is about", () => {
     expect(substackMenuSite.subjectFor(trigger)).toBeNull();
   });
 
-  test("a profile's own menu gets no rows", () => {
+  test("a profile's own menu is about the author only", () => {
     const trigger = loadPage(
       "https://substack.com/@garymarcus",
       `<main class="reader-nav-page"><div>${MORE_BUTTON}</div>
         <a href="https://garymarcus.substack.com/p/the-markets-dropped-25-trillion-yesterday">a post further down</a></main>`,
     );
-    expect(substackMenuSite.subjectFor(trigger)).toBeNull();
+    const subject = substackMenuSite.subjectFor(trigger);
+    expect(subject).not.toBeNull();
+    expect(subject?.page).toBeNull();
   });
 
   test("an inbox row is about its post, without the tracking parameters", () => {
@@ -130,7 +132,7 @@ describe("which post a Substack menu is about", () => {
       "https://substack.com/inbox",
       `<div class="reader2-post-container"><a href="https://nothinghuman.substack.com/p/richard-ngo-on-alignment-hierarchical?utm_source=%2Finbox&amp;utm_medium=reader2">post</a>${MORE_BUTTON}</div>`,
     );
-    expect(substackMenuSite.subjectFor(trigger)?.pageUrl).toBe("https://nothinghuman.substack.com/p/richard-ngo-on-alignment-hierarchical");
+    expect(substackMenuSite.subjectFor(trigger)?.page?.url).toBe("https://nothinghuman.substack.com/p/richard-ngo-on-alignment-hierarchical");
   });
 });
 

@@ -24,16 +24,23 @@ import { addRequestedPage, getRequestedPages } from "./settings";
 // rendering may drop them, so we watch the menu and put them back.
 
 /** The page a three-dot menu belongs to. */
-export interface MenuSubject {
-  pageUrl: string;
+export interface MenuPage {
+  url: string;
   title: string;
   noun: "video" | "post";
   /** True when the menu belongs to the page the reader has open, such as the
    *  menu under the playing video. Such a check goes through the background,
    *  which reads the page's text and follows the check with the progress
    *  card. */
-  currentPage: boolean;
-  /** The page's creator. On Substack this can need a lookup. */
+  current: boolean;
+}
+
+/** What a three-dot menu is about. A Substack profile's own menu is about its
+ *  author only, so it has no page to check. */
+export interface MenuSubject {
+  page: MenuPage | null;
+  /** The creator of the page, or of the profile. On Substack this can need a
+   *  lookup. */
   creator: () => Promise<CreatorTarget | null>;
   /** A row that opens our note editor on this page, such as "Write a note at
    *  12:34" under a YouTube video. It sits after the check row and is never
@@ -90,12 +97,11 @@ async function rowsFor(subject: MenuSubject): Promise<MenuRow[]> {
   ]);
   const pressable = await unlessPrioritized(creator);
   const creatorPrioritized = !!creator && !pressable;
-  const pageHandled =
-    creatorPrioritized ||
-    pageIsCovered(subject.pageUrl, checked ?? []) ||
-    pageIsCovered(subject.pageUrl, requested);
+  const { page } = subject;
   const rows: MenuRow[] = [];
-  if (!pageHandled) rows.push({ label: `Check this ${subject.noun}`, run: () => checkPage(subject, creator) });
+  if (page && !creatorPrioritized && !pageIsCovered(page.url, checked ?? []) && !pageIsCovered(page.url, requested)) {
+    rows.push({ label: `Check this ${page.noun}`, run: () => checkPage(page, creator) });
+  }
   if (subject.writeRow) rows.push(subject.writeRow);
   if (pressable) rows.push({ label: priorityButtonLabel(pressable), run: () => pressCreator(pressable) });
   return rows;
@@ -103,22 +109,22 @@ async function rowsFor(subject: MenuSubject): Promise<MenuRow[]> {
 
 /** The background owns the check of the open page. Another page gets a
  *  request without its text, which the pipeline then fetches itself. */
-async function checkPage(subject: MenuSubject, creator: CreatorTarget | null): Promise<string | null> {
-  if (subject.currentPage) {
-    // The background runs the right-click menu's "Check this page with
-    // Common Notes" for the tab the message came from.
+async function checkPage(page: MenuPage, creator: CreatorTarget | null): Promise<string | null> {
+  if (page.current) {
+    // The background runs the right-click menu's "Check this page" for the
+    // tab the message came from.
     await browser.runtime.sendMessage({ type: "cn-check-open-page" });
     return null;
   }
   await submitNoteRequest({
-    pageUrl: subject.pageUrl,
-    pageTitle: subject.title,
+    pageUrl: page.url,
+    pageTitle: page.title,
     selection: null,
     creatorFeedUrl: creator?.feedUrl ?? null,
   });
   // This is only a local reminder. The request itself is already saved.
-  await addRequestedPage(subject.pageUrl).catch(() => {});
-  return `Checking this ${subject.noun} now.`;
+  await addRequestedPage(page.url).catch(() => {});
+  return `Checking this ${page.noun} now.`;
 }
 
 async function pressCreator(target: CreatorTarget): Promise<string> {

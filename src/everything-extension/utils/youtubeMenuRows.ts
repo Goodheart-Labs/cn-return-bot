@@ -45,10 +45,7 @@ function watchPageSubject(openEditor: OpenVideoNoteEditor): MenuSubject | null {
   const videoId = extractYoutubeVideoId(location.href);
   if (!videoId) return null;
   return {
-    pageUrl: youtubeWatchUrl(videoId),
-    title: watchPageTitle(),
-    noun: "video",
-    currentPage: true,
+    page: { url: youtubeWatchUrl(videoId), title: watchPageTitle(), noun: "video", current: true },
     creator: async () => {
       const channel = readWatchPageChannel();
       return channel ? youtubeChannelTarget(channel.href, channel.name.trim()) : null;
@@ -71,10 +68,12 @@ function cardSubject(card: Element): MenuSubject | null {
   );
   const creator: CreatorTarget | null = channelLink ? youtubeChannelTarget(channelLink.href, channelLink.textContent!.trim()) : null;
   return {
-    pageUrl: youtubeWatchUrl(videoId),
-    title: card.querySelector(CARD_TITLE_SELECTOR)?.textContent?.trim() ?? "",
-    noun: "video",
-    currentPage: false,
+    page: {
+      url: youtubeWatchUrl(videoId),
+      title: card.querySelector(CARD_TITLE_SELECTOR)?.textContent?.trim() ?? "",
+      noun: "video",
+      current: false,
+    },
     creator: async () => creator,
   };
 }
