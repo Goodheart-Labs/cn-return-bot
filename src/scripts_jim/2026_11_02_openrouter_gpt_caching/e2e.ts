@@ -6,8 +6,8 @@
 
 import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
-import { runJob, type ReasoningEffort } from "../../gpt-notes/harness";
-import type { ServiceTier } from "../../gpt-notes/pricing";
+import { runJob, type ReasoningEffort } from "../../agent-notes/harness";
+import type { ServiceTier } from "../../agent-notes/pricing";
 
 process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
 process.env.OPENAI_AGENTS_DISABLE_TRACING = "1";

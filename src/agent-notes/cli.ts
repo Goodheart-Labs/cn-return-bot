@@ -1,23 +1,26 @@
-/* Runs the GPT note writer on one post or one X tweet as a dry run (GOO-682).
+/* Runs the agent note writer on one post or one X tweet as a dry run (GOO-682).
  * It reads its input from prod and writes nothing there. Everything the run
  * produced goes into a run folder: the drafts or the X answer, one line per
  * model request with its cost, every agent's conversation in trajectory.jsonl,
  * and a summary with the cost.
  *
  * Usage:
- *   bun run gpt-notes post <item id or post URL> [options]
- *   bun run gpt-notes tweet <pipeline_runs id> [options]
+ *   bun run agent-notes post <item id or post URL> [options]
+ *   bun run agent-notes tweet <pipeline_runs id> [options]
  *
- * A tweet is one the X run gave to the Claude note writer: GPT gets the input
- * and the A/B picks stored on that row, exactly what Claude got.
+ * A tweet is one the X run gave to the Claude note writer: the model gets the
+ * input and the A/B picks stored on that row, exactly what Claude got. That
+ * input lists the tweet's images only as links, and the harness never sends
+ * images, so the model does not see them. The X bots describe them instead.
  *
  * Options:
+ *   --model gpt-6.1-terra|sonnet-5.5     the model, GPT-6.1 Terra by default
  *   --effort low|medium|high|xhigh|max   reasoning effort, high by default
  *   --tier flex|default                  OpenAI's service tier, flex by default; "default" is the standard tier
  *   --provider openrouter|openai         where requests go, OpenRouter by default
  *   --pick <test>=<variant>              fixes a post's A/B pick, for example --pick claude_cn_taste=with_thoughts
  *   --examples <file>                    replaces the examples in the system prompt, for experiments
- *   --out <folder>                       the run folder, by default under ~/.local/share/gpt-notes/runs */
+ *   --out <folder>                       the run folder, by default under ~/.local/share/agent-notes/runs */
 
 import { mkdirSync, writeFileSync } from "fs";
 import { homedir } from "os";
@@ -32,11 +35,11 @@ import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { SERPER_COST_PER_SEARCH } from "../pipeline/cost-tracking/pricing";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { runJob, type HarnessSettings, type ReasoningEffort, type RunRecord } from "./harness";
-import type { Provider } from "./model";
+import { HARNESS_MODELS, type HarnessModel, type Provider } from "./model";
 import type { ServiceTier } from "./pricing";
 import type { Job } from "./prompts";
 
-const RUNS_DIR = path.join(homedir(), ".local/share/gpt-notes/runs");
+const RUNS_DIR = path.join(homedir(), ".local/share/agent-notes/runs");
 
 // The local copy of OPENROUTER_API_KEY is dead. Local runs use the testing
 // key instead, like the repo's other local scripts.
@@ -44,10 +47,12 @@ if (process.env.OPENROUTER_TESTING_KEY) process.env.OPENROUTER_API_KEY = process
 const EFFORTS: ReasoningEffort[] = ["low", "medium", "high", "xhigh", "max"];
 const TIERS: ServiceTier[] = ["flex", "default"];
 const PROVIDERS: Provider[] = ["openai", "openrouter"];
+const MODELS = Object.keys(HARNESS_MODELS) as HarnessModel[];
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
   options: {
+    model: { type: "string", default: "gpt-6.1-terra" },
     effort: { type: "string", default: "high" },
     tier: { type: "string", default: "flex" },
     provider: { type: "string", default: "openrouter" },
@@ -58,13 +63,15 @@ const { positionals, values } = parseArgs({
 });
 
 function settingsFromArgs(): HarnessSettings {
+  const model = values.model as HarnessModel;
   const effort = values.effort as ReasoningEffort;
   const tier = values.tier as ServiceTier;
   const provider = values.provider as Provider;
+  if (!MODELS.includes(model)) throw new Error(`--model must be one of ${MODELS.join(", ")}`);
   if (!EFFORTS.includes(effort)) throw new Error(`--effort must be one of ${EFFORTS.join(", ")}`);
   if (!TIERS.includes(tier)) throw new Error(`--tier must be one of ${TIERS.join(", ")}`);
   if (!PROVIDERS.includes(provider)) throw new Error(`--provider must be one of ${PROVIDERS.join(", ")}`);
-  return { effort, tier, provider, examplesPath: values.examples };
+  return { model, effort, tier, provider, examplesPath: values.examples };
 }
 
 async function itemIdFor(itemIdOrUrl: string): Promise<string> {
@@ -90,11 +97,12 @@ async function tweetJob(runId: string): Promise<Job> {
   const { data, error } = await db().from("pipeline_runs").select("input:logs->claude->>input, ab_test_picks").eq("id", runId).single();
   if (error) throw new Error(JSON.stringify(error));
   if (!data.input) throw new Error(`Run ${runId} has no input for the Claude note writer`);
-  return { kind: "tweet", runId, input: data.input as string, picks: data.ab_test_picks as Record<string, string> };
+  return { kind: "tweet", input: data.input as string, picks: data.ab_test_picks as Record<string, string> };
 }
 
-function runFolderName(job: Job): string {
-  const subject = job.kind === "post" ? job.item.url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 60) : `x-${job.runId}`;
+/** A tweet's folder is named after its pipeline_runs id, the target. */
+function runFolderName(job: Job, target: string): string {
+  const subject = job.kind === "post" ? job.item.url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 60) : `x-${target}`;
   return `${new Date().toISOString().replace(/[:.]/g, "-")}-${subject}`;
 }
 
@@ -124,13 +132,13 @@ function summarize(record: RunRecord, minutes: number) {
 
 async function main() {
   const [command, target] = positionals;
-  if ((command !== "post" && command !== "tweet") || !target) throw new Error("Usage: bun run gpt-notes post <item id or URL> | tweet <pipeline_runs id>. See src/gpt-notes/cli.ts");
+  if ((command !== "post" && command !== "tweet") || !target) throw new Error("Usage: bun run agent-notes post <item id or URL> | tweet <pipeline_runs id>. See src/agent-notes/cli.ts");
   const settings = settingsFromArgs();
   const job = command === "post" ? await postJob(target) : await tweetJob(target);
-  const runDir = values.out ?? path.join(RUNS_DIR, runFolderName(job));
+  const runDir = values.out ?? path.join(RUNS_DIR, runFolderName(job, target));
   mkdirSync(runDir, { recursive: true });
-  writeFileSync(path.join(runDir, "job.json"), JSON.stringify({ settings, picks: job.picks, ...(job.kind === "post" ? { itemId: job.item.id, url: job.item.url, asked: job.asked } : { runId: job.runId }) }, null, 2));
-  console.log(`Running GPT on ${job.kind === "post" ? job.item.url : `tweet run ${job.runId}`} at ${settings.effort} effort on the ${settings.tier} tier through ${settings.provider}. Run folder: ${runDir}`);
+  writeFileSync(path.join(runDir, "job.json"), JSON.stringify({ settings, picks: job.picks, ...(job.kind === "post" ? { itemId: job.item.id, url: job.item.url, asked: job.asked } : { runId: target }) }, null, 2));
+  console.log(`Running ${settings.model} on ${job.kind === "post" ? job.item.url : `tweet run ${target}`} at ${settings.effort} effort on the ${settings.tier} tier through ${settings.provider}. Run folder: ${runDir}`);
   const startedAt = Date.now();
   const record = await runJob(job, settings);
   const summary = summarize(record, Math.round((Date.now() - startedAt) / 60_000));

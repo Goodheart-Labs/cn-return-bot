@@ -78,7 +78,7 @@ ${list}`;
 }
 
 /** What a Common Notes post asks of the model, shared by the Claude note writer
- *  and the GPT harness (src/gpt-notes/). `examplesAt` names where the examples
+ *  and the GPT harness (src/agent-notes/). `examplesAt` names where the examples
  *  are, in the words of the prompt's first paragraph. Each harness adds its own
  *  section on how to work. */
 export function postTask(params: { modelName: string; examplesAt: string; picks: Record<string, string>; asked: AskedPassages }): string {

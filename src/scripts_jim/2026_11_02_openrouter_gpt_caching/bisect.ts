@@ -3,7 +3,7 @@
  * top-level field or tool field removed at a time. max_output_tokens is cut
  * to keep each try cheap. */
 
-import { runJob } from "../../gpt-notes/harness";
+import { runJob } from "../../agent-notes/harness";
 
 process.env.OPENROUTER_API_KEY = process.env.OPENROUTER_TESTING_KEY;
 process.env.OPENAI_AGENTS_DISABLE_TRACING = "1";

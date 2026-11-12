@@ -1,6 +1,6 @@
 # GPT-6.1 Terra through OpenRouter (GOO-688)
 
-Can the GPT note writer harness (`src/gpt-notes/`) run through OpenRouter
+Can the GPT note writer harness (`src/agent-notes/`) run through OpenRouter
 instead of a direct OpenAI key? Probed on 2026-11-02 with the testing key,
 about $0.50 in all.
 

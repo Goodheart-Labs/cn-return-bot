@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { tweetImageLinks } from "./harness";
-import { addExamplesBreakpoint } from "./model";
+import { addAnthropicCacheMarks, addExamplesBreakpoint } from "./model";
 import { requestCostUsd, type RequestUsage } from "./pricing";
 import { subagentBrief } from "./prompts";
 
@@ -38,13 +37,14 @@ describe("addExamplesBreakpoint", () => {
   });
 });
 
-describe("tweetImageLinks", () => {
-  test("reads the links after the images heading", () => {
-    expect(tweetImageLinks("Tweet text\n\n## Images on the post\n\nhttps://a.jpg\nhttps://b.png")).toEqual(["https://a.jpg", "https://b.png"]);
-  });
-
-  test("finds none in a tweet without images", () => {
-    expect(tweetImageLinks("Tweet text")).toEqual([]);
+describe("addAnthropicCacheMarks", () => {
+  test("marks the end of the examples for an hour and the end of the latest message for five minutes", () => {
+    const body = { messages: [{ role: "system", content: "EXAMPLES" }, { role: "user", content: "task" }, { role: "tool", content: [{ type: "text", text: "a" }, { type: "text", text: "b" }] }] };
+    expect(addAnthropicCacheMarks(body).messages).toEqual([
+      { role: "system", content: [{ type: "text", text: "EXAMPLES", cache_control: { type: "ephemeral", ttl: "1h" } }] },
+      { role: "user", content: "task" },
+      { role: "tool", content: [{ type: "text", text: "a" }, { type: "text", text: "b", cache_control: { type: "ephemeral" } }] },
+    ]);
   });
 });
 
@@ -81,7 +81,7 @@ describe("runJob against a fake Responses API", () => {
     Object.assign(process.env, { OPENAI_API_KEY: "test", OPENAI_BASE_URL: `http://localhost:${server.port}/v1`, OPENAI_AGENTS_DISABLE_TRACING: "1" });
     const { runJob } = await import("./harness");
     const item = { id: "item-1", url: "https://example.com/p", title: "T", full_text: PASSAGE, published_at: "2026-11-01", project: { name: "C", slug: "c" } };
-    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "xhigh", tier: "flex", provider: "openai" });
+    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { model: "gpt-6.1-terra", effort: "xhigh", tier: "flex", provider: "openai" });
     server.stop();
 
     expect(record.failedRequests).toEqual([]);
@@ -120,7 +120,7 @@ describe("a refused flex request", () => {
     Object.assign(process.env, { OPENAI_API_KEY: "test", OPENAI_BASE_URL: `http://localhost:${server.port}/v1`, OPENAI_AGENTS_DISABLE_TRACING: "1" });
     const { runJob } = await import("./harness");
     const item = { id: "item-1", url: "https://example.com/p", title: "T", full_text: "Text.", published_at: "2026-11-01", project: { name: "C", slug: "c" } };
-    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { effort: "low", tier: "flex", provider: "openai" });
+    const record = await runJob({ kind: "post", item: item as never, asked: { requests: [], onlyThese: false }, picks: {} }, { model: "gpt-6.1-terra", effort: "low", tier: "flex", provider: "openai" });
     server.stop();
     expect(tiers).toEqual(["flex", "default"]);
     expect(record.requests.map((r) => r.tier)).toEqual(["default"]);

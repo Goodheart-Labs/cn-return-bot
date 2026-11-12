@@ -1,22 +1,46 @@
-/* The connection to GPT-6.1 Terra, and the wrapper that records every request.
+/* The connection to the harness's models, and the wrapper that records every
+ * request.
  *
- * Requests go to a Responses API: OpenAI's own, or OpenRouter's, which passes
- * them on to OpenAI (GOO-688). The wrapper retries failed requests, logs
- * what each request cost, and keeps the whole conversation of every agent. */
+ * GPT-6.1 Terra runs on a Responses API: OpenAI's own, or OpenRouter's, which
+ * passes the request on to OpenAI (GOO-688). Sonnet 5.5 runs on OpenRouter's
+ * Chat Completions API, because OpenRouter's Responses API ignores Anthropic's
+ * cache breakpoints, and without them every turn would pay the full price for
+ * the examples (src/scripts_jim/2026_11_12_sonnet_responses_probe/). The
+ * wrapper retries failed requests, logs what each request cost, and keeps the
+ * whole conversation of every agent. */
 
 import type { Model, ModelRequest, ModelResponse } from "@openai/agents";
-import { ModelBehaviorError, OpenAIResponsesModel } from "@openai/agents";
+import { ModelBehaviorError, OpenAIChatCompletionsModel, OpenAIResponsesModel } from "@openai/agents";
 import OpenAI from "openai";
 import { LONG_CONTEXT_INPUT_TOKENS, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
 
 export type Provider = "openai" | "openrouter";
 
-/** OpenRouter forwards the request to OpenAI and bills the same list prices.
- *  It passes on the cache breakpoints, the cache key and the tier. */
-const CONNECTIONS: Record<Provider, { baseURL?: string; keyName: string; model: string }> = {
-  openai: { keyName: "OPENAI_API_KEY", model: "gpt-6.1-terra" },
-  openrouter: { baseURL: "https://openrouter.ai/api/v1", keyName: "OPENROUTER_API_KEY", model: "openai/gpt-6.1-terra" },
+/** OpenRouter forwards a request to the model's maker and bills its list
+ *  prices. For GPT it passes on the cache breakpoints, the cache key and the
+ *  tier. */
+const CONNECTIONS: Record<Provider, { baseURL?: string; keyName: string }> = {
+  openai: { keyName: "OPENAI_API_KEY" },
+  openrouter: { baseURL: "https://openrouter.ai/api/v1", keyName: "OPENROUTER_API_KEY" },
 };
+
+/** The models the harness runs, by the names the A/B arms and the dry-run
+ *  command use. `name` is how the prompt greets the model. `maker` is the only
+ *  provider OpenRouter may send the request to, so the cache stays in one
+ *  place. Only GPT can also go to OpenAI directly. */
+export const HARNESS_MODELS = {
+  "gpt-6.1-terra": { name: "GPT", api: "responses", openRouterId: "openai/gpt-6.1-terra", openAIId: "gpt-6.1-terra", maker: "openai" },
+  "sonnet-5.5": { name: "Claude", api: "chat", openRouterId: "anthropic/claude-sonnet-5.5", openAIId: null, maker: "anthropic" },
+} as const;
+
+export type HarnessModel = keyof typeof HARNESS_MODELS;
+
+function modelId(model: HarnessModel, provider: Provider): string {
+  const spec = HARNESS_MODELS[model];
+  if (provider === "openrouter") return spec.openRouterId;
+  if (!spec.openAIId) throw new Error(`${model} runs only through OpenRouter`);
+  return spec.openAIId;
+}
 
 /** OpenAI's advice for flex: a flex request may wait a long time for a free
  *  machine, so the client waits up to 15 minutes for an answer. */
@@ -55,16 +79,46 @@ export function addExamplesBreakpoint(body: Record<string, unknown>): Record<str
   return { ...body, input: [examples, ...rest] };
 }
 
-async function fetchWithExamplesBreakpoint(url: string | URL | Request, init?: RequestInit): Promise<Response> {
-  if (typeof init?.body !== "string" || !String(url).endsWith("/responses")) return fetch(url, init);
-  return fetch(url, { ...init, body: JSON.stringify(addExamplesBreakpoint(JSON.parse(init.body))) });
+/** Anthropic caches a prefix only up to a block marked with cache_control,
+ *  and at most four such marks count. The harness marks two: the end of the
+ *  examples, which every post and tweet shares, and the end of the latest
+ *  message, so each turn reads the turns before it from the cache. The
+ *  examples stay for an hour, the conversation for Anthropic's default five
+ *  minutes. */
+const ANTHROPIC_EXAMPLES_CACHE = { type: "ephemeral", ttl: "1h" };
+const ANTHROPIC_TURN_CACHE = { type: "ephemeral" };
+
+type ChatMessage = { role: string; content?: unknown };
+
+function withCacheMark(message: ChatMessage, mark: object): ChatMessage {
+  if (typeof message.content === "string") return { ...message, content: [{ type: "text", text: message.content, cache_control: mark }] };
+  if (!Array.isArray(message.content) || message.content.length === 0) return message;
+  const parts = [...message.content];
+  parts[parts.length - 1] = { ...parts[parts.length - 1], cache_control: mark };
+  return { ...message, content: parts };
+}
+
+export function addAnthropicCacheMarks(body: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(body.messages)) return body;
+  const messages = [...(body.messages as ChatMessage[])];
+  if (messages[0]?.role === "system") messages[0] = withCacheMark(messages[0], ANTHROPIC_EXAMPLES_CACHE);
+  const last = messages.length - 1;
+  if (last > 0) messages[last] = withCacheMark(messages[last]!, ANTHROPIC_TURN_CACHE);
+  return { ...body, messages };
+}
+
+async function fetchWithCacheMarks(url: string | URL | Request, init?: RequestInit): Promise<Response> {
+  if (typeof init?.body !== "string") return fetch(url, init);
+  if (String(url).endsWith("/responses")) return fetch(url, { ...init, body: JSON.stringify(addExamplesBreakpoint(JSON.parse(init.body))) });
+  if (String(url).endsWith("/chat/completions")) return fetch(url, { ...init, body: JSON.stringify(addAnthropicCacheMarks(JSON.parse(init.body))) });
+  return fetch(url, init);
 }
 
 export function openAIClient(provider: Provider): OpenAI {
   const { baseURL, keyName } = CONNECTIONS[provider];
   const apiKey = process.env[keyName];
   if (!apiKey) throw new Error(`${keyName} is not set. Add it to the root .env (the env file in ~/dev/env/cn-return-bot).`);
-  return new OpenAI({ apiKey, baseURL, timeout: REQUEST_TIMEOUT_MS, maxRetries: 0, fetch: fetchWithExamplesBreakpoint });
+  return new OpenAI({ apiKey, baseURL, timeout: REQUEST_TIMEOUT_MS, maxRetries: 0, fetch: fetchWithCacheMarks });
 }
 
 /** One request as the run log stores it. */
@@ -86,7 +140,8 @@ export interface RequestLog extends RequestUsage {
 /** One request of a conversation in full: the input items that are new since
  *  the conversation's previous request, and the items the model answered with.
  *  The new input holds the tool results of the previous turn, so one step after
- *  another reads as the whole conversation. */
+ *  another reads as the whole conversation. The previous answer, which comes
+ *  back in the input too, is left out of it. */
 export interface TrajectoryStep {
   agent: string;
   turn: number;
@@ -99,6 +154,9 @@ export interface TrajectoryStep {
  *  nothing to a reader. */
 const readable = (items: readonly object[]) => items.map(({ providerData: _, ...item }: { providerData?: unknown }) => item);
 
+/** The model's own items, as the next request sends them back. */
+const isModelOutput = (item: { type?: string; role?: string }) => item.type === "function_call" || item.type === "reasoning" || item.role === "assistant";
+
 /** The requests of one conversation, numbered from 1, in the run's log. */
 class Transcript {
   /** What the conversation's previous request read from the cache and wrote
@@ -110,18 +168,19 @@ class Transcript {
   private inputItemsLogged = 1;
 
   constructor(
+    private readonly model: HarnessModel,
     readonly agent: string,
     private readonly log: RunLog,
   ) {}
 
   record(request: ModelRequest, response: ModelResponse, startedAt: number) {
     this.turn += 1;
-    const entry = requestLog(this.agent, this.turn, response, startedAt);
+    const entry = requestLog(this.model, this.agent, this.turn, response, startedAt);
     warnAboutRequest(entry, this.previousCachedPrefix);
     this.previousCachedPrefix = entry.cachedTokens + entry.cacheWriteTokens;
     this.log.requests.push(entry);
     const input = Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }];
-    this.log.trajectory.push({ agent: this.agent, turn: this.turn, newInput: readable(input.slice(this.inputItemsLogged)), output: readable(response.output) });
+    this.log.trajectory.push({ agent: this.agent, turn: this.turn, newInput: readable(input.slice(this.inputItemsLogged).filter((item) => !isModelOutput(item as { type?: string; role?: string }))), output: readable(response.output) });
     this.inputItemsLogged = input.length;
   }
 }
@@ -136,26 +195,41 @@ export interface RunLog {
   failedRequests: string[];
 }
 
+/** The usage as the Responses API reports it, and as Chat Completions does,
+ *  which names the same counts prompt and completion tokens. */
 interface RawUsage {
   input_tokens?: number;
+  prompt_tokens?: number;
   output_tokens?: number;
+  completion_tokens?: number;
   input_tokens_details?: { cached_tokens?: number; cache_write_tokens?: number; cache_write_tokens_details?: { ttl_30m_tokens?: number; ttl_12h_tokens?: number } };
+  prompt_tokens_details?: { cached_tokens?: number; cache_write_tokens?: number };
   output_tokens_details?: { reasoning_tokens?: number };
+  completion_tokens_details?: { reasoning_tokens?: number };
   /** What OpenRouter billed for the request. */
   cost?: number;
 }
 
-function requestLog(agent: string, turn: number, response: ModelResponse, startedAt: number): RequestLog {
+/** OpenRouter reports what it billed. Only OpenAI's own API does not, and
+ *  pricing.ts holds OpenAI's list prices for that case. */
+function costUsd(model: HarnessModel, usage: RawUsage, tokens: RequestUsage, tier: ServiceTier): number {
+  if (usage.cost !== undefined) return usage.cost;
+  if (HARNESS_MODELS[model].maker !== "openai") throw new Error(`OpenRouter reported no cost for a ${model} request`);
+  return requestCostUsd(tokens, tier);
+}
+
+function requestLog(model: HarnessModel, agent: string, turn: number, response: ModelResponse, startedAt: number): RequestLog {
   const raw = (response.providerData ?? {}) as { usage?: RawUsage; service_tier?: string };
   const usage = raw.usage ?? {};
+  const inputDetails = usage.input_tokens_details ?? usage.prompt_tokens_details;
   const writes = usage.input_tokens_details?.cache_write_tokens_details;
   const tier: ServiceTier = raw.service_tier === "flex" ? "flex" : "default";
   const tokens: RequestUsage = {
-    inputTokens: usage.input_tokens ?? 0,
-    cachedTokens: usage.input_tokens_details?.cached_tokens ?? 0,
+    inputTokens: usage.input_tokens ?? usage.prompt_tokens ?? 0,
+    cachedTokens: inputDetails?.cached_tokens ?? 0,
     write30mTokens: writes?.ttl_30m_tokens ?? 0,
     write12hTokens: writes?.ttl_12h_tokens ?? 0,
-    outputTokens: usage.output_tokens ?? 0,
+    outputTokens: usage.output_tokens ?? usage.completion_tokens ?? 0,
   };
   return {
     agent,
@@ -164,9 +238,9 @@ function requestLog(agent: string, turn: number, response: ModelResponse, starte
     durationMs: Date.now() - startedAt,
     tier,
     ...tokens,
-    reasoningTokens: usage.output_tokens_details?.reasoning_tokens ?? 0,
-    cacheWriteTokens: usage.input_tokens_details?.cache_write_tokens ?? 0,
-    costUsd: usage.cost ?? requestCostUsd(tokens, tier),
+    reasoningTokens: (usage.output_tokens_details ?? usage.completion_tokens_details)?.reasoning_tokens ?? 0,
+    cacheWriteTokens: inputDetails?.cache_write_tokens ?? 0,
+    costUsd: costUsd(model, usage, tokens, tier),
   };
 }
 
@@ -179,10 +253,10 @@ function requestLog(agent: string, turn: number, response: ModelResponse, starte
 function warnAboutRequest(entry: RequestLog, previousCachedPrefix: number) {
   const name = `${entry.agent}, turn ${entry.turn}`;
   if (entry.inputTokens > LONG_CONTEXT_INPUT_TOKENS) {
-    console.warn(`[gpt-notes] ${name}: ${entry.inputTokens} input tokens, more than ${LONG_CONTEXT_INPUT_TOKENS}. The whole request is billed at the long-context rate.`);
+    console.warn(`[agent-notes] ${name}: ${entry.inputTokens} input tokens, more than ${LONG_CONTEXT_INPUT_TOKENS}. The whole request is billed at the long-context rate.`);
   }
   if (entry.turn > 1 && entry.cachedTokens < previousCachedPrefix) {
-    console.warn(`[gpt-notes] ${name}: read only ${entry.cachedTokens} tokens from the cache, but the previous turn had ${previousCachedPrefix} there. The cache missed.`);
+    console.warn(`[agent-notes] ${name}: read only ${entry.cachedTokens} tokens from the cache, but the previous turn had ${previousCachedPrefix} there. The cache missed.`);
   }
 }
 
@@ -206,20 +280,22 @@ function isRetryable(err: unknown): boolean {
   return RETRYABLE_STATUSES.includes(err.status) || err.status >= MIN_SERVER_ERROR_STATUS;
 }
 
-/** The SDK's model for OpenAI's Responses API, with every answer recorded in
- *  the agent's transcript and failed requests retried on the standard tier.
- *  The harness never streams. */
+/** The SDK's model for the harness model's API, with every answer recorded in
+ *  the agent's transcript and failed requests retried, GPT's on the standard
+ *  tier. The harness never streams. */
 export class TrackedModel implements Model {
-  private readonly inner: OpenAIResponsesModel;
+  private readonly inner: Model;
   private readonly transcripts = new Map<string, Transcript>();
 
   constructor(
     client: OpenAI,
+    private readonly model: HarnessModel,
     provider: Provider,
     private readonly name: string,
     private readonly runLog: RunLog,
   ) {
-    this.inner = new OpenAIResponsesModel(client, CONNECTIONS[provider].model);
+    const id = modelId(model, provider);
+    this.inner = HARNESS_MODELS[model].api === "responses" ? new OpenAIResponsesModel(client, id) : new OpenAIChatCompletionsModel(client, id);
   }
 
   /** One model serves every subagent of a run, and several subagents run at
@@ -229,7 +305,7 @@ export class TrackedModel implements Model {
     const key = JSON.stringify(Array.isArray(request.input) ? request.input[1] : request.input);
     let transcript = this.transcripts.get(key);
     if (!transcript) {
-      transcript = new Transcript(`${this.name} ${this.transcripts.size + 1}`, this.runLog);
+      transcript = new Transcript(this.model, `${this.name} ${this.transcripts.size + 1}`, this.runLog);
       this.transcripts.set(key, transcript);
     }
     return transcript;
@@ -240,7 +316,7 @@ export class TrackedModel implements Model {
     for (let retry = 0; ; retry++) {
       const startedAt = Date.now();
       try {
-        const response = await this.inner.getResponse(retry === 0 ? request : onTier(request, RETRY_TIER));
+        const response = await this.inner.getResponse(retry === 0 || HARNESS_MODELS[this.model].api !== "responses" ? request : onTier(request, RETRY_TIER));
         transcript.record(request, response, startedAt);
         return response;
       } catch (err) {
@@ -250,7 +326,7 @@ export class TrackedModel implements Model {
           throw err;
         }
         const waitMs = Math.min(FIRST_RETRY_WAIT_MS * 2 ** retry, MAX_RETRY_WAIT_MS);
-        console.warn(`[gpt-notes] ${transcript.agent}: request failed (${(err as Error).message}). Retry ${retry + 1} of ${MAX_RETRIES} on the standard tier in ${waitMs / 1000}s.`);
+        console.warn(`[agent-notes] ${transcript.agent}: request failed (${(err as Error).message}). Retry ${retry + 1} of ${MAX_RETRIES} in ${waitMs / 1000}s.`);
         await Bun.sleep(waitMs);
       }
     }

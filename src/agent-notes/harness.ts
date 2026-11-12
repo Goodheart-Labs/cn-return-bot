@@ -1,6 +1,7 @@
-/* The GPT note writer (GOO-682): one agent per Common Notes post or X tweet,
- * built with the OpenAI Agents SDK on GPT-6.1 Terra. It gets the same task as
- * the Claude note writer on ai-box and the same examples as its system prompt.
+/* The agent note writer (GOO-682, GOO-734): one agent per Common Notes post
+ * or X tweet, built with the OpenAI Agents SDK, on GPT-6.1 Terra or Sonnet 5.5
+ * (model.ts). It gets the same task as the Claude note writer on ai-box and
+ * the same examples as its system prompt.
  *
  * The agent's tools are our web tools (webTools.ts: a Serper search, and
  * opening a page and finding text in it through the pipeline's fetch ladder),
@@ -12,15 +13,16 @@
  * used (GOO-734).
  *
  * Prompt caching works at two levels. The examples end in a cache breakpoint,
- * so every post or tweet reads them from the cache (model.ts). And OpenAI's
- * implicit mode, its default, puts a breakpoint after the latest message or
- * tool results, so every turn reads the turns before it. The harness does not
- * name the mode, because OpenRouter refuses the setting. The tools are part of
+ * so every post or tweet reads them from the cache (model.ts). And every turn
+ * reads the turns before it: OpenAI's implicit mode, its default, puts a
+ * breakpoint after the latest message or tool results, and for Sonnet the
+ * harness marks the latest message itself. The tools are part of
  * the cached prefix too. The main agent and the subagents have different
  * tools, so each keeps its own cached copy of the examples.
  *
  * The harness only records what the agent produced. The caller decides what
- * happens with it: the dry-run command (cli.ts) writes it to a folder. */
+ * happens with it: the dry-run command (cli.ts) writes it to a folder, and
+ * the X bots (src/bots/agentBots.ts) turn it into a pipeline result. */
 
 import { readFileSync } from "fs";
 import * as path from "path";
@@ -29,8 +31,7 @@ import type OpenAI from "openai";
 import { z } from "zod";
 import type { NewDraft } from "../claude-notes/store";
 import { xNoteProblems } from "../claude-notes/xTweets";
-import { IMAGE_LINKS_HEADING } from "../pipeline/input/claudeTweetInput";
-import { openAIClient, TrackedModel, type Provider, type RunLog } from "./model";
+import { HARNESS_MODELS, openAIClient, TrackedModel, type HarnessModel, type Provider, type RunLog } from "./model";
 import type { ServiceTier } from "./pricing";
 import { postMessage, subagentBrief, tweetMessage, type Job } from "./prompts";
 import { webTools, type WebToolUse } from "./webTools";
@@ -46,9 +47,11 @@ const MAX_TURNS = 200;
 export type ReasoningEffort = "low" | "medium" | "high" | "xhigh" | "max";
 
 export interface HarnessSettings {
+  model: HarnessModel;
   effort: ReasoningEffort;
-  /** Flex for normal use. Experiments use the standard tier, which OpenAI
-   *  calls "default", so they run faster and never wait for capacity. */
+  /** OpenAI's tier for GPT; Sonnet ignores it. Flex for posts. Tweets and
+   *  experiments use the standard tier, which OpenAI calls "default", so they
+   *  run faster and never wait for capacity. */
   tier: ServiceTier;
   provider: Provider;
   /** The examples file for the system prompt, when an experiment replaces the
@@ -107,7 +110,7 @@ const draftParameters = z.object({
 /** A passage the post does not contain word for word could not be shown on
  *  the page, so the tool refuses it and the model copies it again. */
 function saveDraftTool(state: HarnessState, job: Extract<Job, { kind: "post" }>): Tool<HarnessState> {
-  const postText = postMessage(job);
+  const postText = postMessage(job, HARNESS_MODELS[state.settings.model].name);
   return tool({
     name: "save_draft",
     description: "Saves your finding on one passage of the post. A draft with outcome note is posted at once.",
@@ -170,9 +173,24 @@ function xNoNoteTool(state: HarnessState): Tool<HarnessState> {
 // ---------------------------------------------------------------------------
 
 /** Every setting here is part of the cached prefix, so the main agent and the
- *  subagents send the same. GPT-6.1 finds its cache without a cache key. The key only
- *  splits OpenAI's cache accounting, here by post and tweet. */
+ *  subagents send the same. */
 function modelSettings(state: HarnessState): ModelSettings {
+  return HARNESS_MODELS[state.settings.model].api === "responses" ? gptSettings(state) : anthropicSettings(state);
+}
+
+/** Sonnet's thinking follows the effort through Chat Completions'
+ *  reasoning_effort, as the pipeline's Sonnet arms set it. */
+function anthropicSettings(state: HarnessState): ModelSettings {
+  return {
+    reasoning: { effort: state.settings.effort },
+    parallelToolCalls: true,
+    providerData: { provider: { only: [HARNESS_MODELS[state.settings.model].maker] }, usage: { include: true } },
+  };
+}
+
+/** GPT-6.1 finds its cache without a cache key. The key only splits OpenAI's
+ *  cache accounting, here by post and tweet. */
+function gptSettings(state: HarnessState): ModelSettings {
   const shared = { service_tier: state.settings.tier, prompt_cache_key: `cn-notes-${state.job.kind}` };
   return {
     // The summary of its reasoning shows in the trajectory why the model made
@@ -200,7 +218,7 @@ function openRouterSettings(shared: Record<string, string>): ModelSettings {
 function subagentTool(state: HarnessState): Tool<HarnessState> {
   const subagent = new Agent<HarnessState>({
     name: "subagent",
-    model: new TrackedModel(state.client, state.settings.provider, "subagent", state.record),
+    model: new TrackedModel(state.client, state.settings.model, state.settings.provider, "subagent", state.record),
     modelSettings: modelSettings(state),
     tools: state.webTools,
   });
@@ -223,7 +241,7 @@ function mainAgent(state: HarnessState): Agent<HarnessState> {
       : [...state.webTools, submitXNoteTool(state), xNoNoteTool(state)];
   return new Agent<HarnessState>({
     name: "main",
-    model: new TrackedModel(state.client, state.settings.provider, "main", state.record),
+    model: new TrackedModel(state.client, state.settings.model, state.settings.provider, "main", state.record),
     modelSettings: modelSettings(state),
     tools,
     toolUseBehavior: () =>
@@ -231,24 +249,22 @@ function mainAgent(state: HarnessState): Agent<HarnessState> {
   });
 }
 
-/** The image links the X run puts at the end of a tweet's input. GPT gets the
- *  images themselves, since it has no shell to download them with. */
-export function tweetImageLinks(input: string): string[] {
-  const [, list] = input.split(`\n\n${IMAGE_LINKS_HEADING}\n\n`);
-  return list ? list.split("\n").filter((line) => line.startsWith("http")) : [];
+/** The model works from text only, like the Claude note writer since
+ *  2026-11-09: it is never sent an image. The X bots describe a tweet's
+ *  images with Gemini in the input, as the pipeline does. */
+function taskMessage(job: Job, model: HarnessModel): AgentInputItem {
+  const modelName = HARNESS_MODELS[model].name;
+  return { role: "user", content: job.kind === "post" ? postMessage(job, modelName) : tweetMessage(job, modelName) };
 }
 
-function taskMessage(job: Job): AgentInputItem {
-  if (job.kind === "post") return { role: "user", content: postMessage(job) };
-  const images = tweetImageLinks(job.input).map((image) => ({ type: "input_image" as const, image }));
-  return { role: "user", content: [{ type: "input_text", text: tweetMessage(job) }, ...images] };
-}
+export const emptyRunRecord = (): RunRecord => ({ drafts: [], skipReason: null, xAnswer: null, web: { searches: 0, pagesFetched: 0, calls: [] }, requests: [], trajectory: [], failedRequests: [] });
 
-export async function runJob(job: Job, settings: HarnessSettings): Promise<RunRecord> {
-  const record: RunRecord = { drafts: [], skipReason: null, xAnswer: null, web: { searches: 0, pagesFetched: 0, calls: [] }, requests: [], trajectory: [], failedRequests: [] };
+/** The run writes into `record` as it goes, so a caller still has the costs of
+ *  a run that failed halfway. */
+export async function runJob(job: Job, settings: HarnessSettings, record: RunRecord = emptyRunRecord()): Promise<RunRecord> {
   const examplesPath = settings.examplesPath ?? (job.kind === "post" ? POST_EXAMPLES_PATH : TWEET_EXAMPLES_PATH);
   const examples: AgentInputItem = { role: "system", content: readFileSync(examplesPath, "utf8") };
   const state = { job, settings, client: openAIClient(settings.provider), record, examples, webTools: webTools(record.web) };
-  await run(mainAgent(state), [examples, taskMessage(job)], { context: state, maxTurns: MAX_TURNS });
+  await run(mainAgent(state), [examples, taskMessage(job, settings.model)], { context: state, maxTurns: MAX_TURNS });
   return record;
 }
