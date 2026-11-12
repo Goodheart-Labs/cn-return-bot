@@ -3,7 +3,7 @@
  * The Claude Code note writer on the ai-box writes Common Notes and, since
  * GOO-527, notes for some of the X bot's tweets. Both are paid for by Nathan's
  * Claude subscription. Jim gave X 20% of the week on 2026-10-27, and Common
- * Notes the rest of the 90% that usagePacing.ts aims at.
+ * Notes the rest of the weekly target that usagePacing.ts aims at.
  *
  * How much of the week X used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every
@@ -18,7 +18,7 @@
  * The X run reads this once at its start. While X is over its allowance, or
  * the runner on the ai-box would not start a Claude, a tweet that draws Claude
  * fails like a tweet whose model provider is out of credits (Jim,
- * 2026-10-28). It is not moved to the pipeline. Common Notes needs no change: its pacing aims the plan's total at 90%, and X's
+ * 2026-10-28). It is not moved to the pipeline. Common Notes needs no change: its pacing aims the plan's total at its target, and X's
  * usage is part of that total, so Common Notes gets whatever X leaves. */
 
 import { MAX_USAGE_READING_AGE_MS, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";

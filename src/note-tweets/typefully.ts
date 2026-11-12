@@ -37,6 +37,11 @@ async function json<T>(response: Response, what: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+/** Typefully takes only letters, digits and _.()- in an uploaded file's name,
+ *  so "Common Note <id>" becomes "Common-Note-<id>.png". With the spaces left
+ *  in, every post failed with a 422 (2026-11-10). */
+export const pictureFileName = (title: string) => `${title.replace(/[^a-zA-Z0-9_.()-]+/g, "-")}.png`;
+
 async function uploadImage({ api, headers }: Settings, image: ArrayBuffer, fileName: string): Promise<string> {
   const { media_id, upload_url } = await json<{ media_id: string; upload_url: string }>(
     await fetch(`${api}/media/upload`, { method: "POST", headers, body: JSON.stringify({ file_name: fileName }) }),
@@ -60,7 +65,7 @@ async function uploadImage({ api, headers }: Settings, image: ArrayBuffer, fileN
  *  it. */
 export async function createDraft(draft: TweetDraft): Promise<{ draftId: string; scheduledFor: string | null }> {
   const account = settings();
-  const mediaId = await uploadImage(account, draft.image, `${draft.title}.png`);
+  const mediaId = await uploadImage(account, draft.image, pictureFileName(draft.title));
   const posts = [{ text: draft.text, media_ids: [mediaId] }, ...(draft.reply.trim() ? [{ text: draft.reply.trim() }] : [])];
   const created = await json<{ id: string | number; scheduled_date?: string; publish_at?: string }>(
     await fetch(`${account.api}/drafts`, {
