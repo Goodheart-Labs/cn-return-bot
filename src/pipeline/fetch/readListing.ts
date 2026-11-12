@@ -13,6 +13,7 @@
 import { requestListing } from "../../service/client";
 import type { Listing, ListingRequest } from "../../service/contract";
 import { readApi } from "./readApi";
+import { logRead, type ReadOutcome } from "./readLog";
 import { parseAuthorFeedUrl, readForumAuthor, type ForumListing } from "./sites/forum";
 
 /** A publication's feed address in the form everything_projects.feed_url
@@ -22,10 +23,19 @@ const SUBSTACK_PUBLICATION_URL = /^https:\/\/[\w-]+\.substack\.com$/;
 
 export async function readListing(request: ListingRequest): Promise<Listing> {
   if (process.env.GITHUB_ACTIONS) return requestListing(request);
+  return logRead("listing", request.feedUrl, () => readListingHere(request), summarizeListing);
+}
+
+async function readListingHere(request: ListingRequest): Promise<Listing> {
   const forumAuthor = parseAuthorFeedUrl(request.feedUrl);
   if (forumAuthor) return { kind: "forum", listing: await readForumAuthor(forumAuthor, request.limit) };
   if (SUBSTACK_PUBLICATION_URL.test(request.feedUrl)) return { kind: "substack", xml: await readSubstackFeed(request.feedUrl) };
   throw new Error(`Not a feed we list: ${request.feedUrl}`);
+}
+
+function summarizeListing(listing: Listing): ReadOutcome {
+  const text = listing.kind === "substack" ? listing.xml : JSON.stringify(listing.listing);
+  return { outcome: "listing", via: listing.kind, chars: text.length, reason: null, text };
 }
 
 /** A forum author's name, picture and latest `limit` posts. */

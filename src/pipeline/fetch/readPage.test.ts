@@ -15,8 +15,8 @@ const ARTICLE = `# The title\n\n${"The article text goes on for a while. ".repea
 const forumAnswer = (result: object): ApiAnswer => ({ type: "answer", body: JSON.stringify({ data: { post: { result } } }) });
 const FORUM_POST_ANSWER = forumAnswer({ _id: "KgwQchapx4vJDhfYC", pageUrl: FORUM_POST, title: "Generalized atheism", postedAt: "2026-08-05T18:35:09Z", htmlBody: "<p>The post's body.</p>", user: { displayName: "Eliezer Yudkowsky", slug: "eliezer_yudkowsky" } });
 const SUBSTACK_ANSWER: ApiAnswer = { type: "answer", body: JSON.stringify({ title: "A big tent", subtitle: null, post_date: "2026-10-01T16:34:51Z", cover_image: null, canonical_url: SUBSTACK_POST, body_html: "<p>The post's body.</p>", publication_id: 1, publishedBylines: [] }) };
-const LADDER_PAGE: LadderAnswer = { ok: true, html: "<html></html>", markdown: ARTICLE, fetchedUrl: PLAIN_PAGE, via: null };
-const LADDER_FAILED: LadderAnswer = { ok: false, diagnostic: "HTTP 403 (last attempt: browser)" };
+const LADDER_PAGE: LadderAnswer = { ok: true, html: "<html></html>", markdown: ARTICLE, fetchedUrl: PLAIN_PAGE, via: null, attempts: [] };
+const LADDER_FAILED: LadderAnswer = { ok: false, diagnostic: "HTTP 403 (last attempt: browser)", attempts: [] };
 
 /** The steps readPage took, in order. */
 let steps: string[];

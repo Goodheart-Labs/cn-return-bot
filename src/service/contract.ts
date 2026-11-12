@@ -206,9 +206,20 @@ export interface FetchUrlRequest {
  *  it could not. `fetchedUrl` is the archive snapshot when the ladder fell back
  *  to one, and the requested address otherwise. `via` names the fallback step
  *  that produced the page, and is null when a plain request did. */
+/** One request of the fetch ladder, for the read log: which step, what came
+ *  back (good, wall, thin or fail), the HTTP status, the characters and the
+ *  time it took. */
+export interface LadderAttempt {
+  label: string;
+  result: string;
+  status?: number;
+  chars: number;
+  ms: number;
+}
+
 export type LadderAnswer =
-  | { ok: true; html: string; markdown: string; fetchedUrl: string; via: string | null }
-  | { ok: false; diagnostic: string };
+  | { ok: true; html: string; markdown: string; fetchedUrl: string; via: string | null; attempts: LadderAttempt[] }
+  | { ok: false; diagnostic: string; attempts: LadderAttempt[] };
 
 /** What one request to an API address got back. `bot_check` means the site
  *  answered with a challenge page meant to stop programs, such as Vercel's

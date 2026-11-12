@@ -207,3 +207,12 @@ Actions runs fail loudly at their health check, which is the intended signal.
 journalctl -u cn-intake -f                 # live logs, same for the other units
 curl -H "x-cn-service-key: $SECRET" http://localhost:8787/health
 ```
+
+Every page and listing the services read is a row in the table `page_reads`,
+and the same record with the text that came back is a line in
+`/var/lib/cn-page-reads/<day>.jsonl`, kept 30 days (`src/pipeline/fetch/readLog.ts`).
+
+```bash
+jq -c 'select(.outcome != "page") | {input, reason, steps}' /var/lib/cn-page-reads/$(date -u +%F).jsonl   # today's failed reads
+jq -r 'select(.input == "<url>") | .text' /var/lib/cn-page-reads/<day>.jsonl                              # what one read gave
+```

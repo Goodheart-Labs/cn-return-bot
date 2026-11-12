@@ -27,6 +27,7 @@ import { YoutubeQuotaExceededError } from "../media/youtubeDataApi";
 import { isWebUrl } from "../utils/webUrl";
 import { classifyMarkdown, fetchPageWithLadder } from "./fetchLadder";
 import { fetchWithJinaReader, JINA_FALLBACK } from "./jinaReader";
+import { addSteps, logRead, readStep, type ReadOutcome, type ReadStep } from "./readLog";
 import { parsePostUrl, readForumPost } from "./sites/forum";
 import { readSubstackPost } from "./sites/substack";
 import { readYoutubeVideo } from "./sites/youtube";
@@ -43,6 +44,10 @@ const TITLE_HEADING = /^# (.+)\n+/;
 
 export async function readPage(url: string): Promise<PageRead> {
   if (process.env.GITHUB_ACTIONS) return requestPageRead({ url });
+  return logRead("page", url, () => readPageHere(url), summarizePageRead);
+}
+
+async function readPageHere(url: string): Promise<PageRead> {
   if (!isWebUrl(url)) return { type: "unreadable", reason: "only http and https addresses are read" };
   const read = (await readWithSiteApi(url)) ?? (await readWithLadder(url));
   return read.type === "page" ? { type: "page", page: { ...read.page, text: read.page.text.slice(0, MAX_PAGE_TEXT_CHARS) } } : read;
@@ -51,7 +56,7 @@ export async function readPage(url: string): Promise<PageRead> {
 /** Stage 1. Null means the site has no API we know, or its API did not give
  *  the page. */
 async function readWithSiteApi(url: string): Promise<PageRead | null> {
-  if (extractYoutubeVideoId(url)) return readYoutubeVideo(url);
+  if (extractYoutubeVideoId(url)) return readStep("youtube captions", () => readYoutubeVideo(url), describePageRead);
   const forumPost = parsePostUrl(url);
   if (forumPost) return readForumPost(forumPost, url);
   return readSubstackPost(url);
@@ -59,19 +64,41 @@ async function readWithSiteApi(url: string): Promise<PageRead | null> {
 
 /** Stages 2 and 3. */
 async function readWithLadder(url: string): Promise<PageRead> {
+  const ladderStarted = Date.now();
   const ladder = await askFetcher<LadderAnswer>(FETCH_PAGE_PATH, { url }, () => fetchPageWithLadder(url));
+  addSteps(ladder.attempts.map(({ label, ...attempt }) => ({ step: `ladder: ${label}`, ...attempt })), ladderStarted);
   if (ladder.ok) {
     const { title, text } = splitTitle(ladder.markdown);
     return { type: "page", page: { url: ladder.fetchedUrl, title, text, publishedAt: null, authorName: null, source: { kind: "ladder", html: ladder.html, via: ladder.via } } };
   }
   if (!JINA_FALLBACK) return { type: "unreadable", reason: ladder.diagnostic };
-  const jina = await fetchWithJinaReader(url);
+  const jina = await readStep("Jina Reader", () => fetchWithJinaReader(url), describeJinaAnswer);
   if (jina.type !== "page" || classifyMarkdown(jina.markdown) !== "good") {
     return { type: "unreadable", reason: `${ladder.diagnostic}; Jina Reader: ${describeJinaFailure(jina)}` };
   }
   const { title, text } = splitTitle(jina.markdown);
   // Jina reads the live page, so the page is cited at its own address.
   return { type: "page", page: { url, title, text, publishedAt: null, authorName: null, source: { kind: "jina" } } };
+}
+
+function describeJinaAnswer(jina: Awaited<ReturnType<typeof fetchWithJinaReader>>): Pick<ReadStep, "result" | "status" | "chars"> {
+  if (jina.type === "page") return { result: classifyMarkdown(jina.markdown), chars: jina.markdown.length };
+  return { result: jina.type === "target_error" ? "target_error" : describeJinaFailure(jina), status: jina.type === "target_error" ? jina.status : undefined };
+}
+
+function describePageRead(read: PageRead): Pick<ReadStep, "result" | "chars"> {
+  return { result: read.type, chars: read.type === "page" ? read.page.text.length : undefined };
+}
+
+/** The read log's summary of a page read: what it gave, which stage served
+ *  it, and its title and text for the day's file. */
+function summarizePageRead(read: PageRead): ReadOutcome {
+  if (read.type === "page") {
+    const { source, title, text } = read.page;
+    const via = source.kind === "ladder" ? `ladder${source.via ? `: ${source.via}` : ""}` : source.kind;
+    return { outcome: "page", via, chars: text.length, reason: null, text: title ? `# ${title}\n\n${text}` : text };
+  }
+  return { outcome: read.type, via: null, chars: null, reason: read.type === "shortform" ? null : read.reason, text: null };
 }
 
 function describeJinaFailure(jina: Awaited<ReturnType<typeof fetchWithJinaReader>>): string {
