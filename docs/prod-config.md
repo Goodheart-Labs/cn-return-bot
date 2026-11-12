@@ -375,6 +375,18 @@ reads it. Changing provider means changing that secret in both places. When
 the prepaid traffic runs out, the proxy answers with an error and YouTube
 requests fail.
 
+## Jina Reader
+
+Jina Reader (r.jina.ai) is a paid service that fetches a page or an API answer
+with its own browsers. The page reader asks it for every page that the free
+fetch steps failed on, and for every API answer that a bot check kept closed,
+which is how the EA Forum is read (GOO-755, GOO-745). Its key is
+`JINA_API_KEY`, in `/etc/cn-return-bot/service.env` on the services machine
+and in the local `.env` files. GitHub has no copy, because Actions never reads
+an outside page itself. Today's key will be replaced by one from an account
+Nathan manages. When that happens, change the line in `service.env`, restart
+`cn-claim-check cn-extraction cn-intake`, and note the account here.
+
 ## Browser extension stores
 
 | Store | Listing | Extension ID |

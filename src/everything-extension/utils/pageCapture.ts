@@ -11,20 +11,39 @@ export interface CapturedPage {
   text: string;
 }
 
-/** Reads what a note request needs from the current page. Prefers the article
- *  element so navigation chrome stays out of the body text. This function runs
+/** Reads what a note request needs from the current page. This function runs
  *  in two worlds: called directly by content scripts, and injected into the
  *  active tab with scripting.executeScript by the popup and the background.
  *  executeScript serializes the function source, so it must stay
- *  self-contained; an import would not exist on the other side. */
+ *  self-contained; an import, or a constant outside it, would not exist on the
+ *  other side. */
 export function readPageForRequest(): CapturedPage {
-  const container =
-    document.querySelector<HTMLElement>("article") ?? document.querySelector<HTMLElement>("main") ?? document.body;
+  // Sites mark the part of a page that holds the post with <article> or
+  // <main>, but many also wrap each comment, card or related post in its own
+  // <article>. The EA Forum wraps nothing around its post, so its first
+  // <article> is a related post's card. The post is the part that holds the
+  // page's most important heading. So we take the most important heading
+  // level that appears inside such a part, find for every heading of that
+  // level the innermost part around it, and keep the longest of those parts.
+  // Taking the innermost part keeps a <main> from winning over the <article>
+  // inside it, which would add the comments and related links. A page with no
+  // heading in any part gives its longest part, and a page without parts gives
+  // the whole body.
+  const PARTS = "article, main, [role=main]";
+  const textLength = (element: Element) => (element as HTMLElement).innerText.length;
+  const longest = (elements: Element[]) =>
+    elements.reduce<Element | undefined>((best, element) => (!best || textLength(element) > textLength(best) ? element : best), undefined);
+  let container: Element | undefined;
+  for (const level of ["h1", "h2", "h3", "h4", "h5", "h6"]) {
+    container = longest([...document.querySelectorAll(level)].flatMap((heading) => heading.closest(PARTS) ?? []));
+    if (container) break;
+  }
+  container ??= longest([...document.querySelectorAll(PARTS)]) ?? document.body;
   return {
     href: location.href,
     canonical: document.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? null,
     title: document.title,
-    text: (container?.innerText ?? "").trim(),
+    text: (container as HTMLElement).innerText.trim(),
   };
 }
 
