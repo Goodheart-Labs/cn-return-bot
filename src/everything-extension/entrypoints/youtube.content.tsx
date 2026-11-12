@@ -22,7 +22,7 @@ import { initUiAnalytics } from "../utils/analytics";
 import { track } from "@cn/core/analytics";
 import { createOverlayUi } from "../utils/overlayUi";
 import { installMenuRows } from "../utils/menuRows";
-import { youtubeMenuSite } from "../utils/youtubeMenuRows";
+import { youtubeMenuSite, youtubePlayerMenuSite } from "../utils/youtubeMenuRows";
 import { installVideoNoteWriter } from "../utils/videoNoteWriter";
 import { mainVideo, PLAYER_SELECTOR } from "../utils/youtubePlayer";
 
@@ -170,6 +170,7 @@ export default defineContentScript({
     // video that had no notes before gets its overlay and the note its pin.
     const openVideoNoteEditor = installVideoNoteWriter(ctx, () => void init());
     installMenuRows(ctx, youtubeMenuSite(openVideoNoteEditor));
+    installMenuRows(ctx, youtubePlayerMenuSite(openVideoNoteEditor));
     // Listing badges mark noted videos on channel pages and in other video
     // lists. They live independently of the watch-page overlay below.
     const stopBadges = await mountCoverageBadges(ctx);

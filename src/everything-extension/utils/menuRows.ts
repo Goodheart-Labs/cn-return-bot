@@ -51,8 +51,12 @@ export interface MenuSubject {
 /** How one site's menus work. Every selector lives in the site's file. */
 export interface MenuSite {
   /** Sets the row defaults in the stylesheet below. */
-  name: "youtube" | "substack";
-  /** The menu button a click landed on, or null. */
+  name: "youtube" | "youtube-player" | "substack";
+  /** What opens the site's menu: a click on a menu button, which is the
+   *  default, or a right-click, as on YouTube's player. */
+  opensOn?: "click" | "contextmenu";
+  /** The menu button a click landed on, or the element a right-click landed
+   *  on for a site whose menu opens on a right-click. Null otherwise. */
   triggerFor(target: Element): HTMLElement | null;
   /** The video or post the menu button belongs to, or null when it belongs to
    *  something we cannot check, such as a Substack Note or a YouTube Short. */
@@ -281,10 +285,21 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
     items[next]!.focus();
   }
 
-  ctx.addEventListener(document, "pointerdown", select, { capture: true });
-  ctx.addEventListener(document, "click", select, { capture: true });
+  /** A press outside the open menu closes it, and our rows go with it. */
+  function pressOutside(event: Event) {
+    const target = asElement(event.composedPath()[0]);
+    if (target && !selection?.menu?.contains(target)) clear();
+  }
+
+  if (site.opensOn === "contextmenu") {
+    ctx.addEventListener(document, "contextmenu", select, { capture: true });
+    ctx.addEventListener(document, "pointerdown", pressOutside, { capture: true });
+  } else {
+    ctx.addEventListener(document, "pointerdown", select, { capture: true });
+    ctx.addEventListener(document, "click", select, { capture: true });
+    ctx.addEventListener(document, "contextmenu", clear, { capture: true });
+  }
   ctx.addEventListener(document, "keydown", keydown, { capture: true });
-  ctx.addEventListener(document, "contextmenu", clear, { capture: true });
   ctx.addEventListener(window, "popstate", clear);
   // YouTube is a single-page app and announces its own navigations.
   ctx.addEventListener(window, "yt-navigate-start" as keyof WindowEventMap, clear);
@@ -448,6 +463,19 @@ html[dark] [${GROUP_ATTRIBUTE}] {
 [data-cn-site="substack"] .cn-menu-row:hover,
 [data-cn-site="substack"] .cn-menu-row:focus-visible {
   background: var(--color-bg-secondary, #80808020);
+}
+/* YouTube's player menu is dark whatever the page's theme, and sets its own
+   text colour and font, which our rows take over. */
+[${GROUP_ATTRIBUTE}][data-cn-site="youtube-player"] {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+[data-cn-site="youtube-player"] .cn-menu-row {
+  color: inherit;
+  font: inherit;
+}
+[data-cn-site="youtube-player"] .cn-menu-row:hover,
+[data-cn-site="youtube-player"] .cn-menu-row:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
 }
 `;
 

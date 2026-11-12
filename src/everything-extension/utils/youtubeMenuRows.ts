@@ -22,6 +22,10 @@ const WATCH_TRIGGER_SELECTOR = "ytd-watch-metadata #actions ytd-menu-renderer > 
 const CARD_SELECTOR =
   "ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer, yt-lockup-view-model";
 const CARD_TITLE_SELECTOR = "#video-title, .ytLockupMetadataViewModelTitle, h3";
+// The menu YouTube's player opens on a right-click. YouTube keeps it in the
+// page's body and only hides it while closed.
+const PLAYER_SELECTOR = "#movie_player";
+const PLAYER_MENU_SELECTOR = '.ytp-contextmenu [role="menu"]';
 // Both generations of YouTube's popup menu. Only one is open at a time.
 const MENU_SELECTOR = 'ytd-popup-container yt-list-view-model[role="menu"], ytd-popup-container ytd-menu-popup-renderer #items';
 
@@ -106,5 +110,42 @@ export const youtubeMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite => ({
   // Its own resize event makes it measure again, so no row is cut off.
   refit(menu) {
     menu.closest("tp-yt-iron-dropdown")?.dispatchEvent(new CustomEvent("iron-resize"));
+  },
+});
+
+/** The menu YouTube's player opens on a right-click. On a watch page it gets
+ *  the same rows as the menu under the playing video. Anywhere else, such as
+ *  a preview playing on the home page, it gets none. */
+export const youtubePlayerMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite => ({
+  name: "youtube-player",
+  opensOn: "contextmenu",
+  triggerFor(target) {
+    return target.closest<HTMLElement>(PLAYER_SELECTOR);
+  },
+  subjectFor() {
+    return watchPageSubject(openEditor);
+  },
+  menuFor() {
+    return document.querySelector<HTMLElement>(PLAYER_MENU_SELECTOR);
+  },
+  mount(group, menu) {
+    menu.prepend(group);
+  },
+  // YouTube sizes the menu and places it for its own rows before ours exist.
+  // So we size it again around all rows, and move it up when it would now
+  // reach past the bottom of the window.
+  refit(menu) {
+    const popup = menu.closest<HTMLElement>(".ytp-popup");
+    const panel = menu.closest<HTMLElement>(".ytp-panel");
+    if (!popup || !panel) return;
+    menu.style.height = "auto";
+    const width = Math.max(popup.offsetWidth, menu.scrollWidth);
+    const height = menu.scrollHeight;
+    for (const box of [popup, panel]) {
+      box.style.width = `${width}px`;
+      box.style.height = `${height}px`;
+    }
+    const overflow = popup.getBoundingClientRect().bottom - window.innerHeight;
+    if (overflow > 0) popup.style.top = `${Math.max(0, popup.offsetTop - overflow)}px`;
   },
 });
