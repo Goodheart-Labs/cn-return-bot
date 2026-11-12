@@ -13,6 +13,12 @@ Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr
 # Outside pages and images are fetched by the sandboxed fetcher, never in this
 # process (ops/cn-fetch.service). The service refuses to start without this.
 Environment=FETCH_SERVICE_SOCKET=/run/cn-fetch/fetch.sock
+# The page reader records every read in the table page_reads, and with its text
+# in a file per day in this folder, kept 30 days (src/pipeline/fetch/readLog.ts).
+# systemd creates the folder for the service's user.
+StateDirectory=cn-page-reads
+Environment=PAGE_READ_LOG_DIR=/var/lib/cn-page-reads
+Environment=CN_SERVICE=intake
 ExecStart=/home/cnbot/.bun/bin/bun run src/service/intake/main.ts
 Restart=always
 RestartSec=5
