@@ -1,5 +1,5 @@
 /* GPT's web tools: a Google search through Serper, and opening a page and
- * finding text in it through the pipeline's fetch ladder. They replace
+ * finding text in it through the pipeline's page reader. They replace
  * OpenAI's hosted web search, which charges $0.01 per search and bills the
  * page text it reads at full price on every request (GOO-734). Here a search
  * costs Serper's fee, a page is free to fetch, and its text is an ordinary tool
@@ -11,11 +11,12 @@
  *
  * A tool error, such as Serper staying down through its retries, ends the run
  * instead of reaching the model as a message, so a broken search never passes
- * as "no results". A page the ladder could not fetch is an ordinary answer. */
+ * as "no results". A page the reader could not read is an ordinary answer. */
 
 import { tool, type Tool } from "@openai/agents";
 import { z } from "zod";
-import { fetchSearchResults, fetchWebPage, formatSearchResults } from "../pipeline/tool-calling/tools";
+import { readPageForModel } from "../pipeline/fetch/readPage";
+import { fetchSearchResults, formatSearchResults } from "../pipeline/tool-calling/tools";
 import { findInPage, pageLines, pageWindow, type PageLines } from "./pageText";
 
 /** One call of a web tool, for the run's log. Through OpenRouter the hosted
@@ -38,7 +39,7 @@ export function webTools(use: WebToolUse): Tool[] {
   function readPage(url: string): Promise<PageLines | string> {
     if (!pages.has(url)) {
       use.pagesFetched += 1;
-      pages.set(url, fetchWebPage(url).then((page) => (page.ok ? pageLines(page.fetchedUrl, page.content) : `Could not open ${url}. ${page.content}`)));
+      pages.set(url, readPageForModel(url).then((page) => (page.ok ? pageLines(page.fetchedUrl, page.content) : `Could not open ${url}. ${page.content}`)));
     }
     return pages.get(url)!;
   }
