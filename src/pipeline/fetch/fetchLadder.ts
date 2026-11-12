@@ -91,6 +91,11 @@ const WALL_PATTERNS = [
   "registrieren", // German
   "datadome",
   "captcha",
+  // archive.ph's own CAPTCHA page, which it shows our servers instead of a
+  // snapshot. Before these two, it matched only "captcha" and passed as the
+  // article, so the ladder never reached headless Chromium.
+  "one more step",
+  "please complete the security check",
   "verifying you are human",
   "checking your browser",
   // Cloudflare's challenge page. Jina Reader can come back with it, padded out
