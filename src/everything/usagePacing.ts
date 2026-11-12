@@ -33,7 +33,7 @@
  * whatever of the target the X note writer leaves. Jim gave X 20% on 2026-10-27,
  * raised the target from 80% to 90% on 2026-11-05, and on 2026-11-10 lowered
  * it to 60% and stopped the Claude tweets, so that the week keeps room for his
- * own work on the weekend.
+ * own work on the weekend. On 2026-11-12 he raised it back to 90%.
  *
  * The interval is stretched by 10%, so the week most likely ends a little
  * under the target rather than over it. Once the week is at the target, the
@@ -46,8 +46,9 @@ import { duration } from "./logFormat";
 
 /** The share of the weekly limit the posts should use up by the reset. Jim
  *  picked 80% on 2026-10-26, raised it to 90% on 2026-11-05 and lowered it to
- *  60% on 2026-11-10, to keep usage for the weekend. */
-export const WEEKLY_USAGE_TARGET_PERCENT = 60;
+ *  60% on 2026-11-10, to keep usage for the weekend, and raised it back to 90%
+ *  on 2026-11-12. */
+export const WEEKLY_USAGE_TARGET_PERCENT = 90;
 
 /** The interval is stretched by this factor, so that an estimate a little too
  *  low does not carry the week past the target. */
@@ -138,7 +139,7 @@ export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapsh
     ? `default, fewer than ${MIN_POSTS_FOR_USAGE_ESTIMATE} posts in the last ${USAGE_WINDOW_HOURS}h`
     : `a ${usageRise(snapshot.readings)}% rise over ${snapshot.postsTaken} posts in the last ${USAGE_WINDOW_HOURS}h`;
   return [
-    `CLAUDE · Nathan's plan at ${pacing.weekly}% of its weekly limit, aiming at ${WEEKLY_USAGE_TARGET_PERCENT}% by the reset at ${utcTime(pacing.resetsAt)}`,
+    `CLAUDE · the plan at ${pacing.weekly}% of its weekly limit, aiming at ${WEEKLY_USAGE_TARGET_PERCENT}% by the reset at ${utcTime(pacing.resetsAt)}`,
     `         ${pacing.usagePerPost.toFixed(3)}% per post (${sample})`,
     pacing.intervalMs === Infinity
       ? "         the target is reached · no new feed post until the reset"
