@@ -11,15 +11,23 @@ export interface CapturedPage {
   text: string;
 }
 
-/** Reads what a note request needs from the current page. Prefers the article
- *  element so navigation chrome stays out of the body text. This function runs
+/** Reads what a note request needs from the current page. This function runs
  *  in two worlds: called directly by content scripts, and injected into the
  *  active tab with scripting.executeScript by the popup and the background.
  *  executeScript serializes the function source, so it must stay
- *  self-contained; an import would not exist on the other side. */
+ *  self-contained; an import, or a constant outside it, would not exist on the
+ *  other side. */
 export function readPageForRequest(): CapturedPage {
+  // Many sites wrap the post in <article>, title included. Others use <article>
+  // only for cards, comments and related posts and wrap nothing around the
+  // post, as the EA Forum does. Taking the first <article> there sent a related
+  // post's card instead of the post. So an <article> counts only when it holds
+  // a title. Otherwise the page's main part keeps the site's navigation out,
+  // when the page marks it.
   const container =
-    document.querySelector<HTMLElement>("article") ?? document.querySelector<HTMLElement>("main") ?? document.body;
+    [...document.querySelectorAll<HTMLElement>("article")].find((article) => article.querySelector("h1")) ??
+    document.querySelector<HTMLElement>("main") ??
+    document.body;
   return {
     href: location.href,
     canonical: document.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? null,
