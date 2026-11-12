@@ -1,7 +1,7 @@
 /**
  * The fetcher. On the services machine it is the only process that fetches
- * pages and images from addresses a stranger or a model chose. The other
- * services ask it over a Unix socket (see fetchWebPage).
+ * pages, API answers and images from addresses a stranger or a model chose.
+ * The other services ask it over a Unix socket (see readPage and askFetcher).
  *
  * It runs in a sandbox that systemd builds from ops/cn-fetch.service. It holds
  * no keys, it cannot see the secret files, and the kernel lets it reach public
@@ -18,17 +18,18 @@
 
 import { chmodSync } from "node:fs";
 import { downloadImageInlineData } from "../../pipeline/media/mediaAnalysisGemini";
-import { readPageAnswer } from "../../everything/minisites/readPage";
-import { fetchFeedXmlDirectly } from "../../everything/sources/substack";
-import { fetchWebPageInProcess } from "../../pipeline/tool-calling/tools";
+import { minisitePageAnswer } from "../../everything/minisites/readPage";
+import { fetchApiInBrowser, fetchApiPlain } from "../../pipeline/fetch/fetchApi";
+import { fetchPageWithLadder } from "../../pipeline/fetch/fetchLadder";
 import {
+  FETCH_API_IN_BROWSER_PATH,
+  FETCH_API_PATH,
   FETCH_IMAGE_PATH,
   FETCH_PAGE_PATH,
-  READ_PAGE_PATH,
-  SUBSTACK_FEED_PATH,
+  MINISITE_PAGE_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
   type FetchUrlRequest,
-  type FetchPageRequest,
+  type MinisitePageRequest,
   type ServiceErrorResponse,
 } from "../contract";
 import { requiredEnv } from "../serve";
@@ -45,10 +46,11 @@ const IDLE_TIMEOUT_SECONDS = 255;
 const SOCKET_MODE = 0o666;
 
 const routes: Record<string, (body: any) => Promise<unknown>> = {
-  [FETCH_PAGE_PATH]: (body: FetchPageRequest) => fetchWebPageInProcess(body.url),
-  [READ_PAGE_PATH]: (body: FetchUrlRequest) => readPageAnswer(body.url),
+  [FETCH_PAGE_PATH]: (body: FetchUrlRequest) => fetchPageWithLadder(body.url),
+  [FETCH_API_PATH]: (body: FetchUrlRequest) => fetchApiPlain(body.url),
+  [FETCH_API_IN_BROWSER_PATH]: (body: FetchUrlRequest) => fetchApiInBrowser(body.url),
+  [MINISITE_PAGE_PATH]: (body: MinisitePageRequest) => minisitePageAnswer(body.url, body.page),
   [FETCH_IMAGE_PATH]: (body: FetchUrlRequest) => downloadImageInlineData(body.url),
-  [SUBSTACK_FEED_PATH]: (body: FetchUrlRequest) => fetchFeedXmlDirectly(body.url),
 };
 
 export function startFetchService(socketPath: string) {

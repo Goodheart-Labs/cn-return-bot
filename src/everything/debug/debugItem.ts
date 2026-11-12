@@ -21,7 +21,7 @@
  *   --all       fact-check every fact-checkable claim instead of just one
  *
  * Breakpoint suggestions:
- *   sources/substack.ts:fetchSubstackPost   — HTML fetch + strip
+ *   pipeline/fetch/readPage.ts:readPage     — the page reader
  *   gateAndSplit.ts:gateAndSplit            — intent gate + cut into parts
  *   extractClaims.ts:extractClaims          — claim extraction + parsing
  *   rateClaims.ts:rateClaims                — truth rating with the search + fetch loop
@@ -34,10 +34,10 @@ import "dotenv/config";
 import { buildClaimPost, runClaimCheck } from "../pipeline/checkClaims";
 import { extractClaims } from "../pipeline/extractClaims";
 import { rateClaims, shouldFactCheck } from "../pipeline/rateClaims";
-import { fetchSubstackPost } from "../sources/substack";
-import { ensureYtDlp, fetchYoutubeContent } from "../sources/youtube";
+import { ensureYtDlp } from "../sources/youtube";
+import { fetchContent } from "../worker";
 import { closeBrowser } from "../../pipeline/utils/browserManager";
-import type { FetchedContent, SourceKind } from "../types";
+import type { SourceKind } from "../types";
 
 const DEFAULT_URL = "https://thezvi.substack.com/p/twitter-thoughts-for-you";
 // Pinned to 1 so extraction runs one LLM call at a time and stepping stays linear.
@@ -56,21 +56,14 @@ function sourceFor(url: string): SourceKind {
   return /youtube\.com|youtu\.be/.test(url) ? "youtube" : "substack";
 }
 
-async function fetchContent(url: string, source: SourceKind): Promise<FetchedContent> {
-  if (source === "youtube") {
-    ensureYtDlp();
-    return fetchYoutubeContent(url);
-  }
-  return fetchSubstackPost(url);
-}
-
 async function main() {
   const { url, claim: claimIndex, all } = parseArgs();
   const source = sourceFor(url);
   console.log(`\n=== debug [${source}] ${url}\n`);
 
-  // ── Step 1: fetch the raw content (breakpoint inside fetchSubstackPost) ──
-  const content = await fetchContent(url, source);
+  // ── Step 1: read the raw content (breakpoint inside readPage) ──
+  if (source === "youtube") ensureYtDlp();
+  const content = await fetchContent({ url, title: null, published_at: null, full_text: null });
   console.log(`Title: ${content.title}`);
   console.log(`Published: ${content.publishedAt?.slice(0, 10) ?? "no date"}`);
   const bodyLen = content.kind === "substack" ? content.text.length : content.cues.length;
