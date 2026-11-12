@@ -230,12 +230,19 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
     queueMicrotask(() => void sync());
   }
 
+  /** Whether an element belongs to the open menu, our rows included. Our rows
+   *  sit inside the site's menu on most sites, but next to it on YouTube's
+   *  player menu. */
+  function inMenu(selected: Selection, element: Element): boolean {
+    return !!selected.menu?.contains(element) || !!selected.group?.contains(element);
+  }
+
   function select(event: Event) {
     const target = asElement(event.composedPath()[0]);
     if (!target || target.closest(GROUP_SELECTOR)) return;
     // A click on one of the site's own rows leaves our group alone. The site
     // closes its menu, and the next menu button click starts afresh.
-    if (selection?.menu?.contains(target)) return;
+    if (selection && inMenu(selection, target)) return;
     const trigger = site.triggerFor(target);
     if (trigger && trigger === selection?.trigger) return schedule();
     clear();
@@ -265,7 +272,7 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
       else clear();
       return;
     }
-    if (!selected?.menu || !selected.group || !target || !selected.menu.contains(target)) return;
+    if (!selected?.menu || !selected.group || !target || !inMenu(selected, target)) return;
     if ((event.key === "Enter" || event.key === " ") && selected.group.contains(target)) {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -273,7 +280,7 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
       return;
     }
     if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-    const items = focusableRows(selected.menu);
+    const items = focusableRows(selected.menu, selected.group);
     if (!items.length) return;
     const index = items.findIndex((item) => item.contains(target));
     const next =
@@ -288,7 +295,7 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
   /** A press outside the open menu closes it, and our rows go with it. */
   function pressOutside(event: Event) {
     const target = asElement(event.composedPath()[0]);
-    if (target && !selection?.menu?.contains(target)) clear();
+    if (target && !(selection && inMenu(selection, target))) clear();
   }
 
   if (site.opensOn === "contextmenu") {
@@ -325,12 +332,13 @@ function isShown(element: HTMLElement): boolean {
 /** Every row in the menu that can take the focus, ours included, in screen
  *  order. YouTube nests one menu item inside another, so each row is reduced
  *  to the element that actually takes the focus, and the doubles drop out. */
-function focusableRows(menu: HTMLElement): HTMLElement[] {
+function focusableRows(menu: HTMLElement, group: HTMLElement): HTMLElement[] {
   const focusable = (item: HTMLElement) =>
     item.matches("button, a[href], [tabindex]") ? item : (item.querySelector<HTMLElement>("button, a[href], [tabindex]") ?? item);
-  return [...new Set([...menu.querySelectorAll<HTMLElement>(NATIVE_ROW_SELECTOR)].map(focusable))].filter(
-    (item) => !item.closest(':disabled, [aria-disabled="true"]') && isShown(item),
-  );
+  const rows = [...group.querySelectorAll<HTMLElement>(NATIVE_ROW_SELECTOR), ...menu.querySelectorAll<HTMLElement>(NATIVE_ROW_SELECTOR)];
+  return [...new Set(rows.map(focusable))]
+    .filter((item) => !item.closest(':disabled, [aria-disabled="true"]') && isShown(item))
+    .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
 }
 
 const SVG_NS = "http://www.w3.org/2000/svg";
