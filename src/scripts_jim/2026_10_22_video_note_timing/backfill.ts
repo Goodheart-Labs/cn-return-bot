@@ -8,8 +8,8 @@ import { createClient } from "@supabase/supabase-js";
 import { config as loadDotenv } from "dotenv";
 import { ENV_DIR } from "../../cnEnv";
 import type { Database } from "../../everything-core/database.types";
-import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
-import { buildVideoLink, contextTimeSpan } from "../../everything/pipeline/extractClaims";
+import { buildVideoLink, extractYoutubeVideoId } from "../../everything-core/pageUrls";
+import { contextTimeSpan } from "../../everything/pipeline/extractClaims";
 import { requestItemText } from "../../service/client";
 
 loadDotenv({ path: `${ENV_DIR}/.env`, quiet: true });

@@ -23,6 +23,10 @@ import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 const WRITE_MENU_ID = "cn-write-note";
 const REQUEST_MENU_ID = "cn-request-note";
 const REQUEST_PAGE_MENU_ID = "cn-request-page";
+const WRITE_VIDEO_MENU_ID = "cn-write-video-note";
+// The document URL of a YouTube watch page. YouTube switches pages without
+// reloading, and the browser matches the address the page has now.
+const YOUTUBE_WATCH_PATTERNS = ["https://www.youtube.com/watch*"];
 const BADGE_FEEDBACK_MS = 3000;
 const INJECT_RETRY_DELAY_MS = 150;
 const INJECT_RETRY_ATTEMPTS = 10;
@@ -57,8 +61,8 @@ async function registeredGenericHostnames(): Promise<string[]> {
 /** Registering a script only affects future page loads. So tabs that are
  *  already open on a newly covered host get the script injected directly, and
  *  a sync triggered from the popup shows notes in the current tab without a
- *  reload. The script sets a flag on `window`, so a second copy arriving does
- *  nothing. */
+ *  reload. A tab may already run a copy of the script. The new copy then takes
+ *  over, and WXT retires the old one. */
 async function injectIntoOpenTabs(hostnames: string[]) {
   for (const hostname of hostnames) {
     const tabs = await browser.tabs.query({ url: hostnamePattern(hostname) }).catch(() => []);
@@ -149,7 +153,7 @@ async function createMenus() {
   });
   browser.contextMenus.create({
     id: REQUEST_MENU_ID,
-    title: "Check these words with Common Notes",
+    title: "Check these words",
     contexts: ["selection"],
   });
   // The page-context item is the always-available request path, now that the
@@ -158,8 +162,18 @@ async function createMenus() {
   // request entries never appear together.
   browser.contextMenus.create({
     id: REQUEST_PAGE_MENU_ID,
-    title: "Check this page with Common Notes",
+    title: "Check this page",
     contexts: ["page"],
+  });
+  // A note on a video is about a stretch of time, not about selected words,
+  // so on a watch page a plain right-click offers it too. The "video" context
+  // covers the browser's own menu over the player, which YouTube shows on a
+  // second right-click.
+  browser.contextMenus.create({
+    id: WRITE_VIDEO_MENU_ID,
+    title: "Write a note on this video",
+    contexts: ["page", "video"],
+    documentUrlPatterns: YOUTUBE_WATCH_PATTERNS,
   });
 }
 
@@ -397,8 +411,11 @@ export default defineBackground(() => {
       void requestNoteOnSelection(tab, "");
       return;
     }
-    if (info.menuItemId === WRITE_MENU_ID && tab?.id != null) {
-      void sendToTabWithInjection(tab.id, { type: "cn-write-note", selection: info.selectionText ?? "" });
+    if ((info.menuItemId === WRITE_MENU_ID || info.menuItemId === WRITE_VIDEO_MENU_ID) && tab?.id != null) {
+      const tabId = tab.id;
+      void sendToTabWithInjection(tabId, { type: "cn-write-note", selection: info.selectionText ?? "" }).then((delivered) => {
+        if (!delivered) flashBadge(tabId, "!");
+      });
     }
   });
 

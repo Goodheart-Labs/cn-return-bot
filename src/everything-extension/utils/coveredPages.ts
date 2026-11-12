@@ -16,6 +16,17 @@ export async function getCoveredPageUrls(): Promise<string[] | null> {
   return Array.isArray(stored) ? (stored as string[]) : null;
 }
 
+/** Adds one page to the cached list, right after the reader created its item
+ *  by posting the first note on it. The page's notes can then mount at once,
+ *  without waiting for the background's sync, which adds the page as well. A
+ *  list that was never synced stays unsynced, because the notes flow already
+ *  looks every page up live in that case. */
+export async function addCoveredPageUrl(pageUrl: string): Promise<void> {
+  const covered = await getCoveredPageUrls();
+  if (!covered || pageIsCovered(pageUrl, covered)) return;
+  await browser.storage.local.set({ [COVERED_PAGE_URLS_KEY]: [...covered, pageUrl] });
+}
+
 // The subset of covered pages the pipeline has read in full. The listing
 // badges use it to mark a checked page that produced no notes, which is
 // information in its own right: the reader knows we looked and found nothing.

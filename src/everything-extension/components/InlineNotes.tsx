@@ -12,6 +12,7 @@ import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
+import { Quote } from "@cn/ui/typography";
 import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
 import { rememberClosedClaim } from "../utils/closedNotes";
 import { CARD_BESIDE_OFFSET, flowMarginColumn, MARKER_SIZE, type ColumnMode, type MarginOptions } from "@cn/core/marginCards";
@@ -630,7 +631,9 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   return (
     <EventShield>
       {writeSelection && (
-        <WriteNoteOverlay item={item} selection={writeSelection} onClose={() => setWriteSelection(null)} />
+        <WriteNoteOverlay item={item} anchor={{ kind: "text", text: writeSelection }} onClose={() => setWriteSelection(null)}>
+          <Quote>“{writeSelection}”</Quote>
+        </WriteNoteOverlay>
       )}
       {/* The badges and popovers are portalled into the in-content annotation
           layer, so they scroll with the text. A second shield absorbs events on

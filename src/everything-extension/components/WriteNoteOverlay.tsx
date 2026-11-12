@@ -1,25 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ensureUser } from "@cn/core/auth";
 import type { PageItem } from "@cn/core/items";
-import { Quote } from "@cn/ui/typography";
+import type { NoteAnchor } from "@cn/core/postNote";
 import { Modal } from "@cn/ui/Modal";
 import { useSession } from "@cn/features/auth/useSession";
 import { Composer } from "@cn/features/notes/Composer";
 import { usePostClaimWithNote } from "@cn/features/notes/useNoteWrites";
 import { LoginPanel } from "./LoginPanel";
 
-/** Write a note anchored to the reader's selection. This is the extension's
- *  version of the website's WriteNoteModal. On the website you search the
- *  transcript for the passage. Here the reader has already selected the
- *  passage on the page itself.
+/** Write a note anchored to the reader's selection, or to a stretch of a video.
+ *  This is the extension's version of the website's WriteNoteModal. On the
+ *  website you search the transcript for the passage. Here the reader has
+ *  already selected the passage on the page itself, or picked the stretch of
+ *  the video.
  *  An uncovered page has no item row yet, so `item` is null. In that case
  *  `pageForItem` carries what an item needs, and the item is only created
  *  when the note is actually posted. An overlay the reader closes again
  *  therefore leaves no orphan item behind. */
-export function WriteNoteOverlay({ item, pageForItem, selection, onClose, onPosted }: {
+export function WriteNoteOverlay({ item, pageForItem, anchor, children, onClose, onPosted }: {
   item: PageItem | null;
   pageForItem?: { url: string; title: string; creatorFeedUrl?: Promise<string | null> };
-  selection: string;
+  anchor: NoteAnchor;
+  /** What the note is about, shown above the composer. */
+  children: ReactNode;
   onClose: () => void;
   /** Called once the note is saved. The notes on screen refresh by themselves;
    *  an uncovered page uses this to switch to the full notes view. */
@@ -42,7 +45,7 @@ export function WriteNoteOverlay({ item, pageForItem, selection, onClose, onPost
   const submit = (signed: boolean) => {
     if (!session) return;
     post.mutate(
-      { item, page: pageForItem ?? { url: item!.url, title: item!.title ?? "" }, anchorText: selection, note, session, signed },
+      { item, page: pageForItem ?? { url: item!.url, title: item!.title ?? "" }, anchor, note, session, signed },
       {
         onSuccess: () => {
           onPosted?.();
@@ -54,7 +57,7 @@ export function WriteNoteOverlay({ item, pageForItem, selection, onClose, onPost
 
   return (
     <Modal title="Write a note" onClose={onClose} widthClassName="max-w-[35rem]">
-        <Quote>“{selection}”</Quote>
+        {children}
         {!session ? (
           // Signing in happens right here in the overlay. Once the session
           // lands, this branch flips to the composer and the selection is

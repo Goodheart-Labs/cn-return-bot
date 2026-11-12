@@ -115,6 +115,16 @@ export function extractEmbeddedCanonical(html: string): string | null {
   return html.match(/canonical_url\\?"\s*:\s*\\?"(https?:[^"\\]+)/)?.[1] ?? null;
 }
 
+/** The one address form we store a YouTube video under. */
+export function youtubeWatchUrl(videoId: string): string {
+  return `https://www.youtube.com/watch?v=${videoId}`;
+}
+
+/** A link that plays the video from `seconds` on. */
+export function buildVideoLink(videoId: string, seconds: number): string {
+  return `${youtubeWatchUrl(videoId)}&t=${Math.max(0, Math.floor(seconds))}s`;
+}
+
 export function extractYoutubeVideoId(url: string): string | null {
   try {
     const u = new URL(url);

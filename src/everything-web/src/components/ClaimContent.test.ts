@@ -42,4 +42,10 @@ describe("claimContent", () => {
     expect(claimContent(claim({ context_url: VIDEO_URL, context_quote: "Rents fell.", start_seconds: 12 }), undefined))
       .toMatchObject({ kind: "youtube", url: VIDEO_URL, quote: "Rents fell.", startSeconds: 12 });
   });
+
+  test("gives a reader's note on a stretch of a video only the clip", () => {
+    const content = claimContent(claim({ context_url: `${VIDEO_URL}&t=719s`, claim: "At 11:59 to 12:34 in the video", start_seconds: 719, end_seconds: 754 }), undefined);
+    expect(content).toMatchObject({ kind: "youtube", startSeconds: 719, endSeconds: 754 });
+    expect(content.quote).toBeUndefined();
+  });
 });

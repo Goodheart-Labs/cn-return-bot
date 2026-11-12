@@ -1,7 +1,10 @@
-import { extractYoutubeVideoId } from "@cn/core/pageUrls";
+import { extractYoutubeVideoId, youtubeWatchUrl } from "@cn/core/pageUrls";
+import { formatVideoTime } from "@cn/core/videoTime";
 import { readWatchPageChannel } from "./authorFeed";
 import { youtubeChannelPath, youtubeChannelTarget, type CreatorTarget } from "./creatorTarget";
-import type { MenuSite, MenuSubject } from "./menuRows";
+import type { MenuRow, MenuSite, MenuSubject } from "./menuRows";
+import type { OpenVideoNoteEditor } from "./videoNoteWriter";
+import { watchPageTitle, writableVideo } from "./youtubePlayer";
 
 // YouTube's three-dot menus: the one on every video card in a listing, and the
 // one under the playing video. Every selector they depend on lives here. Most
@@ -19,24 +22,39 @@ const WATCH_TRIGGER_SELECTOR = "ytd-watch-metadata #actions ytd-menu-renderer > 
 const CARD_SELECTOR =
   "ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer, yt-lockup-view-model";
 const CARD_TITLE_SELECTOR = "#video-title, .ytLockupMetadataViewModelTitle, h3";
-const WATCH_TITLE_SELECTOR = "ytd-watch-metadata h1";
+// The menu YouTube's player opens on a right-click. YouTube keeps it in the
+// page's body and only hides it while closed.
+const PLAYER_SELECTOR = "#movie_player";
+const PLAYER_MENU_SELECTOR = '.ytp-contextmenu [role="menu"]';
 // Both generations of YouTube's popup menu. Only one is open at a time.
 const MENU_SELECTOR = 'ytd-popup-container yt-list-view-model[role="menu"], ytd-popup-container ytd-menu-popup-renderer #items';
 
-const watchUrl = (videoId: string) => `https://www.youtube.com/watch?v=${videoId}`;
+/** The row that opens the note editor at the time the video is at when the
+ *  menu opens. The label and the editor name the same time. A live stream
+ *  gets no row. */
+function writeRow(openEditor: OpenVideoNoteEditor): MenuRow | undefined {
+  const playing = writableVideo();
+  if (!playing) return undefined;
+  const atSeconds = playing.video.currentTime;
+  return {
+    label: `Write a note at ${formatVideoTime(atSeconds)}`,
+    run: async () => {
+      openEditor(atSeconds);
+      return null;
+    },
+  };
+}
 
-function watchPageSubject(): MenuSubject | null {
+function watchPageSubject(openEditor: OpenVideoNoteEditor): MenuSubject | null {
   const videoId = extractYoutubeVideoId(location.href);
   if (!videoId) return null;
   return {
-    pageUrl: watchUrl(videoId),
-    title: document.querySelector(WATCH_TITLE_SELECTOR)?.textContent?.trim() ?? document.title,
-    noun: "video",
-    currentPage: true,
+    page: { url: youtubeWatchUrl(videoId), title: watchPageTitle(), noun: "video", current: true },
     creator: async () => {
       const channel = readWatchPageChannel();
       return channel ? youtubeChannelTarget(channel.href, channel.name.trim()) : null;
     },
+    writeRow: writeRow(openEditor),
   };
 }
 
@@ -54,22 +72,26 @@ function cardSubject(card: Element): MenuSubject | null {
   );
   const creator: CreatorTarget | null = channelLink ? youtubeChannelTarget(channelLink.href, channelLink.textContent!.trim()) : null;
   return {
-    pageUrl: watchUrl(videoId),
-    title: card.querySelector(CARD_TITLE_SELECTOR)?.textContent?.trim() ?? "",
-    noun: "video",
-    currentPage: false,
+    page: {
+      url: youtubeWatchUrl(videoId),
+      title: card.querySelector(CARD_TITLE_SELECTOR)?.textContent?.trim() ?? "",
+      noun: "video",
+      current: false,
+    },
     creator: async () => creator,
   };
 }
 
-export const youtubeMenuSite: MenuSite = {
+/** YouTube's menus. The menu under the playing video also gets a row that
+ *  opens `openEditor`. */
+export const youtubeMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite => ({
   name: "youtube",
   triggerFor(target) {
     if (!target.closest('button, yt-icon-button, [role="button"]')) return null;
     return target.closest<HTMLElement>(WATCH_TRIGGER_SELECTOR) ?? target.closest<HTMLElement>(TRIGGER_SELECTOR);
   },
   subjectFor(trigger) {
-    if (trigger.matches(WATCH_TRIGGER_SELECTOR)) return watchPageSubject();
+    if (trigger.matches(WATCH_TRIGGER_SELECTOR)) return watchPageSubject(openEditor);
     // The watch page's other buttons, such as Like and Share, sit in the same
     // ytd-menu-renderer and match the general selector. They open no menu of
     // ours.
@@ -89,4 +111,51 @@ export const youtubeMenuSite: MenuSite = {
   refit(menu) {
     menu.closest("tp-yt-iron-dropdown")?.dispatchEvent(new CustomEvent("iron-resize"));
   },
-};
+});
+
+/** The menu YouTube's player opens on a right-click. On a watch page it gets
+ *  the same rows as the menu under the playing video. Anywhere else, such as
+ *  a preview playing on the home page, it gets none. */
+export const youtubePlayerMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite => ({
+  name: "youtube-player",
+  opensOn: "contextmenu",
+  triggerFor(target) {
+    return target.closest<HTMLElement>(PLAYER_SELECTOR);
+  },
+  subjectFor() {
+    return watchPageSubject(openEditor);
+  },
+  menuFor() {
+    return document.querySelector<HTMLElement>(PLAYER_MENU_SELECTOR);
+  },
+  // The menu lays its rows out as a table. Our group inside it would become a
+  // cell of the table's first column and squeeze YouTube's labels, so it sits
+  // just above the table instead.
+  mount(group, menu) {
+    menu.before(group);
+  },
+  // Outside the table our rows inherit nothing of YouTube's label style, so
+  // they copy its font and colour.
+  dress(row, _icon, _label, native) {
+    const style = getComputedStyle(native.querySelector(".ytp-menuitem-label") ?? native);
+    row.style.font = style.font;
+    row.style.color = style.color;
+  },
+  // YouTube sizes the menu and places it for its own rows before ours exist.
+  // So we size it again around both, and move it up when it would now reach
+  // past the bottom of the window.
+  refit(menu) {
+    const popup = menu.closest<HTMLElement>(".ytp-popup");
+    const panel = menu.closest<HTMLElement>(".ytp-panel");
+    const group = menu.previousElementSibling as HTMLElement | null;
+    if (!popup || !panel || !group) return;
+    const width = Math.max(popup.offsetWidth, group.scrollWidth);
+    const height = group.offsetHeight + menu.offsetHeight;
+    for (const box of [popup, panel]) {
+      box.style.width = `${width}px`;
+      box.style.height = `${height}px`;
+    }
+    const overflow = popup.getBoundingClientRect().bottom - window.innerHeight;
+    if (overflow > 0) popup.style.top = `${Math.max(0, popup.offsetTop - overflow)}px`;
+  },
+});

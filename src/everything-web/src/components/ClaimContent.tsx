@@ -44,7 +44,10 @@ export function claimContent(claim: ClaimRef, post: FeedItemRow | undefined): No
   const restated = !claim.context_quote;
   const updatedQuote = claim.updated_quote ?? undefined;
   if (url && /youtube\.com|youtu\.be/.test(url)) {
-    return { kind: "youtube", url, quote, restated, updatedQuote, startSeconds: claim.start_seconds, endSeconds: claim.end_seconds };
+    // A reader's own note on a video names a stretch of it and quotes no
+    // captions. The clip already plays that stretch, so it gets no citation.
+    const stretchOnly = !claim.context_quote && claim.start_seconds != null;
+    return { kind: "youtube", url, quote: stretchOnly ? undefined : quote, restated, updatedQuote, startSeconds: claim.start_seconds, endSeconds: claim.end_seconds };
   }
   return { kind: "article", quote, restated, updatedQuote, post: post && { title: post.title ?? "Untitled", url } };
 }
