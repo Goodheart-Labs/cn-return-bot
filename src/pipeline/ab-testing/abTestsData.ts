@@ -28,17 +28,20 @@ export interface ABTest {
 // 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer on
 // Nathan's ai-box. The X run draws this test itself. While the X share of
 // Nathan's Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
+// On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work.
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
-    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 50 },
+    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 0 },
   ],
 };
 
 // 2026-11-04 (GOO-698): the research step costs twice what it did in summer, so Jim moved it
 // to Sonnet 5.5 (35), GPT 6.1 Terra (35), GLM 5.3 Flash (20) and Haiku 5.5 (10), each new one at
 // medium reasoning. Every other arm goes to 0.
+// 2026-11-12 (GOO-762): Jim set Haiku 5.5 to 0. The other three keep their relative sizes,
+// so Sonnet 5.5 and GPT 6.1 Terra each get about 39% of the posts and GLM 5.3 Flash about 22%.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
@@ -81,7 +84,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "serper" }},       weight: 0 },
-    { variant: { name: "haiku55-native-medium",   overrides: { search_model: "anthropic/claude-haiku-5.5",        web_search: "native", search_reasoning_effort: "medium" }}, weight: 10 },
+    { variant: { name: "haiku55-native-medium",   overrides: { search_model: "anthropic/claude-haiku-5.5",        web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "sonnet55-native-medium",  overrides: { search_model: "anthropic/claude-sonnet-5.5",       web_search: "native", search_reasoning_effort: "medium" }}, weight: 35 },
     { variant: { name: "gpt6_1terra-native-medium", overrides: { search_model: "openai/gpt-6.1-terra",            web_search: "native_openai", search_reasoning_effort: "medium" }}, weight: 35 },
   ],
