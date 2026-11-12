@@ -80,7 +80,9 @@ The card can be dragged and resized like a desktop window, and the next card on 
 
 ## Listing badges
 
-On a listing, such as a Substack front page, a YouTube channel's videos tab, or a list of articles on another site where the extension runs, every card that links to a covered page gets a small circle in the upper-right corner of its picture. If there is no picture, the circle goes in the card's corner. The circle shows the number of notes that you have not set to hidden. A page we read in full and found nothing to note on gets the same circle with a check mark. The counts come from the list the background synced, so drawing badges sends nothing to our server. You can turn badges off in the settings. (`utils/coverageBadges.ts`)
+On a listing, such as a Substack front page, a YouTube channel's videos tab or the LessWrong front page, every card that links to a covered page gets a small circle in the upper-right corner of its picture. If there is no picture, the circle goes in the card's corner. The circle shows the number of notes that you have not set to hidden. A page we read in full and found nothing to note on gets the same circle with a check mark. The counts come from the list the background synced, so drawing badges sends nothing to our server. You can turn badges off in the settings. (`utils/coverageBadges.ts`)
+
+Badges appear only on Substack, including newsletters on their own domain such as Astral Codex Ten, on YouTube, on LessWrong and on the Alignment Forum. The extension also runs on any other site where one page was checked, for example on every Claude chat because someone once checked claude.ai/new. Those sites get no badges. Their pages are chats and articles, not the listings the badge rules were built for, and a bullet in a Claude answer that cited a checked page got a circle on top of its text (GOO-742).
 
 On YouTube the circle sits in the upper-left corner of the thumbnail instead. When you hover a thumbnail, YouTube shows its "Watch later" and "Add to queue" buttons in the upper-right corner, on top of anything we put there.
 
