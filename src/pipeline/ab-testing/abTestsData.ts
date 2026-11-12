@@ -28,11 +28,12 @@ export interface ABTest {
 // 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer on
 // Nathan's ai-box. The X run draws this test itself. While the X share of
 // Nathan's Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
+// On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work.
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
-    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 50 },
+    { variant: { name: "claude-code", overrides: { botId: "claude-code" }}, weight: 0 },
   ],
 };
 
