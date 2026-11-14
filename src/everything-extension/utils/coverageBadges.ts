@@ -269,6 +269,26 @@ function badgeHost(surface: HTMLElement): HTMLElement {
 
 const spotOn = (surface: HTMLElement, corner: BadgeSpot["corner"]): BadgeSpot => ({ surface, corner, host: badgeHost(surface) });
 
+// When a video ends, YouTube's player shows a grid of suggested videos, the
+// end screen. Each tile is one link, and its thumbnail is a div with a CSS
+// background image rather than an img. So the general rules found no picture.
+// They took the tile for a card of its own and put the badge in its lower
+// corner, on top of the view count (GOO-773). They also hung every tile's
+// badge on the grid, and a host carries one badge only, so only the first
+// noted tile got one.
+// Here the badge sits on the thumbnail itself, inside the link. Every tile
+// then has a host of its own. The player handles a tile click in the link's
+// own listeners, which the badge's click handler stops, so a click on the
+// badge opens its card and not the video.
+const YOUTUBE_END_SCREEN_TILE = "a.ytp-modern-videowall-still";
+const YOUTUBE_END_SCREEN_THUMBNAIL = ":scope > .ytp-modern-videowall-still-image";
+
+function endScreenSpot(anchor: HTMLAnchorElement): BadgeSpot | null {
+  if (!anchor.matches(YOUTUBE_END_SCREEN_TILE)) return null;
+  const thumbnail = anchor.querySelector<HTMLElement>(YOUTUBE_END_SCREEN_THUMBNAIL);
+  return thumbnail && { surface: thumbnail, corner: "top", host: thumbnail };
+}
+
 /** How far the surface's edges are inside the host's padding box, which is
  *  what an absolutely positioned child is placed against. All four are zero
  *  when the badge sits directly on its surface. */
@@ -315,8 +335,11 @@ function cornerOffsets(surface: HTMLElement, host: HTMLElement): { top: number; 
  *  tag-name list silently missed the logged-in ones. A link that is a unit by
  *  itself and sits outside any card is a row of a Substack profile's post
  *  list. That row shows its date in its upper corner, so the badge takes the
- *  lower one. */
+ *  lower one.
+ *  A tile of YouTube's end screen skips the climb (see endScreenSpot). */
 function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
+  const endScreen = endScreenSpot(anchor);
+  if (endScreen) return endScreen;
   let picture: HTMLElement | null = null;
   for (let level: HTMLElement | null = anchor; level; level = level.parentElement) {
     if (level.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
