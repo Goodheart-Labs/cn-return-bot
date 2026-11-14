@@ -20,6 +20,7 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
+import { NOTE_WRITER_ACCOUNT_ENV } from "./usage";
 
 export interface JudgedNote {
   post: { title: string | null; url: string; creator: string | null };
@@ -184,7 +185,10 @@ export async function runJudge(runDir: string, prompt: string, settings = RUN_SE
     ],
     {
       cwd: runDir,
-      env: Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
+      env: {
+        ...Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
+        ...NOTE_WRITER_ACCOUNT_ENV,
+      },
       stdout: "pipe",
       stderr: "pipe",
       timeout: JUDGE_TIMEOUT_MS,
