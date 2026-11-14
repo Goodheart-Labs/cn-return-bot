@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   computeClaudePacing,
   judgeMayStartAt,
+  tweetMayStartAt,
   DEFAULT_USAGE_PER_POST_PERCENT,
   usageRise,
   type UsageReading,
@@ -104,5 +105,25 @@ describe("judgeMayStartAt", () => {
   test("no judge starts without a recent reading", () => {
     expect(judgeMayStartAt({ at: minutesAgo(31), weekly: 10 }, now)).toBe(false);
     expect(judgeMayStartAt(null, now)).toBe(false);
+  });
+});
+
+describe("tweetMayStartAt", () => {
+  const resetsAt = new Date("2026-11-15T11:00:00Z");
+  // A day before the reset, six sevenths of the week are gone, so the even line is at 84% of 98%.
+  const now = new Date("2026-11-14T11:00:00Z");
+  const reading = (weekly: number, weeklyResetsAt: Date | null = resetsAt) => ({ at: new Date(now.getTime() - 5 * 60_000), weekly, weeklyResetsAt });
+
+  test("a tweet starts at or below the even line", () => {
+    expect(tweetMayStartAt(reading(84), now)).toBe(true);
+  });
+
+  test("no tweet starts above the even line", () => {
+    expect(tweetMayStartAt(reading(85), now)).toBe(false);
+  });
+
+  test("no tweet starts without the reset time or a recent reading", () => {
+    expect(tweetMayStartAt(reading(10, null), now)).toBe(false);
+    expect(tweetMayStartAt(null, now)).toBe(false);
   });
 });
