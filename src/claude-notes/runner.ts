@@ -47,7 +47,7 @@ import {
 } from "./jobs";
 import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
 import { recordUsage, RUN_ID_ENV } from "./store";
-import { readUsage, type UsageReading } from "./usage";
+import { NOTE_WRITER_ACCOUNT_ENV, readUsage, type UsageReading } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { openXTweets, type XTweet } from "./xTweets";
 
@@ -121,7 +121,7 @@ function startClaude(session: string, runDir: string, prompt: string, extraArgs:
     `. ${ENV_FILE}`,
     "set +a",
     "unset SERVICE_AUTH_SECRET EXTRACTION_URL",
-    ...Object.entries(env).map(([name, value]) => `export ${name}=${value}`),
+    ...Object.entries({ ...NOTE_WRITER_ACCOUNT_ENV, ...env }).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
     `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${RUN_SETTINGS} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
