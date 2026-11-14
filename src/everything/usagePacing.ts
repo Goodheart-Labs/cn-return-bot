@@ -158,3 +158,23 @@ export function judgeMayStartAt(reading: { at: Date; weekly: number } | null, no
   if (!reading || now.getTime() - reading.at.getTime() > MAX_USAGE_READING_AGE_MS) return false;
   return reading.weekly < MAX_WEEKLY_USAGE_PERCENT;
 }
+
+const WEEK_MS = 7 * 24 * 3600_000;
+
+/** The share of the week the plan would have used by now if its usage rose
+ *  evenly from 0% when the week began to the target at the reset. */
+export function evenUsageLine(resetsAt: Date, now: Date): number {
+  const weekElapsed = Math.min(1, Math.max(0, 1 - (resetsAt.getTime() - now.getTime()) / WEEK_MS));
+  return WEEKLY_USAGE_TARGET_PERCENT * weekElapsed;
+}
+
+/** Whether a tweet may start, by the plan's newest usage reading. Tweets have
+ *  no pacing like the feed posts, and on 2026-11-14 they carried the plan
+ *  towards its stop about 13 hours before the reset. Jim asked for them to be
+ *  slowed instead. So a tweet starts only while the plan is at or below the
+ *  even line. Above it, tweets wait until the line has caught up, and the X run
+ *  sweeps the ones that waited too long. The judges' conditions apply too. */
+export function tweetMayStartAt(reading: UsageReading | null, now: Date): boolean {
+  if (!reading?.weeklyResetsAt || !judgeMayStartAt(reading, now)) return false;
+  return reading.weekly <= evenUsageLine(reading.weeklyResetsAt, now);
+}

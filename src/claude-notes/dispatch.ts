@@ -55,7 +55,7 @@ import {
 } from "./jobs";
 import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt, xAccountPrompt } from "./prompts";
 import { JUDGE_EXAMPLES_PATH, JUDGE_MODEL, type JudgedNote, type JudgeExample, judgeSubagentPrompt } from "./judge";
-import { judgeMayStartAt } from "../everything/usagePacing";
+import { judgeMayStartAt, tweetMayStartAt, type UsageReading } from "../everything/usagePacing";
 import { db } from "../serviceDb";
 import { claudeRunsSince, draftsToJudge, latestEventId, postedAfter, readJudgedNote, recordUsage } from "./store";
 import { CLAUDE_RUN_TAGS } from "./usageShare";
@@ -176,10 +176,12 @@ async function newJobs(state: State): Promise<Job[]> {
   const open = new Set(state.jobs.map((job) => job.key));
   const running = (kind: Job["kind"]) => state.jobs.filter((job) => job.kind === kind).length;
   const jobs: Job[] = [];
+  const usage = await latestUsageReading();
+  const now = new Date();
   const tweets = (await openXTweets()).waiting.filter((tweet) => !open.has(`x-${tweet.runId}`));
   // A tweet's run row is written when it ends, so the running ones count separately.
   const tweetsToday = (await claudeRunsSince(CLAUDE_RUN_TAGS.tweet, new Date(Date.now() - DAY_MS))) + running("tweet");
-  const tweetSlots = Math.min(MAX_TWEETS_RUNNING - running("tweet"), MAX_TWEETS_PER_DAY - tweetsToday);
+  const tweetSlots = tweetMayStartAt(usage, now) ? Math.min(MAX_TWEETS_RUNNING - running("tweet"), MAX_TWEETS_PER_DAY - tweetsToday) : 0;
   for (const tweet of tweets.slice(0, Math.max(0, tweetSlots))) jobs.push({ ...newRun(`x-${tweet.runId}`), kind: "tweet", tweet });
   if (running("x-account") < MAX_X_ACCOUNT_LOOKUPS_RUNNING) {
     const creator = (await creatorsToLookUp()).find((c) => !open.has(`xacct-${c.slug}`) && !state.gaveUp.includes(`xacct-${c.slug}`));
@@ -189,7 +191,7 @@ async function newJobs(state: State): Promise<Job[]> {
     const key = `message-${draftId}`;
     if (!open.has(key) && !state.gaveUp.includes(key)) jobs.push({ ...newRun(key), kind: "message", draftId, message });
   }
-  if (running("judge") < MAX_JUDGES_RUNNING && (await judgeMayStart())) {
+  if (running("judge") < MAX_JUDGES_RUNNING && judgeMayStartAt(usage, now)) {
     const queue = await readJudgeQueue();
     const waiting = queue.drafts.filter((id) => !open.has(judgeKey(id)) && !state.gaveUp.includes(judgeKey(id)));
     const picked = waiting.slice(0, MAX_JUDGES_RUNNING - running("judge"));
@@ -285,13 +287,15 @@ export async function dispatchEnd(key: string) {
   console.log(`CLOSED ${describe(job)}`);
 }
 
-async function judgeMayStart(): Promise<boolean> {
-  const { data, error } = await db().from("everything_claude_usage").select("at, weekly").order("at", { ascending: false }).limit(1).maybeSingle();
+/** The plan's newest usage reading, or null when it cannot be read. Without a
+ *  reading no judge and no tweet starts. */
+async function latestUsageReading(): Promise<UsageReading | null> {
+  const { data, error } = await db().from("everything_claude_usage").select("at, weekly, weekly_resets_at").order("at", { ascending: false }).limit(1).maybeSingle();
   if (error) {
-    console.error(`Could not read the usage for the judge: ${error.message}`);
-    return false;
+    console.error(`Could not read the usage: ${error.message}`);
+    return null;
   }
-  return judgeMayStartAt(data && { at: new Date(data.at), weekly: data.weekly }, new Date());
+  return data && { at: new Date(data.at), weekly: data.weekly, weeklyResetsAt: data.weekly_resets_at ? new Date(data.weekly_resets_at) : null };
 }
 
 /** Rebuilds the examples once a day. */
