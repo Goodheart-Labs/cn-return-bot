@@ -7,6 +7,7 @@ Events outside the period are ignored, so a session that ran across the start
 only counts with the part inside it.
 """
 import argparse
+import json
 import datetime as dt
 import glob
 import os
@@ -36,6 +37,25 @@ def transcripts(dir_prefix, since):
     """Main-thread transcripts of the repos whose session folders start with dir_prefix, written to after since."""
     return [f for f in glob.glob(f"{ROOT}/-home-jim-dev-repos-{dir_prefix}*/*.jsonl")
             if os.path.getmtime(f) >= since and os.path.basename(os.path.dirname(f)) != AUDIT_SESSION_DIR]
+
+
+def background_subagent_transcripts(dir_prefix, since):
+    """Transcripts of the subagents that main sessions started in the background.
+
+    A main session does not wait for such a subagent, so its time never shows up in the
+    main transcript. Foreground subagents are left out, because the main session's wait
+    for them is already counted there."""
+    files = []
+    for f in glob.glob(f"{ROOT}/-home-jim-dev-repos-{dir_prefix}*/*/subagents/agent-*.jsonl"):
+        if os.path.getmtime(f) < since or f.split("/")[-4] == AUDIT_SESSION_DIR:
+            continue
+        try:
+            meta = json.load(open(f[:-len(".jsonl")] + ".meta.json"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if meta.get("requestShape") == "background":
+            files.append(f)
+    return files
 
 
 def in_window(record, since, until):

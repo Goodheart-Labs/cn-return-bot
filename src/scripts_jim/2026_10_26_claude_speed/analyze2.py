@@ -7,7 +7,7 @@ waiting for a human or for a background task, and is reported separately.
 """
 import json, os, sys, collections, datetime as dt
 from analyze import classify_tool
-from window import parse_window, transcripts
+from window import parse_window, transcripts, background_subagent_transcripts
 
 CAP_S = 3600
 # The findings page compares weeks by these groups of categories.
@@ -21,7 +21,7 @@ def ts(s):
     return dt.datetime.fromisoformat(s.replace("Z", "+00:00")).timestamp()
 
 
-def intervals(path):
+def intervals(path, sidechain=False):
     model, tools, bg = [], [], []
     req = None
     msg_end = {}
@@ -32,7 +32,7 @@ def intervals(path):
             d = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if d.get("isSidechain") or not d.get("timestamp"):
+        if (d.get("isSidechain") and not sidechain) or not d.get("timestamp"):
             continue
         t = ts(d["timestamp"])
         typ = d.get("type")
@@ -99,6 +99,23 @@ def busy_split(model, tools):
     return out
 
 
+def print_background_subagents(pattern, since, until):
+    """Background subagents work while their main session goes on, so their busy time comes on top of the main sessions'."""
+    total = collections.Counter()
+    agents = 0
+    for f in background_subagent_transcripts(pattern, since):
+        model, tools, _ = (clip(i, since, until) for i in intervals(f, sidechain=True))
+        agents += bool(model or tools)
+        total.update(busy_split(model, tools))
+    busy = sum(total.values())
+    if not busy:
+        return
+    print(f"  background subagents: {agents}, busy {busy/3600:.1f} h, model {total['model']/busy:.0%}")
+    for name, keys in GROUPS.items():
+        v = sum(total[k] for k in keys)
+        print(f"    group: {name:29} {v/3600:6.2f} h {v/busy:5.0%}")
+
+
 def main():
     since, until, patterns = parse_window(sys.argv[1:])
     for pattern in patterns:
@@ -112,6 +129,8 @@ def main():
             total.update(busy_split(model, tools))
             bg_total += sum(b - a for a, b in bg)
         busy = sum(total.values())
+        if not busy:
+            continue
         period = f"{dt.date.fromtimestamp(since)} to {dt.date.fromtimestamp(until)}"
         print(f"\n=== {pattern}, {period}: {sessions} sessions, busy {busy/3600:.1f} h, waiting on background tasks {bg_total/3600:.1f} h")
         for k, v in total.most_common(12):
@@ -119,6 +138,7 @@ def main():
         for name, keys in GROUPS.items():
             v = sum(total[k] for k in keys)
             print(f"  group: {name:29} {v/3600:6.2f} h {v/busy:5.0%}")
+        print_background_subagents(pattern, since, until)
         json.dump({"busy": busy, "bg": bg_total, "split": total, "sessions": sessions},
                   open(f"{os.path.dirname(os.path.abspath(__file__))}/split_{pattern}.json", "w"))
 

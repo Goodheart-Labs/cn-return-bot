@@ -4,9 +4,9 @@ Findings page: https://claude.ai/artifact/K15EBkjgdKRGtFBFhqXbi9
 
 These scripts read the Claude Code session transcripts in `~/.claude/projects` on the devbox and split each session's busy time into model time and tool time. The transcripts themselves stay on the devbox.
 
-Every script except `analyze.py` and `timeit.py` takes `--since` and `--until` as UTC dates (the end is exclusive), for example `--since 2026-10-26 --until 2026-11-02` for one week. Without them they measure the first audit's period, 12 to 26 October. `window.py` holds that shared logic. It also leaves out this audit's own session, whose weekly hook timings are measurements rather than work. The weekly standing job (GOO-609) runs them every Sunday.
+Every script except `analyze.py` and `timeit.py` takes `--since` and `--until` as UTC dates (the end is exclusive), for example `--since 2026-10-26 --until 2026-11-02` for one week. Without them they measure the first audit's period, 12 to 26 October. `window.py` holds that shared logic. It also leaves out this audit's own session, whose weekly hook timings are measurements rather than work. The weekly standing job (GOO-609) runs them every Sunday. Claude Code deletes transcripts older than 30 days by default, so a period can only be measured again within 30 days of its end.
 
-- `analyze2.py <dir-prefix>...` gives the busy-time split per repo, for example `python3 analyze2.py cn-return-bot ai-browser-blocker`. It is the main script.
+- `analyze2.py <dir-prefix>...` gives the busy-time split per repo, for example `python3 analyze2.py cn-return-bot ai-browser-blocker`. It is the main script. Under each repo it also prints the busy time of the subagents that main sessions started in the background, because a main session never waits for those and their work would otherwise be missing.
 - `analyze.py` holds the shell command categories that `analyze2.py` imports. Run on its own, it prints per-category call counts, means and the slowest calls.
 - `latency.py` relates reply time to context size and output tokens.
 - `output.py` splits output tokens into tool calls, edits and final replies.
