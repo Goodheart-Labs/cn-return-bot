@@ -24,6 +24,9 @@ import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
+import { NotesAheadPill } from "./NotesAheadPill";
+import { notesAllAhead } from "../utils/notesAhead";
+import { track } from "@cn/core/analytics";
 
 /** One claim anchored to the page: the claim's notes with the original first,
  *  its note-not-needed entries, and the stretch of page text it sits on. */
@@ -597,6 +600,38 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
     () => jumpAfter(focusedIndex >= 0 ? focusedIndex : jumpCursor.current),
     [jumpAfter, focusedIndex],
   );
+  // "ahead" while every note is still below the window; "gone" for good once
+  // the reader reaches one, jumps or dismisses. The page's notes UI remounts
+  // on every address, so this resets per page.
+  const [pill, setPill] = useState<"waiting" | "ahead" | "gone">("waiting");
+  const noteCount = useMemo(() => groups.reduce((n, g) => n + g.notes.length, 0), [groups]);
+  useEffect(() => {
+    if (pill === "gone" || !ordered.length) return;
+    let raf = 0;
+    const check = () => {
+      if (notesAllAhead(ordered.map((g) => g.range.getBoundingClientRect()), window.innerHeight)) {
+        if (pill === "waiting") {
+          track("notes_pill_shown", { item_id: item.id, note_count: noteCount });
+          setPill("ahead");
+        }
+      } else {
+        setPill("gone");
+      }
+    };
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(check);
+    };
+    schedule();
+    document.addEventListener("scroll", schedule, { capture: true, passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener("scroll", schedule, { capture: true } as EventListenerOptions);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [ordered, pill, item.id, noteCount]);
+
   // The scroll to a jumped-to passage runs after React has put its note on
   // screen. React restores the page's scroll positions while it updates the
   // page, and that cancels a smooth scroll started before the update.
@@ -630,6 +665,17 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
 
   return (
     <EventShield>
+      {pill === "ahead" && (
+        <NotesAheadPill
+          count={noteCount}
+          onJump={() => {
+            track("notes_pill_clicked", { item_id: item.id, note_count: noteCount });
+            setPill("gone");
+            jumpAfter(-1);
+          }}
+          onDismiss={() => setPill("gone")}
+        />
+      )}
       {writeSelection && (
         <WriteNoteOverlay item={item} anchor={{ kind: "text", text: writeSelection }} onClose={() => setWriteSelection(null)}>
           <Quote>“{writeSelection}”</Quote>
