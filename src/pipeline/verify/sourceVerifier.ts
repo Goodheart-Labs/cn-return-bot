@@ -18,7 +18,7 @@
  * SourceVerification.
  */
 
-import { fetchWebPage } from "../tool-calling/tools";
+import { readPageForModel } from "../fetch/readPage";
 import { getBotConfig } from "../ab-testing/botConfig";
 import { getTweetLog } from "../utils/tweetLog";
 import { STEP, COST } from "../utils/noteWriterSteps";
@@ -78,7 +78,7 @@ function isTwitterUrl(url: string): boolean {
 }
 
 // On these hosts we try the media-download cascade before falling back to
-// fetchWebPage. The cascade runs yt-dlp first and gallery-dl second. yt-dlp
+// the page reader. The cascade runs yt-dlp first and gallery-dl second. yt-dlp
 // covers the hosts that mostly carry video. gallery-dl covers the hosts that
 // mostly carry images, such as Reddit, Tumblr and Imgur. It also rescues the
 // Facebook and Instagram image posts that yt-dlp cannot extract.
@@ -248,7 +248,7 @@ function formatTweetSection(url: string, tweet: SyndicationTweet): string {
 
 /** Runs the media cascade when the URL is on a media host. Returns null when
  *  the URL is not on one, or when the cascade failed. The caller then falls
- *  through to fetchWebPage. */
+ *  through to the page reader. */
 async function tryMediaDescription(url: string, costName: string, logKey: string): Promise<FetchedSource | null> {
   if (!isMediaHost(url)) return null;
   return tryDescribeMedia(url, costName, logKey);
@@ -268,7 +268,7 @@ async function tryDescribeMedia(url: string, costName: string, logKey: string): 
 }
 
 async function fetchAsWebPage(url: string): Promise<FetchedSource> {
-  const { content, fetchedUrl, ok } = await fetchWebPage(url);
+  const { content, fetchedUrl, ok } = await readPageForModel(url);
   return { url, fetchedUrl, content: `### ${url}\n${content}`, fetched: ok };
 }
 

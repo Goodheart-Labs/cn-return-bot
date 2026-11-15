@@ -27,7 +27,7 @@ import {
   startPostRun,
   unansweredMessages,
 } from "./store";
-import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
+import { JUDGE_EXAMPLES_PATH, type JudgedNote, JUDGEMENT_FILE, judgePrompt, parseJudgement, runJudge, type JudgeExample } from "./judge";
 import { REPO } from "./prompts";
 import { take, type AskedPassages } from "./take";
 import { fetchUsageSnapshot } from "../everything/db";
@@ -315,6 +315,22 @@ export function runCost(runDir: string): number | null {
     }
   }
   return null;
+}
+
+/** After a judge subagent of the devbox session returned: saves its answer
+ *  for the text it judged. A judge without a valid answer gets one more try,
+ *  and after that its note waits for a restart of the queue. */
+export async function endJudge(run: JobRun & { draftId: string; note: JudgedNote }, end: JobEnd): Promise<JobOutcome | "gave_up"> {
+  await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge], { draft_id: run.draftId });
+  try {
+    const judgement = parseJudgement(readFileSync(path.join(run.runDir, JUDGEMENT_FILE), "utf8"));
+    await saveJudgement(run.draftId, run.note.note, judgement);
+    console.log(`Judged draft ${run.draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
+    return "closed";
+  } catch (err) {
+    console.error(`The judge of draft ${run.draftId} gave no answer: ${(err as Error).message}`);
+  }
+  return run.attempt < MAX_ATTEMPTS ? "retry" : "gave_up";
 }
 
 /** Judges running at once. They share the plan's weekly limit with the posts,

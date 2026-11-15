@@ -7,6 +7,7 @@
  */
 
 import { Bot } from "./types";
+import { gptAgentBot, sonnetAgentBot } from "./agentBots";
 import { simpleBot } from "./simple-bot";
 
 // Retired bots. Each file can be recovered with
@@ -41,7 +42,7 @@ import { simpleBot } from "./simple-bot";
 // verify/sourceVerification, everything under multi-agent/, input/prompt, and
 // the tool-calling tool schemas together with buildToolList.
 
-const ALL_BOTS: Bot[] = [simpleBot];
+const ALL_BOTS: Bot[] = [simpleBot, gptAgentBot, sonnetAgentBot];
 
 export function getEnabledBots(): Bot[] {
   return ALL_BOTS;

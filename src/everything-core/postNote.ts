@@ -1,8 +1,10 @@
 import type { Session } from "@supabase/supabase-js";
 import { mintSelfVoteDonation, type MintedDonation } from "./donations";
+import { buildVideoLink } from "./pageUrls";
 import { displayName } from "./session";
 import { supabase } from "./supabase";
 import type { NoteRow } from "./types";
+import { formatVideoTime } from "./videoTime";
 
 /** A note the reader just posted, with the donation its automatic Helpful vote
  *  minted. The donation is null when minting failed, which never fails the
@@ -34,28 +36,51 @@ async function insertDraftNote(row: { claimId: string; text: string; session: Se
 // anchor text. The full text lives in `context_quote`.
 const CLAIM_PREVIEW_CHARS = 300;
 
-/** Writes a brand-new note anchored to a span of text: the user's claim first,
+/** What a reader's new note is about: a span of text they selected, or a
+ *  stretch of a video between two whole seconds. */
+export type NoteAnchor =
+  | { kind: "text"; text: string; contextParagraph?: string | null }
+  | { kind: "video"; videoId: string; startSeconds: number; endSeconds: number };
+
+/** The claim columns that say what a reader's note is about. A note on a video
+ *  quotes no captions. Its claim names the stretch of the video instead, and
+ *  its link plays the video from the stretch's start. */
+function anchorColumns(anchor: NoteAnchor, itemUrl: string) {
+  if (anchor.kind === "video") {
+    return {
+      claim: `At ${formatVideoTime(anchor.startSeconds)} to ${formatVideoTime(anchor.endSeconds)} in the video`,
+      context_quote: null,
+      context_url: buildVideoLink(anchor.videoId, anchor.startSeconds),
+      start_seconds: anchor.startSeconds,
+      end_seconds: anchor.endSeconds,
+    };
+  }
+  const text = anchor.text.trim();
+  const contextParagraph = anchor.contextParagraph?.trim();
+  return {
+    claim: text.slice(0, CLAIM_PREVIEW_CHARS),
+    context_quote: text,
+    ...(contextParagraph ? { context_paragraph: contextParagraph } : {}),
+    context_url: itemUrl,
+  };
+}
+
+/** Writes a brand-new note on what the reader picked: the user's claim first,
  *  then the draft note on it. */
 export async function postClaimWithNote(params: {
   itemId: string;
   itemUrl: string;
-  anchorText: string;
-  contextParagraph?: string | null;
+  anchor: NoteAnchor;
   note: string;
   session: Session;
   signed: boolean;
 }): Promise<PostedNote> {
-  const anchorText = params.anchorText.trim();
-  const contextParagraph = params.contextParagraph?.trim();
   const { data: claim, error } = await supabase
     .from("everything_claims")
     .insert({
       item_id: params.itemId,
-      claim: anchorText.slice(0, CLAIM_PREVIEW_CHARS),
+      ...anchorColumns(params.anchor, params.itemUrl),
       judgement: "user",
-      context_quote: anchorText,
-      ...(contextParagraph ? { context_paragraph: contextParagraph } : {}),
-      context_url: params.itemUrl,
       status: "note",
       created_by: params.session.user.id,
     })

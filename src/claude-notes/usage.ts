@@ -10,6 +10,11 @@ import * as path from "path";
 
 const CREDENTIALS_PATH = path.join(process.env.CLAUDE_CONFIG_DIR ?? path.join(homedir(), ".claude"), ".credentials.json");
 const USAGE_URL = "https://api.anthropic.com/api/oauth/usage";
+
+/** Jim's devbox can run a Claude on either of two Claude Code accounts, and its
+ *  account switch picks one for new Claudes (devbox claude-account, GOO-772).
+ *  The note writer budgets the main account's plan, so its Claudes always run there. */
+export const NOTE_WRITER_ACCOUNT_ENV = { CLAUDE_ACCOUNT: "main" };
 const USAGE_LOG_PATH = path.join(homedir(), ".local/share/claude-note-finder/usage.jsonl");
 
 interface Window {

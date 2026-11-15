@@ -1,24 +1,25 @@
 /* Reads an article for a minisite: its title, description, byline, date,
- * picture and text. A Substack post, also on a custom domain such as
- * normaltech.ai, comes from Substack's own post endpoint, which returns the
- * clean body and every field in one answer. Any other page goes through the
- * fetch ladder, and Readability finds the article in its HTML. Both paths run
- * the article HTML through the same converter to reader text.
+ * picture and text. The page reader (readPage) reads the page. A Substack
+ * post, also on a custom domain such as normaltech.ai, comes from Substack's
+ * own post endpoint, which returns the clean body and every field in one
+ * answer, and a forum post comes from the forum's API. For any other page the
+ * fetch ladder gives the page's HTML, and Readability finds the article in it.
+ * Every path runs the article HTML through the same converter to reader text.
  *
- * On the services box all of it runs inside the sandboxed fetcher (cn-fetch):
- * the download, and the parsing of the page's HTML, which comes from a
- * stranger. The other services only ever see the finished result.
- * readPageForMinisite asks the fetcher for it over its socket, the way
- * fetchWebPage does, and runs it in this process where there is no fetcher. */
+ * On the services box the HTML is parsed inside the sandboxed fetcher
+ * (cn-fetch), because it comes from a stranger. The other services only ever
+ * see the finished result. readPageForMinisite asks the fetcher for it over
+ * its socket, and parses it in this process where there is no fetcher. */
 
 import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
 import { parseReaderText, plainText, withoutRepeatedHeader } from "../../everything-core/readerText";
-import { fetchJsonInProcess, fetchWebPageHtmlInProcess } from "../../pipeline/tool-calling/tools";
-import { callFetchService } from "../../service/client";
-import { FETCH_SERVICE_SOCKET_VARIABLE, READ_PAGE_PATH, type FetchUrlRequest } from "../../service/contract";
+import { readPage } from "../../pipeline/fetch/readPage";
+import { postPublication, type SubstackPost } from "../../pipeline/fetch/sites/substack";
+import { askFetcher } from "../../service/client";
+import { MINISITE_PAGE_PATH, type MinisitePageRequest, type ReadPage } from "../../service/contract";
 import { isWebUrl } from "../../pipeline/utils/webUrl";
-import { canonicalSubstackFeed, substackFeedInPageHtml, substackFeedOfPage } from "../feedUrls";
+import { canonicalFeed, canonicalSubstackFeed, substackFeedInPageHtml, substackFeedOfPage } from "../feedUrls";
 import { htmlToReaderBlocks } from "./htmlToReaderText";
 
 /** What a read_page job writes into its result, and what
@@ -52,39 +53,62 @@ const MAX_BYLINE_CHARS = 300;
  *  print the title, the subtitle and the byline above the text. */
 const HEADER_BLOCKS_CHECKED = 4;
 
-const SUBSTACK_POST_PATH = /^\/p\/([\w-]+)\/?$/;
-
-/** What the fetcher's read-page route answers. A PageReadError travels as its
+/** What the fetcher's minisite route answers. A PageReadError travels as its
  *  sentence, so the admin still sees why the page could not be read. */
 export type ReadPageAnswer = { kind: "page"; page: MinisitePage } | { kind: "unreadable"; reason: string };
 
-/** Reads a page for a minisite, inside the fetcher when there is one. */
+const NOT_A_WEB_PAGE = "This is not the address of a web page.";
+const NOT_DOWNLOADED = "We could not download this page. The site may block our server, or the page may need a login.";
+const NO_ARTICLE_TEXT = "We found no article text on this page.";
+
+/** Reads a page for a minisite. The page reader reads it, and the fetcher, when
+ *  there is one, turns it into the article. */
 export async function readPageForMinisite(url: string): Promise<MinisitePage> {
-  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
-  if (!socket) return readPageInProcess(url);
-  const answer = await callFetchService<ReadPageAnswer>(socket, READ_PAGE_PATH, { url } satisfies FetchUrlRequest);
+  if (!isWebUrl(url)) throw new PageReadError(NOT_A_WEB_PAGE);
+  const read = await readPage(url);
+  if (read.type !== "page") {
+    console.warn(`[minisite] could not read ${url}: ${read.type === "unreadable" ? read.reason : read.type}`);
+    throw new PageReadError(read.type === "unreadable" ? NOT_DOWNLOADED : NO_ARTICLE_TEXT);
+  }
+  const answer = await askFetcher<ReadPageAnswer>(MINISITE_PAGE_PATH, { url, page: read.page } satisfies MinisitePageRequest, () =>
+    minisitePageAnswer(url, read.page),
+  );
   if (answer.kind === "unreadable") throw new PageReadError(answer.reason);
   return answer.page;
 }
 
-/** The fetcher's read-page route. */
-export async function readPageAnswer(url: string): Promise<ReadPageAnswer> {
+/** The fetcher's minisite route. */
+export async function minisitePageAnswer(url: string, page: ReadPage): Promise<ReadPageAnswer> {
   try {
-    return { kind: "page", page: await readPageInProcess(url) };
+    return { kind: "page", page: minisitePage(url, page) };
   } catch (err) {
     if (err instanceof PageReadError) return { kind: "unreadable", reason: err.message };
     throw err;
   }
 }
 
-/** The page reader itself. Only the fetcher and processes without one call
- *  this directly, because it parses the page's HTML. */
-async function readPageInProcess(url: string): Promise<MinisitePage> {
-  if (!isWebUrl(url)) throw new PageReadError("This is not the address of a web page.");
-  const post = await fetchSubstackPost(url);
-  const page = post ? pageFromSubstackPost(post, url) : await readArticlePage(url);
-  if (!page.plain_text.trim()) throw new PageReadError("We found no article text on this page.");
-  return page;
+/** Only the fetcher and processes without one call this directly, because it
+ *  parses the page's HTML. A page Jina Reader read has no HTML, and a video
+ *  no article. */
+function minisitePage(url: string, page: ReadPage): MinisitePage {
+  const article = articleOf(url, page);
+  if (!article.plain_text.trim()) throw new PageReadError(NO_ARTICLE_TEXT);
+  return article;
+}
+
+function articleOf(url: string, page: ReadPage): MinisitePage {
+  switch (page.source.kind) {
+    case "substack":
+      return pageFromSubstackPost(page.source.post, url);
+    case "forum":
+      return pageFromForumPost(page, page.source.htmlBody, page.source.authorFeedUrl);
+    case "ladder":
+      return pageFromArticleHtml(page.source.html, page.url);
+    case "jina":
+      throw new PageReadError(NOT_DOWNLOADED);
+    case "youtube":
+      throw new PageReadError(NO_ARTICLE_TEXT);
+  }
 }
 
 function clip(text: string, max: number): string {
@@ -128,47 +152,8 @@ function isoDate(value: string | null | undefined): string | null {
 }
 
 // ---------------------------------------------------------------------------
-// Substack posts
+// Substack and forum posts
 // ---------------------------------------------------------------------------
-
-interface SubstackPublication {
-  id: number;
-  name: string;
-  subdomain: string;
-}
-
-/** The fields of Substack's /api/v1/posts/<slug> answer that a minisite uses. */
-interface SubstackPost {
-  title: string;
-  subtitle: string | null;
-  post_date: string | null;
-  cover_image: string | null;
-  canonical_url: string | null;
-  body_html: string;
-  publication_id: number;
-  publishedBylines: { name: string; publicationUsers?: { publication?: SubstackPublication }[] }[];
-}
-
-function isSubstackPost(json: unknown): json is SubstackPost {
-  const post = json as Partial<SubstackPost> | null;
-  return typeof post?.body_html === "string" && typeof post.title === "string" && Array.isArray(post.publishedBylines);
-}
-
-/** Any address of the shape /p/<slug> may be a Substack post on a custom
- *  domain, so the post endpoint is asked first. A site that is not Substack
- *  answers with an error or with HTML, and the page is then read as any other. */
-async function fetchSubstackPost(url: string): Promise<SubstackPost | null> {
-  const { origin, pathname } = new URL(url);
-  const slug = SUBSTACK_POST_PATH.exec(pathname)?.[1];
-  if (!slug) return null;
-  const answer = await fetchJsonInProcess(`${origin}/api/v1/posts/${slug}`);
-  return answer.ok && isSubstackPost(answer.json) ? answer.json : null;
-}
-
-function postPublication(post: SubstackPost): SubstackPublication | null {
-  const publications = post.publishedBylines.flatMap((byline) => byline.publicationUsers ?? []).map((user) => user.publication);
-  return publications.find((publication) => publication?.id === post.publication_id) ?? null;
-}
 
 /** Exported for the tests, which feed it a saved answer. */
 export function pageFromSubstackPost(post: SubstackPost, url: string): MinisitePage {
@@ -184,6 +169,19 @@ export function pageFromSubstackPost(post: SubstackPost, url: string): MinisiteP
     image_url: post.cover_image && isWebUrl(post.cover_image) ? post.cover_image : null,
     content: articleContent(htmlToReaderBlocks(post.body_html, post.canonical_url ?? url), [post.title, post.subtitle, byline]),
     creator_feed_url: feed?.feed_url ?? null,
+  });
+}
+
+function pageFromForumPost(page: ReadPage, htmlBody: string, authorFeedUrl: string | null): MinisitePage {
+  const title = page.title ?? "";
+  return buildPage({
+    title,
+    description: "",
+    byline: page.authorName,
+    published_at: isoDate(page.publishedAt),
+    image_url: null,
+    content: articleContent(htmlToReaderBlocks(htmlBody, page.url), [title, page.authorName]),
+    creator_feed_url: authorFeedUrl ? canonicalFeed(authorFeedUrl)?.feed_url ?? null : null,
   });
 }
 
@@ -266,13 +264,4 @@ export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage
     content: articleContent(htmlToReaderBlocks(article.content, pageUrl), [title, description, byline, author]),
     creator_feed_url: isSubstackPage(html) ? substackFeedInPageHtml(html)?.feed_url ?? null : null,
   });
-}
-
-async function readArticlePage(url: string): Promise<MinisitePage> {
-  const fetched = await fetchWebPageHtmlInProcess(url);
-  if (!fetched.ok) {
-    console.warn(`[minisite] could not fetch ${url}: ${fetched.reason}`);
-    throw new PageReadError("We could not download this page. The site may block our server, or the page may need a login.");
-  }
-  return pageFromArticleHtml(fetched.html, fetched.fetchedUrl);
 }

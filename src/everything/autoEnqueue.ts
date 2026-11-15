@@ -23,6 +23,9 @@
  * the lowest-ranked creator went ahead of a failed post by the highest
  * (GOO-487).
  *
+ * A post published more than two weeks before the walk is not a candidate
+ * (MAX_CANDIDATE_AGE_DAYS): such posts drew almost no Helpful notes.
+ *
  * Only a feed's three newest posts are ever candidates. A newly ranked creator
  * therefore backfills at most three posts rather than their whole archive. A
  * gap deeper than that stays unfilled on purpose. A post counts as checked
@@ -31,16 +34,17 @@
  * rather than from the feed listing, so it stays a candidate even after newer
  * posts pushed it out of the three newest.
  *
- * Where the posts come from: a Substack feed from its RSS feed, which goes
- * through our Cloudflare Worker when we run in CI; a forum author from the
- * LessWrong GraphQL API; a YouTube channel from its stored listing, which the
+ * Where the posts come from: a Substack feed from its RSS feed and a forum
+ * author from the forum's GraphQL API, both read through readListing, which
+ * in CI asks the extraction service; a YouTube channel from its stored listing, which the
  * Data API refreshes only when YouTube told us the channel published
  * something or the listing is a day old (see youtubeChannels.ts). Asking the
  * Data API about every channel on every run used up the daily quota by the
  * afternoon.
  *
- * A Substack post is enqueued with its RSS body already in full_text. That way
- * the worker never has to fetch Substack, which blocks our CI runners.
+ * A Substack post is enqueued with its RSS body already in full_text, and a
+ * forum post with the body its listing carries. That way neither has to be
+ * read again.
  *
  * Usage:
  *   bun run src/everything/autoEnqueue.ts [--dry-run]
@@ -70,8 +74,9 @@ import {
 } from "./db";
 import type { FeedType } from "./feedUrls";
 import { fixedRow, groupClose, groupOpen, tally } from "./logFormat";
-import { fetchAuthorPosts } from "./sources/lesswrong";
-import { fetchFeedPosts, fetchPostBodyText, htmlToText } from "./sources/substack";
+import { readForumListing } from "../pipeline/fetch/readListing";
+import { htmlToText } from "../pipeline/utils/html";
+import { fetchFeedPosts } from "./sources/substack";
 import { quotaRanOutThisRun } from "../pipeline/media/youtubeDataApi";
 import { refreshOneStaleTopList, TOP_POSTS_PER_FEED } from "./topPosts";
 import type { SourceKind } from "./types";
@@ -151,7 +156,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
         url: p.url,
         matchKey: p.url,
         label: `${p.publishedAt.slice(0, 10)} ${p.title}`,
-        fullText: htmlToText(p.bodyHtml, true),
+        fullText: htmlToText(p.bodyHtml),
         title: p.title,
         publishedAt: p.publishedAt.slice(0, 10),
         publishedTime: p.publishedAt,
@@ -159,7 +164,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
     return { sourceName, entries, paidPosts };
   }
   if (feed.type === "lesswrong") {
-    const { authorName, posts } = await fetchAuthorPosts(feed.url, FEED_CANDIDATE_LIMIT);
+    const { authorName, posts } = await readForumListing(feed.url, FEED_CANDIDATE_LIMIT);
     const entries = posts.map((p) => ({
       source: "lesswrong" as const,
       url: p.url,
@@ -170,7 +175,7 @@ async function fetchFeedEntries(feed: PriorityFeed): Promise<FeedListing> {
       publishedAt: p.postedAt.slice(0, 10),
       publishedTime: p.postedAt,
     }));
-    return { sourceName: authorName, entries, paidPosts: 0 };
+    return { sourceName: authorName ?? undefined, entries, paidPosts: 0 };
   }
   const { title, uploads, listedBecause } = await youtubeChannelUploads(feed.url, FEED_CANDIDATE_LIMIT);
   const entries = uploads
@@ -383,6 +388,24 @@ export function orderCandidates(unchecked: UnprocessedEntry[], retries: Retryabl
   return [...posts, ...tops];
 }
 
+/** A candidate published more than this many days before the walk is passed
+ *  over, so the walk goes on to the next creator's new post instead. In the 30
+ *  days to 2026-11-12 the walk checked 836 posts that were 14 or more days old
+ *  when checked, and they gave 18 publicly Helpful notes (2.2 per 100 posts);
+ *  the 831 younger posts gave 144 (17 per 100). Old YouTube posts gave none in
+ *  427. Most were all-time top posts (GOO-81) and the newest posts of creators
+ *  who rarely publish. An undated candidate is kept. */
+export const MAX_CANDIDATE_AGE_DAYS = 14;
+
+/** The candidates young enough to check. Exported for the tests. */
+export function freshCandidates(candidates: Candidate[], now: Date = new Date()): Candidate[] {
+  const cutoff = new Date(now.getTime() - MAX_CANDIDATE_AGE_DAYS * 86_400_000).toISOString().slice(0, 10);
+  return candidates.filter((c) => {
+    const date = candidateDate(c).slice(0, 10);
+    return date === "" || date >= cutoff;
+  });
+}
+
 /** The failed feed posts due another attempt, grouped by the normalised feed
  *  address of their creator. A post whose project follows no feed is never
  *  walked, so it is left out. */
@@ -419,20 +442,11 @@ async function logYoutubeListings(listings: (ListingReason | null)[]): Promise<v
 /** Enqueues one post. An entry whose item row already exists is promoted to a
  *  whole-page check in place, keeping its claims and notes. A Substack
  *  promotion carries the RSS body, the same text a fresh enqueue would have
- *  carried; a YouTube one carries none and the worker fetches the transcript. */
+ *  carried. A YouTube one carries none, and neither does an all-time top
+ *  Substack post, which is too old to appear in the RSS feed. The intake
+ *  service reads those through the page reader as soon as they are queued. */
 async function enqueueEntry(creator: RankedCreator, walk: CreatorWalk, entry: UnprocessedEntry): Promise<void> {
   const { feed, sourceName } = walk;
-  // An all-time top Substack post is too old to appear in the RSS feed, so
-  // its body is fetched here through the API, one call for the picked post.
-  // If that fails the item is enqueued bare, and the worker's web-fetch
-  // ladder is the fallback.
-  if (feed.type === "substack" && entry.topPopularity !== undefined && !entry.fullText) {
-    try {
-      entry.fullText = await fetchPostBodyText(feed.url, entry.url);
-    } catch (err: any) {
-      console.warn(`  body fetch failed for ${entry.url}: ${err?.message}`);
-    }
-  }
   if (entry.existingItem) {
     await promoteItemToWholePage(entry.existingItem.id, entry.fullText ?? null, creator.priority);
     console.log(`  promoted to a whole-page check: ${entry.url}`);
@@ -518,7 +532,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
         CREATOR_ALIGN,
       ),
     );
-    return { feed, sourceName: listing.sourceName, candidates: orderCandidates(unchecked, retries) };
+    return { feed, sourceName: listing.sourceName, candidates: freshCandidates(orderCandidates(unchecked, retries)) };
   };
 
   const { walked, unlisted, found } = await walkToFirstCandidate(ranked, walkCreator);
