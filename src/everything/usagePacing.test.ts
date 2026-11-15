@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 import {
   computeClaudePacing,
   judgeMayStartAt,
-  tweetMayStartAt,
   DEFAULT_USAGE_PER_POST_PERCENT,
   usageRise,
   type UsageReading,
@@ -11,7 +10,7 @@ import {
 
 /* Covers the usage pacing of the Claude note writer (GOO-587): the interval
  * between posts is 1.1 times the time until the weekly reset times the usage
- * per post, divided by the usage left below 98%; the usage per post is
+ * per post, divided by the usage left below 70%; the usage per post is
  * measured; and no new post comes at the target. */
 
 const HOUR_MS = 3600_000;
@@ -45,12 +44,12 @@ describe("usageRise", () => {
 
 describe("computeClaudePacing", () => {
   test("spreads the usage left over the time until the reset", () => {
-    // 10 points over 100 posts is 0.1 per post. 78 points are left below 98%,
-    // which is 780 posts in the 144 hours until the reset: one about every
-    // 11.1 minutes, stretched by 10% to 12.2.
+    // 10 points over 100 posts is 0.1 per post. 50 points are left below 70%,
+    // which is 500 posts in the 144 hours until the reset: one about every
+    // 17.3 minutes, stretched by 10% to 19.
     const pacing = claude(snapshot());
     expect(pacing.usagePerPost).toBeCloseTo(0.1);
-    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 780, -3);
+    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 500, -3);
   });
 
   test("more usage by other work makes a post look dearer, so posts slow down", () => {
@@ -78,7 +77,7 @@ describe("computeClaudePacing", () => {
   });
 
   test("at the target no new feed post is due until the reset", () => {
-    expect(claude(snapshot({ readings: [reading(1, 97), reading(0, 98)] })).intervalMs).toBe(Infinity);
+    expect(claude(snapshot({ readings: [reading(1, 69), reading(0, 70)] })).intervalMs).toBe(Infinity);
   });
 
   test("with no reading at all there is no pacing", () => {
@@ -95,35 +94,15 @@ describe("judgeMayStartAt", () => {
   const minutesAgo = (m: number) => new Date(now.getTime() - m * 60_000);
 
   test("a judge starts below the weekly stop with a recent reading", () => {
-    expect(judgeMayStartAt({ at: minutesAgo(5), weekly: 98 }, now)).toBe(true);
+    expect(judgeMayStartAt({ at: minutesAgo(5), weekly: 70 }, now)).toBe(true);
   });
 
   test("no judge starts at the weekly stop", () => {
-    expect(judgeMayStartAt({ at: minutesAgo(5), weekly: 99 }, now)).toBe(false);
+    expect(judgeMayStartAt({ at: minutesAgo(5), weekly: 71 }, now)).toBe(false);
   });
 
   test("no judge starts without a recent reading", () => {
     expect(judgeMayStartAt({ at: minutesAgo(31), weekly: 10 }, now)).toBe(false);
     expect(judgeMayStartAt(null, now)).toBe(false);
-  });
-});
-
-describe("tweetMayStartAt", () => {
-  const resetsAt = new Date("2026-11-15T11:00:00Z");
-  // A day before the reset, six sevenths of the week are gone, so the even line is at 84% of 98%.
-  const now = new Date("2026-11-14T11:00:00Z");
-  const reading = (weekly: number, weeklyResetsAt: Date | null = resetsAt) => ({ at: new Date(now.getTime() - 5 * 60_000), weekly, weeklyResetsAt });
-
-  test("a tweet starts at or below the even line", () => {
-    expect(tweetMayStartAt(reading(84), now)).toBe(true);
-  });
-
-  test("no tweet starts above the even line", () => {
-    expect(tweetMayStartAt(reading(85), now)).toBe(false);
-  });
-
-  test("no tweet starts without the reset time or a recent reading", () => {
-    expect(tweetMayStartAt(reading(10, null), now)).toBe(false);
-    expect(tweetMayStartAt(null, now)).toBe(false);
   });
 });

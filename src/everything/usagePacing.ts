@@ -34,12 +34,13 @@
  * raised the target from 80% to 90% on 2026-11-05, and on 2026-11-10 lowered
  * it to 60% and stopped the Claude tweets, so that the week keeps room for his
  * own work on the weekend. On 2026-11-12 he raised it back to 90%, and on
- * 2026-11-14 he raised it to 98% and turned the Claude tweets back on.
+ * 2026-11-14 he raised it to 98% and turned the Claude tweets back on. On
+ * 2026-11-15 he lowered it to 70% again.
  *
  * The interval is stretched by 10%, so the week most likely ends a little
  * under the target rather than over it. Once the week is at the target, the
  * runner takes no new feed post until the reset, and it still takes reader
- * requests until its own stop at 99% (MAX_WEEKLY_USAGE_PERCENT). Above that it
+ * requests until its own stop at 71% (MAX_WEEKLY_USAGE_PERCENT). Above that it
  * takes nothing, and queued items wait for the reset. Jim set these rules on
  * 2026-10-26. */
 
@@ -48,8 +49,9 @@ import { duration } from "./logFormat";
 /** The share of the weekly limit the posts should use up by the reset. Jim
  *  picked 80% on 2026-10-26, raised it to 90% on 2026-11-05 and lowered it to
  *  60% on 2026-11-10, to keep usage for the weekend, raised it back to 90%
- *  on 2026-11-12 and raised it to 98% on 2026-11-14. */
-export const WEEKLY_USAGE_TARGET_PERCENT = 98;
+ *  on 2026-11-12, raised it to 98% on 2026-11-14 and lowered it to 70% on
+ *  2026-11-15. */
+export const WEEKLY_USAGE_TARGET_PERCENT = 70;
 
 /** The interval is stretched by this factor, so that an estimate a little too
  *  low does not carry the week past the target. */
@@ -73,9 +75,9 @@ export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
  *  target, so this stop holds back mainly reader requests, which Claude takes
  *  without pacing, and X tweets. Everything queued then waits for the weekly
  *  reset. It sits 1 point above the target, so that queued work still runs
- *  for a while after the feed posts stop, and 1 point below the plan's limit,
- *  where Claude stops working for everyone on the plan. */
-export const MAX_WEEKLY_USAGE_PERCENT = 99;
+ *  for a while after the feed posts stop, while the week still ends close to
+ *  the target. */
+export const MAX_WEEKLY_USAGE_PERCENT = 71;
 
 /** The runner reads the usage every 5 minutes. A newest reading older than
  *  this means the runner on ai-box is down, so the X run hands it no tweet
@@ -157,24 +159,4 @@ export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapsh
 export function judgeMayStartAt(reading: { at: Date; weekly: number } | null, now: Date): boolean {
   if (!reading || now.getTime() - reading.at.getTime() > MAX_USAGE_READING_AGE_MS) return false;
   return reading.weekly < MAX_WEEKLY_USAGE_PERCENT;
-}
-
-const WEEK_MS = 7 * 24 * 3600_000;
-
-/** The share of the week the plan would have used by now if its usage rose
- *  evenly from 0% when the week began to the target at the reset. */
-export function evenUsageLine(resetsAt: Date, now: Date): number {
-  const weekElapsed = Math.min(1, Math.max(0, 1 - (resetsAt.getTime() - now.getTime()) / WEEK_MS));
-  return WEEKLY_USAGE_TARGET_PERCENT * weekElapsed;
-}
-
-/** Whether a tweet may start, by the plan's newest usage reading. Tweets have
- *  no pacing like the feed posts, and on 2026-11-14 they carried the plan
- *  towards its stop about 13 hours before the reset. Jim asked for them to be
- *  slowed instead. So a tweet starts only while the plan is at or below the
- *  even line. Above it, tweets wait until the line has caught up, and the X run
- *  sweeps the ones that waited too long. The judges' conditions apply too. */
-export function tweetMayStartAt(reading: UsageReading | null, now: Date): boolean {
-  if (!reading?.weeklyResetsAt || !judgeMayStartAt(reading, now)) return false;
-  return reading.weekly <= evenUsageLine(reading.weeklyResetsAt, now);
 }
