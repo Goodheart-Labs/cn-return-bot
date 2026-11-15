@@ -630,7 +630,9 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
       document.removeEventListener("scroll", schedule, { capture: true } as EventListenerOptions);
       window.removeEventListener("resize", schedule);
     };
-  }, [ordered, pill, item.id, noteCount]);
+  // layoutTick also follows the container resizing as images and embeds load,
+  // which can bring a passage on screen without any scroll.
+  }, [ordered, pill, item.id, noteCount, layoutTick]);
 
   // The scroll to a jumped-to passage runs after React has put its note on
   // screen. React restores the page's scroll positions while it updates the
