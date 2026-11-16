@@ -63,8 +63,8 @@ export function PostOnX({ draft, view, onClose }: { draft: ReviewDraft; view: Re
     <form onSubmit={submit} className="space-y-3 border-t border-line pt-4 text-sm">
       <h3 className="font-medium text-fg">Post on X</h3>
       {!TWEET_SERVER ? (
-        <div className="overflow-x-auto rounded-control border border-line">
-          <NoteImagePage noteId={noteId} />
+        <div className="rounded-control border border-line">
+          <NoteImagePage noteId={noteId} preview />
         </div>
       ) : image.isError ? (
         <p className="text-negative">The picture of the note failed: {image.error.message}</p>
