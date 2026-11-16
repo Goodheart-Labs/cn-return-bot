@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { parseSubtitleToCues } from "./youtubeCaptions";
+import { isRefusedCaptionFile, parseSubtitleToCues } from "./youtubeCaptions";
 
 /** A German uploader track. It opens with a style block, which is what made the
  *  parser read three lines of CSS as the video's first words. */
@@ -43,5 +43,19 @@ describe("parseSubtitleToCues", () => {
       { start: 2, end: 4, text: "First line" },
       { start: 4, end: 6, text: "Second line" },
     ]);
+  });
+});
+
+describe("isRefusedCaptionFile", () => {
+  it("is true for an empty answer and for a page", () => {
+    expect(isRefusedCaptionFile("")).toBe(true);
+    expect(isRefusedCaptionFile("\n")).toBe(true);
+    expect(isRefusedCaptionFile("<html><body>Sorry</body></html>")).toBe(true);
+  });
+
+  it("is false for caption files, with or without cues", () => {
+    expect(isRefusedCaptionFile(STYLED_VTT)).toBe(false);
+    expect(isRefusedCaptionFile(SRT)).toBe(false);
+    expect(isRefusedCaptionFile("WEBVTT\nKind: captions\nLanguage: en\n")).toBe(false);
   });
 });
