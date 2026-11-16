@@ -272,7 +272,7 @@ export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<Youtube
  *  ones were finished as videos nobody can check. A caption file with a
  *  WEBVTT header and no cues is a real empty track. */
 export function isRefusedCaptionFile(content: string): boolean {
-  return !content.includes("-->") && !/^\uFEFF?WEBVTT/.test(content.trimStart());
+  return !/^WEBVTT(\s|$)/.test(content.trimStart()) && !/\d\s*-->\s*\d/.test(content);
 }
 
 export interface SubtitleCue {

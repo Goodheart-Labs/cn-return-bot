@@ -50,7 +50,8 @@ describe("isRefusedCaptionFile", () => {
   it("is true for an empty answer and for a page", () => {
     expect(isRefusedCaptionFile("")).toBe(true);
     expect(isRefusedCaptionFile("\n")).toBe(true);
-    expect(isRefusedCaptionFile("<html><body>Sorry</body></html>")).toBe(true);
+    expect(isRefusedCaptionFile("<html><!-- 1 --><body>Sorry</body></html>")).toBe(true);
+    expect(isRefusedCaptionFile("WEBVTTerror")).toBe(true);
   });
 
   it("is false for caption files, with or without cues", () => {
