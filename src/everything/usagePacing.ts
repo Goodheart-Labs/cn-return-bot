@@ -35,12 +35,12 @@
  * it to 60% and stopped the Claude tweets, so that the week keeps room for his
  * own work on the weekend. On 2026-11-12 he raised it back to 90%, and on
  * 2026-11-14 he raised it to 98% and turned the Claude tweets back on. On
- * 2026-11-15 he lowered it to 70% again.
+ * 2026-11-15 he lowered it to 70% again, and on 2026-11-16 raised it to 80%.
  *
  * The interval is stretched by 10%, so the week most likely ends a little
  * under the target rather than over it. Once the week is at the target, the
  * runner takes no new feed post until the reset, and it still takes reader
- * requests until its own stop at 71% (MAX_WEEKLY_USAGE_PERCENT). Above that it
+ * requests until its own stop at 81% (MAX_WEEKLY_USAGE_PERCENT). Above that it
  * takes nothing, and queued items wait for the reset. Jim set these rules on
  * 2026-10-26. */
 
@@ -49,9 +49,9 @@ import { duration } from "./logFormat";
 /** The share of the weekly limit the posts should use up by the reset. Jim
  *  picked 80% on 2026-10-26, raised it to 90% on 2026-11-05 and lowered it to
  *  60% on 2026-11-10, to keep usage for the weekend, raised it back to 90%
- *  on 2026-11-12, raised it to 98% on 2026-11-14 and lowered it to 70% on
- *  2026-11-15. */
-export const WEEKLY_USAGE_TARGET_PERCENT = 70;
+ *  on 2026-11-12, raised it to 98% on 2026-11-14, lowered it to 70% on
+ *  2026-11-15 and raised it to 80% on 2026-11-16. */
+export const WEEKLY_USAGE_TARGET_PERCENT = 80;
 
 /** The interval is stretched by this factor, so that an estimate a little too
  *  low does not carry the week past the target. */
@@ -77,7 +77,7 @@ export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
  *  reset. It sits 1 point above the target, so that queued work still runs
  *  for a while after the feed posts stop, while the week still ends close to
  *  the target. */
-export const MAX_WEEKLY_USAGE_PERCENT = 71;
+export const MAX_WEEKLY_USAGE_PERCENT = 81;
 
 /** The runner reads the usage every 5 minutes. A newest reading older than
  *  this means the runner on ai-box is down, so the X run hands it no tweet
