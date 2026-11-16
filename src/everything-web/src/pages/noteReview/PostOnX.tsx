@@ -111,3 +111,35 @@ export function PostOnX({ draft, view, onClose }: { draft: ReviewDraft; view: Re
     </form>
   );
 }
+
+/** One click on commonnotes.net: schedules the proposed tweet and reply as
+ *  they stand in the next free slot. A tweet that still needs the creator's
+ *  handle, and the local tool (which needs its picture), open the panel
+ *  instead. "Edit first" opens the panel for changes before sending. */
+export function SchedulePostOnX({ draft, view, onEdit }: { draft: ReviewDraft; view: ReviewView; onEdit: () => void }) {
+  const client = useQueryClient();
+  const noteId = draft.noteId!;
+  const text = tweetText(draft, publicNoteLink(draft));
+  const direct = !TWEET_SERVER && !text.includes(MISSING_HANDLE);
+  const sending = useMutation({
+    mutationFn: () => send(noteId, text, EXTENSION_REPLY, "next_free_slot"),
+    onSuccess: () => refreshDrafts(client, view.request, [draft.id]),
+  });
+  return (
+    <>
+      <Button disabled={sending.isPending} onClick={() => (direct ? sending.mutate() : onEdit())}>
+        {sending.isPending ? "Scheduling…" : direct ? "Schedule on X" : "Post on X"}
+      </Button>
+      {direct && (
+        <Button variant="secondary" disabled={sending.isPending} onClick={onEdit}>
+          Edit first
+        </Button>
+      )}
+      {sending.error && (
+        <span role="alert" className="text-negative">
+          {sending.error.message}
+        </span>
+      )}
+    </>
+  );
+}
