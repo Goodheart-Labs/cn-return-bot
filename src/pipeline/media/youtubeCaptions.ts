@@ -256,8 +256,23 @@ export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<Youtube
   if (listing.kind !== "tracks") return listing;
   const track = chooseCaptionTrack(listing.tracks, video.audioLanguage);
   if (!track) return { kind: "none", why: `YouTube listed only machine translations (${listing.tracks.map((t) => t.code).join(", ")})` };
-  const cues = parseSubtitleToCues(await downloadCaptionFile(video.url, track));
+  const file = await downloadCaptionFile(video.url, track);
+  if (isRefusedCaptionFile(file)) {
+    throw new YoutubeUnreachableError(video.url, `YouTube listed the ${track.kind} ${track.code} track and served ${file.length} characters that are not a caption file`);
+  }
+  const cues = parseSubtitleToCues(file);
   return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
+}
+
+/** Whether what YouTube served for a listed track is not a caption file at
+ *  all: an empty answer or a page. That is YouTube refusing the download, not
+ *  a video without captions. From 2026-11-11 to 2026-11-16, 49 of 57 videos
+ *  got no transcript, against 9 of 132 on 2026-11-08 and 2026-11-09. The
+ *  young ones failed with "the track's file holds no captions", and the older
+ *  ones were finished as videos nobody can check. A caption file with a
+ *  WEBVTT header and no cues is a real empty track. */
+export function isRefusedCaptionFile(content: string): boolean {
+  return !/^WEBVTT(\s|$)/.test(content.trimStart()) && !/\d\s*-->\s*\d/.test(content);
 }
 
 export interface SubtitleCue {
