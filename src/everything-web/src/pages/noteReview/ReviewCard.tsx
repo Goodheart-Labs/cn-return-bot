@@ -28,7 +28,7 @@ import { Textarea } from "@cn/ui/Field";
 import { CheckIcon, TrashIcon } from "@cn/ui/icons";
 import { ClaimCard } from "../../components/ClaimCard";
 import { noteUrl } from "../../lib/routing";
-import { PostOnX } from "./PostOnX";
+import { PostOnX, SchedulePostOnX } from "./PostOnX";
 import { PERSON, ReviewerVotes } from "./ReviewerVotes";
 import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
 import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
@@ -589,9 +589,20 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        {live && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
-        {live && shows(DISPLAY.markPosted.value) && <MarkButton on={draft.xMark === "posted"} label="Posted on X" disabled={act.isPending} onClick={() => markX("posted")} />}
-        {live && shows(DISPLAY.wontPost.value) && <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />}
+        {/* A note with an X mark shows only that mark, highlighted, whatever the Display menu says. */}
+        {live && !draft.xMark && shows(DISPLAY.postOnX.value) && <SchedulePostOnX draft={draft} view={view} onEdit={() => setOpen("post")} />}
+        {live && draft.xMark === "scheduled" && (
+          <span className="inline-flex items-center gap-1.5 rounded-control border border-link px-3 py-1.5 text-sm font-medium text-link">
+            <CheckIcon size={14} aria-hidden />
+            Scheduled on X
+          </span>
+        )}
+        {live && (draft.xMark === "posted" || (!draft.xMark && shows(DISPLAY.markPosted.value))) && (
+          <MarkButton on={draft.xMark === "posted"} label={draft.xMark === "posted" ? "Posted on X" : "Mark as posted"} disabled={act.isPending} onClick={() => markX("posted")} />
+        )}
+        {live && (draft.xMark === "wont_post" || (!draft.xMark && shows(DISPLAY.wontPost.value))) && (
+          <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />
+        )}
         <XPostLine draft={draft} />
         {claude && shows(DISPLAY.chat.value) && panelButton("chat", "Chat with Claude")}
         {claude && live && shows(DISPLAY.improve.value) && panelButton("improve", draft.proposal ? "Improved version" : "Improve the note")}
