@@ -93,6 +93,7 @@ export const dbMock = () => ({
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: (_tier: "requested" | "feed") => Promise.resolve([]),
   fetchRetryableErrorItems: () => Promise.resolve([]),
+  fetchItemOutcomesSince: () => Promise.resolve([]),
   requeueErroredItem: record("requeueErroredItem"),
   fetchPendingNoteRequests: () => Promise.resolve([]),
   fetchQueueOverview: () => Promise.resolve([]),

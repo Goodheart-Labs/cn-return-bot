@@ -26,6 +26,10 @@
  * A post published more than two weeks before the walk is not a candidate
  * (MAX_CANDIDATE_AGE_DAYS): such posts drew almost no Helpful notes.
  *
+ * A source whose posts are all failing is passed over for an hour
+ * (failingSources), so its failed posts do not use up the walk while the
+ * creators ranked below them wait.
+ *
  * Only a feed's three newest posts are ever candidates. A newly ranked creator
  * therefore backfills at most three posts rather than their whole archive. A
  * gap deeper than that stays unfilled on purpose. A post counts as checked
@@ -59,6 +63,7 @@ import {
   enqueueItems,
   fetchAllTopPosts,
   fetchItemClaims,
+  fetchItemOutcomesSince,
   fetchItemUrlsContaining,
   fetchItemUrlsIn,
   fetchOrphanedProcessingItems,
@@ -68,6 +73,7 @@ import {
   requeueErroredItem,
   requeueItem,
   resolveProjectId,
+  type ItemOutcome,
   type KnownItemUrl,
   type RetryableErrorItem,
   type TopPostRow,
@@ -406,6 +412,24 @@ export function freshCandidates(candidates: Candidate[], now: Date = new Date())
   });
 }
 
+/** How far back the walk looks to decide that a source is failing. */
+const FAILING_SOURCE_WINDOW_MS = 3600_000;
+
+/** The sources the walk passes over: at least two of a source's posts failed
+ *  in the last hour and none was read. On 2026-11-16 YouTube served no
+ *  captions, every video failed, and each video came back for its three
+ *  repeat attempts. Those took both of the walk's posts on most runs, so the
+ *  note writer got about one post an hour instead of six. Once the failures
+ *  are an hour old the source is tried again, so a source that recovers is
+ *  found within the hour, and a video keeps its repeat attempts meanwhile.
+ *  Exported for the tests. */
+export function failingSources(outcomes: ItemOutcome[]): Set<string> {
+  const failed = new Map<string, number>();
+  for (const o of outcomes) if (o.outcome === "failed") failed.set(o.source, (failed.get(o.source) ?? 0) + 1);
+  for (const o of outcomes) if (o.outcome === "read") failed.delete(o.source);
+  return new Set([...failed].filter(([, count]) => count >= 2).map(([source]) => source));
+}
+
 /** The failed feed posts due another attempt, grouped by the normalised feed
  *  address of their creator. A post whose project follows no feed is never
  *  walked, so it is left out. */
@@ -479,6 +503,7 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   // refreshed after the walk, and the fresh rows serve the next run.
   const topRows = await fetchAllTopPosts();
   const dueRetries = await fetchDueRetriesByCreator();
+  const failing = failingSources(await fetchItemOutcomesSince(new Date(Date.now() - FAILING_SOURCE_WINDOW_MS)));
 
   const skipped: string[] = [];
   const paidByCreator = new Map<string, number>();
@@ -498,6 +523,10 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
 
   const walkCreator = async (creator: RankedCreator, feedIndex: number): Promise<CreatorWalk | null> => {
     const feed: PriorityFeed = { project: creator.project_slug, type: creator.feed_type, url: creator.feed_url };
+    if (failing.has(feed.type)) {
+      console.log(fixedRow([String(feedIndex + 1), feed.project, `${feed.type} is failing`, "", "", "", "", "", ""], CREATOR_COLUMNS, CREATOR_ALIGN));
+      return { feed, candidates: [] };
+    }
     let listing: FeedListing;
     try {
       listing = await fetchFeedEntries(feed);
@@ -541,6 +570,9 @@ export async function runAutoEnqueue(dryRun = false): Promise<number> {
   if (closing) console.log(closing);
   console.log(`  walked ${walked.length + unlisted} of ${ranked.length}${unlisted ? `, ${unlisted} could not be listed` : ""}`);
   for (const line of skipped) console.log(line);
+  if (failing.size > 0) {
+    console.log(`  passed over, every post read in the last hour failed: ${[...failing].join(", ")} · tried again once those failures are an hour old`);
+  }
   if (paidByCreator.size > 0) {
     console.log(`  paid posts we cannot read, waiting for the subscriber inbox: ${tally(paidByCreator)}`);
   }
