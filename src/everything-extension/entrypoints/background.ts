@@ -5,7 +5,7 @@ import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
 import { fetchReaderCanonical } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";
-import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
+import { canonicalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
 import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
@@ -236,7 +236,7 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   if (!href) return;
   // A Substack reader page hides the publication's own post URL behind a
   // fetch, the same way the notes flow resolves it.
-  const readerCanonical = isSubstackReaderUrl(href) ? await fetchReaderCanonical(href) : null;
+  const readerCanonical = substackReaderPostId(href) ? await fetchReaderCanonical(href) : null;
   const pageUrl = readerCanonical
     ? canonicalizePageUrl(readerCanonical, null)
     : canonicalizePageUrl(href, captured?.canonical ?? null);
