@@ -16,6 +16,7 @@ import { recordPageVisit } from "./linkVisits";
 import { getClosedClaims } from "./closedNotes";
 import { mountWriteAnywhere } from "./mountWriteAnywhere";
 import { REQUEST_NOTES_CHANGED_EVENT } from "./requestLive";
+import { listenForPassageRequests } from "./passageRequest";
 import { listenForRequestInfo } from "./requestInfo";
 import { getNoteDisplay, getSettings, onNoteDisplayChanged, onSettingsChanged, type ExtensionSettings } from "./settings";
 import { isPageDark, observePageTheme } from "./pageTheme";
@@ -259,14 +260,21 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
   // The background answers a needless request, for example on an already
   // checked page, with an explanation card through this listener.
   listenForRequestInfo(ctx);
+  listenForPassageRequests(ctx);
   // Listing badges live independently of the per-URL note mounts below. They
   // mark noted posts in whatever listing this site shows, such as a Substack
   // front page, and their own observer follows navigations and lazy loading.
   const stopBadges = await mountCoverageBadges(ctx);
+  // A newer copy of this script may have retired this one while the badges
+  // were mounting. The context's invalidation has then already happened, and a
+  // listener added now would never run.
+  if (ctx.isInvalid) return stopBadges?.();
   ctx.onInvalidated(() => stopBadges?.());
   let cleanup: (() => void) | null = null;
+  ctx.onInvalidated(() => cleanup?.());
   let seq = 0;
   const remount = async (href: string) => {
+    if (ctx.isInvalid) return;
     const mine = ++seq;
     cleanup?.();
     cleanup = null;
@@ -274,9 +282,10 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
     // write-anywhere mount calls back here, and the full notes flow takes over on
     // the spot. The new note shows up without a reload.
     const teardown = await mountForUrl(ctx, href, () => void remount(location.href));
-    // A newer navigation started while this one was still resolving, so we throw the
-    // stale mount away.
-    if (mine !== seq) return teardown?.();
+    // A newer navigation started while this one was still resolving, so we throw
+    // the stale mount away. The same goes for a mount that finished after a newer
+    // copy of the script retired this one. Nothing else would ever remove it.
+    if (mine !== seq || ctx.isInvalid) return teardown?.();
     cleanup = teardown;
   };
   await remount(location.href);
@@ -289,5 +298,4 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
   // commits. At that moment location.href can still point at the previous page. So
   // we resolve the item from the event's destination URL and never from location.
   ctx.addEventListener(window, "wxt:locationchange", (event) => void remount(String(event.newUrl)));
-  ctx.onInvalidated(() => cleanup?.());
 }

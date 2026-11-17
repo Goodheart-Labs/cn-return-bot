@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchScheduledPosts, updateXPost } from "@cn/core/xMarks";
 import { queryKeys } from "@cn/features/query/queryKeys";
-import { fetchDraftStates, TWEET_SERVER } from "./tweetServer";
+import { fetchDraftStates, TWEET_SERVER, TYPEFULLY_SET_UP } from "./tweetServer";
 
 /** How often the local posting tool asks Typefully about the scheduled
  *  notes. */
@@ -14,12 +14,13 @@ const sameMoment = (a: string | null, b: string | null) => a === b || (a !== nul
  *  tool is open: when it opens and every few minutes after. A published
  *  tweet makes its note posted, and a deleted draft makes its note not posted
  *  again. Only a mark that changed is written, and then the review page
- *  reloads its notes. Returns how many tweets Typefully could not publish. */
+ *  reloads its notes. Without the Typefully settings there is nothing to ask,
+ *  so the check is off. Returns how many tweets Typefully could not publish. */
 export function useTypefullySync() {
   const client = useQueryClient();
   return useQuery({
     queryKey: queryKeys.typefullySync,
-    enabled: !!TWEET_SERVER,
+    enabled: !!TWEET_SERVER && TYPEFULLY_SET_UP,
     refetchInterval: SYNC_INTERVAL_MS,
     queryFn: async () => {
       const posts = await fetchScheduledPosts();

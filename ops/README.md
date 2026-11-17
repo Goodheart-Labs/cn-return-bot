@@ -9,7 +9,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
 | `cn-extraction` | text in, the claims in it out | 8788 |
 | `cn-intake` | watches reader requests and drives them through the other two | none |
-| `cn-fetch` | fetches outside pages and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
+| `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 
 The first two are pure functions behind HTTP and hold no database credentials.
@@ -22,9 +22,15 @@ so a big reader page makes the paced feed run go quiet for the rest of the day.
 
 ## The sandboxed fetcher
 
-Pages and images from addresses a stranger or a model chose are fetched only
-by `cn-fetch`. The other services send it the address over a Unix socket and
-get the page text back. Its unit file builds a sandbox around it: a throwaway
+Pages, API answers and images from addresses a stranger or a model chose are
+fetched only by `cn-fetch`. The other services send it the address over a Unix
+socket and get the answer back. Every service reads pages through one function,
+`readPage` in `src/pipeline/fetch/readPage.ts`: it asks the fetcher for a
+site's API answer or for the fetch ladder, and adds the two steps that need
+keys itself, YouTube captions and Jina Reader. A page's HTML is parsed only
+inside the fetcher, so a minisite's article is built there too. The extraction
+service also reads pages and the walk's listings for GitHub Actions, which
+never fetches an outside address itself. Its unit file builds a sandbox around it: a throwaway
 user, no environment file and so no keys, no view of `/home`, the secret files
 or other processes, and a kernel rule that lets it reach public internet
 addresses only. So a hostile page that tricks the fetch code into reading
@@ -60,9 +66,10 @@ GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
 # Jina Reader: a paid last resort for a page that every free fetch step failed
-# on. Only runs of the jina_fetch A/B arm use it, in the services that run a
-# claim check. With the arm off nothing reads this key. With the arm on, a
-# missing key throws on the first page that fails every free step.
+# on, and for an API that a bot check keeps closed even to headless Chromium,
+# such as the EA Forum's. Every service that reads pages uses it while
+# JINA_FALLBACK in src/pipeline/fetch/jinaReader.ts is on. A missing key throws
+# on the first read that needs Jina.
 JINA_API_KEY=
 
 # The scoring step inside a claim check calls X's evaluate-note API
@@ -128,11 +135,15 @@ is the line to look for in `journalctl -u cn-intake`.
 ## Deploys
 
 The machine pulls; GitHub never pushes to it and holds no SSH key for it. A
-systemd timer (`cn-autodeploy.timer`, every 5 minutes) runs `ops/autodeploy.sh`,
-which fetches the branch the checkout is on and, when there is a new commit AND
-both services answer their health endpoint with nothing in flight and nothing
-waiting, resets to it, reinstalls dependencies, refreshes the unit files, and
-restarts the three services. A busy machine simply deploys a few minutes later
+systemd timer (`cn-autodeploy.timer`, every 5 minutes) runs
+`/usr/local/sbin/cn-autodeploy`, root's own copy of `ops/autodeploy.sh`. It asks
+GitHub which commit is on `main` and, when that commit is new AND both services
+answer their health endpoint with nothing in flight and nothing waiting, has
+the service user reset the checkout to it and reinstall dependencies. Then it
+installs the unit files and its own new copy, downloaded from GitHub at that
+same commit, and restarts the services. Root never runs or installs a file
+from the checkout, because the checkout belongs to the service user and a
+process running as that user could change it. A busy machine simply deploys a few minutes later
 when it drains; a service that does not answer health counts as idle, because
 the new commit may be the fix. So a merge to main is live within about five
 minutes of the machine going quiet.
@@ -144,7 +155,7 @@ player. The time of the last upgrade is the modification time of
 next tick. A failed upgrade fails the `cn-autodeploy` unit, which
 `journalctl -u cn-autodeploy` shows.
 
-The checkout tracks whichever branch it is on, which is `main`.
+The machine always deploys `main`, whatever branch the checkout is on.
 
 ## Moving to a new machine
 
@@ -195,4 +206,15 @@ Actions runs fail loudly at their health check, which is the intended signal.
 ```bash
 journalctl -u cn-intake -f                 # live logs, same for the other units
 curl -H "x-cn-service-key: $SECRET" http://localhost:8787/health
+```
+
+Every page and listing the services read is a row in the table `page_reads`,
+and the same record with the text that came back is a line in
+`/var/lib/cn-page-reads/<day>.jsonl`, kept 30 days (`src/pipeline/fetch/readLog.ts`).
+A text the service already stored for the same address is stored once; later
+lines carry `text_same_as`, the id of the line that holds it.
+
+```bash
+jq -c 'select(.outcome != "page") | {input, reason, steps}' /var/lib/cn-page-reads/$(date -u +%F).jsonl   # today's failed reads
+jq -r 'select(.input == "<url>") | .text' /var/lib/cn-page-reads/<day>.jsonl                              # what one read gave
 ```

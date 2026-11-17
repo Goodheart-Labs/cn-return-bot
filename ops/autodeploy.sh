@@ -4,22 +4,31 @@
 # A systemd timer runs this every few minutes as root; there is no push deploy
 # from GitHub.
 #
+# Root runs the copy in /usr/local/sbin/cn-autodeploy, not the one in the
+# checkout. The checkout belongs to the service user, so a process running as
+# that user could change any file in it. Root therefore never runs or installs
+# a file from the checkout. It asks GitHub itself which commit is on main, and
+# it downloads this script and the unit files of exactly that commit from
+# GitHub. The service user only fetches and resets its own checkout.
+#
 # The whole script lives inside main() so that bash has read all of it before
-# any of it runs. Without that, the reset --hard below would replace this very
-# file mid-execution and bash would continue reading the new version at the old
-# byte offset. For the same reason the exit sits on the line that calls
-# main(), so that bash never reads past that line once the file has changed.
+# any of it runs, because a deploy installs a new copy of this very file. For
+# the same reason the exit sits on the line that calls main(), so that bash
+# never reads past that line once the file has changed.
 
 set -euo pipefail
 
 REPO_DIR="/opt/cn-return-bot"
+REPO_URL="https://github.com/Goodheart-Labs/cn-return-bot"
+RAW_URL="https://raw.githubusercontent.com/Goodheart-Labs/cn-return-bot"
+DEPLOY_BRANCH="main"
+INSTALLED_SCRIPT="/usr/local/sbin/cn-autodeploy"
 ENV_FILE="/etc/cn-return-bot/service.env"
 SERVICE_USER="cnbot"
-# A deploy runs the copy of this script that was checked out before it, since
-# bash reads all of main() before the reset below. So a unit added to this list
-# is first installed by the deploy after the one that adds it. A new unit must
-# be installed by hand once (cp, daemon-reload, enable --now), as cn-fetch was
-# on 2026-09-28.
+# A deploy runs the copy of this script that was installed before it. So a
+# unit added to this list is first installed by the deploy after the one that
+# adds it. A new unit must be installed by hand once (cp, daemon-reload,
+# enable --now), as cn-fetch was on 2026-09-28.
 UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch)
 
 # When yt-dlp was last upgraded. The file's modification time is the record.
@@ -50,17 +59,17 @@ main() {
 }
 
 deploy_new_code() {
-  # Deploy whatever branch the checkout is on. Before the cutover PR merges
-  # that is the feature branch; afterwards it is main.
-  local branch
-  branch=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse --abbrev-ref HEAD)
-  sudo -u "$SERVICE_USER" git -C "$REPO_DIR" fetch --quiet origin "$branch"
-
-  # Every git call runs as the owning user. This script runs as root, and git
-  # refuses to read a repository owned by somebody else unless it is told to.
   local here upstream
+  # Root's own git and its own configuration, never the service user's.
+  upstream=$(HOME=/root git ls-remote "$REPO_URL" "refs/heads/$DEPLOY_BRANCH" | cut -f1)
+  if [ -z "$upstream" ]; then
+    echo "GitHub did not name a commit for $DEPLOY_BRANCH"
+    return 1
+  fi
+  # Every git call on the checkout runs as the owning user. This script runs
+  # as root, and git refuses to read a repository owned by somebody else
+  # unless it is told to.
   here=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse HEAD)
-  upstream=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse "origin/$branch")
   if [ "$here" = "$upstream" ]; then
     return 0
   fi
@@ -69,27 +78,60 @@ deploy_new_code() {
     return 0
   fi
 
-  echo "deploying $branch ${upstream:0:10} (was ${here:0:10})"
-  sudo -u "$SERVICE_USER" git -C "$REPO_DIR" reset --hard "origin/$branch"
+  # Everything root installs is downloaded before anything changes, so a
+  # failed download leaves the machine as it was and the next tick retries.
+  staging=$(mktemp -d)
+  trap 'rm -rf "$staging"' EXIT
+  download_root_files "$upstream" "$staging"
+
+  echo "deploying $DEPLOY_BRANCH ${upstream:0:10} (was ${here:0:10})"
+  sudo -u "$SERVICE_USER" git -C "$REPO_DIR" fetch --quiet origin "$DEPLOY_BRANCH"
+  sudo -u "$SERVICE_USER" git -C "$REPO_DIR" reset --hard "$upstream"
   sudo -u "$SERVICE_USER" bash -c "cd $REPO_DIR && ~/.bun/bin/bun install --frozen-lockfile"
 
-  # The units and this script's own timer may have changed with the code. A
-  # deploy runs the previous copy of this script, so its list can name a unit
-  # whose file the new code removed. Such a unit is skipped, so that removing a
-  # service never stops a deploy halfway.
-  local unit
-  for unit in "${UNITS[@]}" cn-autodeploy; do
-    if [ -f "$REPO_DIR/ops/$unit.service" ]; then
-      cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
-    fi
+  local file
+  for file in "$staging"/*.service "$staging"/*.timer; do
+    install -m 644 -o root -g root "$file" "/etc/systemd/system/$(basename "$file")"
   done
-  cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
+  # A new file moved over the old one leaves bash reading the old one, which
+  # it still has open.
+  install -m 755 -o root -g root "$staging/autodeploy.sh" "$INSTALLED_SCRIPT.new"
+  mv -f "$INSTALLED_SCRIPT.new" "$INSTALLED_SCRIPT"
   systemctl daemon-reload
   # try-restart, not restart: it restarts only units that are already running.
-  # A unit someone stopped on purpose (intake stays off until the cutover PR
-  # merges) must not be switched back on by a deploy.
+  # A unit someone stopped on purpose must not be switched back on by a deploy.
   systemctl try-restart "${UNITS[@]}"
   echo "deployed ${upstream:0:10}"
+}
+
+# Downloads this script, cn-autodeploy.service and its timer, and the units in
+# UNITS, all as of the given commit. A deploy runs the previous copy of this
+# script, so its list can name a unit that the new commit removed. GitHub
+# answers 404 for such a unit, and it is skipped, so that removing a service
+# never stops a deploy halfway. Any other failure stops the deploy.
+download_root_files() {
+  local commit="$1" staging="$2" path unit
+  for path in ops/autodeploy.sh ops/cn-autodeploy.service ops/cn-autodeploy.timer; do
+    download "$commit" "$path" "$staging" required || return 1
+  done
+  for unit in "${UNITS[@]}"; do
+    download "$commit" "ops/$unit.service" "$staging" optional || return 1
+  done
+}
+
+download() {
+  local commit="$1" path="$2" staging="$3" need="$4" target status
+  target="$staging/$(basename "$path")"
+  status=$(curl -sS -m 30 -o "$target" -w '%{http_code}' "$RAW_URL/$commit/$path")
+  if [ "$status" = 200 ]; then
+    return 0
+  fi
+  rm -f "$target"
+  if [ "$status" = 404 ] && [ "$need" = optional ]; then
+    return 0
+  fi
+  echo "downloading $path at ${commit:0:10} answered $status"
+  return 1
 }
 
 # yt-dlp must follow YouTube's player, which changes every few weeks, and

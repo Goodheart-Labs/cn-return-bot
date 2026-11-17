@@ -10,8 +10,11 @@ import type { TypefullyDraftState } from "../everything-core/xMarks";
 const MEDIA_READY_TIMEOUT_MS = 30_000;
 const MEDIA_POLL_MS = 1_000;
 
-/** The account's settings, read at every send, so the tool runs without them
- *  and only sending says what is missing. */
+/** Whether the repository's .env has the account's settings. The tool runs
+ *  without them, and only sending says what is missing. */
+export const typefullyIsSetUp = () => !!process.env.TYPEFULLY_API_KEY && !!process.env.TYPEFULLY_SOCIAL_SET_ID;
+
+/** The account's settings, read at every send. */
 function settings(): { api: string; headers: Record<string, string> } {
   const key = process.env.TYPEFULLY_API_KEY;
   const socialSet = process.env.TYPEFULLY_SOCIAL_SET_ID;
@@ -34,6 +37,11 @@ async function json<T>(response: Response, what: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+/** Typefully takes only letters, digits and _.()- in an uploaded file's name,
+ *  so "Common Note <id>" becomes "Common-Note-<id>.png". With the spaces left
+ *  in, every post failed with a 422 (2026-11-10). */
+export const pictureFileName = (title: string) => `${title.replace(/[^a-zA-Z0-9_.()-]+/g, "-")}.png`;
+
 async function uploadImage({ api, headers }: Settings, image: ArrayBuffer, fileName: string): Promise<string> {
   const { media_id, upload_url } = await json<{ media_id: string; upload_url: string }>(
     await fetch(`${api}/media/upload`, { method: "POST", headers, body: JSON.stringify({ file_name: fileName }) }),
@@ -55,9 +63,32 @@ async function uploadImage({ api, headers }: Settings, image: ArrayBuffer, fileN
 /** Creates a draft for the X account of the social set in
  *  TYPEFULLY_SOCIAL_SET_ID, and returns its id and when Typefully schedules
  *  it. */
+const isReset = (error: unknown): boolean => {
+  for (let e: unknown = error, depth = 0; e && depth < 4; e = (e as { cause?: unknown }).cause, depth++) {
+    if ((e as { code?: unknown }).code === "ECONNRESET" || String(e).includes("ECONNRESET")) return true;
+  }
+  return false;
+};
+
+/** Bun reuses kept-alive sockets that the far end has already closed, and the
+ *  call then fails at once with ECONNRESET (2 of 3 presses on 2026-11-16). A
+ *  call that is safe to repeat is tried again, up to twice. */
+export async function retryOnReset<T>(call: () => Promise<T>, waitMs = 1000): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await call();
+    } catch (error) {
+      if (attempt >= 2 || !isReset(error)) throw error;
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+  }
+}
+
 export async function createDraft(draft: TweetDraft): Promise<{ draftId: string; scheduledFor: string | null }> {
   const account = settings();
-  const mediaId = await uploadImage(account, draft.image, `${draft.title}.png`);
+  // A repeated upload only leaves an unused picture behind. The draft itself is
+  // never retried: a reset after Typefully made it would schedule the tweet twice.
+  const mediaId = await retryOnReset(() => uploadImage(account, draft.image, pictureFileName(draft.title)));
   const posts = [{ text: draft.text, media_ids: [mediaId] }, ...(draft.reply.trim() ? [{ text: draft.reply.trim() }] : [])];
   const created = await json<{ id: string | number; scheduled_date?: string; publish_at?: string }>(
     await fetch(`${account.api}/drafts`, {

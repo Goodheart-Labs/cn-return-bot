@@ -7,6 +7,9 @@ import type { TypefullyDraftState, TypefullyPost } from "@cn/core/xMarks";
 
 /** The server's address, or undefined outside the local posting tool. */
 export const TWEET_SERVER = import.meta.env.VITE_TWEET_SERVER;
+/** Whether the server has the Typefully settings. Without them only sending
+ *  fails, and it says what is missing. */
+export const TYPEFULLY_SET_UP = import.meta.env.VITE_TYPEFULLY_SET_UP === "true";
 
 /** When Typefully publishes the tweet: in the next free slot of the account's
  *  posting queue, or at once. */

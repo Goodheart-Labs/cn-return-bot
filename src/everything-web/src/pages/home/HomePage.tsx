@@ -8,6 +8,7 @@ import { BrowserLogo, DesktopOnly, StoreButton } from "../../components/StoreBut
 import { BROWSERS, canInstallExtensions, isListed, trackGetExtensionClick } from "../../lib/extensionStores";
 import type { Route } from "../../lib/routing";
 import { HEADLINE, PITCH, SCREENSHOTS, scrollToInstall } from "./content";
+import { SafariWaitlist } from "./SafariWaitlist";
 import { useCarousel } from "./useCarousel";
 import { useInstallTabs } from "./useInstallTabs";
 
@@ -104,7 +105,7 @@ function Install({ navigate, desktop }: { navigate: (route: Route) => void; desk
           ) : isListed(browser) ? (
             <StoreButton browser={browser}>Go to {browser.store.name}</StoreButton>
           ) : (
-            <p className="text-base text-fg-secondary">The {browser.name} version is coming soon.</p>
+            <SafariWaitlist />
           )}
         </div>
       </div>

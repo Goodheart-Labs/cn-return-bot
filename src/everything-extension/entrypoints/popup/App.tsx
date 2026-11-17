@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { browser } from "#imports";
-import { fetchItemForUrl, isWholePageChecked, type PageItem } from "@cn/core/items";
+import { fetchItemForUrl, type PageItem } from "@cn/core/items";
+import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchNotesForItem } from "@cn/core/notes";
 import { COMMONNOTES_ORIGIN, extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
 import type { NoteRow } from "@cn/core/types";

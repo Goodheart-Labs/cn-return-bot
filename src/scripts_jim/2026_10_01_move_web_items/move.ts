@@ -24,7 +24,7 @@
 
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import { extractYoutubeVideoId, fetchReaderCanonical, isSubstackReaderUrl } from "../../everything-core/pageUrls";
+import { extractYoutubeVideoId, fetchReaderCanonical, substackReaderPostId } from "../../everything-core/pageUrls";
 import { WEB_PROJECT_SLUG } from "../../everything-core/projects";
 import { resolveProjectId } from "../../everything/db";
 import { canonicalLesswrongFeed, canonicalYoutubeFeed, substackFeedInPageHtml, substackFeedOfPage, type CanonicalFeed } from "../../everything/feedUrls";
@@ -78,7 +78,7 @@ async function creatorOfPage(url: string): Promise<CanonicalFeed | null> {
   if (videoId) return youtubeCreator(videoId);
   const forumPost = forumPostOf(url);
   if (forumPost) return forumCreator(forumPost.origin, forumPost.postId);
-  if (isSubstackReaderUrl(url)) {
+  if (substackReaderPostId(url)) {
     const publicationUrl = await fetchReaderCanonical(url);
     return publicationUrl ? creatorOfPage(publicationUrl) : null;
   }

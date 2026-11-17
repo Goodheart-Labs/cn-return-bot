@@ -5,21 +5,28 @@
 //
 // Two sources feed the counts. The notes give the helpful, unhelpful and
 // needs-more-ratings counts, and the ratings each note collected. The runs give
-// the total and candidate counts. They are never mixed inside one fraction. A
-// submitted run can have no note row with a submission time, and a note row
-// can have no matching run, so the two denominators can differ slightly.
+// the total and candidate counts and the cost. Only the cost per helpful note
+// and the cost per submitted note mix them, because the cost is known only for
+// runs. A submitted run can have no note row with a submission time, and a note
+// row can have no matching run, so the two denominators can differ slightly.
 
 import { humanizeTagName, isNegativeRatingReason } from "./ratingReasons";
-import { costPerCountCI, proportionCI, proportionDiffCI, type Interval } from "./confidenceIntervals";
+import { costPerCountCI, nonNegativeMeanCI, proportionCI, proportionDiffCI, type Interval } from "./confidenceIntervals";
 
-// The six metrics that take no parameter.
+// The metrics that take no parameter.
 export type BaseStatKind =
   | "pct_helpful"
   | "pct_unhelpful"
   | "pct_helpful_minus_unhelpful"
   | "pct_helpful_ratings"
   | "pct_candidate"
-  | "cost_per_helpful";
+  | "cost_per_helpful"
+  | "cost_per_submitted"
+  | "cost_per_run";
+
+// The three cost metrics divide the cost of every finished run by a different
+// count: the helpful notes, the submitted notes, or the runs themselves.
+const COST_STATS: ReadonlySet<AbComparisonStat["kind"]> = new Set(["cost_per_helpful", "cost_per_submitted", "cost_per_run"]);
 
 // A rater can call a note helpful, somewhat helpful or not helpful. The
 // helpful-ratings metric counts a somewhat-helpful rating as half a helpful
@@ -47,6 +54,9 @@ export interface AbComboCounts {
   candidate: number; // Comes from the run aggregates.
   total: number; // Runs that have finished, from the run aggregates.
   cost: number; // Cost added up over the finished runs.
+  // The squares of the finished runs' costs, added up. The cost per run needs
+  // them for the spread of the cost from one run to the next.
+  costSquares: number;
   // The individual ratings the notes collected, from X's public data dump. The
   // helpful-ratings metric pools them over every note in the combination. The
   // rating-reason metric divides a reason's count by all the ratings of the
@@ -64,18 +74,21 @@ export interface AbComboCounts {
 /**
  * Turn a combination's counts and the chosen metric into an interval and the
  * sample size behind it. Returns null when the sample size is zero, and the
- * caller then draws a "no data" row.
+ * caller then draws a "no data" row. A cost metric also returns null when the
+ * runs recorded no cost at all. The Claude Code note writer's X runs are like
+ * that, because their cost is recorded elsewhere.
  *
  * By default the denominator is the submitted notes. It becomes every finished
  * run when includeNonCandidate is set.
- * Five metrics ignore that setting. pct_candidate always divides by every run.
- * cost_per_helpful always divides the cost of every run by the number of
- * helpful notes. The failure-mode metric divides by the reviewed notes. The
+ * Seven metrics ignore that setting. pct_candidate always divides by every run.
+ * The three cost metrics always take the cost of every finished run, and divide
+ * it by the helpful notes, the submitted notes or the runs. The failure-mode
+ * metric divides by the reviewed notes. The
  * rating-type metric divides by the ratings of one polarity, and the
  * helpful-ratings metric by all ratings, with a somewhat-helpful rating
  * weighted as half a helpful one in the numerator.
- * `n` is the sample size the interval is computed from. For the cost metric
- * that is the helpful-note count.
+ * `n` is the sample size the interval is computed from. For a cost metric
+ * that is the count it divides by.
  */
 export function statInterval(
   counts: AbComboCounts,
@@ -94,6 +107,14 @@ export function statInterval(
     case "cost_per_helpful": {
       if (counts.helpful === 0 || counts.cost <= 0) return null;
       return { interval: costPerCountCI(counts.cost, counts.helpful, z), n: counts.helpful };
+    }
+    case "cost_per_submitted": {
+      if (nSubmitted === 0 || counts.cost <= 0) return null;
+      return { interval: costPerCountCI(counts.cost, nSubmitted, z), n: nSubmitted };
+    }
+    case "cost_per_run": {
+      if (nAll === 0 || counts.cost <= 0) return null;
+      return { interval: nonNegativeMeanCI(counts.cost, counts.costSquares, nAll, z), n: nAll };
     }
     case "failure_mode": {
       const n = counts.reviewedNotes;
@@ -126,21 +147,21 @@ export function statInterval(
 
 export function statKind(stat: AbComparisonStat): AbStatKind {
   if (stat.kind === "pct_helpful_minus_unhelpful") return "diff";
-  if (stat.kind === "cost_per_helpful") return "cost";
+  if (COST_STATS.has(stat.kind)) return "cost";
   return "percent";
 }
 
 // These stats inherently span all runs, so the "include non-candidate runs"
 // toggle is forced on and disabled for them.
 export function forcesAllRuns(stat: AbComparisonStat): boolean {
-  return stat.kind === "pct_candidate" || stat.kind === "cost_per_helpful";
+  return stat.kind === "pct_candidate" || COST_STATS.has(stat.kind);
 }
 
-// Lower is better for the cost metric. It is also better for failure modes,
+// Lower is better for the cost metrics. It is also better for failure modes,
 // where fewer flaws is good, and for negative rating reasons, where fewer
 // complaints is good. This only decides the row order, with the best on top.
 export function lowerIsBetter(stat: AbComparisonStat): boolean {
-  if (stat.kind === "cost_per_helpful") return true;
+  if (COST_STATS.has(stat.kind)) return true;
   if (stat.kind === "failure_mode") return true;
   if (stat.kind === "rating_type") return isNegativeRatingReason(stat.reason);
   return false;
@@ -153,6 +174,8 @@ const BASE_STAT_LABELS: Record<BaseStatKind, string> = {
   pct_helpful_ratings: "Percent Helpful Ratings (somewhat = ½)",
   pct_candidate: "Percent of Candidate Runs out of all runs",
   cost_per_helpful: "Cost per Helpful Note",
+  cost_per_submitted: "Cost per Submitted Note",
+  cost_per_run: "Cost per Pipeline Run",
 };
 
 // The flat metrics, in menu order.

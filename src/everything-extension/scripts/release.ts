@@ -35,9 +35,6 @@ const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 // AMO rejects a token that lives longer than five minutes. Google allows an hour.
 const AMO_TOKEN_LIFETIME_SECONDS = 60;
-const HTTP_TOO_MANY_REQUESTS = 429;
-const AMO_DEFAULT_THROTTLE_SECONDS = 60;
-const AMO_MAX_ATTEMPTS = 5;
 const GOOGLE_TOKEN_LIFETIME_SECONDS = 600;
 const POLL_INTERVAL_MS = 5_000;
 // A package's unpacked code is a few megabytes, more than execFileSync's
@@ -150,30 +147,35 @@ function amoAuthHeader(): string {
   return `JWT ${header}.${payload}.${signature}`;
 }
 
-/** AMO throttles writes after a handful in a row and answers 429 with the
- *  seconds to wait, for example "Expected available in 57 seconds." Replacing
- *  four screenshots takes more requests than that. */
-function amoThrottleSeconds(response: Response, text: string): number | undefined {
-  if (response.status !== HTTP_TOO_MANY_REQUESTS) return undefined;
-  const retryAfter = Number(response.headers.get("retry-after"));
-  if (retryAfter > 0) return retryAfter;
-  const stated = /available in (\d+) seconds/.exec(text)?.[1];
-  return stated ? Number(stated) : AMO_DEFAULT_THROTTLE_SECONDS;
-}
+/** AMO throttles a burst of requests with HTTP 429 and says how many seconds
+ *  to wait. A release replaces several screenshots in a row, which ran into
+ *  it on 2026-10-30 halfway through and left the listing with half its
+ *  screenshots. So a throttled request waits as long as AMO asks and tries
+ *  again. */
+const AMO_THROTTLE_STATUS = 429;
+const MAX_AMO_THROTTLE_WAITS = 5;
+const AMO_THROTTLE_MARGIN_MS = 2000;
+// AMO also limits how often an add-on may submit a new version, and then asks
+// for a wait of hours. On 2026-10-30 a release slept through such waits for 15
+// hours. A wait this long stops the release instead, with the time to try again.
+const MAX_AMO_THROTTLE_WAIT_SECONDS = 5 * 60;
 
 async function amoRequest<T>(method: string, apiPath: string, body?: FormData | object): Promise<T> {
   const isForm = body instanceof FormData;
-  for (let attempt = 1; ; attempt++) {
+  for (let wait = 0; ; wait++) {
     const response = await fetch(`${AMO_API}${apiPath}`, {
       method,
       headers: { Authorization: amoAuthHeader(), ...(body && !isForm ? { "Content-Type": "application/json" } : {}) },
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     });
     const text = await response.text();
-    const throttleSeconds = amoThrottleSeconds(response, text);
-    if (throttleSeconds !== undefined && attempt < AMO_MAX_ATTEMPTS) {
-      console.log(`AMO throttled ${method} ${apiPath}, waiting ${throttleSeconds} seconds`);
-      await sleep((throttleSeconds + 1) * 1000);
+    if (response.status === AMO_THROTTLE_STATUS && wait < MAX_AMO_THROTTLE_WAITS) {
+      const seconds = Number(/available in (\d+) seconds/.exec(text)?.[1] ?? 60);
+      if (seconds > MAX_AMO_THROTTLE_WAIT_SECONDS) {
+        throw new Error(`AMO throttled ${method} ${apiPath} until ${new Date(Date.now() + seconds * 1000).toISOString()}. Run this step again then.`);
+      }
+      console.log(`AMO throttled ${method} ${apiPath}, trying again in ${seconds} seconds`);
+      await sleep(seconds * 1000 + AMO_THROTTLE_MARGIN_MS);
       continue;
     }
     if (!response.ok) throw new Error(`AMO ${method} ${apiPath} failed with ${response.status}: ${text}`);

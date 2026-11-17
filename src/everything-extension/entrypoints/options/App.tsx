@@ -46,6 +46,7 @@ const VISIT_SITES: { kind: VisitSiteKind; label: string }[] = [
   { kind: "substack", label: "Substack" },
   { kind: "youtube", label: "YouTube" },
   { kind: "lesswrong", label: "LessWrong and the Alignment Forum" },
+  { kind: "eaforum", label: "the EA Forum" },
 ];
 
 /** The settings page's checkbox: the design system's, at this page's text
@@ -61,8 +62,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-/** The one visit-recording choice on the main page. It stands for all three
- *  sites at once: ticking it turns every site on, unticking turns every site
+/** The one visit-recording choice on the main page. It stands for every
+ *  site at once: ticking it turns every site on, unticking turns every site
  *  off. A mixed per-site state, set in the advanced section, reads as on with
  *  a hint saying so. */
 function VisitRecordingChoice({ settings, onToggle }: {
@@ -73,11 +74,11 @@ function VisitRecordingChoice({ settings, onToggle }: {
   const anyOn = states.some(Boolean);
   const mixed = anyOn && !states.every(Boolean);
   const setAll = (checked: boolean) =>
-    onToggle({ saveVisits: { substack: checked, youtube: checked, lesswrong: checked } });
+    onToggle({ saveVisits: { substack: checked, youtube: checked, lesswrong: checked, eaforum: checked } });
   return (
     <>
       <p className="text-sm text-fg-secondary">
-        When you open a post on Substack, YouTube, LessWrong, or the Alignment Forum, the extension can save the link and
+        When you open a post on Substack, YouTube, LessWrong, the Alignment Forum, or the EA Forum, the extension can save the link and
         the time. That tells us which posts are worth checking next. It is anonymous: never your
         account or the rest of your browsing. Each saved link carries a random code that is
         different for every author, so we can count how many people read an author without joining

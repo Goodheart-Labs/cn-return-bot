@@ -1617,6 +1617,13 @@ export class SupabaseLogger {
     );
   }
 
+  /** What the X bot's checks have cost since `since`, in USD (migration 166). */
+  async fetchCostSinceUsd(since: Date): Promise<number> {
+    const { data, error } = await this.client.rpc("x_cost_since", { since: since.toISOString() });
+    if (error) throw error;
+    return Number(data ?? 0);
+  }
+
   async getNoteSubmissionCapacity(): Promise<SubmissionCapacity> {
     const { data, error } = await this.client.rpc("get_note_submission_capacity");
     if (error) throw error;

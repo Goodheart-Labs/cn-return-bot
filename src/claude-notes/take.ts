@@ -1,36 +1,42 @@
-/* Takes one post for the Claude note writer (GOO-507): writes its text where
- * the note-finding agents read it and logs the take. The command line and the
- * runner on ai-box both use it. */
+/* Takes one post the notewriter protocol handed to the Claude note writer
+ * (GOO-507, GOO-724): writes its text where the note-finding agents read it.
+ * The intake service already stored the text, and a video's caption
+ * timings, before the post was handed out. */
 
 import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
-import { fetchAndStoreItemText } from "../everything/worker";
-import { isVideo, logEvent, nathanNotedItem, postDir, readItem, skipItem } from "./store";
+import { openPassageRequests, type PassageRequest } from "../everything/passageRequests";
+import { isWholePageChecked } from "../everything-core/wholePageChecked";
+import { nathanNotedItem, postDir, readItem } from "./store";
 
 /** Nathan's own fact-checks are not redone. */
 const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
 
-export type Take = { kind: "taken"; dir: string } | { kind: "skipped"; reason: string };
+/** The passages readers asked about. `onlyThese` is true when the post was
+ *  already checked in full, so Claude checks these passages and nothing else. */
+export type AskedPassages = { requests: PassageRequest[]; onlyThese: boolean };
 
-/** A post without stored text, such as a new video or a requested page, is
- *  read first the way the pipeline reads it. If that read fails, this throws,
- *  and the caller records the failure on the item. */
+export type Take = { kind: "taken"; dir: string; asked: AskedPassages } | { kind: "skipped"; reason: string };
+
+/** The post as the note writer reads it: its title, creator, day and address,
+ *  then its text. */
+export function postMarkdown(item: Awaited<ReturnType<typeof readItem>>): string {
+  return `# ${item.title ?? item.url}\n\nBy ${item.project?.name ?? "unknown"}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`;
+}
+
+
+/** A skipped post gets no Claude, and the caller finishes it with the reason. */
 export async function take(itemId: string): Promise<Take> {
-  if (await nathanNotedItem(itemId)) {
-    await skipItem(itemId, NATHAN_SKIP_REASON);
-    return { kind: "skipped", reason: NATHAN_SKIP_REASON };
-  }
-  const before = await readItem(itemId);
-  // A video is always read, even with stored text, because its caption cues
-  // are what give each note its time in the video.
-  const read = before.full_text && !isVideo(before.url) ? null : await fetchAndStoreItemText(itemId, { keepText: Boolean(before.full_text) });
+  // A reader's question about a passage is answered even on a post Nathan
+  // fact-checked, because the reader asked for it.
+  const requests = await openPassageRequests(itemId);
+  if (!requests.length && (await nathanNotedItem(itemId))) return { kind: "skipped", reason: NATHAN_SKIP_REASON };
   const item = await readItem(itemId);
   const dir = postDir(item.url);
   mkdirSync(dir, { recursive: true });
-  if (read?.cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(read.cues));
+  if (item.caption_cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(item.caption_cues));
   const creator = item.project?.name ?? "unknown";
-  writeFileSync(path.join(dir, "post.md"), `# ${item.title ?? item.url}\n\nBy ${creator}, published ${item.published_at}\n${item.url}\n\n${item.full_text ?? ""}`);
+  writeFileSync(path.join(dir, "post.md"), postMarkdown(item));
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
-  await logEvent({ actor: "claude", type: "item_taken", itemId });
-  return { kind: "taken", dir };
+  return { kind: "taken", dir, asked: { requests, onlyThese: requests.length > 0 && isWholePageChecked(item) } };
 }

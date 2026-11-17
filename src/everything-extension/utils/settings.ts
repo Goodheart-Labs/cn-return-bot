@@ -114,7 +114,7 @@ export const onSettingsChanged = (callback: () => void) => onSyncKeyChanged(SETT
 const SETTINGS_KEY = "cn:settings";
 
 /** The site kinds whose page visits can be recorded (see utils/linkVisits.ts). */
-export type VisitSiteKind = "substack" | "youtube" | "lesswrong";
+export type VisitSiteKind = "substack" | "youtube" | "lesswrong" | "eaforum";
 
 /** How notes render on article pages. "margin" is the default: a small marker
  *  in the right margin, and the note card opens beside the text. "classic" is
@@ -140,7 +140,9 @@ export type ExtensionSettings = {
 };
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
-  saveVisits: { substack: true, youtube: true, lesswrong: true },
+  // The EA Forum's default is only a placeholder: getSettings gives a reader
+  // without an EA Forum answer their answer for the other forum.
+  saveVisits: { substack: true, youtube: true, lesswrong: true, eaforum: true },
   showThumbnailBadges: true,
   noteStyle: "margin",
   pillPalette: DEFAULT_PILL_PALETTE,
@@ -153,10 +155,16 @@ export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {
 
 export async function getSettings(): Promise<ExtensionSettings> {
   const stored = await readSyncObject<SettingsPatch>(SETTINGS_KEY);
+  const saveVisits = { ...DEFAULT_SETTINGS.saveVisits, ...stored.saveVisits };
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
-    saveVisits: { ...DEFAULT_SETTINGS.saveVisits, ...stored.saveVisits },
+    // The EA Forum was added after many readers had answered the welcome
+    // page, which then asked about the other sites only. A reader who said
+    // yes there would have said yes to the EA Forum too, and a reader who
+    // said no would have said no. So without an EA Forum answer of their own,
+    // readers get their answer for LessWrong and the Alignment Forum.
+    saveVisits: { ...saveVisits, eaforum: stored.saveVisits?.eaforum ?? saveVisits.lesswrong },
   };
 }
 

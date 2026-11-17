@@ -24,6 +24,7 @@
  */
 
 import { fetchCostSinceUsd, fetchReaderCostSinceUsd } from "./db";
+import { startOfUtcDay } from "../pipeline/utils/utcDay";
 
 const DEFAULT_DAILY_SPEND_CAP_USD = 50;
 const DEFAULT_REQUEST_RESERVE_USD = 10;
@@ -51,11 +52,6 @@ interface TodaySpend {
 }
 
 let cached: { spend: TodaySpend; fetchedAt: number } | null = null;
-
-function startOfUtcDay(): Date {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-}
 
 async function todaySpend(): Promise<TodaySpend> {
   if (!cached || Date.now() - cached.fetchedAt > SPEND_CACHE_MS) {

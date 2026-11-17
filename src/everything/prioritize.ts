@@ -11,8 +11,8 @@
  *
  * Takes one or more creator links: a *.substack.com publication root, a
  * custom-domain Substack publication page (the page names its *.substack.com
- * form inside its preloads blob), a YouTube channel URL, or a LessWrong or
- * Alignment Forum author page.
+ * form inside its preloads blob), a YouTube channel URL, or a LessWrong,
+ * Alignment Forum or EA Forum author page.
  *
  * The feed is not listed to check it exists. That check used to run here and in
  * the follow-request consumer, and it was throwing away about one request in

@@ -4,11 +4,9 @@ import { useFieldQuery } from "@cn/features/fieldQuery/useFieldQuery";
 import { createLocalPreference } from "@cn/features/hooks/createLocalPreference";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { Page } from "@cn/ui/Page";
-import { SegmentedControl } from "@cn/ui/SegmentedControl";
 import { Switch } from "@cn/ui/Switch";
 import { PageTitle } from "@cn/ui/typography";
-import { RouteLink } from "../../components/RouteLink";
-import { SidebarLayout, sidebarEntry } from "../../components/SidebarLayout";
+import { SidebarPagesLayout } from "../../components/SidebarLayout";
 import { X_AB_TESTS, X_NOTEWRITER, type Route } from "../../lib/routing";
 import { AbTests } from "./AbTests";
 import { abTestFields, DEFAULT_NOTE_QUERY, NOTE_FIELDS } from "./noteFields";
@@ -79,27 +77,11 @@ export function XNotewriterPage({ page, navigate }: { page: XPage; navigate: (ro
       </Page>
     );
   return (
-    <SidebarLayout
-      storageKey="cn:xNotewriterSidebarWidth"
-      label="X notewriter pages"
-      sidebar={
-        <nav aria-label="X notewriter pages" className="space-y-0.5 px-3 py-5">
-          {PAGES.map((p) => (
-            <RouteLink key={p.id} to={p.route} navigate={navigate} current={page === p.id} className={sidebarEntry(page === p.id)}>
-              {p.label}
-            </RouteLink>
-          ))}
-        </nav>
-      }
-    >
+    <SidebarPagesLayout storageKey="cn:xNotewriterSidebarWidth" label="X notewriter pages" pages={PAGES} current={page} navigate={navigate}>
       <div className="mx-auto max-w-5xl">
-        {/* A phone hides the sidebar, so the two pages are a switch above. */}
-        <div className="mb-4 md:hidden">
-          <SegmentedControl label="X notewriter pages" value={page} onChange={(id) => navigate(PAGES.find((p) => p.id === id)!.route)} options={PAGES} />
-        </div>
         {header}
         {content}
       </div>
-    </SidebarLayout>
+    </SidebarPagesLayout>
   );
 }

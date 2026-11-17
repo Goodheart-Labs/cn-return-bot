@@ -73,6 +73,7 @@ import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/genera
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
+import { startOfUtcDay } from "../pipeline/utils/utcDay";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { getForcedPicks, withForcedPicks } from "../pipeline/ab-testing/abTests";
@@ -154,6 +155,13 @@ const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
 // the selection judge run before it and are quick. Regular posts get whatever
 // the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
 const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
+
+// The X bot may spend at most this much on LLM calls per UTC day (Jim,
+// 2026-11-04, GOO-698). Once the day's checks have cost this much, a run checks
+// no new tweets until midnight UTC. It still submits the notes that wait in the
+// note queue, because that costs nothing. The check happens at the start of a
+// run, so the last run of a day can go over by what one run costs, about $2 to $3.
+const X_DAILY_SPEND_CAP_USD = 30;
 
 /** The tweets are checked by the claim-check service, so a run without a
  *  healthy service can only burn its dispatch slot. Failing here makes a dead
@@ -246,6 +254,15 @@ async function main() {
         ? computeMaxPosts(capacity)
         : { maxPosts: MAX_POSTS_FALLBACK };
 
+    if (!isLocal && supabaseLogger) {
+      const spentTodayUsd = await supabaseLogger.fetchCostSinceUsd(startOfUtcDay());
+      console.log(`[spend-cap] the X bot spent $${spentTodayUsd.toFixed(2)} of its $${X_DAILY_SPEND_CAP_USD} today (UTC)`);
+      if (spentTodayUsd >= X_DAILY_SPEND_CAP_USD) {
+        console.log("[spend-cap] daily spend cap reached: no new tweets until midnight UTC, queued notes still go out");
+        maxPosts = 0;
+      }
+    }
+
     // A cooldown probe needs only one note, and the queue already holds
     // written ones, so the probe spends no money on new posts. Only a queued
     // note that would actually be submitted counts: in time, above the
@@ -257,7 +274,7 @@ async function main() {
     }
 
     if (maxPosts === 0 && queued.length === 0) {
-      console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
+      console.log("[pipeline] Skipping: no new tweets to check and no queued notes to submit");
       clearTimeout(globalTimeout);
       await closeBrowser();
       process.exit(0);

@@ -1,9 +1,10 @@
 import { noteStatus } from "./noteScore";
-import { extractYoutubeVideoId } from "./pageUrls";
+import { extractYoutubeVideoId, youtubeWatchUrl } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
 import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
 import type { FeedItemRow, ItemRow, ProjectHeader } from "./types";
+import { isWholePageChecked } from "./wholePageChecked";
 
 /* An item is one post, video or page: a row of everything_items. */
 
@@ -61,14 +62,7 @@ export async function fetchFeedItem(id: string): Promise<FeedItemRow | null> {
 export type PageItem = ItemRow & { full_text: string | null; projectSlug: string | null };
 
 export const PAGE_ITEM_SELECT =
-  "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, project:everything_projects(slug)";
-
-/** Whether the pipeline has read this page in full. Only such a page refuses a
- *  new "check this page" request. An item that exists because a reader wrote
- *  a note, or because one paragraph was checked, is not a checked page. */
-export function isWholePageChecked(item: Pick<ItemRow, "status" | "checked_scope"> | null): boolean {
-  return item?.status === "done" && item.checked_scope === "page";
-}
+  "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, first_checked_at, project:everything_projects(slug)";
 
 /** Resolves a page URL to its everything_items row. Returns null when the page
  *  has never been ingested, and throws when the lookup itself failed. Treating
@@ -112,9 +106,9 @@ export interface CoveredPages {
  *  that has no notes must never reach our backend. Returns null when the query
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
 export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
-  let allRows: Pick<ItemRow, "id" | "url" | "status" | "checked_scope">[];
+  let allRows: Pick<ItemRow, "id" | "url" | "checked_scope" | "first_checked_at">[];
   try {
-    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, status, checked_scope"), "id", { label: "coveredPages" });
+    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, checked_scope, first_checked_at"), "id", { label: "coveredPages" });
   } catch {
     return null;
   }
@@ -123,6 +117,22 @@ export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
     all: rows.map((r) => r.url),
     wholePageChecked: rows.filter(isWholePageChecked).map((r) => r.url),
   };
+}
+
+/** The URLs of pages ingested since `since` (an ISO time), for the
+ *  extension's five-minute delta between hourly full syncs. Null when the query
+ *  failed. */
+export async function fetchCoveredPageUrlsSince(since: string): Promise<string[] | null> {
+  try {
+    const rows = await fetchAllRows<{ id: string; url: string }>(
+      () => supabase.from("everything_items").select("id, url").gte("created_at", since),
+      "id",
+      { label: "coveredPagesSince" },
+    );
+    return rows.map((r) => r.url).filter((url) => !url.startsWith("local:"));
+  } catch {
+    return null;
+  }
 }
 
 /** How many notes of each rating status each ingested page has, keyed by the
@@ -185,22 +195,25 @@ async function projectIdForPage(creatorFeedUrl: string | null | undefined): Prom
   return project.id;
 }
 
-/** Finds or creates the everything_items row for any web page, and returns its
- *  id. The write-anywhere flow needs this first, because a note hangs off a
- *  claim and a claim hangs off an item. Row level security only lets a client
- *  insert rows with source='web' (migrations 068 and 081). `creatorFeedUrl` is
- *  the feed of the page's creator when the caller could tell, and decides the
- *  project. The `url` column is unique, so when two clients race, the loser
- *  simply reads the winner's row. */
-export async function ensureWebItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
-  const url = params.url.replace(/\/$/, "");
-  const existing = await supabase.from("everything_items").select("id").in("url", [url, `${url}/`]).limit(1);
-  if (existing.data?.[0]) return existing.data[0].id;
+/** Finds or creates the everything_items row for a web page or a YouTube video,
+ *  and returns its id. The write-anywhere flow needs this first, because a note
+ *  hangs off a claim and a claim hangs off an item. Row level security only
+ *  lets a client insert a finished item with the source 'web', or 'youtube' at
+ *  a video's plain watch address (migrations 114 and 178). A video is looked up
+ *  by its video id, because older items store other address forms.
+ *  `creatorFeedUrl` is the feed of the page's creator when the caller could
+ *  tell, and decides the project. The `url` column is unique, so when two
+ *  clients race, the loser simply reads the winner's row. */
+export async function ensurePageItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
+  const existing = await fetchItemForUrl(params.url);
+  if (existing) return existing.id;
 
+  const videoId = extractYoutubeVideoId(params.url);
+  const url = videoId ? youtubeWatchUrl(videoId) : params.url.replace(/\/$/, "");
   const projectId = await projectIdForPage(params.creatorFeedUrl);
   const inserted = await supabase
     .from("everything_items")
-    .insert({ project_id: projectId, source: "web", url, title: params.title || null, status: "done" })
+    .insert({ project_id: projectId, source: videoId ? "youtube" : "web", url, title: params.title || null, status: "done" })
     .select("id")
     .single();
   if (inserted.data) return inserted.data.id;

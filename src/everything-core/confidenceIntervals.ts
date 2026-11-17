@@ -75,3 +75,21 @@ export function costPerCountCI(totalCost: number, count: number, z: number): Int
   const rel = Math.exp(z / Math.sqrt(count));
   return { point, lo: point / rel, hi: point * rel };
 }
+
+/**
+ * The normal interval for the mean of n observations that cannot be negative,
+ * such as the cost per pipeline run. It needs only the sum of the observations
+ * and the sum of their squares, so the database never has to send each run.
+ * The sample variance is (sumOfSquares − n·mean²) / (n − 1), and the standard
+ * error of the mean is the square root of that variance divided by n.
+ * One observation has no spread to measure, so its interval has zero width.
+ * The lower bound is clamped to zero, because a mean of such values cannot be
+ * negative.
+ */
+export function nonNegativeMeanCI(sum: number, sumOfSquares: number, n: number, z: number): Interval {
+  if (n <= 0) return { point: 0, lo: 0, hi: 0 };
+  const mean = sum / n;
+  const variance = n > 1 ? Math.max(0, (sumOfSquares - n * mean * mean) / (n - 1)) : 0;
+  const halfWidth = z * Math.sqrt(variance / n);
+  return { point: mean, lo: Math.max(0, mean - halfWidth), hi: mean + halfWidth };
+}

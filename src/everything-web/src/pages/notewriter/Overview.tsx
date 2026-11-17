@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { buildRequest, type FieldDef, type FieldFilter, type FieldQuery, type QueryRequest } from "@cn/core/fieldQuery";
-import type { NotewriterSource } from "@cn/core/notewriter";
+import type { NotewriterSource, XNote } from "@cn/core/notewriter";
 import { FilterButton, FilterPills, type Facet } from "@cn/features/fieldQuery/Filters";
 import { SortBar } from "@cn/features/fieldQuery/SortBar";
 import { LoadFailed } from "@cn/features/query/LoadFailed";
@@ -10,7 +10,7 @@ import { SectionTitle } from "@cn/ui/typography";
 import { useMomentFor } from "../../lib/feedQueries";
 import { isAbField } from "./noteFields";
 import { NotesOverTime, type ChartMode } from "./NotesOverTime";
-import { useNoteFacets, useNoteSummary, useXNoteList } from "./queries";
+import { useNoteFacets, useNoteSummary, useNoteTallies, useXNoteList } from "./queries";
 import { XNoteCard } from "./XNoteCard";
 
 const formatCount = (n: number | undefined) => (n === undefined ? "…" : n.toLocaleString("en-US"));
@@ -49,16 +49,24 @@ export function filterScope(fields: readonly FieldDef[], query: FieldQuery, onQu
   };
 }
 
-function NoteList({ request }: { request: QueryRequest }) {
+/** One loaded page of notes. Each page reads the vote counts of its own
+ *  notes, so loading the next page never reloads the counts above it. */
+function NotePage({ notes, showReviewers }: { notes: XNote[]; showReviewers: boolean }) {
+  const tallies = useNoteTallies(notes);
+  return notes.map((note) => <XNoteCard key={note.noteId} note={note} tally={tallies?.get(note.twinNoteId)} showReviewers={showReviewers} />);
+}
+
+/** The notes that pass the request, page by page as the reader scrolls. The
+ *  review page's X side shows Jim's and Nathan's votes on each card. */
+export function NoteList({ request, showReviewers = false }: { request: QueryRequest; showReviewers?: boolean }) {
   const list = useXNoteList(request);
-  const notes = list.pages?.flat();
   if (list.failed) return <LoadFailed what="These notes" onRetry={list.retry} />;
-  if (!notes) return <p className="text-sm text-fg-muted">Loading…</p>;
-  if (notes.length === 0) return <p className="py-12 text-center text-sm text-fg-muted">No notes match these filters.</p>;
+  if (!list.pages) return <p className="text-sm text-fg-muted">Loading…</p>;
+  if (list.pages.every((page) => page.length === 0)) return <p className="py-12 text-center text-sm text-fg-muted">No notes match these filters.</p>;
   return (
     <div className="space-y-4">
-      {notes.map((note) => (
-        <XNoteCard key={note.noteId} note={note} />
+      {list.pages.map((page, index) => (
+        <NotePage key={index} notes={page} showReviewers={showReviewers} />
       ))}
       <PagedListEnd list={list} endText="That is every note that matches." />
     </div>
