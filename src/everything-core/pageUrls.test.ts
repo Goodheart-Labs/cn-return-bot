@@ -1,5 +1,33 @@
 import { expect, test } from "bun:test";
-import { canonicalizePageUrl } from "./pageUrls";
+import { canonicalizePageUrl, substackReaderPostId } from "./pageUrls";
+
+test("every Substack reader URL shape yields its post id", () => {
+  for (const href of [
+    "https://substack.com/home/post/p-225210833",
+    "https://substack.com/@thezvi/p-225210833",
+    "https://substack.com/inbox/post/225210833",
+    "https://substack.com/inbox/post/225210833/?utm_source=inbox#comments",
+    "https://www.substack.com/inbox/post/225210833",
+  ]) {
+    expect(substackReaderPostId(href)).toBe("225210833");
+  }
+});
+
+test("other substack.com pages and other hosts have no reader post id", () => {
+  for (const href of [
+    "https://substack.com/inbox",
+    "https://substack.com/inbox/post/abc",
+    "https://substack.com/inbox/post/123abc",
+    "https://substack.com/home",
+    "https://substack.com/@thezvi",
+    "https://thezvi.substack.com/p/jensen-huang-really-liked-selling",
+    "https://thezvi.substack.com/inbox/post/123",
+    "https://example.com/inbox/post/123",
+    "not a URL",
+  ]) {
+    expect(substackReaderPostId(href)).toBeNull();
+  }
+});
 
 // The post links on Nathan Young's Substack profile, Posts tab, as the page
 // rendered them on 2026-10-05 (GOO-365). Logged in, Substack adds lli=1.
