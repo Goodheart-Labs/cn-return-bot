@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { fetchFeedPosts, fetchFeedXmlDirectly } from "./substack";
+import { readListing } from "../../pipeline/fetch/readListing";
+import { fetchFeedPosts } from "./substack";
 
 const FEED = `<?xml version="1.0"?><rss><channel>
 <title><![CDATA[Don't Worry About the Vase]]></title>
@@ -30,9 +31,9 @@ describe("fetchFeedPosts", () => {
   });
 });
 
-describe("fetchFeedXmlDirectly", () => {
-  it("refuses any address that is not a publication's feed", async () => {
-    await expect(fetchFeedXmlDirectly("https://example.com/feed")).rejects.toThrow("Not a Substack feed URL");
-    await expect(fetchFeedXmlDirectly("https://thezvi.substack.com/api/v1/archive")).rejects.toThrow("Not a Substack feed URL");
+describe("readListing", () => {
+  it("lists only a feed in the form we store, so it cannot fetch any other address", async () => {
+    await expect(readListing({ feedUrl: "https://example.com", limit: 3 })).rejects.toThrow("Not a feed we list");
+    await expect(readListing({ feedUrl: "https://thezvi.substack.com/api/v1/archive", limit: 3 })).rejects.toThrow("Not a feed we list");
   });
 });

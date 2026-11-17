@@ -12,9 +12,11 @@ import { insideCommonNotesUi, isInertClick } from "../utils/inertClick";
 import { setJumpHandler } from "../utils/jumpBus";
 import { CloseIcon, NoteStackIcon } from "@cn/ui/icons";
 import { IconButton } from "@cn/ui/IconButton";
+import { Quote } from "@cn/ui/typography";
 import { closeCardsOpenedByReader, openCard, type CardChoices } from "../utils/cardChoices";
 import { rememberClosedClaim } from "../utils/closedNotes";
 import { CARD_BESIDE_OFFSET, flowMarginColumn, MARKER_SIZE, type ColumnMode, type MarginOptions } from "@cn/core/marginCards";
+import { noteOpened, watchSeen } from "../utils/noteViews";
 import { mostSpecific } from "../utils/overlaps";
 import { applyFocusHighlight } from "../utils/passageHighlights";
 import { NextNoteButton, type NoteNavigation } from "@cn/features/notes/NextNoteButton";
@@ -202,6 +204,13 @@ function NotePopover({ group, projectSlug, navigation, style, label, openedByRea
     observer.observe(el);
     return () => observer.disconnect();
   }, [onHeight]);
+  // A card open beside the text has no dot, so the card itself counts as the
+  // note being seen.
+  const noteIds = group.notes.map((note) => note.id).join(",");
+  useEffect(() => watchSeen(card.current, "inline", noteIds.split(",")), [noteIds]);
+  useEffect(() => {
+    if (openedByReader) noteOpened("inline", noteIds.split(","));
+  }, [openedByReader, noteIds]);
   // Escape is handled on the card itself, because the event shield around the
   // overlay keeps key presses inside it from ever reaching the page.
   useEffect(() => {
@@ -622,7 +631,9 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   return (
     <EventShield>
       {writeSelection && (
-        <WriteNoteOverlay item={item} selection={writeSelection} onClose={() => setWriteSelection(null)} />
+        <WriteNoteOverlay item={item} anchor={{ kind: "text", text: writeSelection }} onClose={() => setWriteSelection(null)}>
+          <Quote>“{writeSelection}”</Quote>
+        </WriteNoteOverlay>
       )}
       {/* The badges and popovers are portalled into the in-content annotation
           layer, so they scroll with the text. A second shield absorbs events on
@@ -637,8 +648,13 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
             const marker = {
               group,
               ref: (el: HTMLButtonElement | null) => {
-                if (el) markers.current.set(group.claimId, el);
-                else markers.current.delete(group.claimId);
+                if (!el) return;
+                markers.current.set(group.claimId, el);
+                const unwatch = watchSeen(el, "inline", group.notes.map((note) => note.id));
+                return () => {
+                  if (markers.current.get(group.claimId) === el) markers.current.delete(group.claimId);
+                  unwatch?.();
+                };
               },
               label: markerLabel(group),
               open: cardOpen,

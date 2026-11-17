@@ -6,7 +6,8 @@ import { MAX_READER_NOTE_LENGTH, parseOpusDraft, QUESTION_BUDGET_ERROR, type Opu
 import { requestBudgetExhausted } from "../../everything/spendCap";
 import { llm, withLlmAbortSignal } from "../../pipeline/llm/llm";
 import { OPENROUTER_PRICING } from "../../pipeline/cost-tracking/pricing";
-import { MAX_PAGE_TEXT_CHARS, OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
+import { MAX_PAGE_TEXT_CHARS } from "../../pipeline/fetch/readPage";
+import { OPENROUTER_NATIVE_WEB_SEARCH_TOOL, stripBrowserLineCitations } from "../../pipeline/tool-calling/tools";
 import { checked } from "../../api/supabaseResult";
 
 const MODEL = "anthropic/claude-opus-5.5";

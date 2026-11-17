@@ -25,15 +25,16 @@ const JudgeExperimentPage = lazy(() => import("./pages/judgeExperiment/JudgeExpe
 /** The website's frame: the header on every page, the page the route names
  *  below it, and the extension nudge, which counts time across pages. The
  *  local posting tool is only the review page, at any address, plus the note
- *  picture page its server photographs. It has no frame. */
+ *  picture page its server photographs. Neither has a frame. */
 export function App() {
   const [route, navigate] = useRoute();
   const [loginOpen, setLoginOpen] = useState(false);
   useAuthAnalytics();
+  const framed = !TWEET_SERVER && route.view !== "noteImage";
 
   return (
     <LoginPromptProvider value={() => setLoginOpen(true)}>
-      {!TWEET_SERVER && <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />}
+      {framed && <SiteHeader route={route} navigate={navigate} onSignIn={() => setLoginOpen(true)} />}
       {route.view === "noteImage" ? <NoteImagePage noteId={route.note} />
         : TWEET_SERVER || route.view === "noteReview" ? <NoteReviewPage source={route.view === "noteReview" && !TWEET_SERVER ? route.source : "commonnotes"} navigate={navigate} />
         : route.view === "home" ? <HomePage showInstall={route.section === "install"} navigate={navigate} />
@@ -57,7 +58,7 @@ export function App() {
         : route.view === "bestNotes" ? <BestNotesPage projectSlug={route.project} navigate={navigate} />
         : <NotesView route={route} navigate={navigate} />}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      {!TWEET_SERVER && <ExtensionNudge route={route} navigate={navigate} />}
+      {framed && <ExtensionNudge route={route} navigate={navigate} />}
     </LoginPromptProvider>
   );
 }

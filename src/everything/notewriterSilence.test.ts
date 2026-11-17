@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isSilent, NEVER_SEEN, silenceNotice, type WatchedNotewriter } from "./notewriterSilence";
+import { isSilent, NEVER_SEEN, silenceFailsRun, silenceNotice, type WatchedNotewriter } from "./notewriterSilence";
 
 const NOW = new Date("2026-11-05T12:00:00Z");
 const minutesAgo = (minutes: number) => new Date(NOW.getTime() - minutes * 60_000).toISOString();
@@ -65,5 +65,29 @@ describe("silenceNotice", () => {
 
   test("says nothing while the notewriter asks and no warning is outstanding", () => {
     expect(silenceNotice(false, lastSeen, null)).toBeNull();
+  });
+});
+
+describe("silenceFailsRun", () => {
+  const day = 24 * 60;
+  test("a new silence fails the run", () => {
+    expect(silenceFailsRun(notewriter(), NOW)).toBe(true);
+  });
+
+  test("a day-old silence Slack has heard of no longer does", () => {
+    const seen = minutesAgo(day + 1);
+    expect(silenceFailsRun(notewriter({ last_seen_at: seen, silence_warned_for: seen }), NOW)).toBe(false);
+  });
+
+  test("a day-old silence Slack has not heard of still does", () => {
+    expect(silenceFailsRun(notewriter({ last_seen_at: minutesAgo(day + 1) }), NOW)).toBe(true);
+  });
+
+  test("a notewriter that never asked still does", () => {
+    expect(silenceFailsRun(notewriter({ last_seen_at: null, silence_warned_for: NEVER_SEEN.toISOString() }), NOW)).toBe(true);
+  });
+
+  test("one that is not silent never does", () => {
+    expect(silenceFailsRun(notewriter({ last_seen_at: minutesAgo(5) }), NOW)).toBe(false);
   });
 });

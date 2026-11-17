@@ -1,0 +1,338 @@
+/* The connection to the harness's models, and the wrapper that records every
+ * request.
+ *
+ * GPT-6.1 Terra runs on a Responses API: OpenAI's own, or OpenRouter's, which
+ * passes the request on to OpenAI (GOO-688). Sonnet 5.5 runs on OpenRouter's
+ * Chat Completions API, because OpenRouter's Responses API ignores Anthropic's
+ * cache breakpoints, and without them every turn would pay the full price for
+ * the examples (src/scripts_jim/2026_11_12_sonnet_responses_probe/). The
+ * wrapper retries failed requests, logs what each request cost, and keeps the
+ * whole conversation of every agent. */
+
+import type { Model, ModelRequest, ModelResponse } from "@openai/agents";
+import { ModelBehaviorError, OpenAIChatCompletionsModel, OpenAIResponsesModel } from "@openai/agents";
+import OpenAI from "openai";
+import { LONG_CONTEXT_INPUT_TOKENS, requestCostUsd, type RequestUsage, type ServiceTier } from "./pricing";
+
+export type Provider = "openai" | "openrouter";
+
+/** OpenRouter forwards a request to the model's maker and bills its list
+ *  prices. For GPT it passes on the cache breakpoints, the cache key and the
+ *  tier. */
+const CONNECTIONS: Record<Provider, { baseURL?: string; keyName: string }> = {
+  openai: { keyName: "OPENAI_API_KEY" },
+  openrouter: { baseURL: "https://openrouter.ai/api/v1", keyName: "OPENROUTER_API_KEY" },
+};
+
+/** The models the harness runs, by the names the A/B arms and the dry-run
+ *  command use. `name` is how the prompt greets the model. `maker` is the only
+ *  provider OpenRouter may send the request to, so the cache stays in one
+ *  place. Only GPT can also go to OpenAI directly. */
+export const HARNESS_MODELS = {
+  "gpt-6.1-terra": { name: "GPT", api: "responses", openRouterId: "openai/gpt-6.1-terra", openAIId: "gpt-6.1-terra", maker: "openai" },
+  "sonnet-5.5": { name: "Claude", api: "chat", openRouterId: "anthropic/claude-sonnet-5.5", openAIId: null, maker: "anthropic" },
+} as const;
+
+export type HarnessModel = keyof typeof HARNESS_MODELS;
+
+function modelId(model: HarnessModel, provider: Provider): string {
+  const spec = HARNESS_MODELS[model];
+  if (provider === "openrouter") return spec.openRouterId;
+  if (!spec.openAIId) throw new Error(`${model} runs only through OpenRouter`);
+  return spec.openAIId;
+}
+
+/** OpenAI's advice for flex: a flex request may wait a long time for a free
+ *  machine, so the client waits up to 15 minutes for an answer. */
+const REQUEST_TIMEOUT_MS = 15 * 60_000;
+/** A failed request is retried this often, with growing waits, and then the
+ *  run fails. Every retry runs on the standard tier: OpenAI turns flex
+ *  requests away when it is busy, sometimes for a whole day, and a retry on
+ *  flex would likely be turned away again. The harness does its own retries,
+ *  so the OpenAI client makes none. */
+const MAX_RETRIES = 6;
+const FIRST_RETRY_WAIT_MS = 2_000;
+const MAX_RETRY_WAIT_MS = 60_000;
+const RETRY_TIER: ServiceTier = "default";
+
+/** The examples stay in OpenAI's cache this long after each use. Posts come
+ *  about once an hour, so the shorter 30-minute lifetime would often expire
+ *  between two posts. */
+const EXAMPLES_CACHE_TTL = "12h";
+
+/** The Agents SDK (0.21.0) sends a system message as plain text and cannot put
+ *  a cache breakpoint on it. A breakpoint marks the end of a prefix that
+ *  OpenAI stores in its cache, and only a stored prefix can be read by a later
+ *  request. Without one at the end of the examples, two posts would share no
+ *  cached tokens, because they differ right after the examples.
+ *  So the harness sends the examples as the first message with the role
+ *  "system", and this rewrites that message into a developer message (OpenAI's
+ *  name for the system prompt) whose text carries the breakpoint. */
+export function addExamplesBreakpoint(body: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(body.input)) return body;
+  const [first, ...rest] = body.input as { role?: string; content?: unknown }[];
+  if (first?.role !== "system" || typeof first.content !== "string") return body;
+  const examples = {
+    role: "developer",
+    content: [{ type: "input_text", text: first.content, prompt_cache_breakpoint: { mode: "explicit", ttl: EXAMPLES_CACHE_TTL } }],
+  };
+  return { ...body, input: [examples, ...rest] };
+}
+
+/** Anthropic caches a prefix only up to a block marked with cache_control,
+ *  and at most four such marks count. The harness marks two: the end of the
+ *  examples, which every post and tweet shares, and the end of the latest
+ *  message, so each turn reads the turns before it from the cache. The
+ *  examples stay for an hour, the conversation for Anthropic's default five
+ *  minutes. */
+const ANTHROPIC_EXAMPLES_CACHE = { type: "ephemeral", ttl: "1h" };
+const ANTHROPIC_TURN_CACHE = { type: "ephemeral" };
+
+type ChatMessage = { role: string; content?: unknown };
+
+function withCacheMark(message: ChatMessage, mark: object): ChatMessage {
+  if (typeof message.content === "string") return { ...message, content: [{ type: "text", text: message.content, cache_control: mark }] };
+  if (!Array.isArray(message.content) || message.content.length === 0) return message;
+  const parts = [...message.content];
+  parts[parts.length - 1] = { ...parts[parts.length - 1], cache_control: mark };
+  return { ...message, content: parts };
+}
+
+export function addAnthropicCacheMarks(body: Record<string, unknown>): Record<string, unknown> {
+  if (!Array.isArray(body.messages)) return body;
+  const messages = [...(body.messages as ChatMessage[])];
+  if (messages[0]?.role === "system") messages[0] = withCacheMark(messages[0], ANTHROPIC_EXAMPLES_CACHE);
+  const last = messages.length - 1;
+  if (last > 0) messages[last] = withCacheMark(messages[last]!, ANTHROPIC_TURN_CACHE);
+  return { ...body, messages };
+}
+
+async function fetchWithCacheMarks(url: string | URL | Request, init?: RequestInit): Promise<Response> {
+  if (typeof init?.body !== "string") return fetch(url, init);
+  if (String(url).endsWith("/responses")) return fetch(url, { ...init, body: JSON.stringify(addExamplesBreakpoint(JSON.parse(init.body))) });
+  if (String(url).endsWith("/chat/completions")) return fetch(url, { ...init, body: JSON.stringify(addAnthropicCacheMarks(JSON.parse(init.body))) });
+  return fetch(url, init);
+}
+
+export function openAIClient(provider: Provider): OpenAI {
+  const { baseURL, keyName } = CONNECTIONS[provider];
+  const apiKey = process.env[keyName];
+  if (!apiKey) throw new Error(`${keyName} is not set. Add it to the root .env (the env file in ~/dev/env/cn-return-bot).`);
+  return new OpenAI({ apiKey, baseURL, timeout: REQUEST_TIMEOUT_MS, maxRetries: 0, fetch: fetchWithCacheMarks });
+}
+
+/** One request as the run log stores it. */
+export interface RequestLog extends RequestUsage {
+  agent: string;
+  /** The request's number within its agent, from 1. */
+  turn: number;
+  startedAt: string;
+  durationMs: number;
+  /** The tier OpenAI says it served the request on. */
+  tier: ServiceTier;
+  reasoningTokens: number;
+  /** All input tokens written to the cache. OpenAI also splits them by
+   *  lifetime above; OpenRouter reports only this total. */
+  cacheWriteTokens: number;
+  costUsd: number;
+}
+
+/** One request of a conversation in full: the input items that are new since
+ *  the conversation's previous request, and the items the model answered with.
+ *  The new input holds the tool results of the previous turn, so one step after
+ *  another reads as the whole conversation. The previous answer, which comes
+ *  back in the input too, is left out of it. */
+export interface TrajectoryStep {
+  agent: string;
+  turn: number;
+  newInput: unknown[];
+  output: unknown[];
+}
+
+/** The SDK keeps the encrypted reasoning, which only OpenAI can read, in each
+ *  item's providerData. The log leaves it out, because it is large and says
+ *  nothing to a reader. */
+const readable = (items: readonly object[]) => items.map(({ providerData: _, ...item }: { providerData?: unknown }) => item);
+
+/** The model's own items, as the next request sends them back. */
+const isModelOutput = (item: { type?: string; role?: string }) => item.type === "function_call" || item.type === "reasoning" || item.role === "assistant";
+
+/** The requests of one conversation, numbered from 1, in the run's log. */
+class Transcript {
+  /** What the conversation's previous request read from the cache and wrote
+   *  to it. The next request should read at least all of that. */
+  private previousCachedPrefix = 0;
+  private turn = 0;
+  /** The input items already in the trajectory. The first one is the
+   *  examples, which the log leaves out. */
+  private inputItemsLogged = 1;
+
+  constructor(
+    private readonly model: HarnessModel,
+    readonly agent: string,
+    private readonly log: RunLog,
+  ) {}
+
+  record(request: ModelRequest, response: ModelResponse, startedAt: number) {
+    this.turn += 1;
+    const entry = requestLog(this.model, this.agent, this.turn, response, startedAt);
+    warnAboutRequest(entry, this.previousCachedPrefix);
+    this.previousCachedPrefix = entry.cachedTokens + entry.cacheWriteTokens;
+    this.log.requests.push(entry);
+    const input = Array.isArray(request.input) ? request.input : [{ role: "user", content: request.input }];
+    this.log.trajectory.push({ agent: this.agent, turn: this.turn, newInput: readable(input.slice(this.inputItemsLogged).filter((item) => !isModelOutput(item as { type?: string; role?: string }))), output: readable(response.output) });
+    this.inputItemsLogged = input.length;
+  }
+}
+
+/** Where a model writes what its requests did. */
+export interface RunLog {
+  requests: RequestLog[];
+  trajectory: TrajectoryStep[];
+  /** Requests that still failed after every retry. They end their agent. A
+   *  subagent's failure only reaches its parent as "An error occurred while
+   *  running the tool", so this list is where it shows. */
+  failedRequests: string[];
+}
+
+/** The usage as the Responses API reports it, and as Chat Completions does,
+ *  which names the same counts prompt and completion tokens. */
+interface RawUsage {
+  input_tokens?: number;
+  prompt_tokens?: number;
+  output_tokens?: number;
+  completion_tokens?: number;
+  input_tokens_details?: { cached_tokens?: number; cache_write_tokens?: number; cache_write_tokens_details?: { ttl_30m_tokens?: number; ttl_12h_tokens?: number } };
+  prompt_tokens_details?: { cached_tokens?: number; cache_write_tokens?: number };
+  output_tokens_details?: { reasoning_tokens?: number };
+  completion_tokens_details?: { reasoning_tokens?: number };
+  /** What OpenRouter billed for the request. */
+  cost?: number;
+}
+
+/** OpenRouter reports what it billed. Only OpenAI's own API does not, and
+ *  pricing.ts holds OpenAI's list prices for that case. */
+function costUsd(model: HarnessModel, usage: RawUsage, tokens: RequestUsage, tier: ServiceTier): number {
+  if (usage.cost !== undefined) return usage.cost;
+  if (HARNESS_MODELS[model].maker !== "openai") throw new Error(`OpenRouter reported no cost for a ${model} request`);
+  return requestCostUsd(tokens, tier);
+}
+
+function requestLog(model: HarnessModel, agent: string, turn: number, response: ModelResponse, startedAt: number): RequestLog {
+  const raw = (response.providerData ?? {}) as { usage?: RawUsage; service_tier?: string };
+  const usage = raw.usage ?? {};
+  const inputDetails = usage.input_tokens_details ?? usage.prompt_tokens_details;
+  const writes = usage.input_tokens_details?.cache_write_tokens_details;
+  const tier: ServiceTier = raw.service_tier === "flex" ? "flex" : "default";
+  const tokens: RequestUsage = {
+    inputTokens: usage.input_tokens ?? usage.prompt_tokens ?? 0,
+    cachedTokens: inputDetails?.cached_tokens ?? 0,
+    write30mTokens: writes?.ttl_30m_tokens ?? 0,
+    write12hTokens: writes?.ttl_12h_tokens ?? 0,
+    outputTokens: usage.output_tokens ?? usage.completion_tokens ?? 0,
+  };
+  return {
+    agent,
+    turn,
+    startedAt: new Date(startedAt).toISOString(),
+    durationMs: Date.now() - startedAt,
+    tier,
+    ...tokens,
+    reasoningTokens: (usage.output_tokens_details ?? usage.completion_tokens_details)?.reasoning_tokens ?? 0,
+    cacheWriteTokens: inputDetails?.cache_write_tokens ?? 0,
+    costUsd: costUsd(model, usage, tokens, tier),
+  };
+}
+
+/** Two warnings. A request above 272K input tokens is billed at the
+ *  long-context rate as a whole. And from its second turn on, an agent's
+ *  request should read from the cache at least everything its previous
+ *  request read or wrote there. When it reads less, caching broke somewhere.
+ *  The previous request's input count is no measure, because it includes the
+ *  search results OpenAI added inside that request, which never come back. */
+function warnAboutRequest(entry: RequestLog, previousCachedPrefix: number) {
+  const name = `${entry.agent}, turn ${entry.turn}`;
+  if (entry.inputTokens > LONG_CONTEXT_INPUT_TOKENS) {
+    console.warn(`[agent-notes] ${name}: ${entry.inputTokens} input tokens, more than ${LONG_CONTEXT_INPUT_TOKENS}. The whole request is billed at the long-context rate.`);
+  }
+  if (entry.turn > 1 && entry.cachedTokens < previousCachedPrefix) {
+    console.warn(`[agent-notes] ${name}: read only ${entry.cachedTokens} tokens from the cache, but the previous turn had ${previousCachedPrefix} there. The cache missed.`);
+  }
+}
+
+function onTier(request: ModelRequest, tier: ServiceTier): ModelRequest {
+  const { modelSettings } = request;
+  return { ...request, modelSettings: { ...modelSettings, providerData: { ...modelSettings.providerData, service_tier: tier } } };
+}
+
+const RETRYABLE_STATUSES = [408, 409, 429];
+const MIN_SERVER_ERROR_STATUS = 500;
+
+/** Busy answers, server errors and lost connections are worth a retry. A
+ *  response that ended as failed is too: that is how OpenRouter passes on
+ *  OpenAI's "Flex processing is temporarily unavailable". An empty account is
+ *  not, and neither is a request OpenAI refused as invalid. */
+function isRetryable(err: unknown): boolean {
+  if (err instanceof ModelBehaviorError) return err.message.includes("response.failed");
+  if (err instanceof OpenAI.APIConnectionError) return true;
+  if (!(err instanceof OpenAI.APIError) || err.status === undefined) return false;
+  if (err.code === "insufficient_quota" || err.message.includes("no credits")) return false;
+  return RETRYABLE_STATUSES.includes(err.status) || err.status >= MIN_SERVER_ERROR_STATUS;
+}
+
+/** The SDK's model for the harness model's API, with every answer recorded in
+ *  the agent's transcript and failed requests retried, GPT's on the standard
+ *  tier. The harness never streams. */
+export class TrackedModel implements Model {
+  private readonly inner: Model;
+  private readonly transcripts = new Map<string, Transcript>();
+
+  constructor(
+    client: OpenAI,
+    private readonly model: HarnessModel,
+    provider: Provider,
+    private readonly name: string,
+    private readonly runLog: RunLog,
+  ) {
+    const id = modelId(model, provider);
+    this.inner = HARNESS_MODELS[model].api === "responses" ? new OpenAIResponsesModel(client, id) : new OpenAIChatCompletionsModel(client, id);
+  }
+
+  /** One model serves every subagent of a run, and several subagents run at
+   *  the same time. A conversation is told apart by its first message after
+   *  the examples, which holds the subagent's task. */
+  private transcriptFor(request: ModelRequest): Transcript {
+    const key = JSON.stringify(Array.isArray(request.input) ? request.input[1] : request.input);
+    let transcript = this.transcripts.get(key);
+    if (!transcript) {
+      transcript = new Transcript(this.model, `${this.name} ${this.transcripts.size + 1}`, this.runLog);
+      this.transcripts.set(key, transcript);
+    }
+    return transcript;
+  }
+
+  async getResponse(request: ModelRequest): Promise<ModelResponse> {
+    const transcript = this.transcriptFor(request);
+    for (let retry = 0; ; retry++) {
+      const startedAt = Date.now();
+      try {
+        const response = await this.inner.getResponse(retry === 0 || HARNESS_MODELS[this.model].api !== "responses" ? request : onTier(request, RETRY_TIER));
+        transcript.record(request, response, startedAt);
+        return response;
+      } catch (err) {
+        const message = `${transcript.agent}: ${(err as Error).message}`;
+        if (retry >= MAX_RETRIES || !isRetryable(err)) {
+          this.runLog.failedRequests.push(message);
+          throw err;
+        }
+        const waitMs = Math.min(FIRST_RETRY_WAIT_MS * 2 ** retry, MAX_RETRY_WAIT_MS);
+        console.warn(`[agent-notes] ${transcript.agent}: request failed (${(err as Error).message}). Retry ${retry + 1} of ${MAX_RETRIES} in ${waitMs / 1000}s.`);
+        await Bun.sleep(waitMs);
+      }
+    }
+  }
+
+  getStreamedResponse(): never {
+    throw new Error("The GPT harness does not stream");
+  }
+}

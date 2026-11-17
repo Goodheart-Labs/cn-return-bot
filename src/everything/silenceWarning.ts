@@ -4,7 +4,7 @@
 
 import { postToSlack } from "../pipeline/utils/slack";
 import { fetchWatchedNotewriters, setSilenceWarnedFor } from "./db";
-import { isSilent, NEVER_SEEN, silenceNotice, type SilenceNotice, type WatchedNotewriter } from "./notewriterSilence";
+import { isSilent, NEVER_SEEN, silenceFailsRun, silenceNotice, type SilenceNotice, type WatchedNotewriter } from "./notewriterSilence";
 
 /** The channel the Claude note writer reports to, the same one the devbox's
  *  slack-bridge forwards to the note writer's session. */
@@ -19,14 +19,16 @@ function noticeText(w: WatchedNotewriter, notice: NonNullable<SilenceNotice>): s
 }
 
 /** Posts the warnings and all-clears that are due, and returns one problem
- *  for the run per silent notewriter. A post Slack refuses throws, so the run
- *  goes red and the next run tries again. */
+ *  for the run per silent notewriter whose silence is new (silenceFailsRun).
+ *  A post Slack refuses throws, so the run goes red and the next run tries again. */
 export async function watchNotewriterSilence(now = new Date()): Promise<string[]> {
   const problems: string[] = [];
   for (const w of await fetchWatchedNotewriters()) {
     const silent = isSilent(w, now);
     const lastSeenAt = w.last_seen_at ? new Date(w.last_seen_at) : null;
-    if (silent) problems.push(`The notewriter ${w.id} has something to take but has not asked for a post since ${lastSeenAt ? utcTime(lastSeenAt) : "it was added"}.`);
+    const problem = `The notewriter ${w.id} has something to take but has not asked for a post since ${lastSeenAt ? utcTime(lastSeenAt) : "it was added"}.`;
+    if (silenceFailsRun(w, now)) problems.push(problem);
+    else if (silent) console.log(`${problem} Known for over a day, so the run stays green.`);
     const notice = silenceNotice(silent, lastSeenAt, w.silence_warned_for ? new Date(w.silence_warned_for) : null);
     if (!notice) continue;
     await postToSlack(NOTEWRITERS_SLACK_CHANNEL, noticeText(w, notice));

@@ -27,6 +27,8 @@ export {
   RiDeleteBinFill as TrashIcon,
   RiCloseLargeFill as CloseIcon,
   RiPlayFill as PlayIcon,
+  RiSubtractFill as MinusIcon,
+  RiAddFill as PlusIcon,
   RiTrophyFill as TrophyIcon,
   RiTwitterXFill as XLogoIcon,
 } from "@remixicon/react";

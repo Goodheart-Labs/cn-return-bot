@@ -41,13 +41,14 @@ import {
   refreshExamples,
   type ReviewerMessage,
   runCost,
+  stopAtPercent,
   updateClaudeSubscription,
   waitingMessages,
 } from "./jobs";
+import { guardedSettingsFile } from "./imageGuard";
 import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
 import { recordUsage, RUN_ID_ENV } from "./store";
-import { readUsage, type UsageReading } from "./usage";
-import { MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import { NOTE_WRITER_ACCOUNT_ENV, readUsage, type UsageReading } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { openXTweets, type XTweet } from "./xTweets";
 
@@ -71,7 +72,13 @@ const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin
 /** On the main disk. /tmp on ai-box is a small tmpfs in memory with a quota per
  *  user, and a day of run folders is more than a gigabyte, which filled the
  *  quota on 2026-10-30 and crashed the runner. */
-const RUNS_DIR = "/var/tmp/cn-notes";
+const RUNS_DIR = process.env.CN_RUNS_DIR ?? "/var/tmp/cn-notes";
+/** A second runner on another Claude plan (CN_POSTS_ONLY=1, with its own
+ *  CN_NOTEWRITER) writes Common Notes posts and nothing else: X tweets,
+ *  reviewer answers, X account lookups and the judge stay with claude-ai-box.
+ *  Its plan's readings stay out of the shared usage table, whose pacing is
+ *  claude-ai-box's. */
+const POSTS_ONLY = process.env.CN_POSTS_ONLY === "1";
 /** Run folders older than this are deleted. By then their post is finished
  *  and everything that matters is in the database. */
 const KEEP_RUN_FOLDERS_MS = 3 * 24 * 3600_000;
@@ -115,10 +122,10 @@ function startClaude(session: string, runDir: string, prompt: string, extraArgs:
     `. ${ENV_FILE}`,
     "set +a",
     "unset SERVICE_AUTH_SECRET EXTRACTION_URL",
-    ...Object.entries(env).map(([name, value]) => `export ${name}=${value}`),
+    ...Object.entries({ ...NOTE_WRITER_ACCOUNT_ENV, ...env }).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
-    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${RUN_SETTINGS} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
+    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${guardedSettingsFile(runDir, RUN_SETTINGS)} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
     `echo $? > ${runDir}/exit-code`,
   ].join("\n");
   writeFileSync(path.join(runDir, "run.sh"), script);
@@ -162,7 +169,7 @@ async function weeklyUsage(): Promise<number | null> {
     usageReadAt = Date.now();
     try {
       usage = await readUsageRenewingLogin();
-      await recordUsage(usage);
+      if (!POSTS_ONLY) await recordUsage(usage);
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
     }
@@ -174,7 +181,7 @@ async function weeklyUsage(): Promise<number | null> {
 async function mayStartPosts(): Promise<boolean> {
   if (existsSync(PAUSE_FILE)) return false;
   const weekly = await weeklyUsage();
-  return weekly !== null && weekly < MAX_WEEKLY_USAGE_PERCENT;
+  return weekly !== null && weekly < stopAtPercent();
 }
 
 // ---------------------------------------------------------------------------
@@ -329,11 +336,13 @@ async function tickXAccounts() {
 async function tick(first: boolean) {
   await weeklyUsage();
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPostSession(run);
-  await endAnswers();
-  await tickTweets(first);
-  await tickXAccounts();
-  await judge.tick(first);
-  if (!existsSync(PAUSE_FILE)) await startAnswers();
+  if (!POSTS_ONLY) {
+    await endAnswers();
+    await tickTweets(first);
+    await tickXAccounts();
+    await judge.tick(first);
+    if (!existsSync(PAUSE_FILE)) await startAnswers();
+  }
   if (first) await adoptHeldPosts(await heldClaudePosts());
   while (posts.size < MAX_POSTS_RUNNING && (await mayStartPosts())) {
     const post = await nextClaudePost();

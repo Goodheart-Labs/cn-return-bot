@@ -14,7 +14,7 @@
  * that yt-dlp cannot extract. A video of 10 minutes or less is downloaded at
  * 360p, with its sound only when Whisper will transcribe it. A longer video is
  * described by its details alone. If both tools fail this throws, and the
- * caller falls back to fetchWebPage.
+ * caller falls back to the page reader (readPage).
  */
 
 import { tmpdir } from "os";
