@@ -13,7 +13,7 @@ import * as path from "path";
 
 const EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".tif", ".tiff", ".heic", ".heif", ".avif", ".ico", ".pdf"]);
 const MAGIC = ["\x89PNG", "\xff\xd8\xff", "GIF8", "%PDF", "II*\x00", "MM\x00*"];
-const HEIF_BRANDS = new Set(["heic", "heix", "hevc", "heim", "heis", "mif1", "msf1", "avif", "avis"]);
+const HEIF_BRANDS = new Set(["heic", "heix", "hevc", "hevs", "heim", "heis", "mif1", "msf1", "avif", "avis"]);
 
 export function looksLikeImage(filePath: string): boolean {
   if (EXTENSIONS.has(path.extname(filePath).toLowerCase())) return true;
