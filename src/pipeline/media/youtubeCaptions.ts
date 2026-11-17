@@ -246,6 +246,10 @@ export type YoutubeCaptions =
  * When YouTube could not be reached at all, this throws a
  * YoutubeUnreachableError, so that a proxy outage is never recorded as a
  * video without captions (GOO-169).
+ *
+ * This is the only retry loop for captions. Each try lists the tracks and
+ * downloads one, on a fresh proxy connection. A failure at either step means
+ * the next try starts again from the listing.
  */
 export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<YoutubeCaptions> {
   return withResidentialProxy(video.url, (proxyUrl) => fetchCaptionsOnce(video, proxyUrl), (err) => err instanceof YoutubeUnreachableError);
