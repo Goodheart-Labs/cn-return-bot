@@ -140,13 +140,9 @@ export type ExtensionSettings = {
 };
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
-  // The EA Forum was added after many readers had answered the welcome page,
-  // which then named only the other sites. Its default is off, so none of
-  // those readers is recorded there until they switch it on. The welcome page
-  // stores every site's answer explicitly, so a new install that says yes gets
-  // the EA Forum too. Turning this default on would record the earlier readers
-  // without their consent.
-  saveVisits: { substack: true, youtube: true, lesswrong: true, eaforum: false },
+  // The EA Forum's default is only a placeholder: getSettings gives a reader
+  // without an EA Forum answer their answer for the other forum.
+  saveVisits: { substack: true, youtube: true, lesswrong: true, eaforum: true },
   showThumbnailBadges: true,
   noteStyle: "margin",
   pillPalette: DEFAULT_PILL_PALETTE,
@@ -159,10 +155,16 @@ export type SettingsPatch = Partial<Omit<ExtensionSettings, "saveVisits">> & {
 
 export async function getSettings(): Promise<ExtensionSettings> {
   const stored = await readSyncObject<SettingsPatch>(SETTINGS_KEY);
+  const saveVisits = { ...DEFAULT_SETTINGS.saveVisits, ...stored.saveVisits };
   return {
     ...DEFAULT_SETTINGS,
     ...stored,
-    saveVisits: { ...DEFAULT_SETTINGS.saveVisits, ...stored.saveVisits },
+    // The EA Forum was added after many readers had answered the welcome
+    // page, which then asked about the other sites only. A reader who said
+    // yes there would have said yes to the EA Forum too, and a reader who
+    // said no would have said no. So without an EA Forum answer of their own,
+    // readers get their answer for LessWrong and the Alignment Forum.
+    saveVisits: { ...saveVisits, eaforum: stored.saveVisits?.eaforum ?? saveVisits.lesswrong },
   };
 }
 
