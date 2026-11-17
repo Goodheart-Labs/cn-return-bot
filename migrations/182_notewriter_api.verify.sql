@@ -1,5 +1,5 @@
--- Checks for migration 181, run after it (the commands are at the top of
--- 181_notewriter_api.fixture.sql). The block ends by raising an error that
+-- Checks for migration 182, run after it (the commands are at the top of
+-- 182_notewriter_api.fixture.sql). The block ends by raising an error that
 -- carries every result, so nothing it wrote stays. Each result should be
 -- true, and a null counts as a failure.
 do $$
@@ -17,13 +17,13 @@ declare
 begin
   -- Runs one call and answers 'ok' or the SQLSTATE it raised.
   execute $f$
-    create function t181_code(p_sql text) returns text language plpgsql as $b$
+    create function t182_code(p_sql text) returns text language plpgsql as $b$
     begin
       execute p_sql;
       return 'ok';
     exception when others then return sqlstate;
     end $b$ $f$;
-  execute 'create function t181_headers(p_key text) returns void language sql as $b$ select set_config(''request.headers'', jsonb_build_object(''x-notewriter-key'', p_key)::text, true) $b$';
+  execute 'create function t182_headers(p_key text) returns void language sql as $b$ select set_config(''request.headers'', jsonb_build_object(''x-notewriter-key'', p_key)::text, true) $b$';
 
   update everything_items set status = 'done';
   insert into everything_items (id, url, status, full_text) values
@@ -41,31 +41,31 @@ begin
   set local role anon;
 
   -- No key, a wrong key.
-  r := r || jsonb_build_object('no_key_is_401', t181_code('select notewriter_api_me()') = 'PT401');
-  perform t181_headers('cnw_wrong');
-  r := r || jsonb_build_object('wrong_key_is_401', t181_code('select notewriter_api_me()') = 'PT401');
-  perform t181_headers(key);
+  r := r || jsonb_build_object('no_key_is_401', t182_code('select notewriter_api_me()') = 'PT401');
+  perform t182_headers('cnw_wrong');
+  r := r || jsonb_build_object('wrong_key_is_401', t182_code('select notewriter_api_me()') = 'PT401');
+  perform t182_headers(key);
 
   r := r || jsonb_build_object(
     'me_names_the_writer', notewriter_api_me() #>> '{notewriter,id}' = 'jackson-bot',
     'me_counts_notes_left', (notewriter_api_me() ->> 'notes_left')::int = 20,
     'post_by_address', notewriter_api_post('https://blog.example/post') ->> 'text' like 'Researchers say%',
-    'unknown_post_is_404', t181_code($q$select notewriter_api_post('https://nowhere.example')$q$) = 'PT404',
-    'anon_cannot_use_the_protocol', t181_code($q$select notewriter_add_note('jackson-bot', '00000000-0000-0000-0000-0000000001a1', '{}')$q$) = '42501',
-    'anon_cannot_make_writers', t181_code($q$select notewriter_admin_create('x', 'x', 'x', 'x')$q$) = '42501',
-    'anon_cannot_read_keys', t181_code('select count(*) from everything_notewriter_keys') = '42501');
+    'unknown_post_is_404', t182_code($q$select notewriter_api_post('https://nowhere.example')$q$) = 'PT404',
+    'anon_cannot_use_the_protocol', t182_code($q$select notewriter_add_note('jackson-bot', '00000000-0000-0000-0000-0000000001a1', '{}')$q$) = '42501',
+    'anon_cannot_make_writers', t182_code($q$select notewriter_admin_create('x', 'x', 'x', 'x')$q$) = '42501',
+    'anon_cannot_read_keys', t182_code('select count(*) from everything_notewriter_keys') = '42501');
 
   -- Notes that are refused store nothing.
   r := r || jsonb_build_object(
-    'passage_not_in_post_is_400', t181_code(format('select notewriter_api_add_note(%L, %L)',
+    'passage_not_in_post_is_400', t182_code(format('select notewriter_api_add_note(%L, %L)',
         good || '{"passage": "the study had 5,000 participants"}', post)) = 'PT400',
-    'no_source_is_400', t181_code(format('select notewriter_api_add_note(%L, %L)', good || '{"sources": []}', post)) = 'PT400',
-    'source_without_web_address_is_400', t181_code(format('select notewriter_api_add_note(%L, %L)',
+    'no_source_is_400', t182_code(format('select notewriter_api_add_note(%L, %L)', good || '{"sources": []}', post)) = 'PT400',
+    'source_without_web_address_is_400', t182_code(format('select notewriter_api_add_note(%L, %L)',
         good || '{"sources": [{"url": "javascript:alert(1)"}]}', post)) = 'PT400',
-    'long_note_is_400', t181_code(format('select notewriter_api_add_note(%L, %L)',
+    'long_note_is_400', t182_code(format('select notewriter_api_add_note(%L, %L)',
         good || jsonb_build_object('note', repeat('a', 1001)), post)) = 'PT400',
-    'timing_must_be_a_number', t181_code(format('select notewriter_api_add_note(%L, %L)', good || '{"start_seconds": "soon"}', post)) = 'PT400',
-    'post_not_read_is_404', t181_code(format('select notewriter_api_add_note(%L, null, %L)', good, 'https://nowhere.example')) = 'PT404');
+    'timing_must_be_a_number', t182_code(format('select notewriter_api_add_note(%L, %L)', good || '{"start_seconds": "soon"}', post)) = 'PT400',
+    'post_not_read_is_404', t182_code(format('select notewriter_api_add_note(%L, null, %L)', good, 'https://nowhere.example')) = 'PT404');
   reset role;
   r := r || jsonb_build_object('refused_notes_store_nothing', not exists (select 1 from everything_notewriter_submissions));
   set local role anon;
@@ -74,7 +74,7 @@ begin
   x := notewriter_api_add_note(good, null, 'https://blog.example/post');
   r := r || jsonb_build_object(
     'reviewed_writer_waits', x ->> 'kind' = 'waiting',
-    'second_note_on_the_passage_is_409', t181_code(format('select notewriter_api_add_note(%L, %L)', good, post)) = 'PT409',
+    'second_note_on_the_passage_is_409', t182_code(format('select notewriter_api_add_note(%L, %L)', good, post)) = 'PT409',
     'notes_lists_it_waiting', notewriter_api_notes() #>> '{0,status}' = 'waiting' and notewriter_api_notes() -> 0 -> 'note' = 'null');
   reset role;
   r := r || jsonb_build_object('waiting_note_is_not_on_the_site', not exists (select 1 from everything_notes where notewriter_id = 'jackson-bot'));
@@ -86,7 +86,7 @@ begin
     'note_names_its_writer', (select notewriter_id = 'jackson-bot' from everything_notes where id = (y ->> 'note')::uuid),
     'only_named_fields_reach_the_note', (select c.context_url = 'https://blog.example/post' from everything_claims c where c.id = (y ->> 'claim')::uuid)
        and (select count(*) = 1 and bool_and(url = 'https://s.example/a') from everything_note_sources where note_id = (y ->> 'note')::uuid),
-    'deciding_twice_fails', t181_code(format('select notewriter_admin_decide(%L, true, %L)', x ->> 'submission', 'nathan')) = 'P0001');
+    'deciding_twice_fails', t182_code(format('select notewriter_admin_decide(%L, true, %L)', x ->> 'submission', 'nathan')) = 'P0001');
   update everything_notes set helpful_count = 3 where id = (y ->> 'note')::uuid;
   set local role anon;
   r := r || jsonb_build_object('notes_shows_votes', notewriter_api_notes() #>> '{0,status}' = 'posted' and (notewriter_api_notes() #>> '{0,helpful}')::int = 3);
@@ -110,7 +110,7 @@ begin
   x := notewriter_api_add_note(good || '{"passage": "The drug was safe."}', post);
   r := r || jsonb_build_object(
     'trusted_writer_posts_at_once', x ->> 'kind' = 'posted',
-    'cap_is_429', t181_code(format('select notewriter_api_add_note(%L, %L)', good || '{"passage": "Researchers say"}', post)) = 'PT429');
+    'cap_is_429', t182_code(format('select notewriter_api_add_note(%L, %L)', good || '{"passage": "Researchers say"}', post)) = 'PT429');
   reset role;
   update everything_notewriters set notes_per_day = 20 where id = 'jackson-bot';
 
@@ -118,13 +118,13 @@ begin
   insert into everything_assignments (item_id, notewriter_id, reader_request, deadline)
   values ('00000000-0000-0000-0000-000000000001', 'claude-ai-box', false, now() + interval '1 hour') returning id into other_assignment;
   set local role anon;
-  r := r || jsonb_build_object('faster_than_30_minutes_is_400', t181_code('select notewriter_api_subscribe(10)') = 'PT400');
+  r := r || jsonb_build_object('faster_than_30_minutes_is_400', t182_code('select notewriter_api_subscribe(10)') = 'PT400');
   perform notewriter_api_subscribe(30);
   x := notewriter_api_next_post();
   r := r || jsonb_build_object(
     'subscribed_writer_gets_a_post', x ->> 'kind' = 'post' and x #>> '{item,id}' = feed_post::text,
-    'anothers_assignment_is_403', t181_code(format('select notewriter_api_finish(%L)', other_assignment)) = 'PT403'
-                                  and t181_code(format('select notewriter_api_fail(%L, %L)', other_assignment, 'x')) = 'PT403',
+    'anothers_assignment_is_403', t182_code(format('select notewriter_api_finish(%L)', other_assignment)) = 'PT403'
+                                  and t182_code(format('select notewriter_api_fail(%L, %L)', other_assignment, 'x')) = 'PT403',
     'own_assignment_finishes', notewriter_api_finish((x ->> 'assignment')::uuid, '{"notes": 0}') ->> 'post' = 'done');
   reset role;
   r := r || jsonb_build_object('never_takes_reader_requests', (select every_minutes = 30 and not takes_reader_requests from everything_notewriters where id = 'jackson-bot'));
@@ -132,8 +132,8 @@ begin
   -- The switch.
   perform notewriter_admin_switch('jackson-bot', false, 'Too many wrong notes');
   set local role anon;
-  r := r || jsonb_build_object('switched_off_is_403', t181_code('select notewriter_api_me()') = 'PT403'
-                                                      and t181_code(format('select notewriter_api_add_note(%L, %L)', good || '{"passage": "Researchers say"}', post)) = 'PT403');
+  r := r || jsonb_build_object('switched_off_is_403', t182_code('select notewriter_api_me()') = 'PT403'
+                                                      and t182_code(format('select notewriter_api_add_note(%L, %L)', good || '{"passage": "Researchers say"}', post)) = 'PT403');
   reset role;
   r := r || jsonb_build_object(
     'switched_off_leaves_the_queue', (select every_minutes is null from everything_notewriters where id = 'jackson-bot'),
@@ -143,9 +143,9 @@ begin
   -- A new key ends the old one.
   new_key := notewriter_admin_new_key('jackson-bot');
   set local role anon;
-  r := r || jsonb_build_object('old_key_is_401', t181_code('select notewriter_api_me()') = 'PT401');
-  perform t181_headers(new_key);
-  r := r || jsonb_build_object('new_key_works', t181_code('select notewriter_api_me()') = 'ok');
+  r := r || jsonb_build_object('old_key_is_401', t182_code('select notewriter_api_me()') = 'PT401');
+  perform t182_headers(new_key);
+  r := r || jsonb_build_object('new_key_works', t182_code('select notewriter_api_me()') = 'ok');
   reset role;
 
   raise exception 'RESULTS %', r;

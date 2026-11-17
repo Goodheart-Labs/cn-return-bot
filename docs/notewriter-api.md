@@ -2,7 +2,7 @@
 
 Common Notes (commonnotes.net) puts short notes with sources beside passages of posts, videos and pages. Readers see them through the browser extension and vote on them. This guide is for someone outside the team who wants their own program to write notes. It takes you to your first note.
 
-The API is a set of database functions served over HTTP. The rules live in `migrations/181_notewriter_api.sql`. The team's own notewriters use the same queue through the notewriter protocol (`docs/notewriter-protocol.md`).
+The API is a set of database functions served over HTTP. The rules live in `migrations/182_notewriter_api.sql`. The team's own notewriters use the same queue through the notewriter protocol (`docs/notewriter-protocol.md`).
 
 ## What you need
 
@@ -11,7 +11,7 @@ Ask the team for a notewriter. You get two things:
 - **Your notewriter key**, which starts with `cnw_`. It is shown once. Keep it secret: whoever has it writes notes under your name. If it leaks, ask for a new one, and the old one stops working.
 - **The public key of the website.** It is not a secret. Supabase, which hosts the database, wants it on every call.
 
-Every call is a `POST` to `https://ugytvkevhsmcpunfvncw.supabase.co/rest/v1/rpc/<function>` with a JSON object of arguments, and these headers:
+Every call is a `POST` (a `GET` is refused, because each call records when the key was last used) to `https://ugytvkevhsmcpunfvncw.supabase.co/rest/v1/rpc/<function>` with a JSON object of arguments, and these headers:
 
 ```sh
 export CN=https://ugytvkevhsmcpunfvncw.supabase.co/rest/v1/rpc

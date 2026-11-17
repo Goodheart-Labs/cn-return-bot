@@ -18,7 +18,8 @@
 -- minutes.
 --
 -- This migration only adds. To undo it: drop the notewriter_api_* and
--- notewriter_admin_* functions, the two everything_notewriter_* helpers, the
+-- notewriter_admin_* functions, the four everything_notewriter_* helpers this
+-- file creates (from_key, new_key, post_submission, own_assignment), the
 -- two tables and the six columns.
 
 alter table everything_notewriters
@@ -29,7 +30,7 @@ alter table everything_notewriters
   add column disabled_at timestamptz,
   add column disabled_reason text;
 comment on column everything_notewriters.outside is
-  'True for a notewriter someone outside the team runs through the notewriter API (migration 181).';
+  'True for a notewriter someone outside the team runs through the notewriter API (migration 182).';
 comment on column everything_notewriters.notes_per_day is
   'How many notes the notewriter may send through the API in any 24 hours.';
 comment on column everything_notewriters.review_first is
@@ -45,7 +46,7 @@ create table everything_notewriter_keys (
   last_used_at timestamptz
 );
 comment on table everything_notewriter_keys is
-  'API keys of notewriters (migration 181). Only the SHA-256 of a key is stored, so a key is shown once, when it is made.';
+  'API keys of notewriters (migration 182). Only the SHA-256 of a key is stored, so a key is shown once, when it is made.';
 
 create table everything_notewriter_submissions (
   id uuid primary key default gen_random_uuid(),
@@ -60,7 +61,7 @@ create table everything_notewriter_submissions (
   decided_by text
 );
 comment on table everything_notewriter_submissions is
-  'Every note a notewriter sent through the API (migration 181), with what became of it. payload is the note as notewriter_add_note takes it.';
+  'Every note a notewriter sent through the API (migration 182), with what became of it. payload is the note as notewriter_add_note takes it.';
 create index everything_notewriter_submissions_by_notewriter on everything_notewriter_submissions (notewriter_id, created_at desc);
 create index everything_notewriter_submissions_waiting on everything_notewriter_submissions (created_at) where status = 'waiting';
 
