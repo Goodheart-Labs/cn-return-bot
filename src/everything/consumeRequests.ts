@@ -51,7 +51,7 @@ import type { ItemSource } from "./types";
  *  fetches its transcript and cues for timestamped claims. Every other page is
  *  a plain `web` item that the worker fetches through the X pipeline's
  *  web-fetch ladder, Substack posts included — no special-casing. */
-function classifyRequestSource(pageUrl: string): ItemSource {
+export function classifyRequestSource(pageUrl: string): ItemSource {
   return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
 }
 
@@ -61,14 +61,14 @@ function classifyRequestSource(pageUrl: string): ItemSource {
  *  when it parses as a creator feed. A request that names no creator, such as
  *  one from an extension copy older than migration 110, still gets its
  *  creator when the page sits on a *.substack.com subdomain. */
-function creatorOfRequest(request: NoteRequestRow): CanonicalFeed | null {
+function creatorOfRequest(request: Pick<NoteRequestRow, "feed_url" | "page_url">): CanonicalFeed | null {
   return (request.feed_url ? canonicalFeed(request.feed_url) : null) ?? substackFeedOfPage(request.page_url);
 }
 
 /** The project a newly requested page goes under: its creator's, created if we
  *  have never met them, or the catch-all "Around the web" for a page that has
  *  no creator we know how to follow. */
-async function projectForRequest(request: NoteRequestRow): Promise<string> {
+export async function projectForRequest(request: Pick<NoteRequestRow, "feed_url" | "page_url">): Promise<string> {
   const creator = creatorOfRequest(request);
   return creator
     ? resolveProjectId({ slug: creator.project_slug, feedUrl: creator.feed_url })

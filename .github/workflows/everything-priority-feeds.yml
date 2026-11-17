@@ -114,3 +114,10 @@ jobs:
           SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
           # Daily spend cap in USD (repo variable; empty falls back to the code default of 50 USD)
           EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
+          # Pages queued because readers opened them (src/everything/demandQueue.ts).
+          # Repo variables; empty falls back to the code defaults (3 readers and 20
+          # a day for text posts, 5 readers and 20 a day for videos), 0 switches a kind off.
+          EVERYTHING_DEMAND_TEXT_READERS: ${{ vars.EVERYTHING_DEMAND_TEXT_READERS }}
+          EVERYTHING_DEMAND_TEXT_DAILY_CAP: ${{ vars.EVERYTHING_DEMAND_TEXT_DAILY_CAP }}
+          EVERYTHING_DEMAND_YOUTUBE_READERS: ${{ vars.EVERYTHING_DEMAND_YOUTUBE_READERS }}
+          EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP: ${{ vars.EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP }}
