@@ -7,6 +7,9 @@ in several ways and prints how many characters each way got back. The proxy
 address is never printed.
 
 Usage: PROXY=<url> python3 probe.py <video id>...
+
+The workflow that ran it was .github/workflows/caption-probe.yml, removed after
+its one run on 2026-11-17. Restore it from commit 86e7a6ba to run it again.
 """
 
 import json

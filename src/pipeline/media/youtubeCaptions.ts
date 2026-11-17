@@ -252,16 +252,57 @@ export type YoutubeCaptions =
  * video without captions (GOO-169).
  */
 export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<YoutubeCaptions> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fetchCaptionsOnce(video);
+    } catch (err) {
+      if (!(err instanceof RefusedCaptionFileError) || attempt >= FRESH_INTEGRITY_TOKEN_ATTEMPTS) throw err;
+      console.warn(`[youtube] ${err.message}. Minting a fresh integrity token and trying again (${attempt}/${FRESH_INTEGRITY_TOKEN_ATTEMPTS}).`);
+      await invalidateIntegrityToken();
+    }
+  }
+}
+
+/** One try at a video's captions with the PO token provider's current
+ *  integrity token. */
+async function fetchCaptionsOnce(video: YoutubeVideo): Promise<YoutubeCaptions> {
   const listing = await listCaptionTracks(video);
   if (listing.kind !== "tracks") return listing;
   const track = chooseCaptionTrack(listing.tracks, video.audioLanguage);
   if (!track) return { kind: "none", why: `YouTube listed only machine translations (${listing.tracks.map((t) => t.code).join(", ")})` };
   const file = await downloadCaptionFile(video.url, track);
   if (isRefusedCaptionFile(file)) {
-    throw new YoutubeUnreachableError(video.url, `YouTube listed the ${track.kind} ${track.code} track and served ${file.length} characters that are not a caption file`);
+    throw new RefusedCaptionFileError(video.url, `YouTube listed the ${track.kind} ${track.code} track and served ${file.length} characters that are not a caption file`);
   }
   const cues = parseSubtitleToCues(file);
   return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
+}
+
+/** YouTube listed a caption track and then served an empty answer or a page
+ *  instead of its file. It counts as not having reached YouTube, so a video
+ *  that keeps getting this fails red and is retried later. */
+class RefusedCaptionFileError extends YoutubeUnreachableError {}
+
+/** How often one video is tried in a row, each time with a freshly minted
+ *  integrity token, while YouTube refuses its caption file. */
+const FRESH_INTEGRITY_TOKEN_ATTEMPTS = 3;
+
+/** Makes the PO token provider throw away its integrity token, so the next
+ *  PO token is built on a fresh one.
+ *
+ *  The provider gets an integrity token from Google's BotGuard check and
+ *  builds every PO token on it for 12 hours. Google hands out two kinds. With
+ *  one kind, YouTube serves caption files. With the other, YouTube still lists
+ *  a video's caption tracks but answers every caption file with nothing. On
+ *  the services machine the provider logs every integrity token it gets. From
+ *  2026-11-14 to 2026-11-17 it got six. The three 89-character tokens served
+ *  captions (100 of 113 reads), and the three 93-character tokens did not (1
+ *  of 86 reads). A GitHub runner with the same yt-dlp, provider and proxy read
+ *  the same videos without trouble on 2026-11-17 (GOO-776). Before this, one
+ *  bad token meant 12 hours without any transcript. */
+async function invalidateIntegrityToken(): Promise<void> {
+  const response = await fetch(`${PO_TOKEN_PROVIDER_URL}/invalidate_it`, { method: "POST", signal: AbortSignal.timeout(CAPTION_CALL_TIMEOUT_MS) });
+  if (!response.ok) throw new Error(`The PO token provider at ${PO_TOKEN_PROVIDER_URL} refused to drop its integrity token (HTTP ${response.status}).`);
 }
 
 /** Whether what YouTube served for a listed track is not a caption file at
