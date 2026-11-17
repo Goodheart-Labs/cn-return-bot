@@ -68,6 +68,20 @@ const close = (deps: WorkerDeps, id: string, fields: Record<string, unknown>) =>
   check(`closing request ${id}`, deps.db.from(REQUESTS_TABLE).update({ ...fields, done_at: deps.now().toISOString() }).eq("id", id));
 
 /** Carries out one request. Returns what happened, for the log. */
+/** Bun reuses kept-alive sockets that the far end has already closed, and the
+ *  call then fails at once with ECONNRESET (2 of 3 presses on 2026-11-16). Such
+ *  a call is tried again, up to twice, on a fresh connection. */
+export async function retryOnReset<T>(call: () => Promise<T>, waitMs = 1000): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await call();
+    } catch (error) {
+      if (attempt >= 2 || !String(error).includes("ECONNRESET")) throw error;
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+  }
+}
+
 export async function handleRequest(deps: WorkerDeps, request: PostRequest): Promise<string> {
   // Claim it first: only one worker, and only once, ever sends a request.
   const claimed = await check("claiming", deps.db.from(REQUESTS_TABLE).update({ status: "sending", claimed_at: deps.now().toISOString() }).eq("id", request.id).eq("status", "pending").select("id"));
@@ -83,13 +97,10 @@ export async function handleRequest(deps: WorkerDeps, request: PostRequest): Pro
   }
   let draft: Awaited<ReturnType<typeof createDraft>>;
   try {
-    draft = await deps.draft({
-      text: request.tweet_text,
-      reply: request.reply_text,
-      image: await deps.image(request.note_id),
-      title: `Common Note ${request.note_id}`,
-      timing: "next_free_slot",
-    });
+    const image = await retryOnReset(() => deps.image(request.note_id));
+    draft = await retryOnReset(() =>
+      deps.draft({ text: request.tweet_text, reply: request.reply_text, image, title: `Common Note ${request.note_id}`, timing: "next_free_slot" }),
+    );
   } catch (error) {
     await close(deps, request.id, { status: "failed", error: String(error instanceof Error ? error.message : error) });
     return `request ${request.id} failed before Typefully made a draft: ${String(error)}`;
