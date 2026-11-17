@@ -95,6 +95,44 @@ describe("queueDemandedPages", () => {
   });
 });
 
+describe("a source that is failing", () => {
+  const failed = { source: "youtube", outcome: "failed" as const };
+  const errored = (n: number, retries = 0) => ({
+    id: `item-${n}`, url: video(n).page_url, title: null, published_at: null, retries, priority: 1, feed_url: null,
+  });
+
+  test("gets no new pages while every read of the last hour failed", async () => {
+    dbState.demandedPages = [video(1, 9), text(1)];
+    dbState.itemOutcomes = [failed, failed];
+    expect(await queueDemandedPages(demandSettings({}))).toBe(1);
+    expect(queuedUrls()).toEqual([text(1).page_url]);
+  });
+
+  test("gets no repeat attempts either, so an outage does not spend them", async () => {
+    dbState.retryableErrors = [errored(1)];
+    dbState.demandQueuedUrls = [video(1).page_url];
+    dbState.itemOutcomes = [failed, failed];
+    await queueDemandedPages(demandSettings({}));
+    expect(dbState.calls.requeueErroredItem).toBeUndefined();
+  });
+
+  test("a failed page of this rule is retried at its own tier, two per source a run", async () => {
+    dbState.retryableErrors = [errored(1), errored(2, 1), errored(3), errored(4)];
+    dbState.demandQueuedUrls = [video(1).page_url, video(2).page_url, video(3).page_url];
+    await queueDemandedPages(demandSettings({}));
+    expect(dbState.calls.requeueErroredItem!.map(([item, priority]) => [(item as { id: string }).id, priority])).toEqual([
+      ["item-1", 1],
+      ["item-2", 1],
+    ]);
+  });
+
+  test("a failed post the rule did not queue is left to the walk", async () => {
+    dbState.retryableErrors = [errored(4)];
+    await queueDemandedPages(demandSettings({}));
+    expect(dbState.calls.requeueErroredItem).toBeUndefined();
+  });
+});
+
 describe("setting", () => {
   test("empty or unreadable means the default, 0 means off", () => {
     expect(setting(undefined, 3)).toBe(3);
