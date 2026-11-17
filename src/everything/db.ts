@@ -1246,3 +1246,39 @@ export async function recordAvatarAttempt(projectId: string, avatarUrl: string |
   const stamp = { avatar_refreshed_at: attemptedAt.toISOString() };
   throwOnError(await getSupabaseClient().from("everything_projects").update(avatarUrl ? { ...stamp, avatar_url: avatarUrl } : stamp).eq("id", projectId));
 }
+
+/** A page without an item that enough different readers opened in the last 7
+ *  days (everything_demanded_pages, migration 183). */
+export interface DemandedPage {
+  page_url: string;
+  feed_url: string | null;
+  kind: "text" | "youtube";
+  readers: number;
+}
+
+/** The pages reader demand would queue now, most readers first. A null bar
+ *  leaves that kind out. */
+export async function fetchDemandedPages(textReaders: number | null, youtubeReaders: number | null): Promise<DemandedPage[]> {
+  return throwOnError(
+    await getSupabaseClient().rpc("everything_demanded_pages", { p_text_readers: textReaders, p_youtube_readers: youtubeReaders }),
+  ) as DemandedPage[];
+}
+
+/** One kind's row of everything_demand_report. */
+export interface DemandReportRow {
+  kind: "text" | "youtube";
+  queued_24h: number;
+  settled: number;
+  checked: number;
+  with_notes: number;
+}
+
+export async function fetchDemandReport(): Promise<DemandReportRow[]> {
+  return throwOnError(await getSupabaseClient().rpc("everything_demand_report")) as DemandReportRow[];
+}
+
+/** Records that the demand rule took a page, so it never takes it again.
+ *  `queued` is false for a page that already had an item. */
+export async function recordDemandQueued(row: { page_url: string; kind: string; readers: number; queued: boolean }): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_demand_queued").insert(row));
+}

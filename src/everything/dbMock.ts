@@ -13,6 +13,12 @@ export const dbState = {
   knownItems: [] as { id: string; url: string; checked_scope: "page" | "paragraph" | null }[],
   /** What findItemForPageUrl answers. */
   existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null; first_checked_at: string | null } | null,
+  /** What fetchDemandedPages answers, before the bars are applied. */
+  demandedPages: [] as { page_url: string; feed_url: string | null; kind: "text" | "youtube"; readers: number }[],
+  /** Makes recordDemandQueued fail, as when its table cannot be written. */
+  recordDemandFails: false,
+  /** What fetchDemandReport answers. */
+  demandReport: [] as { kind: "text" | "youtube"; queued_24h: number; settled: number; checked: number; with_notes: number }[],
   /** What fetchCreatorProjects answers: every creator we have a project for,
    *  whether or not their priority window is open. */
   creatorProjects: [] as {
@@ -51,6 +57,9 @@ export const resetDbState = () => {
   dbState.knownItems = [];
   dbState.existingItem = null;
   dbState.creatorProjects = [];
+  dbState.demandedPages = [];
+  dbState.demandReport = [];
+  dbState.recordDemandFails = false;
   dbState.creatorVisitScores = [];
   dbState.topPosts = [];
   dbState.feedPacing = {
@@ -111,6 +120,17 @@ export const dbMock = () => ({
   insertNote: record("insertNote"),
   setClaimStatus: record("setClaimStatus"),
   resolveProjectId: record("resolveProjectId"),
+  // Applies the bars as the database function does: a null bar leaves the kind out.
+  fetchDemandedPages: (textReaders: number | null, youtubeReaders: number | null) =>
+    Promise.resolve(
+      dbState.demandedPages.filter((p) => {
+        const bar = p.kind === "text" ? textReaders : youtubeReaders;
+        return bar !== null && p.readers >= bar;
+      }),
+    ),
+  fetchDemandReport: () => Promise.resolve(dbState.demandReport),
+  recordDemandQueued: (...args: unknown[]) =>
+    dbState.recordDemandFails ? Promise.reject(new Error("log is down")) : record("recordDemandQueued")(...args),
   insertFollowedFeed: record("insertFollowedFeed"),
   resolveFollowRequest: record("resolveFollowRequest"),
 });

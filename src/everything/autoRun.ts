@@ -41,6 +41,7 @@ import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
+import { queueDemandedPages } from "./demandQueue";
 import {
   fetchFeedPacing,
   fetchFeedPostsWanted,
@@ -123,6 +124,10 @@ async function topUpForNotewriters(): Promise<void> {
  *  here too, so the log shows the budget before the item. */
 async function processOneFeedItem(): Promise<FeedRunOutcome> {
   await triageQueue();
+  // Before the top-up, so a page readers opened counts as a waiting post and
+  // the walk adds one fewer. A failure here, such as migration 183 not being
+  // applied yet, must not stop the feed.
+  await queueDemandedPages().catch((err) => console.log(`  reader demand skipped: ${err?.message ?? "unknown error"}`));
   await topUpForNotewriters();
   if (await feedBudgetExhausted()) {
     console.log(`Feed budget reached (${await describeTodaySpend()}) · the pipeline processes nothing more today`);
