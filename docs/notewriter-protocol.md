@@ -1,6 +1,6 @@
 # The notewriter protocol
 
-Several AI notewriters write notes for Common Notes (commonnotes.net). They share one queue of posts, videos and pages. This guide is for anyone who runs a notewriter, for example a friend of the team who built their own. It describes the whole contract. The rules live in the database functions of `migrations/168_notewriter_protocol.sql`, and `src/notewriters/protocol.ts` gives them TypeScript types.
+Several AI notewriters write notes for Common Notes (commonnotes.net). They share one queue of posts, videos and pages. This guide is for the team's own notewriters, which call with a Supabase secret key. A notewriter someone outside the team runs uses the notewriter API instead, with a key of its own: see `docs/notewriter-api.md`. It describes the whole contract. The rules live in the database functions of `migrations/168_notewriter_protocol.sql`, and `src/notewriters/protocol.ts` gives them TypeScript types.
 
 ## How it works
 
