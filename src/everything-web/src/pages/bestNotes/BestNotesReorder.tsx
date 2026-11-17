@@ -4,13 +4,16 @@ import { AutoScroller, PointerActivationConstraints, PointerSensor } from "@dnd-
 import { arrayMove } from "@dnd-kit/helpers";
 import { DragDropProvider, DragOverlay, KeyboardSensor, useDragOperation, type DragEndEvent, type DragMoveEvent, type DragOverEvent } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { positionAfterMove, type CuratedNoteRow } from "@cn/core/bestNotes";
+import { positionAfterMove, setPosition, type CuratedNoteRow } from "@cn/core/bestNotes";
 import type { NoteRow, ProjectHeader } from "@cn/core/types";
 import { cn } from "@cn/ui/cn";
+import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { ProjectAvatar } from "../../components/ProjectAvatar";
+import { useWholeLeaderboard } from "../../lib/feedQueries";
+import { useCurationChange } from "./CurationBar";
 
 /** One note in drag mode: its row on the list, the note and its creator. */
-export interface ReorderEntry {
+interface ReorderEntry {
   row: CuratedNoteRow;
   note: NoteRow;
   project: ProjectHeader | undefined;
@@ -65,7 +68,7 @@ function RowContent({ entry, rank }: { entry: ReorderEntry; rank: number }) {
 
 const ROW = "flex items-center gap-3 rounded-control border px-3 py-2";
 
-function Row({ entry, index }: { entry: ReorderEntry; index: number }) {
+function Row({ entry, index, highlighted }: { entry: ReorderEntry; index: number; highlighted: boolean }) {
   const { ref, isDragSource } = useSortable({
     id: entry.row.note_id,
     index,
@@ -76,10 +79,11 @@ function Row({ entry, index }: { entry: ReorderEntry; index: number }) {
   return (
     <li
       ref={ref}
+      data-highlighted={highlighted || undefined}
       className={cn(
         ROW,
         "cursor-grab touch-manipulation bg-surface transition-[opacity,filter]",
-        isDragSource ? "border-dashed border-link bg-tint [&>*]:invisible" : "border-line",
+        isDragSource ? "border-dashed border-link bg-tint [&>*]:invisible" : highlighted ? "border-link bg-tint" : "border-line",
         dragging && !isDragSource && "opacity-40 grayscale",
       )}
     >
@@ -93,13 +97,25 @@ function Row({ entry, index }: { entry: ReorderEntry; index: number }) {
  *  near the top and bottom edges. The other rows make room only once the
  *  dragged row has stayed still for a moment, and dropping it saves its new
  *  place. In a list narrowed to one creator, the note lands right below the
- *  note now shown above it. */
-export function BestNotesReorder({ entries, list, onMove }: {
+ *  note now shown above it. The highlighted note is scrolled into view. */
+function ReorderList({ entries, list, highlightId, onMove }: {
   entries: ReorderEntry[];
   list: CuratedNoteRow[];
+  highlightId?: string;
   onMove: (noteId: string, position: number) => void;
 }) {
   const [order, setOrder] = useState(() => entries.map((entry) => entry.row.note_id));
+  // A note added since the list was first shown, for example the one just
+  // added from the review page while an older copy of the list was cached,
+  // joins at the bottom. Setting state during render is React's pattern for
+  // state derived from props: React re-renders straight away with it.
+  const added = entries.filter((entry) => !order.includes(entry.row.note_id)).map((entry) => entry.row.note_id);
+  if (added.length > 0) setOrder([...order, ...added]);
+  const listElement = useRef<HTMLOListElement>(null);
+  const highlightShown = shownIncludes(entries, highlightId);
+  useEffect(() => {
+    if (highlightShown) listElement.current?.querySelector("[data-highlighted]")?.scrollIntoView({ block: "center" });
+  }, [highlightShown]);
   // The drag handlers read the order through a ref, so they see the latest one.
   const orderRef = useRef(order);
   useEffect(() => {
@@ -164,9 +180,9 @@ export function BestNotesReorder({ entries, list, onMove }: {
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
     >
-      <ol className="mx-auto max-w-[48rem] space-y-1.5">
+      <ol ref={listElement} className="mx-auto max-w-[48rem] space-y-1.5">
         {shown.map((entry, index) => (
-          <Row key={entry.row.note_id} entry={entry} index={index} />
+          <Row key={entry.row.note_id} entry={entry} index={index} highlighted={entry.row.note_id === highlightId} />
         ))}
       </ol>
       <DragOverlay>
@@ -180,5 +196,41 @@ export function BestNotesReorder({ entries, list, onMove }: {
         }}
       </DragOverlay>
     </DragDropProvider>
+  );
+}
+
+const shownIncludes = (entries: ReorderEntry[], noteId: string | undefined) => !!noteId && entries.some((entry) => entry.row.note_id === noteId);
+
+/** The leaderboard's drag mode: it loads the whole leaderboard and saves each
+ *  move. The best-notes page shows it in place of the list, narrowed to one
+ *  creator when the page is. The review page shows it in a modal right after
+ *  a note was added, with that note highlighted. */
+export function LeaderboardReorder({ projectSlug, highlightId, onError, className }: {
+  projectSlug: string | null;
+  highlightId?: string;
+  onError: (message: string) => void;
+  className?: string;
+}) {
+  const whole = useWholeLeaderboard();
+  const change = useCurationChange(onError);
+  if (whole.isError) return <LoadFailed what="The leaderboard" onRetry={() => void whole.refetch()} className={className} />;
+  if (!whole.data) return <p className={cn("text-sm text-fg-muted", className)}>Loading…</p>;
+  const { data } = whole;
+  // In a list narrowed to one creator, only that creator's notes are dragged,
+  // and the notes of other creators keep their places.
+  const entries = data.entries.flatMap(({ row }) => {
+    const note = data.notes.get(row.note_id);
+    const post = note && data.items.get(note.claim.item_id);
+    const project = post?.project_id ? data.projects.get(post.project_id) : undefined;
+    return note && (!projectSlug || project?.slug === projectSlug) ? [{ row, note, project }] : [];
+  });
+  return (
+    <ReorderList
+      key={projectSlug}
+      entries={entries}
+      list={data.entries.map(({ row }) => row)}
+      highlightId={highlightId}
+      onMove={(noteId, position) => void change(() => setPosition(noteId, position))}
+    />
   );
 }
