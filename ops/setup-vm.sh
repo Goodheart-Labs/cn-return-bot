@@ -74,6 +74,9 @@ for unit in cn-claim-check cn-extraction cn-intake cn-fetch cn-autodeploy cn-pot
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
+# Root runs its own copy of the deploy script, because the checkout belongs to
+# the service user. Later deploys download new copies from GitHub.
+install -m 755 -o root -g root "$REPO_DIR/ops/autodeploy.sh" /usr/local/sbin/cn-autodeploy
 systemctl daemon-reload
 systemctl enable cn-claim-check cn-extraction cn-intake
 # The token provider and the fetcher hold no secrets, so they can start right

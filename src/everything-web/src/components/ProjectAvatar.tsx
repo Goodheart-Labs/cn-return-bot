@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { WEB_PROJECT_SLUG } from "@cn/core/projects";
-import type { FeedProjectRow } from "@cn/core/types";
+import type { ProjectHeader } from "@cn/core/types";
 import { cn } from "@cn/ui/cn";
 import { GlobeIcon } from "@cn/ui/icons";
 
@@ -10,7 +10,7 @@ const GLOBE_SCALE = 0.5;
 
 /** A project's picture: the creator's own, or their initial when we have none
  *  or it fails to load. The catch-all "Around the web" project shows a globe. */
-export function ProjectAvatar({ project, size, className }: { project: FeedProjectRow; size: number; className?: string }) {
+export function ProjectAvatar({ project, size, className }: { project: ProjectHeader; size: number; className?: string }) {
   const [broken, setBroken] = useState(false);
   const frame = cn("shrink-0 overflow-hidden rounded-full border border-line bg-surface-muted", className);
   if (project.avatar_url && !broken) {

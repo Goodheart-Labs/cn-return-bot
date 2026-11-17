@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ABTestSlotInfo } from "../../../dashboard-shared/abFilters";
 import {
+  computeDomain,
   forcesAllRuns,
   lowerIsBetter,
   statInterval,
@@ -8,14 +9,14 @@ import {
   statLabel,
   WINDOW_DAY_OPTIONS,
   windowLabel,
-  type AbCombo,
   type AbComparisonStat,
   type AbStatKind,
   type RatingReasonCatalog,
   type ReasonUsage,
-} from "../lib/abComparison";
-import { Z_BY_LEVEL, type ConfidenceLevel } from "../lib/confidenceIntervals";
-import { CiAxis, CiBar, computeDomain } from "./CiBar";
+} from "../../../everything-core/abStats";
+import type { AbCombo } from "../lib/abComparison";
+import { Z_BY_LEVEL, type ConfidenceLevel } from "../../../everything-core/confidenceIntervals";
+import { CiAxis, CiBar } from "./CiBar";
 import { MetricMenu } from "./MetricMenu";
 import { useResizeWidth } from "../lib/useResizeWidth";
 

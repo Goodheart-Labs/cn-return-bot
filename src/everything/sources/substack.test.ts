@@ -1,4 +1,5 @@
-import { describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { readListing } from "../../pipeline/fetch/readListing";
 import { fetchFeedPosts } from "./substack";
 
 const FEED = `<?xml version="1.0"?><rss><channel>
@@ -6,6 +7,14 @@ const FEED = `<?xml version="1.0"?><rss><channel>
 <image><url>https://substackcdn.com/image/fetch/logo.png</url><title>Don't Worry About the Vase</title></image>
 <item><title><![CDATA[AI #176]]></title><link>https://thezvi.substack.com/p/ai-176</link><pubDate>Thu, 09 Jul 2026 12:00:00 GMT</pubDate><content:encoded><![CDATA[<p>Body</p>]]></content:encoded></item>
 </channel></rss>`;
+
+// In GitHub Actions the feed would be asked of the services machine. These
+// tests fetch it in this process, so they run the same everywhere.
+const ciVariable = process.env.GITHUB_ACTIONS;
+beforeEach(() => delete process.env.GITHUB_ACTIONS);
+afterEach(() => {
+  if (ciVariable !== undefined) process.env.GITHUB_ACTIONS = ciVariable;
+});
 
 describe("fetchFeedPosts", () => {
   it("reads the publication's name and logo from the channel, not from an item", async () => {
@@ -19,5 +28,12 @@ describe("fetchFeedPosts", () => {
     } finally {
       globalThis.fetch = realFetch;
     }
+  });
+});
+
+describe("readListing", () => {
+  it("lists only a feed in the form we store, so it cannot fetch any other address", async () => {
+    await expect(readListing({ feedUrl: "https://example.com", limit: 3 })).rejects.toThrow("Not a feed we list");
+    await expect(readListing({ feedUrl: "https://thezvi.substack.com/api/v1/archive", limit: 3 })).rejects.toThrow("Not a feed we list");
   });
 });

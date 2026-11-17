@@ -4,8 +4,8 @@
 // axis. The SVG is written by hand because this repo has no chart library.
 // BarChart in the same folder is a separate chart and shares nothing with these.
 
-import type { Interval } from "../lib/confidenceIntervals";
-import type { AbStatKind } from "../lib/abComparison";
+import type { Interval } from "../../../everything-core/confidenceIntervals";
+import type { AbStatKind, Domain } from "../../../everything-core/abStats";
 
 const COLOR_BLOCK = "#10b981"; // The same green BarChart uses for helpful notes.
 const COLOR_BLOCK_FILL = "#a7f3d0"; // A lighter green, filling the interval.
@@ -18,11 +18,6 @@ const COLOR_ZERO = "#9ca3af";
 const AXIS_INSET = 8;
 const ROW_HEIGHT = 22;
 const AXIS_HEIGHT = 22;
-
-export interface Domain {
-  min: number;
-  max: number;
-}
 
 function scaleX(value: number, domain: Domain, width: number): number {
   const inner = Math.max(1, width - 2 * AXIS_INSET);
@@ -47,26 +42,6 @@ function niceTicks(domain: Domain, count = 5): number[] {
   const ticks: number[] = [];
   for (let v = start; v <= domain.max + step / 2; v += step) ticks.push(v);
   return ticks;
-}
-
-/**
- * Work out the x-axis range that all the visible rows share.
- * For a percent or a cost metric the range follows the data. It never drops
- * below zero, and a percent never goes above one.
- * For a difference metric the range is symmetric around zero.
- * Either way a little padding is added, so the blocks never touch the edges.
- */
-export function computeDomain(intervals: Interval[], kind: AbStatKind): Domain {
-  if (intervals.length === 0) return kind === "diff" ? { min: -0.1, max: 0.1 } : { min: 0, max: 1 };
-  const lo = Math.min(...intervals.map((i) => i.lo));
-  const hi = Math.max(...intervals.map((i) => i.hi));
-  if (kind === "diff") {
-    const m = Math.min(1, Math.max(0.05, Math.max(Math.abs(lo), Math.abs(hi)) * 1.1));
-    return { min: -m, max: m };
-  }
-  const pad = Math.max(kind === "cost" ? 0.01 : 0.02, (hi - lo) * 0.08);
-  const max = kind === "percent" ? Math.min(1, hi + pad) : hi + pad;
-  return { min: Math.max(0, lo - pad), max };
 }
 
 function formatTick(v: number, kind: AbStatKind): string {

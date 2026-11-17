@@ -112,8 +112,9 @@ export function RatingPanel({ question, children }: { question: React.ReactNode;
     <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-card bg-surface-muted px-4 py-3">
       <div className="text-sm text-fg">{question}</div>
       {/* The pills never squeeze beside the question. When both do not fit,
-          the pills move to their own line together. */}
-      <div className="shrink-0">{children}</div>
+          the pills move to their own line together, and wrap there when even
+          that line is too narrow. */}
+      <div className="max-w-full shrink-0">{children}</div>
     </div>
   );
 }
@@ -123,11 +124,9 @@ export function RatingPanel({ question, children }: { question: React.ReactNode;
  *  the question beside the pills. `children` are the pills. `question`
  *  replaces the plain question, which is how the one-time voting hint joins
  *  the panel without covering the note. */
-export function NoteBox({ note, status, compact = false, sourcesOpen, question, children }: {
+export function NoteBox({ note, status, sourcesOpen, question, children }: {
   note: NoteRow;
   status: NoteStatus;
-  /** For a narrow column: sources show as site names. */
-  compact?: boolean;
   sourcesOpen?: boolean;
   question?: React.ReactNode;
   children?: React.ReactNode;
@@ -144,8 +143,7 @@ export function NoteBox({ note, status, compact = false, sourcesOpen, question, 
       </div>
       <LinkifiedText
         className="text-sm text-fg whitespace-pre-wrap"
-        linkClassName={compact ? "text-link hover:underline" : "text-link hover:underline break-all"}
-        shortLinks={compact}
+        linkClassName="text-link hover:underline break-all"
         text={noteText(note)}
       />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}

@@ -1,6 +1,6 @@
 // The shared launch used by the devbox inspection scripts (preview.ts,
 // inspect.ts): headless Chromium with the freshly built extension loaded.
-// See preview.ts for the background on the library path and the kept profile.
+// See preview.ts for the background on the kept profile.
 import os from "node:os";
 import fs from "node:fs";
 import path from "node:path";
@@ -15,14 +15,6 @@ export async function openPageWithExtension(url: string): Promise<{ context: Bro
     throw new Error(`no build at ${extensionDir} — run bun run build-ext-dev first`);
   }
 
-  const localLibs = path.join(os.homedir(), ".cache/cn-playwright-libs/usr/lib/x86_64-linux-gnu");
-  const env = {
-    ...process.env,
-    ...(fs.existsSync(localLibs)
-      ? { LD_LIBRARY_PATH: [localLibs, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":") }
-      : {}),
-  };
-
   // Chromium caches the background service worker's script in the profile and
   // keeps running that copy when a new build has the same manifest version. A
   // preview then ran last month's background, whose sync wrote storage keys
@@ -36,7 +28,6 @@ export async function openPageWithExtension(url: string): Promise<{ context: Bro
     // headless shell silently ignores --load-extension.
     channel: "chromium",
     headless: true,
-    env,
     viewport: { width: 1440, height: 1000 },
     args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
   });

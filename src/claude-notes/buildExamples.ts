@@ -1,6 +1,7 @@
-// Writes docs/note-examples.md, the judged examples the note-finding agents
-// read first (GOO-504, GOO-507). Everything comes from prod: Nathan's Claude
-// Code notes, which Jim judged very good, Nathan's votes on other notes, and
+// Writes docs/note-examples.md, the judged examples in the system prompt of
+// every Claude that writes Common Notes (GOO-504, GOO-507, GOO-612).
+// Everything comes from prod: Nathan's Claude Code notes, which Jim judged
+// very good, Nathan's votes on other notes, and
 // every decision Jim and Nathan made on the Claude note writer's notes in the
 // review page, with the rewrites their messages led to. Nathan's ratings
 // from his own review page of 20 and 21 October come from a stored table.
@@ -19,7 +20,9 @@ const NATHAN_USER_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
 /** Nathan posted his Claude Code batch on 2026-10-21 between 00:19 and 01:00
  *  UTC. His earlier notes are hand-written. */
 const CLAUDE_CODE_BATCH_START = "2026-10-21T00:00:00Z";
-const EXAMPLES_PATH = new URL("../../docs/note-examples.md", import.meta.url).pathname;
+// The runner on ai-box keeps its own copy outside the checkout, because the
+// checkout pulls main every few minutes and must stay clean.
+const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? new URL("../../docs/note-examples.md", import.meta.url).pathname;
 const REVIEW_HEADING = "## Jim's and Nathan's review decisions";
 const RATINGS_HEADING = "## Nathan's ratings on his own review page (2026-10-20 and 21)";
 /** The export of Nathan's local review page, one row per card he scored,
@@ -109,6 +112,7 @@ interface ReviewedDraft {
   passage: string;
   note: string;
   status: string;
+  review_note: string | null;
   item: { url: string; title: string | null };
 }
 interface ReviewEvent {
@@ -119,18 +123,23 @@ interface ReviewEvent {
   data: Record<string, string>;
 }
 
+/** What each review step is called in an entry's heading. Since migration 143
+ *  a vote of Jim or Nathan is the review, and "rejected" is the old button. */
+const VERDICT_WORDS: Record<string, string> = { approved: "approved", disapproved: "disapproved", rejected: "rejected", deleted: "deleted from the site" };
+
 /** One entry per reviewer step that teaches something: an approval, a
- *  rejection with its reason, and a rewrite with the message that asked for it. */
+ *  disapproval or a deletion with the reviewers' shared note, and a rewrite
+ *  with the message that asked for it. */
 async function reviewDecisions(): Promise<string[]> {
   const events = (
     await fetchAllRows<ReviewEvent & { id: number }>(
-      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", ["approved", "rejected", "rewritten", "message"]).not("draft_id", "is", null),
+      () => db.from("everything_claude_events").select("id, draft_id, at, actor, type, data").in("type", [...Object.keys(VERDICT_WORDS), "rewritten", "message"]).not("draft_id", "is", null),
       "id",
     )
   ).sort((a, b) => a.id - b.id);
   const draftIds = [...new Set(events.map((e) => e.draft_id))];
   const drafts = await fetchInBatches<ReviewedDraft>(
-    (chunk) => db.from("everything_claude_drafts").select("id, passage, note, status, item:everything_items(url, title)").in("id", chunk),
+    (chunk) => db.from("everything_claude_drafts").select("id, passage, note, status, review_note, item:everything_items(url, title)").in("id", chunk),
     draftIds,
     "id",
   );
@@ -142,10 +151,11 @@ async function reviewDecisions(): Promise<string[]> {
     if (!d) continue;
     const claim = { claim: d.passage, context_quote: d.passage, item: d.item };
     if (e.type === "message") lastMessage = new Map(lastMessage).set(e.draft_id, e);
-    else if (e.type === "approved") entries.push(noteSection(`${PERSON[e.actor]} approved (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note));
-    else if (e.type === "rejected")
-      entries.push(noteSection(`${PERSON[e.actor]} rejected (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, e.data.reason ? `\n${PERSON[e.actor]}'s reason: ${e.data.reason}` : ""));
-    else if (e.type === "rewritten") {
+    else if (VERDICT_WORDS[e.type]) {
+      // Jim's and Nathan's shared note on the draft says why it is good or bad.
+      const reason = e.data.reason || d.review_note;
+      entries.push(noteSection(`${PERSON[e.actor]} ${VERDICT_WORDS[e.type]} (${e.at.slice(0, 10)})`, claim, e.data.note ?? d.note, reason ? `\nThe reviewers' note: ${reason}` : ""));
+    } else if (e.type === "rewritten") {
       const previous = e.data.previous_note ?? e.data.previousNote;
       const asked = lastMessage.get(e.draft_id);
       if (!previous || !asked) continue;
@@ -245,9 +255,7 @@ const decisions = keepOld(REVIEW_HEADING, decisionsNew, previous);
 const ratings = keepOld(RATINGS_HEADING, nathanRatings(), previous);
 const document = `# What makes a good Common Note
 
-This file collects judged examples of notes on our Common Notes items. Agents that look for noteworthy passages and write notes read it first. It is generated from prod by \`bun run claude-notes examples\` (\`src/claude-notes/buildExamples.ts\`). Do not edit it by hand.
-
-A good note points out something a careful reader would want to know: a small factual mistake, missing context that makes a passage easy to misread, or a claim that is wrong or misleading. It is short, neutral, and every sentence is backed by a cited source.
+This file collects judged examples of notes on our Common Notes items. Every Claude that writes Common Notes, or answers a reviewer about one, gets it in its system prompt. It is generated from prod by \`bun run claude-notes examples\` (\`src/claude-notes/buildExamples.ts\`). Do not edit it by hand.
 
 ${GOOD_HEADING}
 

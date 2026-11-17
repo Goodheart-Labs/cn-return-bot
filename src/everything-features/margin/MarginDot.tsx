@@ -1,10 +1,7 @@
 import type { CSSProperties, Ref } from "react";
 import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { MARKER_SIZE } from "@cn/core/marginCards";
-
-/** The markers are real buttons, so they are reachable with Tab and show the
- *  same focus ring as every other control. */
-export const MARKER_FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 /** The event handlers that report pointing at a marker. */
 export const pointHandlers = (onPoint: (pointing: boolean) => void) => ({
@@ -43,7 +40,7 @@ export function MarginDot({ colorClass, open, onClick, onPoint, style, label, cl
       aria-label={label}
       aria-expanded={open}
       style={style ?? { width: MARKER_SIZE, height: MARKER_SIZE }}
-      className={cn("absolute flex items-center justify-center rounded-full group", MARKER_FOCUS, className)}
+      className={cn("absolute flex items-center justify-center rounded-full group", focusRing, className)}
     >
       <span className={cn("h-2.5 w-2.5 rounded-full bg-current transition", colorClass, !open && "group-hover:ring-4 group-hover:ring-focus-halo")} />
     </button>

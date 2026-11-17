@@ -1,9 +1,9 @@
 import { displayName } from "@cn/core/session";
-import { Button } from "@cn/ui/Button";
 import { Checkbox } from "@cn/ui/Field";
 import { useLoginPrompt } from "@cn/features/auth/loginPrompt";
 import { useSession } from "@cn/features/auth/useSession";
 import { useMyVotes } from "@cn/features/notes/useVotes";
+import { LoadFailed } from "@cn/features/query/LoadFailed";
 import { useLeaderboard, useLeaderboardOptIn } from "../lib/leaderboardQueries";
 
 /** Ranks people by how many notes they have rated. A person is listed only if
@@ -38,12 +38,7 @@ export function LeaderboardPage() {
         )}
       </div>
 
-      {failed && (
-        <div className="space-y-3">
-          <p className="text-sm text-fg-secondary">The leaderboard could not be loaded. The connection to our server failed.</p>
-          <Button onClick={() => void refetch()}>Try again</Button>
-        </div>
-      )}
+      {failed && <LoadFailed what="The leaderboard" onRetry={() => void refetch()} />}
       {!failed && !entries && <p className="text-sm text-fg-muted">Loading…</p>}
       {!failed && entries?.length === 0 && <p className="text-sm text-fg-muted">No ratings yet.</p>}
 

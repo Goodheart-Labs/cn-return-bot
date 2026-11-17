@@ -1,20 +1,22 @@
 /**
- * Finds the Common Notes that might be worth posting on X: the notes that were
- * written, or that readers voted on, since a given time.
+ * Finds the Common Notes that might be worth posting on X, among the notes
+ * that readers voted on, or that the note judge (GOO-591) judged, since a
+ * given time. Jim set the rule on 2026-10-27 (GOO-622):
  *
- * A note is a candidate for one or more reasons:
  * - rated_helpful: the note is rated helpful now, by the website's rule
  *   (`noteStatus`), and it got a vote in the window. The vote may be the one
- *   that made it helpful.
- * - helpful_votes: someone other than its author voted it Helpful or Somewhat
- *   helpful in the window. The author's own vote, which a database trigger casts
- *   automatically, never counts.
- * - written_by_person: a person wrote or improved it in the window.
- * - important_creator: it was written in the window on one of a few creators
- *   that many people we want to reach read.
+ *   that made it helpful. Such a note is always a candidate.
+ * - Any other note is a candidate only when it looks promising and matters:
+ *   - promising: someone other than its author voted it Helpful in the window
+ *     (helpful_votes), or the judge gives it a high chance of ending up rated
+ *     helpful (judged_promising). The author's own vote, which a database
+ *     trigger casts automatically, never counts.
+ *   - matters: it is on one of a few creators that many people we want to reach
+ *     read, or the judge gives it a decent chance that the team puts it on its
+ *     leaderboard.
  *
- * These are only hints. The daily job reads every candidate and fact-checks it
- * before it suggests a note for posting.
+ * These are only hints. The daily job judges every candidate before it
+ * suggests a note for posting.
  */
 
 import { getSupabaseClient } from "../api/supabaseClient";
@@ -35,6 +37,15 @@ const IMPORTANT_CREATOR_FEED_URLS = new Set([
   "https://thezvi.substack.com",
 ]);
 
+/** A note the judge gives at least this chance of ending up rated helpful is
+ *  promising. Over the week to 2026-10-27, one judged note in five reached it. */
+const MIN_P_HELPFUL = 0.7;
+
+/** A note the judge gives at least this chance of a place on the team's
+ *  leaderboard matters even on a creator outside the list above. With
+ *  MIN_P_HELPFUL this gave about 10 candidates a day over that week. */
+const MIN_P_IMPACTFUL = 0.25;
+
 const SITE = "https://commonnotes.net";
 const HELPFUL: Vote = 1;
 const SOMEWHAT_HELPFUL: Vote = 0;
@@ -42,8 +53,10 @@ const SOMEWHAT_HELPFUL: Vote = 0;
 export type Reason =
   | { type: "rated_helpful" }
   | { type: "helpful_votes"; helpful: number; somewhatHelpful: number; fromTeam: number }
-  | { type: "written_by_person"; author: string }
-  | { type: "important_creator" };
+  | { type: "judged_promising"; pHelpful: number };
+
+/** The note judge's answer for a note's current text. */
+export type Judgement = { pHelpful: number; pImpactful: number; reasoning: string; judgedAt: string };
 
 type NoteRow = {
   id: string;
@@ -95,6 +108,10 @@ export type Candidate = {
   /** When the job last posted this note, if it did. Such a note only comes back
    *  when it got a new Helpful or Somewhat helpful vote since. */
   postedAt: string | null;
+  /** The note judge's answer, for notes of the Claude note writer it judged. */
+  judge: Judgement | null;
+  /** Whether the note is on one of the important creators. */
+  importantCreator: boolean;
 };
 
 /** Note ids mapped to when the job posted them in Slack. */
@@ -115,28 +132,61 @@ export function parsePostedLog(text: string): PostedLog {
   return log;
 }
 
+type DraftRow = { id: string; note_id: string };
+type JudgementRow = { draft_id: string; note: string; p_helpful: number; p_impactful: number; reasoning: string; judged_at: string };
+
+/** The judge's answers for these notes, by note id. An answer about an older
+ *  text of the note, from before a rewrite, is left out. */
+async function fetchJudgements(notes: NoteRow[]): Promise<Map<string, Judgement>> {
+  const db = getSupabaseClient();
+  const drafts = await fetchInBatches<DraftRow>(
+    (chunk) => db.from("everything_claude_drafts").select("id, note_id").in("note_id", chunk),
+    notes.map((note) => note.id),
+    "id",
+    { label: "drafts" },
+  );
+  const judgements = await fetchInBatches<JudgementRow>(
+    (chunk) => db.from("everything_claude_judgements").select("draft_id, note, p_helpful, p_impactful, reasoning, judged_at").in("draft_id", chunk),
+    drafts.map((draft) => draft.id),
+    "draft_id",
+    { label: "judgements" },
+  );
+  const noteIdByDraft = new Map(drafts.map((draft) => [draft.id, draft.note_id]));
+  const textById = new Map(notes.map((note) => [note.id, note.note]));
+  const byNote = new Map<string, Judgement>();
+  for (const row of judgements) {
+    const noteId = noteIdByDraft.get(row.draft_id);
+    if (!noteId || textById.get(noteId) !== row.note) continue;
+    byNote.set(noteId, { pHelpful: row.p_helpful, pImpactful: row.p_impactful, reasoning: row.reasoning, judgedAt: row.judged_at });
+  }
+  return byNote;
+}
+
 export async function findCandidates(since: string, posted: PostedLog): Promise<Candidate[]> {
   const db = getSupabaseClient();
-  const [newNotes, recentVotes, teamIds] = await Promise.all([
-    fetchAllRows<NoteRow>(() => db.from("everything_notes").select(NOTE_COLUMNS).neq("status", "hidden").gte("created_at", since), "id", {
-      label: "new notes",
+  const [recentJudgements, recentVotes, teamIds] = await Promise.all([
+    fetchAllRows<{ draft_id: string }>(() => db.from("everything_claude_judgements").select("draft_id").gte("judged_at", since), "draft_id", {
+      label: "recent judgements",
     }),
     fetchAllRows<{ id: string; note_id: string }>(() => db.from("everything_votes").select("id, note_id").gte("updated_at", since), "id", {
       label: "recent votes",
     }),
     teamVoterIds(),
   ]);
-  const newNoteIds = new Set(newNotes.map((note) => note.id));
-  const votedNoteIds = [...new Set(recentVotes.map((vote) => vote.note_id))].filter((id) => !newNoteIds.has(id));
-  const votedNotes = await fetchInBatches<NoteRow>(
-    (chunk) => db.from("everything_notes").select(NOTE_COLUMNS).neq("status", "hidden").in("id", chunk),
-    votedNoteIds,
+  const judgedDrafts = await fetchInBatches<DraftRow>(
+    (chunk) => db.from("everything_claude_drafts").select("id, note_id").in("id", chunk).not("note_id", "is", null),
+    recentJudgements.map((judgement) => judgement.draft_id),
     "id",
-    { label: "voted notes" },
+    { label: "judged drafts" },
   );
-  const notes = [...newNotes, ...votedNotes];
-  const noteIds = notes.map((note) => note.id);
-  const [votes, sources, minisites] = await Promise.all([
+  const noteIds = [...new Set([...judgedDrafts.map((draft) => draft.note_id), ...recentVotes.map((vote) => vote.note_id)])];
+  const notes = await fetchInBatches<NoteRow>(
+    (chunk) => db.from("everything_notes").select(NOTE_COLUMNS).neq("status", "hidden").in("id", chunk),
+    noteIds,
+    "id",
+    { label: "notes" },
+  );
+  const [votes, sources, minisites, judgements] = await Promise.all([
     fetchInBatches<VoteRow>(
       (chunk) => db.from("everything_votes").select("id, note_id, voter_id, vote, updated_at").in("note_id", chunk),
       noteIds,
@@ -155,6 +205,7 @@ export async function findCandidates(since: string, posted: PostedLog): Promise<
       "id",
       { label: "minisites" },
     ),
+    fetchJudgements(notes),
   ]);
   const votesByNote = groupBy(votes, (vote) => vote.note_id);
   const sourcesByNote = groupBy(sources, (source) => source.note_id);
@@ -170,6 +221,7 @@ export async function findCandidates(since: string, posted: PostedLog): Promise<
         teamIds,
         since,
         postedAt: posted.get(note.id) ?? null,
+        judge: judgements.get(note.id) ?? null,
       }),
     )
     .filter((candidate): candidate is Candidate => candidate !== null)
@@ -185,8 +237,9 @@ export function toCandidate(params: {
   teamIds: Set<string>;
   since: string;
   postedAt: string | null;
+  judge: Judgement | null;
 }): Candidate | null {
-  const { note, votes, teamIds, postedAt } = params;
+  const { note, votes, teamIds, postedAt, judge } = params;
   const othersVotes = votes.filter((vote) => vote.voter_id !== note.author_id);
   const isPositive = (vote: VoteRow) => vote.vote === HELPFUL || vote.vote === SOMEWHAT_HELPFUL;
   // A note posted before only comes back for votes that arrived after the post.
@@ -206,10 +259,13 @@ export function toCandidate(params: {
       fromTeam: newPositiveVotes.filter((vote) => teamIds.has(vote.voter_id)).length,
     });
   }
-  const isNew = note.created_at >= since;
-  if (isNew && note.author_id) reasons.push({ type: "written_by_person", author: note.author_name ?? "a reader" });
-  if (isNew && IMPORTANT_CREATOR_FEED_URLS.has(note.claim.item.project?.feed_url ?? "")) reasons.push({ type: "important_creator" });
-  if (reasons.length === 0) return null;
+  if (judge && judge.judgedAt >= since && judge.pHelpful >= MIN_P_HELPFUL) reasons.push({ type: "judged_promising", pHelpful: judge.pHelpful });
+  const importantCreator = IMPORTANT_CREATOR_FEED_URLS.has(note.claim.item.project?.feed_url ?? "");
+  const matters = importantCreator || (judge !== null && judge.pImpactful >= MIN_P_IMPACTFUL);
+  const gotHelpfulVote = newPositiveVotes.some((vote) => vote.vote === HELPFUL);
+  const promising = gotHelpfulVote || reasons.some((reason) => reason.type === "judged_promising");
+  const ratedHelpful = reasons.some((reason) => reason.type === "rated_helpful");
+  if (!ratedHelpful && !(promising && matters)) return null;
 
   const { claim } = note;
   const { item } = claim;
@@ -247,6 +303,8 @@ export function toCandidate(params: {
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((source) => ({ url: source.url, quote: source.quote, explanation: source.explanation })),
     postedAt,
+    judge,
+    importantCreator,
   };
 }
 
@@ -254,8 +312,7 @@ export function toCandidate(params: {
 const REASON_WEIGHT: Record<Reason["type"], number> = {
   rated_helpful: 8,
   helpful_votes: 4,
-  written_by_person: 2,
-  important_creator: 1,
+  judged_promising: 2,
 };
 
 const strength = (candidate: Candidate) => candidate.reasons.reduce((sum, reason) => sum + REASON_WEIGHT[reason.type], 0);

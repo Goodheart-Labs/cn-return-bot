@@ -19,9 +19,6 @@ export const tallyVisible = (myVote: Vote | undefined, createdAt: string) =>
 export const noteTallyVisible = (status: NoteStatus, myVote: Vote | undefined, createdAt: string) =>
   status !== "needs_ratings" || tallyVisible(myVote, createdAt);
 
-export const totalVotes = (n: Pick<NoteRow, "helpful_count" | "somewhat_helpful_count" | "not_helpful_count">) =>
-  n.helpful_count + n.somewhat_helpful_count + n.not_helpful_count;
-
 /** A note is rated once the crowd's estimate that it ends up helpful is decisive.
  *  This one predicate drives three things that used to be decided separately. It
  *  picks the badge on the card. It picks which section of the feed the note lands

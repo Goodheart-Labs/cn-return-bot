@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { fetchAllRows, fetchInBatches } from "./paging";
+import { fetchAllRows, fetchByIds, fetchInBatches } from "./paging";
 
 type Row = { id: number; tag: string };
 
@@ -58,5 +58,15 @@ describe("fetchInBatches", () => {
     const table = fakeTable(rowsUpTo(3000, () => "same"), 1000);
     const rows = await fetchInBatches<Row>((chunk) => table.build(chunk), ["same", "other"], "id", { chunkSize: 1 });
     expect(rows).toHaveLength(3000);
+  });
+});
+
+describe("fetchByIds", () => {
+  test("reads each chunk of unique ids with one request", async () => {
+    const table = fakeTable(rowsUpTo(450, (i) => `id${i}`), 1000);
+    const ids = rowsUpTo(450, (i) => `id${i}`).map((r) => r.tag);
+    const rows = await fetchByIds<Row>((chunk) => table.build(chunk), ids);
+    expect(rows).toHaveLength(450);
+    expect(table.requests()).toBe(3);
   });
 });

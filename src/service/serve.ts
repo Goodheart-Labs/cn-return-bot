@@ -7,6 +7,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import {
   HEALTH_PATH,
   SERVICE_AUTH_HEADER,
+  ServiceError,
   type HealthResponse,
   type ServiceErrorResponse,
   type ServiceName,
@@ -29,8 +30,10 @@ const IDLE_TIMEOUT_SECONDS = 120;
 export interface ServiceRoute<Body, Answer> {
   path: string;
   /** Reads the priority off a parsed body, so the queue knows how urgent the
-   *  call is before the work starts. */
-  priorityOf: (body: Body) => WorkPriority;
+   *  call is before the work starts. It is null for a route that only relays a
+   *  quick fetch, such as a Substack feed. That route skips the queue, so it
+   *  never waits minutes behind a long extraction. */
+  priorityOf: ((body: Body) => WorkPriority) | null;
   handle: (body: Body) => Promise<Answer>;
 }
 
@@ -77,8 +80,9 @@ export function startService(options: ServiceOptions) {
         return errorResponse("Body is not valid JSON", 400);
       }
 
+      const { priorityOf } = route;
       return streamWhileWorking(
-        () => queue.run(route.priorityOf(body), () => route.handle(body)),
+        () => (priorityOf ? queue.run(priorityOf(body), () => route.handle(body)) : route.handle(body)),
         keepaliveMs,
       );
     },
@@ -104,7 +108,8 @@ function secretMatches(given: string | null, secret: string): boolean {
 /** Answers with a stream that stays alive while the work runs and ends with the
  *  JSON answer. A failure becomes an error answer on the same stream, because
  *  by then the status line has already gone out and cannot be changed. The
- *  caller tells the two apart by looking for the `error` field. */
+ *  caller tells the two apart by looking for the `error` field, and reads what
+ *  went wrong from its `code`. */
 function streamWhileWorking<Answer>(work: () => Promise<Answer>, keepaliveMs: number): Response {
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -122,7 +127,8 @@ function streamWhileWorking<Answer>(work: () => Promise<Answer>, keepaliveMs: nu
         const answer = await work();
         send(JSON.stringify(answer));
       } catch (err: any) {
-        send(JSON.stringify({ error: err?.message ?? String(err) } satisfies ServiceErrorResponse));
+        const failure: ServiceErrorResponse = err instanceof ServiceError ? err.response : { code: "failed", error: err?.message ?? String(err) };
+        send(JSON.stringify(failure));
       } finally {
         clearInterval(keepalive);
         try {
@@ -135,7 +141,7 @@ function streamWhileWorking<Answer>(work: () => Promise<Answer>, keepaliveMs: nu
 }
 
 function errorResponse(message: string, status: number): Response {
-  return Response.json({ error: message } satisfies ServiceErrorResponse, { status });
+  return Response.json({ code: "rejected", error: message } satisfies ServiceErrorResponse, { status });
 }
 
 export function requiredEnv(name: string): string {

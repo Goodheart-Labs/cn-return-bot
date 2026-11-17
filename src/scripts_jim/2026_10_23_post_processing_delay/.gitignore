@@ -1,0 +1,2 @@
+# Production data the scripts write. It stays local, because the repo is public.
+*.json

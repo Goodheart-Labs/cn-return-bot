@@ -7,6 +7,9 @@ import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
+import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
+import { CLAUDE_NOTEWRITER, PIPELINE_NOTEWRITER } from "../notewriters/ids";
+import type { WatchedNotewriter } from "./notewriterSilence";
 import type { ItemSource, NoteSourceCitation } from "./types";
 
 /** The queue's priority tiers. The worker takes the highest tier first, and the
@@ -22,7 +25,6 @@ export const QUEUE_PRIORITY = {
 } as const;
 
 export interface EverythingItem {
-  request_steer?: string | null;
   id: string;
   project_id: string | null;
   source: ItemSource;
@@ -40,9 +42,12 @@ export interface EverythingItem {
   full_text: string | null;
   /** How many repeat attempts this item has been given after failing. */
   retries: number;
+  checked_scope: CheckedScope;
+  /** When the page first finished as a whole-page check (migration 133). */
+  first_checked_at: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, request_steer, retries";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, checked_scope, first_checked_at, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -207,13 +212,13 @@ export type CheckedScope = "page" | "paragraph" | null;
  *  or an item whose body we already have. Local `--doc` files and posts read
  *  from a priority feed's RSS are the second kind. */
 export interface EnqueueRow {
-  request_steer?: string | null;
   project_id: string;
   source: ItemSource;
   url: string;
   title?: string; // We know this when the body is supplied. A live URL gets its title from the worker's fetch.
   full_text?: string; // The body we already have. A live URL carries none here.
   published_at?: string; // We know this at enqueue for an RSS-fed item. Otherwise the worker sets it.
+  published_time?: string; // The exact moment of publication, when the walk's listing gives one.
   priority?: number; // A QUEUE_PRIORITY tier. Left out it defaults to the backlog tier.
   checked_scope?: "page" | "paragraph"; // Left out it defaults to a whole-page check.
 }
@@ -222,7 +227,7 @@ export interface EnqueueRow {
  *  already have is ignored. Every row is padded to the same set of keys, because
  *  PostgREST rejects a bulk insert whose rows have differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
-  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, priority: QUEUE_PRIORITY.backlog, checked_scope: "page", ...r }));
+  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, published_time: null, priority: QUEUE_PRIORITY.backlog, checked_scope: "page", ...r }));
   const inserted = throwOnError(
     await getSupabaseClient()
       .from("everything_items")
@@ -249,28 +254,36 @@ export async function raiseItemPriority(id: string, priority: number): Promise<v
   );
 }
 
+/** What a request needs to know about the item its page already has. */
+export interface PageItemState {
+  id: string;
+  status: string;
+  checked_scope: CheckedScope;
+  first_checked_at: string | null;
+}
+
 /** Finds the item a page URL resolves to, whatever its status. A YouTube page is
  *  matched by its video id, because the stored URL forms vary. Any other URL is
  *  matched exactly, apart from a trailing slash. This mirrors the extension's
  *  fetchItemForUrl. */
 export async function findItemForPageUrl(
   pageUrl: string,
-): Promise<{ id: string; status: string; checked_scope: CheckedScope } | null> {
+): Promise<PageItemState | null> {
   const db = getSupabaseClient();
   const videoId = extractYoutubeVideoId(pageUrl);
   if (videoId) {
     // ilike reads an underscore in the video id as a wildcard, so this is only a
     // prefilter. Every row it returns is verified by comparing the id exactly.
     const rows = throwOnError(
-      await db.from("everything_items").select("id, status, checked_scope, url").ilike("url", `%${videoId}%`),
-    ) as { id: string; status: string; checked_scope: CheckedScope; url: string }[];
+      await db.from("everything_items").select("id, status, checked_scope, first_checked_at, url").ilike("url", `%${videoId}%`),
+    ) as (PageItemState & { url: string })[];
     const hit = rows.find((r) => extractYoutubeVideoId(r.url) === videoId);
-    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope } : null;
+    return hit ? { id: hit.id, status: hit.status, checked_scope: hit.checked_scope, first_checked_at: hit.first_checked_at } : null;
   }
   const trimmed = pageUrl.replace(/\/$/, "");
   const rows = throwOnError(
-    await db.from("everything_items").select("id, status, checked_scope").in("url", [trimmed, `${trimmed}/`]).limit(1),
-  ) as { id: string; status: string; checked_scope: CheckedScope }[];
+    await db.from("everything_items").select("id, status, checked_scope, first_checked_at").in("url", [trimmed, `${trimmed}/`]).limit(1),
+  ) as PageItemState[];
   return rows[0] ?? null;
 }
 
@@ -284,7 +297,7 @@ export async function promoteItemToWholePage(id: string, fullText: string | null
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ checked_scope: "page", full_text: fullText, request_steer: null, status: "queued", error: null })
+      .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
       .eq("id", id),
   );
   await raiseItemPriority(id, priority);
@@ -382,6 +395,26 @@ export async function fetchRetryableErrorItems(
   return rows.map(({ everything_projects, ...item }) => ({ ...item, feed_url: everything_projects?.feed_url ?? null }));
 }
 
+/** How one feed item's check ended: its source, and whether it failed. A post
+ *  finished with a skip reason, such as a video without captions, counts as
+ *  neither a failure nor a read. */
+export interface ItemOutcome {
+  source: string;
+  outcome: "failed" | "read" | "skipped";
+}
+
+/** The outcomes of the items whose check ended since the given time. */
+export async function fetchItemOutcomesSince(since: Date): Promise<ItemOutcome[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("source, status, skip_reason")
+      .in("status", ["done", "error"])
+      .gte("processed_at", since.toISOString()),
+  ) as { source: string; status: "done" | "error"; skip_reason: string | null }[];
+  return rows.map((r) => ({ source: r.source, outcome: r.status === "error" ? "failed" : r.skip_reason ? "skipped" : "read" }));
+}
+
 /** Puts an errored item back in the queue at the given tier for a repeat
  *  attempt, and counts the attempt. The last error text stays on the row until
  *  the item finishes, so a waiting retry still shows why the item failed. */
@@ -418,15 +451,152 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
-/** While the Claude note writer writes the notes (migration 129, GOO-507),
- *  the pipeline takes only the items Claude handed back to it, and this returns
- *  their ids. It returns null while the pipeline writes the notes as before. */
-async function itemsLeftToThePipeline(): Promise<string[] | null> {
+/** Whether the pipeline writes notes on this tier of the queue. The pipeline
+ *  is the notewriter `pipeline` (GOO-724). Any subscription means it takes
+ *  feed posts, and takes_reader_requests means it takes reader requests. Its
+ *  pace comes from the money pacing in pacing.ts, not from its interval. */
+async function pipelineTakes(tier: "requested" | "feed"): Promise<boolean> {
+  const row = throwOnError(
+    await getSupabaseClient().from("everything_notewriters").select("every_minutes, takes_reader_requests").eq("id", PIPELINE_NOTEWRITER).single(),
+  ) as { every_minutes: number | null; takes_reader_requests: boolean };
+  return tier === "feed" ? row.every_minutes !== null : row.takes_reader_requests;
+}
+
+/** The items a notewriter holds now. The pipeline never takes one of them. */
+async function heldItemIds(): Promise<string[]> {
+  const rows = throwOnError(await getSupabaseClient().from("everything_assignments").select("item_id").is("ended_at", null)) as { item_id: string }[];
+  return rows.map((row) => row.item_id);
+}
+
+/** A post a notewriter failed on, or held past its deadline. */
+export interface NotewriterFailure {
+  notewriter: string;
+  endedAt: string;
+  url: string;
+  reason: string;
+}
+
+/** A run reports at most this many failures. Any more wait for the next run,
+ *  which is red anyway. */
+const MAX_FAILURES_PER_RUN = 50;
+
+/** The failed and expired assignments that no feed run has reported yet. They
+ *  are marked as reported here, so each failure turns exactly one run red,
+ *  however far apart the runs are. */
+export async function takeUnreportedFailures(): Promise<NotewriterFailure[]> {
   const db = getSupabaseClient();
-  const settings = throwOnError(await db.from("everything_claude_settings").select("writer").single()) as { writer: string };
-  if (settings.writer !== "claude") return null;
-  const handbacks = throwOnError(await db.from("everything_claude_handbacks").select("item_id")) as { item_id: string }[];
-  return handbacks.map((h) => h.item_id);
+  const schedule = throwOnError(await db.from("everything_feed_schedule").select("failures_reported_through").single()) as {
+    failures_reported_through: string;
+  };
+  // The client is untyped, so it takes the embedded item for a list. An
+  // assignment has one item, and PostgREST sends it as one object.
+  const rows = throwOnError(
+    await db
+      .from("everything_assignments")
+      .select("notewriter_id, ended_at, reason, item:everything_items(url)")
+      .in("outcome", ["failed", "expired"])
+      .gt("ended_at", schedule.failures_reported_through)
+      .order("ended_at")
+      .limit(MAX_FAILURES_PER_RUN),
+  ) as unknown as { notewriter_id: string; ended_at: string; reason: string; item: { url: string } }[];
+  if (rows.length === 0) return [];
+  throwOnError(await db.from("everything_feed_schedule").update({ failures_reported_through: rows.at(-1)!.ended_at }).eq("id", true));
+  return rows.map((row) => ({ notewriter: row.notewriter_id, endedAt: row.ended_at, url: row.item.url, reason: row.reason }));
+}
+
+export async function fetchWatchedNotewriters(): Promise<WatchedNotewriter[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_notewriters")
+      .select("id, name, owner, every_minutes, takes_reader_requests, last_seen_at, silence_warned_for, everything_assignments(id)")
+      .is("everything_assignments.ended_at", null),
+  ) as (Omit<WatchedNotewriter, "holdsPost"> & { everything_assignments: { id: string }[] })[];
+  return rows.map(({ everything_assignments, ...row }) => ({ ...row, holdsPost: everything_assignments.length > 0 }));
+}
+
+export async function setSilenceWarnedFor(notewriter: string, warnedFor: Date | null): Promise<void> {
+  throwOnError(
+    await getSupabaseClient().from("everything_notewriters").update({ silence_warned_for: warnedFor?.toISOString() ?? null }).eq("id", notewriter),
+  );
+}
+
+/** The posts the notewriters want waiting, one for each subscribed notewriter
+ *  that is not on a break, and how many feed posts wait that nobody holds. */
+export async function fetchFeedPostsWanted(): Promise<{ wanted: number; waiting: number }> {
+  const rows = throwOnError(await getSupabaseClient().rpc("notewriter_feed_posts_wanted")) as { wanted: number; waiting: number }[];
+  return rows[0]!;
+}
+
+/** Takes back every post held past its deadline, as a failure of its holder. */
+export async function takeBackOverduePosts(): Promise<number> {
+  return throwOnError(await getSupabaseClient().rpc("notewriter_take_back_overdue")) as number;
+}
+
+/** How many queued posts one pass of the intake service's preparer reads. */
+const ITEMS_PREPARED_PER_PASS = 20;
+
+/** Queued posts no notewriter can get yet: ones without stored text, and
+ *  videos without their caption timings. Reader requests come first. */
+export async function fetchItemsToPrepare(): Promise<EverythingItem[]> {
+  return throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select(ITEM_COLUMNS)
+      .eq("status", "queued")
+      .or("full_text.is.null,and(source.eq.youtube,caption_cues.is.null)")
+      .order("priority", { ascending: false })
+      .order("created_at")
+      .limit(ITEMS_PREPARED_PER_PASS),
+  ) as EverythingItem[];
+}
+
+export async function storeCaptionCues(id: string, cues: unknown[]): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ caption_cues: cues }).eq("id", id));
+}
+
+export async function recordReadFailure(itemId: string, reason: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_read_failures").insert({ item_id: itemId, reason }));
+}
+
+/** The posts the preparer could not read that no feed run has reported yet.
+ *  They are marked as reported here, so each turns exactly one run red. */
+export async function takeUnreportedReadFailures(): Promise<{ at: string; url: string; reason: string }[]> {
+  const db = getSupabaseClient();
+  const rows = throwOnError(
+    await db.from("everything_read_failures").select("id, at, reason, item:everything_items(url)").is("reported_at", null).order("id").limit(MAX_FAILURES_PER_RUN),
+  ) as unknown as { id: number; at: string; reason: string; item: { url: string } }[];
+  if (rows.length === 0) return [];
+  throwOnError(await db.from("everything_read_failures").update({ reported_at: new Date().toISOString() }).in("id", rows.map((row) => row.id)));
+  return rows.map((row) => ({ at: row.at, url: row.item.url, reason: row.reason }));
+}
+
+/** What the usage pacing of the Claude note writer needs (usagePacing.ts):
+ *  the usage readings and the posts Claude took over the window. Before the
+ *  notewriter protocol (GOO-724), Claude logged each post it took as an
+ *  item_taken event, and since then each post is an assignment. For the 7
+ *  days after the switch the window holds both, so both are counted. */
+export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
+  const now = new Date();
+  const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
+  const db = getSupabaseClient();
+  const [readings, assigned, takenBefore] = await Promise.all([
+    fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
+      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+      "id",
+      { label: "claudeUsage" },
+    ),
+    db.from("everything_assignments").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
+    db.from("everything_claude_events").select("id", { count: "exact", head: true }).eq("type", "item_taken").gte("at", since),
+  ]);
+  if (assigned.error) throw new Error(`Supabase: ${assigned.error.message}`);
+  if (takenBefore.error) throw new Error(`Supabase: ${takenBefore.error.message}`);
+  return {
+    now,
+    readings: readings
+      .sort((a, b) => a.at.localeCompare(b.at))
+      .map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
+    postsTaken: (assigned.count ?? 0) + (takenBefore.count ?? 0),
+  };
 }
 
 /** Moves the next queued item to `processing` and returns it. The highest
@@ -439,16 +609,14 @@ async function itemsLeftToThePipeline(): Promise<string[] | null> {
  *  safe because each tier has exactly one worker: the intake service on the
  *  machine takes only the requested tier, and the Actions feed run takes only
  *  the tiers below it. Two workers exist, but they can never want the same
- *  row. While the Claude note writer is on, both take only what it handed
- *  back, and Claude takes the rest. */
+ *  row. Both take items only while the notewriter `pipeline` is subscribed,
+ *  and never an item another notewriter holds. */
 export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
+  if (!(await pipelineTakes(tier))) return null;
   const db = getSupabaseClient();
-  let query = db
-    .from("everything_items")
-    .select(ITEM_COLUMNS)
-    .eq("status", "queued");
-  const handedBack = await itemsLeftToThePipeline();
-  if (handedBack) query = query.in("id", handedBack);
+  let query = db.from("everything_items").select(ITEM_COLUMNS).eq("status", "queued");
+  const held = await heldItemIds();
+  if (held.length > 0) query = query.not("id", "in", `(${held.join(",")})`);
   query =
     tier === "requested"
       ? query.gte("priority", QUEUE_PRIORITY.requested)
@@ -626,8 +794,8 @@ export interface NoteRequestRow {
   page_title: string;
   selection: string | null;
   page_text: string | null;
+  /** The reader's own words on why the selected passage needs a note. */
   steer?: string | null;
-  passage_question_id?: string | null;
   /** The creator's feed URL as the extension worked it out. Untrusted input:
    *  the consumer uses it only when it parses as a creator feed. */
   feed_url?: string | null;
@@ -672,7 +840,7 @@ export async function fetchPendingNoteRequests(): Promise<NoteRequestRow[]> {
   return throwOnError(
     await getSupabaseClient()
       .from("everything_note_requests")
-      .select("id, page_url, page_title, selection, page_text, steer, passage_question_id, feed_url")
+      .select("id, page_url, page_title, selection, page_text, steer, feed_url")
       .eq("status", "pending")
       .order("created_at"),
   ) as NoteRequestRow[];
@@ -852,6 +1020,9 @@ export interface StoredUpload {
   title: string;
   /** The publish day, YYYY-MM-DD. */
   publishedAt: string;
+  /** The exact moment of publication. A listing stored before 2026-10-23
+   *  has only the day. */
+  publishedTime?: string;
   /** A premiere or stream that has not started, which cannot be checked yet. */
   upcoming: boolean;
 }
@@ -954,15 +1125,15 @@ function inWorkerOrder(a: { priority: number; published_at: string | null; creat
   return a.created_at.localeCompare(b.created_at);
 }
 
-/** Every visited creator's score, counted in the database (see
- *  everything_creator_visit_scores, migrations 119 and 123). `lastPosts` is how many of
- *  a creator's most recently visited posts the average covers. */
-export async function fetchCreatorVisitScores(lastPosts: number): Promise<CreatorVisitScore[]> {
+/** Every visited creator's visit numbers over their LAST_POSTS_PER_CREATOR
+ *  most recently visited posts. They are counted once a day and stored in the
+ *  materialized view everything_creator_visits (migration 135), because
+ *  counting them reads every visit row ever written. */
+export async function fetchCreatorVisitScores(): Promise<CreatorVisitScore[]> {
   // One row per creator anyone visited, which passed 1,000 rows in September
-  // 2026. PostgREST can order and filter a function's rows, and feed_url is
-  // unique among them, so the rows page by it like a table.
+  // 2026. feed_url is unique in the view, so the rows page by it.
   return fetchAllRows<CreatorVisitScore>(
-    () => getSupabaseClient().rpc("everything_creator_visit_scores", { last_posts: lastPosts }),
+    () => getSupabaseClient().from("everything_creator_visits").select("feed_url, visitors_per_post, posts, people"),
     "feed_url",
     { label: "creatorVisitScores" },
   );

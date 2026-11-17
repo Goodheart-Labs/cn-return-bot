@@ -25,31 +25,47 @@ export interface ABTest {
   defaultVariant?: string;
 }
 
+// 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer on
+// Nathan's ai-box. The X run draws this test itself. While the X share of
+// Nathan's Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
+// On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work,
+// and on 2026-11-14 he turned them back on at their old weight.
+// 2026-11-12 (GOO-734): the agent note writer of src/agent-notes/ on GPT-6.1 Terra and on
+// Sonnet 5.5, with our Serper search and page fetch (src/bots/agentBots.ts). Each gets a
+// sixth of the tweets, the weight of 25 Jim chose for GPT on 2026-11-09.
 export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
-    { variant: { name: "simple-bot",  overrides: { botId: "simple-bot" }}, weight: 100 },
+    { variant: { name: "simple-bot",       overrides: { botId: "simple-bot" }},       weight: 100 },
+    { variant: { name: "claude-code",      overrides: { botId: "claude-code" }},      weight: 50 },
+    { variant: { name: "gpt61terra-agent", overrides: { botId: "gpt61terra-agent" }}, weight: 25 },
+    { variant: { name: "sonnet55-agent",   overrides: { botId: "sonnet55-agent" }},   weight: 25 },
   ],
 };
 
+// 2026-11-04 (GOO-698): the research step costs twice what it did in summer, so Jim moved it
+// to Sonnet 5.5 (35), GPT 6.1 Terra (35), GLM 5.3 Flash (20) and Haiku 5.5 (10), each new one at
+// medium reasoning. Every other arm goes to 0.
+// 2026-11-12 (GOO-762): Jim set Haiku 5.5 to 0. The other three keep their relative sizes,
+// so Sonnet 5.5 and GPT 6.1 Terra each get about 39% of the posts and GLM 5.3 Flash about 22%.
 const SIMPLE_BOT_SEARCH_TEST: ABTest = {
   name: "simple_bot_search",
   prerequisites: { botId: "simple-bot" },
   variants: [
     { variant: { name: "sonnet46-native",         overrides: { search_model: "anthropic/claude-sonnet-4.6",       web_search: "native" }},        weight: 0 },
-    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 25 },
+    { variant: { name: "sonnet5-native",          overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native" }},        weight: 0 },
     { variant: { name: "sonnet5-native-medium",   overrides: { search_model: "anthropic/claude-sonnet-5",         web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "opus48-native",           overrides: { search_model: "anthropic/claude-opus-4.8",         web_search: "native" }},        weight: 0 },
-    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 30 },
-    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 15 },
+    { variant: { name: "opus5-native",            overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native" }},        weight: 0 },
+    { variant: { name: "opus5-native-medium",     overrides: { search_model: "anthropic/claude-opus-5",           web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
     { variant: { name: "haiku45-native",          overrides: { search_model: "anthropic/claude-haiku-4.5",        web_search: "native" }},        weight: 0 },
     { variant: { name: "grok43-native",           overrides: { search_model: "x-ai/grok-4.3",                     web_search: "native_grok" }},   weight: 0 },
     { variant: { name: "grok45-native",           overrides: { search_model: "x-ai/grok-4.5",                     web_search: "native_grok" }},   weight: 0 },
-    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 7 },
-    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 10 },
+    { variant: { name: "grok46-native",           overrides: { search_model: "x-ai/grok-4.6",                     web_search: "native_grok" }},   weight: 0 },
+    { variant: { name: "gemini3flash-native",     overrides: { search_model: "google/gemini-3-flash-preview",     web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini35flash-native",    overrides: { search_model: "google/gemini-3.5-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini36flash-native",    overrides: { search_model: "google/gemini-3.6-flash",           web_search: "native_gemini" }}, weight: 0 },
-    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 6 },
+    { variant: { name: "gemini38flash-native",    overrides: { search_model: "google/gemini-3.8-flash",           web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "gemini31pro-native",      overrides: { search_model: "google/gemini-3.1-pro-preview",      web_search: "native_gemini" }}, weight: 0 },
     { variant: { name: "sonar-reasoning-pro",     overrides: { search_model: "perplexity/sonar-reasoning-pro",    web_search: "bundled" }},       weight: 0 },
     { variant: { name: "sonar-pro",               overrides: { search_model: "perplexity/sonar-pro",              web_search: "bundled" }},       weight: 0 },
@@ -62,7 +78,7 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "glm52-searxng",           overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm52-serper",            overrides: { search_model: "z-ai/glm-5.2",                      web_search: "serper" }},       weight: 0 },
     { variant: { name: "glm53-serper",            overrides: { search_model: "z-ai/glm-5.3",                      web_search: "serper" }},       weight: 0 },
-    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 7 },
+    { variant: { name: "glm53flash-serper",       overrides: { search_model: "z-ai/glm-5.3-flash",                web_search: "serper" }},       weight: 20 },
     { variant: { name: "musespark13c-serper",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "serper" }},       weight: 0 },
     { variant: { name: "musespark13c-native",     overrides: { search_model: "meta/muse-spark-1.3-contributor",   web_search: "openrouter_native" }}, weight: 0 },
     { variant: { name: "gpt6luna-native",         overrides: { search_model: "openai/gpt-6-luna",                 web_search: "openrouter_native" }}, weight: 0 },
@@ -74,17 +90,22 @@ const SIMPLE_BOT_SEARCH_TEST: ABTest = {
     { variant: { name: "gpt5_6terra-native",      overrides: { search_model: "openai/gpt-5.6-terra",              web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "gpt5_6sol-native",        overrides: { search_model: "openai/gpt-5.6-sol",                web_search: "native_openai" }}, weight: 0 },
     { variant: { name: "mistral-large-3-searxng", overrides: { search_model: "mistralai/mistral-large-2512",      web_search: "serper" }},       weight: 0 },
+    { variant: { name: "haiku55-native-medium",   overrides: { search_model: "anthropic/claude-haiku-5.5",        web_search: "native", search_reasoning_effort: "medium" }}, weight: 0 },
+    { variant: { name: "sonnet55-native-medium",  overrides: { search_model: "anthropic/claude-sonnet-5.5",       web_search: "native", search_reasoning_effort: "medium" }}, weight: 35 },
+    { variant: { name: "gpt6_1terra-native-medium", overrides: { search_model: "openai/gpt-6.1-terra",            web_search: "native_openai", search_reasoning_effort: "medium" }}, weight: 35 },
   ],
 };
 
 // 2026-09-17: Sonnet 5 carries the writer, three newcomers at 13 each (numbers in the PR).
 // 2026-09-18: GPT-5.6 Sol takes Gemini 3.8 Flash's share. The arm exists to keep a
 // non-Anthropic writer qualified, and Sol is priced the same as Sonnet 5.
+// 2026-10-13: the ex-Muse share goes to Sonnet 5. Muse's notes netted 2.5% against Sonnet 5's 9.3%,
+// and Luna is untested as a writer here (numbers in the PR).
 const SIMPLE_BOT_WRITER_TEST: ABTest = {
   name: "simple_bot_writer",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 60 },
+    { variant: { name: "sonnet5",          overrides: { writer_model: "anthropic/claude-sonnet-5"      }}, weight: 73 },
     { variant: { name: "gemini38flash",    overrides: { writer_model: "google/gemini-3.8-flash"       }}, weight: 0 },
     { variant: { name: "gpt5_6sol",        overrides: { writer_model: "openai/gpt-5.6-sol"            }}, weight: 13 },
     { variant: { name: "gemini-flash",     overrides: { writer_model: "google/gemini-3-flash-preview" }}, weight: 0 },
@@ -92,11 +113,9 @@ const SIMPLE_BOT_WRITER_TEST: ABTest = {
     { variant: { name: "opus5",            overrides: { writer_model: "anthropic/claude-opus-5"       }}, weight: 0 },
     { variant: { name: "sonnet",           overrides: { writer_model: "anthropic/claude-sonnet-4.6"   }}, weight: 0 },
     { variant: { name: "fable5",           overrides: { writer_model: "anthropic/claude-fable-5"      }}, weight: 0 },
-    // GPT-6 Luna is the fallback for Muse. It took Muse's share while Meta blocked our access on 2026-10-01
-    // (GOO-303) and gave it back once the block was lifted (GOO-322). Meta blocked us again on 2026-10-13,
-    // so Luna holds the share again.
+    // Common Notes pins its writer arm by name, so both stay defined at weight 0 (GOO-303, GOO-322).
     { variant: { name: "musespark13c",     overrides: { writer_model: "meta/muse-spark-1.3-contributor" }}, weight: 0 },
-    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 13 },
+    { variant: { name: "gpt6luna",         overrides: { writer_model: "openai/gpt-6-luna"             }}, weight: 0 },
     { variant: { name: "deepseek-v4flash", overrides: { writer_model: "deepseek/deepseek-v4-flash"    }}, weight: 0 },
   ],
 };
@@ -183,12 +202,14 @@ const TOPIC_FILTER_TEST: ABTest = {
 // The cascade replaces the note-needed prefilter, so it has to run before it.
 // The "precheck" arm is the search step as it was before the cascade existed,
 // with the prefilter where one is configured.
+// 2026-11-04 (GOO-698): every X post takes the cascading path, so the strong
+// research model runs only when the cheap step is unsure.
 const SEARCH_CASCADE_TEST: ABTest = {
   name: "search_cascade",
   prerequisites: { botId: "simple-bot" },
   variants: [
-    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 20 },
-    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 80 },
+    { variant: { name: "cascading", overrides: { search_cascade: true,  note_prefilter: false } }, weight: 100 },
+    { variant: { name: "precheck",  overrides: { search_cascade: false } }, weight: 0 },
   ],
 };
 
@@ -254,17 +275,6 @@ const VERIFIER_CITATIONS_TEST: ABTest = {
   ],
 };
 
-// Jina Reader reads the pages that every free fetch step failed on. It costs money, so it is off.
-// The arm is live only by force, for example in the claim checker evals. Turning it on for traffic is a change of weights.
-const JINA_FETCH_TEST: ABTest = {
-  name: "jina_fetch",
-  prerequisites: { botId: "simple-bot" },
-  variants: [
-    { variant: { name: "off", overrides: { jina_fetch: false } }, weight: 100 },
-    { variant: { name: "on",  overrides: { jina_fetch: true  } }, weight: 0 },
-  ],
-};
-
 // Provenance, not an experiment: processPosts forces the fetched feed tier.
 // Missing historical picks mean small, the original feed.
 const FEED_SIZE_TEST: ABTest = {
@@ -306,6 +316,43 @@ const PANGRAM_MONITORING_TEST: ABTest = {
     { variant: { name: "no",  overrides: {} }, weight: 100 },
     { variant: { name: "yes", overrides: {} }, weight: 0 },
   ],
+};
+
+// 2026-10-29 (GOO-612): two halves of the Claude Code note writer's prompt on X
+// tweets. with_thoughts adds Jim's sentences on what makes a good note to the
+// examples in the system prompt; on adds his nudge to research more. The X run
+// draws both for a tweet that drew claude-code (handTweetToClaude), and the
+// runner on ai-box builds the prompt from the picks. Since 2026-11-12 (GOO-734)
+// the agent bots, which share Claude's tweet prompt, draw them too.
+const CLAUDE_PROMPT_BOTS = ["claude-code", "gpt61terra-agent", "sonnet55-agent"];
+
+const CLAUDE_X_TASTE_TEST: ABTest = {
+  name: "claude_x_taste",
+  prerequisites: { botId: CLAUDE_PROMPT_BOTS },
+  variants: [
+    { variant: { name: "examples_only", overrides: {} }, weight: 50 },
+    { variant: { name: "with_thoughts", overrides: {} }, weight: 50 },
+  ],
+};
+
+const CLAUDE_X_RESEARCH_NUDGE_TEST: ABTest = {
+  name: "claude_x_research_nudge",
+  prerequisites: { botId: CLAUDE_PROMPT_BOTS },
+  variants: [
+    { variant: { name: "off", overrides: {} }, weight: 50 },
+    { variant: { name: "on",  overrides: {} }, weight: 50 },
+  ],
+};
+
+export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST];
+
+// The same taste test for the Claude note writer's Common Notes posts. The
+// runner on ai-box draws it when it takes a post and records the pick on the
+// post's everything_pipeline_runs row. Not in AB_TESTS, because no pipeline
+// run reads it.
+export const CLAUDE_CN_TASTE_TEST: ABTest = {
+  name: "claude_cn_taste",
+  variants: CLAUDE_X_TASTE_TEST.variants,
 };
 
 // Standalone Pangram wording experiment; sampled in generatePangramCandidates only.
@@ -372,7 +419,6 @@ export const AB_TESTS: ABTest[] = [
   VERIFIER_MEDIA_SOURCES_TEST,
   VERIFIER_CLAIM_BASED_TEST,
   VERIFIER_CITATIONS_TEST,
-  JINA_FETCH_TEST,
   SECOND_ROUND_TEST,
   EVAL_SUBMIT_THRESHOLD_TEST,
   FEED_SIZE_TEST,
@@ -382,4 +428,5 @@ export const AB_TESTS: ABTest[] = [
   PANGRAM_MONITORING_TEST,
   AUTHOR_HISTORY_TEST,
   RANKING_POLICY_TEST,
+  ...CLAUDE_X_TESTS,
 ];

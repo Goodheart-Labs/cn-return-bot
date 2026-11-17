@@ -116,19 +116,76 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_assignments: {
+        Row: {
+          deadline: string
+          ended_at: string | null
+          id: string
+          item_id: string
+          notewriter_id: string
+          outcome: string | null
+          reader_request: boolean
+          reason: string | null
+          started_at: string
+          summary: Json | null
+        }
+        Insert: {
+          deadline: string
+          ended_at?: string | null
+          id?: string
+          item_id: string
+          notewriter_id: string
+          outcome?: string | null
+          reader_request: boolean
+          reason?: string | null
+          started_at?: string
+          summary?: Json | null
+        }
+        Update: {
+          deadline?: string
+          ended_at?: string | null
+          id?: string
+          item_id?: string
+          notewriter_id?: string
+          outcome?: string | null
+          reader_request?: boolean
+          reason?: string | null
+          started_at?: string
+          summary?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_assignments_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_assignments_notewriter_id_fkey"
+            columns: ["notewriter_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_best_notes: {
         Row: {
           added_at: string
+          comment: string | null
           note_id: string
           position: number
         }
         Insert: {
           added_at?: string
+          comment?: string | null
           note_id: string
           position: number
         }
         Update: {
           added_at?: string
+          comment?: string | null
           note_id?: string
           position?: number
         }
@@ -217,12 +274,19 @@ export type Database = {
           outcome: string
           passage: string
           posted_as: string | null
+          proposed_note: string | null
+          proposed_sources: Json | null
           reasoning: string
+          review_note: string | null
+          review_note_at: string | null
+          review_note_by: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          run_id: string | null
           sources: Json
           status: string
           updated_at: string
+          verdict: string | null
           video_timing: Json | null
         }
         Insert: {
@@ -237,12 +301,19 @@ export type Database = {
           outcome: string
           passage: string
           posted_as?: string | null
+          proposed_note?: string | null
+          proposed_sources?: Json | null
           reasoning: string
+          review_note?: string | null
+          review_note_at?: string | null
+          review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          run_id?: string | null
           sources?: Json
           status: string
           updated_at?: string
+          verdict?: string | null
           video_timing?: Json | null
         }
         Update: {
@@ -257,12 +328,19 @@ export type Database = {
           outcome?: string
           passage?: string
           posted_as?: string | null
+          proposed_note?: string | null
+          proposed_sources?: Json | null
           reasoning?: string
+          review_note?: string | null
+          review_note_at?: string | null
+          review_note_by?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          run_id?: string | null
           sources?: Json
           status?: string
           updated_at?: string
+          verdict?: string | null
           video_timing?: Json | null
         }
         Relationships: [
@@ -278,6 +356,13 @@ export type Database = {
             columns: ["note_id"]
             isOneToOne: false
             referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_drafts_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "everything_pipeline_runs"
             referencedColumns: ["id"]
           },
         ]
@@ -330,53 +415,169 @@ export type Database = {
           },
         ]
       }
-      everything_claude_handbacks: {
+      everything_claude_few_shot_examples: {
         Row: {
-          at: string
-          item_id: string
-          reason: string
+          added_at: string
+          added_by: string
+          draft_id: string
         }
         Insert: {
-          at?: string
-          item_id: string
-          reason: string
+          added_at?: string
+          added_by: string
+          draft_id: string
         }
         Update: {
-          at?: string
-          item_id?: string
-          reason?: string
+          added_at?: string
+          added_by?: string
+          draft_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "everything_claude_handbacks_item_id_fkey"
-            columns: ["item_id"]
+            foreignKeyName: "everything_claude_few_shot_examples_draft_id_fkey"
+            columns: ["draft_id"]
             isOneToOne: true
-            referencedRelation: "everything_items"
+            referencedRelation: "everything_claude_drafts"
             referencedColumns: ["id"]
           },
         ]
       }
-      everything_claude_settings: {
+      everything_claude_judgements: {
         Row: {
-          approval_required: boolean
-          id: boolean
-          updated_at: string
-          updated_by: string
-          writer: string
+          draft_id: string
+          judged_at: string
+          note: string
+          p_helpful: number
+          p_impactful: number
+          reasoning: string
         }
         Insert: {
-          approval_required?: boolean
-          id?: boolean
-          updated_at?: string
-          updated_by?: string
-          writer?: string
+          draft_id: string
+          judged_at?: string
+          note: string
+          p_helpful: number
+          p_impactful: number
+          reasoning: string
         }
         Update: {
-          approval_required?: boolean
-          id?: boolean
-          updated_at?: string
-          updated_by?: string
-          writer?: string
+          draft_id?: string
+          judged_at?: string
+          note?: string
+          p_helpful?: number
+          p_impactful?: number
+          reasoning?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_judgements_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: true
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_runs: {
+        Row: {
+          api_cost_usd: number | null
+          draft_id: string | null
+          ended_at: string
+          everything_pipeline_run_id: string | null
+          id: string
+          pipeline_run_id: string | null
+          run_dir: string
+          started_at: string
+          tags: string[]
+        }
+        Insert: {
+          api_cost_usd?: number | null
+          draft_id?: string | null
+          ended_at?: string
+          everything_pipeline_run_id?: string | null
+          id?: string
+          pipeline_run_id?: string | null
+          run_dir: string
+          started_at: string
+          tags: string[]
+        }
+        Update: {
+          api_cost_usd?: number | null
+          draft_id?: string | null
+          ended_at?: string
+          everything_pipeline_run_id?: string | null
+          id?: string
+          pipeline_run_id?: string | null
+          run_dir?: string
+          started_at?: string
+          tags?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_runs_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_runs_everything_pipeline_run_id_fkey"
+            columns: ["everything_pipeline_run_id"]
+            isOneToOne: false
+            referencedRelation: "everything_pipeline_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_runs_pipeline_run_id_fkey"
+            columns: ["pipeline_run_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_skips: {
+        Row: {
+          at: string
+          draft_id: string
+          reviewer: string
+        }
+        Insert: {
+          at?: string
+          draft_id: string
+          reviewer: string
+        }
+        Update: {
+          at?: string
+          draft_id?: string
+          reviewer?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_skips_draft_id_fkey"
+            columns: ["draft_id"]
+            isOneToOne: false
+            referencedRelation: "everything_claude_drafts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_claude_usage: {
+        Row: {
+          at: string
+          id: number
+          weekly: number
+          weekly_resets_at: string | null
+        }
+        Insert: {
+          at?: string
+          id?: never
+          weekly: number
+          weekly_resets_at?: string | null
+        }
+        Update: {
+          at?: string
+          id?: never
+          weekly?: number
+          weekly_resets_at?: string | null
         }
         Relationships: []
       }
@@ -451,18 +652,21 @@ export type Database = {
       everything_feed_schedule: {
         Row: {
           dispatched_at: string | null
+          failures_reported_through: string
           id: boolean
           next_run_at: string | null
           next_run_reason: string | null
         }
         Insert: {
           dispatched_at?: string | null
+          failures_reported_through?: string
           id?: boolean
           next_run_at?: string | null
           next_run_reason?: string | null
         }
         Update: {
           dispatched_at?: string | null
+          failures_reported_through?: string
           id?: boolean
           next_run_at?: string | null
           next_run_reason?: string | null
@@ -471,9 +675,11 @@ export type Database = {
       }
       everything_items: {
         Row: {
+          caption_cues: Json | null
           checked_scope: string | null
           created_at: string
           error: string | null
+          first_checked_at: string | null
           full_text: string | null
           id: string
           priority: number
@@ -481,6 +687,8 @@ export type Database = {
           progress: Json | null
           project_id: string | null
           published_at: string | null
+          published_time: string | null
+          queued_at: string | null
           request_steer: string | null
           retries: number
           skip_reason: string | null
@@ -491,9 +699,11 @@ export type Database = {
           url: string
         }
         Insert: {
+          caption_cues?: Json | null
           checked_scope?: string | null
           created_at?: string
           error?: string | null
+          first_checked_at?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -501,6 +711,8 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          published_time?: string | null
+          queued_at?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -511,9 +723,11 @@ export type Database = {
           url: string
         }
         Update: {
+          caption_cues?: Json | null
           checked_scope?: string | null
           created_at?: string
           error?: string | null
+          first_checked_at?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -521,6 +735,8 @@ export type Database = {
           progress?: Json | null
           project_id?: string | null
           published_at?: string | null
+          published_time?: string | null
+          queued_at?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -767,6 +983,44 @@ export type Database = {
           },
         ]
       }
+      everything_note_recommendations: {
+        Row: {
+          added_at: string
+          comment: string | null
+          moved_at: string | null
+          note_id: string
+          position: number
+          removed_at: string | null
+          removed_reason: string | null
+        }
+        Insert: {
+          added_at?: string
+          comment?: string | null
+          moved_at?: string | null
+          note_id: string
+          position: number
+          removed_at?: string | null
+          removed_reason?: string | null
+        }
+        Update: {
+          added_at?: string
+          comment?: string | null
+          moved_at?: string | null
+          note_id?: string
+          position?: number
+          removed_at?: string | null
+          removed_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_note_recommendations_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_note_requests: {
         Row: {
           client_token: string | null
@@ -871,45 +1125,217 @@ export type Database = {
           },
         ]
       }
+      everything_note_x_marks: {
+        Row: {
+          mark: string
+          marked_at: string
+          marked_by: string | null
+          note_id: string
+          published_at: string | null
+          scheduled_for: string | null
+          tweet_url: string | null
+          typefully_draft_id: string | null
+        }
+        Insert: {
+          mark: string
+          marked_at?: string
+          marked_by?: string | null
+          note_id: string
+          published_at?: string | null
+          scheduled_for?: string | null
+          tweet_url?: string | null
+          typefully_draft_id?: string | null
+        }
+        Update: {
+          mark?: string
+          marked_at?: string
+          marked_by?: string | null
+          note_id?: string
+          published_at?: string | null
+          scheduled_for?: string | null
+          tweet_url?: string | null
+          typefully_draft_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_note_x_marks_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_x_post_requests: {
+        Row: {
+          claimed_at: string | null
+          done_at: string | null
+          error: string | null
+          id: string
+          note_id: string
+          reply_text: string
+          requested_at: string
+          requested_by: string
+          status: string
+          tweet_text: string
+          typefully_draft_id: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id: string
+          reply_text?: string
+          requested_at?: string
+          requested_by: string
+          status?: string
+          tweet_text: string
+          typefully_draft_id?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id?: string
+          reply_text?: string
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          tweet_text?: string
+          typefully_draft_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_x_post_requests_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_notewriters: {
+        Row: {
+          cooldown_until: string | null
+          created_at: string
+          every_minutes: number | null
+          failures_in_a_row: number
+          id: string
+          last_seen_at: string | null
+          lease_minutes: number
+          name: string
+          owner: string
+          silence_warned_for: string | null
+          takes_reader_requests: boolean
+        }
+        Insert: {
+          cooldown_until?: string | null
+          created_at?: string
+          every_minutes?: number | null
+          failures_in_a_row?: number
+          id: string
+          last_seen_at?: string | null
+          lease_minutes?: number
+          name: string
+          owner: string
+          silence_warned_for?: string | null
+          takes_reader_requests?: boolean
+        }
+        Update: {
+          cooldown_until?: string | null
+          created_at?: string
+          every_minutes?: number | null
+          failures_in_a_row?: number
+          id?: string
+          last_seen_at?: string | null
+          lease_minutes?: number
+          name?: string
+          owner?: string
+          silence_warned_for?: string | null
+          takes_reader_requests?: boolean
+        }
+        Relationships: []
+      }
       everything_notes: {
         Row: {
           author_id: string | null
           author_name: string | null
-          claim_id: string
+          claim_id: string | null
           created_at: string
+          feed_band: string | null
+          feed_best_key: number[] | null
+          feed_content_key: number[] | null
+          feed_helpful_key: number[] | null
+          feed_item_id: string | null
+          feed_needs_key: number[] | null
+          feed_project_id: string | null
+          feed_recent_key: number[] | null
+          feed_votes: number | null
           helpful_count: number
           id: string
           improved_from_note_id: string | null
           not_helpful_count: number
           note: string
+          notewriter_id: string | null
+          p_helpful: number | null
+          p_helpful_after_helpful: number | null
           somewhat_helpful_count: number
           status: string
+          x_note_id: string | null
         }
         Insert: {
           author_id?: string | null
           author_name?: string | null
-          claim_id: string
+          claim_id?: string | null
           created_at?: string
+          feed_band?: string | null
+          feed_best_key?: number[] | null
+          feed_content_key?: number[] | null
+          feed_helpful_key?: number[] | null
+          feed_item_id?: string | null
+          feed_needs_key?: number[] | null
+          feed_project_id?: string | null
+          feed_recent_key?: number[] | null
+          feed_votes?: number | null
           helpful_count?: number
           id?: string
           improved_from_note_id?: string | null
           not_helpful_count?: number
           note: string
+          notewriter_id?: string | null
+          p_helpful?: number | null
+          p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
           status?: string
+          x_note_id?: string | null
         }
         Update: {
           author_id?: string | null
           author_name?: string | null
-          claim_id?: string
+          claim_id?: string | null
           created_at?: string
+          feed_band?: string | null
+          feed_best_key?: number[] | null
+          feed_content_key?: number[] | null
+          feed_helpful_key?: number[] | null
+          feed_item_id?: string | null
+          feed_needs_key?: number[] | null
+          feed_project_id?: string | null
+          feed_recent_key?: number[] | null
+          feed_votes?: number | null
           helpful_count?: number
           id?: string
           improved_from_note_id?: string | null
           not_helpful_count?: number
           note?: string
+          notewriter_id?: string | null
+          p_helpful?: number | null
+          p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
           status?: string
+          x_note_id?: string | null
         }
         Relationships: [
           {
@@ -925,6 +1351,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "everything_notes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_notes_x_note_id_fkey"
+            columns: ["x_note_id"]
+            isOneToOne: true
+            referencedRelation: "notes"
+            referencedColumns: ["note_id"]
           },
         ]
       }
@@ -1158,6 +1591,11 @@ export type Database = {
           sort_order: number
           top_posts_attempted_at: string | null
           top_posts_refreshed_at: string | null
+          x_handle: string | null
+          x_handle_checked_at: string | null
+          x_handle_checked_by: string | null
+          x_handle_evidence: string | null
+          x_handle_status: string | null
         }
         Insert: {
           avatar_refreshed_at?: string | null
@@ -1172,6 +1610,11 @@ export type Database = {
           sort_order?: number
           top_posts_attempted_at?: string | null
           top_posts_refreshed_at?: string | null
+          x_handle?: string | null
+          x_handle_checked_at?: string | null
+          x_handle_checked_by?: string | null
+          x_handle_evidence?: string | null
+          x_handle_status?: string | null
         }
         Update: {
           avatar_refreshed_at?: string | null
@@ -1186,6 +1629,11 @@ export type Database = {
           sort_order?: number
           top_posts_attempted_at?: string | null
           top_posts_refreshed_at?: string | null
+          x_handle?: string | null
+          x_handle_checked_at?: string | null
+          x_handle_checked_by?: string | null
+          x_handle_evidence?: string | null
+          x_handle_status?: string | null
         }
         Relationships: []
       }
@@ -1204,6 +1652,56 @@ export type Database = {
           show_on_leaderboard?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      everything_read_failures: {
+        Row: {
+          at: string
+          id: number
+          item_id: string
+          reason: string
+          reported_at: string | null
+        }
+        Insert: {
+          at?: string
+          id?: number
+          item_id: string
+          reason: string
+          reported_at?: string | null
+        }
+        Update: {
+          at?: string
+          id?: number
+          item_id?: string
+          reason?: string
+          reported_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_read_failures_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_safari_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: never
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: never
         }
         Relationships: []
       }
@@ -2383,8 +2881,44 @@ export type Database = {
         }
         Relationships: []
       }
+      x_ab_tests: {
+        Row: {
+          control_variant: string
+          fill_variant: string | null
+          position: number | null
+          test: string
+          updated_at: string
+          variants: string[]
+        }
+        Insert: {
+          control_variant: string
+          fill_variant?: string | null
+          position?: number | null
+          test: string
+          updated_at?: string
+          variants: string[]
+        }
+        Update: {
+          control_variant?: string
+          fill_variant?: string | null
+          position?: number | null
+          test?: string
+          updated_at?: string
+          variants?: string[]
+        }
+        Relationships: []
+      }
     }
     Views: {
+      everything_creator_visits: {
+        Row: {
+          feed_url: string | null
+          people: number | null
+          posts: number | null
+          visitors_per_post: number | null
+        }
+        Relationships: []
+      }
       everything_follow_requests: {
         Row: {
           created_at: string | null
@@ -2479,21 +3013,34 @@ export type Database = {
         Args: { p_lane?: string; p_tweet_id: string }
         Returns: Json
       }
-      everything_claude_actor: { Args: { p_actor: string }; Returns: string }
-      everything_claude_approve: {
-        Args: { p_actor?: string; p_draft: string }
-        Returns: string
+      everything_beta_continued_fraction: {
+        Args: { a: number; b: number; x: number }
+        Returns: number
       }
-      everything_claude_change_settings: {
-        Args: {
-          p_actor?: string
-          p_approval_required?: boolean
-          p_writer?: string
-        }
+      everything_claude_actor: { Args: { p_actor: string }; Returns: string }
+      everything_claude_delete_note: {
+        Args: { p_actor?: string; p_draft: string }
         Returns: undefined
+      }
+      everything_claude_draft_views: {
+        Args: {
+          d: Database["public"]["Tables"]["everything_claude_drafts"]["Row"]
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
+        Returns: number
       }
       everything_claude_message: {
         Args: { p_actor?: string; p_draft: string; p_text: string }
+        Returns: undefined
+      }
+      everything_claude_propose: {
+        Args: {
+          p_actor?: string
+          p_draft: string
+          p_note: string
+          p_reason: string
+          p_sources: Json
+        }
         Returns: undefined
       }
       everything_claude_publish: {
@@ -2505,61 +3052,9 @@ export type Database = {
         }
         Returns: string
       }
-      everything_claude_reject: {
-        Args: { p_actor?: string; p_draft: string; p_reason: string }
-        Returns: undefined
-      }
       everything_claude_remove_note: {
         Args: { p_note: string }
         Returns: undefined
-      }
-      everything_claude_review_drafts: {
-        Args: { p_ids: string[] }
-        Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
-        SetofOptions: {
-          from: "*"
-          to: "everything_claude_review_draft"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      everything_claude_review_page: {
-        Args: {
-          p_before_created_at?: string
-          p_before_id?: string
-          p_limit?: number
-          p_section: string
-        }
-        Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
-        SetofOptions: {
-          from: "*"
-          to: "everything_claude_review_draft"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      everything_claude_review_rows: {
-        Args: { p_ids: string[] }
-        Returns: Database["public"]["CompositeTypes"]["everything_claude_review_draft"][]
-        SetofOptions: {
-          from: "*"
-          to: "everything_claude_review_draft"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      everything_claude_review_summary: {
-        Args: never
-        Returns: {
-          approval_required: boolean
-          approved: number
-          no_note: number
-          rejected: number
-          reviewer: string
-          unreviewed: number
-          waiting: number
-          writer: string
-        }[]
       }
       everything_claude_rewrite: {
         Args: {
@@ -2575,10 +3070,27 @@ export type Database = {
         }
         Returns: string
       }
+      everything_claude_set_few_shot: {
+        Args: { p_draft: string; p_on: boolean }
+        Returns: undefined
+      }
+      everything_claude_set_review_note: {
+        Args: { p_draft: string; p_text: string }
+        Returns: undefined
+      }
+      everything_claude_settle_verdict: {
+        Args: { p_note: string }
+        Returns: undefined
+      }
+      everything_claude_skip: {
+        Args: { p_actor?: string; p_draft: string; p_skip: boolean }
+        Returns: undefined
+      }
       everything_claude_withdraw: {
         Args: { p_actor?: string; p_draft: string; p_reason: string }
         Returns: undefined
       }
+      everything_click_counts: { Args: { p_since: string }; Returns: Json }
       everything_cost_since: { Args: { since: string }; Returns: number }
       everything_create_minisite: {
         Args: {
@@ -2595,8 +3107,15 @@ export type Database = {
         Returns: string
       }
       everything_creator_ranking: {
-        Args: { last_posts: number; min_posts: number; min_score: number }
+        Args: {
+          average_posts: number
+          last_posts: number
+          min_posts: number
+          min_score: number
+          unread_posts: number
+        }
         Returns: {
+          average_readers_per_post: number
           delay_posts: number
           extension_voters: number
           feed_url: string
@@ -2609,6 +3128,33 @@ export type Database = {
           visitors_per_post: number
           vote_posts: number
           vote_visitors: number
+        }[]
+      }
+      everything_creator_ranking_page: {
+        Args: {
+          average_posts: number
+          last_posts: number
+          min_posts: number
+          min_score: number
+          p_after_feed_url?: string
+          p_limit?: number
+          unread_posts: number
+        }
+        Returns: {
+          average_readers_per_post: number
+          delay_posts: number
+          extension_voters: number
+          feed_url: string
+          median_delay_hours: number
+          people: number
+          priority_until: string
+          project_name: string
+          project_slug: string
+          score_posts: number
+          visitors_per_post: number
+          vote_posts: number
+          vote_visitors: number
+          walk_score: number
         }[]
       }
       everything_creator_visit_score: {
@@ -2628,6 +3174,31 @@ export type Database = {
           visitors_per_post: number
         }[]
       }
+      everything_curation_page: {
+        Args: {
+          p_after_key?: number
+          p_after_note_id?: string
+          p_limit?: number
+          p_not_posted_only?: boolean
+          p_project_slug?: string
+          p_section: string
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: {
+          comment: string
+          note_id: string
+          position: number
+          posted_at: string
+          removed_at: string
+          removed_reason: string
+          sort_key: number
+        }[]
+      }
+      everything_curation_summary: {
+        Args: { p_section: string }
+        Returns: Json
+      }
       everything_daily_activity: {
         Args: { window_days?: number }
         Returns: {
@@ -2638,6 +3209,16 @@ export type Database = {
         }[]
       }
       everything_dispatch_feed_run_if_due: { Args: never; Returns: boolean }
+      everything_donation_series: {
+        Args: never
+        Returns: {
+          charity: string
+          day: string
+          outstanding: number
+          paid: number
+          team_vote: boolean
+        }[]
+      }
       everything_extend_priority: {
         Args: { granted: string; target_feed_url: string }
         Returns: boolean
@@ -2659,6 +3240,23 @@ export type Database = {
         }[]
       }
       everything_feed_slug: { Args: { feed_url: string }; Returns: string }
+      everything_feed_stream: {
+        Args: {
+          p_after: Json
+          p_band: string
+          p_key: string
+          p_limit: number
+          p_scope: Database["public"]["CompositeTypes"]["everything_feed_scope"]
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
+        Returns: {
+          content: number[]
+          id: string
+          item_id: string
+          key: number[]
+          views: number
+        }[]
+      }
       everything_funnel: {
         Args: { window_days?: number }
         Returns: {
@@ -2666,6 +3264,10 @@ export type Database = {
           stage: string
           users: number
         }[]
+      }
+      everything_incomplete_beta: {
+        Args: { a: number; b: number; x: number }
+        Returns: number
       }
       everything_is_admin: { Args: never; Returns: boolean }
       everything_item_note_viewers: {
@@ -2675,6 +3277,20 @@ export type Database = {
           viewers: number
         }[]
       }
+      everything_item_views: {
+        Args: never
+        Returns: Database["public"]["CompositeTypes"]["everything_item_views"]
+        SetofOptions: {
+          from: "*"
+          to: "everything_item_views"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      everything_join_safari_waitlist: {
+        Args: { p_email: string }
+        Returns: undefined
+      }
       everything_leaderboard: {
         Args: never
         Returns: {
@@ -2682,6 +3298,7 @@ export type Database = {
           rating_count: number
         }[]
       }
+      everything_log_gamma: { Args: { x: number }; Returns: number }
       everything_metric_series: {
         Args: { granularity?: string }
         Returns: {
@@ -2697,6 +3314,96 @@ export type Database = {
           writers: Json
         }[]
       }
+      everything_move_to_leaderboard: {
+        Args: { p_note_id: string; p_position: number }
+        Returns: undefined
+      }
+      everything_note_feed_fields: {
+        Args: { n: Database["public"]["Tables"]["everything_notes"]["Row"] }
+        Returns: {
+          author_id: string | null
+          author_name: string | null
+          claim_id: string | null
+          created_at: string
+          feed_band: string | null
+          feed_best_key: number[] | null
+          feed_content_key: number[] | null
+          feed_helpful_key: number[] | null
+          feed_item_id: string | null
+          feed_needs_key: number[] | null
+          feed_project_id: string | null
+          feed_recent_key: number[] | null
+          feed_votes: number | null
+          helpful_count: number
+          id: string
+          improved_from_note_id: string | null
+          not_helpful_count: number
+          note: string
+          p_helpful: number | null
+          p_helpful_after_helpful: number | null
+          somewhat_helpful_count: number
+          status: string
+          x_note_id: string | null
+        }
+        SetofOptions: {
+          from: "everything_notes"
+          to: "everything_notes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      everything_note_feed_page: {
+        Args: {
+          p_after?: Json
+          p_item_id?: string
+          p_limit?: number
+          p_min_helpful?: number
+          p_min_not_helpful?: number
+          p_min_views?: number
+          p_min_votes?: number
+          p_order?: string
+          p_project_id?: string
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: Json
+      }
+      everything_note_feed_summary: {
+        Args: {
+          p_item_id?: string
+          p_min_helpful?: number
+          p_min_not_helpful?: number
+          p_min_views?: number
+          p_min_votes?: number
+          p_project_id?: string
+          p_since?: string[]
+          p_unvoted_only?: boolean
+          p_voted_before?: string
+        }
+        Returns: Json
+      }
+      everything_note_status: { Args: { p_helpful: number }; Returns: string }
+      everything_notewriters_overview: {
+        Args: never
+        Returns: {
+          cooldown_until: string
+          done_7d: number
+          every_minutes: number
+          failed_7d: number
+          failures_in_a_row: number
+          id: string
+          last_failure: string
+          last_failure_at: string
+          last_seen_at: string
+          lease_minutes: number
+          name: string
+          notes_7d: number
+          notes_total: number
+          open_posts: number
+          owner: string
+          takes_reader_requests: boolean
+        }[]
+      }
       everything_pipeline_daily: {
         Args: never
         Returns: {
@@ -2705,6 +3412,27 @@ export type Database = {
           claims_extracted: number
           day: string
           items_processed: number
+        }[]
+      }
+      everything_probability_helpful: {
+        Args: { helpful: number; not_helpful: number; somewhat_helpful: number }
+        Returns: number
+      }
+      everything_project_items_page: {
+        Args: {
+          p_before_date?: string
+          p_before_id?: string
+          p_limit?: number
+          p_project_id: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          note_count: number
+          project_id: string
+          published_at: string
+          title: string
+          url: string
         }[]
       }
       everything_projects_by_votes: {
@@ -2719,9 +3447,32 @@ export type Database = {
           vote_score: number
         }[]
       }
+      everything_projects_page: {
+        Args: {
+          p_after_id?: string
+          p_after_name?: string
+          p_after_score?: number
+          p_limit?: number
+          p_order?: string
+        }
+        Returns: {
+          avatar_url: string
+          feed_url: string
+          id: string
+          name: string
+          note_count: number
+          slug: string
+          vote_score: number
+        }[]
+      }
       everything_reader_cost_since: { Args: { since: string }; Returns: number }
       everything_recent_posts: {
-        Args: { last_posts: number; max_posts: number }
+        Args: {
+          last_posts: number
+          p_after_id?: string
+          p_after_processed_at?: string
+          p_limit?: number
+        }
         Returns: {
           author_visitors_per_post: number
           checked_scope: string
@@ -2744,8 +3495,134 @@ export type Database = {
           status_reason: string
         }[]
       }
+      everything_request_x_post: {
+        Args: { p_note: string; p_reply?: string; p_text: string }
+        Returns: string
+      }
+      everything_return_to_recommendations: {
+        Args: { p_note_id: string }
+        Returns: undefined
+      }
+      everything_review_drafts: {
+        Args: { p_ids: string[] }
+        Returns: Database["public"]["CompositeTypes"]["everything_review_draft"][]
+        SetofOptions: {
+          from: "*"
+          to: "everything_review_draft"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      everything_review_entries: {
+        Args: { p_ids?: string[] }
+        Returns: {
+          claim: string
+          context_paragraph: string
+          created_at: string
+          draft_id: string
+          id: string
+          item_id: string
+          kind: string
+          note: string
+          note_id: string
+          outcome: string
+          passage: string
+          posted_as: string
+          proposed_note: string
+          proposed_sources: Json
+          reasoning: string
+          review_note: string
+          review_note_at: string
+          review_note_by: string
+          reviewed_at: string
+          reviewed_by: string
+          source: string
+          sources: Json
+          status: string
+          verdict: string
+        }[]
+      }
+      everything_review_facets: {
+        Args: { p_facets: Json; p_request: Json }
+        Returns: {
+          drafts: number
+          field: string
+          label: string
+          value: string
+        }[]
+      }
+      everything_review_field_rows: {
+        Args: {
+          p_ids?: string[]
+          p_reviewer: string
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
+        Returns: Database["public"]["CompositeTypes"]["everything_review_field_row"][]
+        SetofOptions: {
+          from: "*"
+          to: "everything_review_field_row"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      everything_review_page: {
+        Args: {
+          p_after_id?: string
+          p_after_key?: number[]
+          p_limit?: number
+          p_request: Json
+        }
+        Returns: Database["public"]["CompositeTypes"]["everything_review_draft"][]
+        SetofOptions: {
+          from: "*"
+          to: "everything_review_draft"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      everything_review_rows: {
+        Args: {
+          p_ids: string[]
+          p_reviewer: string
+          p_views: Database["public"]["CompositeTypes"]["everything_item_views"]
+        }
+        Returns: Database["public"]["CompositeTypes"]["everything_review_draft"][]
+        SetofOptions: {
+          from: "*"
+          to: "everything_review_draft"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      everything_review_summary: {
+        Args: { p_request: Json }
+        Returns: {
+          matching: number
+          newest: string
+          reviewer: string
+        }[]
+      }
+      everything_reviewer_of: { Args: { p_user: string }; Returns: string }
       everything_set_feed_alarm: {
         Args: { next_at: string; reason: string }
+        Returns: undefined
+      }
+      everything_set_x_handle: {
+        Args: {
+          p_actor?: string
+          p_evidence: string
+          p_handle: string
+          p_project_slug: string
+        }
+        Returns: undefined
+      }
+      everything_set_x_mark: {
+        Args: {
+          p_mark: string
+          p_note: string
+          p_scheduled_for?: string
+          p_typefully_draft_id?: string
+        }
         Returns: undefined
       }
       everything_spend_by_hour: {
@@ -2760,7 +3637,42 @@ export type Database = {
         Args: { target_minisite: string }
         Returns: undefined
       }
+      everything_update_x_post: {
+        Args: {
+          p_draft_id: string
+          p_note: string
+          p_published_at?: string
+          p_scheduled_for?: string
+          p_state: string
+          p_tweet_url?: string
+        }
+        Returns: undefined
+      }
       everything_visit_page: { Args: { url: string }; Returns: string }
+      field_query_condition: {
+        Args: { p_filters: Json; p_row: unknown; p_skip_column?: string }
+        Returns: string
+      }
+      field_query_number: {
+        Args: { p_column: string; p_row: unknown }
+        Returns: string
+      }
+      field_query_signed: {
+        Args: { p_sort: Json; p_value: string }
+        Returns: string
+      }
+      field_query_sort_key: {
+        Args: { p_row: unknown; p_sorts: Json }
+        Returns: string
+      }
+      field_query_text: {
+        Args: { p_column: string; p_row: unknown }
+        Returns: string
+      }
+      field_query_type: {
+        Args: { p_column: string; p_row: unknown }
+        Returns: string
+      }
       finish_note_submission_claim: {
         Args: {
           p_claim_id: string
@@ -2771,6 +3683,111 @@ export type Database = {
         Returns: undefined
       }
       get_note_submission_capacity: { Args: never; Returns: Json }
+      notewriter_ab_compare: {
+        Args: { p_since?: string; p_source: string; p_tests: string[] }
+        Returns: {
+          candidate_runs: number
+          cost: number
+          cost_squares: number
+          failure_modes: Json
+          helpful: number
+          helpful_ratings: number
+          needs_ratings: number
+          not_helpful: number
+          not_helpful_ratings: number
+          picks: Json
+          rating_reasons: Json
+          reviewed: number
+          runs: number
+          somewhat_helpful_ratings: number
+        }[]
+      }
+      notewriter_add_note: { Args: { p_item: string; p_note: Json; p_notewriter: string }; Returns: Json }
+      notewriter_days: {
+        Args: { p_request: Json; p_source: string; p_with_runs?: boolean }
+        Returns: {
+          day: string
+          helpful: number
+          needs_ratings: number
+          not_helpful: number
+          runs: number
+          submitted_runs: number
+        }[]
+      }
+      notewriter_facets: {
+        Args: { p_facets: Json; p_request: Json; p_source: string }
+        Returns: {
+          field: string
+          notes: number
+          value: string
+        }[]
+      }
+      notewriter_fail: { Args: { p_assignment: string; p_reason: string }; Returns: Json }
+      notewriter_feed_posts_wanted: { Args: never; Returns: { waiting: number; wanted: number }[] }
+      notewriter_field_rows: {
+        Args: { p_ids?: string[]; p_source: string }
+        Returns: Database["public"]["CompositeTypes"]["notewriter_field_row"][]
+        SetofOptions: {
+          from: "*"
+          to: "notewriter_field_row"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      notewriter_finish: { Args: { p_assignment: string; p_skip_reason?: string; p_summary?: Json }; Returns: Json }
+      notewriter_next_post: { Args: { p_notewriter: string }; Returns: Json }
+      notewriter_note_ratings: {
+        Args: { p_source: string }
+        Returns: {
+          failure_modes: string[]
+          helpful: number
+          not_helpful: number
+          note_id: string
+          reasons: Json
+          somewhat_helpful: number
+        }[]
+      }
+      notewriter_reasons: {
+        Args: { p_source: string }
+        Returns: {
+          kind: string
+          reason: string
+          uses: number
+        }[]
+      }
+      notewriter_runs: {
+        Args: { p_source: string }
+        Returns: {
+          ab_test_picks: Json
+          candidate: boolean
+          cost: number
+          created_at: string
+          finished: boolean
+          submitted: boolean
+        }[]
+      }
+      notewriter_source: { Args: { p_source: string }; Returns: string }
+      notewriter_status: { Args: { p_notewriter: string }; Returns: Json }
+      notewriter_subscribe: { Args: { p_every_minutes: number; p_notewriter: string; p_takes_reader_requests?: boolean }; Returns: Json }
+      notewriter_summary: {
+        Args: { p_request: Json; p_source: string }
+        Returns: {
+          helpful: number
+          notes: number
+          views: number
+        }[]
+      }
+      notewriter_take_back_overdue: { Args: never; Returns: number }
+      notewriter_tests: {
+        Args: { p_source: string }
+        Returns: {
+          control_variant: string
+          live: boolean
+          recently_varied: boolean
+          test: string
+          variants: string[]
+        }[]
+      }
       queue_signal_submission: { Args: { p_tweet_id: string }; Returns: Json }
       review_dashboard_counts: { Args: { p_filters?: Json }; Returns: Json }
       review_dashboard_page: {
@@ -2792,12 +3809,62 @@ export type Database = {
         }
         Returns: Json
       }
+      x_fill_picks: { Args: never; Returns: Json }
+      x_note_cards: {
+        Args: { p_ids: string[] }
+        Returns: Database["public"]["CompositeTypes"]["x_note_card"][]
+        SetofOptions: {
+          from: "*"
+          to: "x_note_card"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      x_notewriter_origin_days: {
+        Args: never
+        Returns: {
+          day: string
+          helpful_other_ai: number
+          helpful_ours: number
+          helpful_total: number
+        }[]
+      }
+      x_notewriter_page: {
+        Args: {
+          p_after_id?: string
+          p_after_key?: number[]
+          p_limit?: number
+          p_request: Json
+        }
+        Returns: Database["public"]["CompositeTypes"]["x_note_card"][]
+        SetofOptions: {
+          from: "*"
+          to: "x_note_card"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      x_sync_ab_tests: { Args: { p_tests: Json }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
     }
     CompositeTypes: {
-      everything_claude_review_draft: {
+      everything_feed_scope: {
+        project_id: string | null
+        item_id: string | null
+        min_views: number | null
+        min_votes: number | null
+        min_helpful: number | null
+        min_not_helpful: number | null
+        unvoted_only: boolean | null
+        voted_before: string | null
+      }
+      everything_item_views: {
+        item_ids: string[] | null
+        viewers: number[] | null
+      }
+      everything_review_draft: {
         id: string | null
         item_id: string | null
         passage: string | null
@@ -2808,6 +3875,7 @@ export type Database = {
         reasoning: string | null
         sources: Json | null
         status: string | null
+        verdict: string | null
         note_id: string | null
         posted_as: string | null
         reviewed_by: string | null
@@ -2818,9 +3886,90 @@ export type Database = {
         post_title: string | null
         creator: string | null
         creator_slug: string | null
-        rejection_reason: string | null
+        proposed_note: string | null
+        proposed_sources: Json | null
+        judge_reasoning: string | null
+        reviewer_votes: Json | null
+        review_note: string | null
+        review_note_by: string | null
+        review_note_at: string | null
         messages: Json | null
         earlier_versions: Json | null
+        fields: Json | null
+        sort_key: number[] | null
+      }
+      everything_review_field_row: {
+        id: string | null
+        on_x: string | null
+        my_vote: string | null
+        jim_vote: string | null
+        nathan_vote: string | null
+        rating: string | null
+        p_helpful: number | null
+        p_impactful: number | null
+        helpful_votes: number | null
+        somewhat_votes: number | null
+        not_helpful_votes: number | null
+        votes: number | null
+        views: number | null
+        creator: string | null
+        creator_name: string | null
+        creator_views: number | null
+        creator_posts: number | null
+        written: string | null
+        published: string | null
+        approval: string | null
+        outcome: string | null
+        kind: string | null
+        on_site: string | null
+        posted_as: string | null
+        skipped: boolean | null
+        leaderboard: boolean | null
+        few_shot: boolean | null
+        chat: string | null
+        review_note: boolean | null
+        note_length: number | null
+        sources: number | null
+        creator_x: string | null
+        creator_x_handle: string | null
+        creator_x_evidence: string | null
+        x_time: string | null
+        x_tweet_url: string | null
+        source: string | null
+      }
+      notewriter_field_row: {
+        note_id: string | null
+        written: string | null
+        status: string | null
+        writer: string | null
+        views: number | null
+        ratings: number | null
+        picks: Json | null
+        our_rating: string | null
+        our_votes: number | null
+        my_vote: string | null
+        jim_vote: string | null
+        nathan_vote: string | null
+      }
+      x_note_card: {
+        note_id: string | null
+        tweet_id: string | null
+        note_text: string | null
+        helpful_ratings: number | null
+        somewhat_helpful_ratings: number | null
+        not_helpful_ratings: number | null
+        helpful_tags: Json | null
+        not_helpful_tags: Json | null
+        post_text: string | null
+        author_handle: string | null
+        author_name: string | null
+        posted_at: string | null
+        media: Json | null
+        referenced_post: Json | null
+        referenced_kind: string | null
+        fields: Json | null
+        sort_key: number[] | null
+        twin_note_id: string | null
       }
     }
   }

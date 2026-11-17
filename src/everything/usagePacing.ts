@@ -1,0 +1,162 @@
+/* Spaces the Claude note writer's feed posts so that the weekly usage of
+ * Nathan's Claude plan reaches its target by the weekly reset (GOO-587).
+ *
+ * The Claude note writer runs on Nathan's ai-box and is paid for by his Claude
+ * subscription, not by OpenRouter money. Anthropic's usage endpoint says how
+ * much of the plan's weekly limit is used, as a whole percent, and when the
+ * week resets. The runner on ai-box (src/claude-notes/runner.ts) reads it every
+ * 5 minutes and stores each reading in everything_claude_usage. Since the
+ * notewriter protocol (GOO-724), the runner also turns the interval below into
+ * its subscription to the queue, in whole minutes, and the queue hands it a
+ * feed post at most that often.
+ *
+ * The rule mirrors the money pacing in pacing.ts, with usage in place of
+ * dollars and the weekly reset in place of midnight:
+ *
+ *   interval between posts = time until the reset × usage per post
+ *                            ÷ (target − usage now)
+ *
+ * The usage per post is the rise of the weekly usage over the last 7 days,
+ * divided by the posts Claude took in that time. That rise includes every
+ * other use of the plan, such as Nathan's own tasks on the box. So a post
+ * looks more expensive while other work runs, and the posts slow down by just
+ * enough for the total to land on the target. The formula is computed again on
+ * every run, so an estimate that was off corrects itself as the reset comes
+ * closer.
+ *
+ * Since GOO-527 the plan has a second user: the X note writer, which also
+ * runs Claude Code on the ai-box. Only Common Notes paces itself against the
+ * weekly target. The X note writer is capped instead, at a fixed share of the
+ * week that it measures from the cost Claude Code reports for each Claude run
+ * on the ai-box (src/claude-notes/xShare.ts and usageShare.ts). Its usage is part of the plan's rise, so
+ * a Common Notes post looks more expensive while X runs, and Common Notes gets
+ * whatever of the target the X note writer leaves. Jim gave X 20% on 2026-10-27,
+ * raised the target from 80% to 90% on 2026-11-05, and on 2026-11-10 lowered
+ * it to 60% and stopped the Claude tweets, so that the week keeps room for his
+ * own work on the weekend. On 2026-11-12 he raised it back to 90%, and on
+ * 2026-11-14 he raised it to 98% and turned the Claude tweets back on. On
+ * 2026-11-15 he lowered it to 70% again, and on 2026-11-16 raised it to 80%.
+ *
+ * The interval is stretched by 10%, so the week most likely ends a little
+ * under the target rather than over it. Once the week is at the target, the
+ * runner takes no new feed post until the reset, and it still takes reader
+ * requests until its own stop at 81% (MAX_WEEKLY_USAGE_PERCENT). Above that it
+ * takes nothing, and queued items wait for the reset. Jim set these rules on
+ * 2026-10-26. */
+
+import { duration } from "./logFormat";
+
+/** The share of the weekly limit the posts should use up by the reset. Jim
+ *  picked 80% on 2026-10-26, raised it to 90% on 2026-11-05 and lowered it to
+ *  60% on 2026-11-10, to keep usage for the weekend, raised it back to 90%
+ *  on 2026-11-12, raised it to 98% on 2026-11-14, lowered it to 70% on
+ *  2026-11-15 and raised it to 80% on 2026-11-16. */
+export const WEEKLY_USAGE_TARGET_PERCENT = 80;
+
+/** The interval is stretched by this factor, so that an estimate a little too
+ *  low does not carry the week past the target. */
+export const INTERVAL_SAFETY_FACTOR = 1.1;
+
+/** How far back the usage per post is measured. A whole week evens out the
+ *  days when other work on the plan ran, or when the posts were unusually long
+ *  or short. Jim chose 7 days over 48 hours on 2026-10-26. */
+export const USAGE_WINDOW_HOURS = 7 * 24;
+
+/** Below this many posts in the window the measured usage per post says
+ *  little, and DEFAULT_USAGE_PER_POST_PERCENT stands in. */
+export const MIN_POSTS_FOR_USAGE_ESTIMATE = 5;
+
+/** What one post cost from Sunday's reset to Monday morning, 2026-10-26: the
+ *  weekly usage rose from 0% to 3% over 29 posts. */
+export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
+
+/** Above this share of Nathan's weekly limit the runner on ai-box starts no
+ *  new Claude. The feed run already stops giving Claude feed posts at the
+ *  target, so this stop holds back mainly reader requests, which Claude takes
+ *  without pacing, and X tweets. Everything queued then waits for the weekly
+ *  reset. It sits 1 point above the target, so that queued work still runs
+ *  for a while after the feed posts stop, while the week still ends close to
+ *  the target. */
+export const MAX_WEEKLY_USAGE_PERCENT = 81;
+
+/** The runner reads the usage every 5 minutes. A newest reading older than
+ *  this means the runner on ai-box is down, so the X run hands it no tweet
+ *  (src/claude-notes/xShare.ts). */
+export const MAX_USAGE_READING_AGE_MS = 30 * 60_000;
+
+export interface UsageReading {
+  at: Date;
+  /** Percent of the weekly limit used. */
+  weekly: number;
+  /** Null in readings copied from logs that did not keep it. */
+  weeklyResetsAt: Date | null;
+}
+
+/** Everything the rule needs, read in one go. */
+export interface UsageSnapshot {
+  now: Date;
+  /** The readings of the last USAGE_WINDOW_HOURS, oldest first. */
+  readings: UsageReading[];
+  /** How many posts Claude took in the same hours. Reader requests count,
+   *  because they use the plan too. */
+  postsTaken: number;
+}
+
+/** How far apart Claude's feed posts should be. At the target the interval is
+ *  infinite: no new feed post until the reset. */
+export type ClaudePacing = {
+  weekly: number;
+  resetsAt: Date;
+  usagePerPost: number;
+  /** True when the default stood in for a missing measurement. */
+  usagePerPostIsDefault: boolean;
+  intervalMs: number;
+};
+
+/** How much the weekly usage rose over the readings. The drop at a weekly
+ *  reset is not a negative rise, so only increases count. */
+export function usageRise(readings: UsageReading[]): number {
+  let rise = 0;
+  for (let i = 1; i < readings.length; i++) rise += Math.max(0, readings[i]!.weekly - readings[i - 1]!.weekly);
+  return rise;
+}
+
+const utcTime = (d: Date) => `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
+
+/** Null without a reading that says when the week resets. */
+export function computeClaudePacing(snapshot: UsageSnapshot): ClaudePacing | null {
+  const latest = snapshot.readings.at(-1);
+  if (!latest?.weeklyResetsAt) return null;
+  const rise = usageRise(snapshot.readings);
+  const measured = snapshot.postsTaken >= MIN_POSTS_FOR_USAGE_ESTIMATE && rise > 0;
+  const usagePerPost = measured ? rise / snapshot.postsTaken : DEFAULT_USAGE_PER_POST_PERCENT;
+  const msToReset = Math.max(0, latest.weeklyResetsAt.getTime() - snapshot.now.getTime());
+  const usageLeft = WEEKLY_USAGE_TARGET_PERCENT - latest.weekly;
+  const intervalMs = usageLeft > 0 ? (INTERVAL_SAFETY_FACTOR * msToReset * usagePerPost) / usageLeft : Infinity;
+  return { weekly: latest.weekly, resetsAt: latest.weeklyResetsAt, usagePerPost, usagePerPostIsDefault: !measured, intervalMs };
+}
+
+/** The block the runner's log prints, so the spacing of Claude's posts is
+ *  always explainable from the log alone. */
+export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapshot): string {
+  const sample = pacing.usagePerPostIsDefault
+    ? `default, fewer than ${MIN_POSTS_FOR_USAGE_ESTIMATE} posts in the last ${USAGE_WINDOW_HOURS}h`
+    : `a ${usageRise(snapshot.readings)}% rise over ${snapshot.postsTaken} posts in the last ${USAGE_WINDOW_HOURS}h`;
+  return [
+    `CLAUDE · the plan at ${pacing.weekly}% of its weekly limit, aiming at ${WEEKLY_USAGE_TARGET_PERCENT}% by the reset at ${utcTime(pacing.resetsAt)}`,
+    `         ${pacing.usagePerPost.toFixed(3)}% per post (${sample})`,
+    pacing.intervalMs === Infinity
+      ? "         the target is reached · no new feed post until the reset"
+      : `         one post every ${duration(pacing.intervalMs)}, ${INTERVAL_SAFETY_FACTOR}× the even spacing`,
+  ].join("\n");
+}
+
+/** Whether a judge may start, by the plan's newest usage reading. The judges
+ *  stop where the runner on the ai-box stops them: at MAX_WEEKLY_USAGE_PERCENT,
+ *  or when no reading is recent, because the devbox's `dispatch` reads the usage only while
+ *  the session answers. Without this they ran on past the stop and used the
+ *  week that reader requests and tweets wait for. */
+export function judgeMayStartAt(reading: { at: Date; weekly: number } | null, now: Date): boolean {
+  if (!reading || now.getTime() - reading.at.getTime() > MAX_USAGE_READING_AGE_MS) return false;
+  return reading.weekly < MAX_WEEKLY_USAGE_PERCENT;
+}

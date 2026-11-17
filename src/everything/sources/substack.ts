@@ -1,22 +1,23 @@
 /**
- * Substack ingestion. Nothing here scrapes a rendered page. We read Substack's
+ * Substack listings. Nothing here scrapes a rendered page. We read Substack's
  * public JSON API and its RSS feed:
  *   - substack.com/api/v1/user/<handle>/public_profile   → the publication subdomain
  *   - <sub>.substack.com/api/v1/archive?sort=new&limit=N → the latest posts
- *   - <sub>.substack.com/api/v1/posts/<slug>             → a free post's full body_html
+ *   - <sub>.substack.com/api/v1/archive?sort=top&limit=N → the most liked posts
  *   - <sub>.substack.com/feed                            → the latest posts with their bodies
  *
- * Substack's API refuses datacenter IPs, so the archive and post calls go
- * through the residential proxy (fetchJsonViaResidentialProxy). The RSS relay is
- * no help there: it only serves /feed, and Substack rate-limits Cloudflare
- * Workers on the API endpoints. Proxy traffic is paid per gigabyte, which is
- * fine at this volume: the top-post refresh makes one archive call per
- * publication per week, and one body call per enqueued top post.
+ * The RSS feed is what the walk reads, through the page reader's readListing,
+ * because Substack refuses GitHub's machines. Substack's API refuses some
+ * datacenter addresses, so the top-post refresh in GitHub Actions goes
+ * through the residential proxy (fetchJsonViaResidentialProxy). Proxy traffic
+ * is paid per gigabyte, which is fine at this volume: one archive call per
+ * publication every 60 days. A single post is read by the page reader, which
+ * asks Substack's post endpoint (src/pipeline/fetch/sites/substack.ts).
  */
 
+import { readListing } from "../../pipeline/fetch/readListing";
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
 import { fetchJsonViaResidentialProxy } from "../../pipeline/utils/residentialProxy";
-import type { FetchedContent } from "../types";
 
 async function fetchJson(url: string): Promise<any> {
   const res = await fetch(url);
@@ -99,22 +100,6 @@ export async function fetchTopArchivePosts(publicationUrl: string, n: number): P
     .slice(0, n);
 }
 
-/** A post's body as the pipeline's plain text, with inline image markers. The
- *  top-post enqueue uses this for archive posts that are too old to appear in
- *  the RSS feed, so the worker never has to fetch Substack itself. The API
- *  host comes from the publication URL rather than the post URL, because a
- *  custom-domain publication's canonical post URLs live on that custom domain
- *  while our stored feed URL keeps the *.substack.com form. */
-export async function fetchPostBodyText(publicationUrl: string, postUrl: string): Promise<string> {
-  const slug = postUrl.match(/\/p\/([\w-]+)/)?.[1];
-  if (!slug) throw new Error(`Not a substack post URL: ${postUrl}`);
-  const post = await fetchJsonViaResidentialProxy(`${publicationUrl.replace(/\/$/, "")}/api/v1/posts/${slug}`);
-  if (!post.body_html) throw new Error(`No body_html for ${postUrl} (paywalled or podcast-only?)`);
-  const text = htmlToText(post.body_html, true);
-  if (!text) throw new Error(`Empty body for ${postUrl}`);
-  return text;
-}
-
 export interface FeedPost {
   url: string;
   title: string;
@@ -129,19 +114,6 @@ export interface FeedPost {
 
 const PAYWALL_TRAILER = /<a href="[^"]*">\s*Read more\s*<\/a>\s*<\/p>\s*$/;
 
-/** Substack answers a datacenter IP with a 403, so in CI the RSS fetch goes
- *  through our Cloudflare Worker relay in src/everything/substack-proxy-worker.
- *  Substack serves that relay's traffic reliably. On a local machine the proxy
- *  environment variables are unset and we fetch Substack directly. */
-function feedRequest(feedUrl: string): { url: string; headers?: Record<string, string> } {
-  const proxyUrl = process.env.SUBSTACK_PROXY_URL;
-  if (!proxyUrl) return { url: feedUrl };
-  return {
-    url: `${proxyUrl}?url=${encodeURIComponent(feedUrl)}`,
-    headers: { "X-Proxy-Key": process.env.SUBSTACK_PROXY_KEY ?? "" },
-  };
-}
-
 const cdataUnwrap = (raw: string): string =>
   raw
     .trim()
@@ -155,12 +127,6 @@ function tagContent(item: string, tag: string): string {
   return item.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1] ?? "";
 }
 
-/** The proxy serves feeds from a cache it refreshes in the background. A cache
- *  older than this means the proxy's own fetches of Substack have been failing
- *  for a long time. We then fail loudly instead of quietly reading frozen data
- *  forever. */
-const MAX_PROXY_CACHE_AGE_SECONDS = 24 * 3600;
-
 export interface SubstackFeed {
   /** The publication's display name, from the feed's channel title. */
   title?: string;
@@ -171,18 +137,12 @@ export interface SubstackFeed {
 
 /** Reads a publication's RSS feed, so "https://thezvi.substack.com" becomes its
  *  /feed. It returns the publication's name and the roughly 20 latest posts,
- *  newest first, each with the full post HTML. This is the only Substack
- *  endpoint the automated pipeline uses. Feed-reader traffic is the one kind
- *  Substack serves to a non-residential IP. */
+ *  newest first, each with the full post HTML. Feed-reader traffic is the one
+ *  kind Substack serves to a non-residential IP. */
 export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFeed> {
-  const { url, headers } = feedRequest(`${publicationUrl.replace(/\/$/, "")}/feed`);
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
-  const cacheAgeSeconds = Number(res.headers.get("X-Cache-Age-Seconds") ?? 0);
-  if (cacheAgeSeconds > MAX_PROXY_CACHE_AGE_SECONDS) {
-    throw new Error(`Proxy cache for ${url} is ${Math.round(cacheAgeSeconds / 3600)}h old — its Substack fetches must be failing`);
-  }
-  const xml = await res.text();
+  const listing = await readListing({ feedUrl: publicationUrl.replace(/\/$/, ""), limit: 0 });
+  if (listing.kind !== "substack") throw new Error(`Not a Substack publication: ${publicationUrl}`);
+  const { xml } = listing;
   // The channel's own title is the first <title> before any <item>. The items
   // carry <title> tags too, so the channel block is cut out first.
   const channelXml = xml.split("<item>")[0]!;
@@ -201,69 +161,4 @@ export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFe
     })
     .filter((p) => p.url && p.bodyHtml);
   return { title, imageUrl, posts };
-}
-
-/** The placeholder we leave in the plain text where an image stood. The
- *  extractor later renders the image and its URL at that exact point in the
- *  article. */
-export function imageMarker(url: string): string {
-  return `[[IMAGE:${url}]]`;
-}
-export const IMAGE_MARKER_RE = /\[\[IMAGE:(.*?)\]\]/g;
-
-/** Replaces each <img> tag with an inline image marker carrying its URL. An
- *  image inlined as a data URI is dropped instead, because there is no URL the
- *  image analysis could fetch. */
-function imagesToMarkers(html: string): string {
-  return html.replace(/<img\b[^>]*?\bsrc=["']([^"']+)["'][^>]*>/gi, (_m, src) =>
-    src.startsWith("data:") ? "" : `\n\n${imageMarker(src)}\n\n`,
-  );
-}
-
-/** Strips body_html down to plain text whose blocks are separated by blank
- *  lines. Chunking later splits the text on those blank lines. With
- *  `keepImages` an inline `<img>` tag survives as an `[[IMAGE:url]]` marker
- *  instead of being dropped. */
-export function htmlToText(html: string, keepImages = false): string {
-  const withImages = keepImages ? imagesToMarkers(html) : html;
-  const text = withImages
-    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/(p|h[1-6]|li|blockquote|div|figcaption)>/gi, "\n\n")
-    .replace(/<[^>]+>/g, "");
-  return decodeHtmlEntities(text)
-    .split("\n")
-    .map((line) => line.trim())
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
-/** The publication's display name, read out of a post's bylines. The byline
- *  lists every publication its author writes for, so the one whose subdomain
- *  matches the post's own is the one the post belongs to. */
-function publicationNameFromPost(post: any, subdomain: string): string | undefined {
-  const publications = (post.publishedBylines ?? [])
-    .flatMap((byline: any) => byline.publicationUsers ?? [])
-    .map((pu: any) => pu.publication)
-    .filter(Boolean);
-  return publications.find((p: any) => p.subdomain === subdomain)?.name ?? undefined;
-}
-
-export async function fetchSubstackPost(url: string): Promise<FetchedContent> {
-  const m = url.match(/^https?:\/\/([\w-]+)\.substack\.com\/p\/([\w-]+)/);
-  if (!m) throw new Error(`Not a substack post URL: ${url}`);
-  const [, subdomain, slug] = m;
-  const post = await fetchJson(`https://${subdomain}.substack.com/api/v1/posts/${slug}`);
-  if (!post.body_html) throw new Error(`No body_html for ${url} (paywalled or podcast-only?)`);
-  const text = htmlToText(post.body_html, true);
-  if (!text) throw new Error(`Empty body for ${url}`);
-  return {
-    kind: "substack",
-    url: post.canonical_url ?? url,
-    title: post.title ?? slug,
-    publishedAt: post.post_date,
-    text,
-    authorName: publicationNameFromPost(post, subdomain!),
-  };
 }

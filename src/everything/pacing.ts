@@ -61,10 +61,13 @@ export const DEFAULT_MEAN_POST_COST_USD = 1;
 
 /** How long a run that found nothing to process sets the alarm for. Without
  *  it an idle pipeline would be started every minute, since the interval is
- *  measured from a post start that never moves. Thirty minutes is the cadence
- *  the fixed timer had. The other timing rule, the database's 45-minute
- *  backstop for a run that never set its alarm, lives in migration 098. */
-export const IDLE_RECHECK_MS = 30 * 60_000;
+ *  measured from a post start that never moves. While the Claude note writer
+ *  writes the notes, the pipeline mostly has nothing to process, and the alarm
+ *  wakes earlier when Claude's next post is due (usagePacing.ts, GOO-587). It
+ *  was 30 minutes until 2026-10-23, and Jim chose 20 (GOO-549). The other
+ *  timing rule, the database's 45-minute backstop for a run that never set its
+ *  alarm, lives in migration 098. */
+export const IDLE_RECHECK_MS = 20 * 60_000;
 
 const HOUR_MS = 3600_000;
 const DAY_MS = 24 * HOUR_MS;
@@ -96,7 +99,7 @@ export interface NextRun {
   closedForToday: boolean;
 }
 
-export type AlarmReason = "interval" | "midnight" | "idle";
+export type AlarmReason = "interval" | "midnight" | "idle" | "usage";
 
 /** When the database should start the next run, and why that time. */
 export interface FeedAlarm {
@@ -175,6 +178,7 @@ const ALARM_REASONS: Record<AlarmReason, string> = {
   interval: "one interval after the last post started",
   midnight: "the budget resets at midnight",
   idle: "nothing to process, looking again after the idle wait",
+  usage: "the Claude note writer's next post is due",
 };
 
 /** The one line that says when the database will start the next run. */

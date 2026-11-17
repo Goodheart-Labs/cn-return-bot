@@ -1,0 +1,13 @@
+bunx --bun typescript@5.9.3 --noEmit
+bunx --bun typescript@5.9.3 --noEmit -p src/review-dashboard
+bunx --bun typescript@5.9.3 --noEmit -p src/everything-extension
+bunx eslint --max-warnings 0
+bunx knip
+gitleaks git --staged --redact --no-banner
+bunx --bun typescript@5.9.3 --noEmit --incremental --tsBuildInfoFile $SCRATCH/root2.tsbuildinfo
+bunx --bun typescript@5.9.3 --noEmit --incremental --tsBuildInfoFile $SCRATCH/root2.tsbuildinfo
+bunx --bun typescript@5.9.3 --noEmit --extendedDiagnostics
+bunx @typescript/native-preview --noEmit
+bunx @typescript/native-preview --noEmit -p src/review-dashboard
+bunx @typescript/native-preview --noEmit -p src/everything-extension
+bun run check

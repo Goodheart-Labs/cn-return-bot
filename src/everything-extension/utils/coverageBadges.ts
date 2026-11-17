@@ -9,6 +9,8 @@ import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./
 import { isPageDark } from "./pageTheme";
 import type { NoteStatus } from "@cn/core/noteScore";
 import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
+import { STATIC_SITE_HOSTNAME } from "./staticSites";
+import { forumOrigin, readSubstackPublicationFromPage } from "./creatorTarget";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
@@ -267,6 +269,26 @@ function badgeHost(surface: HTMLElement): HTMLElement {
 
 const spotOn = (surface: HTMLElement, corner: BadgeSpot["corner"]): BadgeSpot => ({ surface, corner, host: badgeHost(surface) });
 
+// When a video ends, YouTube's player shows a grid of suggested videos, the
+// end screen. Each tile is one link, and its thumbnail is a div with a CSS
+// background image rather than an img. So the general rules found no picture.
+// They took the tile for a card of its own and put the badge in its lower
+// corner, on top of the view count (GOO-773). They also hung every tile's
+// badge on the grid, and a host carries one badge only, so only the first
+// noted tile got one.
+// Here the badge sits on the thumbnail itself, inside the link. Every tile
+// then has a host of its own. The player handles a tile click in the link's
+// own listeners, which the badge's click handler stops, so a click on the
+// badge opens its card and not the video.
+const YOUTUBE_END_SCREEN_TILE = "a.ytp-modern-videowall-still";
+const YOUTUBE_END_SCREEN_THUMBNAIL = ":scope > .ytp-modern-videowall-still-image";
+
+function endScreenSpot(anchor: HTMLAnchorElement): BadgeSpot | null {
+  if (!anchor.matches(YOUTUBE_END_SCREEN_TILE)) return null;
+  const thumbnail = anchor.querySelector<HTMLElement>(YOUTUBE_END_SCREEN_THUMBNAIL);
+  return thumbnail && { surface: thumbnail, corner: "top", host: thumbnail };
+}
+
 /** How far the surface's edges are inside the host's padding box, which is
  *  what an absolutely positioned child is placed against. All four are zero
  *  when the badge sits directly on its surface. */
@@ -313,8 +335,11 @@ function cornerOffsets(surface: HTMLElement, host: HTMLElement): { top: number; 
  *  tag-name list silently missed the logged-in ones. A link that is a unit by
  *  itself and sits outside any card is a row of a Substack profile's post
  *  list. That row shows its date in its upper corner, so the badge takes the
- *  lower one. */
+ *  lower one.
+ *  A tile of YouTube's end screen skips the climb (see endScreenSpot). */
 function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
+  const endScreen = endScreenSpot(anchor);
+  if (endScreen) return endScreen;
   let picture: HTMLElement | null = null;
   for (let level: HTMLElement | null = anchor; level; level = level.parentElement) {
     if (level.offsetHeight > CARD_MAX_HEIGHT_PX) return null;
@@ -328,15 +353,31 @@ function spotFor(anchor: HTMLAnchorElement): BadgeSpot | null {
   return null;
 }
 
+/** Whether this site gets listing badges at all. Only the sites whose listings
+ *  we know get them: Substack, including newsletters on their own domain such
+ *  as astralcodexten.com, YouTube, LessWrong and the Alignment Forum.
+ *  The extension also runs on any other site that has one checked page. A
+ *  reader once checked claude.ai/new, so it ran on every Claude chat. There
+ *  each bullet of an answer is an li, and a bullet that cited a noted page got
+ *  a badge on top of its text (GOO-742). Such sites show chats, articles and
+ *  link lists that our card rules were never built for. */
+function isBadgeSite(): boolean {
+  return (
+    STATIC_SITE_HOSTNAME.test(location.hostname) ||
+    forumOrigin(location.href) !== null ||
+    readSubstackPublicationFromPage() !== null
+  );
+}
+
 /** Marks every listing link that leads to a noted page with a note-count
  *  badge, placed where spotFor says. The scan re-runs debounced on DOM changes,
  *  which covers infinite scroll and single-page-app navigations. Every card
  *  that links a noted page gets one badge, however often the page is listed.
  *  A badge the host page threw away in a re-render is simply placed again on
- *  the next scan. Returns a teardown
- *  function, or null when the counts have never been synced. */
+ *  the next scan. Returns a teardown function, or null when this site gets no
+ *  badges or the counts have never been synced. */
 export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<(() => void) | null> {
-  if (!(await getSettings()).showThumbnailBadges) return null;
+  if (!isBadgeSite() || !(await getSettings()).showThumbnailBadges) return null;
   const statusCounts = (await getNotedPageStatusCounts()) ?? {};
   // A checked page with no notes at all gets its own badge saying we looked
   // and found nothing. Pages whose notes exist but are all hidden by the

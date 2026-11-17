@@ -73,14 +73,18 @@ import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/genera
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
 import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
+import { startOfUtcDay } from "../pipeline/utils/utcDay";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
-import { withForcedPicks } from "../pipeline/ab-testing/abTests";
+import { getForcedPicks, withForcedPicks } from "../pipeline/ab-testing/abTests";
+import { CLAUDE_TWEET_MAX_WAIT_MINUTES, PIPELINE_BOT } from "../pipeline/orchestration/claudeTweets";
+import { claudeUnavailableReason } from "../claude-notes/xShare";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
 import { loadNoteQueue, mergeWithQueue, noteQueueEnabled, submittableQueued } from "../pipeline/orchestration/noteQueue";
 import { raterBar } from "../pipeline/score/raterBar";
+import { syncAbTests } from "../pipeline/ab-testing/syncAbTests";
 
 function postUrl(postId: string): string {
   return `https://x.com/i/status/${postId}`;
@@ -152,6 +156,13 @@ const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
 // the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
 const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
 
+// The X bot may spend at most this much on LLM calls per UTC day (Jim,
+// 2026-11-04, GOO-698). Once the day's checks have cost this much, a run checks
+// no new tweets until midnight UTC. It still submits the notes that wait in the
+// note queue, because that costs nothing. The check happens at the start of a
+// run, so the last run of a day can go over by what one run costs, about $2 to $3.
+const X_DAILY_SPEND_CAP_USD = 30;
+
 /** The tweets are checked by the claim-check service, so a run without a
  *  healthy service can only burn its dispatch slot. Failing here makes a dead
  *  or wedged machine show up as a red run, which is the only monitoring the
@@ -181,6 +192,8 @@ async function main() {
       console.log("[pipeline] Supabase logging disabled (env vars not set)");
     }
 
+    if (!isLocal) await syncAbTests();
+
     // Submission still takes an atomic claim after this generation snapshot.
     let capacity: SubmissionCapacity | undefined;
     if (!isLocal) {
@@ -199,7 +212,7 @@ async function main() {
     // runs from overlapping, so this can never sweep a live run's rows.
     if (supabaseLogger) {
       try {
-        const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30 });
+        const swept = await supabaseLogger.sweepStuckRuns({ olderThanMinutes: 30, claudeOlderThanMinutes: CLAUDE_TWEET_MAX_WAIT_MINUTES });
         if (swept > 0) console.log(`[pipeline] Swept ${swept} stuck in_progress run(s)`);
       } catch (err) {
         console.warn("[pipeline] Sweeper failed (continuing anyway):", err);
@@ -241,6 +254,15 @@ async function main() {
         ? computeMaxPosts(capacity)
         : { maxPosts: MAX_POSTS_FALLBACK };
 
+    if (!isLocal && supabaseLogger) {
+      const spentTodayUsd = await supabaseLogger.fetchCostSinceUsd(startOfUtcDay());
+      console.log(`[spend-cap] the X bot spent $${spentTodayUsd.toFixed(2)} of its $${X_DAILY_SPEND_CAP_USD} today (UTC)`);
+      if (spentTodayUsd >= X_DAILY_SPEND_CAP_USD) {
+        console.log("[spend-cap] daily spend cap reached: no new tweets until midnight UTC, queued notes still go out");
+        maxPosts = 0;
+      }
+    }
+
     // A cooldown probe needs only one note, and the queue already holds
     // written ones, so the probe spends no money on new posts. Only a queued
     // note that would actually be submitted counts: in time, above the
@@ -252,7 +274,7 @@ async function main() {
     }
 
     if (maxPosts === 0 && queued.length === 0) {
-      console.log("[pipeline] Skipping — writing limit reached for the current 24h window");
+      console.log("[pipeline] Skipping: no new tweets to check and no queued notes to submit");
       clearTimeout(globalTimeout);
       await closeBrowser();
       process.exit(0);
@@ -358,7 +380,13 @@ async function main() {
         (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    const regularCandidates = maxPosts === 0 ? [] : await generateCandidates(supabaseLogger, {
+    // A third of the tweets go to the Claude Code note writer on the ai-box.
+    // While the X share of Nathan's Claude plan has no room, those tweets fail.
+    // A local run writes to the local database, which the ai-box never reads,
+    // so it keeps every tweet with the pipeline.
+    const claudeUnavailable = isLocal || !supabaseLogger ? null : await claudeUnavailableReason();
+    const generatePicks = isLocal && !forcedPicks.bot ? { ...getForcedPicks(), bot: PIPELINE_BOT } : getForcedPicks();
+    const regularCandidates = maxPosts === 0 ? [] : await withForcedPicks(generatePicks, () => generateCandidates(supabaseLogger, {
       maxPosts,
       deadlineMs: SOFT_DEADLINE_AT_MS,
       scorer,
@@ -369,7 +397,8 @@ async function main() {
       // maxPosts. The code for that lives in regularFeedTopicCuration.ts. Pass
       // an empty array to disable it.
       topicIds: MISINFO_ACTIVE_TOPIC_IDS,
-    });
+      claudeUnavailable,
+    }));
 
     // This array fixes the submission order, because submitCandidates does not
     // re-sort it. Misinfo notes get priority, but only up to a bound. The first

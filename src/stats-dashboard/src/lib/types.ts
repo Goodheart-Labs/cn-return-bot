@@ -60,6 +60,7 @@ export interface AbOutcomeAggregate {
   candidate: number; // Runs whose outcome is "candidate" or "submitted".
   submitted: number; // Runs whose outcome is "submitted".
   cost: number; // LLM cost in US dollars, summed over finished runs. A null cost counts as zero.
+  cost_squares: number; // The squares of those costs, summed. The cost per run needs them for its confidence interval.
 }
 
 // A per-day rollup of pipeline_runs. The dashboard uses it to work out how many

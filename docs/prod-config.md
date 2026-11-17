@@ -84,8 +84,7 @@ The website asks X sign-in to return to the page the reader was on, in
 [src/everything-core/auth.ts](../src/everything-core/auth.ts).
 
 The two localhost lines let X sign-in work on a developer's machine while it
-talks to the production database. Port 8003 is the website and port 8004 is
-the analytics dashboard.
+talks to the production database. Port 8003 is the website.
 
 The last two lines are the browser extension's own return addresses. The
 extension's background script asks the browser for its return address with
@@ -197,6 +196,7 @@ so the live list is recorded here (checked on 2026-10-01):
 | `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `cleanup-cron-history` | `17 3 * * *` | Deletes pg_cron's own history older than 7 days. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `refresh-review-dashboard-base` | `0 * * * *` | Refreshes the review dashboard's cached table. | [migrations/080](../migrations/080_slow_review_dashboard_refresh.sql) |
+| `refresh-creator-visits` | `23 3 * * *` | Once a day, recounts every visited creator's visit numbers into `everything_creator_visits`, which the walk and the creator ranking read. Added on 2026-10-23. | [migrations/135](../migrations/135_creator_visits_daily.sql) |
 
 Both dispatch jobs read `github_dispatch_pat` from Vault. To pause one job
 without removing it, run `select cron.alter_job(job_id := <jobid>, active := false);`.
@@ -245,8 +245,8 @@ hides it in logs. The names below were checked against the live repository on
 | Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Create Notes Routine and Everything Priority Feeds. |
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
 | YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine. |
-| Substack relay | `SUBSTACK_PROXY_URL`, `SUBSTACK_PROXY_KEY` | Everything Priority Feeds. |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
+| Slack | `SLACK_BOT_TOKEN`, the bot token of the Slack app "Claudy" (it starts `xoxb-`), the same token the devbox's standing jobs post with. Added on 2026-11-03 (GOO-695). | Everything Priority Feeds, which tells the Claude notes channel when the Claude note writer goes silent. |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
 limited to that probe's own table. When it is unset, the probe falls back to
@@ -271,14 +271,16 @@ GitHub Pages is GitHub's static website hosting. Under Settings → Pages the
 source is "GitHub Actions" (checked on 2026-10-01), so the Deploy Pages
 workflow publishes the site. The site lives at
 `https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain. It
-holds the stats dashboard and the analytics dashboard. The Common Notes
+holds the stats dashboard. Until 2026-10-23 it also held the Common Notes
+analytics dashboard at `/cn-return-bot/analytics/`, which moved to
+commonnotes.net/admin/dashboard (GOO-564). The Common Notes
 website used to have a copy at `/cn-return-bot/notes/`. That copy is gone, and
 its addresses now redirect to the same page on commonnotes.net.
 
 ## Cloudflare
 
 Cloudflare runs the DNS for `commonnotes.net`, hosts the website on that
-domain, and runs the Substack relay. The domain's name servers are
+domain, and still runs the retired Substack relay. The domain's name servers are
 Cloudflare's (checked on 2026-10-01).
 
 ### Cloudflare Pages: commonnotes.net
@@ -306,28 +308,19 @@ so the file must stay on the deployed site. The verification is what lets the
 Chrome Web Store listing name commonnotes.net as its "Official URL" with a
 verified badge.
 
-### The Substack relay Worker
+### The retired Substack relay Worker
 
 A Cloudflare Worker is a small program that Cloudflare runs on its own
-servers. Ours is named `substack-feed-proxy`. It fetches Substack RSS feeds for
-the pipeline, because Substack refuses requests from GitHub's machines. The
-code and its deploy steps are in
-[src/everything/substack-proxy-worker/](../src/everything/substack-proxy-worker/README.md).
-It runs on Jim's Cloudflare account, on the free plan.
+servers. Ours is named `substack-feed-proxy`, on Jim's Cloudflare account on
+the free plan. Until 2026-10-23 it fetched Substack RSS feeds for the feed
+run, because Substack refuses requests from GitHub's machines. On the free
+plan it kept only about 13 feeds fresh, and its copies were often hours old
+(GOO-549). Since then the feed run asks the extraction service on the
+services machine for each feed, and its code was deleted.
 
-Settings that live only in Cloudflare:
-
-- The Worker secret `PROXY_KEY`, set with `bunx wrangler secret put PROXY_KEY`.
-  It must hold the same value as the GitHub secret `SUBSTACK_PROXY_KEY`.
-- The Worker's address, which goes into the GitHub secret `SUBSTACK_PROXY_URL`.
-- The KV namespace `FEEDS`. KV is Cloudflare's key-value storage. Its id is in
-  [wrangler.toml](../src/everything/substack-proxy-worker/wrangler.toml).
-
-The free plan allows 1,000 KV writes a day, which is enough for about 13
-feeds. The README explains what to change when that runs out.
-
-A person deploys the Worker by hand with `bunx wrangler deploy`. No workflow
-deploys it.
+These are still left over and can be deleted by hand: the Worker
+`substack-feed-proxy` with its KV namespace `FEEDS` in Cloudflare, and the
+GitHub secrets `SUBSTACK_PROXY_URL` and `SUBSTACK_PROXY_KEY`.
 
 ## Google
 
@@ -382,12 +375,24 @@ reads it. Changing provider means changing that secret in both places. When
 the prepaid traffic runs out, the proxy answers with an error and YouTube
 requests fail.
 
+## Jina Reader
+
+Jina Reader (r.jina.ai) is a paid service that fetches a page or an API answer
+with its own browsers. The page reader asks it for every page that the free
+fetch steps failed on, and for every API answer that a bot check kept closed,
+which is how the EA Forum is read (GOO-755, GOO-745). Its key is
+`JINA_API_KEY`, in `/etc/cn-return-bot/service.env` on the services machine
+and in the local `.env` files. GitHub has no copy, because Actions never reads
+an outside page itself. Today's key will be replaced by one from an account
+Nathan manages. When that happens, change the line in `service.env`, restart
+`cn-claim-check cn-extraction cn-intake`, and note the account here.
+
 ## Browser extension stores
 
 | Store | Listing | Extension ID |
 |---|---|---|
-| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.4.0 submitted for review on 2026-10-02, with commonnotes.net as its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
-| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (public, version 0.4.0, on 2026-10-02) | `extension@commonnotes.net` |
+| Chrome Web Store | [common-notes](https://chromewebstore.google.com/detail/common-notes/jodkhmefbcmgldokmeicpdogkepmcnij) (version 0.5.1 public since 2026-11-03 at the latest, submitted on 2026-10-30. commonnotes.net is its verified Official URL) | `jodkhmefbcmgldokmeicpdogkepmcnij` |
+| Firefox Add-ons (AMO) | [common-notes](https://addons.mozilla.org/en-US/firefox/addon/common-notes/) (version 0.5.1 public since 2026-10-31, submitted the same day after AMO had throttled new versions for a day) | `extension@commonnotes.net` |
 | Safari | no listing yet | |
 
 How to release a new version, and which credentials the store APIs need, is
@@ -395,8 +400,13 @@ in [extension-release.md](extension-release.md). Those credentials are
 `AMO_JWT_ISSUER` and `AMO_JWT_SECRET` from AMO's API key page, and
 `CWS_PUBLISHER_ID` and `CWS_SERVICE_ACCOUNT_KEY_FILE` for a Google Cloud
 service account that the Chrome Web Store dashboard grants API access. The Chrome Web
-Store publisher ID is `386e874a-cc58-4737-9143-c22ec9085c56`. None of the
-four exist yet (2026-10-02). They belong in `~/dev/env/cn-return-bot/env`. Both listings link to
+Store publisher ID is `386e874a-cc58-4737-9143-c22ec9085c56`. All four are
+in `~/dev/env/cn-return-bot/env`. The service account is
+`cws-release@common-notes-release.iam.gserviceaccount.com`, in the Google
+Cloud project `common-notes-release` of jimmaar1@gmail.com, with the Chrome Web
+Store API enabled and no roles. Its JSON key is
+`~/dev/env/cn-return-bot/cws-service-account.json`, and the store dashboard's
+settings page lists it under service accounts (2026-10-29). Both listings link to
 https://commonnotes.net as their homepage.
 
 Microsoft Edge installs from the Chrome Web Store listing. The website's

@@ -9,6 +9,7 @@
 import {
   CHECK_CLAIM_PATH,
   CHECK_TWEET_PATH,
+  TWEET_INPUT_PATH,
   EXTRACT_CLAIMS_PATH,
   HEALTH_PATH,
   RATE_CLAIMS_PATH,
@@ -17,12 +18,16 @@ import {
   type CheckClaimResponse,
   type CheckTweetRequest,
   type CheckTweetResponse,
+  type TweetInputRequest,
+  type TweetInputResponse,
   type ExtractClaimsRequest,
   type ExtractClaimsResponse,
   type HealthResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
-  type ServiceErrorResponse, ITEM_TEXT_PATH, type ItemTextRequest, type ItemTextResponse } from "./contract";
+  type ServiceErrorResponse, ServiceError,
+  FETCH_SERVICE_SOCKET_VARIABLE, READ_LISTING_PATH, READ_PAGE_PATH,
+  type FetchUrlRequest, type Listing, type ListingRequest, type PageRead } from "./contract";
 
 /** How long a caller waits for an answer. A check takes about a minute and a
  *  half of its own, and it may queue behind other work first, so this is a
@@ -52,6 +57,10 @@ export async function requestTweetCheck(body: CheckTweetRequest): Promise<CheckT
   return call<CheckTweetResponse>(serviceUrl("CLAIM_CHECK_URL"), CHECK_TWEET_PATH, body);
 }
 
+export async function requestTweetInput(body: TweetInputRequest): Promise<TweetInputResponse> {
+  return call<TweetInputResponse>(serviceUrl("CLAIM_CHECK_URL"), TWEET_INPUT_PATH, body);
+}
+
 export async function requestClaimExtraction(body: ExtractClaimsRequest): Promise<ExtractClaimsResponse> {
   return call<ExtractClaimsResponse>(serviceUrl("EXTRACTION_URL"), EXTRACT_CLAIMS_PATH, body);
 }
@@ -60,8 +69,12 @@ export async function requestClaimRating(body: RateClaimsRequest): Promise<RateC
   return call<RateClaimsResponse>(serviceUrl("EXTRACTION_URL"), RATE_CLAIMS_PATH, body);
 }
 
-export async function requestItemText(body: ItemTextRequest): Promise<ItemTextResponse> {
-  return call<ItemTextResponse>(serviceUrl("EXTRACTION_URL"), ITEM_TEXT_PATH, body);
+export async function requestPageRead(body: FetchUrlRequest): Promise<PageRead> {
+  return call<PageRead>(serviceUrl("EXTRACTION_URL"), READ_PAGE_PATH, body);
+}
+
+export async function requestListing(body: ListingRequest): Promise<Listing> {
+  return call<Listing>(serviceUrl("EXTRACTION_URL"), READ_LISTING_PATH, body);
 }
 
 export async function fetchClaimCheckHealth(): Promise<HealthResponse> {
@@ -97,6 +110,14 @@ async function getHealth(baseUrl: string): Promise<HealthResponse> {
  *  runs into its own timeout. This ceiling is for a fetcher that has hung. */
 const FETCH_SERVICE_TIMEOUT_MS = 5 * 60_000;
 
+/** Runs one fetcher route: over the fetcher's socket on the services machine,
+ *  and in this process, with `here`, where there is no fetcher, as on a local
+ *  machine. `here` must be the function the fetcher's route runs. */
+export async function askFetcher<Answer>(path: string, body: unknown, here: () => Promise<Answer>): Promise<Answer> {
+  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
+  return socket ? callFetchService<Answer>(socket, path, body) : here();
+}
+
 /** Asks the fetcher over its Unix socket. It holds no secrets, so it takes no
  *  key, and only processes on the same machine can reach it. */
 export async function callFetchService<Answer>(socket: string, path: string, body: unknown): Promise<Answer> {
@@ -125,7 +146,8 @@ function parseAnswer<Answer>(text: string, status: number, path: string): Answer
   // A failure that happens after the answer started streaming cannot change the
   // status line, so the error field is what tells the two apart.
   if (parsed && typeof parsed === "object" && "error" in parsed) {
-    throw new Error(`${path} failed: ${(parsed as ServiceErrorResponse).error}`);
+    const failure = parsed as ServiceErrorResponse;
+    throw new ServiceError({ ...failure, error: `${path} failed: ${failure.error}` });
   }
   return parsed as Answer;
 }

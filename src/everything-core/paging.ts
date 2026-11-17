@@ -138,3 +138,20 @@ export async function fetchInBatches<T extends object>(
   }
   return out;
 }
+
+/**
+ * Fetch the rows whose unique key is in a list, such as the notes of one page
+ * of the website's feed. Each id matches at most one row, so a chunk of 200
+ * ids can never reach the row cap, and one request per chunk reads all of
+ * it. That saves the empty request `fetchInBatches` needs to know it is done.
+ * `buildQuery` must filter on a unique column, usually the primary key.
+ */
+export async function fetchByIds<T extends object>(buildQuery: (chunk: string[]) => unknown, ids: string[], options: { label?: string } = {}): Promise<T[]> {
+  const out: T[] = [];
+  for (let i = 0; i < ids.length; i += IN_LIST_CHUNK_SIZE) {
+    const { data, error } = await (buildQuery(ids.slice(i, i + IN_LIST_CHUNK_SIZE)) as PromiseLike<QueryResult>);
+    if (error) throw new Error(`[paging:${options.label ?? "fetchByIds"}] failed: ${error.message ?? String(error)}`);
+    out.push(...((data ?? []) as T[]));
+  }
+  return out;
+}

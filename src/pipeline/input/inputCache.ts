@@ -1,12 +1,11 @@
 /**
- * File cache for bot inputs: the media description, the comments and the author
- * history. An entry is keyed by tweet id and by video_description_strategy.
+ * File cache for bot inputs: the media description and the author history. An entry is keyed by tweet id and by video_description_strategy.
  * The cache only exists when BIG_EVAL_INPUT_CACHE holds a directory path. That
  * variable is unset in production, so production behaviour is unchanged.
  *
  * createBotInput reads the cache before it does any work and writes it before it
  * returns. A hill-climbing run therefore reuses the cached inputs instead of
- * paying the X, Gemini and Grok fetch costs again. The Phase 5 script of big_eval
+ * paying the X and Gemini fetch costs again. The Phase 5 script of big_eval
  * runs createBotInput over the selected tweets for no other reason than to fill
  * this cache.
  */
@@ -31,8 +30,8 @@ function cacheDir(): string | null {
 
 // The in-memory cache is always on. The note-needed prefilter builds a post's
 // input first. When the post passes the prefilter, createBotInput reuses that
-// input instead of paying a second time for the Gemini media analysis, the Grok
-// comment fetch and the author-history query. The key includes the strategy so
+// input instead of paying a second time for the Gemini media analysis and the
+// author-history query. The key includes the strategy so
 // that two strategies never collide. The map only grows with the posts processed
 // in one run, and the process is a short-lived cron job, so it needs no eviction.
 const memCache = new Map<string, BotInput>();

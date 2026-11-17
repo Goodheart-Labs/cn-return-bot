@@ -5,8 +5,8 @@ import {
   type AbComparisonStat,
   type RatingReasonCatalog,
   type ReasonUsage,
-} from "../lib/abComparison";
-import { humanizeTagName } from "../../../dashboard-shared/ratingReasons";
+} from "../../../everything-core/abStats";
+import { humanizeTagName } from "../../../everything-core/ratingReasons";
 
 type SubKey = "failure_mode" | "rating_type";
 

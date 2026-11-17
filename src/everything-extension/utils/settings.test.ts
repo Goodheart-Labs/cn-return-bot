@@ -14,7 +14,17 @@ describe("updateSettings", () => {
     expect(await storedSync("cn:settings")).toEqual({ noteStyle: "classic", saveVisits: { youtube: false } });
     const settings = await getSettings();
     expect(settings.noteStyle).toBe("classic");
-    expect(settings.saveVisits).toEqual({ substack: true, youtube: false, lesswrong: true });
+    expect(settings.saveVisits).toEqual({ substack: true, youtube: false, lesswrong: true, eaforum: false });
+  });
+
+  test("a reader who agreed before the EA Forum was added is not recorded there", async () => {
+    await updateSettings({ saveVisits: { substack: true, youtube: true, lesswrong: true } });
+    expect((await getSettings()).saveVisits.eaforum).toBe(false);
+  });
+
+  test("a reader who agrees on today's welcome page is", async () => {
+    await updateSettings({ saveVisits: { substack: true, youtube: true, lesswrong: true, eaforum: true } });
+    expect((await getSettings()).saveVisits.eaforum).toBe(true);
   });
 });
 

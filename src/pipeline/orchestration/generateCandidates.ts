@@ -11,10 +11,12 @@ import { SupabaseLogger } from "../../api/supabaseClient";
 import { beginTweetRun, finishTweetRun, type ProcessTweetResult } from "./processTweet";
 import { requestTweetCheck } from "../../service/client";
 import { STALE_TWEET_CUTOFF_HOURS, tweetAgeHours, type Candidate } from "./submitCandidates";
-import { createTweetLog, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
+import { createTweetLog, nestDotKeys, formatTweetLogSummary, formatTweetLogFull, formatRunSummary, getLoggedBotId, type TweetLogMap } from "../utils/tweetLog";
 import { buildPostSelection, type FeedSize } from "./utils/feedSizeStrategy";
 import { ageInHours, formatCount } from "./utils/tweetSorting";
-import { getBotProbabilities, getForcedPicks } from "../ab-testing/abTests";
+import { getBotProbabilities, getForcedPicks, pickVariantName } from "../ab-testing/abTests";
+import { BOT_TEST } from "../ab-testing/abTestsData";
+import { CLAUDE_CODE_BOT, handTweetToClaude, PIPELINE_BOT } from "./claudeTweets";
 import type { MonitoringContext } from "../misinfo-monitoring/monitoringContext";
 import { curateRegularFeedPosts, fillWithTopicPriority } from "../misinfo-monitoring/regularFeedTopicCuration";
 import type { MisinfoTopic } from "../misinfo-monitoring/topics";
@@ -273,6 +275,9 @@ export interface ProcessPostsOptions {
    *  what the hard kill already did to never-started posts: its tweets row was
    *  written at selection, so it is not refetched. Unset means no deadline. */
   deadlineMs?: number;
+  /** Why the Claude Code note writer cannot take tweets in this run, or null
+   *  when it can. A tweet that draws Claude then fails. See claudeTweets.ts. */
+  claudeUnavailable?: string | null;
 }
 
 /**
@@ -286,7 +291,7 @@ export interface ProcessPostsOptions {
 export async function processPosts(
   items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { onTweetProcessed, label = "generate", deadlineMs }: ProcessPostsOptions,
+  { onTweetProcessed, label = "generate", deadlineMs, claudeUnavailable = null }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
   if (!items.length) return [];
 
@@ -341,10 +346,25 @@ export async function processPosts(
       // deadline, leaves a started-but-incomplete row, and the next run's
       // sweep and skip set are built on exactly those.
       const pipelineRunId = await beginTweetRun(supabaseLogger, item.post, commit);
+
+      // The bot is drawn here rather than on the service, because a tweet for
+      // the Claude Code note writer never reaches the pipeline. A curated-topic
+      // post always stays with the pipeline, which is the only bot that reads
+      // the topic's reference document.
+      const bot = item.monitoring ? PIPELINE_BOT : pickVariantName(BOT_TEST, perPostPicks.bot);
+      if (bot === CLAUDE_CODE_BOT) {
+        if (!supabaseLogger || !pipelineRunId) {
+          console.warn(`[${label}] ${item.post.id} drew Claude, but without a run row the ai-box cannot find it. Skipping it.`);
+          return;
+        }
+        const logs = nestDotKeys(Object.fromEntries(localLog));
+        await handTweetToClaude({ logger: supabaseLogger, runId: pipelineRunId, post: item.post, picks: { ...perPostPicks, bot }, logs, claudeUnavailable });
+        return;
+      }
       const { output } = await requestTweetCheck({
         priority: "x",
         post: item.post,
-        picks: perPostPicks,
+        picks: { ...perPostPicks, bot },
         monitoring: item.monitoring,
       });
       for (const [key, value] of localLog) {
@@ -444,11 +464,13 @@ export interface GenerateCandidatesOptions {
    *  regularFeedTopicCuration.ts. An empty or missing list turns curation off
    *  completely. */
   topicIds?: readonly MisinfoTopicId[];
+  /** See ProcessPostsOptions.claudeUnavailable. */
+  claudeUnavailable?: string | null;
 }
 
 export async function generateCandidates(
   supabaseLogger: SupabaseLogger | null,
-  { maxPosts, deadlineMs, processedThisRun = new Set(), onTweetProcessed, topicIds, scorer = null }: GenerateCandidatesOptions,
+  { maxPosts, deadlineMs, processedThisRun = new Set(), onTweetProcessed, topicIds, scorer = null, claudeUnavailable }: GenerateCandidatesOptions,
 ): Promise<Candidate[]> {
   const outerForcedPicks = getForcedPicks();
   if (Object.keys(outerForcedPicks).length > 0) {
@@ -576,6 +598,7 @@ export async function generateCandidates(
     onTweetProcessed: onProcessed,
     label: "generate",
     deadlineMs,
+    claudeUnavailable,
   });
   // Tag curated candidates the way pre-pass ones are tagged, so that
   // submitCandidates leaves them out of its velocity-floor backstop. They answer

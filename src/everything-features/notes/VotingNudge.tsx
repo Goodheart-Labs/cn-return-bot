@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { readBrowserFlag, setBrowserFlag } from "@cn/core/extensionStorage";
+import { Button } from "@cn/ui/Button";
 import { ratingQuestion } from "./NoteBox";
 
 /** The one-time voting nudge: on the first note a reader opens, the rating
@@ -40,9 +41,9 @@ export function VotingNudge({ onDismiss }: { onDismiss: () => void }) {
   return (
     <span>
       <span className="font-semibold">{ratingQuestion("note")}</span> <span className="text-fg-secondary">You don't need to be an expert.</span>{" "}
-      <button type="button" onClick={onDismiss} className="font-medium text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control">
+      <Button variant="link" onClick={onDismiss} className="rounded-control font-medium">
         Got it
-      </button>
+      </Button>
     </span>
   );
 }

@@ -7,6 +7,7 @@ describe("creatorPlatform", () => {
     expect(creatorPlatform("https://www.youtube.com/@DwarkeshPatel")).toBe("YouTube");
     expect(creatorPlatform("https://www.lesswrong.com/users/zvi")).toBe("LessWrong");
     expect(creatorPlatform("https://www.alignmentforum.org/users/paulfchristiano")).toBe("Alignment Forum");
+    expect(creatorPlatform("https://forum.effectivealtruism.org/users/toby-tremlett")).toBe("EA Forum");
   });
 
   test("gives null for anything else", () => {

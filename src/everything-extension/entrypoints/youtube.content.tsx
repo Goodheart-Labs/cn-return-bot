@@ -13,6 +13,7 @@ import { recordPageVisit } from "../utils/linkVisits";
 import { PillPaletteFromSettings } from "../components/PillPaletteFromSettings";
 import { timedGroups, YoutubeOverlayApp } from "../components/YoutubeOverlay";
 import { isPageDark, observePageTheme } from "../utils/pageTheme";
+import { listenForPassageRequests } from "../utils/passageRequest";
 import { listenForRequestInfo } from "../utils/requestInfo";
 import { listenForLiveRequests } from "../utils/requestLive";
 import { getNoteDisplay } from "../utils/settings";
@@ -21,11 +22,9 @@ import { initUiAnalytics } from "../utils/analytics";
 import { track } from "@cn/core/analytics";
 import { createOverlayUi } from "../utils/overlayUi";
 import { installMenuRows } from "../utils/menuRows";
-import { youtubeMenuSite } from "../utils/youtubeMenuRows";
-
-// YouTube's DOM changes often. Every selector we depend on lives here.
-const PLAYER_SELECTOR = "#movie_player";
-const VIDEO_SELECTOR = "video.html5-main-video";
+import { youtubeMenuSite, youtubePlayerMenuSite } from "../utils/youtubeMenuRows";
+import { installVideoNoteWriter } from "../utils/videoNoteWriter";
+import { mainVideo, PLAYER_SELECTOR } from "../utils/youtubePlayer";
 
 const PLAYER_WAIT_MS = 15_000;
 const PLAYER_POLL_MS = 500;
@@ -89,7 +88,7 @@ async function mountOverlay(ctx: ContentScriptContext): Promise<(() => void) | n
   if (groups.length === 0) return null;
 
   const player = await waitFor<HTMLElement>(PLAYER_SELECTOR);
-  const video = document.querySelector<HTMLVideoElement>(VIDEO_SELECTOR);
+  const video = mainVideo();
   if (!player || !video) return null;
 
   let themeRoot: HTMLElement | null = null;
@@ -151,21 +150,35 @@ export default defineContentScript({
     // The background answers a needless request, for example on an already
     // checked video, with an explanation card through this listener.
     listenForRequestInfo(ctx);
+    listenForPassageRequests(ctx);
     listenForLiveRequests(ctx);
-    installMenuRows(ctx, youtubeMenuSite);
+    let cleanup: (() => void) | null = null;
+    ctx.onInvalidated(() => cleanup?.());
+    let seq = 0;
+    const init = async () => {
+      if (ctx.isInvalid) return;
+      const mine = ++seq;
+      cleanup?.();
+      cleanup = null;
+      const teardown = await mountOverlay(ctx);
+      // A newer navigation, or a note the reader just posted, started another
+      // mount while this one was still resolving. That mount wins.
+      if (mine !== seq || ctx.isInvalid) return teardown?.();
+      cleanup = teardown;
+    };
+    // A note the reader posts on a video mounts the video's notes again, so a
+    // video that had no notes before gets its overlay and the note its pin.
+    const openVideoNoteEditor = installVideoNoteWriter(ctx, () => void init());
+    installMenuRows(ctx, youtubeMenuSite(openVideoNoteEditor));
+    installMenuRows(ctx, youtubePlayerMenuSite(openVideoNoteEditor));
     // Listing badges mark noted videos on channel pages and in other video
     // lists. They live independently of the watch-page overlay below.
     const stopBadges = await mountCoverageBadges(ctx);
+    if (ctx.isInvalid) return stopBadges?.();
     ctx.onInvalidated(() => stopBadges?.());
-    let cleanup: (() => void) | null = null;
-    const init = async () => {
-      cleanup?.();
-      cleanup = await mountOverlay(ctx);
-    };
     await init();
     // YouTube is a single-page app. We resolve the video again on each of its
     // internal navigations.
     ctx.addEventListener(window, "yt-navigate-finish" as keyof WindowEventMap, () => void init());
-    ctx.onInvalidated(() => cleanup?.());
   },
 });

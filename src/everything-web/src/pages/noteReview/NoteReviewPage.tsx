@@ -1,224 +1,248 @@
-import { useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { REVIEW_SECTIONS, setApprovalRequired, type ReviewDraft, type ReviewSection, type ReviewSummary } from "@cn/core/claudeReview";
-import { queryKeys } from "@cn/features/query/queryKeys";
-import { useLoadMoreSentinel } from "@cn/features/query/useLoadMoreSentinel";
+import { useMemo, type ComponentProps, type ReactNode } from "react";
+import type { ReviewDraft, ReviewSummary } from "@cn/core/claudeReview";
+import { buildRequest, type FieldDef, type FieldFilter } from "@cn/core/fieldQuery";
+import type { NotewriterSource } from "@cn/core/notewriter";
+import { LoadFailed } from "@cn/features/query/LoadFailed";
+import { PagedListEnd } from "@cn/features/query/PagedListEnd";
 import { Button } from "@cn/ui/Button";
-import { cn } from "@cn/ui/cn";
-import { ResizablePanel } from "@cn/ui/ResizablePanel";
-import { RouteLink } from "../../components/RouteLink";
-import type { Route } from "../../lib/routing";
-import { useAdminStatus } from "../../lib/useIsAdmin";
-import { PERSON, ReviewCard } from "./ReviewCard";
-import { showNewDrafts, useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewSection, useReviewSummary } from "./reviewQueries";
+import { Page } from "@cn/ui/Page";
+import { PageTitle } from "@cn/ui/typography";
+import { AdminOnly } from "../../components/AdminOnly";
+import { SidebarPagesLayout, type SidebarPage } from "../../components/SidebarLayout";
+import { CardColumn } from "../../components/ClaimCard";
+import { DisplayMenu } from "@cn/features/fieldQuery/DisplayMenu";
+import { FilterButton, FilterPills } from "@cn/features/fieldQuery/Filters";
+import { SortBar } from "@cn/features/fieldQuery/SortBar";
+import { useMomentFor } from "../../lib/feedQueries";
+import { useFieldQuery } from "@cn/features/fieldQuery/useFieldQuery";
+import { NOTE_REVIEW, X_NOTE_REVIEW, type Route } from "../../lib/routing";
+import { abTestFields, DEFAULT_X_REVIEW_QUERY, X_REVIEW_FIELDS } from "../notewriter/noteFields";
+import { NoteList } from "../notewriter/Overview";
+import { useAbTests, useNoteFacets, useNoteSummary } from "../notewriter/queries";
+import { ReviewCard } from "./ReviewCard";
+import { PERSON } from "./ReviewerVotes";
+import { DEFAULT_REVIEW_QUERY, DISPLAY, REVIEW_FIELDS } from "./reviewFields";
+import { useLiveNotes, useNewDrafts, usePollWaitingChats, useReviewFacets, useReviewList, useReviewSummary, type ReviewView } from "./reviewQueries";
+import { TWEET_SERVER } from "./tweetServer";
+import { useTypefullySync } from "./typefullySync";
 
-const SECTION_TITLES: Record<ReviewSection, string> = {
-  unreviewed: "Posted, not reviewed",
-  waiting: "Waiting for approval",
-  approved: "Approved",
-  rejected: "Rejected",
-  no_note: "No note",
-};
-const EMPTY_SECTION: Record<ReviewSection, string> = {
-  unreviewed: "Every posted note has been reviewed.",
-  waiting: "No note is waiting for approval.",
-  approved: "No note has been approved yet.",
-  rejected: "No note has been rejected.",
-  no_note: "No passage ended without a note.",
-};
-/** Sections whose drafts wait for a reviewer get a highlighted count. */
-const NEEDS_REVIEWER = new Set<ReviewSection>(["unreviewed", "waiting"]);
+/** The Display menu offers Post on X only in the local posting tool, which
+ *  has a server that can reach Typefully. */
+// Schedule on X always shows (Nathan, 2026-11-17: a saved view hid it), so the menu does not offer it.
+const DISPLAY_OPTIONS = Object.values(DISPLAY).filter((option) => option !== DISPLAY.postOnX);
 
-/** How wide the sidebar starts, and how far it can be dragged. */
-const SIDEBAR_WIDTH = { default: 280, min: 220, max: 420 };
+const QUERY_KEY = "cn:noteReviewQuery";
+const X_QUERY_KEY = "cn:xNoteReviewQuery";
 
-const sectionRoute = (section: ReviewSection): Route => ({ view: "noteReview", section });
-
-function SectionList({ current, summary, navigate }: { current: ReviewSection; summary: ReviewSummary | undefined; navigate: (route: Route) => void }) {
-  return (
-    <nav aria-label="Sections">
-      <ul className="space-y-0.5">
-        {REVIEW_SECTIONS.map((section) => {
-          const count = summary?.counts[section];
-          const active = section === current;
-          const highlighted = NEEDS_REVIEWER.has(section) && !!count;
-          return (
-            <li key={section}>
-              <RouteLink
-                to={sectionRoute(section)}
-                navigate={navigate}
-                current={active}
-                className={cn(
-                  "flex items-center justify-between gap-3 rounded-control px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                  active ? "bg-tint font-medium text-fg" : "text-fg-secondary hover:bg-surface-hover hover:text-fg",
-                )}
-              >
-                {SECTION_TITLES[section]}
-                {count !== undefined && (
-                  <span
-                    className={cn(
-                      "min-w-6 rounded-full px-1.5 py-0.5 text-center text-xs tabular-nums",
-                      highlighted ? "bg-caution-soft text-caution" : "bg-surface-muted text-fg-secondary",
-                    )}
-                  >
-                    {count}
-                  </span>
-                )}
-              </RouteLink>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
-}
-
-/** Turns the approval step on or off for every reviewer. While it is on,
- *  Claude's new notes wait in "Waiting for approval". */
-function ApprovalSwitch({ approvalRequired }: { approvalRequired: boolean }) {
-  const client = useQueryClient();
-  const toggle = useMutation({
-    mutationFn: () => setApprovalRequired(!approvalRequired),
-    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.noteReviewSummary }),
-  });
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={approvalRequired}
-      disabled={toggle.isPending}
-      onClick={() => toggle.mutate()}
-      title={approvalRequired ? "New notes wait for approval. Click to post them at once" : "New notes go up at once. Click to make them wait for approval"}
-      className="flex items-center gap-2 rounded-full border border-line px-2 py-0.5 text-xs text-fg-secondary hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-    >
-      <span className={cn("relative h-3.5 w-6 rounded-full transition-colors", approvalRequired ? "bg-primary" : "bg-line-strong")}>
-        <span className={cn("absolute top-0.5 h-2.5 w-2.5 rounded-full bg-surface transition-all", approvalRequired ? "left-3" : "left-0.5")} />
-      </span>
-      Approval before posting
-    </button>
-  );
-}
-
-/** Who is reviewing, who writes the notes, and the approval switch. */
-function Settings({ summary }: { summary: ReviewSummary | undefined }) {
+/** Who is reviewing, and how many notes match. */
+function WhoLine({ summary }: { summary: ReviewSummary | undefined }) {
   if (!summary) return null;
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-fg-muted">
-      <span>Reviewing as {PERSON[summary.reviewer]}</span>
-      <span className="rounded-full border border-line px-2 py-0.5">{summary.writer === "claude" ? "Claude writes" : "Pipeline writes"}</span>
-      <ApprovalSwitch approvalRequired={summary.approvalRequired} />
-    </div>
+    <p className="text-sm text-fg-muted">
+      Reviewing as {PERSON[summary.reviewer]} ·{" "}
+      {summary.matching === 1 ? "1 matching note" : `${summary.matching} matching notes`}
+    </p>
   );
 }
 
 /** One loaded page of drafts. Each page reads the live notes of its own
  *  drafts, so loading the next page never reloads the notes above it. */
-function DraftPage({ drafts, section }: { drafts: ReviewDraft[]; section: ReviewSection }) {
+function DraftPage({ drafts, view }: { drafts: ReviewDraft[]; view: ReviewView }) {
   const liveNotes = useLiveNotes(drafts);
-  return drafts.map((draft) => (
-    <ReviewCard key={draft.id} draft={draft} liveNote={draft.noteId ? liveNotes?.get(draft.noteId) : undefined} section={section} />
-  ));
+  return drafts.map((draft) => {
+    const liveNote = draft.noteId ? liveNotes?.get(draft.noteId) : undefined;
+    const originalId = liveNote?.improved_from_note_id;
+    return (
+      <ReviewCard
+        key={draft.id}
+        draft={draft}
+        liveNote={liveNote}
+        improvesOn={originalId ? (liveNotes?.get(originalId) ?? null) : undefined}
+        view={view}
+      />
+    );
+  });
 }
 
-function SectionFeed({ section }: { section: ReviewSection }) {
-  const client = useQueryClient();
-  const query = useReviewSection(section, true);
-  const pages = query.data?.pages;
-  const drafts = pages?.flat();
-  const newDrafts = useNewDrafts(section, drafts);
-  usePollWaitingChats(section, drafts ?? []);
-  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
-  const loadMore = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) void fetchNextPage();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-  const setSentinel = useLoadMoreSentinel(loadMore, drafts?.length ?? 0);
+/** The pages with every draft shown once. A draft an admin changed keeps its
+ *  place, so a later page can bring it again at its new place. */
+function withoutRepeats(pages: ReviewDraft[][]): ReviewDraft[][] {
+  const seen = new Set<string>();
+  return pages.map((page) => page.filter((draft) => !seen.has(draft.id) && seen.add(draft.id)));
+}
 
-  if (query.isError) {
+function ReviewFeed({ view }: { view: ReviewView }) {
+  const list = useReviewList(view.request);
+  const pages = list.pages && withoutRepeats(list.pages);
+  const drafts = pages?.flat();
+  const newDrafts = useNewDrafts(view.request, drafts !== undefined);
+  usePollWaitingChats(view.request, drafts ?? []);
+
+  if (list.failed)
     return (
-      <div className="mx-auto max-w-[40rem] space-y-3">
-        <p className="text-sm text-negative">{query.error.message}</p>
-        <Button onClick={() => void query.refetch()}>Try again</Button>
-      </div>
+      <CardColumn>
+        <LoadFailed what="These notes" onRetry={list.retry} />
+      </CardColumn>
     );
-  }
-  if (!pages || !drafts) return <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading…</p>;
+  if (!pages || !drafts)
+    return (
+      <CardColumn>
+        <p className="text-sm text-fg-muted">Loading…</p>
+      </CardColumn>
+    );
   return (
     <div className="space-y-6">
-      {newDrafts.length > 0 && (
-        <div className="mx-auto max-w-[40rem]">
-          <Button variant="secondary" className="w-full" onClick={() => showNewDrafts(client, section, newDrafts)}>
-            {newDrafts.length === 1 ? "1 new draft. Show it" : `${newDrafts.length} new drafts. Show them`}
+      {newDrafts.arrived && (
+        <CardColumn>
+          <Button variant="secondary" className="w-full" onClick={newDrafts.showThem}>
+            New notes arrived. Show them
           </Button>
-        </div>
+        </CardColumn>
       )}
-      {drafts.length === 0 && <p className="mx-auto max-w-[40rem] py-12 text-center text-sm text-fg-muted">{EMPTY_SECTION[section]}</p>}
+      {drafts.length === 0 && (
+        <CardColumn>
+          <p className="py-12 text-center text-sm text-fg-muted">No notes match these filters.</p>
+        </CardColumn>
+      )}
       {pages.map((page, index) => (
-        <DraftPage key={index} drafts={page} section={section} />
+        <DraftPage key={index} drafts={page} view={view} />
       ))}
-      {hasNextPage && <div ref={setSentinel} aria-hidden="true" />}
-      {isFetchingNextPage && <p className="mx-auto max-w-[40rem] text-sm text-fg-muted">Loading more…</p>}
-      {drafts.length > 0 && !hasNextPage && (
-        <p className="mx-auto max-w-[40rem] text-center text-xs text-fg-muted">That is every draft in this section.</p>
+      {drafts.length > 0 && (
+        <CardColumn>
+          <PagedListEnd list={list} endText="That is every note that matches." />
+        </CardColumn>
       )}
     </div>
   );
 }
 
-/** The admins' review of the Claude note writer's notes. A sidebar lists the
- *  sections with their counts, and the open section's drafts load page by
- *  page as the admin scrolls. On a phone the sidebar becomes a menu above the
- *  drafts. Anyone who is not an admin sees only a short message, and the
- *  database refuses them every draft and every step. */
-export function NoteReviewPage({ section, navigate }: { section: ReviewSection; navigate: (route: Route) => void }) {
-  const status = useAdminStatus();
-  const summary = useReviewSummary(status === "admin");
-  if (status === "loading") return <p className="px-8 py-10 text-sm text-fg-muted">Loading…</p>;
-  if (status === "not_admin") {
-    return <p className="mx-auto max-w-xl px-4 py-10 text-sm text-fg-secondary">This page is for admins. Sign in with an admin account to see it.</p>;
-  }
-  return (
-    <div className="md:flex">
-      <ResizablePanel
-        storageKey="cn:noteReviewSidebarWidth"
-        label="sidebar"
-        defaultWidth={SIDEBAR_WIDTH.default}
-        minWidth={SIDEBAR_WIDTH.min}
-        maxWidth={SIDEBAR_WIDTH.max}
-        className="hidden bg-surface md:block md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]"
-      >
-        <div className="flex h-full flex-col gap-5 overflow-y-auto px-3 py-5">
-          <h1 className="px-3 font-title text-lg font-bold text-fg">Note review</h1>
-          <SectionList current={section} summary={summary.data} navigate={navigate} />
-          <div className="mt-auto px-3">
-            <Settings summary={summary.data} />
-          </div>
-        </div>
-      </ResizablePanel>
+const SOURCES: SidebarPage<NotewriterSource>[] = [
+  { id: "commonnotes", label: "Common Notes", route: NOTE_REVIEW },
+  { id: "x", label: "X", route: X_NOTE_REVIEW },
+];
 
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-8">
-        <div className="mx-auto mb-6 max-w-[40rem] space-y-3 md:hidden">
-          <h1 className="font-title text-2xl font-bold text-fg">Note review</h1>
-          <label className="block text-sm text-fg-secondary">
-            <span className="sr-only">Section</span>
-            <select
-              value={section}
-              onChange={(e) => navigate(sectionRoute(e.target.value as ReviewSection))}
-              className="w-full rounded-control border border-line-strong bg-surface px-3 py-2 text-base text-fg"
-            >
-              {REVIEW_SECTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {SECTION_TITLES[s]}
-                  {summary.data ? ` (${summary.data.counts[s]})` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Settings summary={summary.data} />
+/** The page's header: the title with a line on what is shown, the Filter
+ *  button and any menus beside it, any notices, the filter pills and the
+ *  sort bar. */
+function ReviewHeader({ who, filterProps, menus, notices, sortBar }: {
+  who: ReactNode;
+  filterProps: ComponentProps<typeof FilterButton>;
+  menus?: ReactNode;
+  notices?: ReactNode;
+  sortBar: ReactNode;
+}) {
+  return (
+    // The controls span the page's whole width, so the pills have room on one
+    // line, and the menus open to the left of the buttons at its right edge.
+    <header className="mb-10 space-y-3">
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-0.5">
+          <PageTitle>Note review</PageTitle>
+          {who}
         </div>
-        {summary.isError && <p className="mx-auto mb-4 max-w-[40rem] text-sm text-negative">{summary.error.message}</p>}
-        <h2 className="mx-auto mb-6 hidden max-w-[40rem] font-title text-2xl font-bold text-fg md:block">{SECTION_TITLES[section]}</h2>
-        <SectionFeed key={section} section={section} />
-      </main>
-    </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <FilterButton {...filterProps} />
+          {menus}
+        </div>
+      </div>
+      {notices}
+      <FilterPills {...filterProps} />
+      {sortBar}
+    </header>
+  );
+}
+
+/** The admins' review of the notes of both notewriters, one page each in a
+ *  sidebar. The Common Notes page holds the Claude note writer's notes, which
+ *  is also where Nathan picks notes to post on X. The X page holds every note
+ *  we submitted to X, where our votes go on the note's twin. The local
+ *  posting tool posts only Common Notes, so it shows that page alone. On
+ *  both, a Filter button narrows the list
+ *  by any field and a Sort bar orders it by any number of fields, and both
+ *  live in the page address and are remembered on the device. The notes load
+ *  page by page as the admin scrolls. Anyone who is not an admin sees only a
+ *  short message, and the database refuses them every draft and every step. */
+export function NoteReviewPage({ source, navigate }: { source: NotewriterSource; navigate: (route: Route) => void }) {
+  const content = source === "x" ? <XReview /> : <NoteReview />;
+  return (
+    <AdminOnly>
+      {TWEET_SERVER ? (
+        <Page width="full">{content}</Page>
+      ) : (
+        <SidebarPagesLayout storageKey="cn:noteReviewSidebarWidth" label="Note review pages" pages={SOURCES} current={source} navigate={navigate}>
+          {content}
+        </SidebarPagesLayout>
+      )}
+    </AdminOnly>
+  );
+}
+
+function NoteReview() {
+  const [query, setQuery] = useFieldQuery({
+    storageKey: QUERY_KEY,
+    fields: REVIEW_FIELDS,
+    displayOptions: DISPLAY_OPTIONS.map((option) => option.value),
+    defaults: DEFAULT_REVIEW_QUERY,
+  });
+  // Date filters and buckets count back from this moment, which is taken anew
+  // whenever the filters or sorts change.
+  const now = useMomentFor(JSON.stringify([query.filters, query.sorts]));
+  const request = useMemo(() => buildRequest(REVIEW_FIELDS, query, now), [query, now]);
+  const summary = useReviewSummary(request);
+  const facets = useReviewFacets(REVIEW_FIELDS, request);
+  const filterProps = { fields: REVIEW_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), facets };
+  const typefully = useTypefullySync();
+  const view = useMemo(() => ({ request, sorts: query.sorts, display: query.display, now }), [request, query.sorts, query.display, now]);
+  return (
+    <>
+      <ReviewHeader
+        who={<WhoLine summary={summary.data} />}
+        filterProps={filterProps}
+        menus={<DisplayMenu options={DISPLAY_OPTIONS} shown={query.display} onChange={(display) => setQuery({ ...query, display })} />}
+        notices={
+          <>
+            {summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
+            {typefully.isError && <p className="text-sm text-negative">Could not check Typefully: {typefully.error.message}</p>}
+            {!!typefully.data?.failed && (
+              <p className="text-sm text-negative">
+                Typefully could not publish {typefully.data.failed === 1 ? "1 tweet" : `${typefully.data.failed} tweets`}. Fix them in Typefully.
+              </p>
+            )}
+          </>
+        }
+        sortBar={<SortBar fields={REVIEW_FIELDS} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />}
+      />
+      <ReviewFeed key={JSON.stringify(request)} view={view} />
+    </>
+  );
+}
+
+/** The X side waits for the A/B tests, because each test is a field and the
+ *  fields are fixed for the life of the query. */
+function XReview() {
+  const tests = useAbTests("x");
+  if (tests.isError) return <LoadFailed what="The A/B tests" onRetry={() => void tests.refetch()} />;
+  if (!tests.data) return <p className="text-sm text-fg-muted">Loading…</p>;
+  return <XReviewWithFields fields={[...X_REVIEW_FIELDS, ...abTestFields(tests.data)]} />;
+}
+
+function XReviewWithFields({ fields }: { fields: FieldDef[] }) {
+  const [query, setQuery] = useFieldQuery({ storageKey: X_QUERY_KEY, fields, displayOptions: [], defaults: DEFAULT_X_REVIEW_QUERY });
+  const now = useMomentFor(JSON.stringify([query.filters, query.sorts]));
+  const request = useMemo(() => buildRequest(fields, query, now), [fields, query, now]);
+  const summary = useNoteSummary("x", request);
+  const facets = useNoteFacets("x", fields, request);
+  const filterProps = { fields, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), facets };
+  const matching = summary.data?.notes;
+  return (
+    <>
+      <ReviewHeader
+        who={matching !== undefined && <p className="text-sm text-fg-muted">{matching === 1 ? "1 matching note" : `${matching.toLocaleString("en-US")} matching notes`}</p>}
+        filterProps={filterProps}
+        notices={summary.isError && <p className="text-sm text-negative">{summary.error.message}</p>}
+        sortBar={<SortBar fields={fields} sorts={query.sorts} onChange={(sorts) => setQuery({ ...query, sorts })} />}
+      />
+      <NoteList key={JSON.stringify(request)} request={request} showReviewers />
+    </>
   );
 }

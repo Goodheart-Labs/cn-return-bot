@@ -9,18 +9,14 @@
     "src/scripts/*.ts",
     "src/reports/*.ts",
     "src/stats-dashboard/src/main.tsx",
+    "src/stats-dashboard/vite.config.ts",
     "src/everything-web/src/main.tsx",
-    "src/analytics-dashboard/src/main.tsx",
-    "src/analytics-dashboard/vite.config.ts",
     "src/everything-extension/entrypoints/**/*.{ts,tsx}",
     "src/everything-extension/wxt.config.ts",
     "src/everything-extension/tailwind.config.ts",
     "src/everything-extension/scripts/*.ts",
     "src/everything-web/tailwind.config.ts",
-    "src/everything-storybook/shims/*.ts",
-    "src/everything-storybook/tailwind.config.ts",
-    "src/everything-storybook/manager.ts",
-    "src/everything-storybook/preview.tsx"
+    "src/testPreload.ts"
   ],
   "project": [
     "src/**/*.{ts,tsx}"
@@ -49,13 +45,5 @@
   ],
   "ignoreWorkspaces": [
     "src/review-dashboard"
-  ],
-  "storybook": {
-    "config": [
-      "src/everything-storybook/main.ts"
-    ],
-    "entry": [
-      "src/**/*.stories.tsx"
-    ]
-  }
+  ]
 }

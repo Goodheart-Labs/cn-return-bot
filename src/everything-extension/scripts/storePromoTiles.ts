@@ -10,8 +10,6 @@
  *  The website's title font, SF Pro Display, exists only on Apple devices, so
  *  the tiles use Inter, which looks close to it. */
 import { readFileSync } from "node:fs";
-import os from "node:os";
-import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
 
@@ -58,12 +56,7 @@ const TILES = [
   { file: "promo-marquee-1400x560.png", html: MARQUEE, width: 1400, height: 560 },
 ];
 
-// The devbox lacks some of Chromium's system libraries. scripts/browser.ts
-// explains where these extracted copies come from.
-const localLibs = path.join(os.homedir(), ".cache/cn-playwright-libs/usr/lib/x86_64-linux-gnu");
-const browser = await chromium.launch({
-  env: fs.existsSync(localLibs) ? { ...process.env, LD_LIBRARY_PATH: localLibs } : process.env,
-});
+const browser = await chromium.launch();
 for (const tile of TILES) {
   const page = await browser.newPage({ viewport: { width: tile.width, height: tile.height } });
   await page.setContent(`<style>${PAGE_STYLE}</style>${tile.html}`, { waitUntil: "networkidle" });

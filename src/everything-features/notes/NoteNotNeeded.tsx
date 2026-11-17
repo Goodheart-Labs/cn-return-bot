@@ -1,12 +1,10 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { tallyVisible } from "@cn/core/noteScore";
 import type { NnnRow } from "@cn/core/types";
 import { cn } from "@cn/ui/cn";
-import { ChevronIcon, MoreIcon, TrashIcon } from "@cn/ui/icons";
-import { Menu, MenuItem } from "@cn/ui/Menu";
+import { ChevronIcon } from "@cn/ui/icons";
+import { ConfirmDelete } from "@cn/ui/ConfirmDelete";
 import { eyebrowVariants } from "@cn/ui/typography";
-import { IconButton } from "@cn/ui/IconButton";
-import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useSession } from "../auth/useSession";
 import { useDeleteNnn } from "./useNoteWrites";
 import { useMyNnnVotes, useVoteOnNnn } from "./useVotes";
@@ -22,24 +20,6 @@ function timeAgo(iso: string): string {
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
   if (seconds < 86400 * 30) return `${Math.floor(seconds / 86400)}d`;
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function OwnEntryMenu({ onDelete }: { onDelete: () => void }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
-  useOutsidePress(ref, open, () => setOpen(false));
-  return (
-    <span ref={ref} className="relative">
-      <IconButton label="Entry actions" onClick={() => setOpen((o) => !o)}>
-        <MoreIcon size={16} aria-hidden />
-      </IconButton>
-      {open && (
-        <Menu className="absolute left-0 top-7 z-20">
-          <MenuItem onClick={() => { setOpen(false); onDelete(); }} icon={<TrashIcon size={16} />} danger autoFocus>Delete</MenuItem>
-        </Menu>
-      )}
-    </span>
-  );
 }
 
 /** The arguments that a claim needs no note. The list is flat, and the same
@@ -82,7 +62,7 @@ export function NoteNotNeeded({ entries }: {
               onVote={(vote) => void voteOnEntry(entry, vote)}
             />
             {!!session && session.user.id === entry.author_id && (
-              <OwnEntryMenu onDelete={() => deleteEntry.mutate(entry.id)} />
+              <ConfirmDelete label="Delete entry" iconSize={16} onDelete={() => deleteEntry.mutate(entry.id)} />
             )}
           </div>
         </div>

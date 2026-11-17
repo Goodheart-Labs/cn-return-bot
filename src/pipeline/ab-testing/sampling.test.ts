@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { pickVariantName, runABTests } from "./abTests";
+import { pickVariantName, runABTests, withForcedPicks } from "./abTests";
 import { AB_TESTS, BOT_TEST, type ABTest } from "./abTestsData";
 
 const weighted: ABTest = {
@@ -36,7 +36,7 @@ describe("A/B sampling", () => {
 
   test("the pipeline skips an entirely retired test", () => {
     const retired = { ...weighted, variants: weighted.variants.map(v => ({ ...v, weight: 0 })) };
-    expect(runABTests([BOT_TEST, retired]).picks).toEqual({ bot: "simple-bot" });
+    expect(withForcedPicks({ bot: "simple-bot" }, () => runABTests([BOT_TEST, retired])).picks).toEqual({ bot: "simple-bot" });
   });
 
   test("materiality_treatment samples only for simple-bot, one fix per run", () => {
@@ -65,7 +65,7 @@ describe("A/B sampling", () => {
   test("writer_last_check has no live arms", () => {
     const experiment = AB_TESTS.find(test => test.name === "writer_last_check")!;
     expect(experiment.variants.every(variant => variant.weight === 0)).toBe(true);
-    expect(runABTests([BOT_TEST, experiment]).picks).toEqual({ bot: "simple-bot" });
+    expect(withForcedPicks({ bot: "simple-bot" }, () => runABTests([BOT_TEST, experiment])).picks).toEqual({ bot: "simple-bot" });
   });
 
   test("every configured experiment draws a live arm at zero", () => {

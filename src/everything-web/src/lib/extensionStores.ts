@@ -45,8 +45,17 @@ export const canInstallExtensions = () => window.matchMedia("(pointer: fine)").m
  *  data-cn-extension attribute on <html> before they draw. */
 export const extensionInstalled = () => document.documentElement.hasAttribute("data-cn-extension");
 
-/** Counts a click on a store link (migration 103). */
+/** Counts a click on a store link (migrations 103 and 154). */
 export const trackStoreClick = (browser: Browser) => track("extension_store_clicked", { browser: browser.name });
+
+/** The "Get the extension" buttons, by where they sit: the site header, the
+ *  nudge that pops up after a while, the window that explains how to write a
+ *  note, and the homepage's main button. */
+export type GetExtensionButton = "header" | "nudge" | "write_note" | "home";
+
+/** Counts a click on a "Get the extension" button (migration 154). The admin
+ *  dashboard shows the clicks per button. */
+export const trackGetExtensionClick = (button: GetExtensionButton) => track("get_extension_clicked", { button });
 
 /** The reader's browser, read from the user agent. Edge and Firefox name
  *  themselves. Safari is the one that says Safari without also saying Chrome,

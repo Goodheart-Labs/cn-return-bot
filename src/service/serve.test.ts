@@ -76,6 +76,6 @@ describe("startService", () => {
 
   test("a handler failure becomes an error answer on the stream", async () => {
     const answer = JSON.parse(await (await callWith({ priority: "feed", delayMs: -1 })).text());
-    expect(answer).toEqual({ error: "negative delay" });
+    expect(answer).toEqual({ code: "failed", error: "negative delay" });
   });
 });

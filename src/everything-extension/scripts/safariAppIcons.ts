@@ -4,9 +4,8 @@
 //   bun run src/everything-extension/scripts/safariAppIcons.ts
 //
 // It renders the SVG in headless Chromium, because the devbox has no other
-// SVG rasteriser. See preview.ts for the background on the library path.
+// SVG rasteriser.
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
 
@@ -30,15 +29,7 @@ const ARTWORK_SHARE_OF_CANVAS = 112 / 128;
  *  screens. It has no margin because it sits on the window's own background. */
 const WINDOW_ICON_PIXELS = 256;
 
-const localLibs = path.join(os.homedir(), ".cache/cn-playwright-libs/usr/lib/x86_64-linux-gnu");
-const browser = await chromium.launch({
-  env: {
-    ...process.env,
-    ...(fs.existsSync(localLibs)
-      ? { LD_LIBRARY_PATH: [localLibs, process.env.LD_LIBRARY_PATH].filter(Boolean).join(":") }
-      : {}),
-  },
-});
+const browser = await chromium.launch();
 const page = await browser.newPage();
 const logoDataUrl = `data:image/svg+xml;base64,${fs.readFileSync(LOGO_PATH).toString("base64")}`;
 

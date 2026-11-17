@@ -99,10 +99,11 @@ export async function youtubeChannelId(feedUrl: string): Promise<string> {
   return (await channelRow(feedUrl)).channel_id;
 }
 
-const toStoredUpload = (v: { videoId: string; title: string; publishedAt: string; upcoming: boolean }): StoredUpload => ({
+const toStoredUpload = (v: { videoId: string; title: string; publishedAt: string; publishedTime: string; upcoming: boolean }): StoredUpload => ({
   videoId: v.videoId,
   title: v.title,
   publishedAt: v.publishedAt,
+  publishedTime: v.publishedTime,
   upcoming: v.upcoming,
 });
 

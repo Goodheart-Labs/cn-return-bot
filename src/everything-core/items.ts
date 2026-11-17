@@ -1,47 +1,59 @@
 import { noteStatus } from "./noteScore";
-import { extractYoutubeVideoId } from "./pageUrls";
+import { extractYoutubeVideoId, youtubeWatchUrl } from "./pageUrls";
 import { WEB_PROJECT_SLUG } from "./projects";
-import { fetchAllRows } from "./paging";
+import { fetchAllRows, fetchByIds } from "./paging";
 import { supabase } from "./supabase";
-import type { FeedItemRow, ItemRow } from "./types";
+import type { FeedItemRow, ItemRow, ProjectHeader } from "./types";
+import { isWholePageChecked } from "./wholePageChecked";
 
 /* An item is one post, video or page: a row of everything_items. */
 
-/** One project's items, with the columns the website renders. The body text in
- *  particular is the largest column we have, and the website never shows it. */
-export async function fetchProjectItems(projectId: string): Promise<FeedItemRow[]> {
-  return fetchAllRows<FeedItemRow>(
-    () => supabase.from("everything_items").select("id, project_id, url, title, published_at, created_at").eq("project_id", projectId),
-    "id",
-    { label: "projectItems" },
+const FEED_ITEM_COLS = "id, project_id, url, title, published_at, created_at";
+
+/** The items with the given ids, with the columns the website renders, and the
+ *  projects they belong to. The body text in particular is the largest column
+ *  we have, and the website never shows it. */
+export async function fetchItemsWithProjects(ids: string[]): Promise<{ items: FeedItemRow[]; projects: ProjectHeader[] }> {
+  const rows = await fetchByIds<FeedItemRow & { project: ProjectHeader | null }>(
+    (chunk) => supabase.from("everything_items").select(`${FEED_ITEM_COLS}, project:everything_projects(id, slug, name, feed_url, avatar_url)`).in("id", chunk),
+    ids,
+    { label: "itemsWithProjects" },
   );
+  const projects = new Map(rows.flatMap(({ project }) => (project ? [[project.id, project] as const] : [])));
+  return { items: rows.map(({ project: _project, ...item }) => item), projects: [...projects.values()] };
 }
 
-/** Every item that has at least one note, with the columns the website
- *  renders. The empty embed of the claims and their notes reads no columns. It
- *  only makes PostgREST keep the items that have a note, and it still returns
- *  each item once. */
-export async function fetchItemsWithNotes(): Promise<FeedItemRow[]> {
-  return fetchAllRows<FeedItemRow>(
-    () =>
-      supabase
-        .from("everything_items")
-        .select("id, project_id, url, title, published_at, created_at, everything_claims!inner(everything_notes!inner())"),
-    "id",
-    { label: "itemsWithNotes" },
-  );
+/** A project's post as its list of posts shows it, with how many visible
+ *  notes it has. */
+export type ProjectItemRow = FeedItemRow & { note_count: number };
+
+/** How many posts one page of a project's list holds. */
+export const PROJECT_ITEMS_PAGE_SIZE = 30;
+
+/** The date a project's list sorts a post by: the day it was published, or
+ *  the moment we first saw it when that day is unknown. */
+export const itemDate = (item: Pick<FeedItemRow, "published_at" | "created_at">) => item.published_at ?? item.created_at;
+
+/** One page of a project's posts that have notes, newest first, starting
+ *  after the post `after` (migration 141). */
+export async function fetchProjectItemsPage(projectId: string, after: ProjectItemRow | null): Promise<ProjectItemRow[]> {
+  const { data, error } = await supabase.rpc("everything_project_items_page", {
+    p_project_id: projectId,
+    p_before_date: after ? itemDate(after) : undefined,
+    p_before_id: after?.id,
+    p_limit: PROJECT_ITEMS_PAGE_SIZE,
+  });
+  if (error) throw error;
+  return data;
 }
 
-/** How many different devices outside the team the extension showed each
- *  item's notes on, keyed by item id. An item nobody outside the team has seen
- *  is absent. */
-export async function fetchItemNoteViewers(): Promise<Map<string, number>> {
-  const rows = await fetchAllRows<{ item_id: string; viewers: number }>(
-    () => supabase.rpc("everything_item_note_viewers"),
-    "item_id",
-    { label: "itemNoteViewers" },
-  );
-  return new Map(rows.map((row) => [row.item_id, row.viewers]));
+/** One item by id, with the columns the website renders. A project page that
+ *  names one item reads its title this way, because the item may sit on a page
+ *  of the list that has not loaded. */
+export async function fetchFeedItem(id: string): Promise<FeedItemRow | null> {
+  const { data, error } = await supabase.from("everything_items").select(FEED_ITEM_COLS).eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 /** An ItemRow plus the two extra fields the extension needs. `full_text` is the
@@ -50,14 +62,7 @@ export async function fetchItemNoteViewers(): Promise<Map<string, number>> {
 export type PageItem = ItemRow & { full_text: string | null; projectSlug: string | null };
 
 export const PAGE_ITEM_SELECT =
-  "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, project:everything_projects(slug)";
-
-/** Whether the pipeline has read this page in full. Only such a page refuses a
- *  new "check this page" request. An item that exists because a reader wrote
- *  a note, or because one paragraph was checked, is not a checked page. */
-export function isWholePageChecked(item: Pick<ItemRow, "status" | "checked_scope"> | null): boolean {
-  return item?.status === "done" && item.checked_scope === "page";
-}
+  "id, project_id, source, url, title, published_at, status, error, created_at, full_text, checked_scope, first_checked_at, project:everything_projects(slug)";
 
 /** Resolves a page URL to its everything_items row. Returns null when the page
  *  has never been ingested, and throws when the lookup itself failed. Treating
@@ -101,9 +106,9 @@ export interface CoveredPages {
  *  that has no notes must never reach our backend. Returns null when the query
  *  failed, so a caller does not mistake an outage for "we cover nothing". */
 export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
-  let allRows: Pick<ItemRow, "id" | "url" | "status" | "checked_scope">[];
+  let allRows: Pick<ItemRow, "id" | "url" | "checked_scope" | "first_checked_at">[];
   try {
-    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, status, checked_scope"), "id", { label: "coveredPages" });
+    allRows = await fetchAllRows(() => supabase.from("everything_items").select("id, url, checked_scope, first_checked_at"), "id", { label: "coveredPages" });
   } catch {
     return null;
   }
@@ -112,6 +117,22 @@ export async function fetchCoveredPageUrls(): Promise<CoveredPages | null> {
     all: rows.map((r) => r.url),
     wholePageChecked: rows.filter(isWholePageChecked).map((r) => r.url),
   };
+}
+
+/** The URLs of pages ingested since `since` (an ISO time), for the
+ *  extension's five-minute delta between hourly full syncs. Null when the query
+ *  failed. */
+export async function fetchCoveredPageUrlsSince(since: string): Promise<string[] | null> {
+  try {
+    const rows = await fetchAllRows<{ id: string; url: string }>(
+      () => supabase.from("everything_items").select("id, url").gte("created_at", since),
+      "id",
+      { label: "coveredPagesSince" },
+    );
+    return rows.map((r) => r.url).filter((url) => !url.startsWith("local:"));
+  } catch {
+    return null;
+  }
 }
 
 /** How many notes of each rating status each ingested page has, keyed by the
@@ -174,22 +195,25 @@ async function projectIdForPage(creatorFeedUrl: string | null | undefined): Prom
   return project.id;
 }
 
-/** Finds or creates the everything_items row for any web page, and returns its
- *  id. The write-anywhere flow needs this first, because a note hangs off a
- *  claim and a claim hangs off an item. Row level security only lets a client
- *  insert rows with source='web' (migrations 068 and 081). `creatorFeedUrl` is
- *  the feed of the page's creator when the caller could tell, and decides the
- *  project. The `url` column is unique, so when two clients race, the loser
- *  simply reads the winner's row. */
-export async function ensureWebItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
-  const url = params.url.replace(/\/$/, "");
-  const existing = await supabase.from("everything_items").select("id").in("url", [url, `${url}/`]).limit(1);
-  if (existing.data?.[0]) return existing.data[0].id;
+/** Finds or creates the everything_items row for a web page or a YouTube video,
+ *  and returns its id. The write-anywhere flow needs this first, because a note
+ *  hangs off a claim and a claim hangs off an item. Row level security only
+ *  lets a client insert a finished item with the source 'web', or 'youtube' at
+ *  a video's plain watch address (migrations 114 and 178). A video is looked up
+ *  by its video id, because older items store other address forms.
+ *  `creatorFeedUrl` is the feed of the page's creator when the caller could
+ *  tell, and decides the project. The `url` column is unique, so when two
+ *  clients race, the loser simply reads the winner's row. */
+export async function ensurePageItem(params: { url: string; title: string; creatorFeedUrl?: string | null }): Promise<string> {
+  const existing = await fetchItemForUrl(params.url);
+  if (existing) return existing.id;
 
+  const videoId = extractYoutubeVideoId(params.url);
+  const url = videoId ? youtubeWatchUrl(videoId) : params.url.replace(/\/$/, "");
   const projectId = await projectIdForPage(params.creatorFeedUrl);
   const inserted = await supabase
     .from("everything_items")
-    .insert({ project_id: projectId, source: "web", url, title: params.title || null, status: "done" })
+    .insert({ project_id: projectId, source: videoId ? "youtube" : "web", url, title: params.title || null, status: "done" })
     .select("id")
     .single();
   if (inserted.data) return inserted.data.id;

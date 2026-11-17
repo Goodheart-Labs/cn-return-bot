@@ -101,24 +101,11 @@ export function normalizePageUrl(href: string, doc?: Document): string {
  *  caller falls back. */
 export function isSubstackReaderUrl(href: string): boolean {
   try {
-    const url = new URL(substackReaderFetchUrl(href));
+    const url = new URL(href);
     return /^(www\.)?substack\.com$/.test(url.hostname) && /\/p-\d+(\/|$)/.test(url.pathname);
   } catch {
     return false;
   }
-}
-
-export function substackReaderFetchUrl(href: string): string {
-  try {
-    const url = new URL(href);
-    const inboxPost = url.pathname.match(/^\/inbox\/post\/(\d+)\/?$/);
-    if (/^(www\.)?substack\.com$/.test(url.hostname) && inboxPost) {
-      return `https://substack.com/home/post/p-${inboxPost[1]}`;
-    }
-  } catch {
-    return href;
-  }
-  return href;
 }
 
 /** The embedded `canonical_url` appears either raw or JSON-escaped, depending on
@@ -126,6 +113,16 @@ export function substackReaderFetchUrl(href: string): string {
  *  neither a double quote nor a backslash, so those characters end the match. */
 export function extractEmbeddedCanonical(html: string): string | null {
   return html.match(/canonical_url\\?"\s*:\s*\\?"(https?:[^"\\]+)/)?.[1] ?? null;
+}
+
+/** The one address form we store a YouTube video under. */
+export function youtubeWatchUrl(videoId: string): string {
+  return `https://www.youtube.com/watch?v=${videoId}`;
+}
+
+/** A link that plays the video from `seconds` on. */
+export function buildVideoLink(videoId: string, seconds: number): string {
+  return `${youtubeWatchUrl(videoId)}&t=${Math.max(0, Math.floor(seconds))}s`;
 }
 
 export function extractYoutubeVideoId(url: string): string | null {
@@ -177,9 +174,8 @@ export function sourceLinkLabel(url: string): string {
  *  cross-origin redirect nor read the response, and gets null instead. */
 export async function fetchReaderCanonical(href: string): Promise<string | null> {
   try {
-    const fetchUrl = substackReaderFetchUrl(href);
-    const res = await fetch(fetchUrl, { credentials: "omit" });
-    if (new URL(res.url).hostname !== new URL(fetchUrl).hostname) {
+    const res = await fetch(href, { credentials: "omit" });
+    if (new URL(res.url).hostname !== new URL(href).hostname) {
       void res.body?.cancel();
       return res.url;
     }

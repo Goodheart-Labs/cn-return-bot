@@ -9,7 +9,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { unprocessedEntries, topPostEntries, walkToFirstCandidate, orderCandidates } = await import("./autoEnqueue");
+const { unprocessedEntries, topPostEntries, walkToFirstCandidate, orderCandidates, freshCandidates, failingSources } = await import("./autoEnqueue");
 
 const feed = { project: "test", type: "substack" as const, url: "https://test.substack.com" };
 const entry = (url: string) => ({ source: "substack" as const, url, matchKey: url, label: url });
@@ -60,6 +60,11 @@ describe("topPostEntries", () => {
     expect(entries[0]!.matchKey).toBe("abc123XYZ_-");
     expect(entries[0]!.topPopularity).toBe(1000);
     expect(entries[0]!.publishedAt).toBe("2020-01-01");
+  });
+
+  test("a list cached when it held 5 posts offers only the top 3", () => {
+    const tops = [1, 2, 3, 4, 5].map((rank) => row(`https://s/p/top-${rank}`, "substack", rank));
+    expect(topPostEntries(tops, []).map((e) => e.url)).toEqual(["https://s/p/top-1", "https://s/p/top-2", "https://s/p/top-3"]);
   });
 
   test("a top post already among the recent entries is dropped", () => {
@@ -131,5 +136,44 @@ describe("orderCandidates", () => {
 
   test("a creator with only a failed post still has a candidate", () => {
     expect(urls(orderCandidates([], [failed("failed", "2026-10-17")]))).toEqual(["failed"]);
+  });
+});
+
+describe("freshCandidates", () => {
+  const dated = (url: string, publishedAt?: string) => ({
+    kind: "unchecked" as const,
+    entry: { ...entry(url), publishedAt, existingItem: null },
+  });
+  const failed = (url: string, published_at: string | null) => ({
+    kind: "retry" as const,
+    item: { id: url, url, title: null, published_at, retries: 0, priority: 0, feed_url: "https://test.substack.com" },
+  });
+  const urls = (cs: ReturnType<typeof freshCandidates>) => cs.map((c) => (c.kind === "unchecked" ? c.entry.url : c.item.url));
+
+  test("posts older than two weeks are passed over, newer and undated ones kept", () => {
+    const result = freshCandidates(
+      [
+        dated("new", "2026-11-11"),
+        dated("edge", "2026-10-29"),
+        dated("old", "2026-10-28"),
+        dated("undated"),
+        failed("old-retry", "2026-09-01T00:00:00+00:00"),
+        failed("new-retry", "2026-11-10T08:00:00+00:00"),
+      ],
+      new Date("2026-11-12T12:00:00Z"),
+    );
+    expect(urls(result)).toEqual(["new", "edge", "undated", "new-retry"]);
+  });
+});
+
+describe("failingSources", () => {
+  const o = (source: string, outcome: "failed" | "read" | "skipped") => ({ source, outcome });
+
+  test("a source with two failures and nothing read is passed over", () => {
+    expect([...failingSources([o("youtube", "failed"), o("youtube", "failed"), o("youtube", "skipped"), o("substack", "read")])]).toEqual(["youtube"]);
+  });
+
+  test("one failure, or any post read, keeps the source in the walk", () => {
+    expect(failingSources([o("youtube", "failed"), o("substack", "failed"), o("substack", "failed"), o("substack", "read")]).size).toBe(0);
   });
 });

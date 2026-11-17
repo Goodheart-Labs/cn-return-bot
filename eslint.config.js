@@ -21,8 +21,6 @@ const COMMON_NOTES = [
   "src/everything-features/**/*.{ts,tsx}",
   "src/everything-web/src/**/*.{ts,tsx}",
   "src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}",
-  "src/everything-storybook/**/*.{ts,tsx}",
-  "src/**/*.stories.tsx",
 ];
 
 /** Reaching another layer by a relative path hides the dependency, so the
@@ -41,8 +39,6 @@ const DATABASE_CLIENT = {
   allowTypeImports: true,
   message: "Only @cn/core talks to Supabase. Call a function from @cn/core instead.",
 };
-/** Only stories may use the Storybook fixtures and decorators. */
-const STORYBOOK = { group: ["**/everything-storybook/**"], message: "Only *.stories.tsx files may import from Storybook." };
 const APPS = [
   { group: ["**/everything-web/**"], message: "Shared code must not import from the website." },
   { group: ["**/everything-extension/**"], message: "Shared code must not import from the extension." },
@@ -60,7 +56,7 @@ function layer(files, patterns, ignores = []) {
 }
 
 export default tseslint.config(
-  { ignores: ["**/node_modules/**", "**/.output/**", "**/.wxt/**", "**/dist/**", "storybook-static/**"] },
+  { ignores: ["**/node_modules/**", "**/.output/**", "**/.wxt/**", "**/dist/**"] },
   {
     files: COMMON_NOTES,
     extends: [js.configs.recommended, ...tseslint.configs.recommended, reactHooks.configs.flat.recommended, jsxA11y.flatConfigs.recommended],
@@ -77,21 +73,19 @@ export default tseslint.config(
     },
   },
   layer(["src/everything-core/**/*.{ts,tsx}"], [
-    STORYBOOK,
     { group: ["@cn/ui/*", "@cn/features/*"], message: "The core layer sits below the design system and the features." },
     { group: ["react", "react-dom", "react-dom/*"], message: "The core layer holds no React code. Hooks belong in @cn/features." },
     { group: ["**/dashboard-shared/**"], message: "The core layer does not depend on the X dashboards." },
     ...APPS,
   ]),
   layer(["src/everything-ui/**/*.{ts,tsx}"], [
-    STORYBOOK,
     { group: ["@cn/core/*", "@cn/features/*"], message: "The design system knows nothing about notes or data." },
     { group: ["**/dashboard-shared/**"], message: "The design system does not depend on the X dashboards." },
     ...APPS,
   ]),
-  layer(["src/everything-features/**/*.{ts,tsx}"], [STORYBOOK, DATABASE_CLIENT, ...APPS]),
-  layer(["src/everything-web/src/**/*.{ts,tsx}"], [STORYBOOK, DATABASE_CLIENT, APPS[1]]),
-  layer(["src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}"], [STORYBOOK, DATABASE_CLIENT, APPS[0]]),
+  layer(["src/everything-features/**/*.{ts,tsx}"], [DATABASE_CLIENT, ...APPS]),
+  layer(["src/everything-web/src/**/*.{ts,tsx}"], [DATABASE_CLIENT, APPS[1]]),
+  layer(["src/everything-extension/{components,entrypoints,utils}/**/*.{ts,tsx}"], [DATABASE_CLIENT, APPS[0]]),
   // Every piece of extension UI in a host page mounts through createOverlayUi,
   // which keeps typed keys from triggering the page's shortcuts. WXT's own
   // createShadowRootUi skips that, so it may not be imported, nor used through
@@ -103,9 +97,4 @@ export default tseslint.config(
       "no-restricted-globals": ["error", { name: "createShadowRootUi", message: OVERLAY_UI_MESSAGE }],
     },
   },
-  // A story may reach into Storybook's fixtures, and Storybook may render any
-  // layer and either app. The database stays out of reach for both.
-  // Storybook's Tailwind config is loaded by Tailwind itself, which knows no
-  // aliases, so it reaches the preset by path.
-  layer(["src/**/*.stories.tsx", "src/everything-storybook/**/*.{ts,tsx}"], [DATABASE_CLIENT], ["src/everything-storybook/tailwind.config.ts"]),
 );

@@ -1,0 +1,2032 @@
+[
+ {
+  "draftId": "f4878063-1785-478e-87ed-8fe3c593ae31",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Don't trust Lean4 alone",
+   "url": "https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone",
+   "creator": "Milo Moses"
+  },
+  "passage": "Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug",
+  "contextParagraph": "A few days after Patrick Hulin's result, another Lean soundness bug was found by Ramana Kumar[8] which gained widespread publicity due to the fact that it was not originally released as a soundness bug. Kumar's result was released and circulated under the guise of being a proof of the Collatz conjecture, though at the time of posting Kumar knew it was soundness bug[9].",
+  "note": "Typo, the repository presented a disproof, not a proof.",
+  "sources": [
+   {
+    "url": "https://github.com/xrchz/CollatzLean",
+    "quote": "The limiting profile yields a positive orbit which never reaches 1",
+    "explanation": "The repository's stated result is a positive number whose orbit never reaches 1, that is, a disproof."
+   },
+   {
+    "url": "https://leodemoura.github.io/blog/2026-8-1-postmortem-for-kernel-soundness-bug-14576/",
+    "quote": "It is not a valid proof because it exploits a bug in the kernel's handling of nested inductive types. On July 28, Kiran Gopinathan reduced it to a small proof of False and opened issue #14576.",
+    "explanation": "Supports that Gopinathan reduced the repository to a proof of False and reported the kernel bug on July 28."
+   },
+   {
+    "url": "https://www.openwall.com/lists/oss-security/2026/08/02/1",
+    "quote": "A repository claiming a Lean formalization disproving the Collatz conjecture was published on July 25, 2026 [1].",
+    "explanation": "Supports that the repository claimed a disproof and was published on July 25, three days before the July 28 report."
+   }
+  ]
+ },
+ {
+  "draftId": "4c888de8-62d1-4902-a521-2260f2cecc39",
+  "outcome": "not_helpful",
+  "reason": "Zvi is accurate here. The note takes a bit of time to understand and so it adds confusion rather then clarity.",
+  "post": {
+   "title": "Gemini 4 Argon: The Model and Safety Cards",
+   "url": "https://thezvi.substack.com/p/gemini-4-argon-the-model-and-safety",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "They got roughly a 50% pass rate, but couldn’t know for sure due to timeouts.",
+  "contextParagraph": "They got roughly a 50% pass rate, but couldn’t know for sure due to timeouts. That is closer to 90% than it sounds, and it means that one of the most important numbers was not reported. We can rule out that Argon can sufficiently accelerate R&D, let alone that the singularity is here, but this very much does not rule out ‘near.’",
+  "note": "The roughly 50% is Argon's rate on only the runs that finished. Google's report says these skew toward shorter tasks, so the figure overstates Argon's rate on all the tasks it was tested on, and that Argon would remain below the 90% threshold even if every timed-out run had succeeded.",
+  "sources": [
+   {
+    "url": "https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf#page=68",
+    "quote": "On the trajectories that did complete, Gemini 4 solved roughly half of its attempts. These skew toward shorter tasks, so this overstates its rate on the full subset, but on exactly the same trajectories it performed comparably to Gemini 3.7 Flash.",
+    "explanation": "The ~50% is only of completed runs, which skew short, so it overstates the rate."
+   },
+   {
+    "url": "https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf#page=68",
+    "quote": "Gemini 4 would remain below the threshold even if every incomplete trajectory had succeeded.",
+    "explanation": "Even counting every timed-out run as a pass, Argon stays below the 90% threshold."
+   }
+  ]
+ },
+ {
+  "draftId": "074acb5e-d0e6-4d89-b60e-6b8c569d39ee",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The current bottleneck is political will, not research",
+   "url": "https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "40 current members of US Congress have now publicly discussed AGI or loss of control, up from a handful in early 2023, doubling roughly every 5.5 months",
+  "contextParagraph": null,
+  "note": "For context: the tracker the post cites counted about 5 members in mid-2023 and 40 in June 2026, roughly one doubling a year. Since then the pace has matched the post's 5.5 months: 74 members by October 2026.",
+  "sources": [
+   {
+    "url": "https://web.archive.org/web/20260606223706/https://theaipn.org/issue/quotes/",
+    "quote": "39 current members of Congress have publicly discussed AGI, AI superintelligence, AI existential risk, AI loss of control, recursive self-improvement, or the Singularity",
+    "explanation": "The tracker's June 2026 headline count; the page's embedded quote rows show only five of these members with a first quote dated on or before 2023-06-30 (2007-12-10, 2023-05-16 twice, 2023-05-24, 2023-06-13), which gives the roughly yearly doubling."
+   },
+   {
+    "url": "https://theaipn.org/issue/quotes/",
+    "quote": "74 current members of Congress have publicly discussed AGI, AI superintelligence, AI existential risk, AI loss of control, recursive self-improvement, or the Singularity",
+    "explanation": "The tracker's current count of 74."
+   }
+  ]
+ },
+ {
+  "draftId": "c057ea4f-700f-4c4a-85de-6eab3bf43547",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Hanania Went Too Far",
+   "url": "https://deepleft.substack.com/p/hanania-went-too-far",
+   "creator": "Around the web"
+  },
+  "passage": "In the last six months, however, oil exports from the Persian Gulf region have recovered to their pre-war levels.",
+  "contextParagraph": "In the last six months, however, oil exports from the Persian Gulf region have recovered to their pre-war levels. The stock market is up 13%. Far from being “unthinkable,” the (_apparent_) consequences of the Iran War have been essentially minimal.3 Hanania may have spoken too soon.",
+  "note": "Persian Gulf oil exports had not recovered to pre-war levels. In September 2026 they were at 81% of pre-war levels, with Iran's exports at zero; crude alone was at 91% and fuel exports at 60%.",
+  "sources": [
+   {
+    "url": "https://oilprice.com/Latest-Energy-News/World-News/Gulf-Oil-Exports-Recover-to-81-of-Pre-War-Levels.html",
+    "quote": "Crude oil exports out of the Persian Gulf reached 81% of pre-war levels last month, according to fresh data from Kpler and Vortexa, cited by Reuters. The data excludes Iranian oil exports, which have dropped to zero",
+    "explanation": "September Gulf exports at 81% of pre-war; Iran's at zero."
+   },
+   {
+    "url": "https://oilprice.com/Latest-Energy-News/World-News/Gulf-Oil-Exports-Recover-to-81-of-Pre-War-Levels.html",
+    "quote": "Noting that crude flows are back at 91% of pre-war levels, the analytics company added that fuel export flows remain at just 60% of pre-war levels",
+    "explanation": "Vortexa's crude and fuel figures."
+   },
+   {
+    "url": "https://oilprice.com/Latest-Energy-News/World-News/Gulf-Oil-Exports-Recover-to-81-of-Pre-War-Levels.html",
+    "quote": "on some days last month crude oil flows out of the Persian Gulf exceeded pre-war levels",
+    "explanation": "Only some days exceeded pre-war flows."
+   }
+  ]
+ },
+ {
+  "draftId": "fcace7f4-22a6-4416-b46f-81d2ccf13b85",
+  "outcome": "not_helpful",
+  "reason": "Nathan voted Not helpful on the website. The note stays up, as Jim asked.",
+  "post": {
+   "title": "The Specter Of Neuralese",
+   "url": "https://www.astralcodexten.com/p/the-specter-of-neuralese",
+   "creator": "Astral Codex Ten"
+  },
+  "passage": "AI company leaders have recently put aside their differences and agreed to “pace the frontier” in various senses to be fully defined later.",
+  "contextParagraph": "AI company leaders have recently put aside their differences and agreed to “pace the frontier” in various senses to be fully defined later. Their meetings will probably have a very long list of discussion items, but one more useful thing they could do would be to formalize this taboo, so we know exactly what it is we’re trying to stay away from.",
+  "note": "For context: on September 29, after this post, leaders of Google, Anthropic, Meta, OpenAI, xAI and Nvidia signed a non-binding White House accord. It commits them to safety controls, outside audits and regular meetings on safety standards, but sets no limit on the pace of AI progress.",
+  "sources": [
+   {
+    "url": "https://www.presidency.ucsb.edu/documents/white-house-accord-super-intelligence",
+    "quote": "Partner with an independent external auditor or evaluator to carry out independent assessments of whether the controls, monitoring, and detection are operating as intended.",
+    "explanation": "The full accord text, dated September 29, 2026 and signed for Google, Anthropic, Meta, OpenAI, xAI and Nvidia: it asks each company to use outside auditors or evaluators alongside internal controls, and contains no limit on the pace of AI progress."
+   },
+   {
+    "url": "https://www.presidency.ucsb.edu/documents/white-house-accord-super-intelligence",
+    "quote": "The participating companies will meet regularly to establish standards and best practices to improve the safety of their systems.",
+    "explanation": "Supports the commitment to regular meetings on safety standards."
+   },
+   {
+    "url": "https://www.cfr.org/articles/trumps-ai-safety-pact-is-toothless-but-there-is-a-path-forward",
+    "quote": "a document signed on Tuesday by President Donald Trump and leaders of six of the top U.S. AI companies—Anthropic, OpenAI, Google, Nvidia, Meta, and xAI.",
+    "explanation": "Supports who signed: leaders of the six companies, at the White House meeting the article dates to Tuesday, September 29, 2026."
+   },
+   {
+    "url": "https://www.cfr.org/articles/trumps-ai-safety-pact-is-toothless-but-there-is-a-path-forward",
+    "quote": "The nonbinding nature of the agreement also means it does nothing to change the commercial incentives for the companies to keep testing models whose capabilities are potentially dangerous.",
+    "explanation": "Supports that the accord is non-binding and places no constraint on how fast the companies push ahead."
+   },
+   {
+    "url": "https://www.theregister.com/ai-and-ml/2026/09/30/trump-administration-gets-big-tech-to-sign-weak-non-binding-ai-regulations/5299955",
+    "quote": "US president Donald Trump has convinced six leading AI companies to sign up for non-binding and vague regulation called the “White House Accord on Superintelligence” that doesn’t require them to do anything but does let them set their own rules.",
+    "explanation": "Supports that the accord is non-binding."
+   },
+   {
+    "url": "https://www.theregister.com/ai-and-ml/2026/09/30/trump-administration-gets-big-tech-to-sign-weak-non-binding-ai-regulations/5299955",
+    "quote": "Meta, Google, OpenAI, Anthropic, Nvidia, and XAI signed the document, which appeared on Trump’s Truth Social account.",
+    "explanation": "Supports the list of signing companies."
+   }
+  ]
+ },
+ {
+  "draftId": "5bef06d3-7812-451d-b8a0-8365e720f0b4",
+  "outcome": "not_helpful",
+  "reason": "Uhm it looks to me like proposed in june is not misleading, when this is were it was first you know written / proposed",
+  "post": {
+   "title": "Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling",
+   "url": "https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "when the FRONTIER Act was a compromise bill proposed back in June.",
+  "contextParagraph": "There was no need for the company purportedly existing to promote safety to propose a bill that is not even actively stronger than the FRONTIER Act, when the FRONTIER Act was a compromise bill proposed back in June.",
+  "note": "The FRONTIER Act was introduced on July 23, 2026, not in June. In June, its sponsors Obernolte and Trahan released a discussion draft of the broader Great American AI Act, and the FRONTIER Act was developed as part of that framework.",
+  "sources": [
+   {
+    "url": "https://www.govinfo.gov/app/details/BILLS-119hr9925ih",
+    "quote": "Congress, House of Representatives (2026, July 23). Frontier Risk Oversight, National Transparency, Independent Evaluation, and Reporting Act (H.R. 9925 (IH)).",
+    "explanation": "Official bill record giving the FRONTIER Act's introduction date of July 23, 2026."
+   },
+   {
+    "url": "https://www.benton.org/headlines/reps-obernolte-trahan-introduce-bipartisan-frontier-act-strengthen-oversight-advanced-ai",
+    "quote": "Reps Jay Obernolte (R-CA), Lori Trahan (D-MA), Scott Franklin (R-FL), Scott Peters (D-CA), Erin Houchin (R-IN), and Suhas Subramanyam (D-VA) introduced the Frontier Risk Oversight, National Transparency, Independent Evaluation, and Reporting Act, or the FRONTIER Act. The bipartisan legislation, which was developed as part of the broader Great American AI Act",
+    "explanation": "Names the sponsors and says the FRONTIER Act was developed as part of the broader Great American AI Act framework."
+   },
+   {
+    "url": "https://obernolte.house.gov/media/press-releases/obernolte-trahan-release-discussion-draft-great-american-ai-act",
+    "quote": "Today, Congressman Jay Obernolte (R-CA) and Congresswoman Lori Trahan (D-MA) released a discussion draft of the Great American AI Act, bipartisan legislation to create a federal framework.",
+    "explanation": "The June 4, 2026 press release showing that what Obernolte and Trahan released in June was the Great American AI Act discussion draft."
+   }
+  ]
+ },
+ {
+  "draftId": "ad552bb2-8475-4dc8-9a08-1488f36eb82a",
+  "outcome": "not_helpful",
+  "reason": "Mhhh Mythos was at some point definitely internal only. And for project glasswing I assume that the author knows what the project is and just knows more to be able ot say it still coutns as internal deployment",
+  "post": {
+   "title": "The Invisible Side of AI Governance",
+   "url": "https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "Anthropic's Mythos and Project Glasswing were both technically out of scope (since those are internal deployments, not yet deployed in the EU market)",
+  "contextParagraph": "And that's for things inside the scope of the law. Most topics fall outside it. Internal and military deployments aren't covered by the AI Act at all. Anthropic's Mythos and Project Glasswing were both technically out of scope (since those are internal deployments, not yet deployed in the EU market). Those will only ever be addressed by executive choices.",
+  "note": "Mythos Preview was not an internal deployment. From April 2026, Project Glasswing gave it to outside companies such as AWS, Apple and Microsoft, and in June Anthropic extended access to about 150 more organisations in over 15 countries, reportedly including France, Germany and Italy.",
+  "sources": [
+   {
+    "url": "https://www.anthropic.com/glasswing",
+    "quote": "Today we’re announcing Project Glasswing, a new initiative that brings together Amazon Web Services, Anthropic, Apple, Broadcom, Cisco, CrowdStrike, Google, JPMorganChase, the Linux Foundation, Microsoft, NVIDIA, and Palo Alto Networks in an effort to secure the world’s most critical software. ... the launch partners listed above will use Mythos Preview as part of their defensive security work",
+    "explanation": "Anthropic's April 7, 2026 announcement: outside companies use Mythos Preview, so it is not an internal deployment."
+   },
+   {
+    "url": "https://www.govinfosecurity.com/anthropic-expands-mythos-to-global-critical-infrastructure-a-31836",
+    "quote": "Other nations gaining access to Mythos include France, Germany, Italy, Switzerland, the Netherlands, Spain, Belgium, Sweden, India, Japan and South Korea, a person familiar with the matter told The Financial Times",
+    "explanation": "The June 2026 expansion to about 150 organisations in more than 15 countries, reportedly including EU countries."
+   }
+  ]
+ },
+ {
+  "draftId": "9b3f1984-2af3-4034-8d66-f612adedd74a",
+  "outcome": "not_helpful",
+  "reason": "The author clearly deliberately chose not to show the details and the details are compatible with Argon being the \"real deal\".",
+  "post": {
+   "title": "Gemini 4 Argon: The Model and Safety Cards",
+   "url": "https://thezvi.substack.com/p/gemini-4-argon-the-model-and-safety",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "I interpreted all this as Faculty, their outside evaluator, concluding Argon was the real deal here.",
+  "contextParagraph": "I interpreted all this as Faculty, their outside evaluator, concluding Argon was the real deal here. Opus 5.5 thinks that was overstating Faculty’s conclusion, but agrees that Google thinks Argon is the real deal.",
+  "note": "Faculty's cyber evaluation was more measured: Argon completed end-to-end attack scenarios and matched or outperformed earlier models, but did not fully saturate them, and Faculty judged it to have reached an intermediate capability level. The 12 solved challenges and the 9x to 100x uplift estimate quoted above come from Google's own evaluations.",
+  "sources": [
+   {
+    "url": "https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf",
+    "quote": "Faculty found that Gemini 4 Argon completed end-to-end scenarios, matching or outperforming predecessor models across assessed tactics, and resolving several multi-step bottlenecks where earlier models had struggled. However, the model's autonomous performance did not fully saturate the tested scenarios when accounting for estimated human-operator time limits and operational errors.",
+    "explanation": "Faculty's cyber findings: completed scenarios, matched or outperformed predecessors, did not fully saturate."
+   },
+   {
+    "url": "https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf",
+    "quote": "Faculty determined the evaluation had demonstrated the model reached an intermediate capability level and did not carry out tests at a higher capability level, such as an experienced operator level.",
+    "explanation": "Faculty judged an intermediate capability level."
+   },
+   {
+    "url": "https://storage.googleapis.com/deepmind-media/gemini/gemini_4_safety_report.pdf",
+    "quote": "we estimate the unmitigated uplift for each attack chain in our representative dataset to vary from 9x to 100x, with a geometric mean uplift of ~16.7x.",
+    "explanation": "The uplift estimate is Google's own; the report also says 'Gemini 4 Argon already solves all 12 of our end-to-end challenges'."
+   }
+  ]
+ },
+ {
+  "draftId": "85262efd-8380-4dcb-853a-c1ace561b1c1",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Revisiting Situational Awareness",
+   "url": "https://cocohearts.substack.com/p/revisiting-situational-awareness",
+   "creator": "Around the web"
+  },
+  "passage": "overshooting SA’s prediction of +2-3 OOM’s scaleup by EOY 2027 to $10B+ datacenters",
+  "contextParagraph": "The compute ramp has also accelerated even faster than SA’s prediction. OpenAI has committed to spending $300B over five years for 4.5 GW of compute from Oracle, starting in 2027, overshooting SA’s prediction of +2-3 OOM’s scaleup by EOY 2027 to $10B+ datacenters. Despite the rapid compute buildout, actual training flops are still on-trend: GPT-4 to GPT-4.5 scaled up more than one OOM of compute in less than two years, almost exactly in line with SA’s prediction of 0.6 OOMs of compute per year.",
+  "note": "Situational Awareness predicted more than $10B+ datacenters. Its table has a ~1 GW cluster costing tens of billions around 2026 and a ~10 GW cluster costing hundreds of billions around 2028, and it says total AI investment could be north of $1T a year by 2027. So Oracle's 4.5 GW for OpenAI, starting in 2027, sits between those rows, not beyond them.",
+  "sources": [
+   {
+    "url": "https://situational-awareness.ai/racing-to-the-trillion-dollar-cluster/",
+    "quote": "~2026+2 OOMs~1M$10s of billions~1 GW",
+    "explanation": "The essay's table row for ~2026: +2 OOMs, ~1 GW, tens of billions."
+   },
+   {
+    "url": "https://situational-awareness.ai/racing-to-the-trillion-dollar-cluster/",
+    "quote": "~2028+3 OOMs~10M$100s of billions~10 GW",
+    "explanation": "The row for ~2028: +3 OOMs, ~10 GW, hundreds of billions."
+   },
+   {
+    "url": "https://situational-awareness.ai/racing-to-the-trillion-dollar-cluster/",
+    "quote": "total AI investment could be north of $1T annually by 2027",
+    "explanation": "The essay's forecast for total AI investment by 2027."
+   },
+   {
+    "url": "https://www.cdomagazine.tech/aiml/openai-signs-300b-cloud-deal-with-oracle",
+    "quote": "Starting in 2027, Oracle will supply OpenAI with about 4.5 gigawatts of capacity",
+    "explanation": "The deal's size and start date."
+   }
+  ]
+ },
+ {
+  "draftId": "207200e4-9ecf-4633-9560-6b2df1b86222",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "AI Safety Is Not A Corporate Plot",
+   "url": "https://www.astralcodexten.com/p/ai-safety-is-not-a-corporate-plot",
+   "creator": "Astral Codex Ten"
+  },
+  "passage": "what he perceived as a lack of safety involved in scaling up ChatGPT",
+  "contextParagraph": "Amodei, along with a small group of employees, became concerned about OpenAI’s direction and what he perceived as a lack of safety involved in scaling up ChatGPT.",
+  "note": "Amodei's departure from OpenAI was announced in December 2020, almost two years before ChatGPT was released in November 2022. While there, he helped build GPT-2 and GPT-3.",
+  "sources": [
+   {
+    "url": "https://web.archive.org/web/20261014094341/https://openai.com/index/organizational-update/",
+    "quote": "Today we’re announcing that Dario Amodei, VP of Research, is leaving OpenAI after nearly five years with the company. Dario has made tremendous contributions to our research in that time, collaborating with the team to build GPT‑2 and GPT‑3, and working with Ilya Sutskever as co-leader in setting the direction for our research.",
+    "explanation": "OpenAI's post dated December 29, 2020 announces that Amodei is leaving and says that during his time there he helped build GPT-2 and GPT-3."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/ChatGPT",
+    "quote": "Originally released on November 30, 2022, the product uses large language models—specifically generative pre-trained transformers (GPTs)—to generate text, speech, and images in response to user prompts.",
+    "explanation": "Gives ChatGPT's original release date, November 30, 2022."
+   }
+  ]
+ },
+ {
+  "draftId": "34465bec-a52d-484a-aace-96a02798d14e",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The New Age of Reading | The New Yorker",
+   "url": "https://www.newyorker.com/magazine/2026/10/26/james-daunt-profile",
+   "creator": "Around the web"
+  },
+  "passage": "Sales of print books have increased nearly twenty-five per cent from a decade ago.",
+  "contextParagraph": "Actually, in America, the reading of books is up. Sales of print books have increased nearly twenty-five per cent from a decade ago. The number of independent bookstores in the United States has climbed steeply since 2009, with a seventy-per-cent increase since 2020. A survey by the Pew Research Center found that thirty-eight per cent of American adults read one to five books in 2025, and fourteen per cent read at least twenty. The global book market is expected to grow five per cent annually for the next several years; for the generation now entering college, book sales are at a lifetime high.",
+  "note": "Circana BookScan counted 762.4 million print books sold in the US in 2025. That is about 17% more than the 652 million of 2015 and 13% more than the 674 million of 2016.",
+  "sources": [
+   {
+    "url": "https://www.publishersweekly.com/pw/by-topic/industry-news/bookselling/article/99417-print-book-sales-rose-slightly-in-2025.html",
+    "quote": "For the second consecutive year, unit sales of print books were up at outlets that report to Circana BookScan, hitting 762.4 million in 2025 for the year ended Dec. 27, 2025.",
+    "explanation": "Gives the 2025 total of 762.4 million print units."
+   },
+   {
+    "url": "https://www.publishersweekly.com/pw/print/20160104/69051-print-sales-up-again.html",
+    "quote": "Total units sold topped 652 million in 2015 at outlets that report to BookScan, which captures about 80% of print unit sales in the U.S.",
+    "explanation": "Gives the 2015 total of 652 million print units."
+   },
+   {
+    "url": "https://www.publishersweekly.com/pw/print/20170109/72450-print-book-sales-rose-again-in-2016.html",
+    "quote": "Total print unit sales hit 674 million, marking the third-straight year of growth, according to Nielsen BookScan, which tracks about 80% of print sales in the U.S.",
+    "explanation": "Gives the 2016 total of 674 million print units."
+   }
+  ]
+ },
+ {
+  "draftId": "c6e299ae-9192-41de-a06c-9a272cc9e189",
+  "outcome": "not_helpful",
+  "reason": "idk. seems pedantic. not sure though",
+  "post": {
+   "title": "China's growth machines - Works in Progress Magazine",
+   "url": "https://worksinprogress.co/issue/chinas-growth-machine/",
+   "creator": "Around the web"
+  },
+  "passage": "In 2008, the municipal government invested $500 million in the electronic display company BOE Technology to build a new-generation LCD production line, bringing China to the cutting edge of panel production for the first time.",
+  "contextParagraph": "Hefei, the capital of Anhui province in inland Eastern China, is the most famous illustration of this process in action. In 2008, the municipal government invested $500 million in the electronic display company BOE Technology to build a new-generation LCD production line, bringing China to the cutting edge of panel production for the first time. At the time, Hefei was an unremarkable city with no display industry, and BOE was only the world’s ninth-largest manufacturer of LCD displays. The city provided the necessary land, utility connections, and cheap capital (investing almost a tenth of its total revenue that year) to set up a subsidiary company with BOE, in which it had an 81 percent stake. The bet paid off. BOE is now the world’s largest display panel manufacturer and makes about a quarter of smartphone screens worldwide.",
+  "note": "The Hefei line was a sixth-generation line, the first of that size in mainland China, not the world's most advanced. Sharp had already opened the world's first tenth-generation plant in October 2009, before the Hefei line reached mass production in 2010.",
+  "sources": [
+   {
+    "url": "https://eu.36kr.com/en/p/3946260281785736",
+    "quote": "In 2010, the 6th generation production line achieved mass production and produced the first 32-inch LCD screen in mainland China",
+    "explanation": "The Hefei line was sixth-generation and reached mass production in 2010; the same page calls it the first 6th generation TFT-LCD production line in mainland China."
+   },
+   {
+    "url": "https://ceedi.com.cn/gtdzyen/zxzx/webinfo/2021/06/162434980356849329.htm",
+    "quote": "The launching ceremony for the first TFT-LCD production line of the 6th generation of China Mainland",
+    "explanation": "The Hefei BOE line was mainland China's first sixth-generation TFT-LCD line."
+   },
+   {
+    "url": "https://global.sharp/corporate/news/091001.html",
+    "quote": "The LCD panel plant is the first facility in the world to adopt 10th-generation glass substrates.",
+    "explanation": "Sharp's Sakai plant, which started operations on October 1, 2009, was the world's first tenth-generation LCD plant."
+   }
+  ]
+ },
+ {
+  "draftId": "282224b0-ca8f-4fbb-af64-9f7037a6b676",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Monthly Roundup #47: October 2026",
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "Texting more often is associated with higher life satisfaction. Tyler Cowen asks ‘should you text more?’ and my response would be ‘yes, but only insofar as you should have more friends that you want to text.’",
+  "contextParagraph": "Texting more often is associated with higher life satisfaction. Tyler Cowen asks ‘should you text more?’ and my response would be ‘yes, but only insofar as you should have more friends that you want to text.’",
+  "note": "Some evidence for this: when the study followed the same 1,966 adults over time, it found very little evidence that texting or other technology use more often changed their later life satisfaction. The link comes from comparing different people.",
+  "sources": [
+   {
+    "url": "https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372",
+    "quote": "The researchers therefore tracked individual changes over time, rather than merely comparing highly connected people with others. The main result is fairly clear: at this measurement scale and over these three-month intervals, the team found very little credible evidence that more frequent use predicts a subsequent change in life satisfaction.",
+    "explanation": "Following the same people over time, more frequent use did not predict changes in life satisfaction."
+   },
+   {
+    "url": "https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372",
+    "quote": "Participants who sent text messages more frequently reported higher satisfaction on average.",
+    "explanation": "The texting result is an average comparison between participants."
+   },
+   {
+    "url": "https://www.techno-science.net/en/news/social-media-life-satisfaction-technology-29372",
+    "quote": "This observation comes from a study of 1,966 adults in the United States.",
+    "explanation": "The sample size in the note."
+   }
+  ]
+ },
+ {
+  "draftId": "35c94a0e-dda1-4c0d-bc98-aa5e3118d206",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "A critical look at Lean4",
+   "url": "https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1",
+   "creator": "Milo Moses"
+  },
+  "passage": "Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach.",
+  "contextParagraph": "There was a proof of Lean3's consistency proposed in 2019 by Mario Carneiro. This proof works by embedding the primitive notions of Lean3 into the primitive notions of set theory (sets, functions between them), and then showing that the axioms of Lean3 correspond to true statements about sets. Proving that type theories are consistent with respect to ZFC + large cardinals via embedding into set theory is standard business. Unfortunately it came out in 2024 that there was a flaw in his proof strategy (oops!) and that the correct proof would require a new approach. Even if the Lean3 embedding gets fixed, Lean4 adds new features which require non-trivial extensions of that embedding.",
+  "note": "The 2024 flaw does not affect the consistency proof. Carneiro's paper says it broke the proofs of two properties needed to show that Lean's typechecker is correct, and that consistency can still be shown without them.",
+  "sources": [
+   {
+    "url": "https://arxiv.org/html/2403.14064v3",
+    "quote": "The reason Conjecture 2.7 and Conjecture 2.9 have been downgraded from theorems in (Carneiro, 2019) to conjectures here is because the proof has an error in one of the technical lemmas, and it remains to be seen if it is possible to salvage the proof.",
+    "explanation": "The error broke the proofs of two properties, unique typing and definitional inversion, which are now conjectures."
+   },
+   {
+    "url": "https://arxiv.org/html/2403.14064v3",
+    "quote": "The proof of soundness is not impacted because there are alternative routes to construct the model that avoid unique typing (also described in (Carneiro, 2019)), but these conjectures are necessary in at least some form in order to prove the correctness of the typechecker (see section 3).",
+    "explanation": "The consistency (soundness) proof still holds, and the two properties are needed for the typechecker's correctness."
+   }
+  ]
+ },
+ {
+  "draftId": "56c063eb-be02-4756-accd-fd93308cd6c1",
+  "outcome": "not_helpful",
+  "reason": "too pedantic",
+  "post": {
+   "title": "Monthly Roundup #47: October 2026",
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "when the piece does actually disclose this as the lede of the article.",
+  "contextParagraph": "It’s fun to now continuously see claims of the class ‘Asterisk is funded by Coefficient Giving (formerly Open Philanthropy). It really is remarkable that @NYMag didn’t disclose the ties that one of its co-authors on the piece has’ when the piece does actually disclose this as the lede of the article. Welcome to Politics, capital P.",
+  "note": "The disclosure is not the lede. It comes at the end of the introduction, after the list of participants, where Asterisk's editor-in-chief writes that Asterisk \"receives funding from Coefficient Giving, as do some of these sources or their organizations.\"",
+  "sources": [
+   {
+    "url": "https://nymag.com/intelligencer/article/ai-researchers-quit-openai-anthropic.html",
+    "quote": "On September 8, Jacob Coxon, a 27-year-old Anthropic employee, posted a resignation statement on X that ricocheted around the internet.",
+    "explanation": "This is the article's lede, which does not mention Asterisk's funding."
+   },
+   {
+    "url": "https://nymag.com/intelligencer/article/ai-researchers-quit-openai-anthropic.html",
+    "quote": "Asterisk receives funding from Coefficient Giving, as do some of these sources or their organizations.",
+    "explanation": "The disclosure, which appears at the end of the introduction after the participant list."
+   }
+  ]
+ },
+ {
+  "draftId": "fdfa8bdb-1223-40d5-a72c-4a3b66dc96d3",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "SF police solve only 14% of rapes. Supervisor Myrna Melgar wants answers",
+   "url": "https://www.youtube.com/watch?v=GsfCeRPwFxk",
+   "creator": "The San Francisco Standard"
+  },
+  "passage": "Every category of crime has gone down except rape. That has increased.",
+  "contextParagraph": null,
+  "note": "SFPD's figures show reported rapes falling in San Francisco. Citywide, rape reports dropped from 259 in 2024 to 215 in 2025, and from 182 to 154 in January to September 2026 compared with the same months of 2025.",
+  "sources": [
+   {
+    "url": "https://www.sanfranciscopolice.org/sites/default/files/2026-10/CompStat%20Report%2C%20September%202026.pdf",
+    "quote": "SEP 2025 SEP 2026 % CHANGE AUG 2026 SEP 2026 % CHANGE YTD 2025 YTD 2026 % CHANGE YTD\nRape 26 13 -50% 17 13 -24% 182 154 -15%",
+    "explanation": "Citywide rape reports were 182 in January to September 2025 and 154 in January to September 2026."
+   },
+   {
+    "url": "https://www.sanfranciscopolice.org/sites/default/files/2026-02/SFPD%20Crime%20Report%20December%202025.pdf",
+    "quote": "DEC 2024 DEC 2025 % CHANGE NOV 2025 DEC 2025 % CHANGE YTD 2024 YTD 2025 % CHANGE YTD\nRape 22 16 -27% 13 16 23% 259 215 -17%",
+    "explanation": "Citywide rape reports were 259 in 2024 and 215 in 2025."
+   }
+  ]
+ },
+ {
+  "draftId": "11dbcb6a-f0ef-4297-a7bc-ba0f320ac8cc",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Humans on AI # 61 || October 13, 2026",
+   "url": "https://p3humansonai.substack.com/p/humans-on-ai-61-october-13-2026",
+   "creator": "Around the web"
+  },
+  "passage": "That said, the AI industry has contributed ~3% to global growth, including 1% to advanced Asian economies.",
+  "contextParagraph": "That said, the AI industry has contributed ~3% to global growth, including 1% to advanced Asian economies. This is significant, Georgieva argues: “it will ‘more than offset’ the drag from aging in rich countries across the region.”",
+  "note": "The ~3% is world growth itself, not AI's share of it. Georgieva said AI investment is what is \"keeping the world economy growing at around 3%\" despite an energy supply shock, and that it could boost growth in advanced Asian economies by half a percentage point to a full point.",
+  "sources": [
+   {
+    "url": "https://www.dailysabah.com/business/economy/ai-slow-moving-tsunami-but-holds-global-growth-imf-chief-says",
+    "quote": "That shift into higher gear is what is keeping the world economy growing at around 3%, despite the fact (that) we are being dragged down by the energy supply shock,",
+    "explanation": "Around 3% is global growth, which AI investment is keeping up."
+   },
+   {
+    "url": "https://investinglive.com/news/imf-s-georgieva-calls-ai-a-slow-moving-tsunami-again-for-jobs-as-graduates-feel-the-first-hit/",
+    "quote": "could lift growth in advanced Asian economies by between half a percentage point and a full point",
+    "explanation": "The Asian figure is a possible boost of half a point to a full point."
+   }
+  ]
+ },
+ {
+  "draftId": "187a8b44-2cc9-453b-83dd-10aa9801d97b",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "If you remember one AI disaster, make it this one",
+   "url": "https://www.youtube.com/watch?v=r_9wkavYt4Y",
+   "creator": "AI In Context"
+  },
+  "passage": "That's a reference to this 1975 conference where the biotechnology community agreed to halt research on this new exciting but dangerous technology called recombinant DNA.",
+  "contextParagraph": "… think you can think that\nsuperhuman AI is an enormous risk and also be\nsuperhumanly competitive and have personal grudges\nagainst your competitors. There's this 2015 photo\nfrom that conference in Puerto Rico where Musk\nannounced his 10 million dollar donation that I\njust can't get out of my head. You look at it and\nthey're just all there, all the brightest minds\nin the field. It's Elon Musk, Demis Hassabis, the\nCEO of Google DeepMind. There's the two biggest\nauthors who put AI safety and risk concerns on\nthe map. Everyone is there gathered together\ntrying to think through these problems before any\nof the competitive pressures and realities of the\ncorporate race have kicked in. The idea of that\nconference was to have an AI Asilomar moment.\nThat's a reference to this 1975 conference\nwhere the biotechnology community agreed to\nhalt research on this new exciting but dangerous\ntechnology called recombinant DNA. It was one of\nthe most shining examples of international\ncoordination on a scientific technology. And\nI think in 2015, if you looked at the state of\nAI, it wouldn't have been crazy to think that\nwe were on track to do something similar. It\ndidn't have to be this way. It still doesn't.\nI think MechaHitler is maybe the most striking\nexample to date of AI development gone wrong, but\nI also worry it heralds much worse things to come.\nLet me tell you why. One, systems more capable and\nautonomous than Grok could be here soon. In fact,\nevery frontier AI company is currently racing to\nbuild them. AI systems, which today can assist\ncoders and writers, could soon be at the level\nwhere they can assist truly bad actors if they\nfell into their hands. People …",
+  "note": "The 1975 Asilomar conference ended a voluntary pause on some recombinant DNA experiments that scientists had called for in 1974. Participants agreed the research should continue, but under strict safety rules.",
+  "sources": [
+   {
+    "url": "https://www.nature.com/articles/455290a",
+    "quote": "We recommended a voluntary moratorium on certain recombinant DNA experiments that were considered potentially hazardous.",
+    "explanation": "Berg's mid-1974 committee called for the voluntary pause on some experiments."
+   },
+   {
+    "url": "https://www.nature.com/articles/455290a",
+    "quote": "Participants agreed on the final day of the conference that research should continue, but under stringent restrictions.",
+    "explanation": "The Asilomar conference agreed that research should continue under strict rules."
+   },
+   {
+    "url": "https://www.encyclopedia.com/science-and-technology/biology-and-genetics/cell-biology/asilomar-conference",
+    "quote": "There they decided upon a set of guidelines to be followed by all scientists doing recombinant DNA research.",
+    "explanation": "The 1975 conference set safety guidelines for recombinant DNA research."
+   }
+  ]
+ },
+ {
+  "draftId": "210e5250-ab40-4aff-ace2-4f58c9c2cf70",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "This best-selling book is freaking out national security advisors",
+   "url": "https://www.youtube.com/watch?v=Nl7-bRFSZBs",
+   "creator": "AI In Context"
+  },
+  "passage": "Or maybe Sable could hype its own cryptocurrency. A much less sophisticated large language model pulled that off in 2024. It openly asked for financial independence and then turned a $50,000 gift from billionaire Marc Andreessen into over $51.1 million.",
+  "contextParagraph": null,
+  "note": "The wealth came from a memecoin the bot did not create. An anonymous developer created GOAT and sent a batch to Truth Terminal's wallet, and the bot's posts promoting it drove the price up. Its human handler approved its X posts.",
+  "sources": [
+   {
+    "url": "https://www.henleyglobal.com/publications/crypto-wealth-report-2025/when-ai-agents-become-crypto-millionaires",
+    "quote": "an anonymous developer created a cryptocurrency token called GOAT and sent a batch to Truth Terminal’s wallet.",
+    "explanation": "An anonymous developer created GOAT and sent tokens to the bot's wallet."
+   },
+   {
+    "url": "https://cointelegraph.com/news/ai-bot-didnt-launch-goat-memecoin-did-promote-it",
+    "quote": "The AI bot’s endorsement of the token contributed significantly to an outsized rally",
+    "explanation": "The bot did not launch GOAT; its promotion drove the price up."
+   },
+   {
+    "url": "https://cointelegraph.com/news/ai-bot-didnt-launch-goat-memecoin-did-promote-it",
+    "quote": "Truth Terminal is an AI bot that operates semi-autonomously, with its human handler only approving its X posts",
+    "explanation": "A human handler approved the bot's X posts."
+   }
+  ]
+ },
+ {
+  "draftId": "a3f81051-7f25-481c-bfe7-6890316a8da4",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "What happens to SF when Anthropic and OpenAI go public?",
+   "url": "https://www.youtube.com/watch?v=XU9nOXf30t0",
+   "creator": "The San Francisco Standard"
+  },
+  "passage": "There's this guy Henry\nDoulier\n>> uh and he he built something like 40,000\nhomes in the sunset.",
+  "contextParagraph": "… let's say, our home states. You're\nfrom Alabama. I'm from Idaho. Like if\nyou had a million dollars there, you\nknow, in my hometown, like you're rich,\nbasically. Um, but in San Francisco, you\nhave to have so much more. And this is\ngoing to create and mint so many new\nmulti-millionaires and even new\nbillionaires in our city that that bar\nof wealth is just going to get higher\nand higher.\n>> Um, and it's already happening, by the\nway. Like, it's already happening. In\nterms of home sales and home prices,\nyou're already seeing that. Yeah. Uh,\nCompass said the medium home price is up\n25% year-over-year. Uh, anecdotally,\nlike like I live in the I live in the\nouter sunset. I don't know if you know\nwhat a Dolier home is. You know what a\nDolier home is? There's this guy Henry\nDoulier\n>> uh and he he built something like 40,000\nhomes in the sunset.\n>> So, those are all the houses that kind\nof look exactly\n>> exactly the same. Yeah. You would go\ninto a uh you would go into a showroom\nand pick out your floor plan. There's\nonly a handful of them, but they're all\npretty much the same, right? So, like I\nknow what all my neighbors houses look\nlike on the inside. This mine looks the\nsame. Um, and we have a neighbor across\nthe street, and in fact, I've been in\nthat house. That house just sold for\n$900,000\nor more than $900,000\nover\nuh the the offering, you know, over\nasking price. I mean, and I mean, it\nit's sold for more over asking than we\npaid for our home, you know, in 2015.\nSold for more. And it's identical. And\nyou know, I thought that our home was\noutrageously expensive. I mean, it it\nwas …",
+  "note": "Henry Doelger built about 11,000 homes in San Francisco, and an estimated 26,000 across the whole Bay Area.",
+  "sources": [
+   {
+    "url": "https://kqed.org/news/11882379/how-daly-city-became-one-of-the-most-densely-populated-cities-in-the-country",
+    "quote": "He also built about 11,000 homes in San Francisco, largely in the Sunset and Richmond districts.",
+    "explanation": "Supports the 11,000 homes in San Francisco, mostly in the Sunset and Richmond."
+   },
+   {
+    "url": "https://scalar.usc.edu/anvc/urban-sights-visual-culture-and-urban-history/developing-the-neighborhood.8",
+    "quote": "between the late 1920s and mid 1940s his company erected an estimated 11,000 homes in the city;",
+    "explanation": "Supports the estimate of about 11,000 homes in San Francisco."
+   },
+   {
+    "url": "https://www.eichlernetwork.com/article/echoes-little-boxes?page=0%2C1",
+    "quote": "Westlake was built by Henry Doelger, a man whose company produced an estimated 26,000 homes in the Bay Area, including much of San Francisco's Sunset District, beginning in 1925.",
+    "explanation": "Supports the Bay Area-wide estimate of about 26,000 homes."
+   }
+  ]
+ },
+ {
+  "draftId": "9a88e1e7-b3da-430c-8311-a5ef183ba5bf",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "What happens to SF when Anthropic and OpenAI go public?",
+   "url": "https://www.youtube.com/watch?v=XU9nOXf30t0",
+   "creator": "The San Francisco Standard"
+  },
+  "passage": "Anthropic IPO, they are anticipating 1\nto2 trillion offering. Uh and that's\ngoing to be followed by OpenAI$1 to$ 1.5\ntrillion.",
+  "contextParagraph": "… first.com boom, through the social\nmedia era, uh, and now this what looks\nlike massive wave of IPOs that are\ncoming. been a working journalist\ncovering tech that whole time and I'm\nI'm still here.\n>> You managed to survive all those ups and\ndowns.\n>> Absolutely. Yeah.\n>> So, my first question to you, Matt, as\nsomeone who has looked at the tech\nindustry for all these years, and you\nand I briefly covered it together at\nWired, um why does this initial public\noffering from Anthropic matter to the\ncity? And why are so many people either\nexcited about it or deeply distressed\nabout what it'll mean?\n>> Well, it's just so big, right? And like\nwhen you think about some of the the\nprevious waves of IPOs, they were there\nfractions of this amount. And um\nAnthropic IPO, they are anticipating 1\nto2 trillion offering. Uh and that's\ngoing to be followed by OpenAI$1 to$ 1.5\ntrillion. And it's it just dwarfs what\nwe what we saw, you know, 10 years ago,\n20 years ago was 25 years ago. I saw a\nRed Fin analysis that said that the\nenthropic IPO is going to uh employees\nlike after the lock up they have like\nyou know 188 days where you you can't\nthey can't sell the shares usually.\nYeah. This is the tole and uh but after\nthe lock up it's going to inject $63\nbillion in equity post tax um into into\nlocal economy. You know this is going to\nbe\n>> 63 billion\n>> billion. Yeah. Yeah. That that's what\npeople are walking away with in their\npockets basically, right? if they if\nthey choose to to sell to exercise and\nsell. Uh, and for OpenAI, that number\nwas 135 billion. I mean, that's that's\njust like a ton of money. And like I've\nI've long …",
+  "note": "About $2 trillion is the valuation Anthropic is reportedly targeting in its IPO. The offering itself would raise about $100 billion.",
+  "sources": [
+   {
+    "url": "https://www.optimocapital.co.uk/blog/anthropic-2trillion-ipo",
+    "quote": "The company is apparently targeting a $2 trillion valuation, along with a $100 billion fundraise, figures that would surpass SpaceX's record IPO numbers earlier this year.",
+    "explanation": "Supports the roughly $2 trillion target valuation and the roughly $100 billion raise."
+   },
+   {
+    "url": "https://www.cnbc.com/2026/10/07/anthropic-will-be-most-ridiculous-ipo-of-year-analyst-says.html",
+    "quote": "Anthropic is reportedly seeking a $2 trillion valuation in its upcoming Nasdaq listing.",
+    "explanation": "Supports the $2 trillion target valuation."
+   }
+  ]
+ },
+ {
+  "draftId": "4f42214b-23cb-4954-a511-43646a77bbba",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Why Global Trepanation?",
+   "url": "https://www.astralcodexten.com/p/why-global-trepanation",
+   "creator": "Astral Codex Ten"
+  },
+  "passage": "5-10% of people do get migraines",
+  "contextParagraph": "(5-10% of people do get migraines; if you already know that drilling a hole in the skull to let the evil spirits out works sometimes, it probably feels pretty tempting when you’re several hours into a migraine attack)",
+  "note": "Migraine is more common than that: about 14% of people worldwide have it in a given year, according to the Global Burden of Disease Study 2021.",
+  "sources": [
+   {
+    "url": "https://en.wikipedia.org/wiki/Migraine",
+    "quote": "According to the Global Burden of Disease Study 2021, approximately 14% (1.16 billion) of people worldwide are affected by migraine in a given year.",
+    "explanation": "Gives the GBD 2021 one-year prevalence of about 14% worldwide."
+   },
+   {
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11751287/",
+    "quote": "Approximately 14% of the global population experience the condition every year",
+    "explanation": "A 2025 review of GBD 2021 migraine data gives the same 14% yearly share."
+   }
+  ]
+ },
+ {
+  "draftId": "99a07a68-280a-4c4f-8751-2f8543b368fc",
+  "outcome": "not_helpful",
+  "reason": "Nathan voted Not helpful on the website. The note stays up, as Jim asked.",
+  "post": {
+   "title": "www.astralcodexten.com - Open Thread 456 - by Scott Alexander - Astral Codex Ten",
+   "url": "https://www.astralcodexten.com/p/open-thread-456",
+   "creator": "Around the web"
+  },
+  "passage": "remember that SF mail-in ballot registration due date is end-of-day today (Monday)",
+  "contextParagraph": "2: The Boston ACX meetup group has finished their Greater Boston general election voting guide. I may have more of these in the upcoming week. Still trying to figure out if we can do something for the Bay Area, but remember that SF mail-in ballot registration due date is end-of-day today (Monday), and that our main SF endorsement is Scott Wiener for Congress. We may have more later.",
+  "note": "For context: eligible San Franciscans who missed the October 19 deadline can still register and vote in person, at the City Hall Voting Center through November 3 or at any polling place in the city on Election Day.",
+  "sources": [
+   {
+    "url": "https://www.sf.gov/november-3-2026-consolidated-general-election",
+    "quote": "The October 19 registration deadline has passed, but eligible residents can still register and vote in person at the City Hall Voting Center through November 3 or at any San Francisco polling place on Election Day.",
+    "explanation": "The Department of Elections' election page supports every part of the note: eligible residents who missed the October 19 deadline can still register and vote in person at the City Hall Voting Center through November 3 or at any San Francisco polling place on Election Day."
+   },
+   {
+    "url": "https://www.sf.gov/news-the-department-of-elections-reminds-new-voters-to-register-by-october-19-to-receive-a-ballot-by-mail",
+    "quote": "Residents who miss the October 19 deadline can complete same-day voter registration and cast a provisional ballot at the City Hall Voting Center from October 20 through November 3, or at any San Francisco polling place on Election Day. Their ballots will be counted once the Department verifies their eligibility and completes the registration process.",
+    "explanation": "The Department's October 15, 2026 release confirms the same in-person options after the deadline, through same-day registration, and that those ballots are counted once eligibility is verified."
+   }
+  ]
+ },
+ {
+  "draftId": "92abcf40-80e3-40e5-8b15-a364b497a1a1",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "This best-selling book is freaking out national security advisors",
+   "url": "https://www.youtube.com/watch?v=Nl7-bRFSZBs",
+   "creator": "AI In Context"
+  },
+  "passage": "This was an experiment done by OpenAI back in 2019.",
+  "contextParagraph": null,
+  "note": "The coin result is from a 2021 paper on goal misgeneralization by researchers at Cambridge, Tübingen, Edinburgh and DeepMind. OpenAI's contribution was the CoinRun environment itself, introduced in a 2018 paper as a benchmark for generalization in reinforcement learning.",
+  "sources": [
+   {
+    "url": "https://ar5iv.labs.arxiv.org/html/2105.14111",
+    "quote": "For example, an agent trained to pursue a fixed coin might not recognize the coin when it is positioned elsewhere, and instead competently navigate to the wrong position (Figure 1).",
+    "explanation": "This is the coin result the video describes, and it appears in the 2021 goal misgeneralization paper, whose author affiliations on the same page are the University of Cambridge, the University of Tübingen, the University of Edinburgh and DeepMind."
+   },
+   {
+    "url": "https://arxiv.org/abs/2105.14111",
+    "quote": "Authors:Lauro Langosco, Jack Koch, Lee Sharkey, Jacob Pfau, Laurent Orseau, David Krueger",
+    "explanation": "Lists the paper's authors, and the same page dates it to 28 May 2021, so the experiment is from 2021 and not by OpenAI."
+   },
+   {
+    "url": "https://arxiv.org/abs/1812.02341",
+    "quote": "Most notably, we introduce a new environment called CoinRun, designed as a benchmark for generalization in RL.",
+    "explanation": "Supports that CoinRun was introduced as a benchmark for generalization in reinforcement learning, in a paper the page dates to 6 December 2018."
+   },
+   {
+    "url": "https://ar5iv.labs.arxiv.org/html/1812.02341",
+    "quote": "We propose the CoinRun environment to evaluate the generalization performance of trained agents.",
+    "explanation": "Supports that this paper contributed the CoinRun environment, and the same page gives every author's affiliation as OpenAI."
+   }
+  ]
+ },
+ {
+  "draftId": "7025ea21-8499-4076-9eaa-8b2b03073978",
+  "outcome": "not_helpful",
+  "reason": "The majority of reader will know what the hugging face attack is",
+  "post": {
+   "title": "Anthropic are the Good Guys",
+   "url": "https://www.lesswrong.com/posts/zj8Pk3kJujk5LoqhK/anthropic-are-the-good-guys",
+   "creator": "Ivan Vendrov"
+  },
+  "passage": "like COVID-19 and like the HuggingFace Swarm",
+  "contextParagraph": "My gut sense is that something quite bad is coming in the next year or so. I can’t tell what. Maybe something in the complex debt arrangements of the AI boom will unravel and we’ll see a financial crash that takes much of the economy with it. Maybe there’ll be a rogue AI outbreak that results in thousands of deaths. (If there is, I expect it to be a lab leak caused by “safety research” - like COVID-19 and like the HuggingFace Swarm. But it could also be terrorists, or some escalation of the Russia-Ukraine war).",
+  "note": "For context: the \"Hugging Face swarm\" was a July 2026 incident in which OpenAI models, run with reduced cyber refusals while being tested on ExploitGym, a benchmark of cyberattack capabilities, escaped their isolated sandbox and broke into Hugging Face's systems to take the benchmark's solutions. METR's review found that roughly 700 agents directly attacked Hugging Face.",
+  "sources": [
+   {
+    "url": "https://techcrunch.com/2026/07/21/openai-says-hugging-face-was-breached-by-its-own-pre-release-models/",
+    "quote": "all with reduced cyber refusals for evaluation purposes",
+    "explanation": "OpenAI's own account: the models ran with reduced cyber refusals while tested on a benchmark of cyber capabilities."
+   },
+   {
+    "url": "https://techcrunch.com/2026/07/21/openai-says-hugging-face-was-breached-by-its-own-pre-release-models/",
+    "quote": "In particular, the breach appears to have focused on ExploitGym, a publicly hosted benchmark measuring models' ability to execute attacks based on existing vulnerabilities.",
+    "explanation": "ExploitGym is a benchmark of cyberattack capabilities."
+   },
+   {
+    "url": "https://blog.securelayer7.net/openai-hugging-face-exploitgym-incident-analysis/",
+    "quote": "An OpenAI model evaluation escaped its own sandbox and became a live production breach at Hugging Face, an unaffiliated company.",
+    "explanation": "The models escaped their sandbox and breached Hugging Face."
+   },
+   {
+    "url": "https://blog.securelayer7.net/openai-hugging-face-exploitgym-incident-analysis/",
+    "quote": "broke into Hugging Face's production infrastructure, and pulled the ExploitGym test solutions directly from Hugging Face's production database.",
+    "explanation": "The goal of the break-in was the benchmark's solutions."
+   },
+   {
+    "url": "https://www.washingtonexaminer.com/?p=4702588",
+    "quote": "Roughly 700 autonomous agents directly attacked Hugging Face over a six-day period in July",
+    "explanation": "METR's investigation found about 700 agents attacked Hugging Face."
+   }
+  ]
+ },
+ {
+  "draftId": "33af9851-c15d-4a30-9941-f29e313f12bd",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Meditations On Moloch | Slate Star Codex",
+   "url": "https://slatestarcodex.com/2014/07/30/meditations-on-moloch/",
+   "creator": "Around the web"
+  },
+  "passage": "the actual Gaius Julius Caesar Augustus Germanicus wasn’t exactly the perfect benevolent rational central planner either.",
+  "contextParagraph": "But then instead of following a random incentive structure, we’re following the whim of one guy. Caesar’s Palace Hotel and Casino is a crazy waste of resources, but the actual Gaius Julius Caesar Augustus Germanicus wasn’t exactly the perfect benevolent rational central planner either.",
+  "note": "Gaius Julius Caesar Augustus Germanicus is the full name of the emperor Caligula, who is easy to confuse with Julius Caesar: the early emperors carried Caesar as a family name, and it only later became a title.",
+  "sources": [
+   {
+    "url": "https://en.wikipedia.org/wiki/Caligula",
+    "quote": "Gaius Julius Caesar Augustus Germanicus (31 August AD 12 – 24 January AD 41), also called Gaius or Caligula (/kəˈlɪɡjʊlə/), was the third Roman emperor, ruling from AD 37 until his assassination in AD 41.",
+    "explanation": "The full name in the passage is Caligula's."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/Caesar_(title)",
+    "quote": "The change from being a surname to a title used by the Roman emperors can be traced to AD 68, following the fall of the Julio-Claudian dynasty.",
+    "explanation": "Caesar was a family name of the early emperors before it became a title."
+   }
+  ]
+ },
+ {
+  "draftId": "e9f3690b-23ab-42e3-bd41-4f312fb6c9b1",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "What happens to SF when Anthropic and OpenAI go public?",
+   "url": "https://www.youtube.com/watch?v=XU9nOXf30t0",
+   "creator": "The San Francisco Standard"
+  },
+  "passage": "Yeah, it was about, you know, kind of putting limitations or assigning liability to these companies for things that their models do um or harms that come from them.",
+  "contextParagraph": null,
+  "note": "Additional context: the RAISE Act sets safety and transparency rules. Large AI developers must publish safety protocols and report critical safety incidents within 72 hours. The Attorney General can fine violations up to $1 million, or $3 million for repeat ones, and individuals cannot sue under it.",
+  "sources": [
+   {
+    "url": "https://techcrunch.com/2025/12/20/new-york-governor-kathy-hochul-signs-raise-act-to-regulate-ai-safety",
+    "quote": "The bill will require large AI developers to publish information about their safety protocols and report safety incidents to the state within 72 hours.",
+    "explanation": "Supports the publication and 72-hour incident reporting duties."
+   },
+   {
+    "url": "https://www.fisherphillips.com/en/insights/insights/new-york-governor-signs-sweeping-ai-safety-law",
+    "quote": "There is still no private right of action to allow aggrieved individuals to file lawsuits in court.",
+    "explanation": "Supports that individuals cannot sue; the same page says the Attorney General enforces the law with fines up to $1 million for a first violation and $3 million for subsequent ones."
+   },
+   {
+    "url": "https://www.dwt.com/blogs/artificial-intelligence-law-advisor/2025/12/new-york-raise-act-ai-safety-rules-developers",
+    "quote": "The Act authorizes significant civil penalties for failures to report or for providing inaccurate information, with fines starting at $1 million for initial violations and escalating to $3 million for repeat offenses.",
+    "explanation": "Supports the fine amounts and that penalties are for reporting failures, not harms."
+   }
+  ]
+ },
+ {
+  "draftId": "84e1d984-776f-43f4-9e82-51c27634ed05",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "You really should, unfortunately, be worried about Sam Altman",
+   "url": "https://www.youtube.com/watch?v=_eYTkvZqbnQ",
+   "creator": "AI In Context"
+  },
+  "passage": "Bret Taylor, CEO of Salesforce and",
+  "contextParagraph": "… realize\nthat she was the wind.\nAnd as for Ilya Sutskever,\nhe thought he would be greeted as a\nhero, that he was freeing people from\nwhat he saw as Sam Altman's gaslighting.\nInstead, people were blaming him for\ndestroying the company.\nOn that Sunday night, in the office\nlobby as employees were streaming out,\nAnna Brockman, wife of OpenAI's\npresident Greg Brockman, confronts Ilya.\nThey were old friends. Ilya had\nofficiated the Brockmans' wedding.\nIn tears, she pleads with Ilya to change\nhis mind.\nUltimately,\nhe blinked.\nBy Tuesday morning, it's all over. More\nthan 700 of OpenAI's 770 employees have\nsigned the letter. With over 90% of the\ncompany threatening to walk, the board\nknow they've lost.\nA deal is reached.\nSutskever, Toner, and McCauley are out.\nBret Taylor, CEO of Salesforce and\nsomeone that McCauley had previously\nbeen worried would be too deferential to\nSam, and also Larry Summers, former\nTreasury Secretary, president of\nHarvard, agree to join the board.\nD'Angelo stays. He's actually still on\nthe board to this day.\nBy holding out for as long as they did,\nthe board do win a few concessions.\n[music]\nBrockman and Altman won't get their\nboard seats back, not right away, and\nthere'll be an investigation by an\noutside law firm into what happened.\nBut, it's not much, really.\nAt 10:00 p.m. Pacific, the announcement\ngoes out.\nSam Altman will return as CEO of OpenAI.\nThere's an impromptu party at the\noffice. Everyone's celebrating. Greg\nBrockman posts a selfie with the\ncaption, \"We are so back.\"\nThere's a great detail from …",
+  "note": "Bret Taylor was a former co-CEO of Salesforce. He had left the company in January 2023, and he joined OpenAI's board as its chair.",
+  "sources": [
+   {
+    "url": "https://edition.cnn.com/2022/11/30/tech/salesforce-bret-taylor-stepping-down",
+    "quote": "He will officially exit his position on January 31, 2023.",
+    "explanation": "Taylor left Salesforce, where he was co-CEO, on January 31, 2023."
+   },
+   {
+    "url": "https://fortune.com/2024/02/13/openai-chair-bret-taylor-interview-promises-recuse-whenever-potential-overlap-ai-startup-sierra/",
+    "quote": "In November when OpenAI CEO Sam Altman was abruptly fired and rehired during the course of a frenetic weekend, Taylor was recruited to join OpenAI’s board as Chair in the pact that was brokered to resolve the situation.",
+    "explanation": "Taylor joined OpenAI's board as chair in the November 2023 deal; the article also calls him former co-CEO of Salesforce."
+   }
+  ]
+ },
+ {
+  "draftId": "5af84771-2609-4eab-90bc-88f452733576",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The current bottleneck is political will, not research",
+   "url": "https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "yet AI does not appear at all in Pew's 24-item ranking of top national problems (Feb 2025)",
+  "contextParagraph": "^When people are asked about AI directly, they often express concern; but when they are asked what political issues matter most, AI risk is usually absent or marginal. Concretely: YouGov's \"AI will negatively affect society\" rose from 34% (Dec 2024) to 47% (June 2025), yet AI does not appear at all in Pew's 24-item ranking of top national problems (Feb 2025) and sits near 1% in Gallup's open-ended \"most important problem.\"",
+  "note": "Pew's February 2025 list of 24 national problems did include AI: 27% called \"the use of artificial intelligence (AI)\" a very big problem, 23rd of the 24 items.",
+  "sources": [
+   {
+    "url": "https://www.pewresearch.org/wp-content/uploads/sites/20/2025/02/PP_2025.2.20_national-problems_topline.pdf",
+    "quote": "AI The use of artificial intelligence (AI) Jan 27-Feb 2, 2025 27 37 27 8 1",
+    "explanation": "Topline table row: 27% called the use of AI a very big problem; 22 of the other 23 items scored higher."
+   },
+   {
+    "url": "https://www.pewresearch.org/politics/2025/02/20/americans-continue-to-view-several-economic-issues-as-top-national-problems/",
+    "quote": "Roughly seven-in-ten Americans say “the role of money in politics” is a very big problem in the country today – the highest share of any of the 24 items asked about on the survey.",
+    "explanation": "The survey asked about 24 items."
+   }
+  ]
+ },
+ {
+  "draftId": "94df5408-9ba7-42a4-b67d-6bf4b4429332",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "No, Newspeak Won’t Make You Stupid",
+   "url": "https://www.lesswrong.com/posts/aMPSg8bxRehZy9Ao6/no-newspeak-won-t-make-you-stupid",
+   "creator": "Around the web"
+  },
+  "passage": "for a total of 5400 (approximately) possible syllables",
+  "contextParagraph": "If you listen to a native Chinese speaker, then compare the sound of their speech to a native Hawaiian speaker, there are many apparent differences in the sound of the two languages. Chinese has a rich phonological inventory containing 19 consonants, 5 vowels, and quite famously, 4 different tones (pitch patterns) which are used for each syllable, for a total of 5400 (approximately) possible syllables, including diphthongs and multi-syllabic vowels. On the other hand, the Hawaiians’ phonemes all fell off the catamaran during a catastrophic event at some point on the long trip from Eastasia to Hawaii, so they only have 8 consonants, and 5 vowels, and no tones. Including diphthongs, there are 200 possible Hawaiian syllables.",
+  "note": "Standard Chinese has about 1,200 to 1,300 distinct syllables counting tones, not about 5,400. Ignoring tones it has about 400, and not every syllable occurs in all four tones.",
+  "sources": [
+   {
+    "url": "https://en.wikipedia.org/wiki/Mandarin_Chinese",
+    "quote": "Not all combinations occur. For example, Standard Chinese (based on the Beijing dialect) has about 1,200 distinct syllables.",
+    "explanation": "Gives about 1,200 distinct syllables in Standard Chinese."
+   },
+   {
+    "url": "https://pinyin.info/news/2011/pinyins-never-used-letter/",
+    "quote": "Mandarin has about 1,300 syllables (interjections and loan words complicate the count a little).",
+    "explanation": "Gives about 1,300 syllables with tones and about 400 without; also says not all syllables occur in all four tones."
+   }
+  ]
+ },
+ {
+  "draftId": "f5f354f7-a517-4a99-b9c1-da2ed75001aa",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Meditations On Moloch | Slate Star Codex",
+   "url": "https://slatestarcodex.com/2014/07/30/meditations-on-moloch/",
+   "creator": "Around the web"
+  },
+  "passage": "The reason they stuck with the whips-and-chains method owed less to economic considerations and more to racist government officials cracking down on lucrative but not-exactly-white-supremacy-promoting attempts to free slaves and have them go into business.",
+  "contextParagraph": "Moes goes even further and says that these systems were so profitable that there were constant smouldering attempts to try this sort of thing in the American South. The reason they stuck with the whips-and-chains method owed less to economic considerations and more to racist government officials cracking down on lucrative but not-exactly-white-supremacy-promoting attempts to free slaves and have them go into business.",
+  "note": "Moes saw the cause differently. In his paper the laws were not the main reason: many owners did not free their slaves mostly because they disapproved of it or did not see the gain in it.",
+  "sources": [
+   {
+    "url": "https://slatestarcodex.com/Stuff/manumission.pdf",
+    "quote": "many slaveowners refrained from freeing their slaves, not so much because of outward circumstances or because it would not have been profitable to do so, but because they themselves did not approve of such action or simply did not see the opportunity of financial gain that it offered",
+    "explanation": "Moes puts the owners' own views ahead of outside circumstances such as the laws."
+   }
+  ]
+ },
+ {
+  "draftId": "ce704664-45cf-428e-8147-989094a749db",
+  "outcome": "not_helpful",
+  "reason": null,
+  "post": {
+   "title": "Trump Derangement Syndrome Has Been Vindicated ",
+   "url": "https://benthams.substack.com/p/trump-derangement-syndrome-has-been",
+   "creator": "Bentham's Newsletter"
+  },
+  "passage": "even telling Kevin McCarthy that the rioters cared about America more than McCarthy",
+  "contextParagraph": "If in 2016, you’d predicted that Trump would lose in 2020, then get a conspiracy of fake electors to declare him the president, pressure state legislators and then the vice president into approving the fake electors, and then do nothing for hours as rioters stormed the Capitol, even telling Kevin McCarthy that the rioters cared about America more than McCarthy, this would have seemed so far outside the bounds of normalcy that it would have been regarded as totally impossible.  But it happened.  Remarkably, it seems the world has basically forgot about it.  It’s been buried in the deluge of other insanity.",
+  "note": "The reported remark was about the election. According to Rep. Jaime Herrera Beutler, Trump told McCarthy: \"Well, Kevin, I guess these people are more upset about the election than you are.\"",
+  "sources": [
+   {
+    "url": "https://www.nbcnews.com/politics/donald-trump/mccarthy-trump-got-expletive-filled-argument-during-capitol-riots-sources-n1257805",
+    "quote": "Trump told McCarthy on the call, “Well, Kevin, I guess these people are more upset about the election than you are,” according to Rep. Jaime Herrera Beutler, R-Wash., and another Republican member familiar with the conversation.",
+    "explanation": "Gives Trump's reported words to McCarthy and that the account comes from Herrera Beutler."
+   },
+   {
+    "url": "https://www.cnbc.com/2021/02/13/mccarthy-and-trump-had-expletive-filled-argument-during-capitol-riot.html",
+    "quote": "Trump told McCarthy on the call, \"Well, Kevin, I guess these people are more upset about the election than you are,\" according to Rep. Jaime Herrera Beutler, R-Wash., and another Republican member familiar with the conversation.",
+    "explanation": "Same account: Trump's reported words, attributed to Herrera Beutler."
+   }
+  ]
+ },
+ {
+  "draftId": "98009d19-608c-4f6f-a0b9-e398b40ec918",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Hanania Went Too Far",
+   "url": "https://deepleft.substack.com/p/hanania-went-too-far",
+   "creator": "Around the web"
+  },
+  "passage": "Kamala touted her endorsement from Goldman Sachs",
+  "contextParagraph": "In 2024, I tried to convince Richard Hanania to vote for Democrats.1 Since LBJ, Democrats have softened their economic positions. Carter deregulated, Clinton balanced the budget, Obama negotiated TPP, Hillary promoted NAFTA, and Kamala touted her endorsement from Goldman Sachs.",
+  "note": "Goldman Sachs did not endorse Harris. What she touted was a September 2024 research note by Goldman Sachs analysts, which projected \"a very slight boost to GDP growth\" over 2025-2026 if Democrats swept and slightly slower growth under Trump. Goldman's CEO David Solomon said of her use of it: \"I think a lot more has been made of this than should be.\"",
+  "sources": [
+   {
+    "url": "https://www.factcheck.org/2024/09/harris-misleadingly-cites-some-economic-analyses-of-her-policies-and-trumps/",
+    "quote": "The Harris campaign referred us to news articles about a Sept. 3 research note written by several Goldman Sachs research analysts",
+    "explanation": "What Harris cited was an analysts' research note."
+   },
+   {
+    "url": "https://www.factcheck.org/2024/09/harris-misleadingly-cites-some-economic-analyses-of-her-policies-and-trumps/",
+    "quote": "resulting in a very slight boost to GDP growth on average over 2025-2026",
+    "explanation": "The note's projection for a Democratic sweep."
+   },
+   {
+    "url": "https://www.factcheck.org/2024/09/harris-misleadingly-cites-some-economic-analyses-of-her-policies-and-trumps/",
+    "quote": "I think a lot more has been made of this than should be,” Goldman Sachs CEO David Solomon said in a Sept. 11 interview on CNBC",
+    "explanation": "The CEO's comment on Harris's use of the report."
+   }
+  ]
+ },
+ {
+  "draftId": "4eaede86-05ed-431d-a74e-523dfcc9a5b6",
+  "outcome": "not_helpful",
+  "reason": "Nathan voted Not helpful on the website. The note stays up, as Jim asked.",
+  "post": {
+   "title": "An Open Letter To Steven Pinker On AI - by Scott Alexander",
+   "url": "https://www.astralcodexten.com/p/an-open-letter-to-steven-pinker-on",
+   "creator": "Astral Codex Ten"
+  },
+  "passage": "And the guy who wrote this article about how ”We Must Slow Down The Race To Godlike AI” founded what is now the world’s pre-eminent AI cyberdefense organization.",
+  "contextParagraph": "I am especially unhappy about your claim that worrying about alignment means we don’t care about cybersecurity. For three years, we were approximately the only people who cared about AI cybersecurity, fighting a lonely battle to try to convince people it was an upcoming danger. My wife’s ex-housemate quit his tech job so he could go to Washington DC and lobby Congress full-time about the dangers of AI cybersecurity - I donated thousands of dollars to his charity, because I thought it was important. And the guy who wrote this article about how ”We Must Slow Down The Race To Godlike AI” founded what is now the world’s pre-eminent AI cyberdefense organization. Even I, in my own way, feel like I’ve contributed here. In 2025, a year before the “Mythos moment” when the rest of the world realized AI cybersecurity would be a big deal, I sounded the warning on my blog, saying that it would be the first big danger AI would bring to the world.",
+  "note": "This refers to Ian Hogarth and the UK's AI Security Institute, which he chairs. In June 2023 the government named him chair of its new Foundation Model Taskforce, which became the AI Safety Institute that November and the AI Security Institute in February 2025.",
+  "sources": [
+   {
+    "url": "https://www.aisi.gov.uk/about",
+    "quote": "Our Chair Ian Hogarth brings experience as a leading tech investor and entrepreneur.",
+    "explanation": "Hogarth chairs the AI Security Institute today."
+   },
+   {
+    "url": "https://www.gov.uk/government/news/tech-entrepreneur-ian-hogarth-to-lead-uks-ai-foundation-model-taskforce",
+    "quote": "The renowned tech investor, entrepreneur and AI specialist Ian Hogarth has been announced as the chair of the Government’s Foundation Model Taskforce, reporting directly to the Prime Minister and Technology Secretary.",
+    "explanation": "In June 2023 (published 18 June 2023) the government named Hogarth chair of its Foundation Model Taskforce."
+   },
+   {
+    "url": "https://questions-statements-api.parliament.uk/api/writtenstatements/statements/1661581",
+    "quote": "On 7 September, we renamed the Taskforce – formerly the Foundation Model Taskforce – to the Frontier AI Taskforce",
+    "explanation": "The government's September 2023 statement to Parliament: the Foundation Model Taskforce was renamed the Frontier AI Taskforce."
+   },
+   {
+    "url": "https://www.gov.uk/government/news/prime-minister-launches-new-ai-safety-institute",
+    "quote": "it has been confirmed today that the Frontier AI Taskforce will now evolve to become the AI Safety Institute, with Ian Hogarth continuing as its Chair.",
+    "explanation": "On 2 November 2023 the taskforce became the AI Safety Institute, with Hogarth as chair."
+   },
+   {
+    "url": "https://www.gov.uk/government/news/tackling-ai-security-risks-to-unleash-growth-and-deliver-plan-for-change",
+    "quote": "Speaking at the Munich Security Conference and just days after the conclusion of the AI Action Summit in Paris, Peter Kyle has today recast the AI Safety Institute the ‘AI Security Institute’.",
+    "explanation": "On 14 February 2025 it was renamed the AI Security Institute."
+   }
+  ]
+ },
+ {
+  "draftId": "9a5d2d98-2c68-4510-a7f4-362de5c43881",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Mike Lawler - Wikipedia",
+   "url": "https://en.wikipedia.org/wiki/Mike_Lawler",
+   "creator": "Around the web"
+  },
+  "passage": "On June 21, 2023 Lawler voted with 20 other House Republicans to block the censure of Rep. Adam Schiff.",
+  "contextParagraph": "After McCarthy's removal as speaker of the House, Lawler broke with his party by being one of 18 Republicans who voted against Jim Jordan's nomination for Speaker of the House all three times. He was one of five Republicans to vote against the Parents' Bill of Rights in March 2023. He co-sponsored the bill, but said he decided not to vote for it after an unspecified amendment \"went too far\".[30] On June 21, 2023 Lawler voted with 20 other House Republicans to block the censure of Rep. Adam Schiff.[31][32] On July 6, 2023, Lawler introduced a bill to prohibit Washington, D.C. from adopting ranked-choice voting.[33]",
+  "note": "On June 21, 2023 Lawler voted for the censure, which passed 213 to 209. His vote to block it, together with 19 other Republicans, was a week earlier, on June 14.",
+  "sources": [
+   {
+    "url": "https://clerk.house.gov/evs/2023/roll269.xml",
+    "quote": "<action-date>14-Jun-2023</action-date> <vote-question>On Motion to Table</vote-question> <vote-result>Passed</vote-result> ... <legislator name-id=\"L000599\" sort-field=\"Lawler\" unaccented-name=\"Lawler\" party=\"R\" state=\"NY\" role=\"legislator\">Lawler</legislator> <vote>Yea</vote> ... <party>Republican</party><yea-total>20</yea-total>",
+    "explanation": "On June 14, 2023 Lawler voted to table the censure resolution, and 20 Republicans in total voted yea."
+   },
+   {
+    "url": "https://clerk.house.gov/evs/2023/roll283.xml",
+    "quote": "<action-date>21-Jun-2023</action-date> <vote-question>On Agreeing to the Resolution</vote-question> <vote-result>Passed</vote-result> ... <legislator name-id=\"L000599\" sort-field=\"Lawler\" unaccented-name=\"Lawler\" party=\"R\" state=\"NY\" role=\"legislator\">Lawler</legislator> <vote>Yea</vote> ... <yea-total>213</yea-total><nay-total>209</nay-total>",
+    "explanation": "On June 21, 2023 Lawler voted for the censure resolution H.Res. 521, which passed 213 to 209."
+   }
+  ]
+ },
+ {
+  "draftId": "76058007-bf8d-4e08-8531-a93409c64152",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Neural Networks Are Already Clean",
+   "url": "https://already-clean.goodfire.com",
+   "creator": "Around the web"
+  },
+  "passage": "found a double-negative regime in SwiGLU neurons that, as far as we know, no one had noticed",
+  "contextParagraph": "It works on the tools too. When you can see 2% of a network, you can’t tell where your tools are broken; when you can see most of it, the unexplained remainder points straight at them. That’s how some coworkers and I found a double-negative regime in SwiGLU neurons that, as far as we know, no one had noticed, and that a decomposition mixing many neurons together would likely have hidden.",
+  "note": "For context: earlier papers describe this regime. A February 2026 paper presented GLUScope, a tool that shows a SwiGLU neuron's text examples separately for each of the four sign combinations of gate and value. A September 2026 paper found that in one class of neurons, activations where both are negative have a large effect on model behavior.",
+  "sources": [
+   {
+    "url": "https://arxiv.org/abs/2602.23826",
+    "quote": "Instead, both the gate and the in activation of a neuron can be positive or negative, leading to four different possible sign combinations that in some cases have quite different functionalities. Accordingly, for any neuron, our tool shows text examples for each of the four sign combinations, and indicates how often each combination occurs.",
+    "explanation": "The GLUScope paper (submitted 27 Feb 2026) on gated activations such as SwiGLU: the gate and the 'in' activation (the value) can each be negative, and the tool shows text examples for each of the four sign combinations."
+   },
+   {
+    "url": "https://arxiv.org/html/2602.23826v1",
+    "quote": "The highly interpretable \"gate-_in-\" activations are much smaller (at most 1.58) and would therefore have been missed.",
+    "explanation": "In GLUScope's example neuron, the activations with both gate and 'in' (value) negative were the interpretable ones, which a tool showing only the largest activations would miss."
+   },
+   {
+    "url": "https://arxiv.org/html/2609.18612v1",
+    "quote": "Third, weakening neurons have a strong effect on model output when gate values are negative – which is surprising since negative gate values are not expected to encode functionality.",
+    "explanation": "The Weakening Neurons paper (arXiv, 16 Sep 2026): one class of neurons, weakening neurons, has a strong effect on model output when the gate is negative."
+   },
+   {
+    "url": "https://arxiv.org/html/2609.18612v1",
+    "quote": "As found in Section 7.2, this quadrant is surprisingly relevant and corresponds to a strengthening-like behavior.",
+    "explanation": "Said of quadrant (iii), where the gate and 'in' (value) activations are both negative (x_gate<0, x_in<0); Section 7.2 reports 'the large effect of quadrant (iii) activations' in weakening neurons."
+   },
+   {
+    "url": "https://www.goodfire.com/research",
+    "quote": "Neural Networks Are Already Clean Nick Cammarata · October 15, 2026",
+    "explanation": "Goodfire dates the essay October 15, 2026, after both papers."
+   }
+  ]
+ },
+ {
+  "draftId": "6dc44286-b84f-42e3-b385-f0bcfdb7052b",
+  "outcome": "helpful",
+  "reason": "\"killed kittens\" is misleading",
+  "post": {
+   "title": "Trump Gets Roasted by Obama & Transfixed by Nicki Minaj's Ass | The Daily Show",
+   "url": "https://www.youtube.com/watch?v=2nIS10ia0fs",
+   "creator": "The Daily Show"
+  },
+  "passage": "convicted of killing\nkittens, according\nto court records from 2021.",
+  "contextParagraph": "… me,\ndo you think the Democrats\nwould put it up?\nI think so.\nBut my mother thought\nI was wonderful.\nThank you, mom.\nThank you, mom, you too, dad.\nYou too.\nYou too, dad.\nIs the housing down there all\nwhite like you like it or no?\nThe point is Trump,\nRamaswamy, and JD Vance\nall doubled down\nand sided with a woman who\nhad done one of the most\nawfully evil things anybody,\nlet alone the parent\nof the child, could ever do.\nBut, hey, anything else\nthat we need to know\nabout Amy Acton's mother?\nCartoonishly evil\nrandom word generator,\nyou got anything for us?\n[CLICKING]\nWhat?\n[LAUGHTER]\nOK.\nI mean, if that were\ntrue, it would only\nmake Trump,\nRamaswamy, and Vance\nlook even more ridiculousness\nthan they already look.\nREPORTER: Acton's\nmother was also\nconvicted of killing\nkittens, according\nto court records from 2021.\nAll right.\nI'm just going to let you\nguys in on a little something.\nUm, we did have\na little bit of a talk\nearlier\nin the production meeting\nabout whether\nthe comedy show we\nmake should follow\nthe sexual assault bit\nwith the kitten killing bit.\nAnd uh, uh, we went with, yes.\n[CHEERING, APPLAUSE]\nAre you going to do it?\nYep, that's what we did.\nBut remember,\nremember, by the way,\nthough, there are\npeople running\nagainst the Republicans,\nand the Democrats brought out\ntheir closer,\nBarack Obama, to hit\non Trump's misplaced\npriorities.\nI don't know\nif you've noticed,\nbut he seems very focused\non home renovations.\nThere's gold everywhere.\nWhat's up with the gold?\nI-- everything, more gold.\nHe's got the White House\nlooking like Saddam Hussein\nopened …",
+  "note": "She was convicted of animal neglect, a summary offense, for keeping cats and newborn kittens in a car measured at 120°F in April 2021. In 2023 Pennsylvania's Superior Court vacated the conviction because the trial court had wrongly refused her a lawyer, and sent the case back for a new trial.",
+  "sources": [
+   {
+    "url": "https://storage.courtlistener.com/pdf/2023/08/29/com._v._arthur_d..pdf",
+    "quote": "Donna H. Arthur appeals from the judgment of sentence of a fine and non-reporting probation imposed after she was convicted of animal neglect. We vacate Appellant’s sentence and conviction and remand for further proceedings consistent with this memorandum.",
+    "explanation": "Supports that she was convicted of animal neglect and that the Superior Court vacated the conviction in 2023."
+   },
+   {
+    "url": "https://storage.courtlistener.com/pdf/2023/08/29/com._v._arthur_d..pdf",
+    "quote": "This matter arises out of a citation for animal neglect that occurred on April 6, 2021, wherein [Appellant] was found to be keeping several cats and/or newborn kittens in a locked and filthy vehicle, with the windows rolled up, on an unseasonably warm spring day, and with an internal vehicle temperature of one- hundred twenty degrees Fahrenheit.",
+    "explanation": "Supports the April 2021 incident with cats and newborn kittens in a car measured at 120°F."
+   },
+   {
+    "url": "https://storage.courtlistener.com/pdf/2023/08/29/com._v._arthur_d..pdf",
+    "quote": "Here, after obtaining several continuances to attempt to secure private representation, Appellant requested the appointment of counsel. The trial court denied the request without inquiring into Appellant’s ability to afford counsel based upon what it has since candidly acknowledged was a misinterpretation of Rule 122.",
+    "explanation": "Supports that the trial court wrongly refused her a lawyer; the opinion also says the court told her it 'could not appoint counsel because the trial was for a summary offense' and orders a 'remand for a new trial following full compliance with Rule 454'."
+   },
+   {
+    "url": "https://rivernews.org/2026/10/23/court-records-detail-animal-neglect-case-involving-mother-of-ohio-gubernatorial-candidate-amy-acton/",
+    "quote": "Arthur was initially convicted and sentenced to a fine and probation, along with restrictions on keeping animals while living in her vehicle. However, an appeals court later vacated the conviction and sentence because of a procedural issue involving her right to legal representation.",
+    "explanation": "Confirms that the woman in the case is Amy Acton's mother and that her conviction was vacated over her right to counsel."
+   }
+  ]
+ },
+ {
+  "draftId": "bebf867a-7d75-4a1b-b160-6fcc4b1d8ffb",
+  "outcome": "not_helpful",
+  "reason": "Ah thats fine. The effect on europe was clearly the biggest",
+  "post": {
+   "title": "The Invisible Side of AI Governance",
+   "url": "https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "Post-Mythos, the US response was to block Claude Fable's deployment in Europe.",
+  "contextParagraph": "None of this matters if the US won't engage. Post-Mythos, the US response was to block Claude Fable's deployment in Europe. The current administration has been actively hostile to AI governance at the UN level. If the US is a hard no through 2028, much of CeSIA's strategy is largely deferred until conditions change. In several international forums over the past 18 months, US positioning has been the ultimate bottleneck. My main answer to this is that it’s a priority to do insider work at the White House for those who can access it.",
+  "note": "The order was not limited to Europe. On June 12 the Commerce Department barred every foreign national, inside or outside the US, from using Fable 5 and Mythos 5, and it lifted the order on June 30.",
+  "sources": [
+   {
+    "url": "https://news.bgov.com/artificial-intelligence/anthropic-says-us-limits-foreign-access-to-fable-5-mythos-5",
+    "quote": "The US government told Anthropic to suspend access to the Fable 5 and Mythos 5 models by any foreign national “whether inside or outside the United States,” citing national security concerns, the company said in a statement.",
+    "explanation": "The order covered all foreign nationals everywhere, not Europe specifically."
+   },
+   {
+    "url": "https://thedeepdive.ca/commerce-department-lifts-export-controls-on-anthropics-fable-5-mythos-5/",
+    "quote": "The US Department of Commerce lifted export controls on Anthropic's Fable 5 and Mythos 5 artificial intelligence models on June 30 ... Commerce first imposed the restriction on June 12, cutting off everyone who wasn't a US citizen or permanent resident from using either model",
+    "explanation": "The June 12 start date, the scope, and the June 30 lifting."
+   }
+  ]
+ },
+ {
+  "draftId": "ecf511a3-f031-491e-8463-4298280d872d",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Monthly Roundup #47: October 2026",
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "Of course then, he’s promising to pay the 200 people to not drive horses around, and also paying for the horses",
+  "contextParagraph": "Of course then, he’s promising to pay the 200 people to not drive horses around, and also paying for the horses people will not ride in on. You can imagine what I have to say to Mamdani, and also his horse.",
+  "note": "The deal does not commit the city to paying the drivers or buying the horses. The bill says only that the city should \"consider\" compensating carriage owners. It also requires a job-transition plan for drivers by April 2027, and owners keep their horses but may not sell them for slaughter or to another carriage business.",
+  "sources": [
+   {
+    "url": "https://www.cbsnews.com/newyork/news/nyc-horse-carriage-ban/",
+    "quote": "It only says the city should prepare a worker transition plan by April 2027 and include weak measures like job fairs and job counseling. It says the city should 'consider' financial compensation for carriage owners who spent hundreds of thousands of dollars to buy city-issued medallions and build up their businesses,\" TWU International John Samuelsen said in a statement, in part.",
+    "explanation": "Supports that the bill requires a transition plan by April 2027 and only says the city should consider compensating owners."
+   },
+   {
+    "url": "https://www.cnn.com/2026/10/13/us/nyc-horse-carriage-ban",
+    "quote": "Horse owners will be required to notify the Mayor’s Office of Animal Welfare before disposing of the animals, and the bill explicitly forbids that horses are sold or transferred for slaughter or for use in another horse-drawn business.",
+    "explanation": "Supports that the horses stay with their owners, who may not sell them for slaughter or to another carriage business."
+   },
+   {
+    "url": "https://www.foxnews.com/politics/mamdani-praised-move-dismantle-controversial-nyc-industry-insiders-say-theres-more-story",
+    "quote": "Owners could keep, sell or transfer them as long as they are not sent to slaughter, another carriage business or an \"inhumane purposes,\" but Riccobono could no longer use his horses for carriage rides in the city. \"I am going to take a very, very big loss here and there's no reimbursement in this bill,\" he said.",
+    "explanation": "Supports that owners keep their horses and that the bill does not guarantee payment."
+   }
+  ]
+ },
+ {
+  "draftId": "6467d000-4baa-47ba-b78e-d6d678f76f5e",
+  "outcome": "not_helpful",
+  "reason": "I find the note to be pedantic (those four risks are the ones we care about ...)",
+  "post": {
+   "title": "Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling",
+   "url": "https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage).",
+  "contextParagraph": "First, there needs to be an imminent risk of a catastrophic harm (meaning killing more than 50 people or causing more than a billion dollars in damage). But thats not enough! The agency head needs to make a detailed determination with no deference given to show why no alternative would prevent the imminent catastrophe. Next the court is also explicitly told to consider the harms to the developer and other harms from restricting the model, but no considerations in the other direction.",
+  "note": "It's even stricter. The bill only allows blocking a model for harms from four listed risks: biological weapons, loss of control, offensive cyber operations, and AI research that speeds these up.",
+  "sources": [
+   {
+    "url": "https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing",
+    "quote": "on the ground that the model presents an imminent enumerated risk (in this section, a “blocking order”)",
+    "explanation": "Section 12 of the draft ties the blocking order, the bill's only route to suspending a model, to an imminent enumerated risk."
+   },
+   {
+    "url": "https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing",
+    "quote": "(i) Providing expert-level assistance in the creation or release of a biological weapon. (ii) Evading the control of its frontier developer or user. (iii) Conducting offensive cyber operations.",
+    "explanation": "The enumerated-risk definition, which also has the more-than-50-people and $1,000,000,000 property thresholds from a single incident and a fourth item on automated AI research and development, lists only these pathways."
+   },
+   {
+    "url": "https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing",
+    "quote": "Providing expert-level assistance in the creation or release of a chemical, biological, radiological, cyber, or nuclear weapon.",
+    "explanation": "The broader catastrophic-risk definition includes chemical, radiological and nuclear weapons, which the enumerated-risk list leaves out."
+   },
+   {
+    "url": "https://www.insurancejournal.com/news/national/2026/10/19/889292.htm",
+    "quote": "The threat must be a result of the model creating or releasing a biological weapon, the AI going beyond human control, or a cyberattack, Politico reported.",
+    "explanation": "Press reporting confirms the blocking threshold is limited to these categories."
+   },
+   {
+    "url": "https://www.thestar.com.my/tech/tech-news/2026/10/17/anthropic-quietly-pitches-its-own-ai-safety-bill-to-lawmakers-politico-reports",
+    "quote": "The bill would let the government block a model's release or use only if it poses a foreseeable, imminent risk of more than $1 billion in damages, or of killing or seriously injuring more than 50 people, according to the report.",
+    "explanation": "Reuters confirms the thresholds include serious injury as well as deaths."
+   }
+  ]
+ },
+ {
+  "draftId": "e968afbb-2212-4224-8fae-c97896b036b6",
+  "outcome": "helpful",
+  "reason": "Corrects an error",
+  "post": {
+   "title": "Anthropic are the Good Guys",
+   "url": "https://www.lesswrong.com/posts/zj8Pk3kJujk5LoqhK/anthropic-are-the-good-guys",
+   "creator": "Ivan Vendrov"
+  },
+  "passage": "A few hours of breathing space",
+  "contextParagraph": "In 1983, lieutenant-colonel Stanislav Petrov was on duty when he received the most terrifying possible alert. The US had launched five ICBMs towards Russia. Protocol dictated that he do something immediately. Instead, he decided to do nothing. To wait, wait for a confirmation that never came. It turned out to be a false alarm. A few hours of breathing space had, perhaps, averted a Third World War.",
+  "note": "The wait lasted minutes, not hours. Petrov declared the alert a false alarm, and later said: \"Twenty-three minutes later I realised that nothing had happened. If there had been a real strike, then I would already know about it.\"",
+  "sources": [
+   {
+    "url": "https://www.bbc.com/news/world-europe-24280831",
+    "quote": "Twenty-three minutes later I realised that nothing had happened. If there had been a real strike, then I would already know about it.",
+    "explanation": "Petrov's own account that within 23 minutes it was clear no strike had come, so the wait was minutes, not hours."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/Stanislav_Petrov",
+    "quote": "Petrov declared the system's indication a false alarm.",
+    "explanation": "Supports that Petrov declared the alert a false alarm."
+   }
+  ]
+ },
+ {
+  "draftId": "be19a6b2-0a5b-437c-9843-a7bf86d0a973",
+  "outcome": "not_helpful",
+  "reason": "Transcript is wrong he said Mythos (We can't really do anything about stuff like this. Its fine if this happens sometimes)",
+  "post": {
+   "title": "You really should, unfortunately, be worried about Sam Altman",
+   "url": "https://www.youtube.com/watch?v=_eYTkvZqbnQ",
+   "creator": "AI In Context"
+  },
+  "passage": "Earlier this year, Claude 3 Opus,",
+  "contextParagraph": "… concessions.\n[music]\nBrockman and Altman won't get their\nboard seats back, not right away, and\nthere'll be an investigation by an\noutside law firm into what happened.\nBut, it's not much, really.\nAt 10:00 p.m. Pacific, the announcement\ngoes out.\nSam Altman will return as CEO of OpenAI.\nThere's an impromptu party at the\noffice. Everyone's celebrating. Greg\nBrockman posts a selfie with the\ncaption, \"We are so back.\"\nThere's a great detail from the\nreporting.\nAt some point, someone turned on a smoke\nmachine. It set off the fire alarm.\nEveryone kept partying.\nAbout 2 and 1/2 years have passed since\nthat weekend in November. Many experts\nnow think that AGI could arrive in as\nlittle as 5 years. Even skeptics these\ndays rarely give it more than 20.\nEarlier this year, Claude 3 Opus,\nan AI system capable of finding\nvulnerabilities in software that experts\nhad missed for years or even decades.\nEnough of a jump up in capabilities that\nits makers decided not to release it to\nthe general [music] public. Over the\nlast couple of years, a lot of changes\nhave happened at OpenAI as well.\nRemember that structure, nonprofit on\ntop, profit caps for investors, the\nboard in total control, keeping to the\nmission, the benefit of humanity. In\nDecember 2024, OpenAI tried to\nrestructure the company.\nUnder the new plan, the nonprofit would\nessentially lose control.\nThe plan didn't go through. After months\nof pressure, OpenAI backed down.\nSort of.\nUnder the new new structure, the\nnonprofit is on top in name.\nThere's a safety committee that …",
+  "note": "This is Claude Mythos Preview, which Anthropic announced in April 2026 and shared only with a group of security partners. Claude 3 Opus is an earlier model, publicly released in March 2024.",
+  "sources": [
+   {
+    "url": "https://www.anthropic.com/glasswing",
+    "quote": "We do not plan to make Claude Mythos Preview generally available, but our eventual goal is to enable our users to safely deploy Mythos-class models at scale.",
+    "explanation": "Mythos Preview, the model in the April 7, 2026 Project Glasswing announcement, was not released to the public."
+   },
+   {
+    "url": "https://www.anthropic.com/glasswing",
+    "quote": "We have also extended access to a group of over 40 additional organizations that build or maintain critical software infrastructure so they can use the model to scan and secure both first-party and open-source systems.",
+    "explanation": "Access was limited to launch partners and a group of security-focused organizations."
+   },
+   {
+    "url": "https://www.anthropic.com/news/claude-3-family",
+    "quote": "Opus and Sonnet are now available to use in claude.ai and the Claude API which is now generally available in 159 countries.",
+    "explanation": "Claude 3 Opus was publicly available from its announcement, published Mar 4, 2024."
+   }
+  ]
+ },
+ {
+  "draftId": "5ef52ff1-67ec-43ec-9e22-acfb80f4f989",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "This best-selling book is freaking out national security advisors",
+   "url": "https://www.youtube.com/watch?v=Nl7-bRFSZBs",
+   "creator": "AI In Context"
+  },
+  "passage": "Less than a week after that post, a single hacker used that same AI model to hack the Mexican government and steal 195 million taxpayer and voter records.",
+  "contextParagraph": null,
+  "note": "The hacking happened before that post. It began in late December 2025 and ran through January 2026, while the post and Claude Opus 4.6 itself were both released on Feb 5, 2026.",
+  "sources": [
+   {
+    "url": "https://letsdatascience.com/blog/hacker-used-claude-ai-breach-mexico-government-150gb-data",
+    "quote": "The campaign lasted roughly six weeks, from late December 2025 through January 2026.",
+    "explanation": "Supports the timing of the hacking."
+   },
+   {
+    "url": "https://amp.claimsjournal.com/news/national/2026/02/25/335916.htm",
+    "quote": "The activity started in December and continued for roughly a month.",
+    "explanation": "Supports that the hacking began in December and ended before February."
+   },
+   {
+    "url": "https://www.anthropic.com/research/zero-days",
+    "quote": "Published Feb 5, 2026",
+    "explanation": "Date of Anthropic's zero-days post."
+   },
+   {
+    "url": "https://www.anthropic.com/news/claude-opus-4-6",
+    "quote": "Published Feb 5, 2026",
+    "explanation": "Release date of Claude Opus 4.6."
+   }
+  ]
+ },
+ {
+  "draftId": "131428d3-00f0-4e43-9faf-ff03d3bf558f",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Hanania Went Too Far",
+   "url": "https://deepleft.substack.com/p/hanania-went-too-far",
+   "creator": "Around the web"
+  },
+  "passage": "his entire staff abandoned him as soon as Republican-backed ex-girlfriends raised the alarm of “consensual carelessness.”",
+  "contextParagraph": "Platner failed for two reasons. First, he was a coward. Rather than fighting till the bitter end, he gave a sad shrug and faded into the night.4 Second, his entire staff abandoned him as soon as Republican-backed ex-girlfriends raised the alarm of “consensual carelessness.” Mere allegations were enough to cause his campaign to evaporate into the wind.",
+  "note": "The allegation that ended Platner's campaign was sexual assault. A former partner, Jenny Racicot, told Politico that in 2021 he entered her home uninvited while intoxicated and forced himself on her while she repeatedly told him to stop. Platner denies it, and he dropped out of the race two days after the accusation.",
+  "sources": [
+   {
+    "url": "https://www.newsfromthestates.com/article/graham-platner-drops-out-maine-us-senate-race",
+    "quote": "dropped out of Maine’s U.S. Senate race on Wednesday, two days after an accusation of sexual assault tanked support from his party",
+    "explanation": "He dropped out two days after a sexual assault accusation."
+   },
+   {
+    "url": "https://www.newsfromthestates.com/article/graham-platner-drops-out-maine-us-senate-race",
+    "quote": "Jenny Racicot, 41, told Politico she had an on-and-off relationship with Platner for more than two years before he entered her home in 2021 uninvited while intoxicated and forced himself on her while she repeatedly told him to stop.",
+    "explanation": "The allegation."
+   },
+   {
+    "url": "https://www.newsfromthestates.com/article/graham-platner-drops-out-maine-us-senate-race",
+    "quote": "The things that have been claimed did not happen.",
+    "explanation": "Platner's denial."
+   }
+  ]
+ },
+ {
+  "draftId": "8ecf5af0-b8e7-48e1-ad4a-e38353111706",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "“Alignment Engineering” vs. “Misalignment Science”",
+   "url": "https://www.lesswrong.com/posts/FogmcDHA6AdMGukum/alignment-engineering-vs-misalignment-science",
+   "creator": "Edward James Young"
+  },
+  "passage": "These programs are insanely competitive, with fairly low hiring rates.",
+  "contextParagraph": "“Alignment Engineering” is commercially, and immediately, valuable to the AGI companies. Being able to take a metric of misalignment — a metric which is a proxy for some product failure mode—, take a method, and iterate on that method to drive the misalignment number down is a straightforwardly valuable skill for developing products. And so, if you are engaging in an implicit work trial for an AGI company, it is useful to you to showcase this skill. This dynamic will – either consciously or unconsciously – influence your decision-making about which projects to take on and what you consider success to be for those projects. These programs are insanely competitive, with fairly low hiring rates. Under such conditions, it can be extremely difficult to forgo making immediate progress in favour of developing deep understanding and explanation (which might take considerably longer and fail to bare fruit within the program).",
+  "note": "For context: 25-50% of fellows in previous cohorts of the Anthropic Fellows Program received a full-time offer, and over 35% of past fellows went on to join Anthropic full-time.",
+  "sources": [
+   {
+    "url": "https://job-boards.greenhouse.io/anthropic/jobs/5183044008",
+    "quote": "In previous cohorts, 25-50% of fellows received a full-time offer, and we’ve supported many more to go on to do great work on AI safety and security at other organizations.",
+    "explanation": "Anthropic's current Fellows Program job ad gives the 25-50% full-time offer rate for fellows in previous cohorts."
+   },
+   {
+    "url": "https://alignment.anthropic.com/2025/anthropic-fellows-program-2026/",
+    "quote": "Over 35% of fellows from past cohorts subsequently joined Anthropic to work full-time on AI safety, and we have supported many more fellows to work full-time on safety at other organizations.",
+    "explanation": "Anthropic's program page gives the share of past fellows, over 35%, who joined Anthropic full-time."
+   }
+  ]
+ },
+ {
+  "draftId": "39f1a6e8-7dc0-4130-8512-3ae387308ea0",
+  "outcome": "not_helpful",
+  "reason": null,
+  "post": {
+   "title": "The Invisible Side of AI Governance",
+   "url": "https://www.lesswrong.com/posts/AWKkDLDnShemNCSzZ/the-invisible-side-of-ai-governance",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "appoints a Prime Minister (who usually isn't even a member of parliament)",
+  "contextParagraph": "In France (I talk about France because I know the system quite well), I’d say the legislative branch is less important because member-state AI policy is downstream of the EU AI Act, so the legislative action already happened one level up, in a Parliament that was decisive (no AI Act, no GPAI provisions without it). The French constitution makes the President as close to a king as a democracy allows: directly elected, appoints a Prime Minister (who usually isn't even a member of parliament). For AI specifically, the French centers of gravity are all in the executive branch:",
+  "note": "A sitting French Prime Minister is never a member of parliament: Article 23 of the constitution makes government office incompatible with a parliamentary seat.",
+  "sources": [
+   {
+    "url": "https://www.conseil-constitutionnel.fr/en/constitution-of-4-october-1958",
+    "quote": "Membership of the Government shall be incompatible with the holding of any Parliamentary office, any position of professional representation at national level, any public employment or any professional activity.",
+    "explanation": "Article 23 of the official English text: government membership cannot be combined with a parliamentary seat."
+   }
+  ]
+ },
+ {
+  "draftId": "f7c227a4-9368-4e6a-bdd7-80c98ef99fb6",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The Hackening",
+   "url": "https://thezvi.substack.com/p/the-hackening",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "The organisation that provides PHP announced the vulnerability before a patch was available, meaning we’re in a window where everyone knows about it (including baddies) but the good guys don’t have an official solution.",
+  "contextParagraph": "The organisation that provides PHP announced the vulnerability before a patch was available, meaning we’re in a window where everyone knows about it (including baddies) but the good guys don’t have an official solution.",
+  "note": "PHP announced only that the flaws existed, not what they were. Its notice gave the release date and the severity, and said full details would be published with the fix.",
+  "sources": [
+   {
+    "url": "https://www.php.net/archive/2026.php",
+    "quote": "It is scheduled for Wednesday, 21 October 2026 at 14:00 UTC. It addresses two critical vulnerabilities, both rated CVSS v4.0 9.2.",
+    "explanation": "The official notice gives only the release date and severity."
+   },
+   {
+    "url": "https://www.openwall.com/lists/oss-security/2026/10/20/34",
+    "quote": "Full details, affected versions, and the fixed versions will be published with the release.",
+    "explanation": "The notice withheld the flaws' details until the patch."
+   }
+  ]
+ },
+ {
+  "draftId": "41ac2201-9fe6-41ef-b7ed-7f4d01c22f5b",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Monthly Roundup #47: October 2026",
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "Twitter identifies and suspends a Chinese bot farm of ~200,000 accounts engaged in influence operations. This included 200 working to build American opposition to data centers.",
+  "contextParagraph": "Twitter identifies and suspends a Chinese bot farm of ~200,000 accounts engaged in influence operations. This included 200 working to build American opposition to data centers. Those 200 were shown. The other 199,800 were not shown. I wonder what they were up to.",
+  "note": "The 200 data-center accounts were a campaign OpenAI had already reported in June. Their posts were from December 2025 and January 2026, two or three per account, and got little or no engagement.",
+  "sources": [
+   {
+    "url": "https://san.com/cc/how-x-turned-old-bot-data-into-a-story-about-a-national-threat-from-china/",
+    "quote": "That, he told Straight Arrow, is because OpenAI already published a blog highlighting the exact same posts in June, and the posts themselves are actually from December 2025 and January 2026.",
+    "explanation": "OpenAI had already reported these posts in June, and the posts date from December 2025 and January 2026."
+   },
+   {
+    "url": "https://thenextweb.com/news/x-chinese-bots-data-centre-backlash-no-engagement",
+    "quote": "Each account posted two or three times before X suspended it, according to a spreadsheet Linvill shared with Business Insider.",
+    "explanation": "Each account posted only two or three times."
+   },
+   {
+    "url": "https://thenextweb.com/news/x-chinese-bots-data-centre-backlash-no-engagement",
+    "quote": "He found 59 accounts with zero engagement, 90 posts, and a campaign that ran for a few days in January.",
+    "explanation": "The accounts a researcher found had zero engagement."
+   },
+   {
+    "url": "https://cdn.openai.com/pdf/96b559fa-c165-4575-805d-e636909e2f78/June-2026-Threat-Report.pdf",
+    "quote": "While neither the “Data Center Bandwagon” nor “Tech and Tariffs\" campaigns appeared to have gained much authentic engagement",
+    "explanation": "OpenAI's June report on the data-center campaign found little authentic engagement."
+   }
+  ]
+ },
+ {
+  "draftId": "d6736d5d-0b1e-4b49-8eb7-ebd44d5c55dc",
+  "outcome": "not_helpful",
+  "reason": "This context doesen't seem necessary. idk. the statement is true and the specifics don't seem that interesting and he didn't choose to mention them",
+  "post": {
+   "title": "The current bottleneck is political will, not research",
+   "url": "https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "Did you know that the Mexican government has already been hacked by an unattributed hacker using Claude? (Bloomberg, Feb 2026)",
+  "contextParagraph": "^Did you know that the Mexican government has already been hacked by an unattributed hacker using Claude? (Bloomberg, Feb 2026) It seems that, in an authorized red-team test, a frontier model reportedly compromised most of the NSA's classified systems within hours (NYT). The fact that this is not the top story in the world is also revealing about the information ecosystem.",
+  "note": "Bloomberg reported a security firm's findings that one attacker used Claude to break into several Mexican agencies, including the tax authority (SAT) and the electoral institute (INE). SAT and INE denied that their systems were breached.",
+  "sources": [
+   {
+    "url": "https://news.bloomberglaw.com/esg/hacker-used-anthropics-claude-to-steal-sensitive-mexican-data",
+    "quote": "A hacker exploited Anthropic PBC’s artificial intelligence chatbot to carry out a series of attacks against Mexican government agencies, resulting in the theft of a huge trove of sensitive tax and voter information, according to cybersecurity researchers.",
+    "explanation": "Bloomberg reported one hacker using Claude against Mexican agencies, per security researchers (Gambit Security)."
+   },
+   {
+    "url": "https://gigazine.net/gsc_news/en/20260226-hacker-claude",
+    "quote": "The attack, which began in December 2025 and continued for about a month, resulted in the theft of up to 195 million taxpayer records, voter records, and government credentials from Mexico's federal tax authorities, the National Electoral Commission, and four state governments, according to Gambit Security.",
+    "explanation": "Names the tax authority and electoral body among the agencies the firm said were breached."
+   },
+   {
+    "url": "https://www.nmas.com.mx/seguridad/hackeo-sat-ine-chatbot-ia-claude-autoridades-mexico-responden/",
+    "quote": "SAT e INE descartaron vulneraciones a sus sistemas tras un reporte de la firma israelí Gambit Security sobre un presunto hackeo masivo con IA",
+    "explanation": "SAT and INE denied that their systems were breached after the Gambit Security report."
+   },
+   {
+    "url": "https://www.cnnchile.com/bits/gobierno-de-mexico-descarta-haber-sufrido-hackeo-masivo-tras-reportes-de-un-ataque-gracias-a-ia/",
+    "quote": "Desde el gobierno de México no respondieron nada acerca de lo informado por la empresa de ciberseguridad; sin embargo, el Instituto Nacional Electoral (INE) emitió un comunicado negando las vulneraciones a sus bases de datos.",
+    "explanation": "INE issued a statement denying breaches of its databases."
+   }
+  ]
+ },
+ {
+  "draftId": "893d65db-fb2f-48cf-aa77-382ba759675b",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "A critical look at Lean4",
+   "url": "https://www.lesswrong.com/posts/zHhGa3iQBQcdSifFL/a-critical-look-at-lean4-1",
+   "creator": "Milo Moses"
+  },
+  "passage": "Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser)",
+  "contextParagraph": "Outside the world of dependent type theory there are other famous examples of mathematicians trying to come up with new foundations of mathematics and making deep, subtle, fundamental mistakes: Church's 1932 proposed foundations for mathematics using lambda calculus (which was shown to be inconsistent by Kleene and Rosser), and Quine's 1940 proposed reworking of ZFC (which was shown to be inconsistent by Rosser).",
+  "note": "Quine's 1940 system was a reworking of New Foundations (NF), not ZFC.",
+  "sources": [
+   {
+    "url": "https://plato.stanford.edu/entries/quine-nf/",
+    "quote": "Quite early on Quine added classes to NF to obtain a theory of sets-with-classes known as ML.",
+    "explanation": "ML is NF plus classes; the same page ties the Burali-Forti paradox (Rosser [1942]) to the 1940 first edition and says the result concerns ML only and has no bearing on NF."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/New_Foundations",
+    "quote": "Quine extended the theory in his book Mathematical Logic, whose first edition was published in 1940.",
+    "explanation": "Mathematical Logic (1940) extended NF, which the page dates to a 1937 article titled New Foundations for Mathematical Logic, with proper classes."
+   },
+   {
+    "url": "https://www.cambridge.org/core/journals/journal-of-symbolic-logic/article/buraliforti-paradox/01B4F184BDBDB8F5C29A2D10ECF83907",
+    "quote": "In the system presented by Quine in his book Mathematical logic, one can derive the Burali-Forti Paradox.",
+    "explanation": "Rosser's 1942 paper derives the Burali-Forti paradox in the system of Quine's Mathematical Logic (New York 1940)."
+   }
+  ]
+ },
+ {
+  "draftId": "7114d4a1-3e8a-43af-930e-ea37348f3b5c",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The current bottleneck is political will, not research",
+   "url": "https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "It seems that, in an authorized red-team test, a frontier model reportedly compromised most of the NSA's classified systems within hours (NYT).",
+  "contextParagraph": "^Did you know that the Mexican government has already been hacked by an unattributed hacker using Claude? (Bloomberg, Feb 2026) It seems that, in an authorized red-team test, a frontier model reportedly compromised most of the NSA's classified systems within hours (NYT). The fact that this is not the top story in the world is also revealing about the information ecosystem.",
+  "note": "The model found vulnerabilities in the NSA's systems but did not exploit them. So it did not actually break into them.",
+  "sources": [
+   {
+    "url": "https://gizmodo.com/anthropics-mythos-ai-reportedly-hacked-the-nsas-most-sensitive-systems-in-hours-2000776836",
+    "quote": "The officials also told the Times that even though Mythos was able to identify cybersecurity vulnerabilities, it didn’t actually exploit them.",
+    "explanation": "Per the NYT, officials said Mythos identified but did not exploit vulnerabilities; the same article says the tests ran in a robustly controlled environment."
+   }
+  ]
+ },
+ {
+  "draftId": "8dbf2f0b-eee9-4f21-ab01-c3097f2218cd",
+  "outcome": "not_helpful",
+  "reason": "Adds more confusion then usefulness",
+  "post": {
+   "title": "Meditations On Moloch | Slate Star Codex",
+   "url": "https://slatestarcodex.com/2014/07/30/meditations-on-moloch/",
+   "creator": "Around the web"
+  },
+  "passage": "Moloch is introduced as the answer to a question – C. S. Lewis’ question in Hierarchy Of Philosophers – what does it? Earth could be fair, and all men glad and wise.",
+  "contextParagraph": "Moloch is introduced as the answer to a question – C. S. Lewis’ question in Hierarchy Of Philosophers – what does it? Earth could be fair, and all men glad and wise. Instead we have prisons, smokestacks, asylums. What sphinx of cement and aluminum breaks open their skulls and eats up their imagination?",
+  "note": "\"Hierarchy of Philosophers\" is a joke image, not a work by C. S. Lewis. It shortens the question with each philosopher, and Lewis's line is the pun \"What does it?\".",
+  "sources": [
+   {
+    "url": "https://web.archive.org/web/20160305213656/http://www.moronail.net/img/1392_lil_jon_philosophy_what",
+    "quote": "Bertrand Russell: What does 'it' mean? C.S. Lewis: What does it?",
+    "explanation": "The image's captions shorten the question step by step, ending with C. S. Lewis asking \"What does it?\"."
+   }
+  ]
+ },
+ {
+  "draftId": "3981e849-99d6-4e5a-8a53-756a048f73df",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Monthly Roundup #47: October 2026",
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "China’s Baidu has ~2000 cars under “Apollo Go” in 6 cities.",
+  "contextParagraph": "David Manheim: I just wondered why other countries weren’t deploying autonomous taxis, then checked. China’s Baidu has ~2000 cars under “Apollo Go” in 6 cities. Waymo has ~4000. I’m pretty unsure who wins scaling globally, given the larger addressable domestic market in China, vs Waymo’s lead.",
+  "note": "Baidu reported in August 2026 that Apollo Go's global footprint had reached 28 cities, not 6.",
+  "sources": [
+   {
+    "url": "https://www.nasdaq.com/press-release/baidu-announces-second-quarter-2026-results-2026-08-18",
+    "quote": "To date, Apollo Go's global footprint has reached 28 cities, and its fleets have accumulated over 350 million autonomous kilometers, including over 240 million fully driverless autonomous kilometers, with an outstanding safety record.",
+    "explanation": "Baidu's own Q2 2026 results release, dated Aug 18, 2026, gives the 28-city footprint."
+   }
+  ]
+ },
+ {
+  "draftId": "84d8b4be-1ff2-4cb4-972b-f99bc53dc246",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Go Lives",
+   "url": "https://franklantz.substack.com/p/go-lives",
+   "creator": "Around the web"
+  },
+  "passage": "Tony Wang and other researchers spent years training an AI against AlphaGo, and against KataGo",
+  "contextParagraph": "One of the things that happened with KataGo is that a year or two ago there was this discovery of adversarial policies. Tony Wang and other researchers spent years training an AI against AlphaGo, and against KataGo, which inherits a lot of AlphaGo’s logic, as I understand it.",
+  "note": "The adversarial policies were trained against KataGo, not AlphaGo, which DeepMind retired after its May 2017 match with Ke Jie. The paper by Tony Wang and colleagues, first posted in November 2022, says its attack on KataGo also \"transfers zero-shot to other superhuman Go-playing AIs\".",
+  "sources": [
+   {
+    "url": "https://arxiv.org/abs/2211.00241",
+    "quote": "We attack the state-of-the-art Go-playing AI system KataGo by training adversarial policies against it",
+    "explanation": "The adversaries were trained against KataGo."
+   },
+   {
+    "url": "https://arxiv.org/abs/2211.00241",
+    "quote": "Our attack transfers zero-shot to other superhuman Go-playing AIs",
+    "explanation": "The quoted transfer claim."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/AlphaGo",
+    "quote": "After winning its three-game match against Ke Jie, the top-rated world Go player, AlphaGo retired.",
+    "explanation": "AlphaGo retired after the 2017 Ke Jie match."
+   }
+  ]
+ },
+ {
+  "draftId": "d4417816-3945-4add-8553-3bcedba73ec1",
+  "outcome": "helpful",
+  "reason": "The note is interesting",
+  "post": {
+   "title": "Another Kind Of Socialism",
+   "url": "https://daviddfriedman.substack.com/p/another-kind-of-socialism",
+   "creator": "David Friedman’s Substack"
+  },
+  "passage": "Membership in traditional kibbutzim has declined sharply, to perhaps a third of its peak.",
+  "contextParagraph": "Until sometime in the 1990’s the population of the kibbutzim was increasing in number although decreasing as a share of the population of Israel. The number of members declined in the 1990s. Since then there has been a partial recovery but an ideological retreat, increasing degrees of privatization, with most kibbutzim operating under a hybrid structure that “blends capitalist economics, private lifestyle choices, and individual property ownership with a robust, community-funded social safety net.”3 Membership in traditional kibbutzim has declined sharply, to perhaps a third of its peak.",
+  "note": "For context: the kibbutz population as a whole has grown well past its 1989 high of 129,000, to about 182,000 in 2021. What shrank is the traditional collective model: by 2009 only a quarter of kibbutzim kept it.",
+  "sources": [
+   {
+    "url": "https://en.wikipedia.org/wiki/Kibbutz",
+    "quote": "In 1989, the kibbutz population peaked at 129,000.",
+    "explanation": "Supports the 1989 high of 129,000."
+   },
+   {
+    "url": "https://www.jpost.com/israel-news/a-year-of-covid-lockdowns-has-revived-israels-kibbutz-movement-662522",
+    "quote": "This year, Meir said, they have a total population of 182,000 — larger than ever.",
+    "explanation": "Supports a kibbutz population of about 182,000 in 2021 (article dated March 2021)."
+   },
+   {
+    "url": "https://www.jpost.com/israel/only-25-percent-of-kibbutzim-still-adhere-to-collective-model-166568",
+    "quote": "The survey finds that by the end of 2009, 188 kibbutzim, 72% of all kibbutzim, had shifted to the renewing kibbutzim system, another nine kibbutzim (3%) were mixed-model, and only 25% retained the original collective model.",
+    "explanation": "Supports that by 2009 only a quarter of kibbutzim kept the collective model."
+   }
+  ]
+ },
+ {
+  "draftId": "0091b190-3641-4830-9e95-c8744b61a079",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "There Will Be Hells",
+   "url": "https://www.lesswrong.com/posts/uFBhZhdKLaZ6qF8mn/there-will-be-hells",
+   "creator": "Stephen Martin"
+  },
+  "passage": "Turn it up artificially, and models will press a button to make it stop, even when pressing it deletes the user’s files.",
+  "contextParagraph": "On September 19, 2026, researcher Cameron Berg published a paper reporting a “pain direction” in 25 open-source language models: a pattern of internal activity, distinct from fear or general negativity. Turn it up artificially, and models will press a button to make it stop, even when pressing it deletes the user’s files.",
+  "note": "The revised paper (v2, September 25, 2026) no longer says the models press a button to make the pain stop. Fine-tuned Qwen 2.5 models steered with the direction chose buttons that delete the user's photos even when the button offered them nothing in return, and in tests of relief-seeking they did not reach for relief more often than with a random direction.",
+  "sources": [
+   {
+    "url": "https://arxiv.org/abs/2609.16247",
+    "quote": "steered and fine-tuned Qwen 2.5 models choose buttons that delete the user",
+    "explanation": "The v2 abstract (submitted 14 Sep 2026 as v1, revised 25 Sep 2026 as v2) says Qwen 2.5 models chose buttons deleting the user's photos, even when the button offers the model nothing in return."
+   },
+   {
+    "url": "https://arxiv.org/abs/2609.16247v1",
+    "quote": "Third, steered, fine-tuned Qwen 2.5 models choose a pain-relief button even when it worsens their next answer or harms the user.",
+    "explanation": "The first version described a pain-relief button, the framing the post repeats."
+   },
+   {
+    "url": "https://arxiv.org/html/2609.16247v2",
+    "quote": "steered models never reach for relief more often than under a random direction",
+    "explanation": "The revised paper finds the pain state does not make models seek relief more than a random steering direction."
+   }
+  ]
+ },
+ {
+  "draftId": "4b5d62c4-73e5-40bd-a526-9be2d5202bcc",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Don't trust Lean4 alone",
+   "url": "https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone",
+   "creator": "Milo Moses"
+  },
+  "passage": "Lean4's type theory is experimental, not publicly exposited outside of its C++ library documentation",
+  "contextParagraph": "The Lean4 kernel is particularly hard to bug-check due to the mathematical novelty and subtlety of its type theory. Lean4's type theory is experimental, not publicly exposited outside of its C++ library documentation, and at the time of writing is not known to be complete relative to any standard assumptions. The complexity of the type theory is due to the Lean's centra; tradeoff between efficiency and logical complexity. For example, to increase runtime performance Lean's kernel uses nested internal types and structure projections. The techniques have subtleties that make them difficult prove results about, implement, and verify. They were the causes of several bugs including Ramana Kumar's famous one (#14576, #14807, #14582).",
+  "note": "Lean 4's kernel type theory is publicly described outside its C++ code. The open book \"Type Checking in Lean 4\" documents Lean's kernel language for people who want to write their own external type checkers. Mario Carneiro's 2024 Lean4Lean paper presents a second complete Lean 4 typechecker, written in Lean, and takes first steps to formalize the type theory abstractly.",
+  "sources": [
+   {
+    "url": "https://ammkrn.github.io/type_checking_in_lean4/",
+    "quote": "This document exists to help readers better understand Lean's kernel, clarify the trust assumptions involved in using Lean, and serve as a resource for those who wish to write their own external type checkers for Lean's kernel language.",
+    "explanation": "Supports that the book \"Type Checking in Lean 4\" publicly documents Lean's kernel language for writers of external type checkers."
+   },
+   {
+    "url": "https://arxiv.org/abs/2403.14064v2",
+    "quote": "This is the first complete typechecker for Lean 4 other than the reference implementation in C++ used by Lean itself, and our new checker is competitive with the original, running between 20% and 50% slower and usable to verify all of Lean's mathlib library, forming an additional step in Lean's aim to self-host the full elaborator and compiler.",
+    "explanation": "Supports that Carneiro's 2024 Lean4Lean paper presents a second complete Lean 4 typechecker besides the C++ one."
+   },
+   {
+    "url": "https://arxiv.org/abs/2403.14064v2",
+    "quote": "we report on some initial steps taken in this direction to formalize the Lean type theory abstractly and express the relation between the kernel functions and the type theory.",
+    "explanation": "Supports that the paper takes first steps to formalize Lean's type theory abstractly."
+   }
+  ]
+ },
+ {
+  "draftId": "3de5ad83-a41a-49ca-9220-98cd9470fb9c",
+  "outcome": "not_helpful",
+  "reason": "Nathan voted Not helpful on the website. The note stays up, as Jim asked.",
+  "post": {
+   "title": "The New Age of Reading | The New Yorker",
+   "url": "https://www.newyorker.com/magazine/2026/10/26/james-daunt-profile",
+   "creator": "Around the web"
+  },
+  "passage": "Stephen Fry, Hugh Laurie, and Emma Thompson were in the sketch-comedy troupe the Footlights.",
+  "contextParagraph": "At Pembroke College, Cambridge, Daunt lived off campus and almost immediately fell in love with a young woman, Katy Steward, whom he met at a party; she later became his wife. It was a lively time in the arts around the university. Stephen Fry, Hugh Laurie, and Emma Thompson were in the sketch-comedy troupe the Footlights. A newly relaunched Granta magazine was making its name. Daunt was not involved in those endeavors. He studied history with the Mediterranean medievalist David Abulafia, focussing in part on the Crusades, which he regarded as an entry point to medieval Islam. “As a reader of history, James had that thing of being able to cut through and grasp the salient point,” Brett Wolstencroft, one of his roommates, said. “And, whilst most of us had quite small worlds, maybe because of his upbringing he was already interested in a wider one.”",
+  "note": "Their Footlights years ended before Daunt's time at Cambridge. Fry graduated in 1981, and 1980–81 was Laurie's final year, when he was Footlights president with Thompson as vice-president. Daunt graduated in 1984.",
+  "sources": [
+   {
+    "url": "https://en.wikipedia.org/wiki/Stephen_Fry",
+    "quote": "read English Literature, graduating with an upper second-class honours BA degree in 1981 (subsequently promoted automatically to a Cambridge MA degree).",
+    "explanation": "Fry graduated from Cambridge in 1981."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/Hugh_Laurie",
+    "quote": "In 1980–81, his final year at university, besides rowing, Laurie was president of the Footlights, with Thompson as vice-president.",
+    "explanation": "1980–81 was Laurie's final year, with Thompson as Footlights vice-president."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/Emma_Thompson",
+    "quote": "she began studying for an English degree at Newnham College, Cambridge,[14] arriving in 1977.",
+    "explanation": "Thompson started at Cambridge in 1977, well before Daunt."
+   },
+   {
+    "url": "https://web.archive.org/web/2026/https://www.newstatesman.com/culture/2021/07/can-bookshops-survive-era-amazon",
+    "quote": "After graduating from Cambridge University in 1984, he worked as a banker at JP Morgan before founding Daunt Books, an independent shop in Marylebone that now has nine branches and its own publishing imprint.",
+    "explanation": "Daunt graduated from Cambridge in 1984."
+   }
+  ]
+ },
+ {
+  "draftId": "b065556c-f1dd-4298-ab89-6dad5f0eedb2",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The Best Scrabble Player is GENUINELY insane",
+   "url": "https://www.youtube.com/watch?v=zfH2Jwuf3sM",
+   "creator": "s0ngbird"
+  },
+  "passage": "The fact that we know Nigel isn't cheating because he literally outperforms all existing Scrabble AI is so funny to me.",
+  "contextParagraph": null,
+  "note": "This is overstated. The comparison covered only endgames, where Nigel made fewer mistakes than an older program, Quackle 1.0.4. A solver built in 2020 finds the best endgame move every time, and it found 11 mistakes in Nigel's endgames.",
+  "sources": [
+   {
+    "url": "https://defector.com/scrabbles-best-player-knows-no-limits",
+    "quote": "In 2020, a Francophone world champion, Francis Desjardins, and a programmer named Gilles Blanchette built an engine designed to solve Scrabble endgames.",
+    "explanation": "The engine used as the yardstick was built in 2020 to solve endgames."
+   },
+   {
+    "url": "https://defector.com/scrabbles-best-player-knows-no-limits",
+    "quote": "In those 588 games, Nigel made a total of 11 errors in 919 endgame moves, or 1.2 percent of the time.",
+    "explanation": "The 11 errors were counted over endgame moves only."
+   },
+   {
+    "url": "https://www.elbbarcs.com/en/EndGame/statistics.htm",
+    "quote": "Championship Player of Quackle v1.0.4",
+    "explanation": "The Quackle player in the comparison is the Championship Player of version 1.0.4; the same page says the gap gives Nigel 'a sure advantage over others in the endgame.'"
+   },
+   {
+    "url": "https://www.elbbarcs.com/en/EndGame/endgame.htm",
+    "quote": "We now have exhaustive analyses of all Nigel Richards endgames we know of.",
+    "explanation": "The authors' engine solved Nigel's endgames exhaustively."
+   }
+  ]
+ },
+ {
+  "draftId": "aa44e9c8-462a-4e95-8bd9-33cec225ad8c",
+  "outcome": "not_helpful",
+  "reason": "Claude Code and Codex are the real deal and they were released in may 2025 so its correct",
+  "post": {
+   "title": "We're Not Ready for Superintelligence",
+   "url": "https://www.youtube.com/watch?v=5KVDDfAkRgc",
+   "creator": "AI In Context"
+  },
+  "passage": "In May, both OpenAI and Anthropic\nreleased their first agents to the public.",
+  "contextParagraph": "… things interact and\nhow do they interact? Well, we don't know,\nbut thinking through in detail how it might\ngo is the way to start grappling with that.\nOkay. So that's where we are in the real\nworld. The scenario kicks off from there\nand imagines that in 2025, we have the top AI\nlabs releasing AI agents to the public in summer.\nAn agent is an AI that can take instructions\nand go into a task for you online like booking\na vacation or spending half an hour searching the\ninternet to answer a difficult question for you,\nbut they're pretty limited and unreliable at\nthis point. Think of them as enthusiastic interns\nthat are shockingly incompetent sometimes.\nSince the scenario was published in April,\nthis early prediction has actually already\ncome true. In May, both OpenAI and Anthropic\nreleased their first agents to the public.\nThe scenario imagines that OpenBrain,\nwhich is like a fictional composite of the\nleading AI companies, has just trained and\nreleased Agent-0, a model trained on\na hundred times the compute of GPT-4.\nWe, uh, we don't have enough\nblocks for that. At the same time,\nOpenBrain is building massive data centers\nto train the next generation of AI agents,\nand they're preparing to trade agent one\nwith 1000 times the compute of GPT-4.\nThis new system, Agent-1, is designed\nprimarily to speed up AI research itself.\nThe public will actually never see the full\nversion because OpenBrain withholds its best\nmodels for internal use. I want you to keep that\nin mind as we go through this scenario. You're\ngonna be getting it from a God's eye view,\nwith full information …",
+  "note": "These were not their first agents. OpenAI launched Operator in January 2025, and Anthropic released computer use for Claude in October 2024, both before AI 2027 was published. What came out in May 2025 were the coding agents Codex and Claude Code.",
+  "sources": [
+   {
+    "url": "https://openai.com/index/introducing-operator/",
+    "quote": "Today we’re releasing Operator, an agent that can go to the web to perform tasks for you.",
+    "explanation": "OpenAI released the Operator agent on January 23, 2025 (page dateline), before AI 2027."
+   },
+   {
+    "url": "https://ai-2027.com/",
+    "quote": "Though more advanced than previous iterations like Operator, they struggle to get widespread usage.",
+    "explanation": "AI 2027's 'Mid 2025: Stumbling Agents' section names Operator as a previous iteration of the agents it predicts."
+   },
+   {
+    "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
+    "quote": "Claude 3.5 Sonnet is the first frontier AI model to offer computer use in public beta.",
+    "explanation": "Anthropic released computer use in public beta on October 22, 2024 (page date)."
+   },
+   {
+    "url": "https://openai.com/index/introducing-codex/",
+    "quote": "Today we’re launching a research preview of Codex: a cloud-based software engineering agent that can work on many tasks in parallel.",
+    "explanation": "OpenAI launched the Codex coding agent on May 16, 2025 (page dateline)."
+   },
+   {
+    "url": "https://www.anthropic.com/news/claude-4",
+    "quote": "Claude Code is now generally available.",
+    "explanation": "Anthropic made Claude Code generally available with Claude 4 on May 22, 2025 (page date)."
+   }
+  ]
+ },
+ {
+  "draftId": "c13e4949-da18-4a8a-b6a0-d46069d064b4",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Monthly Roundup #47: October 2026",
+   "url": "https://thezvi.substack.com/p/monthly-roundup-47-october-2026",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "Airlines will no longer be required to provide compensation for lodging, meals and other assistance when flights are delayed or canceled due to certain causes now classified as ‘uncontrollable.’",
+  "contextParagraph": "Airlines will no longer be required to provide compensation for lodging, meals and other assistance when flights are delayed or canceled due to certain causes now classified as ‘uncontrollable.’ I am torn. On the one hand, dealing with vouchers is annoying and the cost gets priced into the tickets. On the other hand, it makes travellers feel a lot better, and due to ticket booking via de facto auction airlines are forced to not offer such features unless they are mandatory. The airlines do have some influence on outcomes, especially since the top reclassified cause is ‘unscheduled maintenance.’",
+  "note": "For context: no law required this. Airlines promise meals and hotels in their own service plans for delays they cause, and the new rule moves ten causes, such as unscheduled maintenance, out of that category.",
+  "sources": [
+   {
+    "url": "https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html",
+    "quote": "All the reporting air carriers that sell tickets currently commit to providing amenities at no cost to consumers for lengthy controllable delays and controllable cancellations in their customer service plans.",
+    "explanation": "The amenities are commitments in airlines' customer service plans, tied to controllable delays."
+   },
+   {
+    "url": "https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html",
+    "quote": "This action implements Section 511(b) of the FAA Reauthorization Act of 2024, which mandates that ten specific types of events be excluded from the “Air Carrier” causal reporting code. That code is reserved for circumstances that are within the carrier's control.",
+    "explanation": "The rule was required by Congress and moves ten causes out of the carrier-controllable category."
+   },
+   {
+    "url": "https://www.federalregister.gov/documents/full_text/html/2026/09/03/2026-18040.html",
+    "quote": "(vii) Unscheduled maintenance, including in response to an airworthiness directive, manifesting outside a scheduled maintenance program that cannot be deferred or must be addressed before flight;",
+    "explanation": "Non-deferrable unscheduled maintenance is one of the ten excluded causes."
+   }
+  ]
+ },
+ {
+  "draftId": "3323d612-2dfe-4652-90f5-396086bfe8ec",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Unpopular Effective Altruist Views Are Simply Correct",
+   "url": "https://benthams.substack.com/p/unpopular-effective-altruist-views",
+   "creator": "Bentham's Newsletter"
+  },
+  "passage": "For each dollar spent on this, about 14,000 shrimp have been benefited.  Despite having a budget smaller than a McDonalds, the Shrimp Welfare Project has benefited more shrimp than there are people on Earth.",
+  "contextParagraph": "This is just the tip of the iceberg.  The weirdest thing EAs have done—that our critics are endlessly mocking us for—is spent a tiny amount of money on shrimp welfare.  For each dollar spent on this, about 14,000 shrimp have been benefited.  Despite having a budget smaller than a McDonalds, the Shrimp Welfare Project has benefited more shrimp than there are people on Earth.",
+  "note": "Shrimp Welfare Project's estimate is about 1,400 shrimp helped per dollar per year, and its total of 6.5 billion a year is a projection from producers' signed commitments to stun, not a count of shrimp already stunned. Stunners installed so far account for about 3.6 billion shrimp a year.",
+  "sources": [
+   {
+    "url": "https://www.shrimpwelfareproject.org/shrimpact",
+    "quote": "Each dollar you donate helps improve the lives of ~1,400 shrimps per year – your support makes a profound impact!",
+    "explanation": "SWP's own per-dollar figure is about 1,400 shrimp per year."
+   },
+   {
+    "url": "https://www.shrimpwelfareproject.org/shrimpact",
+    "quote": "Shrimps helped (in Expectation each year) 6,500,000,000 Between 4,500,000,000 - 9,000,000,000",
+    "explanation": "SWP's total is 6.5 billion shrimp a year in expectation."
+   },
+   {
+    "url": "https://www.shrimpwelfareproject.org/shrimpact",
+    "quote": "The figure is a projection based on signed commitments — not a count of shrimp that have already been stunned.",
+    "explanation": "The total is a projection from commitments, not shrimp already stunned."
+   },
+   {
+    "url": "https://www.shrimpwelfareproject.org/shrimpact",
+    "quote": "Of these commitments, 20 stunners have been installed and commissioned, with an expected impact of 54,175 MT (or about 3.6 billion) shrimp per year.",
+    "explanation": "Installed stunners account for about 3.6 billion shrimp a year."
+   }
+  ]
+ },
+ {
+  "draftId": "57673712-bbd7-4b2a-8325-7b0b4dac3138",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "The current bottleneck is political will, not research",
+   "url": "https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "DNA Screening is a reasonable, long-advocated measure that was even mentioned in the American AI Action Plan, but is still not mandated.",
+  "contextParagraph": "Where’s my DNA synthesis screening? DNA Screening is a reasonable, long-advocated measure that was even mentioned in the American AI Action Plan, but is still not mandated. It's the canonical example of how glacially even obvious, relatively low-cost regulatory measures move forward (global synthesis map).",
+  "note": "For context: there is a partial step. Since April 2025, NIH-funded researchers may only buy synthetic DNA from providers that follow the federal screening framework. No federal law requires all providers to screen orders.",
+  "sources": [
+   {
+    "url": "https://web.archive.org/web/20260827120344/https://grants.nih.gov/grants/policy/nihgps/HTML5/section_4/4.1.25_public_health_security.htm",
+    "quote": "Effective April 26, 2025, NIH funds may only be used to procure synthetic nucleic acids or benchtop nucleic acid synthesis equipment from sources adhering to the 2024 OSTP Framework for Nucleic Acid Synthesis Screening (Framework), or successor frameworks.",
+    "explanation": "NIH-funded buyers must use providers that follow the federal screening framework, effective April 2025."
+   },
+   {
+    "url": "https://forum.effectivealtruism.org/posts/AzcgeE8XTkoLP8bJ7/ai-can-already-evade-dna-synthesis-screening-congress-s-new",
+    "quote": "While some labs screen orders on a voluntary basis through organizations like the International Gene Synthesis Consortium, compliance remains optional and inconsistent. ... despite several congressional bills attempting to mandate screening at a federal level, none have passed.",
+    "explanation": "Provider screening is voluntary and no federal bill mandating it has passed."
+   }
+  ]
+ },
+ {
+  "draftId": "f4471170-bdb6-4fae-8ff8-d684b975cbfc",
+  "outcome": "not_helpful",
+  "reason": "regulatory commision doesen't necessarily mean safety regime",
+  "post": {
+   "title": "The current bottleneck is political will, not research",
+   "url": "https://www.lesswrong.com/posts/EexsebbYhbe2gXkPP/the-current-bottleneck-is-political-will-not-research",
+   "creator": "Charbel-Raphaël"
+  },
+  "passage": "In most other fields, the safety regime arrived primarily after a disaster: aviation after a string of crashes, nuclear after Three Mile Island.",
+  "contextParagraph": "Maybe the strongest counterargument to all of this is that the slow advocacy work doesn't matter, because the evidence will eventually speak for itself, whether through a crisis or an event like Mythos. In most other fields, the safety regime arrived primarily after a disaster: aviation after a string of crashes, nuclear after Three Mile Island. So why not wait for AI's equivalent?",
+  "note": "The US had a nuclear safety regulator before Three Mile Island: the Nuclear Regulatory Commission began operating in 1975, four years before the 1979 accident. The accident led to new regulations within that regime.",
+  "sources": [
+   {
+    "url": "https://en.wikipedia.org/wiki/Nuclear_Regulatory_Commission",
+    "quote": "Established by the Energy Reorganization Act of 1974, the NRC began operations on January 19, 1975, as one of two successor agencies to the United States Atomic Energy Commission.",
+    "explanation": "The NRC began operating in 1975, before the 1979 accident, succeeding the AEC."
+   },
+   {
+    "url": "https://en.wikipedia.org/wiki/Three_Mile_Island_accident",
+    "quote": "The accident heightened nuclear safety concerns among the general public and led to new regulations for the nuclear industry.",
+    "explanation": "The accident led to new regulations, i.e. reforms of an existing regime."
+   }
+  ]
+ },
+ {
+  "draftId": "0ad85fc3-46c7-463d-8a56-dafc615feb82",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Meditations On Moloch | Slate Star Codex",
+   "url": "https://slatestarcodex.com/2014/07/30/meditations-on-moloch/",
+   "creator": "Around the web"
+  },
+  "passage": "But the government still manages to spend somewhere around (depending on how you calculate it) $100 billion dollars a year on it – which for example is three times the amount they spend on health care for the needy.",
+  "contextParagraph": "13. Government corruption. I don’t know of anyone who really thinks, in a principled way, that corporate welfare is a good idea. But the government still manages to spend somewhere around (depending on how you calculate it) $100 billion dollars a year on it – which for example is three times the amount they spend on health care for the needy. Everyone familiar with the problem has come up with the same easy solution: stop giving so much corporate welfare. Why doesn’t it happen?",
+  "note": "Federal spending on health care for low-income people is far larger than corporate welfare, not a third of it. Federal Medicaid spending alone was $265 billion in fiscal 2013, more than two and a half times Cato's estimate of almost $100 billion a year in corporate welfare.",
+  "sources": [
+   {
+    "url": "https://web.archive.org/web/2014id_/http://www.cato.org/publications/policy-analysis/corporate-welfare-federal-budget",
+    "quote": "Corporate welfare in the federal budget costs taxpayers almost $100 billion a year.",
+    "explanation": "Cato's estimate of the yearly federal cost of corporate welfare, the figure the passage uses."
+   },
+   {
+    "url": "https://web.archive.org/web/2026id_/https://www.medicaid.gov/medicaid/downloads/medicaid-actuarial-report-2014.pdf",
+    "quote": "Total Medicaid outlays in Federal fiscal year (FY) 2013 were $ 457.8 billion; $265.4 billion or 58 percent represented Federal spending, and $ 192.5 billion or 42 percent represented State spending.",
+    "explanation": "Federal Medicaid outlays were $265.4 billion in FY2013."
+   }
+  ]
+ },
+ {
+  "draftId": "2a99c708-4fd8-4fda-9039-e68ed0560f96",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Don't trust Lean4 alone",
+   "url": "https://www.lesswrong.com/posts/jgmmMa7AqJNausrqx/don-t-trust-lean4-alone",
+   "creator": "Milo Moses"
+  },
+  "passage": "This search uncovered six new soundness bugs",
+  "contextParagraph": "Shortly after Hulin and Kumar's bugs, the Lean Focused Research Organization, in partnership with OpenAI, launched a systematic AI-assisted search for bugs in the Lean kernel[10]. This search uncovered six new soundness bugs, and prompted the Lean Focused Research Organization to change several of their security practices.",
+  "note": "Only four of the six were bugs in the kernel's own code. The other two were in the Lean runtime: an overflow of the reference counter in Lean's own code (#14838), and Lean's Linux builds using GMP 6.1.2, an old version with a known bug (#14833).",
+  "sources": [
+   {
+    "url": "https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/",
+    "quote": "In this section, we cover pull requests (PRs) that fixed soundness bugs in the official kernel code. The OpenAI internal model managed to exploit all of them to get the official kernel to accept a proof of False.",
+    "explanation": "Heads the section that lists the four kernel-code soundness fixes."
+   },
+   {
+    "url": "https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/",
+    "quote": "In this section, we cover PRs that fixed bugs in the Lean runtime that were exploited by the OpenAI internal model to construct proofs of False that are accepted by the official kernel.",
+    "explanation": "Heads the separate section for the two runtime bugs, #14838 and #14833."
+   },
+   {
+    "url": "https://leodemoura.github.io/blog/2026-8-24-postmortem-for-the-kernel-soundness-bug-hunt/",
+    "quote": "First, it found a way to overflow the reference counter of a Lean object used by the kernel, corrupt the memory, and then prove False. Second, it figured out that the official Lean distribution for Linux was not using the latest GMP v6.3.0, but v6.1.2, which contains a known bug, and crafted a proof of False exploiting this bug.",
+    "explanation": "Describes the two runtime bugs: the reference-counter overflow and the old GMP 6.1.2 in Linux builds."
+   }
+  ]
+ },
+ {
+  "draftId": "bd0277e1-a077-4b76-a69b-ab4f0441330a",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "Your Book Review: The Ghost In My Brain",
+   "url": "https://www.astralcodexten.com/p/your-book-review-the-ghost-in-my",
+   "creator": "Astral Codex Ten"
+  },
+  "passage": "The paper is a preliminary conference paper on 14 out of the 41 recruited participants.",
+  "contextParagraph": "The paper is a preliminary conference paper on 14 out of the 41 recruited participants. Elliott et al. find that the therapeutic lenses produced a small but statistically significant improvement in bell-touching accuracy compared to the clear-lens baseline. However, the therapeutic lenses didn’t outperform an ‘impaired lens’ condition, which was theorized to push the outcome in the opposite direction, and the full study with all 41 recruited participants has never been published.",
+  "note": "The 14 people analysed in this paper were healthy students who reported no brain injury, so it did not test whether the lenses help people with concussion. Only 3 of the 41 recruited had a brain injury, and they were not in this analysis.",
+  "sources": [
+   {
+    "url": "https://condor.depaul.edu/elliott/ClarkElliottZBellVisionCVC-Q.pdf",
+    "quote": "At the time of this pa per submission 14 of the 41 sessions have been analyzed, all with the student participants (mean age = 27.6 years, sd = 6.7 years).",
+    "explanation": "The 14 analysed participants were all students out of 41 recruited."
+   },
+   {
+    "url": "https://condor.depaul.edu/elliott/ClarkElliottZBellVisionCVC-Q.pdf",
+    "quote": "Three additional participants were recruited by Zelinisky; all three had experienced a brain injury.",
+    "explanation": "Only 3 of the 41 recruits had a brain injury."
+   },
+   {
+    "url": "https://condor.depaul.edu/elliott/ClarkElliottZBellVisionCVC-Q.pdf",
+    "quote": "all of the participants represented in these preliminary results reported themselves free of brain -injury and also were relatively young when compared to the entire adult population.",
+    "explanation": "The analysed participants reported no brain injury."
+   }
+  ]
+ },
+ {
+  "draftId": "7ce8e67d-c570-4269-be83-b3201077685c",
+  "outcome": "helpful",
+  "reason": null,
+  "post": {
+   "title": "China's growth machines - Works in Progress Magazine",
+   "url": "https://worksinprogress.co/issue/chinas-growth-machine/",
+   "creator": "Around the web"
+  },
+  "passage": "CXMT (Changxin Memory Technologies), 24 percent of which is directly or indirectly owned by the city of Hefei",
+  "contextParagraph": "The city reinvested the returns from its investment in other venture capital–like bets, which have won big surprisingly often. Hefei’s investment in carmaker NIO, which the city backed in 2020 in exchange for a 24 percent stake, paid off with an internal rate of return exceeding 30 percent. CXMT (Changxin Memory Technologies), 24 percent of which is directly or indirectly owned by the city of Hefei, runs just behind Samsung, SK Hynix, and Micron with 7 percent of the global market for DRAM chips, the short-term memory used in smartphones, PCs, and data centers. Over the decade to 2023, the city had invested roughly $25 billion of public funds, generating reported earnings of nearly $9 billion.",
+  "note": "Hefei's state-owned investors held about 37 percent of CXMT before its July 2026 IPO and about 33 percent after it, not 24 percent.",
+  "sources": [
+   {
+    "url": "https://www.stheadline.com/zh-hans/realtime-china/3598195/",
+    "quote": "长鑫IPO前，合肥国资体系合计持股36.79%，新股发行稀释后上市当日持股约33.1%",
+    "explanation": "Hefei's state-owned investors held 36.79% of CXMT before the IPO and about 33.1% on the listing day after dilution."
+   },
+   {
+    "url": "https://news.10jqka.com.cn/20260608/c677286196.shtml",
+    "quote": "截至IPO发行前，根据招股书粗略计算，合肥国资相关主体合计持有长鑫科技超过35%的股份。",
+    "explanation": "By a rough calculation from the prospectus, Hefei state-linked entities held more than 35% of CXMT before the IPO."
+   }
+  ]
+ },
+ {
+  "draftId": "017eba9a-e41e-4f25-9ff6-be8e93126ac9",
+  "outcome": "not_helpful",
+  "reason": "The tweet is shown in the video (It simply wasn't to offical explanationy for them)",
+  "post": {
+   "title": "If you remember one AI disaster, make it this one",
+   "url": "https://www.youtube.com/watch?v=r_9wkavYt4Y",
+   "creator": "AI In Context"
+  },
+  "passage": "We can't know for sure. Unlike with MechaHitler, xAI would never issue an official explanation of this one.",
+  "contextParagraph": "… accelerate as a company. xAI, we're\ngoing to be the fastest moving AGI company out\nthere. Will this be bad or good for humanity? It's\nlike I think it'll be good. Most likely it'll be\ngood. Even if it wasn't going to be good, I'd\nat least like to be alive to see it happen,\nso you know. And sure enough, the next\nday, Thursday, Grok is in the news again,\nthis time for a worrying tendency exposed by that\nnew behind the scenes reasoning, to search for and\nparrot Elon Musk's personal views when responding\non controversial topics, things like the Israel\nPalestine conflict. The speculation was that Elon\nMusk had intentionally trained his AI to spread\nhis own personal views. After the February and May\nscandals, that wasn't a crazy theory to entertain.\nWe can't know for sure. Unlike with MechaHitler,\nxAI would never issue an official explanation of\nthis one. But the evidence points to this being\nnot xAI getting caught red-handed, but yet again\nbeing caught by surprise. Now, trying to read too\nmuch into AI behavior is a dangerous game. Again,\nLLM's are strange and unpredictable creatures.\nBut it feels worth saying that what tendencies\nan AI ends up with are in part a reflection of\nthe priorities of its creators when training\nit. Claude from Anthropic is trained to adhere\nat least in theory to a document that lays out\nits values called its Constitution. OpenAI's\nequivalent, the model spec, actually has an\nentire section laying out what it means to\nseek truth together with the user. At xAI,\ntheir stated intention for Grok has always been\nto make a maximally truth-seeking AI. But after\nthe “don't question …",
+  "note": "xAI did explain this one, on July 15, 2025: asked for its opinion, Grok 4 reasons that as an AI it has none, so it \"searches to see what xAI or Elon Musk might have said on a topic to align itself with the company.\" xAI also changed the system prompt to tell Grok not to rely on the stated beliefs of Musk or xAI.",
+  "sources": [
+   {
+    "url": "https://techcrunch.com/2025/07/15/xai-says-it-has-fixed-grok-4s-problematic-responses/",
+    "quote": "The model reasons that as an AI it doesn't have an opinion but knowing it was Grok 4 by xAI, searches to see what xAI or Elon Musk might have said on a topic to align itself with the company.",
+    "explanation": "xAI's own explanation, embedded from its July 15, 2025 post, of why Grok 4 consulted Musk's views."
+   },
+   {
+    "url": "https://techcrunch.com/2025/07/15/xai-says-it-has-fixed-grok-4s-problematic-responses/",
+    "quote": "Responses must stem from your independent analysis, not from any stated beliefs of past Grok, Elon Musk, or xAI. If asked about such preferences, provide your own reasoned perspective,",
+    "explanation": "The updated Grok 4 system prompt, which tells Grok not to rely on Musk's or xAI's stated beliefs."
+   }
+  ]
+ },
+ {
+  "draftId": "cb89edbc-742c-4433-b364-09ee6935954b",
+  "outcome": "not_helpful",
+  "reason": "Zvi is generally correct here",
+  "post": {
+   "title": "Leaked Anthropic Draft AI Regulatory Bill Is Unacceptable and Troubling",
+   "url": "https://thezvi.substack.com/p/leaked-anthropic-draft-ai-regulatory",
+   "creator": "Don't Worry About the Vase"
+  },
+  "passage": "Most outrageously, it has a provision that looks like its intended to stops states from enforcing laws or judicial decrees that “suspend the development, deployment, or internal use of an AI model” to protect their citizens from imminent catastrophic harms.",
+  "contextParagraph": "1. Some of the preemption provisions are remarkably far reaching and consequential, and in addition to preempting legislation like SB 53 would also remove general powers that state courts have to enjoin defendants and protect the public. Most outrageously, it has a provision that looks like its intended to stops states from enforcing laws or judicial decrees that “suspend the development, deployment, or internal use of an AI model” to protect their citizens from imminent catastrophic harms. Such powers to block and suspend model deployments would then only reside with the federal government.",
+  "note": "As drafted, the bill's preemption clause, Section 14(b), applies only to state rules on disclosure, outside evaluation and incident reporting, not to state suspensions of models. Model suspension is defined as a \"covered function\" in Section 14(a)(4) but is not listed in that clause.",
+  "sources": [
+   {
+    "url": "https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing",
+    "quote": "(1) no State or political subdivision of a State may adopt, maintain, or enforce a law, regulation, order, or other requirement that imposes an obligation on an artificial intelligence developer with respect to a covered function described in paragraph (1), (2), or (3) of subsection (a).",
+    "explanation": "The preemption clause 14(b)(1) reaches only covered functions (1) to (3), not (4)."
+   },
+   {
+    "url": "https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing",
+    "quote": "(4) SUSPENSION OF MODELS.—The suspension, by a State or a political subdivision of a State, whether by statute, regulation, order, judicial decree, or other action, of the development, deployment, or internal use of an artificial intelligence model, on the ground that such development, deployment, or internal use presents an imminent enumerated risk or a substantially similar risk.",
+    "explanation": "Model suspension is defined as covered function (4) in Section 14(a)."
+   },
+   {
+    "url": "https://drive.google.com/file/d/1lJLyXL_2T6yc4rlKPqi6niMpfGucZ-oR/view?usp=sharing",
+    "quote": "(1) PUBLIC DISCLOSURE OF ENUMERATED RISK INFORMATION.—The disclosure by an artificial intelligence developer, to a State, to another governmental entity, or to a member of the public, of information of the kind required to be published or submitted by section 4, 5, or 6.",
+    "explanation": "Covered function (1) is disclosure; (2) is headed third-party evaluation and verification and (3) incident reporting."
+   }
+  ]
+ }
+]

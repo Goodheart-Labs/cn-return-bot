@@ -9,26 +9,69 @@ export const queryKeys = {
   sourceDetails: (noteId: string) => ["sourceDetails", noteId] as const,
   /** Every cached NoteSet, whatever it is scoped to. */
   noteSets: ["noteSet"] as const,
-  projectNoteSet: (projectId: string) => ["noteSet", "project", projectId] as const,
   itemNoteSet: (itemId: string) => ["noteSet", "item", itemId] as const,
-  /** Every visible note on the site, for the website's All notes page. */
-  allNoteSet: ["noteSet", "all"] as const,
-  projects: ["projects"] as const,
+  /** The loaded pages of one notes feed on the website. The feed is named by
+   *  its scope, its order and its filters. */
+  noteFeed: (scope: unknown, order: string, filters: unknown) => ["noteSet", "feed", scope, order, filters] as const,
+  /** The counts a notes feed shows besides its pages. */
+  noteFeedSummary: (scope: unknown, filters: unknown, since: string[]) => ["noteFeedSummary", scope, filters, since] as const,
+  /** How many visible notes a scope holds, without filters. */
+  noteCount: (scope: unknown) => ["noteCount", scope] as const,
+  /** A note a shared link points at, which its project page shows first. */
+  sharedNote: (noteId: string) => ["noteSet", "shared", noteId] as const,
+  /** The admins' curation of the best notes. Every section's pages and the
+   *  whole leaderboard sit under one prefix, so a change reloads them all. */
+  curation: ["noteSet", "curation"] as const,
+  curationSection: (filters: unknown) => ["noteSet", "curation", "section", filters] as const,
+  wholeLeaderboard: ["noteSet", "curation", "wholeLeaderboard"] as const,
+  curationSummary: ["curationSummary"] as const,
+  /** The pages of the projects overview in one order. */
+  projectsPage: (order: string) => ["projects", order] as const,
+  project: (slug: string) => ["project", slug] as const,
+  /** The pages of one project's list of posts. */
   projectItems: (projectId: string) => ["projectItems", projectId] as const,
-  itemsWithNotes: ["itemsWithNotes"] as const,
-  /** How many devices outside the team saw each item's notes. */
-  itemNoteViewers: ["itemNoteViewers"] as const,
+  feedItem: (itemId: string) => ["feedItem", itemId] as const,
   leaderboard: ["leaderboard"] as const,
+  /** Everything the X notewriter page and the dashboard's notes read, by
+   *  source: "x" or "commonnotes". */
+  noteSummary: (source: string, request: unknown) => ["notewriter", source, "summary", request] as const,
+  noteDays: (source: string, request: unknown, withRuns: boolean) => ["notewriter", source, "days", request, withRuns] as const,
+  noteFacets: (source: string, columns: string[], request: unknown) => ["notewriter", source, "facets", columns, request] as const,
+  xNoteList: (request: unknown) => ["notewriter", "x", "list", request] as const,
+  /** The vote counts of the X notes' twins on screen. A vote on an X note
+   *  reads them all again under the prefix. */
+  noteTallies: ["noteTallies"] as const,
+  noteTalliesOf: (noteIds: string[]) => ["noteTallies", ...noteIds] as const,
+  xOriginDays: ["notewriter", "x", "originDays"] as const,
+  abTests: (source: string) => ["notewriter", source, "abTests"] as const,
+  abReasons: (source: string) => ["notewriter", source, "abReasons"] as const,
+  abCombos: (source: string, tests: string[], since: string | null) => ["notewriter", source, "abCombos", tests, since] as const,
   /** Everything the admins' note review page reads. */
   noteReview: ["noteReview"] as const,
-  noteReviewSummary: ["noteReview", "summary"] as const,
-  /** The pages of one sidebar section that the admin scrolled through. */
-  noteReviewSection: (section: string) => ["noteReview", "section", section] as const,
-  /** The newest page of a section, polled to notice new drafts. */
-  noteReviewNewest: (section: string) => ["noteReview", "newest", section] as const,
+  typefullySync: ["typefullySync"] as const,
+  /** Every count of the page: how many drafts match, and how many each value
+   *  of the choice fields would show, each under one request. */
+  noteReviewCounts: ["noteReview", "counts"] as const,
+  noteReviewSummary: (request: unknown) => ["noteReview", "counts", "summary", request] as const,
+  noteReviewFacets: (request: unknown) => ["noteReview", "counts", "facets", request] as const,
+  /** The pages of the list under one request. */
+  noteReviewList: (request: unknown) => ["noteReview", "list", request] as const,
+  /** One note for the local posting tool: the note on its picture page, and
+   *  the picture's address on the tool's server. */
+  noteImage: (noteId: string) => ["noteImage", noteId] as const,
+  noteImageUrl: (noteId: string) => ["noteImage", "url", noteId] as const,
   /** The live notes of the drafts on screen. They sit under the noteSet
    *  prefix, so a vote on one of them updates it here too. */
   noteReviewNoteSet: (noteIds: string[]) => ["noteSet", "noteReview", ...noteIds] as const,
+  /** What the admins' dashboard reads: the metric series per bucket size,
+   *  the walk's ranking of creators and the recently checked posts. */
+  dashboardMetricSeries: (granularity: string) => ["dashboard", "metricSeries", granularity] as const,
+  dashboardCreatorRanking: ["dashboard", "creatorRanking"] as const,
+  dashboardRecentPosts: ["dashboard", "recentPosts"] as const,
+  dashboardClaudeUsage: (sinceDays: number) => ["dashboard", "claudeUsage", sinceDays] as const,
+  dashboardClicks: (sinceDays: number) => ["dashboard", "clicks", sinceDays] as const,
+  dashboardNotewriters: ["dashboard", "notewriters"] as const,
+  dashboardDonations: ["dashboard", "donations"] as const,
   leaderboardOptIn: (userId: string | undefined) => ["leaderboardOptIn", userId] as const,
 };
 

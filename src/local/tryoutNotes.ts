@@ -26,7 +26,7 @@
  *                             tweet  reuse the post, so there is no X fetch.
  *                                    Everything else is rebuilt.
  *                             input  also reuse the full input, which covers
- *                                    the comments, the media and the author.
+ *                                    the media and the author.
  *                             note   also reuse the written note, so only the
  *                                    gates run again.
  *                           This defaults to --bot simple-bot. Override it with

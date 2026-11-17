@@ -40,7 +40,8 @@ export interface ReaderNoteRequest {
   id: string;
   blockId: string;
   quote: string;
-  progress: RequestProgress;
+  /** Null while the card still asks the reader why, before anything is sent. */
+  progress: RequestProgress | null;
 }
 
 /** The id of the margin group that holds entries we could not place beside a
@@ -66,6 +67,10 @@ export interface ReaderApi {
   askedQuestions: ReadonlyMap<string, AskedPassage>;
   /** Returns the existing request when the same words were already requested this visit. */
   requestNote: (blockId: string, quote: string) => Pick<ReaderNoteRequest, "id" | "blockId">;
+  /** Sends the request with the reader's reason, which may be empty. */
+  sendNoteRequest: (id: string, reason: string) => void;
+  /** Drops a request the reader cancelled before sending it. */
+  discardNoteRequest: (id: string) => void;
   dialog: ReaderDialog | null;
   /** The conversation with Opus the reader opened last. On a wide screen it
    *  is a panel in the margin beside its passage, on a narrow one a sheet. */

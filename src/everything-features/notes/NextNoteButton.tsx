@@ -1,3 +1,5 @@
+import { cn } from "@cn/ui/cn";
+import { focusRing } from "@cn/ui/focusRing";
 import { NextIcon } from "@cn/ui/icons";
 
 /** Where a card sits among the page's cards, and how to move on to the next
@@ -19,7 +21,7 @@ export function NextNoteButton({ position, total, onNext }: NoteNavigation) {
       type="button"
       onClick={onNext}
       aria-label={`Next note. This is note ${position} of ${total}`}
-      className="-ml-1.5 inline-flex h-6 items-center gap-0.5 rounded-control px-1.5 text-sm tabular-nums text-fg-muted hover:bg-surface-hover hover:text-fg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      className={cn("-ml-1.5 inline-flex h-6 items-center gap-0.5 rounded-control px-1.5 text-sm tabular-nums text-fg-muted hover:bg-surface-hover hover:text-fg-secondary", focusRing)}
     >
       {position} of {total}
       <NextIcon size={14} aria-hidden />

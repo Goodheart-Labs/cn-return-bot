@@ -162,7 +162,7 @@ export function parseCliArgs(
     console.error("  --concurrency <n>       parallel workers (default 5)");
     console.error("  --name <label>          name for dashboard upload (default: derived)");
     console.error("  --topic <id>            run as a curated-topic post: inject the topic's grounding document and make the eval gate advisory, as prod does");
-    console.error("  --input-cache <dir>     cache/replay bot inputs (media, comments, author history)");
+    console.error("  --input-cache <dir>     cache/replay bot inputs (media, author history)");
     console.error("  --writer-cache <dir>    cache/replay writer output (replay starts from the gates)");
     console.error("\nAvailable bots:", getEnabledBots().map((b) => b.id).join(", "));
     process.exit(1);

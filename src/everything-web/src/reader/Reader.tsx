@@ -269,6 +269,8 @@ export function Reader({ item, content, header, features, scope }: {
     noteRequests: noteRequests.requests,
     askedQuestions,
     requestNote: noteRequests.request,
+    sendNoteRequest: noteRequests.send,
+    discardNoteRequest: noteRequests.discard,
     dialog,
     openDialog: (next) => { setDialog(next); document.getSelection()?.removeAllRanges(); },
     closeDialog: () => setDialog(null),

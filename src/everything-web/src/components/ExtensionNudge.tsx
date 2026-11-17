@@ -3,7 +3,7 @@ import { matchMutation, useQueryClient } from "@tanstack/react-query";
 import { mutationKeys } from "@cn/features/query/queryKeys";
 import { buttonVariants } from "@cn/ui/Button";
 import { Modal } from "@cn/ui/Modal";
-import { canInstallExtensions, extensionInstalled } from "../lib/extensionStores";
+import { canInstallExtensions, extensionInstalled, trackGetExtensionClick } from "../lib/extensionStores";
 import { INSTALL, type Route } from "../lib/routing";
 import { useVisibleFor } from "../lib/useVisibleFor";
 import { RouteLink } from "./RouteLink";
@@ -94,6 +94,7 @@ export function ExtensionNudge({ route, navigate }: { route: Route; navigate: (r
       <RouteLink
         to={INSTALL}
         navigate={(route) => {
+          trackGetExtensionClick("nudge");
           setOpen(false);
           navigate(route);
         }}
