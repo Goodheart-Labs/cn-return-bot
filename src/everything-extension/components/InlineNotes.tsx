@@ -26,6 +26,7 @@ import { EventShield } from "./EventShield";
 import { WriteNoteOverlay } from "./WriteNoteOverlay";
 import { NotesAheadPill } from "./NotesAheadPill";
 import { notesAllAhead } from "../utils/notesAhead";
+import { getSwitches } from "../utils/switches";
 import { track } from "@cn/core/analytics";
 
 /** One claim anchored to the page: the claim's notes with the original first,
@@ -603,10 +604,14 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
   // "ahead" while every note is still below the window; "gone" for good once
   // the reader reaches one, jumps or dismisses. The page's notes UI remounts
   // on every address, so this resets per page.
-  const [pill, setPill] = useState<"waiting" | "ahead" | "gone">("waiting");
+  const [pill, setPill] = useState<"off" | "waiting" | "ahead" | "gone">("off");
+  // Off until the server switch says on (utils/switches.ts).
+  useEffect(() => {
+    void getSwitches().then((s) => { if (s.notesAheadPill) setPill((p) => (p === "off" ? "waiting" : p)); });
+  }, []);
   const noteCount = useMemo(() => groups.reduce((n, g) => n + g.notes.length, 0), [groups]);
   useEffect(() => {
-    if (pill === "gone" || !ordered.length) return;
+    if (pill === "off" || pill === "gone" || !ordered.length) return;
     let raf = 0;
     const check = () => {
       if (notesAllAhead(ordered.map((g) => g.range.getBoundingClientRect()), window.innerHeight)) {

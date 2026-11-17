@@ -13,6 +13,7 @@ import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } fr
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, getCoveredPageUrls, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { mergeCoveredUrls, parseSyncState, planSync } from "../utils/notedSitesSync";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
+import { syncSwitches } from "../utils/switches";
 import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { saveLiveRequest } from "../utils/liveRequests";
 import { capturePageFromTab } from "../utils/pageCapture";
@@ -112,6 +113,8 @@ async function syncNotedSites() {
       fetchCoveredPageUrls(),
       fetchNotedPageCounts(),
       fetchPrioritizedCreatorUrls(),
+      // Its own failure must not cost the lists their sync.
+      syncSwitches().catch((err) => console.warn("[common-notes] switches sync failed:", err)),
     ]);
     // The listing badges draw their per-page note counts from this cache.
     if (counts) await browser.storage.local.set({ [NOTED_PAGE_STATUS_COUNTS_KEY]: counts });
