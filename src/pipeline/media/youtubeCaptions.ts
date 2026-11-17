@@ -10,7 +10,7 @@
  */
 
 import { decodeHtmlEntities } from "../utils/html";
-import { fetchTextViaResidentialProxy, hideProxyAddress, withResidentialProxy } from "../utils/residentialProxy";
+import { hideProxyAddress, withResidentialProxy } from "../utils/residentialProxy";
 import type { YoutubeVideo } from "./youtubeDataApi";
 import { proxyArgs, runYtDlp } from "./ytDlpDownload";
 
@@ -185,26 +185,20 @@ type CaptionListing =
  *  page it did not need. A call that got no tracks and whose output says
  *  YouTube was not reached throws YoutubeUnreachableError, and the proxy
  *  wrapper runs it again on a fresh connection until its tries run out. */
-async function listCaptionTracks(video: YoutubeVideo): Promise<CaptionListing> {
-  return withResidentialProxy(
-    video.url,
-    async (proxyUrl) => {
-      const { stdout, stderr } = await dumpVideoJson(video, proxyUrl);
-      const dump = stdout.trim() ? JSON.parse(stdout) : {};
-      const tracks = dump ? captionTracksFromDump(dump) : [];
-      if (tracks.length) return { kind: "tracks", tracks };
-      const answer = readTracklessAnswer(stderr);
-      if (answer.kind === "unreachable") throw new YoutubeUnreachableError(video.url, answer.line.trim().slice(0, MAX_REASON_LENGTH));
-      if (answer.kind === "age_restricted") return answer;
-      // Sometimes yt-dlp prints the word null instead of the video's
-      // description. Then it learned nothing about the video. Both times this
-      // happened, on 2026-10-27, the videos had captions. So a null dump means
-      // we did not reach YouTube, and it is never "no captions" (GOO-652).
-      if (dump === null) throw new YoutubeUnreachableError(video.url, `yt-dlp described no video${ytDlpWarnings(stderr)}`.slice(0, MAX_REASON_LENGTH));
-      return { kind: "none", why: `YouTube listed no caption tracks${ytDlpWarnings(stderr)}` };
-    },
-    (err) => err instanceof YoutubeUnreachableError,
-  );
+async function listCaptionTracks(video: YoutubeVideo, proxyUrl: string | undefined): Promise<CaptionListing> {
+  const { stdout, stderr } = await dumpVideoJson(video, proxyUrl);
+  const dump = stdout.trim() ? JSON.parse(stdout) : {};
+  const tracks = dump ? captionTracksFromDump(dump) : [];
+  if (tracks.length) return { kind: "tracks", tracks };
+  const answer = readTracklessAnswer(stderr);
+  if (answer.kind === "unreachable") throw new YoutubeUnreachableError(video.url, answer.line.trim().slice(0, MAX_REASON_LENGTH));
+  if (answer.kind === "age_restricted") return answer;
+  // Sometimes yt-dlp prints the word null instead of the video's
+  // description. Then it learned nothing about the video. Both times this
+  // happened, on 2026-10-27, the videos had captions. So a null dump means
+  // we did not reach YouTube, and it is never "no captions" (GOO-652).
+  if (dump === null) throw new YoutubeUnreachableError(video.url, `yt-dlp described no video${ytDlpWarnings(stderr)}`.slice(0, MAX_REASON_LENGTH));
+  return { kind: "none", why: `YouTube listed no caption tracks${ytDlpWarnings(stderr)}` };
 }
 
 /** yt-dlp's complaints, quoted after a sentence that explains a missing
@@ -226,11 +220,13 @@ export function readTracklessAnswer(stderr: string): { kind: "none" } | { kind: 
   return unreachableLine ? { kind: "unreachable", line: unreachableLine } : { kind: "none" };
 }
 
-/** The caption file's text, fetched through the residential proxy. When every
- *  try fails, YouTube was not reached, whatever the reason. */
-async function downloadCaptionFile(videoUrl: string, track: CaptionTrack): Promise<string> {
+/** The caption file's text, fetched through the given proxy. Any failure
+ *  means YouTube was not reached. */
+async function downloadCaptionFile(videoUrl: string, track: CaptionTrack, proxyUrl: string | undefined): Promise<string> {
   try {
-    return await fetchTextViaResidentialProxy(track.url);
+    const response = await fetch(track.url, { proxy: proxyUrl, signal: AbortSignal.timeout(CAPTION_CALL_TIMEOUT_MS) } as RequestInit);
+    if (!response.ok) throw new Error(`HTTP ${response.status} for the caption file`);
+    return await response.text();
   } catch (err) {
     throw new YoutubeUnreachableError(videoUrl, hideProxyAddress(err instanceof Error ? err.message : String(err)).slice(0, MAX_REASON_LENGTH));
   }
@@ -250,14 +246,64 @@ export type YoutubeCaptions =
  * When YouTube could not be reached at all, this throws a
  * YoutubeUnreachableError, so that a proxy outage is never recorded as a
  * video without captions (GOO-169).
+ *
+ * This is the only retry loop for captions. Each try runs on a fresh proxy
+ * connection. A try lists the tracks unless an earlier try already did, and
+ * then downloads one. The listing can be kept, because its track addresses
+ * work from any connection (GOO-776). The one exception is a refused caption
+ * file. The addresses carry the PO token, and after a refusal that token's
+ * integrity token is dropped, so the next try lists again.
  */
 export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<YoutubeCaptions> {
-  const listing = await listCaptionTracks(video);
-  if (listing.kind !== "tracks") return listing;
-  const track = chooseCaptionTrack(listing.tracks, video.audioLanguage);
-  if (!track) return { kind: "none", why: `YouTube listed only machine translations (${listing.tracks.map((t) => t.code).join(", ")})` };
-  const cues = parseSubtitleToCues(await downloadCaptionFile(video.url, track));
-  return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
+  let listing: CaptionListing | null = null;
+  return withResidentialProxy(
+    video.url,
+    async (proxyUrl) => {
+      const current = (listing ??= await listCaptionTracks(video, proxyUrl));
+      if (current.kind !== "tracks") return current;
+      const track = chooseCaptionTrack(current.tracks, video.audioLanguage);
+      if (!track) return { kind: "none", why: `YouTube listed only machine translations (${current.tracks.map((t) => t.code).join(", ")})` };
+      const file = await downloadCaptionFile(video.url, track, proxyUrl);
+      if (isRefusedCaptionFile(file)) {
+        listing = null;
+        await invalidateIntegrityToken();
+        throw new YoutubeUnreachableError(video.url, `YouTube listed the ${track.kind} ${track.code} track and served ${file.length} characters that are not a caption file`);
+      }
+      const cues = parseSubtitleToCues(file);
+      return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
+    },
+    (err) => err instanceof YoutubeUnreachableError,
+  );
+}
+
+/** Makes the PO token provider throw away its integrity token, so the next
+ *  try's PO token is built on a fresh one.
+ *
+ *  The provider gets an integrity token from Google's BotGuard check and
+ *  builds every PO token on it for 12 hours. Google hands out two kinds. With
+ *  one kind, YouTube serves caption files. With the other, YouTube still lists
+ *  a video's caption tracks but answers every caption file with nothing. On
+ *  the services machine the provider logs every integrity token it gets. From
+ *  2026-11-14 to 2026-11-17 it got six. The three 89-character tokens served
+ *  captions (100 of 113 reads, and none of the 13 failures was an empty
+ *  file), and the three 93-character tokens did not (1 of 86 reads). A GitHub
+ *  runner with the same yt-dlp, provider and proxy read the same videos
+ *  without trouble on 2026-11-17 (GOO-776). Before this, one bad token meant
+ *  12 hours without any transcript. */
+async function invalidateIntegrityToken(): Promise<void> {
+  const response = await fetch(`${PO_TOKEN_PROVIDER_URL}/invalidate_it`, { method: "POST", signal: AbortSignal.timeout(CAPTION_CALL_TIMEOUT_MS) });
+  if (!response.ok) throw new Error(`The PO token provider at ${PO_TOKEN_PROVIDER_URL} refused to drop its integrity token (HTTP ${response.status}).`);
+}
+
+/** Whether what YouTube served for a listed track is not a caption file at
+ *  all: an empty answer or a page. That is YouTube refusing the download, not
+ *  a video without captions. From 2026-11-11 to 2026-11-16, 49 of 57 videos
+ *  got no transcript, against 9 of 132 on 2026-11-08 and 2026-11-09. The
+ *  young ones failed with "the track's file holds no captions", and the older
+ *  ones were finished as videos nobody can check. A caption file with a
+ *  WEBVTT header and no cues is a real empty track. */
+export function isRefusedCaptionFile(content: string): boolean {
+  return !/^WEBVTT(\s|$)/.test(content.trimStart()) && !/\d\s*-->\s*\d/.test(content);
 }
 
 export interface SubtitleCue {

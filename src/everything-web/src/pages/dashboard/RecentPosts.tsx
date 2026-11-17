@@ -3,21 +3,9 @@ import { LAST_POSTS_PER_CREATOR } from "@cn/core/readers";
 import { queryKeys } from "@cn/features/query/queryKeys";
 import { afterFullPage, usePagedList } from "@cn/features/query/usePagedList";
 import { cn } from "@cn/ui/cn";
-import { CELL, DashboardTable, LoadState, NUMBER_CELL, ShowMore, SUBLINE, type Column } from "./tableParts";
+import { CELL, DashboardTable, LoadState, NUMBER_CELL, ShowMore, SUBLINE, timeAgo, type Column } from "./tableParts";
 
-const MINUTE_MS = 60 * 1000;
-const HOUR_MS = 60 * MINUTE_MS;
-const DAY_MS = 24 * HOUR_MS;
-
-/** "just now", "12 min ago", "5 h ago", "3 days ago". */
-function timeAgo(timestamp: string): string {
-  const elapsed = Date.now() - new Date(timestamp).getTime();
-  if (elapsed < MINUTE_MS) return "just now";
-  if (elapsed < HOUR_MS) return `${Math.floor(elapsed / MINUTE_MS)} min ago`;
-  if (elapsed < DAY_MS) return `${Math.floor(elapsed / HOUR_MS)} h ago`;
-  const days = Math.floor(elapsed / DAY_MS);
-  return days === 1 ? "1 day ago" : `${days} days ago`;
-}
+const DAY_MS = 24 * 3600 * 1000;
 
 /** A publish date carries no time of day, so it is counted in whole UTC days:
  *  "today", "yesterday", "4 days ago". */

@@ -53,7 +53,8 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
       // request actually finishes.
       onDismiss: teardown,
     });
-    if (mine !== seq) return handle.teardown();
+    // A newer start, or a newer copy of this script, has taken over meanwhile.
+    if (mine !== seq || ctx.isInvalid) return handle.teardown();
     card = handle;
     let seenNotes = 0;
     watch = watchRequestProgress({

@@ -3,20 +3,28 @@
  * on Jim's plan. The dispatcher does the runner's bookkeeping (jobs.ts) and
  * hands every job to that session, which starts one ordinary subagent per
  * job with the job's prompt. A job is a queued post, an X tweet the X run
- * handed to Claude, a reviewer message on the review page, or a creator whose
- * X account nobody has looked up yet.
+ * handed to Claude, a reviewer message on the review page, a creator whose
+ * X account nobody has looked up yet, or a posted note the judge has not
+ * judged yet.
  *
  * `dispatch` runs as a background task of the session. It waits until jobs
  * are ready, starts them, prints them and exits, and the end of the task
  * wakes the session up. It also exits every few hours without jobs, so the
  * session posts its digest. When a subagent has returned, the session runs
  * `dispatch-end` for its job, which closes the job or prints the prompt of
- * one more try. `dispatch-services` runs all the time next to it: it runs the
- * note judge and rebuilds the examples once a day, the way the runner does.
+ * one more try. `dispatch-services` runs all the time next to it and rebuilds
+ * the examples once a day, the way the runner does.
  *
- * `dispatch` also reads the plan's usage every 5 minutes while it waits. The
- * feed run and the X run take a reading older than 30 minutes to mean that
- * no Claude takes their work. The session starts `dispatch` again after every
+ * On the devbox the note judge is a subagent of the session too, so that the
+ * session sees all the work on its plan (Jim, 2026-11-09). The ai-box runner
+ * starts its own `claude -p` for each judge instead, which cannot reach the
+ * database or the votes. A subagent works in the session's checkout and could,
+ * so only its prompt keeps it away from them.
+ *
+ * `dispatch` also reads the plan's usage every 5 minutes while it waits, and
+ * turns it into Claude's subscription to the queue. The X run takes a reading
+ * older than 30 minutes to mean that no Claude takes its tweets, and the feed
+ * run goes red when Claude stops asking for posts. The session starts `dispatch` again after every
  * wake, so the readings stop soon after the session stops answering. In
  * dispatch-services they would go on while the session is dead.
  *
@@ -33,17 +41,23 @@ import {
   endAnswer,
   endPost,
   endTweet,
+  endJudge,
   endXAccountLookup,
+  type HeldPost,
   type JobEnd,
   type JobRun,
   messageContext,
-  noteJudge,
+  nextClaudePost,
   refreshExamples,
   type ReviewerMessage,
+  updateClaudeSubscription,
   waitingMessages,
 } from "./jobs";
 import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt, xAccountPrompt } from "./prompts";
-import { claudeQueue, claudeRunsSince, type QueueItem, readSettings, recordUsage } from "./store";
+import { JUDGE_EXAMPLES_PATH, JUDGE_MODEL, type JudgedNote, type JudgeExample, judgeSubagentPrompt } from "./judge";
+import { judgeMayStartAt } from "../everything/usagePacing";
+import { db } from "../serviceDb";
+import { claudeRunsSince, draftsToJudge, latestEventId, postedAfter, readJudgedNote, recordUsage } from "./store";
 import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
@@ -55,8 +69,9 @@ const JOBS_FILE = path.join(STATE_DIR, "jobs.json");
  *  wake, so the time is kept in a file. */
 const USAGE_READ_AT_FILE = path.join(STATE_DIR, "usage-read-at");
 const RUNS_DIR = path.join(STATE_DIR, "runs");
-/** The devbox's judges run without the ai-box guard hook. */
-const JUDGE_SETTINGS = path.join(STATE_DIR, "judge-settings.json");
+/** The posted notes still to judge, newest first, and the last "posted" entry
+ *  of the log read so far. Only `dispatch` writes it. */
+const JUDGE_QUEUE_FILE = path.join(STATE_DIR, "judge-queue.json");
 
 const POLL_MS = 30_000;
 /** `dispatch` also ends after this long without jobs, so the session posts
@@ -65,34 +80,41 @@ const DIGEST_EVERY_MS = 3 * 60 * 60 * 1000;
 /** Printed with every batch of jobs, so the session does not depend on
  *  remembering its brief after a restart or a summarised context. */
 const JOBS_INSTRUCTION =
-  "Start one ordinary subagent per job. Tell it to read the job's prompt file and follow it. When the subagent has returned, run `bun run claude-notes dispatch-end <key>` for its job.";
+  "Start one ordinary subagent per job, on the model the job names if it names one. Tell it to read the job's prompt file and follow it. When the subagent has returned, run `bun run claude-notes dispatch-end <key>` for its job.";
 /** Jobs in progress at once. The session's subagents start their own
  *  subagents, and every one of them counts against the session's limits. */
 const MAX_POSTS_RUNNING = 5;
 const MAX_TWEETS_RUNNING = 3;
-/** X account lookups are small, so one at a time keeps them from crowding out posts. */
-const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
+/** The devbox starts no X account lookups and no judges for now. Most of them
+ *  were for claude-hq-nathan's notes, and they used Jim's plan at about a point
+ *  an hour while the devbox itself wrote two posts a day (Jim, 2026-11-17).
+ *  GOO-786 brings them back on the shared Claude account. Before the pause the
+ *  limits were 1 lookup and 2 judges at a time. */
+const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 0;
+const MAX_JUDGES_RUNNING = 0;
 /** Tweets the devbox starts in any 24 hours. A subagent records no cost, so
  *  the X share in xShare.ts sees none of the devbox's tweets and never stops
  *  the X run from sending more. Without this limit the tweets used about four
  *  times their share of the week (Jim, 2026-11-02). The limit was 35 at first,
- *  and Jim raised it to 100 on 2026-11-04. At about $0.61 of API cost per tweet
- *  and about $25 per percent of the plan's week, 100 tweets use about 2.5% a day.
+ *  and Jim raised it to 100 on 2026-11-04 and lowered it to 70 on 2026-11-15.
+ *  At about $0.61 of API cost per tweet and about $25 per percent of the plan's
+ *  week, 70 tweets use about 1.7% a day.
  *  A tweet that is not started is swept as failed by the X run after
  *  CLAUDE_TWEET_MAX_WAIT_MINUTES. */
-const MAX_TWEETS_PER_DAY = 100;
+const MAX_TWEETS_PER_DAY = 70;
 const DAY_MS = 24 * 3600_000;
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 
 type Job = JobRun & { key: string; prompt: string } & (
-    | { kind: "post"; item: QueueItem }
+    | ({ kind: "post" } & HeldPost)
     | { kind: "tweet"; tweet: XTweet }
     | { kind: "message"; draftId: string; message: ReviewerMessage }
     | { kind: "x-account"; creator: CreatorToLookUp }
+    | { kind: "judge"; draftId: string; note: JudgedNote }
   );
 
 /** The open jobs, and the keys of the jobs Claude gave up on: reviewer
- *  messages and X account lookups. Those wait for a person and are not
+ *  messages, X account lookups and judges. Those wait for a person and are not
  *  started again. */
 type State = { jobs: Job[]; gaveUp: string[] };
 
@@ -115,7 +137,7 @@ function runFolder(name: string): string {
 async function preparePrompt(job: Job): Promise<boolean> {
   let prompt: string;
   if (job.kind === "post") {
-    const start = await beginPost(job.item, job.runDir, job.attempt);
+    const start = await beginPost(job, job.runDir, job.attempt);
     if (start.kind !== "ready") return false;
     prompt = postPrompt({ host: "devbox", item: job.item, dir: start.dir, runDir: job.runDir, runId: start.postRun.runId, picks: start.postRun.picks, asked: start.asked });
   } else if (job.kind === "tweet") {
@@ -123,6 +145,9 @@ async function preparePrompt(job: Job): Promise<boolean> {
     prompt = tweetPrompt({ host: "devbox", tweet: job.tweet, runDir: job.runDir });
   } else if (job.kind === "x-account") {
     prompt = xAccountPrompt({ creator: job.creator, runDir: job.runDir });
+  } else if (job.kind === "judge") {
+    const examples: JudgeExample[] = JSON.parse(readFileSync(JUDGE_EXAMPLES_PATH, "utf8"));
+    prompt = judgeSubagentPrompt(job.note, examples.filter((e) => e.draftId !== job.draftId), job.runDir);
   } else {
     prompt = messagePrompt({ host: "devbox", ...job.message, ...(await messageContext(job.draftId)), runDir: job.runDir });
   }
@@ -134,6 +159,21 @@ const newRun = (key: string) => {
   const runDir = runFolder(key);
   return { key, runDir, prompt: path.join(runDir, "prompt.md"), attempt: 1, startedAt: Date.now(), weeklyAtStart: null };
 };
+
+type JudgeQueue = { lastPostedEventId: number; drafts: string[] };
+
+/** The notes still to judge. The first call reads every posted note without a
+ *  judgement for its current text. Later calls add only the notes posted since. */
+async function readJudgeQueue(): Promise<JudgeQueue> {
+  if (!existsSync(JUDGE_QUEUE_FILE)) return { lastPostedEventId: await latestEventId(), drafts: await draftsToJudge() };
+  const queue: JudgeQueue = JSON.parse(readFileSync(JUDGE_QUEUE_FILE, "utf8"));
+  const posted = await postedAfter(queue.lastPostedEventId);
+  if (posted.length === 0) return queue;
+  const newestFirst = posted.map((p) => p.draftId).reverse();
+  return { lastPostedEventId: posted.at(-1)!.id, drafts: [...new Set([...newestFirst, ...queue.drafts])] };
+}
+
+const judgeKey = (draftId: string) => `judge-${draftId}`;
 
 /** The jobs waiting for a Claude, within the limits of jobs in progress. */
 async function newJobs(state: State): Promise<Job[]> {
@@ -149,13 +189,23 @@ async function newJobs(state: State): Promise<Job[]> {
     const creator = (await creatorsToLookUp()).find((c) => !open.has(`xacct-${c.slug}`) && !state.gaveUp.includes(`xacct-${c.slug}`));
     if (creator) jobs.push({ ...newRun(`xacct-${creator.slug}`), kind: "x-account", creator });
   }
-  if ((await readSettings()).writer !== "claude") return jobs;
   for (const [draftId, message] of await waitingMessages()) {
     const key = `message-${draftId}`;
     if (!open.has(key) && !state.gaveUp.includes(key)) jobs.push({ ...newRun(key), kind: "message", draftId, message });
   }
-  const items = (await claudeQueue()).waiting.filter((item) => !open.has(item.id));
-  for (const item of items.slice(0, Math.max(0, MAX_POSTS_RUNNING - running("post")))) jobs.push({ ...newRun(item.id), kind: "post", item });
+  if (running("judge") < MAX_JUDGES_RUNNING && (await judgeMayStart())) {
+    const queue = await readJudgeQueue();
+    const waiting = queue.drafts.filter((id) => !open.has(judgeKey(id)) && !state.gaveUp.includes(judgeKey(id)));
+    const picked = waiting.slice(0, MAX_JUDGES_RUNNING - running("judge"));
+    for (const draftId of picked) jobs.push({ ...newRun(judgeKey(draftId)), kind: "judge", draftId, note: await readJudgedNote(draftId) });
+    writeFileSync(JUDGE_QUEUE_FILE, JSON.stringify({ ...queue, drafts: waiting.filter((id) => !picked.includes(id)) }));
+  }
+  // The queue never hands out a post that Claude already holds.
+  for (let slots = MAX_POSTS_RUNNING - running("post"); slots > 0; slots--) {
+    const post = await nextClaudePost();
+    if (!post) break;
+    jobs.push({ ...newRun(post.item.id), kind: "post", ...post });
+  }
   return jobs;
 }
 
@@ -163,6 +213,7 @@ function describe(job: Job): string {
   if (job.kind === "post") return job.item.title ?? job.item.url;
   if (job.kind === "tweet") return `X tweet ${job.tweet.tweetId}`;
   if (job.kind === "x-account") return `the X account of ${job.creator.name}`;
+  if (job.kind === "judge") return `the judge of draft ${job.draftId}`;
   return `${job.message.from}'s message on draft ${job.draftId}`;
 }
 
@@ -170,12 +221,13 @@ function endJob(job: Job, end: JobEnd) {
   if (job.kind === "post") return endPost(job, end);
   if (job.kind === "tweet") return endTweet(job, end);
   if (job.kind === "x-account") return endXAccountLookup(job, end);
+  if (job.kind === "judge") return endJudge(job, end);
   return endAnswer(job.draftId, job, end);
 }
 
-/** Reads the plan's usage when the last reading is 5 minutes old. A failed
- *  reading is only logged: the next one is due in 5 minutes, and only half an
- *  hour without a reading counts as the note writer being down. */
+/** Reads the plan's usage when the last reading is 5 minutes old, and turns it
+ *  into Claude's subscription to the queue. A failed reading is only logged
+ *  and keeps the subscription: the next one is due in 5 minutes. */
 async function readUsageWhenDue() {
   const readAt = existsSync(USAGE_READ_AT_FILE) ? Number(readFileSync(USAGE_READ_AT_FILE, "utf8")) : 0;
   if (Date.now() - readAt < USAGE_READ_EVERY_MS) return;
@@ -184,6 +236,7 @@ async function readUsageWhenDue() {
     const reading = await readUsage();
     await recordUsage(reading);
     console.error(`${reading.at} the plan is at ${reading.weekly}% of its week`);
+    await updateClaudeSubscription(reading.weekly, false);
   } catch (err) {
     console.error(`Could not read the usage: ${(err as Error).message}`);
   }
@@ -204,7 +257,7 @@ export async function dispatch() {
       // are added, or a closed job would come back.
       const current = readState();
       writeState({ ...current, jobs: [...current.jobs, ...started] });
-      const jobs = started.map((job) => ({ key: job.key, kind: job.kind, what: describe(job), prompt: job.prompt }));
+      const jobs = started.map((job) => ({ key: job.key, kind: job.kind, what: describe(job), prompt: job.prompt, ...(job.kind === "judge" && { model: JUDGE_MODEL }) }));
       return console.log(JSON.stringify({ wake: "jobs", instruction: JOBS_INSTRUCTION, jobs, inProgress: current.jobs.length + started.length }, null, 2));
     }
     if (Date.now() - startedAt > DIGEST_EVERY_MS) return console.log(JSON.stringify({ wake: "digest", inProgress: state.jobs.map((job) => job.key) }));
@@ -236,14 +289,19 @@ export async function dispatchEnd(key: string) {
   console.log(`CLOSED ${describe(job)}`);
 }
 
-/** Runs the note judge and rebuilds the examples once a day. */
+async function judgeMayStart(): Promise<boolean> {
+  const { data, error } = await db().from("everything_claude_usage").select("at, weekly").order("at", { ascending: false }).limit(1).maybeSingle();
+  if (error) {
+    console.error(`Could not read the usage for the judge: ${error.message}`);
+    return false;
+  }
+  return judgeMayStartAt(data && { at: new Date(data.at), weekly: data.weekly }, new Date());
+}
+
+/** Rebuilds the examples once a day. */
 export async function dispatchServices() {
-  mkdirSync(RUNS_DIR, { recursive: true });
-  if (!existsSync(JUDGE_SETTINGS)) writeFileSync(JUDGE_SETTINGS, "{}");
-  const judge = noteJudge({ runFolder, mayStart: async () => true, runSettings: JUDGE_SETTINGS });
-  for (let first = true; ; first = false) {
+  for (;;) {
     refreshExamples(DEVBOX_EXAMPLES_PATH);
-    await judge.tick(first);
     await Bun.sleep(POLL_MS);
   }
 }

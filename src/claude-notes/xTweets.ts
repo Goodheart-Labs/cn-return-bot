@@ -8,7 +8,7 @@ import type { Json } from "../everything-core/database.types";
 import { fetchAllRows } from "../everything-core/paging";
 import { CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
 import { countNoteLength } from "../pipeline/utils/noteLength";
-import { db } from "./store";
+import { db } from "../serviceDb";
 
 /** X's limit, where every link counts as one character. */
 export const X_NOTE_MAX_CHARS = 280;

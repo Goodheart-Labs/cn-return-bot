@@ -4,7 +4,7 @@ import { BOT_TEST, type ABTest } from "./abTestsData";
 
 test("a test without a declared default has its heaviest arm as control and fills nothing", () => {
   const [row] = abTestRows([BOT_TEST]);
-  expect(row).toEqual({ test: "bot", fill_variant: null, control_variant: "simple-bot", variants: ["simple-bot", "claude-code"] });
+  expect(row).toEqual({ test: "bot", fill_variant: null, control_variant: "simple-bot", variants: ["simple-bot", "claude-code", "gpt61terra-agent", "sonnet55-agent"] });
 });
 
 test("a declared default is both the fill and the control", () => {

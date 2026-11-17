@@ -116,6 +116,60 @@ export type Database = {
         }
         Relationships: []
       }
+      everything_assignments: {
+        Row: {
+          deadline: string
+          ended_at: string | null
+          id: string
+          item_id: string
+          notewriter_id: string
+          outcome: string | null
+          reader_request: boolean
+          reason: string | null
+          started_at: string
+          summary: Json | null
+        }
+        Insert: {
+          deadline: string
+          ended_at?: string | null
+          id?: string
+          item_id: string
+          notewriter_id: string
+          outcome?: string | null
+          reader_request: boolean
+          reason?: string | null
+          started_at?: string
+          summary?: Json | null
+        }
+        Update: {
+          deadline?: string
+          ended_at?: string | null
+          id?: string
+          item_id?: string
+          notewriter_id?: string
+          outcome?: string | null
+          reader_request?: boolean
+          reason?: string | null
+          started_at?: string
+          summary?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_assignments_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_assignments_notewriter_id_fkey"
+            columns: ["notewriter_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_best_notes: {
         Row: {
           added_at: string
@@ -480,27 +534,6 @@ export type Database = {
           },
         ]
       }
-      everything_claude_settings: {
-        Row: {
-          id: boolean
-          updated_at: string
-          updated_by: string
-          writer: string
-        }
-        Insert: {
-          id?: boolean
-          updated_at?: string
-          updated_by?: string
-          writer?: string
-        }
-        Update: {
-          id?: boolean
-          updated_at?: string
-          updated_by?: string
-          writer?: string
-        }
-        Relationships: []
-      }
       everything_claude_skips: {
         Row: {
           at: string
@@ -618,25 +651,22 @@ export type Database = {
       }
       everything_feed_schedule: {
         Row: {
-          claude_failures_reported_through: string
-          claude_silence_warned_for: string | null
           dispatched_at: string | null
+          failures_reported_through: string
           id: boolean
           next_run_at: string | null
           next_run_reason: string | null
         }
         Insert: {
-          claude_failures_reported_through?: string
-          claude_silence_warned_for?: string | null
           dispatched_at?: string | null
+          failures_reported_through?: string
           id?: boolean
           next_run_at?: string | null
           next_run_reason?: string | null
         }
         Update: {
-          claude_failures_reported_through?: string
-          claude_silence_warned_for?: string | null
           dispatched_at?: string | null
+          failures_reported_through?: string
           id?: boolean
           next_run_at?: string | null
           next_run_reason?: string | null
@@ -645,6 +675,7 @@ export type Database = {
       }
       everything_items: {
         Row: {
+          caption_cues: Json | null
           checked_scope: string | null
           created_at: string
           error: string | null
@@ -657,6 +688,7 @@ export type Database = {
           project_id: string | null
           published_at: string | null
           published_time: string | null
+          queued_at: string | null
           request_steer: string | null
           retries: number
           skip_reason: string | null
@@ -667,6 +699,7 @@ export type Database = {
           url: string
         }
         Insert: {
+          caption_cues?: Json | null
           checked_scope?: string | null
           created_at?: string
           error?: string | null
@@ -679,6 +712,7 @@ export type Database = {
           project_id?: string | null
           published_at?: string | null
           published_time?: string | null
+          queued_at?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -689,6 +723,7 @@ export type Database = {
           url: string
         }
         Update: {
+          caption_cues?: Json | null
           checked_scope?: string | null
           created_at?: string
           error?: string | null
@@ -701,6 +736,7 @@ export type Database = {
           project_id?: string | null
           published_at?: string | null
           published_time?: string | null
+          queued_at?: string | null
           request_steer?: string | null
           retries?: number
           skip_reason?: string | null
@@ -1130,6 +1166,98 @@ export type Database = {
           },
         ]
       }
+      everything_x_post_requests: {
+        Row: {
+          claimed_at: string | null
+          done_at: string | null
+          error: string | null
+          id: string
+          note_id: string
+          reply_text: string
+          requested_at: string
+          requested_by: string
+          status: string
+          tweet_text: string
+          typefully_draft_id: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id: string
+          reply_text?: string
+          requested_at?: string
+          requested_by: string
+          status?: string
+          tweet_text: string
+          typefully_draft_id?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id?: string
+          reply_text?: string
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          tweet_text?: string
+          typefully_draft_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_x_post_requests_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_notewriters: {
+        Row: {
+          cooldown_until: string | null
+          created_at: string
+          every_minutes: number | null
+          failures_in_a_row: number
+          id: string
+          last_seen_at: string | null
+          lease_minutes: number
+          name: string
+          owner: string
+          silence_warned_for: string | null
+          takes_reader_requests: boolean
+        }
+        Insert: {
+          cooldown_until?: string | null
+          created_at?: string
+          every_minutes?: number | null
+          failures_in_a_row?: number
+          id: string
+          last_seen_at?: string | null
+          lease_minutes?: number
+          name: string
+          owner: string
+          silence_warned_for?: string | null
+          takes_reader_requests?: boolean
+        }
+        Update: {
+          cooldown_until?: string | null
+          created_at?: string
+          every_minutes?: number | null
+          failures_in_a_row?: number
+          id?: string
+          last_seen_at?: string | null
+          lease_minutes?: number
+          name?: string
+          owner?: string
+          silence_warned_for?: string | null
+          takes_reader_requests?: boolean
+        }
+        Relationships: []
+      }
       everything_notes: {
         Row: {
           author_id: string | null
@@ -1150,6 +1278,7 @@ export type Database = {
           improved_from_note_id: string | null
           not_helpful_count: number
           note: string
+          notewriter_id: string | null
           p_helpful: number | null
           p_helpful_after_helpful: number | null
           somewhat_helpful_count: number
@@ -1175,6 +1304,7 @@ export type Database = {
           improved_from_note_id?: string | null
           not_helpful_count?: number
           note: string
+          notewriter_id?: string | null
           p_helpful?: number | null
           p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
@@ -1200,6 +1330,7 @@ export type Database = {
           improved_from_note_id?: string | null
           not_helpful_count?: number
           note?: string
+          notewriter_id?: string | null
           p_helpful?: number | null
           p_helpful_after_helpful?: number | null
           somewhat_helpful_count?: number
@@ -1523,6 +1654,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      everything_read_failures: {
+        Row: {
+          at: string
+          id: number
+          item_id: string
+          reason: string
+          reported_at: string | null
+        }
+        Insert: {
+          at?: string
+          id?: number
+          item_id: string
+          reason: string
+          reported_at?: string | null
+        }
+        Update: {
+          at?: string
+          id?: number
+          item_id?: string
+          reason?: string
+          reported_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_read_failures_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       everything_safari_waitlist: {
         Row: {
@@ -2855,10 +3018,6 @@ export type Database = {
         Returns: number
       }
       everything_claude_actor: { Args: { p_actor: string }; Returns: string }
-      everything_claude_change_settings: {
-        Args: { p_actor?: string; p_writer: string }
-        Returns: undefined
-      }
       everything_claude_delete_note: {
         Args: { p_actor?: string; p_draft: string }
         Returns: undefined
@@ -3050,6 +3209,16 @@ export type Database = {
         }[]
       }
       everything_dispatch_feed_run_if_due: { Args: never; Returns: boolean }
+      everything_donation_series: {
+        Args: never
+        Returns: {
+          charity: string
+          day: string
+          outstanding: number
+          paid: number
+          team_vote: boolean
+        }[]
+      }
       everything_extend_priority: {
         Args: { granted: string; target_feed_url: string }
         Returns: boolean
@@ -3214,6 +3383,27 @@ export type Database = {
         Returns: Json
       }
       everything_note_status: { Args: { p_helpful: number }; Returns: string }
+      everything_notewriters_overview: {
+        Args: never
+        Returns: {
+          cooldown_until: string
+          done_7d: number
+          every_minutes: number
+          failed_7d: number
+          failures_in_a_row: number
+          id: string
+          last_failure: string
+          last_failure_at: string
+          last_seen_at: string
+          lease_minutes: number
+          name: string
+          notes_7d: number
+          notes_total: number
+          open_posts: number
+          owner: string
+          takes_reader_requests: boolean
+        }[]
+      }
       everything_pipeline_daily: {
         Args: never
         Returns: {
@@ -3305,6 +3495,10 @@ export type Database = {
           status_reason: string
         }[]
       }
+      everything_request_x_post: {
+        Args: { p_note: string; p_reply?: string; p_text: string }
+        Returns: string
+      }
       everything_return_to_recommendations: {
         Args: { p_note_id: string }
         Returns: undefined
@@ -3318,6 +3512,35 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      everything_review_entries: {
+        Args: { p_ids?: string[] }
+        Returns: {
+          claim: string
+          context_paragraph: string
+          created_at: string
+          draft_id: string
+          id: string
+          item_id: string
+          kind: string
+          note: string
+          note_id: string
+          outcome: string
+          passage: string
+          posted_as: string
+          proposed_note: string
+          proposed_sources: Json
+          reasoning: string
+          review_note: string
+          review_note_at: string
+          review_note_by: string
+          reviewed_at: string
+          reviewed_by: string
+          source: string
+          sources: Json
+          status: string
+          verdict: string
+        }[]
       }
       everything_review_facets: {
         Args: { p_facets: Json; p_request: Json }
@@ -3377,7 +3600,6 @@ export type Database = {
           matching: number
           newest: string
           reviewer: string
-          writer: string
         }[]
       }
       everything_reviewer_of: { Args: { p_user: string }; Returns: string }
@@ -3480,6 +3702,7 @@ export type Database = {
           somewhat_helpful_ratings: number
         }[]
       }
+      notewriter_add_note: { Args: { p_item: string; p_note: Json; p_notewriter: string }; Returns: Json }
       notewriter_days: {
         Args: { p_request: Json; p_source: string; p_with_runs?: boolean }
         Returns: {
@@ -3499,6 +3722,8 @@ export type Database = {
           value: string
         }[]
       }
+      notewriter_fail: { Args: { p_assignment: string; p_reason: string }; Returns: Json }
+      notewriter_feed_posts_wanted: { Args: never; Returns: { waiting: number; wanted: number }[] }
       notewriter_field_rows: {
         Args: { p_ids?: string[]; p_source: string }
         Returns: Database["public"]["CompositeTypes"]["notewriter_field_row"][]
@@ -3509,6 +3734,8 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      notewriter_finish: { Args: { p_assignment: string; p_skip_reason?: string; p_summary?: Json }; Returns: Json }
+      notewriter_next_post: { Args: { p_notewriter: string }; Returns: Json }
       notewriter_note_ratings: {
         Args: { p_source: string }
         Returns: {
@@ -3540,6 +3767,8 @@ export type Database = {
         }[]
       }
       notewriter_source: { Args: { p_source: string }; Returns: string }
+      notewriter_status: { Args: { p_notewriter: string }; Returns: Json }
+      notewriter_subscribe: { Args: { p_every_minutes: number; p_notewriter: string; p_takes_reader_requests?: boolean }; Returns: Json }
       notewriter_summary: {
         Args: { p_request: Json; p_source: string }
         Returns: {
@@ -3548,6 +3777,7 @@ export type Database = {
           views: number
         }[]
       }
+      notewriter_take_back_overdue: { Args: never; Returns: number }
       notewriter_tests: {
         Args: { p_source: string }
         Returns: {
@@ -3705,6 +3935,7 @@ export type Database = {
         creator_x_evidence: string | null
         x_time: string | null
         x_tweet_url: string | null
+        source: string | null
       }
       notewriter_field_row: {
         note_id: string | null

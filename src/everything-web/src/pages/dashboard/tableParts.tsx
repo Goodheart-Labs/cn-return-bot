@@ -98,3 +98,17 @@ export function LoadState({ error, onRetry }: { error: Error | null; onRetry: ()
 }
 
 export const postCount = (n: number) => (n === 1 ? "1 post" : `${n} posts`);
+
+const MINUTE_MS = 60 * 1000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+
+/** "just now", "12 min ago", "5 h ago", "3 days ago". */
+export function timeAgo(timestamp: string): string {
+  const elapsed = Date.now() - new Date(timestamp).getTime();
+  if (elapsed < MINUTE_MS) return "just now";
+  if (elapsed < HOUR_MS) return `${Math.floor(elapsed / MINUTE_MS)} min ago`;
+  if (elapsed < DAY_MS) return `${Math.floor(elapsed / HOUR_MS)} h ago`;
+  const days = Math.floor(elapsed / DAY_MS);
+  return days === 1 ? "1 day ago" : `${days} days ago`;
+}

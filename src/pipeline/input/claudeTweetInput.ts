@@ -25,6 +25,9 @@ export interface ClaudeTweetInputOptions {
   now?: Date;
 }
 
+/** The heading of the list of image links at the end of the input. */
+export const IMAGE_LINKS_HEADING = "## Images on the post";
+
 const isPhoto = (media: { type?: string }) => media.type === "photo";
 
 function imageLinks(post: Post): string[] {
@@ -48,5 +51,5 @@ export async function buildClaudeTweetInput(post: Post, options: ClaudeTweetInpu
     now: options.now,
   });
   const links = options.describeImages ? [] : imageLinks(post);
-  return links.length ? `${message}\n\n## Images on the post\n\n${links.join("\n")}` : message;
+  return links.length ? `${message}\n\n${IMAGE_LINKS_HEADING}\n\n${links.join("\n")}` : message;
 }

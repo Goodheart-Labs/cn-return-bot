@@ -22,15 +22,16 @@ async function fetchNoteWithPost(noteId: string) {
  *  with its whole source links, and the rating pills with their counts. The
  *  surrounding paragraph and the action row are left out. The server waits for
  *  the element with `data-note-image`. */
-export function NoteImagePage({ noteId }: { noteId: string }) {
+export function NoteImagePage({ noteId, preview = false }: { noteId: string; preview?: boolean }) {
   const card = useQuery({ queryKey: queryKeys.noteImage(noteId), queryFn: () => fetchNoteWithPost(noteId) });
   if (card.isError) return <p className="p-8 text-sm text-negative">{card.error.message}</p>;
   if (card.data === null) return <p className="p-8 text-sm text-fg-muted">There is no note {noteId}.</p>;
   if (!card.data) return null;
   const { note, post } = card.data;
   return (
-    <main className="p-6">
-      <div data-note-image style={{ width: IMAGE_WIDTH_PX }}>
+    // The preview on a review card fits the card's width; the photographed page keeps the fixed width.
+    <main className={preview ? "p-3" : "p-6"}>
+      <div data-note-image style={preview ? { width: "100%", maxWidth: IMAGE_WIDTH_PX } : { width: IMAGE_WIDTH_PX }}>
         <ClaimCard claim={note.claim} paragraph={null} post={post}>
           <NoteBox note={note} status={noteStatus(note)}>
             <VoteRatings helpful={note.helpful_count} somewhatHelpful={note.somewhat_helpful_count} notHelpful={note.not_helpful_count} showCounts onVote={() => {}} />

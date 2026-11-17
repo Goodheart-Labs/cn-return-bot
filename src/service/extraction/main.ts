@@ -14,22 +14,20 @@
 import "dotenv/config";
 import { extractClaims } from "../../everything/pipeline/extractClaims";
 import { rateClaims } from "../../everything/pipeline/rateClaims";
-import { readItemText } from "../../everything/worker";
-import { fetchFeedXml } from "../../everything/sources/substack";
-import { UnreadableVideoError } from "../../everything/sources/youtube";
 import { aggregateAndLogCosts, withCostTracker } from "../../pipeline/cost-tracking/costTracker";
+import { readListing } from "../../pipeline/fetch/readListing";
+import { readPage } from "../../pipeline/fetch/readPage";
 import {
   EXTRACT_CLAIMS_PATH,
   FETCH_SERVICE_SOCKET_VARIABLE,
-  ITEM_TEXT_PATH,
   RATE_CLAIMS_PATH,
-  SUBSTACK_FEED_PATH,
-  ServiceError,
+  READ_LISTING_PATH,
+  READ_PAGE_PATH,
   type ExtractClaimsRequest,
   type FetchUrlRequest,
-  type SubstackFeedXml,
-  type ItemTextRequest,
-  type ItemTextResponse,
+  type Listing,
+  type ListingRequest,
+  type PageRead,
   type ExtractClaimsResponse,
   type RateClaimsRequest,
   type RateClaimsResponse,
@@ -99,31 +97,26 @@ const rateClaimsRoute: ServiceRoute<RateClaimsRequest, RateClaimsResponse> = {
   },
 };
 
-/** Reads one item's text for the Claude note writer on the devbox (GOO-507),
- *  because only this machine can fetch YouTube captions. */
-const itemTextRoute: ServiceRoute<ItemTextRequest, ItemTextResponse> = {
-  path: ITEM_TEXT_PATH,
-  priorityOf: (body) => body.priority,
+/** Reads a page for a caller in GitHub Actions, which never fetches an
+ *  outside address itself (GOO-755). A page read takes minutes at most and no
+ *  model call, so it skips the queue. */
+const readPageRoute: ServiceRoute<FetchUrlRequest, PageRead> = {
+  path: READ_PAGE_PATH,
+  priorityOf: null,
   handle: async (body) => {
-    if (!body?.item?.url) throw new Error("Reading an item needs the item");
-    try {
-      const read = await readItemText(body.item);
-      console.log(`[extraction] ${body.priority} read ${body.item.url}: ${read.text.length} characters`);
-      return read;
-    } catch (err) {
-      if (!(err instanceof UnreadableVideoError)) throw err;
-      const { reason, captionsMayStillCome, why } = err;
-      throw new ServiceError({ code: "unreadable_video", error: err.message, video: { reason, captionsMayStillCome, why } });
-    }
+    const read = await readPage(body.url);
+    console.log(`[extraction] read ${body.url}: ${read.type === "page" ? `${read.page.text.length} characters` : read.type}`);
+    return read;
   },
 };
 
-/** Relays a Substack feed to the feed run in GitHub Actions, which Substack
- *  refuses (GOO-549). */
-const substackFeedRoute: ServiceRoute<FetchUrlRequest, SubstackFeedXml> = {
-  path: SUBSTACK_FEED_PATH,
+/** Reads a creator's listing for the walk in GitHub Actions: a Substack feed,
+ *  which Substack refuses GitHub's machines (GOO-549), or a forum author's
+ *  latest posts. */
+const readListingRoute: ServiceRoute<ListingRequest, Listing> = {
+  path: READ_LISTING_PATH,
   priorityOf: null,
-  handle: (body) => fetchFeedXml(body.url),
+  handle: (body) => readListing(body),
 };
 
 // On the services machine, outside pages and images are fetched only by the
@@ -136,5 +129,5 @@ startService({
   port: numberFromEnv("EXTRACTION_PORT", DEFAULT_PORT),
   concurrency: numberFromEnv("EXTRACTION_CONCURRENCY", DEFAULT_CONCURRENCY),
   reservedForReader: RESERVED_FOR_READER,
-  routes: [extractClaimsRoute, rateClaimsRoute, itemTextRoute, substackFeedRoute],
+  routes: [extractClaimsRoute, rateClaimsRoute, readPageRoute, readListingRoute],
 });

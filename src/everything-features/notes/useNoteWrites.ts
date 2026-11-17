@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ensureWebItem } from "@cn/core/items";
+import { ensurePageItem } from "@cn/core/items";
 import { deleteNnn, postNnn } from "@cn/core/noteNotNeeded";
 import { deleteNote } from "@cn/core/notes";
 import { postClaimWithNote, postImprovement, type PostedNote } from "@cn/core/postNote";
@@ -34,7 +34,8 @@ export function usePostImprovement() {
   return useMutation({ mutationFn: postImprovement, onSuccess: useAfterPostingNote() });
 }
 
-/** Posts a brand-new note on a passage the reader selected. A page we have
+/** Posts a brand-new note on a passage the reader selected, or on a stretch of
+ *  a video. A page we have
  *  never ingested has no item row yet, so `item` may be missing; the row is
  *  then created from `page` only now, when the note is actually posted, and
  *  closing the composer leaves no orphan item behind. `page.creatorFeedUrl`
@@ -46,7 +47,7 @@ export function usePostClaimWithNote() {
       item: { id: string; url: string } | null;
       page: { url: string; title: string; creatorFeedUrl?: Promise<string | null> };
     }) => {
-      const itemId = item?.id ?? (await ensureWebItem({ ...page, creatorFeedUrl: await page.creatorFeedUrl }));
+      const itemId = item?.id ?? (await ensurePageItem({ ...page, creatorFeedUrl: await page.creatorFeedUrl }));
       return postClaimWithNote({ ...rest, itemId, itemUrl: item?.url ?? page.url });
     },
     onSuccess: useAfterPostingNote(),

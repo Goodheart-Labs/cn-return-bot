@@ -36,8 +36,8 @@ import { geminiNativeGenerate, type GeminiContentPart } from "../llm/gemini";
 import { IMAGE_PROMPT, VIDEO_PROMPT, FRAME_PROMPT, MEDIA_RESPONSE_FORMAT } from "../prompts/media/mediaAnalysis";
 import { getBestMediaUrl } from "./bestMediaUrl";
 import { isWebUrl } from "../utils/webUrl";
-import { callFetchService } from "../../service/client";
-import { FETCH_IMAGE_PATH, FETCH_SERVICE_SOCKET_VARIABLE, type FetchUrlRequest, type FetchedImage } from "../../service/contract";
+import { askFetcher } from "../../service/client";
+import { FETCH_IMAGE_PATH, type FetchUrlRequest, type FetchedImage } from "../../service/contract";
 
 const execAsync = promisify(exec);
 // The vision model we fall back to when the configured model fails, for example
@@ -172,13 +172,11 @@ async function analyzeMediaParts(parts: GeminiContentPart[], costName: string): 
 
 /** Reads an image for inline use. A data: URL already holds its bytes. Any
  *  other image is downloaded, on the services machine by the sandboxed
- *  fetcher, for the same reason as in fetchWebPage. */
+ *  fetcher, for the same reason as a page (readPage). */
 async function fetchImageInlineData(imageUrl: string): Promise<FetchedImage> {
   const dataUrlMatch = /^data:([^;]+);base64,(.*)$/s.exec(imageUrl);
   if (dataUrlMatch) return { mimeType: dataUrlMatch[1]!, data: dataUrlMatch[2]! };
-  const socket = process.env[FETCH_SERVICE_SOCKET_VARIABLE];
-  if (!socket) return downloadImageInlineData(imageUrl);
-  return callFetchService<FetchedImage>(socket, FETCH_IMAGE_PATH, { url: imageUrl } satisfies FetchUrlRequest);
+  return askFetcher<FetchedImage>(FETCH_IMAGE_PATH, { url: imageUrl } satisfies FetchUrlRequest, () => downloadImageInlineData(imageUrl));
 }
 
 /** The download itself. Only the fetcher and processes without one call this

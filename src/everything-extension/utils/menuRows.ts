@@ -24,24 +24,39 @@ import { addRequestedPage, getRequestedPages } from "./settings";
 // rendering may drop them, so we watch the menu and put them back.
 
 /** The page a three-dot menu belongs to. */
-export interface MenuSubject {
-  pageUrl: string;
+export interface MenuPage {
+  url: string;
   title: string;
   noun: "video" | "post";
   /** True when the menu belongs to the page the reader has open, such as the
    *  menu under the playing video. Such a check goes through the background,
    *  which reads the page's text and follows the check with the progress
    *  card. */
-  currentPage: boolean;
-  /** The page's creator. On Substack this can need a lookup. */
+  current: boolean;
+}
+
+/** What a three-dot menu is about. A Substack profile's own menu is about its
+ *  author only, so it has no page to check. */
+export interface MenuSubject {
+  page: MenuPage | null;
+  /** The creator of the page, or of the profile. On Substack this can need a
+   *  lookup. */
   creator: () => Promise<CreatorTarget | null>;
+  /** A row that opens our note editor on this page, such as "Write a note at
+   *  12:34" under a YouTube video. It sits after the check row and is never
+   *  left out. */
+  writeRow?: MenuRow;
 }
 
 /** How one site's menus work. Every selector lives in the site's file. */
 export interface MenuSite {
   /** Sets the row defaults in the stylesheet below. */
-  name: "youtube" | "substack";
-  /** The menu button a click landed on, or null. */
+  name: "youtube" | "youtube-player" | "substack";
+  /** What opens the site's menu: a click on a menu button, which is the
+   *  default, or a right-click, as on YouTube's player. */
+  opensOn?: "click" | "contextmenu";
+  /** The menu button a click landed on, or the element a right-click landed
+   *  on for a site whose menu opens on a right-click. Null otherwise. */
   triggerFor(target: Element): HTMLElement | null;
   /** The video or post the menu button belongs to, or null when it belongs to
    *  something we cannot check, such as a Substack Note or a YouTube Short. */
@@ -58,7 +73,7 @@ export interface MenuSite {
   dress?(row: HTMLElement, icon: HTMLElement, label: HTMLElement, native: HTMLElement): void;
 }
 
-interface MenuRow {
+export interface MenuRow {
   label: string;
   /** Runs the row's action and returns the confirmation to show, or null
    *  when the background shows its own. */
@@ -86,34 +101,34 @@ async function rowsFor(subject: MenuSubject): Promise<MenuRow[]> {
   ]);
   const pressable = await unlessPrioritized(creator);
   const creatorPrioritized = !!creator && !pressable;
-  const pageHandled =
-    creatorPrioritized ||
-    pageIsCovered(subject.pageUrl, checked ?? []) ||
-    pageIsCovered(subject.pageUrl, requested);
+  const { page } = subject;
   const rows: MenuRow[] = [];
-  if (!pageHandled) rows.push({ label: `Check this ${subject.noun}`, run: () => checkPage(subject, creator) });
+  if (page && !creatorPrioritized && !pageIsCovered(page.url, checked ?? []) && !pageIsCovered(page.url, requested)) {
+    rows.push({ label: `Check this ${page.noun}`, run: () => checkPage(page, creator) });
+  }
+  if (subject.writeRow) rows.push(subject.writeRow);
   if (pressable) rows.push({ label: priorityButtonLabel(pressable), run: () => pressCreator(pressable) });
   return rows;
 }
 
 /** The background owns the check of the open page. Another page gets a
  *  request without its text, which the pipeline then fetches itself. */
-async function checkPage(subject: MenuSubject, creator: CreatorTarget | null): Promise<string | null> {
-  if (subject.currentPage) {
-    // The background runs the right-click menu's "Check this page with
-    // Common Notes" for the tab the message came from.
+async function checkPage(page: MenuPage, creator: CreatorTarget | null): Promise<string | null> {
+  if (page.current) {
+    // The background runs the right-click menu's "Check this page" for the
+    // tab the message came from.
     await browser.runtime.sendMessage({ type: "cn-check-open-page" });
     return null;
   }
   await submitNoteRequest({
-    pageUrl: subject.pageUrl,
-    pageTitle: subject.title,
+    pageUrl: page.url,
+    pageTitle: page.title,
     selection: null,
     creatorFeedUrl: creator?.feedUrl ?? null,
   });
   // This is only a local reminder. The request itself is already saved.
-  await addRequestedPage(subject.pageUrl).catch(() => {});
-  return `Checking this ${subject.noun} now.`;
+  await addRequestedPage(page.url).catch(() => {});
+  return `Checking this ${page.noun} now.`;
 }
 
 async function pressCreator(target: CreatorTarget): Promise<string> {
@@ -215,12 +230,19 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
     queueMicrotask(() => void sync());
   }
 
+  /** Whether an element belongs to the open menu, our rows included. Our rows
+   *  sit inside the site's menu on most sites, but next to it on YouTube's
+   *  player menu. */
+  function inMenu(selected: Selection, element: Element): boolean {
+    return !!selected.menu?.contains(element) || !!selected.group?.contains(element);
+  }
+
   function select(event: Event) {
     const target = asElement(event.composedPath()[0]);
     if (!target || target.closest(GROUP_SELECTOR)) return;
     // A click on one of the site's own rows leaves our group alone. The site
     // closes its menu, and the next menu button click starts afresh.
-    if (selection?.menu?.contains(target)) return;
+    if (selection && inMenu(selection, target)) return;
     const trigger = site.triggerFor(target);
     if (trigger && trigger === selection?.trigger) return schedule();
     clear();
@@ -250,7 +272,7 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
       else clear();
       return;
     }
-    if (!selected?.menu || !selected.group || !target || !selected.menu.contains(target)) return;
+    if (!selected?.menu || !selected.group || !target || !inMenu(selected, target)) return;
     if ((event.key === "Enter" || event.key === " ") && selected.group.contains(target)) {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -258,7 +280,7 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
       return;
     }
     if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-    const items = focusableRows(selected.menu);
+    const items = focusableRows(selected.menu, selected.group);
     if (!items.length) return;
     const index = items.findIndex((item) => item.contains(target));
     const next =
@@ -270,10 +292,21 @@ export function installMenuRows(ctx: ContentScriptContext, site: MenuSite): void
     items[next]!.focus();
   }
 
-  ctx.addEventListener(document, "pointerdown", select, { capture: true });
-  ctx.addEventListener(document, "click", select, { capture: true });
+  /** A press outside the open menu closes it, and our rows go with it. */
+  function pressOutside(event: Event) {
+    const target = asElement(event.composedPath()[0]);
+    if (target && !(selection && inMenu(selection, target))) clear();
+  }
+
+  if (site.opensOn === "contextmenu") {
+    ctx.addEventListener(document, "contextmenu", select, { capture: true });
+    ctx.addEventListener(document, "pointerdown", pressOutside, { capture: true });
+  } else {
+    ctx.addEventListener(document, "pointerdown", select, { capture: true });
+    ctx.addEventListener(document, "click", select, { capture: true });
+    ctx.addEventListener(document, "contextmenu", clear, { capture: true });
+  }
   ctx.addEventListener(document, "keydown", keydown, { capture: true });
-  ctx.addEventListener(document, "contextmenu", clear, { capture: true });
   ctx.addEventListener(window, "popstate", clear);
   // YouTube is a single-page app and announces its own navigations.
   ctx.addEventListener(window, "yt-navigate-start" as keyof WindowEventMap, clear);
@@ -299,12 +332,13 @@ function isShown(element: HTMLElement): boolean {
 /** Every row in the menu that can take the focus, ours included, in screen
  *  order. YouTube nests one menu item inside another, so each row is reduced
  *  to the element that actually takes the focus, and the doubles drop out. */
-function focusableRows(menu: HTMLElement): HTMLElement[] {
+function focusableRows(menu: HTMLElement, group: HTMLElement): HTMLElement[] {
   const focusable = (item: HTMLElement) =>
     item.matches("button, a[href], [tabindex]") ? item : (item.querySelector<HTMLElement>("button, a[href], [tabindex]") ?? item);
-  return [...new Set([...menu.querySelectorAll<HTMLElement>(NATIVE_ROW_SELECTOR)].map(focusable))].filter(
-    (item) => !item.closest(':disabled, [aria-disabled="true"]') && isShown(item),
-  );
+  const rows = [...group.querySelectorAll<HTMLElement>(NATIVE_ROW_SELECTOR), ...menu.querySelectorAll<HTMLElement>(NATIVE_ROW_SELECTOR)];
+  return [...new Set(rows.map(focusable))]
+    .filter((item) => !item.closest(':disabled, [aria-disabled="true"]') && isShown(item))
+    .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
 }
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -437,6 +471,17 @@ html[dark] [${GROUP_ATTRIBUTE}] {
 [data-cn-site="substack"] .cn-menu-row:hover,
 [data-cn-site="substack"] .cn-menu-row:focus-visible {
   background: var(--color-bg-secondary, #80808020);
+}
+/* YouTube's player menu is dark whatever the page's theme. Our group sits
+   above the menu's own list, which has its own top padding. */
+[${GROUP_ATTRIBUTE}][data-cn-site="youtube-player"] {
+  padding: 8px 0;
+  margin: 0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+[data-cn-site="youtube-player"] .cn-menu-row:hover,
+[data-cn-site="youtube-player"] .cn-menu-row:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
 }
 `;
 

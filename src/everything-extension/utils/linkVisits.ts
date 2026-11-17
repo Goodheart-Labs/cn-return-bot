@@ -5,8 +5,12 @@ import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { readWatchPageChannel } from "./authorFeed";
 import { isSubstackPostPage } from "./pageShape";
 import {
+  EA_FORUM_ORIGIN,
+  forumAuthorFromPageLink,
+  forumOrigin,
   forumPostAuthorTarget,
   isForumPostPage,
+  readForumPostAuthorFromPage,
   readSubstackPublicationFromPage,
   substackCreatorTarget,
   substackTargetFromPublication,
@@ -15,8 +19,8 @@ import {
 import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
 import { visitReaderHash } from "./visitReader";
 
-// Visits are recorded on Substack, YouTube, and the LessWrong / Alignment
-// Forum pair, and only for content pages: a post or a video, never a homepage
+// Visits are recorded on Substack, YouTube, the LessWrong / Alignment Forum
+// pair and the EA Forum, and only for content pages: a post or a video, never a homepage
 // or a feed. Visit counts per link are what tells the team where notes are
 // needed, so the page does NOT have to be covered already. An ingested page is
 // recognized by its item's source, which also catches newsletters on custom
@@ -27,12 +31,16 @@ import { visitReaderHash } from "./visitReader";
 function visitSiteKind(pageUrl: string, item: PageItem | null): VisitSiteKind | null {
   if (item?.source === "substack") return "substack";
   if (item?.source === "youtube" || item?.source === "podcast") return "youtube";
-  if (item?.source === "lesswrong") return "lesswrong";
-  if (isForumPostPage(pageUrl)) return "lesswrong";
+  if (item?.source === "lesswrong" || isForumPostPage(pageUrl)) return forumVisitKind(pageUrl);
   if (extractYoutubeVideoId(pageUrl)) return "youtube";
   if (isSubstackPostPage(pageUrl)) return "substack";
   return null;
 }
+
+/** The EA Forum's posts are items of the source "lesswrong" too, so the host
+ *  tells its visits apart. They have their own setting, because readers who
+ *  agreed before the EA Forum was added never saw it named. */
+const forumVisitKind = (pageUrl: string): VisitSiteKind => (forumOrigin(pageUrl) === EA_FORUM_ORIGIN ? "eaforum" : "lesswrong");
 
 /** A YouTube watch page renders its owner box late on cold loads, so the
  *  channel read polls for a while before giving up. */
@@ -41,7 +49,8 @@ const WATCH_CHANNEL_POLL_TRIES = 20;
 
 /** The creator's feed URL for the visited page: the Substack publication from
  *  the hostname or the page's preloads blob, the YouTube channel from the
- *  watch page's owner box, the forum author from the site's own API. Null when
+ *  watch page's owner box, the forum author from the site's own API or, when
+ *  that does not answer, from the post's header. Null when
  *  the page has no followable creator. The pipeline ranks creators by these
  *  (creatorRanking.ts), which is why the visit records the creator at all: a
  *  creator is not derivable on the server from a watch URL or a custom-domain
@@ -51,7 +60,10 @@ async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string
     const target = substackCreatorTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
     return target?.feedUrl ?? null;
   }
-  if (kind === "lesswrong") return (await forumPostAuthorTarget(pageUrl))?.feedUrl ?? null;
+  if (kind === "lesswrong" || kind === "eaforum") {
+    const author = (await forumPostAuthorTarget(pageUrl)) ?? forumAuthorFromPageLink(readForumPostAuthorFromPage());
+    return author?.feedUrl ?? null;
+  }
   if (kind !== "youtube") return null;
   for (let attempt = 0; attempt < WATCH_CHANNEL_POLL_TRIES; attempt++) {
     const channel = readWatchPageChannel();
