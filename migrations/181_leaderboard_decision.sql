@@ -1,55 +1,14 @@
--- 181: the admins can decide that a note will not go on the leaderboard
--- (GOO-741).
+-- 181: the review page shows the leaderboard decisions again (GOO-741).
 --
--- Until now the review page knew only whether a note was on the leaderboard
--- (everything_best_notes). Jim asked on 2026-11-06 for a "Won't add to
--- leaderboard" button and a filter with three values: on the leaderboard, not
--- for the leaderboard, and undecided. So:
+-- Migration 171 added the "Won't add to leaderboard" marks
+-- (everything_leaderboard_declines) and made the review field `leaderboard`
+-- text: 'on', 'declined' or 'undecided'. It was applied to prod on 2026-11-06.
+-- Migration 175 then rewrote everything_review_field_rows from 170's version
+-- to add `suggested_x`, without 171's join to the marks. Since then the field
+-- held 'true' or 'false', and every mark was invisible on the review page.
 --
--- 1. A new table holds the notes an admin decided against. A note on the
---    leaderboard counts as on it even if it also has such a row, so adding a
---    declined note to the leaderboard needs no extra step.
--- 2. The review page's field `leaderboard` changes from yes or no to 'on',
---    'declined' or 'undecided'.
+-- This puts 171's leaderboard value back into 175's version of the function.
 
--- 1. The decisions.
-
-create table everything_leaderboard_declines (
-  note_id uuid primary key references everything_notes (id) on delete cascade,
-  declined_by text not null check (declined_by in ('jim', 'nathan')),
-  declined_at timestamptz not null default now()
-);
-comment on table everything_leaderboard_declines is
-  'Notes an admin decided not to put on the leaderboard (GOO-741). No row means undecided, unless the note is on the leaderboard.';
-
-alter table everything_leaderboard_declines enable row level security;
-revoke all on everything_leaderboard_declines from anon, authenticated;
-grant all on everything_leaderboard_declines to service_role;
-
--- Marks a note as not for the leaderboard, or takes the mark off. Only an
--- admin may call it, which everything_claude_actor checks.
-create function everything_set_leaderboard_decline(p_note uuid, p_on boolean) returns void
-language plpgsql security definer set search_path = public as $$
-declare
-  v_actor text := everything_claude_actor(null);
-begin
-  if p_on then
-    insert into everything_leaderboard_declines (note_id, declined_by) values (p_note, v_actor) on conflict do nothing;
-  else
-    delete from everything_leaderboard_declines where note_id = p_note;
-  end if;
-end;
-$$;
-revoke all on function everything_set_leaderboard_decline(uuid, boolean) from public, anon, authenticated;
-grant execute on function everything_set_leaderboard_decline(uuid, boolean) to authenticated, service_role;
-
--- 2. The field.
-
-alter type everything_review_field_row
-  -- 'on' the leaderboard, 'declined' by an admin, or 'undecided'.
-  alter attribute leaderboard set data type text;
-
--- As in migration 175, with the leaderboard decision.
 create or replace function everything_review_field_rows(p_reviewer text, p_views everything_item_views, p_ids uuid[] default null)
 returns setof everything_review_field_row
 language sql stable security definer set search_path = public as $$
