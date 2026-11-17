@@ -85,10 +85,13 @@ const JOBS_INSTRUCTION =
  *  subagents, and every one of them counts against the session's limits. */
 const MAX_POSTS_RUNNING = 5;
 const MAX_TWEETS_RUNNING = 3;
-/** X account lookups are small, so one at a time keeps them from crowding out posts. */
-const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
-/** Judges are small too. Two at a time catch up with a day's notes. */
-const MAX_JUDGES_RUNNING = 2;
+/** The devbox starts no X account lookups and no judges for now. Most of them
+ *  were for claude-hq-nathan's notes, and they used Jim's plan at about a point
+ *  an hour while the devbox itself wrote two posts a day (Jim, 2026-11-17).
+ *  GOO-786 brings them back on the shared Claude account. Before the pause the
+ *  limits were 1 lookup and 2 judges at a time. */
+const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 0;
+const MAX_JUDGES_RUNNING = 0;
 /** Tweets the devbox starts in any 24 hours. A subagent records no cost, so
  *  the X share in xShare.ts sees none of the devbox's tweets and never stops
  *  the X run from sending more. Without this limit the tweets used about four
