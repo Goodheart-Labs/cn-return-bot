@@ -1285,8 +1285,13 @@ export async function recordDemandQueued(row: { page_url: string; kind: string; 
 
 /** Which of these addresses the demand rule queued. */
 export async function fetchDemandQueuedUrls(urls: string[]): Promise<Set<string>> {
-  const rows = throwOnError(
-    await getSupabaseClient().from("everything_demand_queued").select("page_url").eq("queued", true).in("page_url", urls.slice(0, 100)),
-  ) as { page_url: string }[];
-  return new Set(rows.map((r) => r.page_url));
+  const found = new Set<string>();
+  // Asked 100 at a time, because the addresses travel in the request's URL.
+  for (let i = 0; i < urls.length; i += 100) {
+    const rows = throwOnError(
+      await getSupabaseClient().from("everything_demand_queued").select("page_url").eq("queued", true).in("page_url", urls.slice(i, i + 100)),
+    ) as { page_url: string }[];
+    for (const row of rows) found.add(row.page_url);
+  }
+  return found;
 }
