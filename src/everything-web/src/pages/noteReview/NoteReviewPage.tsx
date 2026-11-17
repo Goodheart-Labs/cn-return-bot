@@ -28,7 +28,8 @@ import { useTypefullySync } from "./typefullySync";
 
 /** The Display menu offers Post on X only in the local posting tool, which
  *  has a server that can reach Typefully. */
-const DISPLAY_OPTIONS = Object.values(DISPLAY);
+// Schedule on X always shows (Nathan, 2026-11-17: a saved view hid it), so the menu does not offer it.
+const DISPLAY_OPTIONS = Object.values(DISPLAY).filter((option) => option !== DISPLAY.postOnX);
 
 const QUERY_KEY = "cn:noteReviewQuery";
 const X_QUERY_KEY = "cn:xNoteReviewQuery";

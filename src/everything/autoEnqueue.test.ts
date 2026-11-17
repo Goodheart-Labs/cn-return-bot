@@ -9,7 +9,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { unprocessedEntries, topPostEntries, walkToFirstCandidate, orderCandidates, freshCandidates } = await import("./autoEnqueue");
+const { unprocessedEntries, topPostEntries, walkToFirstCandidate, orderCandidates, freshCandidates, failingSources } = await import("./autoEnqueue");
 
 const feed = { project: "test", type: "substack" as const, url: "https://test.substack.com" };
 const entry = (url: string) => ({ source: "substack" as const, url, matchKey: url, label: url });
@@ -163,5 +163,17 @@ describe("freshCandidates", () => {
       new Date("2026-11-12T12:00:00Z"),
     );
     expect(urls(result)).toEqual(["new", "edge", "undated", "new-retry"]);
+  });
+});
+
+describe("failingSources", () => {
+  const o = (source: string, outcome: "failed" | "read" | "skipped") => ({ source, outcome });
+
+  test("a source with two failures and nothing read is passed over", () => {
+    expect([...failingSources([o("youtube", "failed"), o("youtube", "failed"), o("youtube", "skipped"), o("substack", "read")])]).toEqual(["youtube"]);
+  });
+
+  test("one failure, or any post read, keeps the source in the walk", () => {
+    expect(failingSources([o("youtube", "failed"), o("substack", "failed"), o("substack", "failed"), o("substack", "read")]).size).toBe(0);
   });
 });

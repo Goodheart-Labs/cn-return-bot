@@ -205,7 +205,7 @@ export const REVIEW_FIELDS: FieldDef[] = [
 
 /** The buttons a card can show, each switched on or off in the Display menu. */
 export const DISPLAY = {
-  postOnX: { value: "post_on_x", label: "Post on X", hint: "Opens the tweet and schedules it in Typefully's next free slot." },
+  postOnX: { value: "post_on_x", label: "Post on X", hint: "Schedules the proposed tweet in Typefully's next free slot in one click; Edit first opens it for changes." },
   markPosted: { value: "mark_posted", label: "Posted on X", hint: "Marks a note that was posted on X without the posting tool" },
   wontPost: { value: "wont_post", label: "We won't post this" },
   chat: { value: "chat", label: "Chat with Claude" },
