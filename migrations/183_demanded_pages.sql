@@ -96,7 +96,11 @@ language sql stable set search_path = public as $$
          count(*) filter (where q.queued_at <= now() - interval '2 days' and exists (
            select 1 from everything_claims c join everything_notes n on n.claim_id = c.id where c.item_id = i.id))::int
     from everything_demand_queued q
-    left join everything_items i on everything_visit_page(i.url) = q.page_url
+    -- One item per page, so a page stored under two spellings counts once.
+    left join lateral (
+      select it.id, it.status from everything_items it
+       where everything_visit_page(it.url) = q.page_url
+       order by it.created_at limit 1) i on true
    where q.queued and q.queued_at > now() - interval '9 days'
    group by q.kind;
 $$;
