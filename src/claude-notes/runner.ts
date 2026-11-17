@@ -45,6 +45,7 @@ import {
   updateClaudeSubscription,
   waitingMessages,
 } from "./jobs";
+import { guardedSettingsFile } from "./imageGuard";
 import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
 import { recordUsage, RUN_ID_ENV } from "./store";
 import { NOTE_WRITER_ACCOUNT_ENV, readUsage, type UsageReading } from "./usage";
@@ -124,7 +125,7 @@ function startClaude(session: string, runDir: string, prompt: string, extraArgs:
     ...Object.entries({ ...NOTE_WRITER_ACCOUNT_ENV, ...env }).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
-    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${RUN_SETTINGS} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
+    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${guardedSettingsFile(runDir, RUN_SETTINGS)} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
     `echo $? > ${runDir}/exit-code`,
   ].join("\n");
   writeFileSync(path.join(runDir, "run.sh"), script);

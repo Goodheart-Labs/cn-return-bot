@@ -63,8 +63,8 @@ export function PostOnX({ draft, view, onClose }: { draft: ReviewDraft; view: Re
     <form onSubmit={submit} className="space-y-3 border-t border-line pt-4 text-sm">
       <h3 className="font-medium text-fg">Post on X</h3>
       {!TWEET_SERVER ? (
-        <div className="overflow-x-auto rounded-control border border-line">
-          <NoteImagePage noteId={noteId} />
+        <div className="rounded-control border border-line">
+          <NoteImagePage noteId={noteId} preview />
         </div>
       ) : image.isError ? (
         <p className="text-negative">The picture of the note failed: {image.error.message}</p>
@@ -109,5 +109,37 @@ export function PostOnX({ draft, view, onClose }: { draft: ReviewDraft; view: Re
         )}
       </div>
     </form>
+  );
+}
+
+/** One click on commonnotes.net: schedules the proposed tweet and reply as
+ *  they stand in the next free slot. A tweet that still needs the creator's
+ *  handle, and the local tool (which needs its picture), open the panel
+ *  instead. "Edit first" opens the panel for changes before sending. */
+export function SchedulePostOnX({ draft, view, onEdit }: { draft: ReviewDraft; view: ReviewView; onEdit: () => void }) {
+  const client = useQueryClient();
+  const noteId = draft.noteId!;
+  const text = tweetText(draft, publicNoteLink(draft));
+  const direct = !TWEET_SERVER && !text.includes(MISSING_HANDLE);
+  const sending = useMutation({
+    mutationFn: () => send(noteId, text, EXTENSION_REPLY, "next_free_slot"),
+    onSuccess: () => refreshDrafts(client, view.request, [draft.id]),
+  });
+  return (
+    <>
+      <Button disabled={sending.isPending} onClick={() => (direct ? sending.mutate() : onEdit())}>
+        {sending.isPending ? "Scheduling…" : direct ? "Schedule on X" : "Post on X"}
+      </Button>
+      {direct && (
+        <Button variant="secondary" disabled={sending.isPending} onClick={onEdit}>
+          Edit first
+        </Button>
+      )}
+      {sending.error && (
+        <span role="alert" className="text-negative">
+          {sending.error.message}
+        </span>
+      )}
+    </>
   );
 }
