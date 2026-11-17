@@ -257,7 +257,7 @@ export async function triageOrphanedItems(tier: "requested" | "feed"): Promise<v
  *  attempt and 5 only 12 hours after it (GOO-422). The retry after 1 hour was
  *  added on 2026-10-23, so a passing failure delays a new post by an hour
  *  instead of three (GOO-549). */
-const RETRY_WAIT_HOURS = [1, 2, 9] as const;
+export const RETRY_WAIT_HOURS = [1, 2, 9] as const;
 
 /** How many repeat attempts an errored item gets before it stays an error a
  *  human has to look at. */
@@ -413,7 +413,7 @@ export function freshCandidates(candidates: Candidate[], now: Date = new Date())
 }
 
 /** How far back the walk looks to decide that a source is failing. */
-const FAILING_SOURCE_WINDOW_MS = 3600_000;
+export const FAILING_SOURCE_WINDOW_MS = 3600_000;
 
 /** The sources the walk passes over: at least two of a source's posts failed
  *  in the last hour and none was read. On 2026-11-16 YouTube served no

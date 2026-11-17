@@ -11,17 +11,23 @@
  * these pages replace walk posts and add no writer runs.
  *
  * A page is taken once. everything_demand_queued keeps it, so a page whose
- * check failed or was skipped is not queued again.
+ * check failed or was skipped is not queued again. A page that could not be
+ * read gets the same three repeat attempts as any failed post.
  */
 
+import { FAILING_SOURCE_WINDOW_MS, failingSources, MAX_ITEM_RETRIES, RETRY_WAIT_HOURS } from "./autoEnqueue";
 import { classifyRequestSource, projectForRequest } from "./consumeRequests";
 import {
   fetchDemandedPages,
+  fetchDemandQueuedUrls,
   fetchDemandReport,
+  fetchItemOutcomesSince,
+  fetchRetryableErrorItems,
   findItemForPageUrl,
   insertQueuedItem,
   QUEUE_PRIORITY,
   recordDemandQueued,
+  requeueErroredItem,
   type DemandedPage,
 } from "./db";
 
@@ -54,6 +60,30 @@ export function demandSettings(env: Record<string, string | undefined> = process
 
 const KINDS: Kind[] = ["text", "youtube"];
 const NAME: Record<Kind, string> = { text: "text posts", youtube: "videos" };
+/** The item source each kind is queued as (classifyRequestSource). */
+const SOURCE: Record<Kind, string> = { text: "web", youtube: "youtube" };
+
+/** How many failed pages of one source get a repeat attempt per feed run. Two
+ *  failures are what marks a source as failing, so when a source is down, two
+ *  pages an hour spend an attempt, not all of them at once. */
+const RETRIES_PER_SOURCE_PER_RUN = 2;
+
+/** Gives failed pages of this rule their repeat attempts, on the walk's
+ *  schedule. The walk retries a failed post only when it walks the post's
+ *  creator, and most of these pages belong to creators it does not walk. */
+async function retryDemandedPages(failing: Set<string>): Promise<void> {
+  const due = (await fetchRetryableErrorItems(RETRY_WAIT_HOURS, "feed")).filter((item) => !failing.has(classifyRequestSource(item.url)));
+  if (due.length === 0) return;
+  const ours = await fetchDemandQueuedUrls(due.map((item) => item.url));
+  const retried = new Map<string, number>();
+  for (const item of due) {
+    const source = classifyRequestSource(item.url);
+    if (!ours.has(item.url) || (retried.get(source) ?? 0) >= RETRIES_PER_SOURCE_PER_RUN) continue;
+    retried.set(source, (retried.get(source) ?? 0) + 1);
+    await requeueErroredItem(item, item.priority);
+    console.log(`  failed page back in the queue, attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
+  }
+}
 
 /** Queues the pages readers opened, up to each kind's daily cap. Returns how
  *  many it queued. */
@@ -71,6 +101,17 @@ export async function queueDemandedPages(settings = demandSettings()): Promise<n
     const outcome = row?.settled ? ` · of ${row.settled} queued 2 to 9 days ago, ${row.checked} were checked and ${row.with_notes} got a note` : "";
     console.log(`  ${NAME[kind]}: ${state}${outcome}`);
   }
+  // A source whose every read failed in the last hour gets no new pages and
+  // no repeat attempts, as in the walk. On 2026-11-17 the proxy YouTube is
+  // read through ran out of traffic, and the first 20 videos queued here all
+  // failed within a minute.
+  const failing = failingSources(await fetchItemOutcomesSince(new Date(Date.now() - FAILING_SOURCE_WINDOW_MS)));
+  for (const kind of KINDS) {
+    if (!failing.has(SOURCE[kind])) continue;
+    left[kind] = 0;
+    console.log(`  ${NAME[kind]}: passed over, every one read in the last hour failed`);
+  }
+  await retryDemandedPages(failing);
   if (KINDS.every((kind) => left[kind] === 0)) return 0;
 
   const pages = await fetchDemandedPages(left.text > 0 ? settings.text.readers : null, left.youtube > 0 ? settings.youtube.readers : null);

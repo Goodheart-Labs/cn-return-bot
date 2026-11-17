@@ -17,6 +17,12 @@ export const dbState = {
   demandedPages: [] as { page_url: string; feed_url: string | null; kind: "text" | "youtube"; readers: number }[],
   /** Makes recordDemandQueued fail, as when its table cannot be written. */
   recordDemandFails: false,
+  /** What fetchRetryableErrorItems answers: failed posts due another attempt. */
+  retryableErrors: [] as { id: string; url: string; title: string | null; published_at: string | null; retries: number; priority: number; feed_url: string | null }[],
+  /** What fetchItemOutcomesSince answers: the last hour of reads. */
+  itemOutcomes: [] as { source: string; outcome: "read" | "failed" | "skipped" }[],
+  /** The addresses the demand rule queued before. */
+  demandQueuedUrls: [] as string[],
   /** What fetchDemandReport answers. */
   demandReport: [] as { kind: "text" | "youtube"; queued_24h: number; settled: number; checked: number; with_notes: number }[],
   /** What fetchCreatorProjects answers: every creator we have a project for,
@@ -60,6 +66,9 @@ export const resetDbState = () => {
   dbState.demandedPages = [];
   dbState.demandReport = [];
   dbState.recordDemandFails = false;
+  dbState.retryableErrors = [];
+  dbState.itemOutcomes = [];
+  dbState.demandQueuedUrls = [];
   dbState.creatorVisitScores = [];
   dbState.topPosts = [];
   dbState.feedPacing = {
@@ -101,8 +110,9 @@ export const dbMock = () => ({
   upsertCreatorPriority: record("upsertCreatorPriority"),
   fetchItemClaims: () => Promise.resolve([]),
   fetchOrphanedProcessingItems: (_tier: "requested" | "feed") => Promise.resolve([]),
-  fetchRetryableErrorItems: () => Promise.resolve([]),
-  fetchItemOutcomesSince: () => Promise.resolve([]),
+  fetchRetryableErrorItems: () => Promise.resolve(dbState.retryableErrors),
+  fetchItemOutcomesSince: () => Promise.resolve(dbState.itemOutcomes),
+  fetchDemandQueuedUrls: (urls: string[]) => Promise.resolve(new Set(urls.filter((u) => dbState.demandQueuedUrls.includes(u)))),
   requeueErroredItem: record("requeueErroredItem"),
   fetchPendingNoteRequests: () => Promise.resolve([]),
   fetchQueueOverview: () => Promise.resolve([]),

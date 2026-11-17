@@ -1282,3 +1282,11 @@ export async function fetchDemandReport(): Promise<DemandReportRow[]> {
 export async function recordDemandQueued(row: { page_url: string; kind: string; readers: number; queued: boolean }): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_demand_queued").insert(row));
 }
+
+/** Which of these addresses the demand rule queued. */
+export async function fetchDemandQueuedUrls(urls: string[]): Promise<Set<string>> {
+  const rows = throwOnError(
+    await getSupabaseClient().from("everything_demand_queued").select("page_url").eq("queued", true).in("page_url", urls.slice(0, 100)),
+  ) as { page_url: string }[];
+  return new Set(rows.map((r) => r.page_url));
+}
