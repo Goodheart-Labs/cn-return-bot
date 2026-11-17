@@ -1,7 +1,21 @@
 import { expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TypefullyDraftState } from "../everything-core/xMarks";
+import { retryOnReset } from "./typefully";
 import { handleRequest, handleRequests, syncScheduled, type WorkerDeps } from "./worker";
+
+test("a reset connection is tried again, other errors and a third reset are not", async () => {
+  let calls = 0;
+  const flaky = () => (++calls < 3 ? Promise.reject(new TypeError("ECONNRESET: closed")) : Promise.resolve("ok"));
+  expect(await retryOnReset(flaky, 0)).toBe("ok");
+  expect(calls).toBe(3);
+  calls = 0;
+  await expect(retryOnReset(() => (++calls, Promise.reject(new TypeError("ECONNRESET"))), 0)).rejects.toThrow("ECONNRESET");
+  expect(calls).toBe(3);
+  calls = 0;
+  await expect(retryOnReset(() => (++calls, Promise.reject(new Error("422"))), 0)).rejects.toThrow("422");
+  expect(calls).toBe(1);
+});
 
 type Row = Record<string, unknown>;
 

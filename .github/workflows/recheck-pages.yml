@@ -1,0 +1,36 @@
+name: Recheck Pages
+
+# Puts pages that were already checked back in the queue for a full new check
+# (src/everything/recheck.ts). Run by hand, with the page addresses.
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Page addresses, separated by spaces"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Put the pages back in the queue
+        # The addresses reach the script through the environment, never pasted
+        # into the shell line, so an address cannot run a command.
+        run: bun run src/everything/recheck.ts "$URLS"
+        env:
+          URLS: ${{ inputs.urls }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
