@@ -1166,6 +1166,56 @@ export type Database = {
           },
         ]
       }
+      everything_x_post_requests: {
+        Row: {
+          claimed_at: string | null
+          done_at: string | null
+          error: string | null
+          id: string
+          note_id: string
+          reply_text: string
+          requested_at: string
+          requested_by: string
+          status: string
+          tweet_text: string
+          typefully_draft_id: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id: string
+          reply_text?: string
+          requested_at?: string
+          requested_by: string
+          status?: string
+          tweet_text: string
+          typefully_draft_id?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          done_at?: string | null
+          error?: string | null
+          id?: string
+          note_id?: string
+          reply_text?: string
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          tweet_text?: string
+          typefully_draft_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_x_post_requests_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_notewriters: {
         Row: {
           cooldown_until: string | null
@@ -3444,6 +3494,10 @@ export type Database = {
           status: string
           status_reason: string
         }[]
+      }
+      everything_request_x_post: {
+        Args: { p_note: string; p_reply?: string; p_text: string }
+        Returns: string
       }
       everything_return_to_recommendations: {
         Args: { p_note_id: string }

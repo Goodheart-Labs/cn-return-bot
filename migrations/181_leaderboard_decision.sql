@@ -1,4 +1,4 @@
--- 171: the admins can decide that a note will not go on the leaderboard
+-- 181: the admins can decide that a note will not go on the leaderboard
 -- (GOO-741).
 --
 -- Until now the review page knew only whether a note was on the leaderboard
@@ -49,7 +49,7 @@ alter type everything_review_field_row
   -- 'on' the leaderboard, 'declined' by an admin, or 'undecided'.
   alter attribute leaderboard set data type text;
 
--- As in migration 170, with the leaderboard decision.
+-- As in migration 175, with the leaderboard decision.
 create or replace function everything_review_field_rows(p_reviewer text, p_views everything_item_views, p_ids uuid[] default null)
 returns setof everything_review_field_row
 language sql stable security definer set search_path = public as $$
@@ -83,6 +83,9 @@ language sql stable security definer set search_path = public as $$
       join everything_items i on i.id = v.item_id
      where v.viewers >= 1
      group by i.project_id
+  ),
+  suggested as materialized (
+    select note_id from everything_x_suggestions()
   ),
   last_chat as (
     select distinct on (e.draft_id) e.draft_id, e.actor
@@ -139,7 +142,8 @@ language sql stable security definer set search_path = public as $$
          p.x_handle_evidence,
          case x.mark when 'scheduled' then x.scheduled_for when 'posted' then x.published_at end,
          x.tweet_url,
-         d.source
+         d.source,
+         sg.note_id is not null
     from entries d
     join everything_items i on i.id = d.item_id
     left join everything_projects p on p.id = i.project_id
@@ -158,7 +162,8 @@ language sql stable security definer set search_path = public as $$
     left join everything_best_notes b on b.note_id = d.note_id
     left join everything_leaderboard_declines ld on ld.note_id = d.note_id
     left join everything_claude_few_shot_examples f on f.draft_id = d.draft_id
-    left join last_chat lc on lc.draft_id = d.draft_id;
+    left join last_chat lc on lc.draft_id = d.draft_id
+    left join suggested sg on sg.note_id = d.note_id;
 $$;
 
 notify pgrst, 'reload schema';

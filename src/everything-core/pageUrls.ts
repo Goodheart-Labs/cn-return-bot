@@ -91,20 +91,20 @@ export function normalizePageUrl(href: string, doc?: Document): string {
   return canonicalizePageUrl(href, doc?.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? null);
 }
 
-/** Substack's reader app shows a post under several URL shapes on the apex
- *  domain, such as `/@author/p-<postid>`, `/home/post/p-<postid>` and the inbox
- *  variants. The database has never seen any of them. The reader page's
- *  <link rel=canonical> points at itself, so the only route back to the
- *  publication URL we store is the `canonical_url` field in the page's embedded
- *  JSON. We therefore match any `/p-<id>` path segment. A false positive costs
- *  nothing, because the fetched page then has no embedded canonical and the
- *  caller falls back. */
-export function isSubstackReaderUrl(href: string): boolean {
+/** The numeric post id in a URL of Substack's reader app, or null for any
+ *  other URL. The reader shows a post under several URL shapes on the apex
+ *  domain: `/@author/p-<id>`, `/home/post/p-<id>` and `/inbox/post/<id>`, the
+ *  last one when a logged-in reader opens a post from their inbox. The
+ *  database has never seen any of them, so a caller resolves them with
+ *  fetchReaderCanonical. A false positive costs nothing, because the fetched
+ *  page then has no embedded canonical and the caller falls back. */
+export function substackReaderPostId(href: string): string | null {
   try {
     const url = new URL(href);
-    return /^(www\.)?substack\.com$/.test(url.hostname) && /\/p-\d+(\/|$)/.test(url.pathname);
+    if (!/^(www\.)?substack\.com$/.test(url.hostname)) return null;
+    return url.pathname.match(/\/(?:p-|inbox\/post\/)(\d+)(\/|$)/)?.[1] ?? null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -113,6 +113,16 @@ export function isSubstackReaderUrl(href: string): boolean {
  *  neither a double quote nor a backslash, so those characters end the match. */
 export function extractEmbeddedCanonical(html: string): string | null {
   return html.match(/canonical_url\\?"\s*:\s*\\?"(https?:[^"\\]+)/)?.[1] ?? null;
+}
+
+/** The one address form we store a YouTube video under. */
+export function youtubeWatchUrl(videoId: string): string {
+  return `https://www.youtube.com/watch?v=${videoId}`;
+}
+
+/** A link that plays the video from `seconds` on. */
+export function buildVideoLink(videoId: string, seconds: number): string {
+  return `${youtubeWatchUrl(videoId)}&t=${Math.max(0, Math.floor(seconds))}s`;
 }
 
 export function extractYoutubeVideoId(url: string): string | null {
@@ -152,9 +162,10 @@ export function sourceLinkLabel(url: string): string {
 }
 
 /** Resolves a reader URL to the publication's own post URL by fetching it
- *  logged out. A home-feed link (substack.com/home/post/p-<id>) answers with a
- *  redirect to the publication's domain, so the redirect target is the answer
- *  and the body is never downloaded. A profile link (substack.com/@author/p-<id>)
+ *  logged out. A home-feed link (substack.com/home/post/p-<id>) and an inbox
+ *  link (substack.com/inbox/post/<id>) answer with a redirect to the
+ *  publication's domain, so the redirect target is the answer and the body is
+ *  never downloaded. A profile link (substack.com/@author/p-<id>)
  *  answers 200 on substack.com itself, so there the answer is the canonical_url
  *  in the page's embedded JSON. A fresh fetch is needed even on the reader page
  *  itself, because the reader is a single-page app and the JSON already in the

@@ -2,6 +2,7 @@ import { browser } from "#imports";
 import { signedInUser } from "@cn/core/auth";
 import { insertEvent } from "@cn/core/events";
 import { setAnalyticsSink } from "@cn/core/analytics";
+import { deviceId, readWithLegacy, replaceDeviceId } from "./deviceId";
 
 // The extension's analytics transport: rows in the everything_events table
 // (insert-only for clients, migration 077), registered as the sink behind
@@ -15,14 +16,11 @@ import { setAnalyticsSink } from "@cn/core/analytics";
 // a runtime message; the background does the actual insert.
 
 const MESSAGE_TYPE = "cn-analytics";
-const DEVICE_ID_KEY = "cn-device-id";
 const USER_ID_KEY = "cn-user-id";
 // The UTC day on which this install last sent extension_active, so the
 // background sends one heartbeat per calendar day however often it wakes.
 const ACTIVE_DAY_KEY = "cn:extensionActiveDay";
-// The keys the PostHog-era transport used; adopted on first read so existing
-// installs keep their device identity.
-const LEGACY_DEVICE_ID_KEY = "cn-ph-device-id";
+// The key the PostHog-era transport used; adopted on first read.
 const LEGACY_USER_ID_KEY = "cn-ph-user-id";
 // The supabase-js session in chrome.storage.local — one seam that sees every
 // sign-in (email code, X OAuth) and sign-out, without instrumenting each flow.
@@ -66,28 +64,6 @@ export function initBackgroundAnalytics() {
     return undefined; // The listener never answers. Captures are fire and forget.
   });
   watchAuthChanges();
-}
-
-/** Read a storage key, falling back to its PostHog-era name once: the legacy
- *  value is persisted under the new key and removed. */
-async function readWithLegacy(key: string, legacyKey: string): Promise<string | null> {
-  const values = await browser.storage.local.get([key, legacyKey]);
-  if (typeof values[key] === "string") return values[key];
-  if (typeof values[legacyKey] === "string") {
-    await browser.storage.local.set({ [key]: values[legacyKey] });
-    await browser.storage.local.remove(legacyKey);
-    return values[legacyKey];
-  }
-  return null;
-}
-
-/** Minted lazily, only ever here in the background (single writer). */
-async function deviceId(): Promise<string> {
-  const existing = await readWithLegacy(DEVICE_ID_KEY, LEGACY_DEVICE_ID_KEY);
-  if (existing) return existing;
-  const fresh = crypto.randomUUID();
-  await browser.storage.local.set({ [DEVICE_ID_KEY]: fresh });
-  return fresh;
 }
 
 /** The auth watcher's dedupe state: which user this install last identified. */
@@ -160,7 +136,7 @@ async function identify(userId: string) {
  *  events on this install aren't linked to the previous account. */
 async function reset() {
   await browser.storage.local.remove(USER_ID_KEY);
-  await browser.storage.local.set({ [DEVICE_ID_KEY]: crypto.randomUUID() });
+  await replaceDeviceId();
 }
 
 /** Comparing against the stored user id turns the noisy storage stream

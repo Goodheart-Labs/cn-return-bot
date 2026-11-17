@@ -38,6 +38,21 @@ export function isSilent(w: WatchedNotewriter, now: Date): boolean {
   return !w.last_seen_at || now.getTime() - new Date(w.last_seen_at).getTime() > SILENCE_LIMIT_MS;
 }
 
+/** How long a silence Slack has heard of keeps failing the feed run. After
+ *  that it is known, often on purpose (a writer stopped by its owner), and a
+ *  run that is always red would hide every new problem. */
+export const SILENCE_FAILS_RUN_MS = 24 * 60 * 60_000;
+
+/** Whether this notewriter's silence should turn the feed run red: while it
+ *  is new, or Slack has not heard of it, or it never asked at all. */
+export function silenceFailsRun(w: WatchedNotewriter, now: Date): boolean {
+  if (!isSilent(w, now)) return false;
+  if (!w.last_seen_at) return true;
+  const lastSeen = new Date(w.last_seen_at).getTime();
+  const warned = w.silence_warned_for !== null && new Date(w.silence_warned_for).getTime() === lastSeen;
+  return !warned || now.getTime() - lastSeen <= SILENCE_FAILS_RUN_MS;
+}
+
 export type SilenceNotice = { kind: "warn"; lastSeenAt: Date } | { kind: "back" } | null;
 
 /** What to post, given whether the notewriter is silent now and the silence

@@ -395,6 +395,26 @@ export async function fetchRetryableErrorItems(
   return rows.map(({ everything_projects, ...item }) => ({ ...item, feed_url: everything_projects?.feed_url ?? null }));
 }
 
+/** How one feed item's check ended: its source, and whether it failed. A post
+ *  finished with a skip reason, such as a video without captions, counts as
+ *  neither a failure nor a read. */
+export interface ItemOutcome {
+  source: string;
+  outcome: "failed" | "read" | "skipped";
+}
+
+/** The outcomes of the items whose check ended since the given time. */
+export async function fetchItemOutcomesSince(since: Date): Promise<ItemOutcome[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("source, status, skip_reason")
+      .in("status", ["done", "error"])
+      .gte("processed_at", since.toISOString()),
+  ) as { source: string; status: "done" | "error"; skip_reason: string | null }[];
+  return rows.map((r) => ({ source: r.source, outcome: r.status === "error" ? "failed" : r.skip_reason ? "skipped" : "read" }));
+}
+
 /** Puts an errored item back in the queue at the given tier for a repeat
  *  attempt, and counts the attempt. The last error text stays on the row until
  *  the item finishes, so a waiting retry still shows why the item failed. */

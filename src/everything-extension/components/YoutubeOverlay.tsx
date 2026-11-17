@@ -10,11 +10,13 @@ import { NextNoteButton } from "@cn/features/notes/NextNoteButton";
 import { cn } from "@cn/ui/cn";
 import { focusRing } from "@cn/ui/focusRing";
 import { PlayIcon } from "@cn/ui/icons";
+import { formatVideoTime } from "@cn/core/videoTime";
 import { ClaimNoteStack, NOTE_POPOVER_WIDTH } from "./ClaimNoteStack";
 import { OverlayLoginGate } from "./OverlayLoginGate";
 import { FloatingWindow, type Box } from "./FloatingWindow";
 import { useNoteDisplay } from "./NoteDisplayChoices";
 import { ScrubberPins } from "./ScrubberPins";
+import { noteOpened, watchSeen } from "../utils/noteViews";
 
 /** A claim pinned to a span of the video timeline, together with its notes and
  *  its note-not-needed entries. This is the same shape the Substack popover
@@ -72,18 +74,6 @@ function popsUpDuringPlayback(group: TimedGroup): boolean {
 /** Whether playback at `seconds` is inside the claim's part of the video. */
 function playheadInClaim(group: TimedGroup, seconds: number): boolean {
   return seconds >= group.startSeconds && seconds <= group.endSeconds + TRAILING_GRACE_SECONDS;
-}
-
-const SECONDS_PER_MINUTE = 60;
-const SECONDS_PER_HOUR = 3600;
-
-/** A time in the video as YouTube writes it, such as 4:05 or 1:02:03. */
-function formatVideoTime(totalSeconds: number): string {
-  const whole = Math.floor(totalSeconds);
-  const hours = Math.floor(whole / SECONDS_PER_HOUR);
-  const minutes = Math.floor((whole % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  const seconds = String(whole % SECONDS_PER_MINUTE).padStart(2, "0");
-  return hours ? `${hours}:${String(minutes).padStart(2, "0")}:${seconds}` : `${minutes}:${seconds}`;
 }
 
 /** The top bar's button that moves the video to the claim, labelled with the
@@ -287,6 +277,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     else pinned.current = target.claimId;
     cardWanted.current = true;
     setPlayheadAtClaim(atClaim);
+    noteOpened("youtube", target.notes.map((note) => note.id));
     show(target.claimId);
   }, [video]);
   // Moves the video into the claim's window and keeps its card up. From
@@ -298,6 +289,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
     seek(video, target.startSeconds + 0.01);
     cardWanted.current = true;
     setPlayheadAtClaim(true);
+    noteOpened("youtube", target.notes.map((note) => note.id));
     show(target.claimId);
   }, [video]);
   // A click on a pin opens its card, and a second click on the pin of the
@@ -398,12 +390,16 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
           }}
           className={`transition-opacity duration-[400ms] ease-out ${visible ? "opacity-100" : "opacity-0"}`}
         >
-          <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
-            {quotePreview(group) && (
-              <Quote className="mb-4">“{quotePreview(group)}”</Quote>
-            )}
-            <ClaimNoteStack group={group} projectSlug={projectSlug} />
-          </OverlayLoginGate>
+          {/* The pins on the scrubber stand for every note on the video, so
+              only the card counts as a note being seen. */}
+          <div ref={(el) => watchSeen(el, "youtube", group.notes.map((note) => note.id))}>
+            <OverlayLoginGate open={loginOpen} onOpenChange={setLoginOpen}>
+              {quotePreview(group) && (
+                <Quote className="mb-4">“{quotePreview(group)}”</Quote>
+              )}
+              <ClaimNoteStack group={group} projectSlug={projectSlug} />
+            </OverlayLoginGate>
+          </div>
         </FloatingWindow>
       )}
     </div>

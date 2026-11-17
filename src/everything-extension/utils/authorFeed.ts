@@ -2,9 +2,11 @@ import { browser } from "#imports";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
 import { unlessPrioritized } from "./prioritizedCreators";
 import {
+  forumAuthorFromPageLink,
   forumAuthorTarget,
   forumPostAuthorTarget,
   isForumPostPage,
+  readForumPostAuthorFromPage,
   readSubstackPublicationFromPage,
   resolveProfileCreatorTarget,
   substackCreatorTarget,
@@ -28,8 +30,9 @@ export function readWatchPageChannel() {
 
 /** The creator a tab belongs to: a Substack publication (from its subdomain or
  *  a profile page), a YouTube channel (from a channel page, or read out of a
- *  watch page's owner box), or a LessWrong / Alignment Forum author (from their
- *  profile page, or asked of the site's own API on a post page). Null when the
+ *  watch page's owner box), or a forum author (from their profile page, or on
+ *  a post page asked of the site's own API, or read out of the page when the
+ *  API does not answer). Null when the
  *  page has no creator. Reading the watch page's owner box needs the tab to be
  *  scriptable, which the popup and a context-menu click both have through
  *  activeTab. */
@@ -44,9 +47,9 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
   if (channelTarget) return channelTarget;
   // A forum profile tab is titled like "Zvi — LessWrong"; the suffix is not
   // part of the author's name.
-  const forumTarget = forumAuthorTarget(url, (tab.title ?? "").replace(/\s[—–-]\s*(LessWrong|AI Alignment Forum)$/, ""));
+  const forumTarget = forumAuthorTarget(url, (tab.title ?? "").replace(/\s[—–-]\s*(LessWrong|AI Alignment Forum|EA Forum)$/, ""));
   if (forumTarget) return forumTarget;
-  if (isForumPostPage(url)) return forumPostAuthorTarget(url);
+  if (isForumPostPage(url)) return (await forumPostAuthorTarget(url)) ?? (await forumPostAuthorFromTab(tab.id));
   if (extractYoutubeVideoId(url) && tab.id != null) {
     try {
       const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: readWatchPageChannel });
@@ -72,6 +75,18 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
     }
   }
   return null;
+}
+
+/** Reads a forum post's author out of the open tab. */
+async function forumPostAuthorFromTab(tabId: number | undefined): Promise<CreatorTarget | null> {
+  if (tabId == null) return null;
+  try {
+    const [result] = await browser.scripting.executeScript({ target: { tabId }, func: readForumPostAuthorFromPage });
+    return forumAuthorFromPageLink(result?.result ?? null);
+  } catch {
+    // A page we may not inject into offers no follow target.
+    return null;
+  }
 }
 
 /** How a tab relates to creators: it has none, it has one whose priority window

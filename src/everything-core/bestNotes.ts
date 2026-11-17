@@ -92,7 +92,7 @@ export async function addToLeaderboard(noteId: string): Promise<void> {
 }
 
 /** Marks a note as not for the leaderboard, or takes the mark off
- *  (migration 171). A note on the leaderboard counts as on it either way. */
+ *  (migration 181). A note on the leaderboard counts as on it either way. */
 export async function setLeaderboardDecline(noteId: string, on: boolean): Promise<void> {
   const { error } = await supabase.rpc("everything_set_leaderboard_decline", { p_note: noteId, p_on: on });
   if (error) throw error;
