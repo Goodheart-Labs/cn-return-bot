@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "../api/supabaseClient";
 import type { TypefullyDraftState } from "../everything-core/xMarks";
 import { closeBrowser, takeNoteImage } from "./noteImage";
-import { createDraft, draftStates } from "./typefully";
+import { createDraft, draftStates, retryOnReset } from "./typefully";
 
 /* The posting worker (migration 173): what makes the review page's Post on X
  * button work on commonnotes.net. An admin's press writes a request into
@@ -83,13 +83,8 @@ export async function handleRequest(deps: WorkerDeps, request: PostRequest): Pro
   }
   let draft: Awaited<ReturnType<typeof createDraft>>;
   try {
-    draft = await deps.draft({
-      text: request.tweet_text,
-      reply: request.reply_text,
-      image: await deps.image(request.note_id),
-      title: `Common Note ${request.note_id}`,
-      timing: "next_free_slot",
-    });
+    const image = await retryOnReset(() => deps.image(request.note_id));
+    draft = await deps.draft({ text: request.tweet_text, reply: request.reply_text, image, title: `Common Note ${request.note_id}`, timing: "next_free_slot" });
   } catch (error) {
     await close(deps, request.id, { status: "failed", error: String(error instanceof Error ? error.message : error) });
     return `request ${request.id} failed before Typefully made a draft: ${String(error)}`;

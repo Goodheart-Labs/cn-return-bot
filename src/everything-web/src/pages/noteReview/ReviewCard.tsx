@@ -590,7 +590,7 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         {/* A note with an X mark shows only that mark, highlighted, whatever the Display menu says. */}
-        {live && !draft.xMark && shows(DISPLAY.postOnX.value) && <SchedulePostOnX draft={draft} view={view} onEdit={() => setOpen("post")} />}
+        {live && !draft.xMark && <SchedulePostOnX draft={draft} view={view} onEdit={() => setOpen("post")} />}
         {live && draft.xMark === "scheduled" && (
           <span className="inline-flex items-center gap-1.5 rounded-control border border-link px-3 py-1.5 text-sm font-medium text-link">
             <CheckIcon size={14} aria-hidden />
