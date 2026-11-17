@@ -12,13 +12,19 @@
  * PAGE_READ_LOG_DIR. The text stays out of the database, because all reads
  * together come to tens of megabytes a day. The files are kept 30 days.
  *
+ * A text the process already stored for the same address is not stored again.
+ * Its line names the read that holds it in `text_same_as`. The walk reads the
+ * same creator listings every few minutes, and one Substack feed carries every
+ * recent post in full, up to a few megabytes. Storing each copy filled 4.5 GB
+ * of files on 2026-11-16 alone.
+ *
  * The steps are collected without passing anything along: a read runs inside
  * an AsyncLocalStorage, a Node feature that keeps a value for everything one
  * call starts, and each step adds itself to the list it finds there.
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { appendFile, readdir, unlink } from "node:fs/promises";
 import path from "node:path";
 import { getSupabaseClient } from "../../api/supabaseClient";
@@ -59,6 +65,9 @@ const LOG_FILE = /^(\d{4}-\d{2}-\d{2})\.jsonl$/;
 
 const trails = new AsyncLocalStorage<ReadTrail>();
 let lastPrunedDay: string | null = null;
+/** For each address, the read whose line holds the text this process stored
+ *  last, and that text's hash. */
+const lastStoredText = new Map<string, { id: string; hash: string }>();
 
 /** Runs a step of the read and adds it to the read's record. `describe` turns
  *  the step's answer into its result and size. A step that throws is recorded
@@ -128,10 +137,20 @@ async function writeRecord(dir: string, kind: "page" | "listing", input: string,
     steps: trail.steps,
   };
   const day = readAt.slice(0, 10);
-  await appendFile(path.join(dir, `${day}.jsonl`), `${JSON.stringify({ ...record, text })}\n`);
+  await appendFile(path.join(dir, `${day}.jsonl`), `${JSON.stringify({ ...record, ...textForLine(record.id, input, text) })}\n`);
   if (lastPrunedDay !== day) await pruneOldFiles(dir, day);
   const { error } = await getSupabaseClient().from("page_reads").insert(record);
   if (error) throw new Error(error.message);
+}
+
+/** The text for the day's file, or the read that already holds it. */
+function textForLine(id: string, input: string, text: string | null): { text: string | null } | { text: null; text_same_as: string } {
+  if (text === null) return { text };
+  const hash = createHash("sha256").update(text).digest("hex");
+  const stored = lastStoredText.get(input);
+  if (stored?.hash === hash) return { text: null, text_same_as: stored.id };
+  lastStoredText.set(input, { id, hash });
+  return { text };
 }
 
 /** Deletes the day files older than DAYS_KEPT, once a day per process. */

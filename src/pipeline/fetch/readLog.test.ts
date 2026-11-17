@@ -59,6 +59,22 @@ describe("logRead", () => {
     expect(record).toMatchObject({ kind: "listing", outcome: "error", reason: "feed refused" });
   });
 
+  test("stores a text the same address gave before only once", async () => {
+    const readFeed = (text: string) =>
+      logRead("listing", "https://x.substack.com", async () => text, (feed) => ({ outcome: "listing", via: "substack", chars: feed.length, reason: null, text: feed }));
+    await readFeed("<rss>one post</rss>");
+    await readFeed("<rss>one post</rss>");
+    await readFeed("<rss>two posts</rss>");
+    const deadline = Date.now() + FILE_WAIT_MS;
+    let records = await loggedRecords();
+    while (records.length < 3 && Date.now() < deadline) {
+      await Bun.sleep(20);
+      records = await loggedRecords();
+    }
+    expect(records.map((record) => record.text)).toEqual(["<rss>one post</rss>", null, "<rss>two posts</rss>"]);
+    expect(records[1]!.text_same_as).toBe(records[0]!.id);
+  });
+
   test("records nothing outside the services", async () => {
     delete process.env.PAGE_READ_LOG_DIR;
     await logRead("page", "https://example.com", async () => "text", () => ({ outcome: "page", via: null, chars: 4, reason: null, text: "text" }));
