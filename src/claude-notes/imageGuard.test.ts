@@ -15,16 +15,17 @@ test("refuses an image whatever its name, and a PDF", () => {
 });
 
 test("lets text and other tools through", () => {
-  writeFileSync(path.join(dir, "post.md"), "BMW sold more cars. Plain text.".slice(3));
+  writeFileSync(path.join(dir, "post.md"), "BMW sold more cars. Plain text.");
   expect(hookAnswer(read("post.md"))).toBe("");
   expect(hookAnswer(read("shot.png", "Bash"))).toBe("");
 });
 
 test("the settings file keeps the box's own hooks, and its hook refuses an image when Claude Code runs it", () => {
   const own = path.join(dir, "own.json");
-  writeFileSync(own, JSON.stringify({ env: { A: "1" }, hooks: { PreToolUse: [{ matcher: "Bash", hooks: [] }], Stop: [] } }));
+  writeFileSync(own, JSON.stringify({ env: { A: "1" }, disableAllHooks: true, hooks: { PreToolUse: [{ matcher: "Bash", hooks: [] }], Stop: [] } }));
   const settings = JSON.parse(readFileSync(guardedSettingsFile(dir, own), "utf8"));
   expect(settings.env).toEqual({ A: "1" });
+  expect(settings.disableAllHooks).toBe(false);
   expect(settings.hooks.Stop).toEqual([]);
   expect(settings.hooks.PreToolUse.map((h: { matcher: string }) => h.matcher)).toEqual(["Bash", "Read"]);
 
@@ -38,4 +39,18 @@ test("the settings file keeps the box's own hooks, and its hook refuses an image
 test("a box with no settings file still gets the hook", () => {
   const settings = JSON.parse(readFileSync(guardedSettingsFile(dir, path.join(dir, "missing.json")), "utf8"));
   expect(settings.hooks.PreToolUse).toHaveLength(1);
+});
+
+test("a settings file that cannot be parsed stops the run", () => {
+  const broken = path.join(dir, "broken.json");
+  writeFileSync(broken, "{");
+  expect(() => guardedSettingsFile(dir, broken)).toThrow();
+});
+
+test("refuses WebP and HEIC, lets a WAV and a folder through", () => {
+  const bytes = (name: string, head: string) => (writeFileSync(path.join(dir, name), Buffer.from(head, "latin1")), read(name));
+  expect(hookAnswer(bytes("a", "RIFF\x10\0\0\0WEBPVP8 "))).toContain('"deny"');
+  expect(hookAnswer(bytes("b", "\0\0\0\x18ftypheic\0\0\0\0"))).toContain('"deny"');
+  expect(hookAnswer(bytes("c", "RIFF\x10\0\0\0WAVEfmt "))).toBe("");
+  expect(hookAnswer(read("."))).toBe("");
 });
