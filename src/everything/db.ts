@@ -1279,6 +1279,6 @@ export async function fetchDemandReport(): Promise<DemandReportRow[]> {
 
 /** Records that the demand rule took a page, so it never takes it again.
  *  `queued` is false for a page that already had an item. */
-export async function recordDemandQueued(row: { page_url: string; kind: string; readers: number; item_id: string; queued: boolean }): Promise<void> {
+export async function recordDemandQueued(row: { page_url: string; kind: string; readers: number; queued: boolean }): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_demand_queued").insert(row));
 }

@@ -19,6 +19,9 @@
 -- once, whatever became of its item. It also carries the numbers for tuning
 -- the bar and the daily caps (everything_demand_report).
 --
+-- The row is written before the item, so a page the log cannot record is
+-- never queued and the daily cap always holds.
+--
 -- ORDER: apply before or after the code. Without it the feed run logs that the
 -- rule is not installed and carries on.
 -- UNDO: drop function everything_demand_report(); drop function
@@ -28,7 +31,6 @@ create table everything_demand_queued (
   page_url text primary key,
   kind text not null check (kind in ('text', 'youtube')),
   readers int not null,
-  item_id uuid references everything_items (id) on delete set null,
   -- False for a page that turned out to have an item under another spelling
   -- of its address. Such a row only stops the page from being looked at again.
   queued boolean not null default true,
@@ -47,7 +49,7 @@ returns table (page_url text, feed_url text, kind text, readers int)
 language sql stable set search_path = public as $$
   with pages as (
     select regexp_replace(v.page_url, '/comments$', '') as page_url,
-           min(v.feed_url) as feed_url,
+           mode() within group (order by v.feed_url) as feed_url,
            count(distinct v.reader_hash)::int as readers
       from everything_link_visits v
      where v.visited_at > now() - interval '7 days'
@@ -62,18 +64,21 @@ language sql stable set search_path = public as $$
              when p.page_url ~* '^https?://(www\.)?(lesswrong\.com|alignmentforum\.org|forum\.effectivealtruism\.org)/posts/[^/]+/[^/]+$' then 'text'
            end as kind
       from pages p
+  ), wanted as (
+    select k.*, row_number() over (partition by k.kind order by k.readers desc, k.page_url) as place
+      from kinds k
+     where k.readers >= case k.kind when 'text' then p_text_readers when 'youtube' then p_youtube_readers end
+       and not exists (select 1 from everything_demand_queued q where q.page_url = k.page_url)
+       and not exists (select 1 from everything_items i where everything_visit_page(i.url) = k.page_url)
   )
-  select k.page_url, k.feed_url, k.kind, k.readers
-    from kinds k
-   where k.readers >= case k.kind when 'text' then p_text_readers when 'youtube' then p_youtube_readers end
-     and not exists (select 1 from everything_demand_queued q where q.page_url = k.page_url)
-     and not exists (select 1 from everything_items i where everything_visit_page(i.url) = k.page_url)
-   order by k.readers desc, k.page_url
-   limit p_limit;
+  select w.page_url, w.feed_url, w.kind, w.readers
+    from wanted w
+   where w.place <= p_limit
+   order by w.readers desc, w.page_url;
 $$;
 
 comment on function everything_demanded_pages(int, int, int) is
-  'Pages without an item that at least p_text_readers (text posts) or p_youtube_readers (videos) different readers opened in the last 7 days, most readers first. A null bar leaves that kind out. Pages in everything_demand_queued are left out (GOO-793).';
+  'Pages without an item that at least p_text_readers (text posts) or p_youtube_readers (videos) different readers opened in the last 7 days, most readers first, at most p_limit of each kind, each with the feed most of its visits named. A null bar leaves that kind out. Pages in everything_demand_queued are left out (GOO-793).';
 
 revoke all on function everything_demanded_pages(int, int, int) from public, anon, authenticated;
 grant execute on function everything_demanded_pages(int, int, int) to service_role;
@@ -91,7 +96,7 @@ language sql stable set search_path = public as $$
          count(*) filter (where q.queued_at <= now() - interval '2 days' and exists (
            select 1 from everything_claims c join everything_notes n on n.claim_id = c.id where c.item_id = i.id))::int
     from everything_demand_queued q
-    left join everything_items i on i.id = q.item_id
+    left join everything_items i on everything_visit_page(i.url) = q.page_url
    where q.queued and q.queued_at > now() - interval '9 days'
    group by q.kind;
 $$;

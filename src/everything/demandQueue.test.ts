@@ -50,8 +50,15 @@ describe("queueDemandedPages", () => {
     dbState.demandedPages = [text(1, 4)];
     await queueDemandedPages(demandSettings({}));
     expect(dbState.calls.recordDemandQueued).toEqual([
-      [{ page_url: text(1).page_url, kind: "text", readers: 4, item_id: "new-item-id", queued: true }],
+      [{ page_url: text(1).page_url, kind: "text", readers: 4, queued: true }],
     ]);
+  });
+
+  test("a page the log cannot record is not queued, and the pass ends", async () => {
+    dbState.demandedPages = [text(1), text(2)];
+    dbState.recordDemandFails = true;
+    await expect(queueDemandedPages(demandSettings({}))).rejects.toThrow("log is down");
+    expect(dbState.calls.insertQueuedItem).toBeUndefined();
   });
 
   test("the daily cap counts what the last 24 hours already queued", async () => {
@@ -84,7 +91,7 @@ describe("queueDemandedPages", () => {
     expect(await queueDemandedPages(demandSettings({}))).toBe(0);
     expect(dbState.calls.insertQueuedItem).toBeUndefined();
     expect(dbState.calls.requeueItem).toBeUndefined();
-    expect(dbState.calls.recordDemandQueued![0]![0]).toMatchObject({ item_id: "item-1", queued: false });
+    expect(dbState.calls.recordDemandQueued![0]![0]).toMatchObject({ queued: false });
   });
 });
 

@@ -77,26 +77,28 @@ export async function queueDemandedPages(settings = demandSettings()): Promise<n
   let queued = 0;
   for (const page of pages) {
     if (left[page.kind] === 0) continue;
+    // The database matched the page against every item's address. A video's
+    // stored address can still be spelled in a way that match misses.
+    const existing = await findItemForPageUrl(page.page_url);
+    // Recorded before it is queued, and a failure here ends the pass: a page
+    // the log does not hold would be offered again, and the daily cap, which
+    // counts the log, would stop nothing.
+    await recordDemandQueued({ page_url: page.page_url, kind: page.kind, readers: page.readers, queued: !existing });
+    if (existing) continue;
+    left[page.kind]--;
     try {
-      // The database matched the page against every item's address. A video's
-      // stored address can still be spelled in a way that match misses.
-      const existing = await findItemForPageUrl(page.page_url);
-      const itemId =
-        existing?.id ??
-        (await insertQueuedItem({
-          project_id: await projectForRequest(page),
-          source: classifyRequestSource(page.page_url),
-          url: page.page_url,
-          priority: QUEUE_PRIORITY.prioritized,
-          checked_scope: "page",
-        }));
-      await recordDemandQueued({ page_url: page.page_url, kind: page.kind, readers: page.readers, item_id: itemId, queued: !existing });
-      if (existing) continue;
-      left[page.kind]--;
+      await insertQueuedItem({
+        project_id: await projectForRequest(page),
+        source: classifyRequestSource(page.page_url),
+        url: page.page_url,
+        priority: QUEUE_PRIORITY.prioritized,
+        checked_scope: "page",
+      });
       queued++;
       console.log(`  queued, ${page.readers} readers: ${page.page_url}`);
     } catch (err: any) {
-      // One page that cannot be queued must not stop the feed run.
+      // One page that cannot be queued must not stop the feed run. It stays
+      // recorded, so it is not tried again.
       console.log(`  could not queue ${page.page_url}: ${err?.message ?? "unknown error"}`);
     }
   }
