@@ -63,9 +63,32 @@ async function uploadImage({ api, headers }: Settings, image: ArrayBuffer, fileN
 /** Creates a draft for the X account of the social set in
  *  TYPEFULLY_SOCIAL_SET_ID, and returns its id and when Typefully schedules
  *  it. */
+const isReset = (error: unknown): boolean => {
+  for (let e: unknown = error, depth = 0; e && depth < 4; e = (e as { cause?: unknown }).cause, depth++) {
+    if ((e as { code?: unknown }).code === "ECONNRESET" || String(e).includes("ECONNRESET")) return true;
+  }
+  return false;
+};
+
+/** Bun reuses kept-alive sockets that the far end has already closed, and the
+ *  call then fails at once with ECONNRESET (2 of 3 presses on 2026-11-16). A
+ *  call that is safe to repeat is tried again, up to twice. */
+export async function retryOnReset<T>(call: () => Promise<T>, waitMs = 1000): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await call();
+    } catch (error) {
+      if (attempt >= 2 || !isReset(error)) throw error;
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+  }
+}
+
 export async function createDraft(draft: TweetDraft): Promise<{ draftId: string; scheduledFor: string | null }> {
   const account = settings();
-  const mediaId = await uploadImage(account, draft.image, pictureFileName(draft.title));
+  // A repeated upload only leaves an unused picture behind. The draft itself is
+  // never retried: a reset after Typefully made it would schedule the tweet twice.
+  const mediaId = await retryOnReset(() => uploadImage(account, draft.image, pictureFileName(draft.title)));
   const posts = [{ text: draft.text, media_ids: [mediaId] }, ...(draft.reply.trim() ? [{ text: draft.reply.trim() }] : [])];
   const created = await json<{ id: string | number; scheduled_date?: string; publish_at?: string }>(
     await fetch(`${account.api}/drafts`, {

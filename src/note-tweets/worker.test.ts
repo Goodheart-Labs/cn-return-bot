@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TypefullyDraftState } from "../everything-core/xMarks";
-import { handleRequest, handleRequests, retryOnReset, syncScheduled, type WorkerDeps } from "./worker";
+import { retryOnReset } from "./typefully";
+import { handleRequest, handleRequests, syncScheduled, type WorkerDeps } from "./worker";
 
 test("a reset connection is tried again, other errors and a third reset are not", async () => {
   let calls = 0;
