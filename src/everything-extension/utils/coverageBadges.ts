@@ -3,7 +3,7 @@ import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_HOVER_SCALE, MARKER_LIGHT, MARKE
 import type { ContentScriptContext } from "#imports";
 import type { BadgeMark } from "../components/BadgeCard";
 import { mountBadgeCard, type BadgeCardHandle } from "./mountBadgeCard";
-import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import { extractYoutubeVideoId, normalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
 import { NOTE_STACK_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
@@ -55,26 +55,14 @@ function pageKey(href: string): string | null {
   return extractYoutubeVideoId(url.toString()) ?? trimSlash(normalizePageUrl(url.toString()));
 }
 
-// Substack's reader links a post as substack.com/home/post/p-<id> or
-// /@author/p-<id>. The database only knows the publication's own post URL, so
+// Substack's reader links a post as substack.com/home/post/p-<id>,
+// /inbox/post/<id> or /@author/p-<id>. The database only knows the publication's own post URL, so
 // such a link cannot be matched directly. The background resolves each post id
 // to that URL once, from the redirect a logged-out fetch gets or from the
 // canonical embedded in the fetched page, and the mapping is kept in storage
 // so a post the reader's feed showed once never needs resolving again.
 const READER_CANONICALS_KEY = "cn:readerPostCanonicals";
 const READER_CANONICALS_MAX = 2000;
-
-/** The reader post id ("p-210916646") of a link, or null when the link is not
- *  a reader-style post link. */
-function readerPostId(href: string): string | null {
-  try {
-    const url = new URL(href, location.href);
-    if (!/^(www\.)?substack\.com$/.test(url.hostname)) return null;
-    return url.pathname.match(/\/(p-\d+)(\/|$)/)?.[1] ?? null;
-  } catch {
-    return null;
-  }
-}
 
 /** A small circle pinned to a card's upper corner. It uses the same surface as
  *  the in-article passage badge: a white circle with a border and the blue
@@ -450,11 +438,11 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
    *  publication URL they lead to. A reader link whose translation is not
    *  known yet gets none, and its resolution is kicked off instead. */
   const keyFor = (href: string): string | null => {
-    const postId = readerPostId(href);
+    const postId = substackReaderPostId(href);
     if (!postId) return pageKey(href);
     const canonical = readerCanonicals.get(postId);
     if (!canonical) {
-      resolveReaderLink(new URL(href, location.href).toString(), postId);
+      resolveReaderLink(href, postId);
       return null;
     }
     return pageKey(canonical);
@@ -543,9 +531,10 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
     // only-while-the-path-matches guard: after a client-side navigation back
     // to the front page, Substack leaves the previous post's canonical tag in
     // the head, and trusting it raw suppressed exactly that post's badge.
-    // A reader page such as substack.com/home/post/p-<id> shows the article
-    // itself, so its address is translated like a reader link, and the
-    // article's own title link gets no badge. A note page such as
+    // A reader page such as substack.com/home/post/p-<id> or
+    // substack.com/inbox/post/<id> shows the article itself, so its address is
+    // translated like a reader link, and the article's own title link gets no
+    // badge. A note page such as
     // substack.com/@author/note/p-<id> is different. It shows the post as a
     // card with replies under it. That card is the only place the page can say
     // the post was checked, so there the address stays untranslated and the

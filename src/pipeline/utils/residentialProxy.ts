@@ -105,5 +105,3 @@ async function fetchViaResidentialProxy<T>(url: string, read: (res: Response) =>
 }
 
 export const fetchJsonViaResidentialProxy = (url: string): Promise<any> => fetchViaResidentialProxy(url, (res) => res.json());
-
-export const fetchTextViaResidentialProxy = (url: string): Promise<string> => fetchViaResidentialProxy(url, (res) => res.text());

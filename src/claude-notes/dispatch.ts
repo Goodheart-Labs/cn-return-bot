@@ -85,19 +85,23 @@ const JOBS_INSTRUCTION =
  *  subagents, and every one of them counts against the session's limits. */
 const MAX_POSTS_RUNNING = 5;
 const MAX_TWEETS_RUNNING = 3;
-/** X account lookups are small, so one at a time keeps them from crowding out posts. */
-const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
-/** Judges are small too. Two at a time catch up with a day's notes. */
-const MAX_JUDGES_RUNNING = 2;
+/** The devbox starts no X account lookups and no judges for now. Most of them
+ *  were for claude-hq-nathan's notes, and they used Jim's plan at about a point
+ *  an hour while the devbox itself wrote two posts a day (Jim, 2026-11-17).
+ *  GOO-786 brings them back on the shared Claude account. Before the pause the
+ *  limits were 1 lookup and 2 judges at a time. */
+const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 0;
+const MAX_JUDGES_RUNNING = 0;
 /** Tweets the devbox starts in any 24 hours. A subagent records no cost, so
  *  the X share in xShare.ts sees none of the devbox's tweets and never stops
  *  the X run from sending more. Without this limit the tweets used about four
  *  times their share of the week (Jim, 2026-11-02). The limit was 35 at first,
- *  and Jim raised it to 100 on 2026-11-04. At about $0.61 of API cost per tweet
- *  and about $25 per percent of the plan's week, 100 tweets use about 2.5% a day.
+ *  and Jim raised it to 100 on 2026-11-04 and lowered it to 70 on 2026-11-15.
+ *  At about $0.61 of API cost per tweet and about $25 per percent of the plan's
+ *  week, 70 tweets use about 1.7% a day.
  *  A tweet that is not started is swept as failed by the X run after
  *  CLAUDE_TWEET_MAX_WAIT_MINUTES. */
-const MAX_TWEETS_PER_DAY = 100;
+const MAX_TWEETS_PER_DAY = 70;
 const DAY_MS = 24 * 3600_000;
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 

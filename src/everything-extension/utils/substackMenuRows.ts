@@ -1,4 +1,4 @@
-import { isSubstackReaderUrl, normalizePageUrl } from "@cn/core/pageUrls";
+import { normalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
 import {
   readSubstackPublicationFromPage,
   resolveProfileCreatorTarget,
@@ -51,7 +51,7 @@ const AUTHOR_LINK_SELECTOR = 'a[href*="utm_source=substack-feed-item"]';
  *  so the background resolves it when the check starts, and the reader view
  *  gets no creator row. */
 function openPostSubject(): MenuSubject | null {
-  if (!isSubstackPostPage(location.href) && !isSubstackReaderUrl(location.href)) return null;
+  if (!isSubstackPostPage(location.href) && !substackReaderPostId(location.href)) return null;
   return {
     page: { url: normalizePageUrl(location.href, document), title: document.title, noun: "post", current: true },
     creator: async () =>
