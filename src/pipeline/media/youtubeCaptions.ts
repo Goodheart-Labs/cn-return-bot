@@ -247,28 +247,33 @@ export type YoutubeCaptions =
  * YoutubeUnreachableError, so that a proxy outage is never recorded as a
  * video without captions (GOO-169).
  *
- * This is the only retry loop for captions. Each try lists the tracks and
- * downloads one, on a fresh proxy connection. A failure at either step means
- * the next try starts again from the listing.
+ * This is the only retry loop for captions. Each try runs on a fresh proxy
+ * connection. A try lists the tracks unless an earlier try already did, and
+ * then downloads one. The listing can be kept, because its track addresses
+ * work from any connection (GOO-776). The one exception is a refused caption
+ * file. The addresses carry the PO token, and after a refusal that token's
+ * integrity token is dropped, so the next try lists again.
  */
 export async function fetchYoutubeCaptions(video: YoutubeVideo): Promise<YoutubeCaptions> {
-  return withResidentialProxy(video.url, (proxyUrl) => fetchCaptionsOnce(video, proxyUrl), (err) => err instanceof YoutubeUnreachableError);
-}
-
-/** One try at a video's captions: list its tracks, then download the chosen
- *  one, both through the same proxy connection settings. */
-async function fetchCaptionsOnce(video: YoutubeVideo, proxyUrl: string | undefined): Promise<YoutubeCaptions> {
-  const listing = await listCaptionTracks(video, proxyUrl);
-  if (listing.kind !== "tracks") return listing;
-  const track = chooseCaptionTrack(listing.tracks, video.audioLanguage);
-  if (!track) return { kind: "none", why: `YouTube listed only machine translations (${listing.tracks.map((t) => t.code).join(", ")})` };
-  const file = await downloadCaptionFile(video.url, track, proxyUrl);
-  if (isRefusedCaptionFile(file)) {
-    await invalidateIntegrityToken();
-    throw new YoutubeUnreachableError(video.url, `YouTube listed the ${track.kind} ${track.code} track and served ${file.length} characters that are not a caption file`);
-  }
-  const cues = parseSubtitleToCues(file);
-  return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
+  let listing: CaptionListing | null = null;
+  return withResidentialProxy(
+    video.url,
+    async (proxyUrl) => {
+      const current = (listing ??= await listCaptionTracks(video, proxyUrl));
+      if (current.kind !== "tracks") return current;
+      const track = chooseCaptionTrack(current.tracks, video.audioLanguage);
+      if (!track) return { kind: "none", why: `YouTube listed only machine translations (${current.tracks.map((t) => t.code).join(", ")})` };
+      const file = await downloadCaptionFile(video.url, track, proxyUrl);
+      if (isRefusedCaptionFile(file)) {
+        listing = null;
+        await invalidateIntegrityToken();
+        throw new YoutubeUnreachableError(video.url, `YouTube listed the ${track.kind} ${track.code} track and served ${file.length} characters that are not a caption file`);
+      }
+      const cues = parseSubtitleToCues(file);
+      return cues.length ? { kind: "captions", cues } : { kind: "none", why: `the ${track.kind} ${track.code} track's file holds no captions` };
+    },
+    (err) => err instanceof YoutubeUnreachableError,
+  );
 }
 
 /** Makes the PO token provider throw away its integrity token, so the next
