@@ -42,6 +42,7 @@ import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
 import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
 import { queueDemandedPages } from "./demandQueue";
+import { creatorlessSubstackVisitsProblem } from "./creatorlessVisits";
 import {
   fetchFeedPacing,
   fetchFeedPostsWanted,
@@ -178,6 +179,8 @@ async function problemsToReport(ended: FeedRunOutcome | undefined, silences: str
   for (const failure of await takeUnreportedReadFailures()) {
     problems.push(`The intake service could not read ${failure.url} at ${failure.at}, so no notewriter got it: ${failure.reason}`);
   }
+  const creatorlessVisits = await creatorlessSubstackVisitsProblem();
+  if (creatorlessVisits) problems.push(creatorlessVisits);
   return problems;
 }
 
