@@ -21,6 +21,11 @@ const MAX_REASON_LENGTH = 200;
  *  transcript. A few warnings fit, and a flood of them does not fill the log. */
 const MAX_WARNINGS_LENGTH = 600;
 
+/** The words in an item's error that say its source could not be reached. The
+ *  retry sweep finds such items by them (fetchRetryableErrorItems), so they
+ *  must stay in the message of YoutubeUnreachableError. */
+export const SOURCE_UNREACHABLE_TEXT = "could not be reached";
+
 /** YouTube could not be reached, as opposed to YouTube answering that the
  *  video has no captions. The caller must treat this as a network failure:
  *  retry later, never record it as a fact about the video. Before GOO-169
@@ -28,7 +33,7 @@ const MAX_WARNINGS_LENGTH = 600;
  *  marked a permanent error. */
 export class YoutubeUnreachableError extends Error {
   constructor(url: string, reason: string) {
-    super(`YouTube could not be reached for ${url}: ${reason}`);
+    super(`YouTube ${SOURCE_UNREACHABLE_TEXT} for ${url}: ${reason}`);
     this.name = "YoutubeUnreachableError";
   }
 }

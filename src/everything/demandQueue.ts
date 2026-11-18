@@ -15,7 +15,7 @@
  * read gets the same three repeat attempts as any failed post.
  */
 
-import { FAILING_SOURCE_WINDOW_MS, failingSources, MAX_ITEM_RETRIES, RETRY_WAIT_HOURS } from "./autoEnqueue";
+import { attemptLabel, FAILING_SOURCE_WINDOW_MS, failingSources, RETRY_WAIT_HOURS } from "./autoEnqueue";
 import { classifyRequestSource, projectForRequest } from "./consumeRequests";
 import {
   fetchDemandedPages,
@@ -81,7 +81,7 @@ async function retryDemandedPages(failing: Set<string>): Promise<void> {
     if (!ours.has(item.url) || (retried.get(source) ?? 0) >= RETRIES_PER_SOURCE_PER_RUN) continue;
     retried.set(source, (retried.get(source) ?? 0) + 1);
     await requeueErroredItem(item, item.priority);
-    console.log(`  failed page back in the queue, attempt ${item.retries + 2}/${MAX_ITEM_RETRIES + 1}: ${item.url}`);
+    console.log(`  failed page back in the queue, attempt ${attemptLabel(item)}: ${item.url}`);
   }
 }
 
