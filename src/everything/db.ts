@@ -4,6 +4,7 @@
 import { getSupabaseClient } from "../api/supabaseClient";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
+import { SOURCE_UNREACHABLE_TEXT } from "../pipeline/media/youtubeCaptions";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
@@ -363,35 +364,53 @@ export interface RetryableErrorItem {
   feed_url: string | null;
 }
 
+/** How old an item may be and still get attempts beyond its listed ones
+ *  because its source could not be reached. */
+const SOURCE_DOWN_RETRY_DAYS = 7;
+
 /** Returns the errored items of one worker's tiers that are due another
  *  attempt. `waitHours[n]` is how long an item that has been retried n times
  *  waits after its last failure, so an item retried as often as the list is
  *  long is never returned. The wait spaces the attempts out. Without it a
  *  failure whose cause lasts a while, say a broken proxy or an exhausted API
  *  key, would burn every retry within minutes and the item would be dead
- *  again before the cause clears. */
+ *  again before the cause clears.
+ *
+ *  An item whose source could not be reached is returned beyond the list too,
+ *  every time the list's last wait has passed, until the item is
+ *  SOURCE_DOWN_RETRY_DAYS old. Such a failure says nothing about the page. On
+ *  2026-11-17 the YouTube proxy ran out of traffic for more than 20 hours, and
+ *  8 of the 20 videos reader demand had queued spent every attempt on it, so
+ *  they would have stayed in error after the proxy came back. */
 export async function fetchRetryableErrorItems(
   waitHours: readonly number[],
   tier: "requested" | "feed",
 ): Promise<RetryableErrorItem[]> {
-  const due = waitHours.map((hours, retries) => {
-    const failedBefore = new Date(Date.now() - hours * 3600_000).toISOString();
-    return `and(retries.eq.${retries},processed_at.lt."${failedBefore}")`;
-  });
-  const rows = await fetchAllRows<Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null }>(
-    () => {
-      const query = getSupabaseClient()
-        .from("everything_items")
-        .select("id, url, title, published_at, retries, priority, everything_projects(feed_url)")
-        .eq("status", "error")
-        .or(due.join(","));
-      return tier === "requested"
-        ? query.gte("priority", QUEUE_PRIORITY.requested)
-        : query.lt("priority", QUEUE_PRIORITY.requested);
-    },
-    "id",
-    { label: "retryableErrorItems" },
-  );
+  const hoursAgo = (hours: number) => new Date(Date.now() - hours * 3600_000).toISOString();
+  const due = waitHours.map((hours, retries) => `and(retries.eq.${retries},processed_at.lt."${hoursAgo(hours)}")`);
+  type Row = Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null };
+  const errored = () => {
+    const query = getSupabaseClient()
+      .from("everything_items")
+      .select("id, url, title, published_at, retries, priority, everything_projects(feed_url)")
+      .eq("status", "error");
+    return tier === "requested"
+      ? query.gte("priority", QUEUE_PRIORITY.requested)
+      : query.lt("priority", QUEUE_PRIORITY.requested);
+  };
+  const rows = [
+    ...(await fetchAllRows<Row>(() => errored().or(due.join(",")), "id", { label: "retryableErrorItems" })),
+    ...(await fetchAllRows<Row>(
+      () =>
+        errored()
+          .gte("retries", waitHours.length)
+          .like("error", `%${SOURCE_UNREACHABLE_TEXT}%`)
+          .lt("processed_at", hoursAgo(waitHours[waitHours.length - 1]!))
+          .gte("created_at", hoursAgo(SOURCE_DOWN_RETRY_DAYS * 24)),
+      "id",
+      { label: "sourceDownErrorItems" },
+    )),
+  ];
   return rows.map(({ everything_projects, ...item }) => ({ ...item, feed_url: everything_projects?.feed_url ?? null }));
 }
 

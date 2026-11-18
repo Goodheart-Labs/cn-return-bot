@@ -9,7 +9,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { unprocessedEntries, topPostEntries, walkToFirstCandidate, orderCandidates, freshCandidates, failingSources } = await import("./autoEnqueue");
+const { unprocessedEntries, topPostEntries, walkToFirstCandidate, orderCandidates, freshCandidates, failingSources, attemptLabel } = await import("./autoEnqueue");
 
 const feed = { project: "test", type: "substack" as const, url: "https://test.substack.com" };
 const entry = (url: string) => ({ source: "substack" as const, url, matchKey: url, label: url });
@@ -163,6 +163,17 @@ describe("freshCandidates", () => {
       new Date("2026-11-12T12:00:00Z"),
     );
     expect(urls(result)).toEqual(["new", "edge", "undated", "new-retry"]);
+  });
+});
+
+describe("attemptLabel", () => {
+  test("counts the listed attempts out of four", () => {
+    expect(attemptLabel({ retries: 0 })).toBe("2/4");
+    expect(attemptLabel({ retries: 2 })).toBe("4/4");
+  });
+
+  test("an attempt beyond the listed ones says the source was down", () => {
+    expect(attemptLabel({ retries: 3 })).toBe("5, its source was down");
   });
 });
 
