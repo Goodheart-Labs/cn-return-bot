@@ -85,7 +85,7 @@ const CHECKED_PASSAGE_MAX_CHARS = 200;
 function alreadyCheckedSection(asked: AskedPassages): string {
   const passages = asked.alreadyChecked ?? [];
   if (!passages.length || asked.onlyThese) return "";
-  const list = passages.map((p, i) => `${i + 1}. "${p.length > CHECKED_PASSAGE_MAX_CHARS ? `${p.slice(0, CHECKED_PASSAGE_MAX_CHARS)}…` : p}"`).join("\n");
+  const list = passages.map((p, i) => `${i + 1}. "${[...p].length > CHECKED_PASSAGE_MAX_CHARS ? `${[...p].slice(0, CHECKED_PASSAGE_MAX_CHARS).join("")}…` : p}"`).join("\n");
   return `
 
 ## Passages already checked

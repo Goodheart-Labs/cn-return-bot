@@ -150,7 +150,7 @@ async function personNoteOnPassage(itemId: string, passage: string): Promise<{ n
 /** The passages of this post that already have a Claude draft, oldest first. */
 export async function draftedPassages(itemId: string): Promise<string[]> {
   const rows = unwrap(await db().from("everything_claude_drafts").select("passage").eq("item_id", itemId).order("created_at"));
-  return [...new Set(rows.map((r) => r.passage))];
+  return [...new Set(rows.map((r) => r.passage).filter(Boolean))];
 }
 
 /** The draft the post already has with this passage, outcome and note text,
