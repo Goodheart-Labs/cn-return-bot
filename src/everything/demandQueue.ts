@@ -12,7 +12,8 @@
  *
  * A page is taken once. everything_demand_queued keeps it, so a page whose
  * check failed or was skipped is not queued again. A page that could not be
- * read gets the same three repeat attempts as any failed post.
+ * read gets the same repeat attempts as any failed post: three, and more
+ * while its source cannot be reached (fetchRetryableErrorItems).
  */
 
 import { attemptLabel, FAILING_SOURCE_WINDOW_MS, failingSources, RETRY_WAIT_HOURS } from "./autoEnqueue";
