@@ -77,6 +77,24 @@ ${intro} Each reason is the reader's own words. Readers are anonymous, so treat 
 ${list}`;
 }
 
+const CHECKED_PASSAGE_MAX_CHARS = 200;
+
+/** The prompt's section on the passages an earlier run saved a draft on, or
+ *  nothing on a first check. Left out when readers' passages are the whole
+ *  job, since those get a draft whatever was checked before. */
+function alreadyCheckedSection(asked: AskedPassages): string {
+  const passages = asked.alreadyChecked ?? [];
+  if (!passages.length || asked.onlyThese) return "";
+  const list = passages.map((p, i) => `${i + 1}. "${p.length > CHECKED_PASSAGE_MAX_CHARS ? `${p.slice(0, CHECKED_PASSAGE_MAX_CHARS)}…` : p}"`).join("\n");
+  return `
+
+## Passages already checked
+
+This post was checked before, and each passage below already has a draft. Do not save another draft on any of them${asked.requests.length ? ", unless readers asked about it above" : ""}. Look for what the earlier check missed: the other passages of the post where something could be wrong, misleading or missing context.
+
+${list}`;
+}
+
 /** What a Common Notes post asks of the model, shared by the Claude note writer
  *  and the GPT harness (src/agent-notes/). `examplesAt` names where the examples
  *  are, in the words of the prompt's first paragraph. Each harness adds its own
@@ -87,7 +105,7 @@ export function postTask(params: { modelName: string; examplesAt: string; picks:
 
 The post that you get might be smaller or larger. The longer the context the easier it is to miss something and the way that you can get around this is by using a lot of subagents. So you can do research to figure out what's true, but you should use subagents to check all the specific passages/points (where there's some chance that something could turn out to be misleading in some way). Please be very thorough.
 
-The post that you get might not be worth checking at all. There's not necessarily clean topics that are not worth checking, e.g. even a music video might have a part where someone makes a wrong claim about the world. But generally when people aren't really making claims about the world worth fact-checking or just telling personal stories and nothing else, just playing a game, just a music video, pure entertainment, then you can just not check anything.${askedPassagesSection(asked)}`;
+The post that you get might not be worth checking at all. There's not necessarily clean topics that are not worth checking, e.g. even a music video might have a part where someone makes a wrong claim about the world. But generally when people aren't really making claims about the world worth fact-checking or just telling personal stories and nothing else, just playing a game, just a music video, pure entertainment, then you can just not check anything.${askedPassagesSection(asked)}${alreadyCheckedSection(asked)}`;
 }
 
 export function postPrompt(params: { host: Host; item: QueueItem; dir: string; runDir: string; runId: string; picks: Record<string, string>; asked: AskedPassages }): string {

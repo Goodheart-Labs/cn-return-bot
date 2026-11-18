@@ -7,14 +7,17 @@ import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
 import { openPassageRequests, type PassageRequest } from "../everything/passageRequests";
 import { isWholePageChecked } from "../everything-core/wholePageChecked";
-import { nathanNotedItem, postDir, readItem } from "./store";
+import { draftedPassages, nathanNotedItem, postDir, readItem } from "./store";
 
 /** Nathan's own fact-checks are not redone. */
 const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
 
 /** The passages readers asked about. `onlyThese` is true when the post was
- *  already checked in full, so Claude checks these passages and nothing else. */
-export type AskedPassages = { requests: PassageRequest[]; onlyThese: boolean };
+ *  already checked in full, so Claude checks these passages and nothing else.
+ *  `alreadyChecked` holds the passages earlier Claude runs saved a draft on:
+ *  a post that is checked again (a recheck, or a new attempt after a failed
+ *  one) would otherwise get a second note on the same passage in new words. */
+export type AskedPassages = { requests: PassageRequest[]; onlyThese: boolean; alreadyChecked?: string[] };
 
 export type Take = { kind: "taken"; dir: string; asked: AskedPassages } | { kind: "skipped"; reason: string };
 
@@ -38,5 +41,5 @@ export async function take(itemId: string): Promise<Take> {
   const creator = item.project?.name ?? "unknown";
   writeFileSync(path.join(dir, "post.md"), postMarkdown(item));
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify({ itemId: item.id, url: item.url, title: item.title, creator, publishedAt: item.published_at }, null, 2));
-  return { kind: "taken", dir, asked: { requests, onlyThese: requests.length > 0 && isWholePageChecked(item) } };
+  return { kind: "taken", dir, asked: { requests, onlyThese: requests.length > 0 && isWholePageChecked(item), alreadyChecked: await draftedPassages(itemId) } };
 }
