@@ -190,18 +190,18 @@ export async function endPost(run: JobRun & HeldPost, end: JobEnd): Promise<JobO
   };
   if (report?.skipped) {
     await record("skipped");
-    await claudeQueue().finish(run.assignment, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
+    await endReservation(run, () => claudeQueue().finish(run.assignment, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") }));
     return "closed";
   }
   if (report) {
     await warnAboutUnsavedNotes(run, report);
     await record("done");
-    await claudeQueue().finish(run.assignment, { summary: { ...report, ...usageNote } as Json });
+    await endReservation(run, () => claudeQueue().finish(run.assignment, { summary: { ...report, ...usageNote } as Json }));
     return "closed";
   }
   if (await savedDrafts(run)) {
     await record("incomplete");
-    await claudeQueue().finish(run.assignment, { summary: { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote } });
+    await endReservation(run, () => claudeQueue().finish(run.assignment, { summary: { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote } }));
     return "closed";
   }
   if (run.attempt < MAX_ATTEMPTS) return "retry";
@@ -210,11 +210,26 @@ export async function endPost(run: JobRun & HeldPost, end: JobEnd): Promise<JobO
   return "closed";
 }
 
+/** Finishes or fails the post's reservation. A Claude that worked past the
+ *  reservation's deadline finds it already ended as expired. Its notes are
+ *  posted all the same, so that is only logged; it would otherwise crash the
+ *  runner on every such post. */
+async function endReservation(post: HeldPost, end: () => Promise<unknown>) {
+  try {
+    await end();
+  } catch (err) {
+    if (!(err as Error).message.includes("already ended as expired")) throw err;
+    console.error(`The reservation of ${post.item.url} expired while its Claude worked, so it could not be ended: ${(err as Error).message}`);
+  }
+}
+
 /** Claude fails on the post. The post is never listed to this notewriter
  *  again, and stays listed for the others. */
 async function failPost(post: HeldPost, reason: string) {
-  const outcome = await claudeQueue().fail(post.assignment, reason);
-  console.log(`Failed on ${post.item.url}: ${reason}. ${outcome[0]!.toUpperCase()}${outcome.slice(1)}`);
+  await endReservation(post, async () => {
+    const outcome = await claudeQueue().fail(post.assignment, reason);
+    console.log(`Failed on ${post.item.url}: ${reason}. ${outcome[0]!.toUpperCase()}${outcome.slice(1)}`);
+  });
 }
 
 /** A report that lists more notes than the post has drafts means some
