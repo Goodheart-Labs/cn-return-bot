@@ -363,8 +363,12 @@ const SOURCE_DOWN_RETRY_DAYS = 7;
  *  SOURCE_DOWN_RETRY_DAYS old. Such a failure says nothing about the page. On
  *  2026-11-17 the YouTube proxy ran out of traffic for more than 20 hours, and
  *  8 of the 20 videos reader demand had queued spent every attempt on it, so
- *  they would have stayed in error after the proxy came back. */
-export async function fetchRetryableErrorItems(waitHours: readonly number[]): Promise<RetryableErrorItem[]> {
+ *  they would have stayed in error after the proxy came back.
+ *
+ *  Only a post the list can still show is retried: a requested post, or one
+ *  whose list day is `listedFrom` or later. An older post is never listed
+ *  again, so another attempt would only move it from error to queued. */
+export async function fetchRetryableErrorItems(waitHours: readonly number[], listedFrom: string): Promise<RetryableErrorItem[]> {
   const hoursAgo = (hours: number) => new Date(Date.now() - hours * 3600_000).toISOString();
   const due = waitHours.map((hours, retries) => `and(retries.eq.${retries},processed_at.lt."${hoursAgo(hours)}")`);
   type Row = Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null };
@@ -372,7 +376,8 @@ export async function fetchRetryableErrorItems(waitHours: readonly number[]): Pr
     getSupabaseClient()
       .from("everything_items")
       .select("id, source, url, title, published_at, retries, everything_projects(feed_url)")
-      .eq("status", "error");
+      .eq("status", "error")
+      .or(`requested_since.not.is.null,list_date.gte.${listedFrom}`);
   const rows = [
     ...(await fetchAllRows<Row>(() => errored().or(due.join(",")), "id", { label: "retryableErrorItems" })),
     ...(await fetchAllRows<Row>(
