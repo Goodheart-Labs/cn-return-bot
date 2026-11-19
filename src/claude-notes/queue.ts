@@ -63,13 +63,6 @@ const v1Queue: ClaudeQueue = {
  *  notewriter may reserve a listed post first. */
 const RESERVE_TRIES = 5;
 
-/** The notewriter API refuses a skip reason or a failure reason longer than
- *  500 characters (migration 184). A skip reason is Claude's own words from its
- *  report, and a failure reason can be an error message, so both are cut to fit.
- *  Postgres counts characters and JavaScript counts UTF-16 units, so a cut
- *  string is never longer than the limit. */
-const MAX_REASON_CHARS = 500;
-
 type V2State = { pace: ClaudePace; lastFeedAt: number | null };
 const V2_STATE_FILE = path.join(homedir(), ".local/share/claude-note-finder/v2-queue.json");
 const NO_POSTS: V2State = { pace: { feedEveryMinutes: null, readerRequests: false }, lastFeedAt: null };
@@ -120,10 +113,10 @@ export function v2Queue(client: NotewriterClient): ClaudeQueue {
     },
     held: async () => (await client.me()).open.map((open) => ({ reservation: open.reservation, itemId: open.post, deadline: open.deadline })),
     finish: async (reservation, options) => {
-      await client.finish(reservation, { ...options, skipReason: options.skipReason?.slice(0, MAX_REASON_CHARS) });
+      await client.finish(reservation, options);
     },
     fail: async (reservation, reason) => {
-      await client.fail(reservation, reason.slice(0, MAX_REASON_CHARS));
+      await client.fail(reservation, reason);
       return describeFailure("back_in_queue");
     },
     signOfLife: async () => {
