@@ -13,7 +13,6 @@ import { askFetcher } from "../../service/client";
 import { FETCH_API_IN_BROWSER_PATH, FETCH_API_PATH, type ApiAnswer } from "../../service/contract";
 import { fetchApiInBrowser, fetchApiPlain } from "./fetchApi";
 import { fetchApiWithJina, JINA_FALLBACK } from "./jinaReader";
-import { readStep } from "./readLog";
 
 type ApiStep = "the headless browser" | "Jina Reader";
 
@@ -25,25 +24,12 @@ export type JsonRead = { type: "json"; json: unknown } | { type: "unreadable"; r
  *  it, so a site behind a bot check answers in full each time. */
 export async function readApi(address: string, options: { etag?: string } = {}): Promise<ApiRead> {
   const { etag } = options;
-  const plain = await apiStep("api: plain request", address, () =>
-    askFetcher<ApiAnswer>(FETCH_API_PATH, { url: address, ...(etag && { etag }) }, () => fetchApiPlain(address, etag)),
-  );
+  const plain = await askFetcher<ApiAnswer>(FETCH_API_PATH, { url: address, ...(etag && { etag }) }, () => fetchApiPlain(address, etag));
   if (plain.type !== "bot_check") return toApiRead(plain);
-  const inBrowser = await apiStep("api: headless browser", address, () =>
-    askFetcher<ApiAnswer>(FETCH_API_IN_BROWSER_PATH, { url: address }, () => fetchApiInBrowser(address)),
-  );
+  const inBrowser = await askFetcher<ApiAnswer>(FETCH_API_IN_BROWSER_PATH, { url: address }, () => fetchApiInBrowser(address));
   if (inBrowser.type !== "bot_check") return logStep(toApiRead(inBrowser), address, "the headless browser");
   if (!JINA_FALLBACK) return toApiRead(inBrowser);
-  return logStep(toApiRead(await apiStep("api: Jina Reader", address, () => fetchApiWithJina(address))), address, "Jina Reader");
-}
-
-/** One request to an API address, recorded in the read log. */
-function apiStep(step: string, address: string, run: () => Promise<ApiAnswer>): Promise<ApiAnswer> {
-  return readStep(step, run, (answer) => ({
-    address,
-    result: answer.type === "failed" ? `failed: ${answer.reason}` : answer.type,
-    chars: answer.type === "answer" ? answer.body.length : undefined,
-  }));
+  return logStep(toApiRead(await fetchApiWithJina(address)), address, "Jina Reader");
 }
 
 export async function readJsonApi(address: string): Promise<JsonRead> {

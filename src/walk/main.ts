@@ -42,7 +42,7 @@
  * the pages several readers opened (demandQueue.ts), and puts posts the
  * intake service could not read back for another attempt (retries.ts).
  *
- * A read that fails is recorded in page_reads like every read, and the feed
+ * A read that fails is written to the service's log, and the feed
  * stays on its schedule. A database error crashes the walk on purpose, and
  * systemd starts it again.
  *
@@ -60,7 +60,8 @@ import { watchNotewriterSilence } from "../everything/silenceWarning";
 import { readFeedIfChanged } from "../everything/sources/substack";
 import { channelDue, youtubeChannelUploads } from "../everything/youtubeChannels";
 import { quotaRanOutThisRun, YoutubeQuotaExceededError } from "../pipeline/media/youtubeDataApi";
-import { readForumListing, readForumNewestPosts } from "../pipeline/fetch/readListing";
+import { readForumListing } from "../pipeline/fetch/readListing";
+import { readForumNewest } from "../pipeline/fetch/sites/forum";
 import { forumOrigin, parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
 import { feedWaits, kindsBelowBar, listRank, nextDue, restFeedSchedule } from "./feedSchedule";
 import { addNewPosts, forumEntries, listWindowStart, substackEntries, youtubeEntries } from "./posts";
@@ -163,7 +164,7 @@ async function readForums(): Promise<void> {
   for (const origin of origins) {
     let posts;
     try {
-      posts = await readForumNewestPosts(origin, FORUM_NEWEST_POSTS);
+      posts = await readForumNewest(origin, FORUM_NEWEST_POSTS);
     } catch (err) {
       console.log(`[walk] could not read the newest posts of ${origin}: ${(err as Error).message}`);
       continue;
