@@ -249,13 +249,14 @@ journalctl -u cn-intake -f                 # live logs, same for the other units
 curl -H "x-cn-service-key: $SECRET" http://localhost:8787/health
 ```
 
-Every page and listing the services read is a row in the table `page_reads`,
-and the same record with the text that came back is a line in
-`/var/lib/cn-page-reads/<day>.jsonl`, kept 30 days (`src/pipeline/fetch/readLog.ts`).
-A text the service already stored for the same address is stored once; later
-lines carry `text_same_as`, the id of the line that holds it.
+From 2026-11-12 to 2026-11-19 the services recorded every page and listing
+they read (GOO-766): a row in the table `page_reads`, and the same record with
+the text that came back as a line in `/var/lib/cn-page-reads/<day>.jsonl`. A
+line with `text_same_as` names the line that holds its text. The recording
+was removed once there was enough data to study the fetcher (GOO-826). The
+table and the files stay for that.
 
 ```bash
-jq -c 'select(.outcome != "page") | {input, reason, steps}' /var/lib/cn-page-reads/$(date -u +%F).jsonl   # today's failed reads
+jq -c 'select(.outcome != "page") | {input, reason, steps}' /var/lib/cn-page-reads/<day>.jsonl                              # one day's failed reads
 jq -r 'select(.input == "<url>") | .text' /var/lib/cn-page-reads/<day>.jsonl                              # what one read gave
 ```
