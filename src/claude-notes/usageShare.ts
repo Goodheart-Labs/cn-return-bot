@@ -1,7 +1,9 @@
-/* Which part of Nathan's Claude plan each kind of Claude run used (GOO-612).
+/* Which part of a notewriter's Claude plan each kind of Claude run used
+ * (GOO-612).
  *
- * Every Claude that the runner on ai-box starts writes one row to
- * everything_claude_runs when it ends (recordClaudeRun in store.ts). The row
+ * Every Claude that a runner starts writes one row to everything_claude_runs
+ * when it ends (recordClaudeRun in store.ts), with the notewriter whose plan
+ * paid for it (GOO-787). The row
  * has tags that say what the run was for, and what the run would have cost on
  * the API, as Claude Code reports it. Anthropic's usage endpoint only reports
  * the plan's total, so a tag's share of the week is estimated: the usage that
@@ -9,8 +11,8 @@
  * the week's costs.
  *
  * Counting from the first cost matters in the week this was deployed, because
- * the usage from before then has no rows. Nathan's own work on the plan has no
- * row either, so it makes every tag's share look bigger than it is. The split
+ * the usage from before then has no rows. Any other work on the plan has no
+ * row either, so it would make every tag's share look bigger than it is. The split
  * also assumes that the plan counts every model in proportion to its API
  * price. */
 
@@ -51,10 +53,11 @@ export function usageShare(snapshot: UsageSnapshot, tag: ClaudeRunTag): number {
 }
 
 /** The usage reading just before `at`, or 0 when the week has none yet. */
-async function weeklyBefore(at: string, weekStart: string): Promise<number> {
+async function weeklyBefore(notewriter: string, at: string, weekStart: string): Promise<number> {
   const { data, error } = await getSupabaseClient()
     .from("everything_claude_usage")
     .select("weekly")
+    .eq("notewriter", notewriter)
     .gte("at", weekStart)
     .lte("at", at)
     .order("at", { ascending: false })
@@ -64,11 +67,13 @@ async function weeklyBefore(at: string, weekStart: string): Promise<number> {
   return data?.weekly ?? 0;
 }
 
-export async function readUsageSnapshot(): Promise<UsageSnapshot> {
+/** The week so far of one notewriter's Claude plan: its readings and its runs. */
+export async function readUsageSnapshot(notewriter: string): Promise<UsageSnapshot> {
   const db = getSupabaseClient();
   const { data: latest, error } = await db
     .from("everything_claude_usage")
     .select("at, weekly, weekly_resets_at")
+    .eq("notewriter", notewriter)
     .not("weekly_resets_at", "is", null)
     .order("at", { ascending: false })
     .limit(1)
@@ -78,7 +83,7 @@ export async function readUsageSnapshot(): Promise<UsageSnapshot> {
   const weeklyResetsAt = new Date(latest.weekly_resets_at!);
   const weekStart = new Date(weeklyResetsAt.getTime() - WEEK_MS).toISOString();
   const rows = await fetchAllRows<{ id: string; started_at: string; tags: string[]; api_cost_usd: number }>(
-    () => db.from("everything_claude_runs").select("id, started_at, tags, api_cost_usd").gte("started_at", weekStart).gt("api_cost_usd", 0),
+    () => db.from("everything_claude_runs").select("id, started_at, tags, api_cost_usd").eq("notewriter", notewriter).gte("started_at", weekStart).gt("api_cost_usd", 0),
     "id",
     { label: "claudeRunCosts" },
   );
@@ -86,6 +91,6 @@ export async function readUsageSnapshot(): Promise<UsageSnapshot> {
   return {
     latest: { at: new Date(latest.at), weekly: latest.weekly, weeklyResetsAt },
     runs: rows.map((row) => ({ tags: row.tags, apiCostUsd: Number(row.api_cost_usd) })),
-    weeklyBeforeCosts: firstCostAt ? await weeklyBefore(firstCostAt, weekStart) : latest.weekly,
+    weeklyBeforeCosts: firstCostAt ? await weeklyBefore(notewriter, firstCostAt, weekStart) : latest.weekly,
   };
 }

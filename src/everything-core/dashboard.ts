@@ -194,11 +194,16 @@ export interface ClaudeUsageRow {
   weekly_resets_at: string | null;
 }
 
-/** Every reading of the Claude plan's usage since a time, oldest first. Only
- *  admins can read the table, through its row-level policy. */
+/** The notewriter whose plan the chart shows: the runner on the ai-box, on
+ *  Jim's notewriter account (GOO-787). Its id is AI_BOX_NOTEWRITER in
+ *  src/notewriters/ids.ts, which this layer may not import. */
+const CHART_NOTEWRITER = "claude-ai-box";
+
+/** Every reading of the note writer's Claude plan since a time, oldest first.
+ *  Only admins can read the table, through its row-level policy. */
 export async function fetchClaudeUsage(since: string): Promise<ClaudeUsageRow[]> {
   const rows = await fetchAllRows<ClaudeUsageRow & { id: number }>(
-    () => supabase.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+    () => supabase.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CHART_NOTEWRITER).gte("at", since),
     "id",
     { label: "claude usage" },
   );

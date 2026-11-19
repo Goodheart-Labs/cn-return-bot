@@ -2,13 +2,9 @@
  * again. cn-walk runs it every 5 minutes. The rules are in
  * notewriterSilence.ts. */
 
-import { postToSlack } from "../pipeline/utils/slack";
+import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
 import { fetchWatchedNotewriters, setSilenceWarnedFor } from "./db";
 import { isSilent, NEVER_SEEN, silenceNotice, type SilenceNotice, type WatchedNotewriter } from "./notewriterSilence";
-
-/** The channel the Claude note writer reports to, the same one the devbox's
- *  slack-bridge forwards to the note writer's session. */
-const NOTEWRITERS_SLACK_CHANNEL = "C0CATM96UR1";
 
 const utcTime = (d: Date) => `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
 

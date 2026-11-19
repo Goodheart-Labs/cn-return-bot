@@ -1,8 +1,7 @@
 /* Where a Claude host gets its posts (GOO-791). A host with a notewriter key
- * in CN_NOTEWRITER_KEY uses API v2 (src/notewriters/client.ts), as the
- * devbox's dispatcher does. A host without one uses API v1
- * (src/notewriters/v1.ts), as the runners on Nathan's ai-box and hq do until
- * Nathan moves them. Both hosts run the same jobs.ts on top of this.
+ * in CN_NOTEWRITER_KEY uses API v2 (src/notewriters/client.ts), as the runner
+ * on the ai-box does since GOO-787. A host without one uses API v1
+ * (src/notewriters/v1.ts), as hq does until Nathan gives it a key. Both hosts run the same jobs.ts on top of this.
  *
  * On v1 the server paces the host: the host subscribes with how often it
  * wants a feed post, and next_post answers when it is due. On v2 the host
@@ -24,9 +23,9 @@ import * as v1 from "../notewriters/v1";
  *  reader requests, which are never paced. */
 export type ClaudePace = { feedEveryMinutes: number | null; readerRequests: boolean };
 
-/** A post the host holds: its reservation (v1 calls it the assignment) and
- *  the post's id. */
-export type HeldReservation = { reservation: string; itemId: string };
+/** A post the host holds: its reservation (v1 calls it the assignment), the
+ *  post's id, and when the reservation ends unless it is finished first. */
+export type HeldReservation = { reservation: string; itemId: string; deadline: string };
 
 export interface ClaudeQueue {
   setPace(pace: ClaudePace): Promise<void>;
@@ -50,9 +49,9 @@ const v1Queue: ClaudeQueue = {
   },
   next: async () => {
     const answer = await v1.nextPost(CLAUDE_NOTEWRITER);
-    return answer.kind === "post" ? { reservation: answer.assignment, itemId: answer.item.id } : null;
+    return answer.kind === "post" ? { reservation: answer.assignment, itemId: answer.item.id, deadline: answer.deadline } : null;
   },
-  held: async () => (await v1.status(CLAUDE_NOTEWRITER)).open.map((open) => ({ reservation: open.assignment, itemId: open.item.id })),
+  held: async () => (await v1.status(CLAUDE_NOTEWRITER)).open.map((open) => ({ reservation: open.assignment, itemId: open.item.id, deadline: open.deadline })),
   finish: async (reservation, options) => {
     await v1.finish(reservation, options);
   },
@@ -85,7 +84,7 @@ async function reserveFirst(client: NotewriterClient, requestedOnly: boolean): P
   const { posts } = await client.posts({ limit: RESERVE_TRIES, maxOthers: 0, othersFrom: "team", requestedOnly });
   for (const post of posts) {
     const answer = await client.reserve(post.id, 1);
-    if (answer.kind === "reserved") return { reservation: answer.reservation, itemId: answer.post.id };
+    if (answer.kind === "reserved") return { reservation: answer.reservation, itemId: answer.post.id, deadline: answer.deadline };
   }
   return null;
 }
@@ -112,7 +111,7 @@ export function v2Queue(client: NotewriterClient): ClaudeQueue {
       if (post) writeV2State({ ...state, lastFeedAt: Date.now() });
       return post;
     },
-    held: async () => (await client.me()).open.map((open) => ({ reservation: open.reservation, itemId: open.post })),
+    held: async () => (await client.me()).open.map((open) => ({ reservation: open.reservation, itemId: open.post, deadline: open.deadline })),
     finish: async (reservation, options) => {
       await client.finish(reservation, options);
     },

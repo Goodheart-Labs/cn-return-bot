@@ -490,6 +490,7 @@ export type Database = {
           ended_at: string
           everything_pipeline_run_id: string | null
           id: string
+          notewriter: string | null
           pipeline_run_id: string | null
           run_dir: string
           started_at: string
@@ -501,6 +502,7 @@ export type Database = {
           ended_at?: string
           everything_pipeline_run_id?: string | null
           id?: string
+          notewriter?: string | null
           pipeline_run_id?: string | null
           run_dir: string
           started_at: string
@@ -512,6 +514,7 @@ export type Database = {
           ended_at?: string
           everything_pipeline_run_id?: string | null
           id?: string
+          notewriter?: string | null
           pipeline_run_id?: string | null
           run_dir?: string
           started_at?: string
@@ -530,6 +533,13 @@ export type Database = {
             columns: ["everything_pipeline_run_id"]
             isOneToOne: false
             referencedRelation: "everything_pipeline_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_runs_notewriter_fkey"
+            columns: ["notewriter"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriters"
             referencedColumns: ["id"]
           },
           {
@@ -571,22 +581,33 @@ export type Database = {
         Row: {
           at: string
           id: number
+          notewriter: string | null
           weekly: number
           weekly_resets_at: string | null
         }
         Insert: {
           at?: string
           id?: never
+          notewriter?: string | null
           weekly: number
           weekly_resets_at?: string | null
         }
         Update: {
           at?: string
           id?: never
+          notewriter?: string | null
           weekly?: number
           weekly_resets_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "everything_claude_usage_notewriter_fkey"
+            columns: ["notewriter"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       everything_demand_queued: {
         Row: {
@@ -712,6 +733,8 @@ export type Database = {
           demanded_at: string | null
           error: string | null
           first_checked_at: string | null
+          flagged_at: string | null
+          flagged_reason: string | null
           full_text: string | null
           id: string
           list_all_count: number
@@ -744,6 +767,8 @@ export type Database = {
           demanded_at?: string | null
           error?: string | null
           first_checked_at?: string | null
+          flagged_at?: string | null
+          flagged_reason?: string | null
           full_text?: string | null
           id?: string
           list_all_count?: number
@@ -776,6 +801,8 @@ export type Database = {
           demanded_at?: string | null
           error?: string | null
           first_checked_at?: string | null
+          flagged_at?: string | null
+          flagged_reason?: string | null
           full_text?: string | null
           id?: string
           list_all_count?: number
@@ -3558,6 +3585,7 @@ export type Database = {
         }[]
       }
       everything_feed_slug: { Args: { feed_url: string }; Returns: string }
+      everything_flag_item: { Args: { p_item: string; p_reason: string }; Returns: number }
       everything_feed_stream: {
         Args: {
           p_after: Json
