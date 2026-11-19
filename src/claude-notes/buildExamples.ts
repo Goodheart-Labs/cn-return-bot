@@ -5,7 +5,9 @@
 // every decision Jim and Nathan made on the Claude note writer's notes in the
 // review page, with the rewrites their messages led to. Nathan's ratings
 // from his own review page of 20 and 21 October come from a stored table.
-// Regenerating never drops an entry: an entry of the old file that prod no
+// Last come the notes outside readers clearly rated Helpful or Not helpful;
+// that section is rebuilt from today's votes each time.
+// Regenerating never drops an entry of the other sections: an entry of the old file that prod no
 // longer yields, for example a vote on a note we have since deleted, is kept.
 //
 // Usage: bun run claude-notes examples
@@ -15,6 +17,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import Papa from "papaparse";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
+import { teamVoterIds } from "../everything/teamAccounts";
+import { MAX_PUBLIC_HELPFUL, MIN_PUBLIC_VOTES, publicVerdicts } from "./publicVerdicts";
 
 const NATHAN_USER_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
 /** Nathan posted his Claude Code batch on 2026-10-21 between 00:19 and 01:00
@@ -105,6 +109,29 @@ async function nathanNotNeeded(): Promise<string[]> {
     db.from("everything_note_not_needed").select("body, claim:everything_claims(claim, context_quote, item:everything_items(url, title))").eq("author_id", NATHAN_USER_ID),
   );
   return entries.map((e) => noteSection("Nathan wrote that no note is needed", e.claim as unknown as ClaimContext, e.body));
+}
+
+/** The notes the public settled on, with the counts, so the writer sees what
+ *  readers reward and reject and not only what Jim and Nathan do. */
+async function publicVotes(): Promise<string[]> {
+  const [votes, teamIds] = await Promise.all([
+    fetchAllRows<{ id: string; note_id: string; voter_id: string; vote: number }>(() => db.from("everything_votes").select("id, note_id, voter_id, vote"), "id"),
+    teamVoterIds(),
+  ]);
+  const verdicts = publicVerdicts(votes, teamIds);
+  const notes = await fetchInBatches<{ id: string; note: string; claim: unknown }>(
+    (chunk) => db.from("everything_notes").select(NOTE_COLUMNS).in("id", chunk).eq("status", "published"),
+    verdicts.map((v) => v.noteId),
+    "id",
+  );
+  const noteById = new Map(notes.map((n) => [n.id, n]));
+  // The cap comes after the filter, so a note we have since withdrawn does not use up a place.
+  const shown = verdicts.filter((v) => noteById.get(v.noteId)?.claim);
+  return [...shown.filter((v) => v.verdict === "Not helpful"), ...shown.filter((v) => v.verdict === "Helpful").slice(0, MAX_PUBLIC_HELPFUL)]
+    .map((v) => {
+      const n = noteById.get(v.noteId)!;
+      return noteSection(`Readers rated ${v.verdict} (${v.helpful} Helpful, ${v.notHelpful} Not helpful)`, n.claim as unknown as ClaimContext, n.note);
+    });
 }
 
 interface ReviewedDraft {
@@ -248,7 +275,8 @@ function keepOld(heading: string, entries: string[], previous: Map<string, strin
 const GOOD_HEADING = "## Nathan's Claude Code notes (all judged very good by Jim)";
 const VOTES_HEADING = "## Nathan's votes on other notes";
 const previous = previousEntries();
-const [goodNew, votesNew, notNeeded, decisionsNew] = await Promise.all([nathanNotes(), nathanVotes(), nathanNotNeeded(), reviewDecisions()]);
+const PUBLIC_HEADING = "## What outside readers voted";
+const [goodNew, votesNew, notNeeded, decisionsNew, publicNotes] = await Promise.all([nathanNotes(), nathanVotes(), nathanNotNeeded(), reviewDecisions(), publicVotes()]);
 const good = keepOld(GOOD_HEADING, goodNew, previous);
 const votes = keepOld(VOTES_HEADING, [...votesNew, ...notNeeded], previous);
 const decisions = keepOld(REVIEW_HEADING, decisionsNew, previous);
@@ -278,7 +306,13 @@ ${RATINGS_HEADING}
 Nathan scored notes from 1 (bad) to 5 (very good) on his own review page, and commented on some of them.
 
 ${ratings.join("\n\n")}
+
+${PUBLIC_HEADING}
+
+Readers outside the team vote on our notes, and their vote is what decides whether a note is Helpful. These are the notes they settled on: at least ${MIN_PUBLIC_VOTES} votes one way and over twice the votes the other way. Not helpful first.
+
+${publicNotes.join("\n\n")}
 `;
 
 writeFileSync(EXAMPLES_PATH, document);
-console.log(`Wrote ${EXAMPLES_PATH}: ${good.length} good examples, ${votes.length} votes and no-note entries, ${decisions.length} review decisions, ${ratings.length} ratings`);
+console.log(`Wrote ${EXAMPLES_PATH}: ${good.length} good examples, ${votes.length} votes and no-note entries, ${decisions.length} review decisions, ${ratings.length} ratings, ${publicNotes.length} public verdicts`);

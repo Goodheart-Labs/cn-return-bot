@@ -45,6 +45,20 @@ function readPostRun(runDir: string): PostRun | null {
   return existsSync(postRunFile(runDir)) ? JSON.parse(readFileSync(postRunFile(runDir), "utf8")) : null;
 }
 
+/** The notewriter API refuses a summary larger than 10 KB (migration 184), and
+ *  a report that quotes every passage it checked can be larger. So the API gets
+ *  only how many passages ended with each outcome. The full report stays in the
+ *  post's run row and in its run folder. A skipped post's reason travels as the
+ *  finish call's skip reason, so its counts are simply empty. */
+function countOutcomes(report: Record<string, unknown>): Record<string, number> {
+  const outcomeCounts: Record<string, number> = {};
+  for (const { outcome } of (report.passages ?? []) as { outcome?: string }[]) {
+    const key = outcome ?? "unknown";
+    outcomeCounts[key] = (outcomeCounts[key] ?? 0) + 1;
+  }
+  return outcomeCounts;
+}
+
 function readReport(runDir: string): Record<string, unknown> | null {
   try {
     return JSON.parse(readFileSync(reportFile(runDir), "utf8"));
@@ -162,13 +176,13 @@ export const postJob: JobKind<HeldPost> = {
     };
     if (report?.skipped) {
       await record("skipped");
-      await finish(post, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
+      await finish(post, { summary: { outcomeCounts: countOutcomes(report), ...usageNote }, skipReason: String(report.reason ?? "nothing worth checking") });
       return "closed";
     }
     if (report) {
       await warnAboutUnsavedNotes(post, run, report);
       await record("done");
-      await finish(post, { summary: { ...report, ...usageNote } as Json });
+      await finish(post, { summary: { outcomeCounts: countOutcomes(report), ...usageNote } });
       return "closed";
     }
     if ((await claudeDraftsSince(post.item.id, new Date(run.startedAt).toISOString())) > 0) {
