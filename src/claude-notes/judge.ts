@@ -15,12 +15,9 @@
  * The judge has full Claude Code tooling, so it may research the passage and
  * the sources on the web. It must not see the note's votes. So it runs in an
  * empty folder instead of the checkout, without the runner's secrets, and it
- * may not fetch commonnotes.net. */
+ * may not fetch commonnotes.net (jobs/judge.ts, runner/session.ts). */
 
-import { mkdirSync, writeFileSync } from "fs";
-import { homedir } from "os";
 import * as path from "path";
-import { guardedSettingsFile } from "./imageGuard";
 
 export interface JudgedNote {
   post: { title: string | null; url: string; creator: string | null };
@@ -45,7 +42,7 @@ export interface Judgement {
 }
 
 /** The judge thinks out loud first, so the reasoning comes before the numbers. */
-const JUDGE_SCHEMA = {
+export const JUDGE_SCHEMA = {
   type: "object",
   properties: {
     reasoning: { type: "string" },
@@ -65,17 +62,10 @@ export const JUDGE_EXAMPLES_PATH = path.join(import.meta.dir, "judge-examples.js
  *  Helpful from Not Helpful notes only weakly (AUC 0.65 on 163 notes). */
 export const JUDGE_MODEL = "sonnet";
 
-const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
-const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 /** A judge that researches for longer than this is stuck. */
-const JUDGE_TIMEOUT_MS = 20 * 60_000;
+export const JUDGE_TIMEOUT_MS = 20 * 60_000;
 /** The website shows each note's votes, which are what the judge predicts. */
-const BLOCKED_TOOLS = ["WebFetch(domain:commonnotes.net)", "WebFetch(domain:www.commonnotes.net)"];
-/** The only environment the judge gets, so the runner's database keys stay out
- *  of reach. Claude Code finds its login in CLAUDE_CONFIG_DIR, the config
- *  folder of the notewriter's own Claude account, or else in the home folder. */
-const JUDGE_ENV_NAMES = ["HOME", "PATH", "USER", "LANG", "CLAUDE_CONFIG_DIR"];
+export const BLOCKED_TOOLS = ["WebFetch(domain:commonnotes.net)", "WebFetch(domain:www.commonnotes.net)"];
 
 export function noteBlock(note: JudgedNote, withParagraph: boolean): string {
   const sources = note.sources.map((s, i) => `${i + 1}. ${s.url}\n   Quote: ${s.quote}\n   Why it matters: ${s.explanation}`).join("\n");
@@ -134,44 +124,9 @@ You may research the passage, the post and the sources on the web. Do not look t
 export const judgePrompt = (note: JudgedNote, examples: JudgeExample[] = []) =>
   [JUDGE_INTRO, ...(examples.length > 0 ? [examplesBlock(examples), "## The note to judge"] : []), noteBlock(note, true), JUDGE_QUESTIONS].join("\n\n");
 
-/** Runs one judge in its own empty folder and returns its answer. The folder
- *  keeps the prompt and Claude Code's full output for later reading. */
-export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { turns: number }> {
-  mkdirSync(runDir, { recursive: true });
-  writeFileSync(path.join(runDir, "prompt.md"), prompt);
-  const child = Bun.spawn(
-    [
-      CLAUDE_BIN,
-      "-p",
-      prompt,
-      "--model",
-      JUDGE_MODEL,
-      "--permission-mode",
-      "bypassPermissions",
-      "--settings",
-      guardedSettingsFile(runDir, RUN_SETTINGS),
-      "--disallowedTools",
-      ...BLOCKED_TOOLS,
-      "--output-format",
-      "json",
-      "--json-schema",
-      JSON.stringify(JUDGE_SCHEMA),
-      "--no-session-persistence",
-    ],
-    {
-      cwd: runDir,
-      env: Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
-      stdout: "pipe",
-      stderr: "pipe",
-      timeout: JUDGE_TIMEOUT_MS,
-    },
-  );
-  const [stdout, stderr, exitCode] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text(), child.exited]);
-  writeFileSync(path.join(runDir, "output.json"), stdout);
-  if (stderr) writeFileSync(path.join(runDir, "stderr.txt"), stderr);
-  if (exitCode !== 0) throw new Error(`The judge exited with ${exitCode}: ${stderr.slice(0, 500)}`);
-  const output = JSON.parse(stdout);
-  const answer = output.structured_output;
-  if (output.is_error || !answer) throw new Error(`The judge gave no answer: ${String(output.result).slice(0, 500)}`);
-  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful, turns: output.num_turns };
+/** The judgement in Claude Code's JSON answer. Throws when there is none. */
+export function judgementFrom(output: { is_error?: boolean; structured_output?: unknown; result?: unknown } | null): Judgement {
+  const answer = output?.structured_output as { reasoning: string; p_helpful: number; p_impactful: number } | undefined;
+  if (!output || output.is_error || !answer) throw new Error(`The judge gave no answer: ${String(output?.result).slice(0, 500)}`);
+  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful };
 }

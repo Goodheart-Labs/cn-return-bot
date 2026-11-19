@@ -5,17 +5,20 @@ Nathan's ai-box (2.31.1.171) runs Jim's Claude note writer, the notewriter
 account, a Claude Code subscription used for nothing else. Until 2026-11-01 it
 ran on Nathan's own plan.
 
-A runner (`src/claude-notes/runner.ts`) starts one headless Claude
-(`claude -p`) per job, each in its own tmux session so a person can attach
-and watch:
+A runner starts one headless Claude (`claude -p`) per job, each in its own
+tmux session so a person can attach and watch. A scheduler
+(`src/claude-notes/runner/scheduler.ts`) does what is the same for every job:
+free slots, the budget gate, the deploy freeze, time limits, alerts and cost
+rows. One module per kind in `src/claude-notes/jobs/` says which work is
+waiting, how to prepare one job and how to close it:
 
 | Job | tmux session | At once |
 |---|---|---|
 | A Common Notes post from the post list | `cn-post-<item>` | 5 |
 | An X tweet the X run handed to Claude (GOO-527) | `cn-x-<run id>` | 6 |
-| A reviewer's message on the review page | `cn-msg-<draft>` | any |
+| A reviewer's message on the review page | `cn-msg-<draft>` | 3 |
 | A creator whose X account nobody looked up | `cn-xacct-<slug>` | 1 |
-| A posted note to judge (a child process, no tmux) | none | 1 |
+| A posted note to judge, isolated from the runner's keys | `cn-judge-<draft>` | 1 |
 
 A post whose Claude exits twice without a report fails its reservation, and
 the post stays listed for the other notewriters. Nothing goes to the
@@ -29,8 +32,7 @@ goes through the image screen (`src/claude-notes/imageScreen.ts`, GOO-815).
 | `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it, and it follows whatever branch is checked out. |
 | `/home/nathan/.claude-cn-notewriter` | The config folder of Jim's notewriter account: its login in `.credentials.json` and Claude Code's own files. The unit file points Claude Code here with `CLAUDE_CONFIG_DIR`, so Nathan's own login in `~/.claude` is never used. |
 | `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `CN_NOTEWRITER_KEY` (the notewriter API v2 key of `claude-ai-box`, made with `bun run notewriter new-key claude-ai-box`), `SLACK_BOT_TOKEN` (the alerts) and `OPENAI_API_KEY` (the image screen). Owned by root, readable by `nathan` only. The runner removes all but the database keys from its Claudes' environment. |
-| `/var/tmp/cn-notes/<item id>/` | One run folder per post: the prompt, the Claude's output stream, its drafts and `report.json`. The runner deletes folders older than 3 days. |
-| `/var/tmp/cn-notes/x-<run id>/` | One run folder per X tweet: the prompt, the output stream and `note.json`. |
+| `/var/tmp/cn-notes/<kind>/<key>/` | One run folder per job, the same for every try: the prompt, the start script, Claude Code's output, stderr and the exit code, plus what the job keeps (a post's drafts and `report.json`, a tweet's `note.json`). The runner deletes folders older than 3 days. |
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
 | `~nathan/.local/share/cn-notes/note-examples.md` | The examples file, rebuilt once a day by the runner. |
 | `/srv/ai-box/PAUSE` | Nathan's pause switch. While it exists, the runner starts nothing. |

@@ -43,8 +43,8 @@ export async function take(itemId: string): Promise<Take> {
   if (screen.kind === "flagged") {
     // The flag keeps every notewriter away from the post, and fails the
     // readers' requests before finishing the reservation could answer them.
-    const failedRequests = await flagItem(item.id, `sexual score ${screen.sexualScore.toFixed(2)}`);
-    await tellSlack(`The image screen stopped the post ${item.id}: one of its images scored ${screen.sexualScore.toFixed(2)} for sexual content. No Claude saw it, no notewriter will get it, and ${failedRequests} reader requests on it failed.`);
+    const failedRequests = await flagItem(item.id, screen.reason);
+    await tellSlack(`The image screen stopped the post ${item.id} (${screen.reason}). No Claude saw it, no notewriter will get it, and ${failedRequests} reader requests on it failed.`);
     return { kind: "skipped", reason: FLAGGED_SKIP_REASON };
   }
   const dir = postDir(item.url);

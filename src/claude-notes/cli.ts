@@ -18,7 +18,7 @@
  *   x-handle <creator slug> <handle | none> <evidence>
  *                                 records a creator's X account, or that they have none
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
- *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
+ *   run                           the runner on ai-box (src/claude-notes/runner/main.ts) */
 
 import { readFileSync, writeFileSync } from "fs";
 import { JUDGE_EXAMPLES_PATH } from "./judge";
@@ -56,7 +56,7 @@ async function main() {
     case "posted-since":
       return print(await postedSince(arg(0)));
     case "run":
-      return import("./runner");
+      return import("./runner/main");
     case "messages":
       return print(await unansweredMessages());
     case "answer":

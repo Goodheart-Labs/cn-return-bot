@@ -1,7 +1,7 @@
 /* The prompts of the Claude note writer: one per post, one per X tweet, one
  * per reviewer message and one per creator whose X account we look up.
  *
- * The runner (runner.ts) starts one `claude -p` per job. The examples are
+ * The runner (runner/main.ts) starts one `claude -p` per job. The examples are
  * appended to that Claude's system prompt, so the prompt cache can share
  * them, and the Claude splits its work across fork subagents. */
 

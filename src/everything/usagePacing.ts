@@ -4,7 +4,7 @@
  * The Claude note writer runs on Nathan's ai-box and is paid for by his Claude
  * subscription, not by OpenRouter money. Anthropic's usage endpoint says how
  * much of the plan's weekly limit is used, as a whole percent, and when the
- * week resets. The runner on ai-box (src/claude-notes/runner.ts) reads it every
+ * week resets. The runner on ai-box (src/claude-notes/runner/main.ts) reads it every
  * 5 minutes and stores each reading in everything_claude_usage. Since the
  * notewriter protocol (GOO-724), the runner also turns the interval below into
  * its subscription to the queue, in whole minutes, and the queue hands it a
