@@ -5,8 +5,8 @@
 /** The site's crowd bar, used both ways: at least this many votes one way,
  *  and over twice the votes the other way. */
 export const MIN_PUBLIC_VOTES = 3;
-/** The most-voted Helpful notes kept, so the prompt grows by a bounded amount. */
-const MAX_HELPFUL = 40;
+/** The most-voted Helpful notes the examples show, so the prompt grows by a bounded amount. */
+export const MAX_PUBLIC_HELPFUL = 40;
 
 export interface PublicVerdict {
   noteId: string;
@@ -30,6 +30,6 @@ export function publicVerdicts(votes: { note_id: string; voter_id: string; vote:
   const all = [...counts].map(([noteId, c]) => ({ noteId, ...c }));
   const clear = (mine: number, theirs: number) => mine >= MIN_PUBLIC_VOTES && mine > 2 * theirs;
   const bad = all.filter((c) => clear(c.notHelpful, c.helpful)).sort((a, b) => b.notHelpful - a.notHelpful);
-  const good = all.filter((c) => clear(c.helpful, c.notHelpful)).sort((a, b) => b.helpful - a.helpful).slice(0, MAX_HELPFUL);
+  const good = all.filter((c) => clear(c.helpful, c.notHelpful)).sort((a, b) => b.helpful - a.helpful);
   return [...bad.map((c) => ({ ...c, verdict: "Not helpful" as const })), ...good.map((c) => ({ ...c, verdict: "Helpful" as const }))];
 }
