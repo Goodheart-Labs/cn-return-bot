@@ -1,14 +1,17 @@
 import { supabase } from "./supabase";
 
 /* The corrections page (migration 193): notes after which the author changed
- * their post. An admin adds a note with a link that shows the correction, and
- * can take it off again. Everyone can read the list. */
+ * their post. A note gets on it when the daily job finds its passage changed
+ * (everything_claims.updated_quote), or when an admin adds it with a link that
+ * shows the correction, and can take such a row off again. Everyone can read
+ * the list. */
 
-/** One correction: the note, the link that shows the author corrected the
- *  post, and when an admin recorded it. */
+/** One correction: the note, the link an admin gave that shows the author
+ *  corrected the post (null when we found the change ourselves), and when it
+ *  was recorded. */
 export interface CorrectionRow {
   note_id: string;
-  evidence_url: string;
+  evidence_url: string | null;
   corrected_at: string;
 }
 

@@ -64,8 +64,9 @@ function AddCorrection({ onAdded }: { onAdded: () => Promise<void> }) {
 }
 
 /** Notes after which the author changed their post, the most recent first.
- *  Each card names its creator and links to what shows the correction. Admins
- *  add a note with that link, and can take a note off again. */
+ *  Most get here because the daily job found the noted passage changed; the
+ *  card itself then says what the post reads now. An admin can also add a note
+ *  with a link that shows the correction, and take such a row off again. */
 export function CorrectionsPage({ navigate }: { navigate: (route: Route) => void }) {
   const admin = useIsAdmin();
   const client = useQueryClient();
@@ -76,12 +77,16 @@ export function CorrectionsPage({ navigate }: { navigate: (route: Route) => void
     ({ entry: { row }, note, project }: FeedCard<CorrectionEntry>) => (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         {project && <CreatorLink project={project} navigate={navigate} />}
-        <span className="text-sm text-fg-muted">Corrected by the author · {day(row.corrected_at)}</span>
-        <a href={row.evidence_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-link hover:underline">
-          See the correction
-          <ExternalLinkIcon size={13} aria-hidden />
-        </a>
-        {admin && (
+        <span className="text-sm text-fg-muted">
+          {row.evidence_url ? "Corrected by the author" : "The post changed after this note"} · {day(row.corrected_at)}
+        </span>
+        {row.evidence_url && (
+          <a href={row.evidence_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-link hover:underline">
+            See the correction
+            <ExternalLinkIcon size={13} aria-hidden />
+          </a>
+        )}
+        {admin && row.evidence_url && (
           <span className="ml-auto">
             <ConfirmDelete
               label="Take off the corrections"
@@ -103,7 +108,7 @@ export function CorrectionsPage({ navigate }: { navigate: (route: Route) => void
       <div className="mx-auto mb-6 max-w-[40rem] space-y-4">
         <PageTitle>Corrections</PageTitle>
         <p className="text-sm text-fg-secondary">
-          Posts their authors corrected after a note. Each one links to where the author said so, or to the corrected post.
+          Posts that changed after a note. We find them by reading posts again each day, or an author tells us.
         </p>
         {admin && <AddCorrection onAdded={reload} />}
         {error && <p className="text-sm text-negative">{error}</p>}
