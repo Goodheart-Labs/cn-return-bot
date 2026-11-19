@@ -129,7 +129,8 @@ const tmuxAlive = (session: string) => spawnSync("tmux", ["has-session", "-t", `
 /** Starts `claude -p` in a detached tmux session. The secrets come from the
  *  env file inside the session, so they never appear in a process's
  *  arguments. The service secret is removed again, because the agents never
- *  call the services box; only `take` in this runner does. The script sets
+ *  call the services box; only `take` in this runner does. So are the Slack
+ *  and OpenAI keys, which only the runner's alerts and image screen use. The script sets
  *  CLAUDE_CONFIG_DIR itself, because a tmux session takes its environment from
  *  the tmux server, which may have started long before this runner. */
 function startClaude(session: string, runDir: string, prompt: string, extraArgs: string[] = [], env: Record<string, string> = {}) {
@@ -139,7 +140,7 @@ function startClaude(session: string, runDir: string, prompt: string, extraArgs:
     "set -a",
     `. ${ENV_FILE}`,
     "set +a",
-    "unset SERVICE_AUTH_SECRET EXTRACTION_URL",
+    "unset SERVICE_AUTH_SECRET EXTRACTION_URL SLACK_BOT_TOKEN OPENAI_API_KEY",
     ...Object.entries({ ...account, ...env }).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
