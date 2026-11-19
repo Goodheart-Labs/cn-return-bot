@@ -24,8 +24,8 @@ const MIN_TIME_TO_START_MS = 20 * 60_000;
 /** A tweet's Claude must stop before the X run sweeps the tweet as failed. */
 const sweptAt = (tweet: XTweet) => Date.parse(tweet.createdAt) + CLAUDE_TWEET_MAX_WAIT_MINUTES * 60_000;
 
-/** Whether the tweet's images passed the image screen (GOO-815). A tweet
- *  they did not pass fails, and Slack hears of it. When the screen itself
+/** Whether the tweet's images passed the image screen (GOO-815), or the host
+ *  has no screen (GOO-822). A tweet they did not pass fails, and Slack hears of it. When the screen itself
  *  fails, the tweet fails too and the error goes on to the scheduler. */
 async function passesScreen(tweet: XTweet): Promise<boolean> {
   let screen;
@@ -35,7 +35,7 @@ async function passesScreen(tweet: XTweet): Promise<boolean> {
     await failXTweet(tweet.runId, `The image screen could not run: ${(err as Error).message}`, "image_screen_failed");
     throw err;
   }
-  if (screen.kind === "clear") return true;
+  if (screen.kind !== "flagged") return true;
   await failXTweet(tweet.runId, `The image screen flagged an image (${screen.reason}), so no Claude saw this tweet`, "image_flagged");
   await tellSlack(`The image screen stopped X tweet run ${tweet.runId}: ${screen.reason}. No Claude saw it.`);
   return false;

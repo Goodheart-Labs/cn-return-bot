@@ -57,6 +57,14 @@ describe("screenImages", () => {
     globalThis.fetch = realFetch;
   });
 
+  test("a host without the Arachnid login screens nothing and calls no service", async () => {
+    const calls = fakeNetwork({ arachnid: noMatch, openai: sexual(0.9) });
+    delete process.env.ARACHNID_SHIELD_USERNAME;
+    expect(await screenImages(text)).toEqual({ kind: "off" });
+    expect(calls).toEqual([]);
+    globalThis.fetch = realFetch;
+  });
+
   test("a failing Arachnid stops the job instead of letting it through", async () => {
     fakeNetwork({ arachnid: { detail: "down" }, arachnidStatus: 503 });
     await expect(screenImages(text)).rejects.toThrow("Arachnid Shield answered 503");

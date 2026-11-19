@@ -23,6 +23,7 @@ import { reviewAnswerJob } from "../jobs/reviewAnswer";
 import { tweetJob } from "../jobs/tweet";
 import { xHandleJob } from "../jobs/xHandle";
 import { EXAMPLES_PATH, REPO } from "../prompts";
+import { imageScreenOn } from "../imageScreen";
 import { claudeQueue } from "../queue";
 import { recordClaudeRun } from "../store";
 import { DRAIN_FILE, mayStartClaudes, POSTS_ONLY, weeklyUsage } from "./planUsage";
@@ -86,7 +87,7 @@ function pruneRunFolders() {
 }
 
 mkdirSync(RUNS_DIR, { recursive: true });
-console.log(`Claude note writer runner started in ${REPO}, running ${KINDS.map((kind) => kind.name).join(", ")}`);
+console.log(`Claude note writer runner started in ${REPO}, running ${KINDS.map((kind) => kind.name).join(", ")}, ${imageScreenOn() ? "with" : "without"} the image screen`);
 for (let first = true; ; first = false) {
   refreshExamples();
   pruneRunFolders();
