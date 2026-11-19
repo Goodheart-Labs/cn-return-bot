@@ -528,13 +528,17 @@ $$;
 -- Ends a reservation as failed or expired. The post stays listed for every
 -- other notewriter and is never listed to this one again. A requested post
 -- that none of our notewriters taking reader requests can still take is
--- marked failed, so the reader does not wait forever.
+-- marked failed, so the reader does not wait forever. A post the pipeline
+-- left in processing, because its run was killed, goes back to queued, so
+-- the reader's progress card does not hang and the next check resumes its
+-- pending claims.
 create function everything_fail_reservation(r everything_reservations, p_outcome text, p_reason text) returns jsonb
 language plpgsql set search_path = public as $$
 declare
   i everything_items;
 begin
   update everything_reservations set ended_at = now(), outcome = p_outcome, reason = left(p_reason, 500) where id = r.id;
+  update everything_items set status = 'queued', progress = null where id = r.item_id and status = 'processing';
   select * into i from everything_items where id = r.item_id for update;
   if i.requested_since is not null and not exists (
        select 1 from everything_notewriters w
@@ -560,7 +564,8 @@ $$;
 --
 -- p_note: passage, note, sources [{url, quote, explanation}], start_seconds,
 -- end_seconds, context_url, and claim: a claim of the post without a note,
--- which the pipeline passes so the note hangs on its own extracted claim.
+-- which the pipeline passes so the note hangs on its own extracted claim. The
+-- claim's quote and timings then stand in for a passage and timings left out.
 create function everything_post_note(p_notewriter text, p_item uuid, p_note jsonb) returns jsonb
 language plpgsql set search_path = public as $$
 declare
@@ -579,8 +584,19 @@ declare
   v_length numeric;
   v_existing record;
   v_claim uuid := (p_note ->> 'claim')::uuid;
+  v_claim_row everything_claims;
   v_note uuid;
 begin
+  if v_claim is not null then
+    select * into v_claim_row from everything_claims c
+     where c.id = v_claim and c.item_id = p_item and not exists (select 1 from everything_notes n where n.claim_id = c.id);
+    if not found then
+      raise exception 'Claim % is not a claim of post % without a note', v_claim, p_item using errcode = 'PT400';
+    end if;
+    v_passage := coalesce(nullif(v_passage, ''), btrim(coalesce(v_claim_row.context_quote, '')));
+    if v_start = 'null' then v_start := coalesce(to_jsonb(v_claim_row.start_seconds), 'null'); end if;
+    if v_end = 'null' then v_end := coalesce(to_jsonb(v_claim_row.end_seconds), 'null'); end if;
+  end if;
   -- One note of a notewriter at a time, so two calls cannot both take the
   -- last note of the day.
   select * into w from everything_notewriters where id = p_notewriter for update;
@@ -622,15 +638,11 @@ begin
       raise exception 'Video timings are whole seconds from 0 to the video''s length (% seconds), and the end is not before the start', coalesce(ceil(v_length), 0) using errcode = 'PT400';
     end if;
   end if;
-  if v_claim is not null and not exists (
-       select 1 from everything_claims c where c.id = v_claim and c.item_id = i.id
-          and not exists (select 1 from everything_notes n where n.claim_id = c.id)) then
-    raise exception 'Claim % is not a claim of post % without a note', v_claim, p_item using errcode = 'PT400';
-  end if;
   -- The first note on a passage wins.
   select n.notewriter_id, n.author_id, n.author_name into v_existing
     from everything_claims c join everything_notes n on n.claim_id = c.id
    where c.item_id = i.id and everything_passages_overlap(coalesce(c.context_quote, c.claim), v_passage)
+     and c.id is distinct from v_claim
    order by (n.notewriter_id is not distinct from w.id) desc, n.created_at
    limit 1;
   if found then
@@ -937,6 +949,19 @@ begin
     if v_answer ->> 'kind' = 'reserved' then return everything_v1_post(v_answer); end if;
   end loop;
   return null;
+end;
+$$;
+
+-- For the intake service: reserves the top requested post for a v1 notewriter
+-- such as the pipeline, and never a feed post. Null when none waits.
+create function everything_take_requested_post(p_notewriter text) returns jsonb
+language plpgsql set search_path = public as $$
+declare
+  w everything_notewriters;
+begin
+  select * into w from everything_notewriters where id = p_notewriter;
+  if not found then raise exception 'There is no notewriter %', p_notewriter; end if;
+  return everything_v1_take(w, 'requested');
 end;
 $$;
 
@@ -1257,6 +1282,7 @@ begin
     'everything_notewriter_last_failures(text)',
     'everything_v1_post(jsonb)',
     'everything_v1_take(everything_notewriters, text)',
+    'everything_take_requested_post(text)',
     'notewriter_next_post(text)',
     'notewriter_add_note(text, uuid, jsonb)',
     'notewriter_finish(uuid, jsonb, text)',

@@ -33,8 +33,7 @@ import { take, type AskedPassages } from "./take";
 import { fetchUsageSnapshot } from "../everything/db";
 import { computeClaudePacing, describeClaudePacing, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 import type { Json } from "../everything-core/database.types";
-import { CLAUDE_NOTEWRITER } from "../notewriters/ids";
-import { fail, finish, nextPost, status, subscribe } from "../notewriters/protocol";
+import { claudeQueue, type ClaudePace } from "./queue";
 import { pickVariantName } from "../pipeline/ab-testing/abTests";
 import { CLAUDE_CN_TASTE_TEST } from "../pipeline/ab-testing/abTestsData";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
@@ -67,15 +66,16 @@ export function stopAtPercent(): number {
   return set ? Math.min(Number(set), MAX_WEEKLY_USAGE_PERCENT) : MAX_WEEKLY_USAGE_PERCENT;
 }
 
-/** Turns the plan's weekly usage into Claude's subscription to the queue
- *  (GOO-724). Below the target, Claude wants a feed post as often as the usage
- *  pacing allows, and it takes reader requests. At the target it takes reader
+/** Turns the plan's weekly usage into Claude's pace (GOO-724, GOO-791).
+ *  Below the target, Claude wants a feed post as often as the usage pacing
+ *  allows, and it takes reader requests. At the target it takes reader
  *  requests only. Above MAX_WEEKLY_USAGE_PERCENT, while paused, or without a
- *  reading, it takes nothing. A notewriter with nothing to take is never
- *  counted as silent, so the feed run stays green while Claude rests. */
+ *  reading, it takes nothing. A v1 host tells the server as its subscription,
+ *  and a v2 host keeps the pace itself (queue.ts). */
 export async function updateClaudeSubscription(weekly: number | null, paused: boolean): Promise<void> {
+  const setPace = (pace: ClaudePace) => claudeQueue().setPace(pace);
   if (paused || weekly === null || weekly >= stopAtPercent()) {
-    await subscribe(CLAUDE_NOTEWRITER, null, false);
+    await setPace({ feedEveryMinutes: null, readerRequests: false });
     console.log(`Subscription: nothing, because ${paused ? "the runner is paused" : weekly === null ? "the usage is unknown" : `the plan is at ${weekly}%`}`);
     return;
   }
@@ -85,7 +85,7 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
   const fixedMinutes = Number(process.env.CN_EVERY_MINUTES) || (process.env.CN_POSTS_ONLY === "1" ? 10 : 0);
   if (fixedMinutes > 0) {
     const requests = process.env.CN_READER_REQUESTS === "1";
-    await subscribe(CLAUDE_NOTEWRITER, fixedMinutes, requests);
+    await setPace({ feedEveryMinutes: fixedMinutes, readerRequests: requests });
     console.log(`Subscription: a feed post every ${fixedMinutes} minutes, ${requests ? "and" : "no"} reader requests (plan at ${weekly}%)`);
     return;
   }
@@ -93,7 +93,7 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
   const pacing = computeClaudePacing(snapshot);
   if (pacing) console.log(describeClaudePacing(pacing, snapshot));
   const everyMinutes = pacing && Number.isFinite(pacing.intervalMs) ? Math.max(1, Math.ceil(pacing.intervalMs / 60_000)) : null;
-  await subscribe(CLAUDE_NOTEWRITER, everyMinutes, true);
+  await setPace({ feedEveryMinutes: everyMinutes, readerRequests: true });
   console.log(`Subscription: ${everyMinutes ? `a feed post every ${everyMinutes} minutes` : "no feed posts"}, and reader requests`);
 }
 
@@ -101,20 +101,20 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
 // Posts
 // ---------------------------------------------------------------------------
 
-/** A post the notewriter protocol handed to Claude, by its assignment. */
+/** A post Claude reserved. `assignment` is the reservation, under API v1's
+ *  name, because the devbox keeps its open jobs in a file under that name. */
 export type HeldPost = { assignment: string; item: QueueItem };
 
-/** Asks the queue for one more post. Null when none is due. */
+/** Reserves one more post. Null when none is due or waiting. */
 export async function nextClaudePost(): Promise<HeldPost | null> {
-  const answer = await nextPost(CLAUDE_NOTEWRITER);
-  if (answer.kind !== "post") return null;
-  return { assignment: answer.assignment, item: await readItem(answer.item.id) };
+  const held = await claudeQueue().next();
+  return held && { assignment: held.reservation, item: await readItem(held.itemId) };
 }
 
 /** The posts Claude holds now, for a host that starts again. */
 export async function heldClaudePosts(): Promise<HeldPost[]> {
   const held: HeldPost[] = [];
-  for (const open of (await status(CLAUDE_NOTEWRITER)).open) held.push({ assignment: open.assignment, item: await readItem(open.item.id) });
+  for (const open of await claudeQueue().held()) held.push({ assignment: open.reservation, item: await readItem(open.itemId) });
   return held;
 }
 
@@ -153,7 +153,7 @@ export async function beginPost(post: HeldPost, runDir: string, attempt: number)
   }
   if (taken.kind === "skipped") {
     console.log(`Skipped ${post.item.url}: ${taken.reason}`);
-    await finish(post.assignment, { skipReason: taken.reason });
+    await claudeQueue().finish(post.assignment, { skipReason: taken.reason });
     return { kind: "not_started" };
   }
   // A post Claude checked before has its last report in the same folder. It
@@ -192,18 +192,18 @@ export async function endPost(run: JobRun & HeldPost, end: JobEnd): Promise<JobO
   };
   if (report?.skipped) {
     await record("skipped");
-    await finish(run.assignment, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
+    await claudeQueue().finish(run.assignment, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
     return "closed";
   }
   if (report) {
     await warnAboutUnsavedNotes(run, report);
     await record("done");
-    await finish(run.assignment, { summary: { ...report, ...usageNote } as Json });
+    await claudeQueue().finish(run.assignment, { summary: { ...report, ...usageNote } as Json });
     return "closed";
   }
   if (await savedDrafts(run)) {
     await record("incomplete");
-    await finish(run.assignment, { summary: { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote } });
+    await claudeQueue().finish(run.assignment, { summary: { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote } });
     return "closed";
   }
   if (run.attempt < MAX_ATTEMPTS) return "retry";
@@ -212,11 +212,11 @@ export async function endPost(run: JobRun & HeldPost, end: JobEnd): Promise<JobO
   return "closed";
 }
 
-/** Claude fails on the post. It gets a break, the post goes to the next
- *  notewriter, and the next feed run goes red. */
+/** Claude fails on the post. The post is never listed to this notewriter
+ *  again, and stays listed for the others. */
 async function failPost(post: HeldPost, reason: string) {
-  const failed = await fail(post.assignment, reason);
-  console.log(`Failed on ${post.item.url}: ${reason}. A break until ${failed.cooldown_until}, and the post ${failed.post === "failed" ? "failed, because no notewriter is left for it" : "went back to the queue"}`);
+  const outcome = await claudeQueue().fail(post.assignment, reason);
+  console.log(`Failed on ${post.item.url}: ${reason}. ${outcome[0]!.toUpperCase()}${outcome.slice(1)}`);
 }
 
 /** A report that lists more notes than the post has drafts means some

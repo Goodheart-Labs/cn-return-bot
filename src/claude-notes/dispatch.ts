@@ -21,12 +21,18 @@
  * database or the votes. A subagent works in the session's checkout and could,
  * so only its prompt keeps it away from them.
  *
+ * The devbox is the notewriter claude-devbox and calls the notewriter API v2
+ * with its own key (CN_NOTEWRITER_KEY and CN_NOTEWRITER=claude-devbox in the
+ * root .env, GOO-791). Until 2026-11 it shared the id claude-ai-box.
+ *
  * `dispatch` also reads the plan's usage every 5 minutes while it waits, and
- * turns it into Claude's subscription to the queue. The X run takes a reading
- * older than 30 minutes to mean that no Claude takes its tweets, and the feed
- * run goes red when Claude stops asking for posts. The session starts `dispatch` again after every
- * wake, so the readings stop soon after the session stops answering. In
- * dispatch-services they would go on while the session is dead.
+ * turns it into Claude's pace. The X run takes a reading older than 30 minutes
+ * to mean that no Claude takes its tweets. On every poll `dispatch` calls
+ * notewriter_api_me, its sign of life: cn-walk tells Slack when it has not
+ * called for 30 minutes. The session starts `dispatch` again after every
+ * wake, so the readings and the sign of life stop soon after the session
+ * stops answering. In dispatch-services they would go on while the session is
+ * dead.
  *
  * The open jobs are kept in a file, so they survive a restart of the session.
  *
@@ -57,6 +63,7 @@ import { DEVBOX_EXAMPLES_PATH, messagePrompt, postPrompt, tweetPrompt, xAccountP
 import { JUDGE_EXAMPLES_PATH, JUDGE_MODEL, type JudgedNote, type JudgeExample, judgeSubagentPrompt } from "./judge";
 import { judgeMayStartAt } from "../everything/usagePacing";
 import { db } from "../serviceDb";
+import { claudeQueue } from "./queue";
 import { claudeRunsSince, draftsToJudge, latestEventId, postedAfter, readJudgedNote, recordUsage } from "./store";
 import { CLAUDE_RUN_TAGS } from "./usageShare";
 import { readUsage } from "./usage";
@@ -200,7 +207,7 @@ async function newJobs(state: State): Promise<Job[]> {
     for (const draftId of picked) jobs.push({ ...newRun(judgeKey(draftId)), kind: "judge", draftId, note: await readJudgedNote(draftId) });
     writeFileSync(JUDGE_QUEUE_FILE, JSON.stringify({ ...queue, drafts: waiting.filter((id) => !picked.includes(id)) }));
   }
-  // The queue never hands out a post that Claude already holds.
+  // The list never shows a post that Claude already holds.
   for (let slots = MAX_POSTS_RUNNING - running("post"); slots > 0; slots--) {
     const post = await nextClaudePost();
     if (!post) break;
@@ -247,6 +254,7 @@ export async function dispatch() {
   mkdirSync(RUNS_DIR, { recursive: true });
   const startedAt = Date.now();
   for (;;) {
+    await claudeQueue().signOfLife();
     await readUsageWhenDue();
     const state = readState();
     const started: Job[] = [];

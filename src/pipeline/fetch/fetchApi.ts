@@ -37,18 +37,22 @@ const BOT_CHECK_VALUE = "challenge";
 const isBotCheck = (headers: { get(name: string): string | null }) =>
   BOT_CHECK_HEADERS.some((name) => headers.get(name) === BOT_CHECK_VALUE);
 
-/** One plain request. */
-export async function fetchApiPlain(address: string): Promise<ApiAnswer> {
+const NOT_MODIFIED = 304;
+
+/** One plain request. With the ETag of the last answer, a site whose answer
+ *  has not changed answers 304 with no body. */
+export async function fetchApiPlain(address: string, etag?: string): Promise<ApiAnswer> {
   if (!isWebUrl(address)) return { type: "failed", reason: REFUSED_NON_WEB_URL };
   try {
     const response = await fetch(address, {
-      headers: { "User-Agent": FETCH_UAS.desktop, Accept: API_ACCEPT },
+      headers: { "User-Agent": FETCH_UAS.desktop, Accept: API_ACCEPT, ...(etag && { "If-None-Match": etag }) },
       redirect: "follow",
       signal: AbortSignal.timeout(API_TIMEOUT_MS),
     });
     if (isBotCheck(response.headers)) return { type: "bot_check" };
+    if (response.status === NOT_MODIFIED) return { type: "not_modified" };
     if (!response.ok) return { type: "failed", reason: `HTTP ${response.status}` };
-    return { type: "answer", body: await response.text() };
+    return { type: "answer", body: await response.text(), ...(response.headers.get("etag") && { etag: response.headers.get("etag")! }) };
   } catch (err: any) {
     return { type: "failed", reason: err?.message?.slice(0, 200) ?? "network error" };
   }

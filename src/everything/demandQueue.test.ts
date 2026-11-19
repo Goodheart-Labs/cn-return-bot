@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { dbMock, dbState, resetDbState } from "./dbMock";
 
-/* The rule that queues a page because readers opened it: which pages it takes,
- * at which tier, and when it stops. The db module is mocked, so no database
+/* The rule that adds a page because readers opened it: which pages it takes,
+ * how it marks them, and when it stops. The db module is mocked, so no database
  * runs; the mock applies the reader bars as everything_demanded_pages does. */
 
 mock.module("./db", dbMock);
@@ -34,13 +34,13 @@ describe("queueDemandedPages", () => {
     expect(queuedUrls()).toEqual([text(1).page_url, video(1).page_url]);
   });
 
-  test("a queued page sits behind reader requests and ahead of the backlog walk", async () => {
+  test("an added page is marked as demanded, which ranks it like a priority creator's post, and is not requested", async () => {
     dbState.demandedPages = [text(1), video(1)];
     await queueDemandedPages(demandSettings({}));
-    const rows = dbState.calls.insertQueuedItem!.map(([row]) => row as { priority: number; source: string; checked_scope: string });
+    const rows = dbState.calls.insertQueuedItem!.map(([row]) => row as { demanded_at?: string; requested_since?: string; source: string; checked_scope: string });
     for (const row of rows) {
-      expect(row.priority).toBeLessThan(dbMock().QUEUE_PRIORITY.requested);
-      expect(row.priority).toBeGreaterThan(dbMock().QUEUE_PRIORITY.backlog);
+      expect(row.demanded_at).toBeDefined();
+      expect(row.requested_since).toBeUndefined();
       expect(row.checked_scope).toBe("page");
     }
     expect(rows.map((r) => r.source)).toEqual(["web", "youtube"]);
@@ -97,39 +97,12 @@ describe("queueDemandedPages", () => {
 
 describe("a source that is failing", () => {
   const failed = { source: "youtube", outcome: "failed" as const };
-  const errored = (n: number, retries = 0) => ({
-    id: `item-${n}`, url: video(n).page_url, title: null, published_at: null, retries, priority: 1, feed_url: null,
-  });
 
   test("gets no new pages while every read of the last hour failed", async () => {
     dbState.demandedPages = [video(1, 9), text(1)];
     dbState.itemOutcomes = [failed, failed];
     expect(await queueDemandedPages(demandSettings({}))).toBe(1);
     expect(queuedUrls()).toEqual([text(1).page_url]);
-  });
-
-  test("gets no repeat attempts either, so an outage does not spend them", async () => {
-    dbState.retryableErrors = [errored(1)];
-    dbState.demandQueuedUrls = [video(1).page_url];
-    dbState.itemOutcomes = [failed, failed];
-    await queueDemandedPages(demandSettings({}));
-    expect(dbState.calls.requeueErroredItem).toBeUndefined();
-  });
-
-  test("a failed page of this rule is retried at its own tier, two per source a run", async () => {
-    dbState.retryableErrors = [errored(1), errored(2, 1), errored(3), errored(4)];
-    dbState.demandQueuedUrls = [video(1).page_url, video(2).page_url, video(3).page_url];
-    await queueDemandedPages(demandSettings({}));
-    expect(dbState.calls.requeueErroredItem!.map(([item, priority]) => [(item as { id: string }).id, priority])).toEqual([
-      ["item-1", 1],
-      ["item-2", 1],
-    ]);
-  });
-
-  test("a failed post the rule did not queue is left to the walk", async () => {
-    dbState.retryableErrors = [errored(4)];
-    await queueDemandedPages(demandSettings({}));
-    expect(dbState.calls.requeueErroredItem).toBeUndefined();
   });
 });
 

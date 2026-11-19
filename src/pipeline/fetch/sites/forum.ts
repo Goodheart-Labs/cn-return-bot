@@ -162,3 +162,22 @@ export async function readForumAuthor(author: ForumAuthorFeed, limit: number): P
     .map((p: any) => ({ postId: p._id, url: p.pageUrl, title: p.title, postedAt: p.postedAt, text: htmlToText(p.htmlBody) }));
   return { authorName: user.displayName ?? null, imageUrl: user.profileImageId ? profileImageUrl(author.origin, user.profileImageId) : null, posts };
 }
+
+/** A forum's newest post, with the slug of its author. */
+export type NewestForumPost = ForumPost & { authorSlug: string | null };
+
+/** The forum's newest `limit` posts of every author, newest first (cn-walk,
+ *  GOO-791). One query a minute covers every walked author of the forum,
+ *  where a query per author read the forum 11,000 to 15,000 times a day.
+ *  Posts without a body and copies of crossposts are left out, as in
+ *  readForumAuthor. */
+export async function readForumNewest(origin: string, limit: number): Promise<NewestForumPost[]> {
+  const data = await graphqlData(
+    origin,
+    `{ posts(input: {terms: {view: "new", limit: ${limit}}}) {
+        results { _id pageUrl title postedAt htmlBody fmCrosspost { isCrosspost hostedHere } user { slug } } } }`,
+  );
+  return (data.posts?.results ?? [])
+    .filter((p: any) => p.htmlBody?.trim() && !isForeignCrosspost(p))
+    .map((p: any) => ({ postId: p._id, url: p.pageUrl, title: p.title, postedAt: p.postedAt, text: htmlToText(p.htmlBody), authorSlug: p.user?.slug ?? null }));
+}

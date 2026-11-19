@@ -1,37 +1,22 @@
 /**
- * One feed run. This is what the Everything Priority Feeds workflow runs, and
- * the database starts it when the alarm the previous run set has come
- * (everything_feed_schedule, migration 098). A run is a straight line: check
- * that the machine's services are well, tidy the queue, process one feed
- * item, set the alarm for the next run (see pacing.ts), and exit. It never
- * waits and never does a second item. A long item is never cut short; the
- * next alarm is measured from its start, so a post that outlasts its interval
- * is followed at once.
+ * One feed run of the pipeline. This is what the Everything Priority Feeds
+ * workflow runs, and the database starts it when the alarm the previous run
+ * set has come (everything_feed_schedule, migration 098). Since the post list
+ * (GOO-791) the run does one thing: it checks one post as the notewriter
+ * `pipeline` of API v1, and only while the pipeline is subscribed. cn-walk on
+ * the services box adds the posts, ends overdue reservations and watches the
+ * notewriters, which this run used to do.
  *
- * A run does not ask whether it may start. It starts because its time came,
- * because someone started it by hand, or because the database's backstop
- * fired after a run that never set its alarm. In the last two cases the post
- * starts ahead of schedule, and the next alarm, measured from that post with
- * the money actually left, absorbs it.
+ * A run is a straight line: check that the machine's services are well, ask
+ * v1's next_post for the pipeline, check the post, finish or fail its
+ * reservation, set the alarm for the next run (see pacing.ts), and exit. It
+ * never waits and never does a second post. A long post is never cut short;
+ * the next alarm is measured from its start, so a post that outlasts its
+ * interval is followed at once.
  *
- * Reader requests are not consumed here. The intake service on the machine
- * owns them, because a reader is watching a spinner and a half-hour tick is
- * exactly what that ticket removed. This run instead checks that intake is
- * doing its job, and fails loudly when it is not.
- *
- * The walk keeps the queue full for the notewriters (GOO-724, migration 168).
- * Each subscribed notewriter that is not on a break wants one feed post
- * waiting, and the walk adds posts until that many wait that nobody holds.
- * Every feed post a notewriter takes sets the alarm to now, so a run tops the
- * queue up again within a minute or two. A failed post does not wait in the
- * queue. The walk picks it again in rank order (see autoEnqueue.ts).
- *
- * The pipeline is the notewriter `pipeline`. It takes this run's one item only
- * while it is subscribed, which it is not since the Claude note writer took
- * over. This run also goes red for every post a notewriter failed on or held
- * past its deadline since the last run, and while a notewriter that has
- * something to take has not asked for 30 minutes. A silent notewriter is also
- * told to Slack, once per silence (silenceWarning.ts).
+ * Reader requests are not checked here while the pipeline takes them. The
+ * intake service on the machine checks them at once, because a reader is
+ * watching a spinner.
  *
  * Usage:
  *   bun run src/everything/autoRun.ts
@@ -40,47 +25,21 @@
 import "dotenv/config";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchClaimCheckHealth, fetchExtractionHealth, queueIsStuck } from "../service/client";
-import { runAutoEnqueue, triageQueue } from "./autoEnqueue";
-import { queueDemandedPages } from "./demandQueue";
-import {
-  fetchFeedPacing,
-  fetchFeedPostsWanted,
-  oldestPendingRequestAgeSeconds,
-  setFeedAlarm,
-  takeBackOverduePosts,
-  takeUnreportedFailures,
-  takeUnreportedReadFailures,
-} from "./db";
-import { AVATARS_PER_RUN, refreshStaleAvatars } from "./projectAvatars";
+import { fetchFeedPacing, oldestPendingRequestAgeSeconds, pipelineSubscription, setFeedAlarm } from "./db";
 import { ensureYtDlp } from "./sources/youtube";
 import { duration } from "./logFormat";
-import { quotaRanOutThisRun } from "../pipeline/media/youtubeDataApi";
-import {
-  computeNextRun,
-  describeAlarm,
-  describePacing,
-  MEAN_COST_RULE,
-  nextAlarm,
-  type FeedAlarm,
-} from "./pacing";
+import { computeNextRun, describeAlarm, describePacing, MEAN_COST_RULE, nextAlarm, type FeedAlarm } from "./pacing";
 import { describeTodaySpend, FEED_BUDGET_USD, feedBudgetExhausted } from "./spendCap";
-import { watchNotewriterSilence } from "./silenceWarning";
-import { logQueue, processNextFeedItem } from "./worker";
+import { processNextFeedItem } from "./worker";
 
 /** How long a reader request may sit unconsumed before this run fails. Intake
  *  consumes within seconds when it is alive, and its own 60-second poll is the
  *  slowest legitimate path, so a request this old means intake is dead. */
 const STALE_REQUEST_LIMIT_SECONDS = 15 * 60;
 
-/** Asks the machine how it is, and throws when something is unwell.
- *
- * This run is also the only thing watching the machine, so sickness must fail
- * the run. A red run in the Actions list is how a dead or wedged machine
- * becomes visible, exactly the way a broken pipeline is visible today. Three
- * things are checked: each service answers, neither service's queue is stuck,
- * and the intake service is consuming reader requests. Intake has no port of
- * its own, so it is checked by its effect: an old unconsumed request means
- * nobody is listening. */
+/** Asks the machine how it is, and throws when something is unwell. The
+ *  pipeline needs both services, and the intake service is checked by its
+ *  effect: an old unconsumed request means nobody is listening. */
 async function assertMachineHealthy(): Promise<void> {
   const healths = await Promise.all([fetchClaimCheckHealth(), fetchExtractionHealth()]);
   for (const health of healths) {
@@ -103,46 +62,29 @@ async function assertMachineHealthy(): Promise<void> {
   }
 }
 
-type FeedRunOutcome = Awaited<ReturnType<typeof processNextFeedItem>> | "budget_reached";
+type FeedRunOutcome = Awaited<ReturnType<typeof processNextFeedItem>> | "budget_reached" | "unsubscribed";
 
-/** Walks until one feed post waits for every subscribed notewriter that is
- *  not on a break. A post held past its deadline goes back first, so it
- *  counts as waiting. The walk is free, so the day's feed budget does not
- *  stop it. */
-async function topUpForNotewriters(): Promise<void> {
-  const takenBack = await takeBackOverduePosts();
-  if (takenBack > 0) console.log(`\nTook back ${takenBack} post${takenBack === 1 ? "" : "s"} held past the deadline`);
-  const { wanted, waiting } = await fetchFeedPostsWanted();
-  console.log(`\nNOTEWRITERS · ${wanted} want a feed post waiting · ${waiting} wait that nobody holds`);
-  for (let missing = wanted - waiting; missing > 0; missing--) {
-    if ((await runAutoEnqueue()) === 0) break;
-  }
-}
-
-/** Tidies the queue, tops it up for the notewriters, and processes one feed
- *  item when the pipeline takes feed posts. The pacing block is printed
- *  here too, so the log shows the budget before the item. */
+/** Checks one post for the pipeline, when it takes feed posts and the day's
+ *  feed budget is not spent. The pacing block is printed first, so the log
+ *  shows the budget before the post. */
 async function processOneFeedItem(): Promise<FeedRunOutcome> {
-  await triageQueue();
-  // Before the top-up, so a page readers opened counts as a waiting post and
-  // the walk adds one fewer. A failure here, such as migration 183 not being
-  // applied yet, must not stop the feed.
-  await queueDemandedPages().catch((err) => console.log(`  reader demand skipped: ${err?.message ?? "unknown error"}`));
-  await topUpForNotewriters();
+  if (!(await pipelineSubscription()).feed) {
+    console.log("The pipeline takes no feed posts, so this run checks nothing");
+    return "unsubscribed";
+  }
   if (await feedBudgetExhausted()) {
     console.log(`Feed budget reached (${await describeTodaySpend()}) · the pipeline processes nothing more today`);
     return "budget_reached";
   }
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
   console.log(describePacing(computeNextRun(snapshot, FEED_BUDGET_USD), snapshot, FEED_BUDGET_USD));
-  await logQueue();
   const ended = await processNextFeedItem();
-  if (ended === "empty") console.log("Nothing for the pipeline to process");
+  if (typeof ended !== "string") console.log(`Nothing for the pipeline to check: ${ended.reason}`);
   return ended;
 }
 
 /** Sets the alarm the database starts the next run on. The snapshot is read
- *  again here, after the item, so the interval sees this item's start and
+ *  again here, after the post, so the interval sees this post's start and
  *  whatever the day has cost by now, reader pages included. */
 async function setNextAlarm(started: boolean): Promise<void> {
   const snapshot = await fetchFeedPacing(MEAN_COST_RULE);
@@ -150,35 +92,6 @@ async function setNextAlarm(started: boolean): Promise<void> {
   const alarm: FeedAlarm = nextAlarm(nextRun, snapshot, started);
   console.log(`\n${describePacing(nextRun, snapshot, FEED_BUDGET_USD)}\n${describeAlarm(alarm, snapshot)}`);
   await setFeedAlarm(alarm.at, alarm.reason);
-}
-
-/** Why this run must go red. The run fails only at its end, after its item
- *  and its alarm, so a problem never stops the schedule. */
-async function problemsToReport(ended: FeedRunOutcome | undefined, silences: string[]): Promise<string[]> {
-  const problems: string[] = [];
-  // An exhausted YouTube quota does not stop the run, because Substack and
-  // LessWrong posts can still be checked. But it must not stay a log line: for
-  // five days in September 2026 the quota ran out every afternoon and nobody
-  // noticed.
-  if (quotaRanOutThisRun()) problems.push("The YouTube Data API quota is used up until 07:00 UTC. No YouTube channel could be listed.");
-  // A failed item is recorded on its row, and the run used to end green. On
-  // 1 October 2026 every item failed for 16 hours while every run stayed
-  // green, and nobody noticed until someone read the logs. A young video that
-  // has no captions yet is the one expected error, and it ends as
-  // "no_captions_yet" instead. On 10 October 2026 such videos made 30 of 31
-  // red runs and buried the failures that mattered (GOO-422).
-  if (ended === "error") problems.push("This run's item failed. The reason is in the log above and in everything_items.error.");
-  // The posts a silent notewriter should take only wait until someone sees this.
-  problems.push(...silences);
-  // A notewriter has no red run of its own, so its failures turn this run
-  // red, the same way this run's own failed item does.
-  for (const failure of await takeUnreportedFailures()) {
-    problems.push(`The notewriter ${failure.notewriter} failed on ${failure.url} at ${failure.endedAt}: ${failure.reason}`);
-  }
-  for (const failure of await takeUnreportedReadFailures()) {
-    problems.push(`The intake service could not read ${failure.url} at ${failure.at}, so no notewriter got it: ${failure.reason}`);
-  }
-  return problems;
 }
 
 async function main() {
@@ -192,25 +105,19 @@ async function main() {
   try {
     ended = await processOneFeedItem();
   } finally {
-    // Whatever the item did, the next run must be scheduled, or the pipeline
-    // would sleep until the backstop. The alarm is measured from the item's
-    // start, so it needs to know whether an item was started.
-    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error" || ended === "no_captions_yet");
+    // Whatever the post did, the next run must be scheduled, or the pipeline
+    // would sleep until the backstop. The alarm is measured from the post's
+    // start, so it needs to know whether a post was started.
+    await setNextAlarm(ended === "done" || ended === "capped" || ended === "error");
   }
-  // Creator pictures for the website cost no LLM money, so they refresh even
-  // on a capped day. They run last, after the alarm is set, so a slow source
-  // never delays the item or the schedule.
-  await refreshStaleAvatars(AVATARS_PER_RUN);
-  // A red run is seen only in the next morning's CI report. A silent
-  // notewriter leaves its posts waiting, so it is told to Slack at once. This
-  // runs after the alarm, so a Slack failure never stops the schedule.
-  const silences = await watchNotewriterSilence();
   console.log(`\nrun done · today so far: ${await describeTodaySpend()}`);
   try {
     await closeBrowser();
   } catch {}
-  const problems = await problemsToReport(ended, silences);
-  if (problems.length > 0) throw new Error(`${problems.join("\n")}\nFailing the run so this is seen.`);
+  // A failed post is recorded on its reservation, and the run used to end
+  // green. On 1 October 2026 every post failed for 16 hours while every run
+  // stayed green, and nobody noticed until someone read the logs.
+  if (ended === "error") throw new Error("This run's post failed. The reason is in the log above and on its reservation. Failing the run so this is seen.");
 }
 
 main().catch((err) => {
