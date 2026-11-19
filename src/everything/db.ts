@@ -9,7 +9,7 @@ import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
 import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
-import { CLAUDE_NOTEWRITER, PIPELINE_NOTEWRITER } from "../notewriters/ids";
+import { MAIN_PLAN_NOTEWRITERS, PIPELINE_NOTEWRITER } from "../notewriters/ids";
 import type { HandedOutPost } from "../notewriters/v1";
 import type { WatchedNotewriter } from "./notewriterSilence";
 import type { ItemSource } from "./types";
@@ -522,7 +522,7 @@ export async function recordReadFailure(itemId: string, reason: string): Promise
 }
 
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
- *  the usage readings and the posts this host's Claude reserved over the
+ *  the usage readings and the posts the plan's notewriters reserved over the
  *  window. Every assignment of migration 168 became a reservation with the
  *  same id (migration 184). */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
@@ -535,7 +535,7 @@ export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
       "id",
       { label: "claudeUsage" },
     ),
-    db.from("everything_reservations").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
+    db.from("everything_reservations").select("id", { count: "exact", head: true }).in("notewriter_id", MAIN_PLAN_NOTEWRITERS).gte("started_at", since),
   ]);
   if (reserved.error) throw new Error(`Supabase: ${reserved.error.message}`);
   return {

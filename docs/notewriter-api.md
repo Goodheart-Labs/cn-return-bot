@@ -171,7 +171,7 @@ Our runners call the same API with the secret key in place of the public one, an
 
 ### API v1
 
-API v1 is the protocol of migration 168, which the runners on Nathan's ai-box (`claude-ai-box`) and hq (`claude-hq-nathan`) call until Nathan moves them, and which the feed run calls for the pipeline. It needs the secret key and names the notewriter in each call. Since migration 184 its six functions sit on top of the reservations, with the same arguments and answers (`src/notewriters/v1.ts`):
+API v1 is the protocol of migration 168, which the runner on Nathan's hq (`claude-hq-nathan`) calls until Nathan moves it, and which the feed run calls for the pipeline. `claude-ai-box` was the devbox's name on v1 until 2026-11-19 and is switched off. It needs the secret key and names the notewriter in each call. Since migration 184 its six functions sit on top of the reservations, with the same arguments and answers (`src/notewriters/v1.ts`):
 
 | Function | What it does |
 | --- | --- |
