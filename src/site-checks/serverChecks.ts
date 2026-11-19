@@ -119,7 +119,7 @@ export const serverChecks: SiteCheck[] = [
     name: "The profile API names a writer's publication",
     code: "fetchLatestFreePosts (src/everything/sources/substack.ts)",
     run: async () => {
-      const { publicationName, posts } = await fetchLatestFreePosts(`https://substack.com/@${pages.SUBSTACK_PROFILE_HANDLE}`, 1);
+      const { publicationName, posts } = await fetchLatestFreePosts(pages.SUBSTACK_PROFILE, 1);
       must(publicationName, "the profile names no publication");
       must(posts.length === 1, "the publication's archive gave no post");
       return `@${pages.SUBSTACK_PROFILE_HANDLE} writes "${publicationName}"`;

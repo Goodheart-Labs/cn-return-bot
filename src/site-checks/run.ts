@@ -88,6 +88,8 @@ async function runWatchPageChecks(): Promise<{ results: CheckResult[]; proxiedBy
     if (proxy) {
       await context.route(IMAGES_NOBODY_CHECKS, (route) => route.abort());
       context.on("requestfinished", (request) => {
+        // The extension's own files load from the extension, not the network.
+        if (!request.url().startsWith("http")) return;
         request.sizes().then((sizes) => (proxiedBytes += sizes.responseHeadersSize + sizes.responseBodySize), () => {});
       });
     }

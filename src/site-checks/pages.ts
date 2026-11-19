@@ -15,6 +15,7 @@ export const SUBSTACK_POST = "https://thezvi.substack.com/p/childhood-and-educat
 export const SUBSTACK_ARCHIVE = "https://thezvi.substack.com/archive";
 export const SUBSTACK_PUBLICATION = "https://thezvi.substack.com";
 export const SUBSTACK_PROFILE_HANDLE = "thezvi";
+export const SUBSTACK_PROFILE = `https://substack.com/@${SUBSTACK_PROFILE_HANDLE}`;
 
 /** A video with 36 timestamped notes. */
 export const YOUTUBE_VIDEO = { url: "https://www.youtube.com/watch?v=zB6PhTxnj7U", channelPath: "/@ChrisWillx" };

@@ -31,6 +31,9 @@ const LOG_WAIT_MS = 45_000;
 /** YouTube and the forums render their pages after loading them. */
 const PAGE_SETTLE_MS = 6000;
 const MENU_ROWS_WAIT_MS = 5000;
+/** A post in a Substack feed or profile. Substack keys each feed item by its
+ *  kind, and a post's key starts with "p-". */
+const SUBSTACK_FEED_POST = '[data-entity-key^="p-"]';
 /** What YouTube's player shows instead of the video when it wants the viewer
  *  to sign in and prove they are not a bot. */
 const YOUTUBE_PLAYER_REFUSAL = "yt-playability-error-supported-renderers, #movie_player .ytp-error";
@@ -165,15 +168,18 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
   badgeCheck(context, "Substack", "a *.substack.com archive", pages.SUBSTACK_ARCHIVE),
   {
     site: "Substack",
-    name: "Our rows appear in a post's three-dot menu on a newsletter's own domain",
+    name: "Our rows appear in the three-dot menu of a post in a writer's Substack profile",
     code: "substackMenuSite (src/everything-extension/utils/substackMenuRows.ts) and installMenuRows",
+    // Substack shows a logged-out reader no three-dot menu on an open post
+    // (docs/extension-behaviour.md), and this browser is not logged in. The
+    // posts listed on a profile have one for every reader.
     run: () =>
-      withPage(context, pages.CUSTOM_DOMAIN_SUBSTACK_POST, async (page) => {
+      withPage(context, pages.SUBSTACK_PROFILE, async (page) => {
         await page.waitForTimeout(PAGE_SETTLE_MS);
-        const rows = await ourMenuRows(page, page.locator(SUBSTACK_MENU_TRIGGER).locator("visible=true").first());
-        // The post is checked, so its only row is the author's. A week of
-        // priority for the author removes that row too.
-        must(rows.length > 0, "the menu got no rows. Either Substack's menu changed, or someone gave Astral Codex Ten priority this week");
+        const rows = await ourMenuRows(page, page.locator(`${SUBSTACK_FEED_POST} ${SUBSTACK_MENU_TRIGGER}`).locator("visible=true").first());
+        // The newest posts are checked, so their only row is the author's. A
+        // week of priority for the author removes that row too.
+        must(rows.length > 0, "the menu got no rows. Either Substack's menu changed, or someone gave Don't Worry About the Vase priority this week");
         return rows.join(" · ");
       }),
   },
