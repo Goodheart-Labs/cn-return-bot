@@ -11,10 +11,12 @@
  *
  * It also answers readers' Ask Opus questions (passageQuestions.ts), works
  * the jobs the website writes for minisites (minisiteJobs.ts), and reads every
- * queued post that the notewriters cannot get yet because its text is missing
- * (prepareItems.ts), each in a loop of its own. The requested tier is
- * processed here only while the notewriter `pipeline` takes reader requests.
- * Otherwise a notewriter takes those items from the queue.
+ * post that the notewriters cannot get yet because its text is missing
+ * (prepareItems.ts), each in a loop of its own. A request marks its post as
+ * requested, which puts it at the top of the post list (GOO-791). Requested
+ * posts are checked here only while the notewriter `pipeline` takes reader
+ * requests, and then on a reservation of the pipeline, like any notewriter's
+ * check. Otherwise our Claude runners reserve them.
  *
  * It hears about a new request in about a second over Supabase Realtime, and
  * additionally re-reads the inbox on a timer. The timer is not optional:
@@ -35,12 +37,12 @@ import { consumePassageQuestions } from "./passageQuestions";
 import { prepareQueuedItems } from "./prepareItems";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { consumeNoteRequests } from "../../everything/consumeRequests";
-import { triageOrphanedItems } from "../../everything/autoEnqueue";
-import { claimNextQueuedItem, markRequestedQueueBudgetExhausted } from "../../everything/db";
+import { markRequestedQueueBudgetExhausted, pipelineSubscription, reserveRequestedPost } from "../../everything/db";
 import { clip } from "../../everything/logFormat";
 import { ensureYtDlp } from "../../everything/sources/youtube";
 import { describeTodaySpend, requestBudgetExhausted } from "../../everything/spendCap";
-import { processQueuedItem } from "../../everything/worker";
+import { checkReservedPost } from "../../everything/worker";
+import { PIPELINE_NOTEWRITER } from "../../notewriters/ids";
 import { FETCH_SERVICE_SOCKET_VARIABLE } from "../contract";
 import { requiredEnv } from "../serve";
 
@@ -80,25 +82,26 @@ function subscribeToRequests(): void {
     .subscribe((status) => console.log(`[intake] realtime channel: ${status}`));
 }
 
-/** Consumes the inbox, then works the requested tier until it is empty or the
- *  full daily cap is reached. An item cut short by the cap goes back in the
- *  queue with its finished claims kept, and the day's budget marker tells the
- *  extension why nothing is moving. */
+/** Consumes the inbox, then, while the pipeline takes reader requests, checks
+ *  the requested posts until none is left or the full daily cap is reached.
+ *  A post cut short by the cap keeps its finished claims, and the day's budget
+ *  marker tells the extension why nothing is moving. */
 async function handlePendingWork(): Promise<void> {
   await consumeNoteRequests();
-  // A new request is a new queue item, which needs its text before a
-  // notewriter can take it.
+  // A new request is a new post, which needs its text before a notewriter can
+  // reserve it.
   wakePreparer();
+  if (!(await pipelineSubscription()).requests) return;
   for (;;) {
     if (await requestBudgetExhausted()) {
       console.log(`[intake] request budget spent (${await describeTodaySpend()}) — marking the queue`);
       await markRequestedQueueBudgetExhausted();
       return;
     }
-    const item = await claimNextQueuedItem("requested");
-    if (!item) return;
-    console.log(`\n[intake] CHECKING NOW · [${item.source}] ${clip(item.title ?? item.url, 60)}`);
-    const ended = await processQueuedItem(item);
+    const post = await reserveRequestedPost(PIPELINE_NOTEWRITER);
+    if (!post) return;
+    console.log(`\n[intake] CHECKING NOW · [${post.item.source}] ${clip(post.item.title ?? post.item.url, 60)}`);
+    const ended = await checkReservedPost(post);
     if (ended === "capped") return;
   }
 }
@@ -109,10 +112,6 @@ async function main() {
   // this process, next to our keys, so it refuses to start instead.
   requiredEnv(FETCH_SERVICE_SOCKET_VARIABLE);
   ensureYtDlp();
-  // The intake service is the only worker of the requested tier, so at start
-  // nothing can still be checking an item of that tier that sits in
-  // processing. A previous run of this service left it there.
-  await triageOrphanedItems("requested");
   subscribeToRequests();
   console.log("[intake] watching for reader requests");
   await Promise.all([questionLoop(), minisiteJobLoop(), noteLoop(), preparerLoop()]);
@@ -135,7 +134,7 @@ async function minisiteJobLoop() {
   }
 }
 
-/** Feed posts the walk adds wait at most one poll interval for their text. */
+/** Posts cn-walk adds wait at most one poll interval for their text. */
 async function preparerLoop() {
   for (;;) {
     await prepareQueuedItems();

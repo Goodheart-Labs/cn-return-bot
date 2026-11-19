@@ -25,12 +25,6 @@ const API_ROOT = "https://www.googleapis.com/youtube/v3";
 /** The most items one list call returns. */
 const PAGE_SIZE = 50;
 
-/** How deep the all-time-top scan reads a channel's uploads. Joe Rogan's
- *  channel holds about 3050 long-form videos and its most viewed episodes sit
- *  past position 2000, so a shallower scan would miss the videos the scan is
- *  for. Sixty list calls plus sixty statistics calls at this depth. */
-export const TOP_VIDEOS_SCAN_LIMIT = 3000;
-
 export interface YoutubeChannel {
   id: string;
   title: string;
@@ -69,8 +63,8 @@ function apiKey(): string {
 
 /** The day's quota is used up. Every call fails until the reset at 07:00 UTC,
  *  so this is a different kind of failure from one channel that will not list:
- *  the feed run finishes its work and then fails, so the exhaustion is seen
- *  (see autoRun.ts). */
+ *  cn-walk lists no channel until the reset and records that once
+ *  (src/walk/main.ts). */
 export class YoutubeQuotaExceededError extends Error {
   constructor(resource: string, message: string) {
     super(`YouTube Data API ${resource} failed (quotaExceeded): ${message}`);
@@ -79,14 +73,28 @@ export class YoutubeQuotaExceededError extends Error {
 }
 
 /** Set by the first call that finds the quota used up. After that no call in
- *  this process goes to Google, because each would fail the same way. */
+ *  this process goes to Google until the quota's reset, because each would
+ *  fail the same way. */
 let quotaExceeded: YoutubeQuotaExceededError | null = null;
+let quotaResetsAt = 0;
 
-/** Whether a call in this process found the day's quota used up. */
-export const quotaRanOutThisRun = (): boolean => quotaExceeded !== null;
+/** The quota resets at 07:00 UTC, midnight in California. */
+const QUOTA_RESET_HOUR_UTC = 7;
+
+function nextQuotaReset(now: Date): number {
+  const reset = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), QUOTA_RESET_HOUR_UTC);
+  return reset > now.getTime() ? reset : reset + 24 * 3600_000;
+}
+
+/** Whether a call in this process found the day's quota used up, and its
+ *  reset has not come yet. */
+export function quotaRanOutThisRun(now = new Date()): boolean {
+  if (quotaExceeded && now.getTime() >= quotaResetsAt) quotaExceeded = null;
+  return quotaExceeded !== null;
+}
 
 async function apiGet(resource: string, params: Record<string, string>): Promise<any> {
-  if (quotaExceeded) throw quotaExceeded;
+  if (quotaRanOutThisRun()) throw quotaExceeded;
   const url = new URL(`${API_ROOT}/${resource}`);
   for (const [name, value] of Object.entries({ ...params, key: apiKey() })) url.searchParams.set(name, value);
   const response = await fetch(url);
@@ -96,7 +104,10 @@ async function apiGet(resource: string, params: Record<string, string>): Promise
     // it means the day's 10,000 units are gone, not that YouTube is down.
     const reason = body?.error?.errors?.[0]?.reason;
     const message = body?.error?.message ?? `HTTP ${response.status}`;
-    if (reason === "quotaExceeded") throw (quotaExceeded = new YoutubeQuotaExceededError(resource, message));
+    if (reason === "quotaExceeded") {
+      quotaResetsAt = nextQuotaReset(new Date());
+      throw (quotaExceeded = new YoutubeQuotaExceededError(resource, message));
+    }
     throw new Error(`YouTube Data API ${resource} failed${reason ? ` (${reason})` : ""}: ${message}`);
   }
   return body;
@@ -197,9 +208,3 @@ export async function fetchChannelUploads(channelId: string, limit: number): Pro
   return fetchVideos(await listPlaylistVideoIds(longFormUploadsPlaylist(channelId), limit));
 }
 
-/** A channel's `n` most viewed long-form videos, most viewed first, from a
- *  scan of its newest `scanLimit` uploads. */
-export async function fetchChannelTopVideos(channelId: string, n: number, scanLimit = TOP_VIDEOS_SCAN_LIMIT): Promise<YoutubeVideo[]> {
-  const videos = await fetchChannelUploads(channelId, scanLimit);
-  return videos.sort((a, b) => b.viewCount - a.viewCount).slice(0, n);
-}

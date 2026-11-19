@@ -3,16 +3,19 @@ name: Everything Priority Feeds
 on:
   workflow_dispatch:
 
-# Triggered by Supabase pg_cron via workflow_dispatch (GitHub's own scheduler
-# delays/drops runs). There is no fixed timer: every run processes one feed
-# item and stores when the next run is due (src/everything/pacing.ts), and
+# The pipeline's feed run (GOO-791): it checks one post as the notewriter
+# `pipeline` of API v1, and nothing else. cn-walk on the services box adds the
+# posts and watches the notewriters. Triggered by Supabase pg_cron via
+# workflow_dispatch (GitHub's own scheduler delays/drops runs), and only while
+# the pipeline takes feed posts (migration 185). There is no fixed timer:
+# every run checks one post and stores when the next run is due
+# (src/everything/pacing.ts), and
 # pg_cron checks that alarm once a minute and dispatches when it has come
 # (migrations/098_feed_alarm.sql). A run that never set its alarm is followed
 # by another 45 minutes after its dispatch, which is the backstop for a crash.
 #
-# Never run two workers at once: the queue claim has no locking, and the
-# auto-enqueue's orphan cleanup assumes no worker is live. Queue (don't cancel)
-# so a run is never killed mid-item. The backstop can queue a second run
+# One run at a time keeps the pacing simple. Queue (don't cancel) so a run is
+# never killed mid-item. The backstop can queue a second run
 # behind a post longer than 45 minutes; it waits here and then does one post.
 concurrency:
   group: everything-priority-feeds
@@ -78,7 +81,7 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Process one feed item and set the alarm for the next run
+      - name: Check one post for the pipeline and set the alarm for the next run
         run: bun run everything-auto-run
         env:
           # OpenRouter API key for AI models (claim extraction, search, writer)
@@ -99,13 +102,6 @@ jobs:
           # YouTube Data API key: channel listings, publish dates, view counts and
           # video details. No proxy involved, 10,000 free quota units a day.
           YOUTUBE_DATA_V3_API_KEY: ${{ secrets.YOUTUBE_DATA_V3_API_KEY }}
-          # Shared with the youtube-websub Edge Function. The walk sends it to
-          # Google's WebSub hub with each subscription, and the hub signs every
-          # notification with it.
-          YOUTUBE_WEBSUB_SECRET: ${{ secrets.YOUTUBE_WEBSUB_SECRET }}
-          # The bot token of the Slack app "Claudy". The run tells the Claude notes
-          # channel when the Claude note writer goes silent and when it is back.
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           # The two services that do the claim extraction and the claim checking.
           # This run asks each one for its health before starting, and fails if it
           # cannot reach them, which is how a machine that is down becomes visible.
@@ -114,10 +110,3 @@ jobs:
           SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}
           # Daily spend cap in USD (repo variable; empty falls back to the code default of 50 USD)
           EVERYTHING_DAILY_SPEND_CAP_USD: ${{ vars.EVERYTHING_DAILY_SPEND_CAP_USD }}
-          # Pages queued because readers opened them (src/everything/demandQueue.ts).
-          # Repo variables; empty falls back to the code defaults (3 readers and 20
-          # a day for text posts, 5 readers and 20 a day for videos), 0 switches a kind off.
-          EVERYTHING_DEMAND_TEXT_READERS: ${{ vars.EVERYTHING_DEMAND_TEXT_READERS }}
-          EVERYTHING_DEMAND_TEXT_DAILY_CAP: ${{ vars.EVERYTHING_DEMAND_TEXT_DAILY_CAP }}
-          EVERYTHING_DEMAND_YOUTUBE_READERS: ${{ vars.EVERYTHING_DEMAND_YOUTUBE_READERS }}
-          EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP: ${{ vars.EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP }}

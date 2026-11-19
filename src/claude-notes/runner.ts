@@ -1,12 +1,13 @@
 /* The Claude note writer's runner (GOO-580). It runs all the time on Nathan's
  * ai-box as a systemd service, under Nathan's user, because Claude Code uses
- * the login in his home folder. It is the notewriter claude-ai-box of the
- * notewriter protocol (GOO-724, src/notewriters/): it asks the queue for a
- * post whenever it has a free slot, starts one Claude for each post it gets,
- * and finishes the post when that Claude is done. A post it cannot finish it
- * fails on, so the queue gives it to another notewriter and the feed run goes
- * red. Every 5 minutes it turns the plan's usage into its subscription: how
- * often it wants a feed post, and whether it takes reader requests.
+ * the login in his home folder. It is the notewriter claude-ai-box, on API v1
+ * of the notewriters (GOO-724, src/notewriters/v1.ts) until Nathan gives it a
+ * key (GOO-791, see src/claude-notes/queue.ts): it asks for a post whenever it
+ * has a free slot, starts one Claude for each post it gets, and finishes the
+ * post when that Claude is done. A post it cannot finish it fails on, so the
+ * post stays for the other notewriters. Every 5 minutes it turns the plan's
+ * usage into its subscription: how often it wants a feed post, and whether it
+ * takes reader requests. The same code runs on hq as claude-hq-nathan.
  * It also starts one Claude for each reviewer message on the review page, and
  * one Claude for each X tweet the X run handed to it (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on

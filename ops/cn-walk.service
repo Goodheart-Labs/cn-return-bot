@@ -1,0 +1,38 @@
+# The cn-walk service (GOO-791): keeps every walked creator's feed on a
+# schedule and adds their new posts to the post list (src/walk/main.ts). A new
+# unit is installed by hand once (ops/README.md); autodeploy restarts it after.
+[Unit]
+Description=Common Notes walk
+After=network-online.target cn-fetch.service
+Wants=network-online.target cn-fetch.service
+
+[Service]
+User=cnbot
+WorkingDirectory=/opt/cn-return-bot
+EnvironmentFile=/etc/cn-return-bot/service.env
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+# Feeds and forum answers are fetched by the sandboxed fetcher, never in this
+# process (ops/cn-fetch.service).
+Environment=FETCH_SERVICE_SOCKET=/run/cn-fetch/fetch.sock
+# Every listing is recorded in page_reads, with its text in a file per day in
+# this folder (src/pipeline/fetch/readLog.ts). The folder is cn-intake's too.
+StateDirectory=cn-page-reads
+Environment=PAGE_READ_LOG_DIR=/var/lib/cn-page-reads
+Environment=CN_SERVICE=walk
+# The pages several readers opened (src/everything/demandQueue.ts). Unset
+# means the defaults: 3 readers and 20 a day for text posts, 5 readers and 20
+# a day for videos. 0 switches a kind off.
+#Environment=EVERYTHING_DEMAND_TEXT_READERS=3
+#Environment=EVERYTHING_DEMAND_TEXT_DAILY_CAP=20
+#Environment=EVERYTHING_DEMAND_YOUTUBE_READERS=5
+#Environment=EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP=20
+ExecStart=/home/cnbot/.bun/bin/bun run src/walk/main.ts
+Restart=always
+RestartSec=5
+PrivateTmp=yes
+# No process in this service may talk to a link-local address, where the cloud
+# provider's metadata service lives.
+IPAddressDeny=link-local
+
+[Install]
+WantedBy=multi-user.target

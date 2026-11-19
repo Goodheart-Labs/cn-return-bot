@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isSilent, NEVER_SEEN, silenceFailsRun, silenceNotice, type WatchedNotewriter } from "./notewriterSilence";
+import { isSilent, NEVER_SEEN, silenceNotice, type WatchedNotewriter } from "./notewriterSilence";
 
 const NOW = new Date("2026-11-05T12:00:00Z");
 const minutesAgo = (minutes: number) => new Date(NOW.getTime() - minutes * 60_000).toISOString();
@@ -7,33 +7,25 @@ const notewriter = (overrides: Partial<WatchedNotewriter> = {}): WatchedNotewrit
   id: "friend-bot",
   name: "Friend",
   owner: "A friend",
-  every_minutes: 20,
-  takes_reader_requests: false,
   last_seen_at: minutesAgo(31),
   silence_warned_for: null,
-  holdsPost: false,
   ...overrides,
 });
 
 describe("isSilent", () => {
-  test("a subscribed notewriter that has not asked for 30 minutes is silent", () => {
+  test("a notewriter that has not called for 30 minutes is silent, whatever it takes", () => {
     expect(isSilent(notewriter(), NOW)).toBe(true);
   });
 
-  test("one that asked recently is not", () => {
+  test("one that called recently is not", () => {
     expect(isSilent(notewriter({ last_seen_at: minutesAgo(5) }), NOW)).toBe(false);
   });
 
-  test("one that holds a post is busy, not silent", () => {
-    expect(isSilent(notewriter({ holdsPost: true }), NOW)).toBe(false);
+  test("one that never called is silent", () => {
+    expect(isSilent(notewriter({ last_seen_at: null }), NOW)).toBe(true);
   });
 
-  test("one with nothing to take is not silent", () => {
-    expect(isSilent(notewriter({ every_minutes: null }), NOW)).toBe(false);
-    expect(isSilent(notewriter({ every_minutes: null, takes_reader_requests: true }), NOW)).toBe(true);
-  });
-
-  test("the pipeline is never silent, because the feed run is its worker", () => {
+  test("the pipeline is never silent, because the feed run calls for it", () => {
     expect(isSilent(notewriter({ id: "pipeline", last_seen_at: null }), NOW)).toBe(false);
   });
 });
@@ -65,29 +57,5 @@ describe("silenceNotice", () => {
 
   test("says nothing while the notewriter asks and no warning is outstanding", () => {
     expect(silenceNotice(false, lastSeen, null)).toBeNull();
-  });
-});
-
-describe("silenceFailsRun", () => {
-  const day = 24 * 60;
-  test("a new silence fails the run", () => {
-    expect(silenceFailsRun(notewriter(), NOW)).toBe(true);
-  });
-
-  test("a day-old silence Slack has heard of no longer does", () => {
-    const seen = minutesAgo(day + 1);
-    expect(silenceFailsRun(notewriter({ last_seen_at: seen, silence_warned_for: seen }), NOW)).toBe(false);
-  });
-
-  test("a day-old silence Slack has not heard of still does", () => {
-    expect(silenceFailsRun(notewriter({ last_seen_at: minutesAgo(day + 1) }), NOW)).toBe(true);
-  });
-
-  test("a notewriter that never asked still does", () => {
-    expect(silenceFailsRun(notewriter({ last_seen_at: null, silence_warned_for: NEVER_SEEN.toISOString() }), NOW)).toBe(true);
-  });
-
-  test("one that is not silent never does", () => {
-    expect(silenceFailsRun(notewriter({ last_seen_at: minutesAgo(5) }), NOW)).toBe(false);
   });
 });

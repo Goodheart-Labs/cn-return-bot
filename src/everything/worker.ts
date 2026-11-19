@@ -1,8 +1,11 @@
 /**
- * Worker for the everything pipeline. Run directly it drains the queue and
- * then exits; the paced Actions feed run takes one item at a time from it.
+ * Worker for the everything pipeline, the notewriter `pipeline` of API v1
+ * (GOO-791). Run directly it checks posts until the feed budget is spent and
+ * then exits; the paced Actions feed run checks one post at a time with it,
+ * and the intake service checks the requested posts while the pipeline takes
+ * reader requests.
  *
- * It takes the next queued item and reads its content through the page
+ * It reserves the next post through v1 and reads its content through the page
  * reader: a video's captions or an article's text. It then hands that content to
  * processFetchedContent. That step extracts the claims, drops the speculative
  * ones, fact-checks the ones the rater is not already confident about, and streams
@@ -19,20 +22,19 @@ import { closeBrowser } from "../pipeline/utils/browserManager";
 import { imageMarker } from "../pipeline/utils/html";
 import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
-import { claimNextQueuedItem, fetchItem, fetchItemClaims, fetchQueueOverview, fillProjectDisplayName, markItemDone, markItemError, QUEUE_PRIORITY, requeueItem, type EverythingItem, updateItemMeta } from "./db";
-import { age, clip, duration, money, ordinal, table } from "./logFormat";
+import { fetchItem, fetchItemClaims, fillProjectDisplayName, markItemDone, markItemError, markItemProcessing, type EverythingItem, updateItemMeta } from "./db";
+import { clip, duration, money } from "./logFormat";
 import { isWholePageChecked } from "../everything-core/wholePageChecked";
 import { answerPassageRequest, openPassageRequests } from "./passageRequests";
 import { checkRequestedPassage } from "./pipeline/checkRequestedPassage";
 import { bodyText, processFetchedContent, resumeItemClaims } from "./pipeline/processContent";
 import type { PageRead, ReadPage } from "../service/contract";
 import { ensureYtDlp, UnreadableVideoError } from "./sources/youtube";
-import { MAX_ITEM_RETRIES } from "./autoEnqueue";
+import { MAX_ITEM_RETRIES } from "./retries";
+import { PIPELINE_NOTEWRITER } from "../notewriters/ids";
+import { fail, finish, nextPost, type HandedOutPost, type NextPost } from "../notewriters/v1";
 import { describeTodaySpend, feedBudgetExhausted, requestBudgetExhausted, todaySpendUsd } from "./spendCap";
 import type { FetchedContent } from "./types";
-
-/** How many queued items the log lists before summarising the rest. */
-const QUEUE_LINES = 8;
 
 /** An image whose CDN URL asks for a rendered size this small is interface
  *  furniture, an avatar or an icon, not article content worth describing. */
@@ -151,37 +153,6 @@ export async function fetchAndStoreItemText(itemId: string, options: { keepText:
   return read;
 }
 
-/** Names the tier an item is waiting at, for the queue listing. */
-function tierName(priority: number): string {
-  if (priority >= QUEUE_PRIORITY.requested) return "requested";
-  if (priority === QUEUE_PRIORITY.prioritized) return "priority";
-  return "visits";
-}
-
-/** Prints what is waiting, in the order the queue hands it out. The worker
- *  itself only ever holds one item at a time, so without this read a run
- *  never says how much work is queued or why one item goes before another. */
-export async function logQueue(): Promise<void> {
-  const queue = await fetchQueueOverview();
-  if (queue.length === 0) {
-    console.log("\nQUEUE · empty right now");
-    return;
-  }
-  const oldest = queue.reduce((a, b) => (a.created_at < b.created_at ? a : b));
-  console.log(`\nQUEUE · ${queue.length} waiting right now, in the order the worker takes them · oldest waiting ${age(oldest.created_at)}`);
-  const rows = queue
-    .slice(0, QUEUE_LINES)
-    .map((item, i) => [
-      ordinal(i + 1),
-      tierName(item.priority),
-      `[${item.source}]`,
-      clip(item.title ?? item.url, 48),
-      `waiting ${age(item.created_at)}`,
-    ]);
-  for (const line of table(["", "tier", "source", "title", ""], rows, ["right"])) console.log(line);
-  if (queue.length > QUEUE_LINES) console.log(`     … and ${queue.length - QUEUE_LINES} more`);
-}
-
 /** Where one item ended. "no_captions_yet" is an error that gets its repeat
  *  attempts like any other, but it is expected, so it does not fail the feed
  *  run. */
@@ -244,13 +215,21 @@ async function checkPage(item: EverythingItem) {
   return processFetchedContent(item, content, claims);
 }
 
-/** Runs one claimed item through fetch, extraction and checking, and records
- *  where it ended: done, put back because a budget ran out part way, or
- *  errored. Both workers use this: the Actions feed run for the backlog tiers,
- *  and the intake service for reader-requested items. */
-export async function processQueuedItem(item: EverythingItem): Promise<ItemOutcome> {
+/** Why a reservation is failed, and what the run log says. */
+class CheckStopped extends Error {}
+
+/** Checks a post the pipeline reserved: the whole page when it was never
+ *  checked in full, then each passage a reader asked about. Each note goes
+ *  through v1's add_note on the reservation. Finishing the reservation marks
+ *  the post done and answers the readers' passage requests. A post the
+ *  budget cut short, or a check that failed, fails the reservation. Its
+ *  pending claims stay, and the post stays listed for the other notewriters.
+ *  Both the Actions feed run and the intake service use this. */
+export async function checkReservedPost(post: HandedOutPost): Promise<ItemOutcome> {
   const startedAt = Date.now();
   const spentBefore = await todaySpendUsd();
+  await markItemProcessing(post.item.id);
+  const item = await fetchItem(post.item.id);
   try {
     // A page that was checked in full is not read again. Only the passages
     // readers asked about are checked, each on its own. A paragraph item is
@@ -258,21 +237,10 @@ export async function processQueuedItem(item: EverythingItem): Promise<ItemOutco
     const passages = await openPassageRequests(item.id);
     const pageWanted = !passages.length || (item.checked_scope === "page" && !isWholePageChecked(item));
     const tally = pageWanted ? await checkPage(item) : null;
-    // An item cut short by its budget goes back in the queue rather than
-    // being marked done. Its unchecked claims are still pending, so the next
-    // run resumes exactly those.
-    if (tally && tally.capped > 0) {
-      await requeueItem(item.id);
-      console.log(`  budget reached part way through, put back in the queue with ${tally.capped} claims left`);
-      return "capped";
-    }
-    if (passages.length && (await requestBudgetExhausted())) {
-      await requeueItem(item.id);
-      console.log("  the reader budget is spent, put back in the queue before checking the passages readers asked about");
-      return "capped";
-    }
-    for (const request of passages) await answerPassageRequest(request.id, await checkRequestedPassage(item, request));
-    await markItemDone(item.id, tally?.skipReason ?? null);
+    if (tally && tally.capped > 0) throw new CheckStopped(`The day's budget ran out part way through, with ${tally.capped} claims left`);
+    if (passages.length && (await requestBudgetExhausted())) throw new CheckStopped("The reader budget is spent, before checking the passages readers asked about");
+    for (const request of passages) await checkRequestedPassage(item, request);
+    await finish(post.assignment, { skipReason: tally?.skipReason ?? undefined });
     // The per-item cost is already recorded per claim; this is the first time
     // it is shown. It is what tells you which items are expensive.
     const cost = (await todaySpendUsd()) - spentBefore;
@@ -282,36 +250,42 @@ export async function processQueuedItem(item: EverythingItem): Promise<ItemOutco
     );
     return "done";
   } catch (err: any) {
-    if (!(err instanceof UnreadableVideoError || err instanceof ShortformPageError)) console.error(`  failed after ${duration(Date.now() - startedAt)}: ${err?.message}`);
-    return recordItemFailure(item, err);
+    // A video without captions and a shortform page are no failures: they end
+    // as done without a check.
+    if (err instanceof UnreadableVideoError || err instanceof ShortformPageError) {
+      const reason = err instanceof ShortformPageError ? SHORTFORM_SKIP_REASON : err.reason;
+      console.log(`  ${err.message} · finished without checking`);
+      await finish(post.assignment, { skipReason: reason });
+      return "done";
+    }
+    console.error(`  ${err instanceof CheckStopped ? "stopped" : "failed"} after ${duration(Date.now() - startedAt)}: ${err?.message}`);
+    await fail(post.assignment, err?.message ?? "unknown");
+    return err instanceof CheckStopped ? "capped" : "error";
   }
 }
 
-/** Takes the next feed-tier item and processes it. "empty" means nothing was
- *  waiting. The Actions feed run calls this once per run;
- *  reader-requested items are never taken here, the intake service on the
- *  machine owns that tier. */
-export async function processNextFeedItem(): Promise<ItemOutcome | "empty"> {
-  const item = await claimNextQueuedItem("feed");
-  if (!item) return "empty";
-  console.log(`\nCHECKING NOW · [${item.source}] ${clip(item.title ?? item.url, 60)}`);
-  return processQueuedItem(item);
+/** Reserves the next post for the pipeline and checks it. Without a post due,
+ *  it answers v1's wait. The Actions feed run calls this once per run. */
+export async function processNextFeedItem(): Promise<ItemOutcome | Extract<NextPost, { kind: "wait" }>> {
+  const post = await nextPost(PIPELINE_NOTEWRITER);
+  if (post.kind !== "post") return post;
+  console.log(`\nCHECKING NOW · [${post.item.source}] ${clip(post.item.title ?? post.item.url, 60)}`);
+  return checkReservedPost(post);
 }
 
-/** Processes the backlog tiers until they are empty or the feed budget is
+/** Checks posts for the pipeline until none is due or the feed budget is
  *  spent, with no pacing. This is the local `everything-worker` command, an
  *  escape hatch that must never run while the paced dispatch is active.
  *  Returns how many items it finished. */
 export async function drainQueue(): Promise<number> {
   let processed = 0;
-  await logQueue();
   while (true) {
     if (await feedBudgetExhausted()) {
       console.log(`\nFeed budget reached (${await describeTodaySpend()}) — stopping for today`);
       break;
     }
     const ended = await processNextFeedItem();
-    if (ended === "empty" || ended === "capped") break;
+    if (typeof ended !== "string" || ended === "capped") break;
     processed++;
   }
   return processed;

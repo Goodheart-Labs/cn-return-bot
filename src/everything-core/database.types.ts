@@ -675,6 +675,14 @@ export type Database = {
       }
       everything_items: {
         Row: {
+          demanded_at: string | null
+          list_all_count: number
+          list_date: string | null
+          list_open: boolean
+          list_rank: number
+          list_requested: boolean
+          list_team_count: number
+          requested_since: string | null
           caption_cues: Json | null
           checked_scope: string | null
           created_at: string
@@ -699,6 +707,14 @@ export type Database = {
           url: string
         }
         Insert: {
+          demanded_at?: string | null
+          list_all_count?: number
+          list_date?: string | null
+          list_open?: boolean
+          list_rank?: number
+          list_requested?: boolean
+          list_team_count?: number
+          requested_since?: string | null
           caption_cues?: Json | null
           checked_scope?: string | null
           created_at?: string
@@ -723,6 +739,14 @@ export type Database = {
           url: string
         }
         Update: {
+          demanded_at?: string | null
+          list_all_count?: number
+          list_date?: string | null
+          list_open?: boolean
+          list_rank?: number
+          list_requested?: boolean
+          list_team_count?: number
+          requested_since?: string | null
           caption_cues?: Json | null
           checked_scope?: string | null
           created_at?: string
@@ -1216,8 +1240,46 @@ export type Database = {
           },
         ]
       }
+      everything_notewriter_keys: {
+        Row: {
+          created_at: string
+          key_hash: string
+          last_used_at: string | null
+          notewriter_id: string
+          revoked_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          key_hash: string
+          last_used_at?: string | null
+          notewriter_id: string
+          revoked_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          key_hash?: string
+          last_used_at?: string | null
+          notewriter_id?: string
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_notewriter_keys_notewriter_id_fkey"
+            columns: ["notewriter_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_notewriters: {
         Row: {
+          contact: string | null
+          disabled_at: string | null
+          disabled_reason: string | null
+          max_open: number | null
+          notes_per_day: number | null
+          outside: boolean
           cooldown_until: string | null
           created_at: string
           every_minutes: number | null
@@ -1231,6 +1293,12 @@ export type Database = {
           takes_reader_requests: boolean
         }
         Insert: {
+          contact?: string | null
+          disabled_at?: string | null
+          disabled_reason?: string | null
+          max_open?: number | null
+          notes_per_day?: number | null
+          outside?: boolean
           cooldown_until?: string | null
           created_at?: string
           every_minutes?: number | null
@@ -1244,6 +1312,12 @@ export type Database = {
           takes_reader_requests?: boolean
         }
         Update: {
+          contact?: string | null
+          disabled_at?: string | null
+          disabled_reason?: string | null
+          max_open?: number | null
+          notes_per_day?: number | null
+          outside?: boolean
           cooldown_until?: string | null
           created_at?: string
           every_minutes?: number | null
@@ -1579,6 +1653,7 @@ export type Database = {
       }
       everything_projects: {
         Row: {
+          list_rank: number
           avatar_refreshed_at: string | null
           avatar_url: string | null
           created_at: string
@@ -1598,6 +1673,7 @@ export type Database = {
           x_handle_status: string | null
         }
         Insert: {
+          list_rank?: number
           avatar_refreshed_at?: string | null
           avatar_url?: string | null
           created_at?: string
@@ -1617,6 +1693,7 @@ export type Database = {
           x_handle_status?: string | null
         }
         Update: {
+          list_rank?: number
           avatar_refreshed_at?: string | null
           avatar_url?: string | null
           created_at?: string
@@ -1654,6 +1731,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      everything_reservations: {
+        Row: {
+          deadline: string
+          ended_at: string | null
+          id: string
+          item_id: string
+          notewriter_id: string
+          outcome: string | null
+          place: number
+          reason: string | null
+          requested: boolean
+          started_at: string
+          summary: Json | null
+        }
+        Insert: {
+          deadline: string
+          ended_at?: string | null
+          id?: string
+          item_id: string
+          notewriter_id: string
+          outcome?: string | null
+          place: number
+          reason?: string | null
+          requested: boolean
+          started_at?: string
+          summary?: Json | null
+        }
+        Update: {
+          deadline?: string
+          ended_at?: string | null
+          id?: string
+          item_id?: string
+          notewriter_id?: string
+          outcome?: string | null
+          place?: number
+          reason?: string | null
+          requested?: boolean
+          started_at?: string
+          summary?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_reservations_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_reservations_notewriter_id_fkey"
+            columns: ["notewriter_id"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       everything_read_failures: {
         Row: {
@@ -2910,6 +3044,31 @@ export type Database = {
       }
     }
     Views: {
+      everything_notewriter_health: {
+        Row: {
+          disabled_at: string | null
+          done_7d: number | null
+          every_minutes: number | null
+          expired_7d: number | null
+          failed_7d: number | null
+          id: string | null
+          last_failure: string | null
+          last_failure_at: string | null
+          last_seen_at: string | null
+          lease_minutes: number | null
+          max_open: number | null
+          name: string | null
+          notes_7d: number | null
+          notes_per_day: number | null
+          notes_total: number | null
+          open_reservations: number | null
+          outside: boolean | null
+          owner: string | null
+          skipped_7d: number | null
+          takes_reader_requests: boolean | null
+        }
+        Relationships: []
+      }
       everything_creator_visits: {
         Row: {
           feed_url: string | null
@@ -3386,21 +3545,25 @@ export type Database = {
       everything_notewriters_overview: {
         Args: never
         Returns: {
-          cooldown_until: string
+          disabled_at: string
           done_7d: number
           every_minutes: number
+          expired_7d: number
           failed_7d: number
-          failures_in_a_row: number
           id: string
           last_failure: string
           last_failure_at: string
           last_seen_at: string
           lease_minutes: number
+          max_open: number
           name: string
           notes_7d: number
+          notes_per_day: number
           notes_total: number
-          open_posts: number
+          open_reservations: number
+          outside: boolean
           owner: string
+          skipped_7d: number
           takes_reader_requests: boolean
         }[]
       }
@@ -3687,6 +3850,26 @@ export type Database = {
         Returns: undefined
       }
       get_note_submission_capacity: { Args: never; Returns: Json }
+      everything_take_requested_post: { Args: { p_notewriter: string }; Returns: Json }
+      notewriter_admin_create: {
+        Args: { p_contact: string; p_id: string; p_max_open?: number; p_name: string; p_notes_per_day?: number; p_owner: string }
+        Returns: string
+      }
+      notewriter_admin_new_key: { Args: { p_notewriter: string }; Returns: string }
+      notewriter_admin_switch: { Args: { p_notewriter: string; p_on: boolean; p_reason?: string }; Returns: undefined }
+      notewriter_api_add_note: { Args: { p_note: Json; p_reservation: string }; Returns: Json }
+      notewriter_api_fail: { Args: { p_reason: string; p_reservation: string }; Returns: Json }
+      notewriter_api_finish: { Args: { p_reservation: string; p_skip_reason?: string; p_summary?: Json }; Returns: Json }
+      notewriter_api_me: { Args: never; Returns: Json }
+      notewriter_api_notes: { Args: { p_after?: Json; p_limit?: number }; Returns: Json }
+      notewriter_api_post: { Args: { p_post?: string; p_url?: string }; Returns: Json }
+      notewriter_api_posts: {
+        Args: { p_after?: Json; p_limit?: number; p_max_others?: number; p_others_from?: string; p_requested_only?: boolean; p_url?: string }
+        Returns: Json
+      }
+      notewriter_api_reserve: { Args: { p_at_most?: number; p_post: string }; Returns: Json }
+      notewriter_set_list_ranks: { Args: { p_ranks: Json }; Returns: number }
+      notewriter_tidy_list: { Args: never; Returns: { closed: number; expired: number }[] }
       notewriter_ab_compare: {
         Args: { p_since?: string; p_source: string; p_tests: string[] }
         Returns: {
