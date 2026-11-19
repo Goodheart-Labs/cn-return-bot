@@ -36,6 +36,25 @@ describe("filters", () => {
     expect(filterText(field("creator"), { field: "creator", values: ["thezvi"] }, { thezvi: "Zvi" })).toBe("Zvi");
   });
 
+  test("a negated filter reads as not", () => {
+    expect(filterText(field("creator"), { field: "creator", values: ["thezvi"], negated: true }, { thezvi: "Zvi" })).toBe("not Zvi");
+    expect(filterText(field("helpful_votes"), { field: "helpful_votes", threshold: 3, negated: true })).toBe("not 3 or more");
+  });
+
+  test("a negated filter asks the database for the other rows", () => {
+    const request = buildRequest(FIELDS, {
+      filters: [
+        { field: "creator", values: ["thezvi"], negated: true },
+        { field: "helpful_votes", threshold: 3, negated: true },
+      ],
+      sorts: [],
+    }, NOW);
+    expect(request.filters).toEqual([
+      { column: "creator", in: ["thezvi"], not: true },
+      { column: "helpful_votes", min: 3, not: true },
+    ]);
+  });
+
   test("the request turns thresholds, spans and values into bounds", () => {
     const request = buildRequest(FIELDS, {
       filters: [
@@ -107,6 +126,7 @@ describe("the page address", () => {
     filters: [
       { field: "rating", values: ["helpful", "other"] },
       { field: "written", span: "7d" },
+      { field: "creator", values: ["thezvi", "astralcodexten"], negated: true },
     ],
     sorts: [
       { field: "rating", descending: true },
