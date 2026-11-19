@@ -1,0 +1,47 @@
+name: Spot Changed Quotes
+
+# Once a day, reads again every text post one of our notes with a Helpful vote
+# quotes, and records what a post says now where the quoted passage changed
+# (src/everything/spotChangedQuotes.ts). Those notes show on
+# commonnotes.net/corrections. GitHub's scheduler can drop a run; the next
+# day's run finds the same changes, so nothing is lost.
+on:
+  schedule:
+    - cron: "40 5 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only print what changed, write nothing"
+        type: boolean
+        default: false
+
+concurrency:
+  group: spot-changed-quotes
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  spot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install
+      - name: Read the posts again
+        run: bun run src/everything/spotChangedQuotes.ts $DRY_RUN
+        env:
+          DRY_RUN: ${{ inputs.dry_run && '--dry-run' || '' }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          # GitHub Actions never fetches an outside address itself: readPage
+          # asks the extraction service to read each post.
+          EXTRACTION_URL: ${{ secrets.EXTRACTION_URL }}
+          SERVICE_AUTH_SECRET: ${{ secrets.SERVICE_AUTH_SECRET }}

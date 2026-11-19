@@ -222,6 +222,7 @@ export type Database = {
           start_seconds: number | null
           status: string
           status_reason: string | null
+          quote_updated_at: string | null
           updated_quote: string | null
         }
         Insert: {
@@ -239,6 +240,7 @@ export type Database = {
           start_seconds?: number | null
           status?: string
           status_reason?: string | null
+          quote_updated_at?: string | null
           updated_quote?: string | null
         }
         Update: {
@@ -256,6 +258,7 @@ export type Database = {
           start_seconds?: number | null
           status?: string
           status_reason?: string | null
+          quote_updated_at?: string | null
           updated_quote?: string | null
         }
         Relationships: [
@@ -1011,6 +1014,32 @@ export type Database = {
             columns: ["item_id"]
             isOneToOne: true
             referencedRelation: "everything_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      everything_note_corrections: {
+        Row: {
+          corrected_at: string
+          evidence_url: string
+          note_id: string
+        }
+        Insert: {
+          corrected_at?: string
+          evidence_url: string
+          note_id: string
+        }
+        Update: {
+          corrected_at?: string
+          evidence_url?: string
+          note_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_note_corrections_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
             referencedColumns: ["id"]
           },
         ]
@@ -3405,6 +3434,18 @@ export type Database = {
         Returns: undefined
       }
       everything_click_counts: { Args: { p_since: string }; Returns: Json }
+      everything_corrections_page: {
+        Args: {
+          p_after_at?: string
+          p_after_note_id?: string
+          p_limit?: number
+        }
+        Returns: {
+          corrected_at: string
+          evidence_url: string
+          note_id: string
+        }[]
+      }
       everything_cost_since: { Args: { since: string }; Returns: number }
       everything_create_minisite: {
         Args: {
@@ -3958,6 +3999,15 @@ export type Database = {
           note_count: number
           slug: string
           vote_score: number
+        }[]
+      }
+      everything_quote_check_candidates: {
+        Args: never
+        Returns: {
+          claim_id: string
+          context_quote: string
+          item_id: string
+          url: string
         }[]
       }
       everything_reader_cost_since: { Args: { since: string }; Returns: number }

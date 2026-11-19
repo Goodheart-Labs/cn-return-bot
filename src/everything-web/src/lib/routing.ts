@@ -15,6 +15,7 @@ import { capturePageview } from "./analytics";
  *   /minisites/new        an admin creates a minisite from a pasted link
  *   /minisites/<slug>     one minisite: an article with the reader features it switched on
  *   /leaderboard          the rating leaderboard
+ *   /corrections          notes after which the author changed their post
  *   /x-notewriter         our AI-written notes on X: the numbers, the chart and
  *                         the notes; its filters and sorts are query parameters
  *   /x-notewriter/ab-tests  the A/B comparison of the X bot, in developer mode
@@ -57,6 +58,7 @@ export type Route =
   | { view: "notes"; project: string | null; item: string | null; note: string | null }
   | { view: "allNotes" }
   | { view: "leaderboard" }
+  | { view: "corrections" }
   | { view: "minisites"; slug: string | null }
   | { view: "newMinisite" }
   | { view: "noteReview"; source: NotewriterSource }
@@ -70,6 +72,7 @@ export const HOME: Route = { view: "home", section: null };
 export const INSTALL: Route = { view: "home", section: "install" };
 export const NOTES: Route = { view: "notes", project: null, item: null, note: null };
 export const ALL_NOTES: Route = { view: "allNotes" };
+export const CORRECTIONS: Route = { view: "corrections" };
 export const MINISITES: Route = { view: "minisites", slug: null };
 export const NOTE_REVIEW: Route = { view: "noteReview", source: "commonnotes" };
 export const X_NOTE_REVIEW: Route = { view: "noteReview", source: "x" };
@@ -102,6 +105,7 @@ export function readRoute(pathname: string, search: string): Route {
   if (LEGACY_PARAMS.some((name) => q.has(name))) return readLegacyRoute(q);
   const [page, project, item, creator] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (page === "leaderboard") return { view: "leaderboard" };
+  if (page === "corrections") return CORRECTIONS;
   if (page === "minisites") return project === "new" ? { view: "newMinisite" } : { view: "minisites", slug: project ?? null };
   if (page === "install") return INSTALL;
   if (page === "admin" && project === "best") return { view: "bestNotes", project: (OLD_CURATION_SECTIONS.includes(item) ? creator : item) ?? null };
@@ -119,6 +123,7 @@ export function readRoute(pathname: string, search: string): Route {
 /** The address of a route, for the href of a link that navigates in-app. */
 export function routeHref(route: Route): string {
   if (route.view === "leaderboard") return "/leaderboard";
+  if (route.view === "corrections") return "/corrections";
   if (route.view === "allNotes") return "/notes/all";
   if (route.view === "newMinisite") return "/minisites/new";
   if (route.view === "dashboard") return route.section === DASHBOARD_SECTIONS[0].id ? "/admin/dashboard" : `/admin/dashboard/${route.section}`;
