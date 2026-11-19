@@ -31,25 +31,33 @@ language plpgsql immutable as $$
 declare
   v_passage text := btrim(p_passage);
   v_opening text := lower(left(v_passage, 40));
+  v_text text := replace(p_text, E'\r', '');
   v_at int;
+  v_found int := length(v_passage);
   v_back int;
   v_fwd int;
   v_start int;
+  v_raw text;
   p text;
 begin
-  if p_text is null or coalesce(v_passage, '') = '' then return null; end if;
-  v_at := strpos(p_text, v_passage);
-  if v_at = 0 then v_at := strpos(lower(p_text), v_opening); end if;
+  if v_text is null or coalesce(v_passage, '') = '' then return null; end if;
+  v_at := strpos(v_text, v_passage);
+  if v_at = 0 then
+    v_at := strpos(lower(v_text), v_opening);
+    v_found := length(v_opening);
+  end if;
   if v_at = 0 then return null; end if;
-  -- The paragraph runs from the blank line before the passage's start to the
-  -- one after it.
-  v_back := strpos(reverse(left(p_text, v_at - 1)), E'\n\n');
+  -- The paragraph runs from the blank line before what was found to the one
+  -- after it.
+  v_back := strpos(reverse(left(v_text, v_at - 1)), E'\n\n');
   v_start := case when v_back = 0 then 1 else v_at - v_back + 1 end;
-  v_fwd := strpos(substr(p_text, v_at), E'\n\n');
-  p := btrim(substr(p_text, v_start, case when v_fwd = 0 then length(p_text) else v_at + v_fwd - 1 - v_start end), E' \t\r\n');
+  v_fwd := strpos(substr(v_text, v_at + v_found), E'\n\n');
+  v_raw := substr(v_text, v_start, case when v_fwd = 0 then length(v_text) else v_at + v_found + v_fwd - 1 - v_start end);
+  p := btrim(v_raw, E' \t\n');
   if regexp_replace(lower(p), '\s+', ' ', 'g') = regexp_replace(lower(v_passage), '\s+', ' ', 'g') then return null; end if;
   if length(p) <= 3000 then return p; end if;
-  v_at := greatest(strpos(lower(p), v_opening), 1);
+  -- Where the passage starts in the trimmed paragraph.
+  v_at := v_at - v_start + 1 - (length(v_raw) - length(ltrim(v_raw, E' \t\n')));
   return case when v_at > 750 then '… ' || regexp_replace(substr(p, v_at - 750, 750), '^\S*\s+', '') else left(p, v_at - 1) end
       || case when v_at + length(v_passage) + 750 <= length(p)
               then regexp_replace(substr(p, v_at, length(v_passage) + 750), '\s+\S*$', '') || ' …'
@@ -61,7 +69,7 @@ create function everything_fill_context_paragraph() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   if new.context_paragraph is null then
-    select everything_context_paragraph(i.full_text, coalesce(new.context_quote, new.claim)) into new.context_paragraph
+    select everything_context_paragraph(i.full_text, coalesce(nullif(btrim(new.context_quote), ''), new.claim)) into new.context_paragraph
       from everything_items i where i.id = new.item_id;
   end if;
   return new;
@@ -76,7 +84,7 @@ revoke all on function everything_fill_context_paragraph() from public, anon, au
 
 set local statement_timeout = 0;
 update everything_claims c
-   set context_paragraph = everything_context_paragraph(i.full_text, coalesce(c.context_quote, c.claim))
+   set context_paragraph = everything_context_paragraph(i.full_text, coalesce(nullif(btrim(c.context_quote), ''), c.claim))
   from everything_items i
  where i.id = c.item_id and c.context_paragraph is null and i.full_text is not null
    and exists (select 1 from everything_notes n where n.claim_id = c.id);
