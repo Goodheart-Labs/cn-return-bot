@@ -20,7 +20,8 @@ export function must(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
-/** Thrown when a check cannot run from the devbox at all, as opposed to
+/** Thrown when a check cannot run from this machine at all, as opposed to
  *  failing. YouTube, for one, refuses to play videos to datacenter
- *  addresses. The report lists such checks apart, with the reason. */
+ *  addresses, so the watch-page checks need the residential proxy. The
+ *  report lists such checks apart, with the reason. */
 export class CannotRunError extends Error {}

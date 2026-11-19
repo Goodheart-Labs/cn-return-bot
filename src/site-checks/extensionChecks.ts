@@ -34,6 +34,8 @@ const MENU_ROWS_WAIT_MS = 5000;
 /** What YouTube's player shows instead of the video when it wants the viewer
  *  to sign in and prove they are not a bot. */
 const YOUTUBE_PLAYER_REFUSAL = "yt-playability-error-supported-renderers, #movie_player .ytp-error";
+/** How Chromium reports a page load that the proxy refused. */
+const PROXY_REFUSAL = /ERR_TUNNEL_CONNECTION_FAILED|ERR_PROXY_CONNECTION_FAILED|ERR_PROXY_AUTH/;
 
 /** Opens `url`, hands the page and the extension's console lines to `use`,
  *  and closes the page again. */
@@ -66,18 +68,27 @@ async function ourMenuRows(page: Page, trigger: Locator): Promise<string[]> {
 }
 
 /** Opens a YouTube watch page and waits until the player has loaded. YouTube
- *  refuses to play videos to many datacenter addresses, the devbox's
- *  included, and then the player, the owner box and the menus never fill. */
+ *  refuses to play videos to datacenter addresses, and then the player, the
+ *  owner box and the menus never fill. Such a check cannot run, and neither
+ *  can one whose connection the residential proxy refused, for example
+ *  because its paid traffic ran out. A dead proxy fails the captions check
+ *  already, so it does not fail these as well. */
 async function withPlayingVideo<T>(context: BrowserContext, url: string, use: (page: Page, lines: string[]) => Promise<T>): Promise<T> {
-  return withPage(context, url, async (page, lines) => {
-    await page.waitForTimeout(PAGE_SETTLE_MS);
-    const refusal = page.locator(YOUTUBE_PLAYER_REFUSAL).locator("visible=true");
-    if ((await refusal.count()) > 0) {
-      const reason = (await refusal.first().innerText()).trim().replace(/\s+/g, " ").slice(0, 120);
-      throw new CannotRunError(`YouTube would not play the video to the devbox: "${reason}"`);
-    }
-    return use(page, lines);
-  });
+  try {
+    return await withPage(context, url, async (page, lines) => {
+      await page.waitForTimeout(PAGE_SETTLE_MS);
+      const refusal = page.locator(YOUTUBE_PLAYER_REFUSAL).locator("visible=true");
+      if ((await refusal.count()) > 0) {
+        const reason = (await refusal.first().innerText()).trim().replace(/\s+/g, " ").slice(0, 120);
+        throw new CannotRunError(`YouTube would not play the video to this machine: "${reason}"`);
+      }
+      return use(page, lines);
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (PROXY_REFUSAL.test(message)) throw new CannotRunError(`the residential proxy refused the connection: ${message.split("\n")[0]}`);
+    throw err;
+  }
 }
 
 function anchoringCheck(context: BrowserContext, site: SiteCheck["site"], name: string, url: string): SiteCheck {
@@ -186,42 +197,7 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
       return canonical;
     },
   },
-  {
-    site: "YouTube",
-    name: "A watch page's channel is read out of the page",
-    code: "readWatchPageChannel (src/everything-extension/utils/creatorTarget.ts)",
-    run: () =>
-      withPlayingVideo(context, pages.YOUTUBE_VIDEO.url, async (page) => {
-        const channel = await page.evaluate(readWatchPageChannel);
-        must(channel && new URL(channel.href).pathname === pages.YOUTUBE_VIDEO.channelPath, `the page reader found the channel ${channel?.href ?? "none"}`);
-        return channel.name.trim();
-      }),
-  },
-  {
-    site: "YouTube",
-    name: "A video's notes show as pins on the player's progress bar",
-    code: "youtube.content.tsx, youtubePlayer.ts and ScrubberPins.tsx (src/everything-extension/)",
-    run: () =>
-      withPlayingVideo(context, pages.YOUTUBE_VIDEO.url, async (page, lines) => {
-        const [, claims] = await waitForLog(page, lines, /(\d+) timestamped claims on this video/);
-        await page.locator(".cn-scrub-pin").first().waitFor({ timeout: LOG_WAIT_MS }).catch(() => {});
-        const pins = await page.locator(".cn-scrub-pin").count();
-        must(pins > 0, `the video has ${claims} timestamped claims, but no pin was drawn on the progress bar`);
-        return `${claims} timestamped claims, ${pins} pins`;
-      }),
-  },
   badgeCheck(context, "YouTube", "a channel's videos page", pages.YOUTUBE_CHANNEL_VIDEOS),
-  {
-    site: "YouTube",
-    name: "Our rows appear in the three-dot menu under a playing video",
-    code: "youtubeMenuSite (src/everything-extension/utils/youtubeMenuRows.ts) and installMenuRows",
-    run: () =>
-      withPlayingVideo(context, pages.YOUTUBE_UNFOLLOWED_VIDEO, async (page) => {
-        const rows = await ourMenuRows(page, page.locator(YOUTUBE_WATCH_MENU_TRIGGER).locator("visible=true").first());
-        must(rows.length > 0, "the menu under the video got no rows");
-        return rows.join(" · ");
-      }),
-  },
   {
     site: "YouTube",
     name: "Our rows appear in a video card's three-dot menu",
@@ -258,4 +234,45 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
   },
   anchoringCheck(context, "Forums", "LessWrong post", pages.LESSWRONG_POST.url),
   badgeCheck(context, "Forums", "a LessWrong author's page", pages.LESSWRONG_AUTHOR),
+];
+
+/** The checks on a YouTube watch page. YouTube will not play a video to a
+ *  datacenter address, so run.ts opens these pages in a second browser that
+ *  goes through the residential proxy. */
+export const watchPageChecks = (context: BrowserContext): SiteCheck[] => [
+  {
+    site: "YouTube",
+    name: "A watch page's channel is read out of the page",
+    code: "readWatchPageChannel (src/everything-extension/utils/creatorTarget.ts)",
+    run: () =>
+      withPlayingVideo(context, pages.YOUTUBE_VIDEO.url, async (page) => {
+        const channel = await page.evaluate(readWatchPageChannel);
+        must(channel && new URL(channel.href).pathname === pages.YOUTUBE_VIDEO.channelPath, `the page reader found the channel ${channel?.href ?? "none"}`);
+        return channel.name.trim();
+      }),
+  },
+  {
+    site: "YouTube",
+    name: "A video's notes show as pins on the player's progress bar",
+    code: "youtube.content.tsx, youtubePlayer.ts and ScrubberPins.tsx (src/everything-extension/)",
+    run: () =>
+      withPlayingVideo(context, pages.YOUTUBE_VIDEO.url, async (page, lines) => {
+        const [, claims] = await waitForLog(page, lines, /(\d+) timestamped claims on this video/);
+        await page.locator(".cn-scrub-pin").first().waitFor({ timeout: LOG_WAIT_MS }).catch(() => {});
+        const pins = await page.locator(".cn-scrub-pin").count();
+        must(pins > 0, `the video has ${claims} timestamped claims, but no pin was drawn on the progress bar`);
+        return `${claims} timestamped claims, ${pins} pins`;
+      }),
+  },
+  {
+    site: "YouTube",
+    name: "Our rows appear in the three-dot menu under a playing video",
+    code: "youtubeMenuSite (src/everything-extension/utils/youtubeMenuRows.ts) and installMenuRows",
+    run: () =>
+      withPlayingVideo(context, pages.YOUTUBE_UNFOLLOWED_VIDEO, async (page) => {
+        const rows = await ourMenuRows(page, page.locator(YOUTUBE_WATCH_MENU_TRIGGER).locator("visible=true").first());
+        must(rows.length > 0, "the menu under the video got no rows");
+        return rows.join(" · ");
+      }),
+  },
 ];

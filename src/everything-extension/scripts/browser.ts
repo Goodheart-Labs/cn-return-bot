@@ -10,9 +10,9 @@ import { chromium, type BrowserContext, type Page } from "playwright";
 const BADGE_WAIT_ROUNDS = 6;
 const BADGE_WAIT_PER_ROUND_MS = 4000;
 
-/** Launches headless Chromium with the built extension. The caller closes
- *  the returned context when done. */
-export async function launchWithExtension(): Promise<BrowserContext> {
+/** Launches headless Chromium with the built extension, through `proxy` when
+ *  one is given. The caller closes the returned context when done. */
+export async function launchWithExtension(proxy?: { server: string; username: string; password: string }): Promise<BrowserContext> {
   const extensionDir = path.resolve(import.meta.dir, "../.output/chrome-mv3-prod-backend");
   if (!fs.existsSync(path.join(extensionDir, "manifest.json"))) {
     throw new Error(`no build at ${extensionDir}. Run bun run build-ext-dev first.`);
@@ -32,6 +32,7 @@ export async function launchWithExtension(): Promise<BrowserContext> {
     channel: "chromium",
     headless: true,
     viewport: { width: 1440, height: 1000 },
+    proxy,
     args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
   });
 }

@@ -42,6 +42,17 @@ export function hideProxyAddress(text: string): string {
   return proxyUrl ? text.replaceAll(proxyUrl, "<residential proxy>") : text;
 }
 
+/** The proxy in the form Playwright takes it, or undefined when none is
+ *  configured. The daily site checks open YouTube watch pages through it,
+ *  because YouTube will not play a video to the services machine
+ *  (src/site-checks/run.ts). */
+export function residentialProxyForBrowser(): { server: string; username: string; password: string } | undefined {
+  const proxyUrl = residentialProxyUrl();
+  if (!proxyUrl) return undefined;
+  const url = new URL(proxyUrl);
+  return { server: `${url.protocol}//${url.host}`, username: decodeURIComponent(url.username), password: decodeURIComponent(url.password) };
+}
+
 /**
  * Runs `attempt` through the residential proxy, and runs it again on a fresh
  * connection when it fails in a way a different device could fix.

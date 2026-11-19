@@ -1,6 +1,6 @@
 # The services machine
 
-One always-on Linux server runs seven systemd services. It is the Hetzner Cloud
+One always-on Linux server runs these systemd services. It is the Hetzner Cloud
 server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 `ssh root@95.217.155.79` (see `docs/prod-config.md`).
 
@@ -12,6 +12,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-walk` | keeps every walked creator's feed on a schedule and adds their new posts to the post list (GOO-791) | none |
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
+| `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake and the walk are callers: they hold the service key and write the rows.
@@ -149,6 +150,28 @@ Then add `YOUTUBE_DATA_V3_API_KEY=` to the environment file and
 `systemctl restart cn-intake`. A caption download without the provider fails
 with "The PO token provider at http://127.0.0.1:4416 did not answer", which
 is the line to look for in `journalctl -u cn-intake`.
+
+## The daily site checks
+
+`cn-site-checks.timer` starts `cn-site-checks.service` every night at 22:00
+UTC. It builds the extension against production, runs `bun run site-checks
+--save` (src/site-checks/), and saves the report in the table
+`site_check_runs`. The devbox's CI checker Claude reads it at 23:00 UTC with
+`bun run site-checks-latest`. The checks run here because Substack refuses
+GitHub's machines (measured 2026-11-19: its API answered 403 and its pages
+never loaded), and because this machine holds the residential proxy, which the
+YouTube watch-page checks go through. The proxy is paid per gigabyte, so the
+report says how many megabytes they took.
+
+The build needs `SUPABASE_ANON_KEY` in service.env, the public key that every
+copy of the extension carries. Once, as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-site-checks.service /opt/cn-return-bot/ops/cn-site-checks.timer /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-site-checks.timer
+systemctl start --no-block cn-site-checks   # a first run now, to see it work
+journalctl -u cn-site-checks -f
+```
 
 ## Deploys
 
