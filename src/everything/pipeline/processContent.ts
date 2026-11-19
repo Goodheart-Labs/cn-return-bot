@@ -13,12 +13,11 @@
 
 import PQueue from "p-queue";
 import { buildClaimPost, recordClaimRun } from "./checkClaims";
+import { postClaimNote } from "./postNote";
 import {
-  QUEUE_PRIORITY,
   fetchClaimIdsWithAiNotes,
   fetchItemClaims,
   insertClaims,
-  insertNote,
   isSyntheticDocUrl,
   setClaimStatus,
   updateItemMeta,
@@ -51,7 +50,7 @@ const CHECK_REQUEST_CONCURRENCY = 8;
 /** A page someone asked for and is waiting on is served before anything from
  *  the backlog. Everything else this file processes is backlog. */
 export function workPriorityOf(item: EverythingItem): SpendFor {
-  return item.priority >= QUEUE_PRIORITY.requested ? "reader" : "feed";
+  return item.requested_since !== null ? "reader" : "feed";
 }
 
 /** Which budget this item's claims spend from. Reader-requested work may use
@@ -120,7 +119,12 @@ async function checkAndRecordClaim(
     // The service cannot store anything, so recording the run is ours to do.
     await recordClaimRun(claimId, run, workPriorityOf(item));
     if (check.kind === "note") {
-      await insertNote(claimId, check.note, check.sources);
+      const posted = await postClaimNote(item.id, claimId, check);
+      if (posted.kind === "not_posted") {
+        await setClaimStatus(claimId, "no_note", posted.reason);
+        lines.push(`     ✋ note not posted (${posted.reason}) — ${claim.claim}`);
+        return "no_note";
+      }
       await setClaimStatus(claimId, "note", null);
       lines.push(`     ⚠️  NOTE — ${claim.claim}\n         ${check.note}`);
       return "note";

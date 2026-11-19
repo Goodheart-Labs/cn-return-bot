@@ -1,6 +1,6 @@
 /**
- * What the creator walk knows about each YouTube channel, so it asks the Data
- * API about a channel only when there may be something new (GOO-225).
+ * What cn-walk knows about each YouTube channel, so it asks the Data API
+ * about a channel only when there may be something new (GOO-225, GOO-791).
  *
  * Until September 2026 every feed run listed every YouTube creator it passed.
  * That spent the 10,000 daily quota units by the afternoon, and after that no
@@ -61,6 +61,12 @@ export function listingReason(row: Pick<YoutubeChannelRow, "listed_at" | "notifi
 const olderThanDays = (stamp: string | null, days: number, now: Date): boolean =>
   !stamp || Date.parse(stamp) < now.getTime() - days * 24 * HOUR_MS;
 
+/** Whether cn-walk must look at the channel now: it was never stored, a
+ *  listing is due, or its subscription at the hub needs renewing. */
+export function channelDue(row: Pick<YoutubeChannelRow, "listed_at" | "notified_at" | "subscribed_at"> | undefined, now: Date): boolean {
+  return !row || listingReason(row, now) !== null || olderThanDays(row.subscribed_at, RESUBSCRIBE_AFTER_DAYS, now);
+}
+
 /** The address the hub sends notifications to: our Edge Function. */
 const callbackUrl = (): string => `${process.env.SUPABASE_URL}/functions/v1/youtube-websub`;
 
@@ -90,13 +96,6 @@ async function channelRow(feedUrl: string): Promise<YoutubeChannelRow> {
   if (stored) return stored;
   const channel = await resolveChannel(feedUrl);
   return { feed_url: feedUrl, channel_id: channel.id, title: channel.title, uploads: [], listed_at: null, notified_at: null, subscribed_at: null };
-}
-
-/** A feed's YouTube channel id. The top-posts refresh uses it, so its scan does
- *  not pay for the lookup again. The walk has always stored the row by the
- *  time the refresh reaches a creator. */
-export async function youtubeChannelId(feedUrl: string): Promise<string> {
-  return (await channelRow(feedUrl)).channel_id;
 }
 
 const toStoredUpload = (v: { videoId: string; title: string; publishedAt: string; publishedTime: string; upcoming: boolean }): StoredUpload => ({

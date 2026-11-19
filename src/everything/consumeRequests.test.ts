@@ -4,7 +4,7 @@ import { dbMock, dbState, resetDbState } from "./dbMock";
 
 /* These tests cover the decision table in consumeNoteRequest: which existing
  * items refuse a request, which are promoted to a whole-page check, and which
- * are only bumped in priority. The db module is mocked, so no database runs. */
+ * are only marked as requested. The db module is mocked, so no database runs. */
 
 mock.module("./db", dbMock);
 mock.module("./pipeline/cleanCapturedText", () => ({
@@ -43,7 +43,7 @@ describe("consumeNoteRequest", () => {
     const outcome = await consumeNoteRequest(request({ selection: "a passage the page check skipped", steer: "the date looks wrong" }) as never);
     expect(outcome.kind).toBe("queued");
     expect(dbState.calls.requeueItem?.[0]).toEqual(["item-1"]);
-    expect(dbState.calls.raiseItemPriority?.[0]).toEqual(["item-1", 2]);
+    expect(dbState.calls.markItemRequested?.[0]).toEqual(["item-1"]);
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", PASSAGE_CHECK.running, "item-1"]);
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
   });
@@ -52,7 +52,7 @@ describe("consumeNoteRequest", () => {
     dbState.existingItem = { id: "item-1", status: "queued", checked_scope: "page", first_checked_at: "2026-10-29T14:15:24Z" };
     const outcome = await consumeNoteRequest(request() as never);
     expect(outcome.kind).toBe("already_checked");
-    expect(dbState.calls.raiseItemPriority).toBeUndefined();
+    expect(dbState.calls.markItemRequested).toBeUndefined();
   });
 
   test("an item a worker is holding leaves the request pending", async () => {
@@ -67,7 +67,7 @@ describe("consumeNoteRequest", () => {
     const outcome = await consumeNoteRequest(request({ page_text: "body" }) as never);
     expect(outcome.kind).toBe("queued");
     expect(outcome.detail).toContain("promoted");
-    expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", "cleaned:body", 2]);
+    expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", "cleaned:body", { requested: true }]);
     expect(dbState.calls.insertItemRun?.[0]).toEqual(["item-1", "capture_cleanup", 0.004, "reader"]);
     expect(dbState.calls.resolveNoteRequest?.[0]).toEqual(["req-1", "enqueued", null, "item-1"]);
   });
@@ -82,24 +82,24 @@ describe("consumeNoteRequest", () => {
   test("a promoted YouTube item carries no text, so the worker fetches the transcript", async () => {
     dbState.existingItem = { id: "item-1", status: "done", checked_scope: null, first_checked_at: null };
     await consumeNoteRequest(request({ page_url: "https://www.youtube.com/watch?v=abcdefghijk", page_text: "player chrome" }) as never);
-    expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", null, 2]);
+    expect(dbState.calls.promoteItemToWholePage?.[0]).toEqual(["item-1", null, { requested: true }]);
   });
 
-  test("a queued whole-page item is only bumped, keeping its body text", async () => {
+  test("a queued whole-page item is only marked as requested, keeping its body text", async () => {
     dbState.existingItem = { id: "item-1", status: "queued", checked_scope: "page", first_checked_at: null };
     const outcome = await consumeNoteRequest(request() as never);
     expect(outcome.kind).toBe("queued");
-    expect(outcome.detail).toContain("bumped");
+    expect(outcome.detail).toContain("marked existing item as requested");
     expect(dbState.calls.promoteItemToWholePage).toBeUndefined();
     expect(dbState.calls.requeueItem).toBeUndefined();
-    expect(dbState.calls.raiseItemPriority?.[0]).toEqual(["item-1", 2]);
+    expect(dbState.calls.markItemRequested?.[0]).toEqual(["item-1"]);
   });
 
-  test("an errored whole-page item is requeued and bumped", async () => {
+  test("an errored whole-page item is requeued and marked as requested", async () => {
     dbState.existingItem = { id: "item-1", status: "error", checked_scope: "page", first_checked_at: null };
     await consumeNoteRequest(request() as never);
     expect(dbState.calls.requeueItem?.[0]).toEqual(["item-1"]);
-    expect(dbState.calls.raiseItemPriority?.[0]).toEqual(["item-1", 2]);
+    expect(dbState.calls.markItemRequested?.[0]).toEqual(["item-1"]);
   });
 
   test("a fresh whole-page request inserts a page-scope item", async () => {

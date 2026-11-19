@@ -1,16 +1,15 @@
-/* Watches that every notewriter keeps asking for posts (GOO-724). A
- * notewriter is silent when it has something to take, because it is
- * subscribed or takes reader requests, holds no post, and has not asked for
- * one in 30 minutes. A notewriter that holds a post is busy, and its deadline
- * catches a crash. The pipeline is never silent, because the feed run that
- * watches is the pipeline's own worker.
+/* Watches that our own notewriters keep calling (GOO-724, GOO-791). One of
+ * them is silent when it has not called for 30 minutes: v1's next_post or
+ * subscribe, or any v2 call. A runner calls even while it rests, the v1
+ * runners subscribe every 5 minutes and the v2 dispatcher calls
+ * notewriter_api_me on every poll, so silence means the runner itself
+ * stopped. The pipeline is never silent, because it has no program of its
+ * own: the feed run calls for it. Outside notewriters are not watched.
  *
- * A silent notewriter turns every feed run red. A red run is seen only in the
- * next morning's CI report, while the posts it should take wait. So the
- * Claude notes Slack channel hears of it at once, once per silence, and again
- * when the notewriter asks again (GOO-695 did this for Claude alone). This
- * file holds the rules, and silenceWarning.ts reads the notewriters and posts
- * to Slack. */
+ * The Claude notes Slack channel hears of a silence once, and again when the
+ * notewriter calls again (GOO-695 did this for Claude alone). cn-walk checks
+ * every 5 minutes. This file holds the rules, and silenceWarning.ts reads the
+ * notewriters and posts to Slack. */
 
 import { PIPELINE_NOTEWRITER } from "../notewriters/ids";
 
@@ -19,38 +18,19 @@ export interface WatchedNotewriter {
   id: string;
   name: string;
   owner: string;
-  every_minutes: number | null;
-  takes_reader_requests: boolean;
   last_seen_at: string | null;
   silence_warned_for: string | null;
-  holdsPost: boolean;
 }
 
 export const SILENCE_LIMIT_MS = 30 * 60_000;
 
-/** Stands in for the last ask of a notewriter that never asked, so its
+/** Stands in for the last call of a notewriter that never called, so its
  *  silence is still warned about only once. */
 export const NEVER_SEEN = new Date(0);
 
 export function isSilent(w: WatchedNotewriter, now: Date): boolean {
-  if (w.id === PIPELINE_NOTEWRITER || w.holdsPost) return false;
-  if (w.every_minutes === null && !w.takes_reader_requests) return false;
+  if (w.id === PIPELINE_NOTEWRITER) return false;
   return !w.last_seen_at || now.getTime() - new Date(w.last_seen_at).getTime() > SILENCE_LIMIT_MS;
-}
-
-/** How long a silence Slack has heard of keeps failing the feed run. After
- *  that it is known, often on purpose (a writer stopped by its owner), and a
- *  run that is always red would hide every new problem. */
-export const SILENCE_FAILS_RUN_MS = 24 * 60 * 60_000;
-
-/** Whether this notewriter's silence should turn the feed run red: while it
- *  is new, or Slack has not heard of it, or it never asked at all. */
-export function silenceFailsRun(w: WatchedNotewriter, now: Date): boolean {
-  if (!isSilent(w, now)) return false;
-  if (!w.last_seen_at) return true;
-  const lastSeen = new Date(w.last_seen_at).getTime();
-  const warned = w.silence_warned_for !== null && new Date(w.silence_warned_for).getTime() === lastSeen;
-  return !warned || now.getTime() - lastSeen <= SILENCE_FAILS_RUN_MS;
 }
 
 export type SilenceNotice = { kind: "warn"; lastSeenAt: Date } | { kind: "back" } | null;

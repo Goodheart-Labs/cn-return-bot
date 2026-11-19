@@ -17,12 +17,17 @@ import { readStep } from "./readLog";
 
 type ApiStep = "the headless browser" | "Jina Reader";
 
-export type ApiRead = { type: "answer"; body: string } | { type: "unreadable"; reason: string };
+export type ApiRead = { type: "answer"; body: string; etag?: string } | { type: "not_modified" } | { type: "unreadable"; reason: string };
 
 export type JsonRead = { type: "json"; json: unknown } | { type: "unreadable"; reason: string };
 
-export async function readApi(address: string): Promise<ApiRead> {
-  const plain = await apiStep("api: plain request", address, () => askFetcher<ApiAnswer>(FETCH_API_PATH, { url: address }, () => fetchApiPlain(address)));
+/** `etag` is the version tag of the last answer. Only the plain request sends
+ *  it, so a site behind a bot check answers in full each time. */
+export async function readApi(address: string, options: { etag?: string } = {}): Promise<ApiRead> {
+  const { etag } = options;
+  const plain = await apiStep("api: plain request", address, () =>
+    askFetcher<ApiAnswer>(FETCH_API_PATH, { url: address, ...(etag && { etag }) }, () => fetchApiPlain(address, etag)),
+  );
   if (plain.type !== "bot_check") return toApiRead(plain);
   const inBrowser = await apiStep("api: headless browser", address, () =>
     askFetcher<ApiAnswer>(FETCH_API_IN_BROWSER_PATH, { url: address }, () => fetchApiInBrowser(address)),
@@ -44,6 +49,7 @@ function apiStep(step: string, address: string, run: () => Promise<ApiAnswer>): 
 export async function readJsonApi(address: string): Promise<JsonRead> {
   const read = await readApi(address);
   if (read.type === "unreadable") return read;
+  if (read.type === "not_modified") return { type: "unreadable", reason: "a request without an ETag got 304 Not Modified" };
   try {
     return { type: "json", json: JSON.parse(read.body) };
   } catch {
@@ -52,14 +58,14 @@ export async function readJsonApi(address: string): Promise<JsonRead> {
 }
 
 function toApiRead(answer: ApiAnswer): ApiRead {
-  if (answer.type === "answer") return answer;
+  if (answer.type === "answer" || answer.type === "not_modified") return answer;
   return { type: "unreadable", reason: answer.type === "bot_check" ? "a bot check stopped every request" : answer.reason };
 }
 
 /** A bot check in front of an API is rare, so the run log says which step got
  *  past it. */
 function logStep(read: ApiRead, address: string, step: ApiStep): ApiRead {
-  const outcome = read.type === "answer" ? "got an answer" : `failed too (${read.reason})`;
+  const outcome = read.type === "unreadable" ? `failed too (${read.reason})` : "got an answer";
   console.log(`[read-api] a bot check stopped the plain request to ${new URL(address).origin}, and ${step} ${outcome}`);
   return read;
 }

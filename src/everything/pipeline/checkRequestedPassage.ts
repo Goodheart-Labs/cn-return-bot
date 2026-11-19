@@ -1,9 +1,10 @@
 import { requestClaimCheck } from "../../service/client";
-import { insertClaims, insertNote, setClaimStatus, type EverythingItem } from "../db";
+import { insertClaims, setClaimStatus, type EverythingItem } from "../db";
 import type { PassageRequest } from "../passageRequests";
 import { paragraphAround } from "../selectionParagraph";
 import type { ExtractedClaim } from "../types";
 import { buildClaimPost, recordClaimRun } from "./checkClaims";
+import { postClaimNote } from "./postNote";
 
 /** The pipeline's check of one passage a reader asked about. The passage is
  *  checked as one claim, with the paragraph around it and the reader's reason.
@@ -22,9 +23,13 @@ export async function checkRequestedPassage(item: EverythingItem, request: Passa
   try {
     const { check, run } = await requestClaimCheck({ priority: "reader", post: buildClaimPost({ claim, source: item.source, itemId: item.id, index: 0, publishedAt: item.published_at ?? undefined }) });
     await recordClaimRun(claimId!, run, "reader");
-    if (check.kind === "note") await insertNote(claimId!, check.note, check.sources);
-    await setClaimStatus(claimId!, check.kind, check.kind === "no_note" ? check.reason : null);
-    return check.kind === "note";
+    if (check.kind === "no_note") {
+      await setClaimStatus(claimId!, "no_note", check.reason);
+      return false;
+    }
+    const posted = await postClaimNote(item.id, claimId!, check);
+    await setClaimStatus(claimId!, posted.kind === "posted" ? "note" : "no_note", posted.kind === "posted" ? null : posted.reason);
+    return posted.kind === "posted";
   } catch (err) {
     await setClaimStatus(claimId!, "error", "Requested check failed");
     throw err;

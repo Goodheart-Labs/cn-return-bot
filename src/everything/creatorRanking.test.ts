@@ -22,7 +22,6 @@ const creator = (slug: string, overrides: Partial<(typeof dbState.creatorProject
   project_slug: slug,
   feed_url: `https://${slug}.substack.com`,
   priority_until: null,
-  top_posts_refreshed_at: null,
   ...overrides,
 });
 
@@ -149,20 +148,10 @@ describe("rankCreators, priority and projects", () => {
     expect(creators[0]!.prioritized).toBe(false);
   });
 
-  test("a creator we know keeps their top-posts stamp when walked on visits alone", async () => {
-    // Without this the stamp reads as null, the creator looks permanently
-    // overdue, and the walk re-fetches their top posts on every single run.
-    const stamp = inDays(-1);
-    dbState.creatorProjects = [creator("zvi", { top_posts_refreshed_at: stamp })];
-    dbState.creatorVisitScores = [visited("https://zvi.substack.com")];
-    expect((await rankCreators())[0]!.top_posts_refreshed_at).toBe(stamp);
-  });
-
   test("a creator we have never seen is walked under a slug derived from the url", async () => {
     dbState.creatorVisitScores = [visited("https://www.youtube.com/@SomeChannel")];
     const creators = await rankCreators();
     expect(creators.map((c) => c.project_slug)).toEqual(["somechannel"]);
-    expect(creators[0]!.top_posts_refreshed_at).toBeNull();
   });
 
   test("a trailing slash or different casing still matches a creator we know", async () => {

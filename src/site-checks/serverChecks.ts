@@ -11,7 +11,7 @@ import { postPublication } from "../pipeline/fetch/sites/substack";
 import { BROWSER_HEADERS, classifyMarkdown, tryWayback } from "../pipeline/fetch/fetchLadder";
 import { fetchWithJinaReader } from "../pipeline/fetch/jinaReader";
 import { fetchChannelUploads, resolveChannel } from "../pipeline/media/youtubeDataApi";
-import { fetchArchivePosts, fetchLatestFreePosts, mostLikedArchivePosts, parseSubstackFeed, topArchiveUrl } from "../everything/sources/substack";
+import { fetchArchivePosts, fetchLatestFreePosts, parseSubstackFeed } from "../everything/sources/substack";
 import { substackFeedInPageHtml } from "../everything/feedUrls";
 import { pageFromArticleHtml, pageFromSubstackPost } from "../everything/minisites/readPage";
 import { must, type SiteCheck } from "./siteCheck";
@@ -112,21 +112,6 @@ export const serverChecks: SiteCheck[] = [
         "an archive post lacks its address, title or date",
       );
       return posts.map((post) => post.title).join(" · ");
-    },
-  },
-  {
-    site: "Substack",
-    name: "The archive API's top sort carries like counts",
-    // Production asks through the residential proxy from GitHub Actions. The
-    // devbox reaches Substack directly, so the check asks plainly.
-    code: "fetchTopArchivePosts and mostLikedArchivePosts (src/everything/sources/substack.ts)",
-    run: async () => {
-      const res = await fetch(topArchiveUrl(pages.SUBSTACK_PUBLICATION));
-      must(res.ok, `the archive answered HTTP ${res.status}`);
-      const posts = mostLikedArchivePosts(await res.json(), LISTED_POSTS);
-      must(posts.length === LISTED_POSTS, `the top sort gave ${posts.length} free posts`);
-      must(posts[0]!.likes > 0, "the most liked post has no likes, so the reaction counts are missing");
-      return posts.map((post) => `${post.likes} likes`).join(", ");
     },
   },
   {
