@@ -467,8 +467,9 @@ export async function reserveRequestedPost(notewriter: string): Promise<HandedOu
  *  their deadline end as expired, and listed posts that turned 14 days old
  *  leave the list. */
 export async function tidyList(): Promise<{ expired: number; closed: number }> {
-  const rows = throwOnError(await getSupabaseClient().rpc("notewriter_tidy_list")) as { expired: number; closed: number }[];
-  return rows[0]!;
+  // A function with OUT parameters returns one row, which PostgREST sends as
+  // a single object, not as an array.
+  return throwOnError(await getSupabaseClient().rpc("notewriter_tidy_list")) as { expired: number; closed: number };
 }
 
 /** Sets every creator's place in the list: list_rank of everything_projects.
