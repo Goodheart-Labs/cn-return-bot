@@ -29,7 +29,7 @@ begin;
 create function everything_context_paragraph(p_text text, p_passage text) returns text
 language plpgsql immutable as $$
 declare
-  v_passage text := btrim(p_passage);
+  v_passage text := btrim(replace(p_passage, E'\r', ''), E' \t\n');
   v_opening text := lower(left(v_passage, 40));
   v_text text := replace(p_text, E'\r', '');
   v_at int;
@@ -69,7 +69,7 @@ create function everything_fill_context_paragraph() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   if new.context_paragraph is null then
-    select everything_context_paragraph(i.full_text, coalesce(nullif(btrim(new.context_quote), ''), new.claim)) into new.context_paragraph
+    select everything_context_paragraph(i.full_text, coalesce(nullif(btrim(new.context_quote, E' \t\r\n'), ''), new.claim)) into new.context_paragraph
       from everything_items i where i.id = new.item_id;
   end if;
   return new;
@@ -84,7 +84,7 @@ revoke all on function everything_fill_context_paragraph() from public, anon, au
 
 set local statement_timeout = 0;
 update everything_claims c
-   set context_paragraph = everything_context_paragraph(i.full_text, coalesce(nullif(btrim(c.context_quote), ''), c.claim))
+   set context_paragraph = everything_context_paragraph(i.full_text, coalesce(nullif(btrim(c.context_quote, E' \t\r\n'), ''), c.claim))
   from everything_items i
  where i.id = c.item_id and c.context_paragraph is null and i.full_text is not null
    and exists (select 1 from everything_notes n where n.claim_id = c.id);
