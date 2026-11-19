@@ -11,7 +11,11 @@
 --   $PSQL --single-transaction -f migrations/184_notewriter_api.sql
 --   $PSQL -f migrations/184_notewriter_api.verify.sql
 --   $PSQL -f migrations/184_notewriter_api.v1.verify.sql
---   $PSQL --single-transaction -f migrations/185_drop_assignments.sql
+--   $PSQL --single-transaction -f migrations/185_feed_run_only_for_pipeline.sql
+--   $PSQL -f migrations/185_feed_run_only_for_pipeline.verify.sql
+-- and migration 186 as its fixture says.
+-- src/scripts_jim/2026_11_19_notewriter_api_v2/http_test.sh and bench.sql run
+-- against the same database after 184.
 
 alter table everything_projects add column feed_url text, add column priority_until timestamptz;
 alter table everything_items add column published_time timestamptz;

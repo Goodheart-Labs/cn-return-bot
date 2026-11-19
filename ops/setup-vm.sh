@@ -70,7 +70,7 @@ if [ ! -f /swapfile ]; then
 fi
 
 echo "── systemd units"
-for unit in cn-claim-check cn-extraction cn-intake cn-fetch cn-autodeploy cn-pot-provider; do
+for unit in cn-claim-check cn-extraction cn-intake cn-walk cn-fetch cn-autodeploy cn-pot-provider; do
   cp "$REPO_DIR/ops/$unit.service" "/etc/systemd/system/$unit.service"
 done
 cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
@@ -78,7 +78,7 @@ cp "$REPO_DIR/ops/cn-autodeploy.timer" /etc/systemd/system/cn-autodeploy.timer
 # the service user. Later deploys download new copies from GitHub.
 install -m 755 -o root -g root "$REPO_DIR/ops/autodeploy.sh" /usr/local/sbin/cn-autodeploy
 systemctl daemon-reload
-systemctl enable cn-claim-check cn-extraction cn-intake
+systemctl enable cn-claim-check cn-extraction cn-intake cn-walk
 # The token provider and the fetcher hold no secrets, so they can start right
 # away. The fetcher must run before the other three services do any work.
 systemctl enable --now cn-pot-provider cn-fetch
@@ -115,5 +115,5 @@ fi
 echo
 echo "Done. Next steps, in order:"
 echo "  1. Fill in $ENV_FILE (see ops/README.md)."
-echo "  2. systemctl start cn-claim-check cn-extraction cn-intake"
+echo "  2. systemctl start cn-claim-check cn-extraction cn-intake cn-walk"
 echo "  3. curl each health endpoint from outside, with the secret header."

@@ -262,14 +262,13 @@ export async function unansweredMessages(): Promise<EventRow[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Items: the posts the note writer gets from the notewriter protocol
+// Items: the posts the note writer reserves through the notewriter API
 // ---------------------------------------------------------------------------
 
 export interface QueueItem {
   id: string;
   url: string;
   title: string | null;
-  priority: number;
   status: string;
   published_at: string | null;
   created_at: string;
@@ -285,7 +284,7 @@ export async function readItem(itemId: string): Promise<QueueItem & {
   return unwrap(
     await db()
       .from("everything_items")
-      .select("id, url, title, priority, status, full_text, checked_scope, first_checked_at, caption_cues, published_at, created_at, project:everything_projects(name, slug)")
+      .select("id, url, title, status, full_text, checked_scope, first_checked_at, caption_cues, published_at, created_at, project:everything_projects(name, slug)")
       .eq("id", itemId)
       .single(),
   ) as never;

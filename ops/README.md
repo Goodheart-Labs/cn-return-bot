@@ -1,6 +1,6 @@
 # The services machine
 
-One always-on Linux server runs six systemd services. It is the Hetzner Cloud
+One always-on Linux server runs seven systemd services. It is the Hetzner Cloud
 server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 `ssh root@95.217.155.79` (see `docs/prod-config.md`).
 
@@ -9,12 +9,13 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
 | `cn-extraction` | text in, the claims in it out | 8788 |
 | `cn-intake` | watches reader requests and drives them through the other two | none |
+| `cn-walk` | keeps every walked creator's feed on a schedule and adds their new posts to the post list (GOO-791) | none |
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 
 The first two are pure functions behind HTTP and hold no database credentials.
-Intake is a caller: it holds the service key and writes the rows. The Actions
-pipelines are the monitor; nothing on this machine phones home.
+Intake and the walk are callers: they hold the service key and write the rows.
+The walk also tells Slack when one of our own notewriters has gone silent.
 
 Intake is outside the feed pacing. It processes reader-requested pages at once
 and spends from the full daily cap. Its spend still counts in the day's total,
@@ -46,8 +47,19 @@ themselves, because their units want it, and autodeploy restarts it with them.
 git clone https://github.com/Goodheart-Labs/cn-return-bot.git /opt/cn-return-bot
 bash /opt/cn-return-bot/ops/setup-vm.sh
 # fill in /etc/cn-return-bot/service.env (below)
-systemctl start cn-claim-check cn-extraction cn-intake
+systemctl start cn-claim-check cn-extraction cn-intake cn-walk
 ```
+
+On a machine set up before cn-walk existed (GOO-791), add YOUTUBE_WEBSUB_SECRET
+and SLACK_BOT_TOKEN to service.env (below), then run once as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-walk.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-walk
+```
+
+Before that, `bun run cn-walk --dry-run` on the devbox reads the Substack and
+forum feeds against production and prints what it would add, writing nothing.
 
 ## /etc/cn-return-bot/service.env
 
@@ -87,9 +99,15 @@ SUPABASE_SERVICE_KEY=
 CLAIM_CHECK_URL=http://localhost:8787
 EXTRACTION_URL=http://localhost:8788
 
-# YouTube Data API key (intake): video details for a requested YouTube page.
-# The same key the feed run uses; 10,000 free quota units a day per project.
+# YouTube Data API key: video details for a requested YouTube page (intake),
+# and the walk's channel listings. 10,000 free quota units a day per project.
 YOUTUBE_DATA_V3_API_KEY=
+
+# The walk: shared with the youtube-websub Edge Function. The walk sends it to
+# Google's WebSub hub with each channel subscription.
+YOUTUBE_WEBSUB_SECRET=
+# The walk: the bot token of the Slack app "Claudy", for the silence warnings.
+SLACK_BOT_TOKEN=
 
 # YouTube needs the residential proxy here, exactly as it does on GitHub's
 # runners. Measured on this machine on 2026-09-08: every per-video call answers
