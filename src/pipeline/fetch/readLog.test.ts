@@ -36,7 +36,9 @@ async function loggedRecords(): Promise<Array<Record<string, unknown>>> {
   const deadline = Date.now() + FILE_WAIT_MS;
   while (Date.now() < deadline) {
     const [file] = readdirSync(dir);
-    if (file) return readFileSync(path.join(dir, file), "utf8").trim().split("\n").map((line) => JSON.parse(line));
+    // A file that does not end in a newline yet is still being written.
+    const lines = file ? readFileSync(path.join(dir, file), "utf8") : "";
+    if (lines.endsWith("\n")) return lines.trim().split("\n").map((line) => JSON.parse(line));
     await Bun.sleep(20);
   }
   throw new Error("no record was written");
@@ -81,8 +83,10 @@ describe("logRead", () => {
       await Bun.sleep(20);
       records = await loggedRecords();
     }
-    expect(records.map((record) => record.text)).toEqual(["<rss>one post</rss>", null, "<rss>two posts</rss>"]);
-    expect(records[1]!.text_same_as).toBe(records[0]!.id);
+    // The lines are appended without waiting for each other, so the file's order is not the reads' order.
+    expect(records.map((record) => String(record.text)).sort()).toEqual(["<rss>one post</rss>", "<rss>two posts</rss>", "null"]);
+    const first = records.find((record) => record.text === "<rss>one post</rss>")!;
+    expect(records.find((record) => record.text === null)!.text_same_as).toBe(first.id);
   });
 
   test("records nothing outside the services", async () => {
