@@ -28,7 +28,7 @@ goes through the image screen (`src/claude-notes/imageScreen.ts`, GOO-815).
 |---|---|
 | `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it, and it follows whatever branch is checked out. |
 | `/home/nathan/.claude-cn-notewriter` | The config folder of Jim's notewriter account: its login in `.credentials.json` and Claude Code's own files. The unit file points Claude Code here with `CLAUDE_CONFIG_DIR`, so Nathan's own login in `~/.claude` is never used. |
-| `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `SLACK_BOT_TOKEN` (the alerts) and `OPENAI_API_KEY` (the image screen). Owned by root, readable by `nathan` only. The runner removes all but the database keys from its Claudes' environment. |
+| `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `CN_NOTEWRITER_KEY` (the notewriter API v2 key of `claude-ai-box`, made with `bun run notewriter new-key claude-ai-box`), `SLACK_BOT_TOKEN` (the alerts) and `OPENAI_API_KEY` (the image screen). Owned by root, readable by `nathan` only. The runner removes all but the database keys from its Claudes' environment. |
 | `/var/tmp/cn-notes/<item id>/` | One run folder per post: the prompt, the Claude's output stream, its drafts and `report.json`. The runner deletes folders older than 3 days. |
 | `/var/tmp/cn-notes/x-<run id>/` | One run folder per X tweet: the prompt, the output stream and `note.json`. |
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
@@ -76,7 +76,7 @@ git clone https://github.com/Goodheart-Labs/cn-return-bot.git /srv/cn-notes
 chown -R nathan:team /srv/cn-notes
 runuser -u nathan -- bash -lc 'cd /srv/cn-notes && ~/.bun/bin/bun install --frozen-lockfile'
 install -d -m 750 -o root -g nathan /etc/cn-notes
-install -m 640 -o root -g nathan /dev/null /etc/cn-notes/env   # then fill in the six variables
+install -m 640 -o root -g nathan /dev/null /etc/cn-notes/env   # then fill in the seven variables
 cp /srv/cn-notes/ops/ai-box/cn-notes-*.{service,timer} /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now cn-notes-runner cn-notes-deploy.timer

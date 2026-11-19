@@ -4,14 +4,15 @@
  * the unit file sets CLAUDE_CONFIG_DIR, and every Claude the runner starts
  * gets it too. Nathan's own login in his home folder is not used. Without the
  * variable, Claude Code uses the login in the home folder, as on hq.
- * It is the notewriter claude-ai-box, on API v1
- * of the notewriters (GOO-724, src/notewriters/v1.ts) until Nathan gives it a
- * key (GOO-791, see src/claude-notes/queue.ts): it asks for a post whenever it
- * has a free slot, starts one Claude for each post it gets, and finishes the
- * post when that Claude is done. A post it cannot finish it fails on, so the
- * post stays for the other notewriters. Every 5 minutes it turns the plan's
- * usage into its subscription: how often it wants a feed post, and whether it
- * takes reader requests. The same code runs on hq as claude-hq-nathan.
+ * It is the notewriter claude-ai-box. Since GOO-787 it calls API v2 of the
+ * notewriters with its own key (CN_NOTEWRITER_KEY, see
+ * src/claude-notes/queue.ts); without a key a host uses API v1, as hq does.
+ * It reserves a post whenever it has a free slot, starts one Claude for each
+ * post it gets, and finishes the post when that Claude is done. A post it
+ * cannot finish it fails on, so the post stays for the other notewriters.
+ * Every 5 minutes it turns the plan's usage into its pace: how often it wants
+ * a feed post, and whether it takes reader requests. The same code runs on hq
+ * as claude-hq-nathan.
  * It also starts one Claude for each reviewer message on the review page, and
  * one Claude for each X tweet the X run handed to it (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). And it runs the note judge on
@@ -53,6 +54,7 @@ import {
   waitingMessages,
 } from "./jobs";
 import { guardedSettingsFile } from "./imageGuard";
+import { claudeQueue } from "./queue";
 import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
 import { recordUsage, RUN_ID_ENV } from "./store";
 import { readUsage, type UsageReading } from "./usage";
@@ -130,7 +132,8 @@ const tmuxAlive = (session: string) => spawnSync("tmux", ["has-session", "-t", `
  *  env file inside the session, so they never appear in a process's
  *  arguments. The service secret is removed again, because the agents never
  *  call the services box; only `take` in this runner does. So are the Slack
- *  and OpenAI keys, which only the runner's alerts and image screen use. The script sets
+ *  and OpenAI keys, which only the runner's alerts and image screen use, and
+ *  the notewriter key, with which only the runner reserves posts. The script sets
  *  CLAUDE_CONFIG_DIR itself, because a tmux session takes its environment from
  *  the tmux server, which may have started long before this runner. */
 function startClaude(session: string, runDir: string, prompt: string, extraArgs: string[] = [], env: Record<string, string> = {}) {
@@ -140,7 +143,7 @@ function startClaude(session: string, runDir: string, prompt: string, extraArgs:
     "set -a",
     `. ${ENV_FILE}`,
     "set +a",
-    "unset SERVICE_AUTH_SECRET EXTRACTION_URL SLACK_BOT_TOKEN OPENAI_API_KEY",
+    "unset SERVICE_AUTH_SECRET EXTRACTION_URL SLACK_BOT_TOKEN OPENAI_API_KEY CN_NOTEWRITER_KEY",
     ...Object.entries({ ...account, ...env }).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
@@ -399,6 +402,9 @@ async function tickXAccounts() {
 // ---------------------------------------------------------------------------
 
 async function tick(first: boolean) {
+  // On API v2 any call is the sign of life that cn-walk's silence watch looks
+  // for. On v1 the subscription every 5 minutes is.
+  await claudeQueue().signOfLife();
   await weeklyUsage();
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPostSession(run);
   if (!POSTS_ONLY) {

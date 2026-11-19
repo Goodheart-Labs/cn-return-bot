@@ -1,8 +1,7 @@
 /* Where a Claude host gets its posts (GOO-791). A host with a notewriter key
- * in CN_NOTEWRITER_KEY uses API v2 (src/notewriters/client.ts), as the
- * devbox's dispatcher does. A host without one uses API v1
- * (src/notewriters/v1.ts), as the runners on Nathan's ai-box and hq do until
- * Nathan moves them. Both hosts run the same jobs.ts on top of this.
+ * in CN_NOTEWRITER_KEY uses API v2 (src/notewriters/client.ts), as the runner
+ * on the ai-box does since GOO-787. A host without one uses API v1
+ * (src/notewriters/v1.ts), as hq does until Nathan gives it a key. Both hosts run the same jobs.ts on top of this.
  *
  * On v1 the server paces the host: the host subscribes with how often it
  * wants a feed post, and next_post answers when it is due. On v2 the host
