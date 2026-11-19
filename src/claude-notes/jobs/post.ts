@@ -45,6 +45,28 @@ function readPostRun(runDir: string): PostRun | null {
   return existsSync(postRunFile(runDir)) ? JSON.parse(readFileSync(postRunFile(runDir), "utf8")) : null;
 }
 
+/** The notewriter API refuses a summary larger than 10 KB of stored JSON
+ *  (migration 184), and a report that quotes many long passages can be larger.
+ *  Such a report goes to the API as counts of its passage outcomes instead. The
+ *  full report stays in the post's run row and in its run folder. The limit is
+ *  measured on Postgres's stored size, so we keep a margin below it. */
+const MAX_SUMMARY_JSON_CHARS = 8_000;
+const MAX_SHORTENED_REASON_CHARS = 500;
+
+function summaryFromReport(report: Record<string, unknown>, runDir: string): Record<string, unknown> {
+  if (JSON.stringify(report).length <= MAX_SUMMARY_JSON_CHARS) return report;
+  const outcomeCounts: Record<string, number> = {};
+  for (const { outcome } of (report.passages ?? []) as { outcome?: string }[]) {
+    const key = outcome ?? "unknown";
+    outcomeCounts[key] = (outcomeCounts[key] ?? 0) + 1;
+  }
+  return {
+    ...(report.skipped ? { skipped: true, reason: String(report.reason ?? "").slice(0, MAX_SHORTENED_REASON_CHARS) } : {}),
+    outcomeCounts,
+    shortened: `The report was too long for the notewriter API. It is in full in ${reportFile(runDir)}.`,
+  };
+}
+
 function readReport(runDir: string): Record<string, unknown> | null {
   try {
     return JSON.parse(readFileSync(reportFile(runDir), "utf8"));
@@ -162,13 +184,13 @@ export const postJob: JobKind<HeldPost> = {
     };
     if (report?.skipped) {
       await record("skipped");
-      await finish(post, { summary: { ...report, ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
+      await finish(post, { summary: { ...summaryFromReport(report, run.runDir), ...usageNote } as Json, skipReason: String(report.reason ?? "nothing worth checking") });
       return "closed";
     }
     if (report) {
       await warnAboutUnsavedNotes(post, run, report);
       await record("done");
-      await finish(post, { summary: { ...report, ...usageNote } as Json });
+      await finish(post, { summary: { ...summaryFromReport(report, run.runDir), ...usageNote } as Json });
       return "closed";
     }
     if ((await claudeDraftsSince(post.item.id, new Date(run.startedAt).toISOString())) > 0) {
