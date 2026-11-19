@@ -57,7 +57,7 @@ import { quotaRanOutThisRun, YoutubeQuotaExceededError } from "../pipeline/media
 import { readForumListing, readForumNewestPosts } from "../pipeline/fetch/readListing";
 import { forumOrigin, parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
 import { feedWaits, nextDue } from "./feedSchedule";
-import { addNewPosts, forumEntries, substackEntries, youtubeEntries } from "./posts";
+import { addNewPosts, forumEntries, listWindowStart, substackEntries, youtubeEntries } from "./posts";
 
 /** At most this many creators of the ranking are walked, creators holding
  *  priority first. The read budget already fixes how many Substack reads
@@ -208,7 +208,7 @@ async function readYoutube(): Promise<void> {
 async function retryUnreadPosts(): Promise<void> {
   const failing = failingSources(await fetchItemOutcomesSince(new Date(Date.now() - FAILING_SOURCE_WINDOW_MS)));
   const retried = new Map<string, number>();
-  for (const item of await fetchRetryableErrorItems(RETRY_WAIT_HOURS)) {
+  for (const item of await fetchRetryableErrorItems(RETRY_WAIT_HOURS, listWindowStart())) {
     const count = retried.get(item.source) ?? 0;
     if (failing.has(item.source) && count >= RETRIES_PER_FAILING_SOURCE) continue;
     retried.set(item.source, count + 1);

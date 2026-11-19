@@ -75,9 +75,12 @@ export const youtubeEntries = (uploads: StoredUpload[]): FeedEntry[] =>
       publishedTime: v.publishedTime,
     }));
 
+/** The first day, YYYY-MM-DD, of the last MAX_POST_AGE_DAYS days. */
+export const listWindowStart = (now = new Date()) => new Date(now.getTime() - MAX_POST_AGE_DAYS * DAY_MS).toISOString().slice(0, 10);
+
 /** The entries published in the last MAX_POST_AGE_DAYS days. */
 export function recentEntries(entries: FeedEntry[], now = new Date()): FeedEntry[] {
-  const cutoff = new Date(now.getTime() - MAX_POST_AGE_DAYS * DAY_MS).toISOString().slice(0, 10);
+  const cutoff = listWindowStart(now);
   return entries.filter((e) => e.publishedAt >= cutoff);
 }
 
