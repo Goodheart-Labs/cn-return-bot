@@ -32,10 +32,12 @@ export function tweetText(draft: ReviewDraft, noteLink: string): string {
   const who =
     draft.fields.creator_x === "found" ? `@${draft.fields.creator_x_handle}` : draft.fields.creator_x === "none" ? draft.post.creator : `${MISSING_HANDLE} (${draft.post.creator})`;
   const helpful = draft.fields.helpful_votes as number;
+  // Transcripts keep their caption line breaks inside a sentence, which looked broken on X (2026-11-17).
+  const oneLine = (text: string) => text.replace(/\s+/g, " ").trim();
   return [
-    `Claim, from ${who}: "${draft.passage}"`,
+    `Claim, from ${who}: "${oneLine(draft.passage)}"`,
     "",
-    `Additional context: "${draft.note}"`,
+    `Additional context: "${oneLine(draft.note)}"`,
     ...(helpful > 0 ? ["", `${helpful} ${helpful === 1 ? "person" : "people"} found this helpful.`] : []),
     "",
     `Link to note: ${noteLink}`,

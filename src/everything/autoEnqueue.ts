@@ -278,8 +278,11 @@ async function retryRequestedPages(): Promise<void> {
   }
 }
 
-/** Which attempt a retry of the item is, for the log: "2/4", "3/4" or "4/4". */
-const attemptLabel = (item: RetryableErrorItem) => `${item.retries + 2}/${MAX_ITEM_RETRIES + 1}`;
+/** Which attempt a retry of the item is, for the log: "2/4", "3/4" or "4/4",
+ *  and "5, its source was down" for an attempt beyond the listed ones
+ *  (fetchRetryableErrorItems). */
+export const attemptLabel = (item: Pick<RetryableErrorItem, "retries">) =>
+  item.retries < MAX_ITEM_RETRIES ? `${item.retries + 2}/${MAX_ITEM_RETRIES + 1}` : `${item.retries + 2}, its source was down`;
 
 /** Turns a feed's cached top posts into feed entries, leaving out the ones
  *  already among the feed's recent entries so a recent viral post is not a
