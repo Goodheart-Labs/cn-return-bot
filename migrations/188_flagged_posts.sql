@@ -19,9 +19,9 @@
 -- Nothing unflags a post. An admin who decides a flag was wrong clears
 -- flagged_at by hand.
 --
--- UNDO: drop the trigger and function everything_note_requests_flagged and
---       everything_flag_item, re-run the list trigger of migration 186 and
---       everything_reserve of migration 184, then
+-- UNDO: drop the triggers everything_items_list_flagged and
+--       everything_note_requests_flagged with their functions, drop
+--       everything_flag_item, re-run everything_reserve of migration 184, then
 --       alter table everything_items drop column flagged_at, drop column flagged_reason;
 
 alter table everything_items
@@ -32,38 +32,24 @@ comment on column everything_items.flagged_at is
 comment on column everything_items.flagged_reason is
   'What the image screen saw, for example the score. Never the image''s address.';
 
--- The list trigger of migration 186, plus: a flagged post is not listed and
--- cannot be requested.
-create or replace function everything_items_list_fields() returns trigger
+-- A flagged post is never listed and never requested. This is a trigger of its
+-- own rather than a change to the list trigger (everything_items_list_fields),
+-- because migration 186 rewrites that trigger and may be applied after this
+-- one. Triggers of the same kind fire in the order of their names, so this one
+-- runs after the list trigger and has the last word.
+create function everything_items_list_flagged() returns trigger
 language plpgsql set search_path = public as $$
-declare
-  v_counts record;
 begin
-  if tg_op = 'UPDATE' and new.status = 'done' and old.status is distinct from 'done'
-     and new.requested_since is not distinct from old.requested_since then
-    new.requested_since := null;
-  end if;
   if new.flagged_at is not null then
     new.requested_since := null;
-  end if;
-  new.list_requested := new.requested_since is not null;
-  new.list_date := coalesce(new.demanded_at::date, new.published_at, new.created_at::date);
-  new.list_rank := coalesce((select p.list_rank from everything_projects p where p.id = new.project_id), 0);
-  -- A page readers opened ranks like a post of its creator holding priority.
-  if new.demanded_at is not null then
-    new.list_rank := everything_priority_rank() + mod(new.list_rank, everything_priority_rank());
-  end if;
-  new.list_open := new.full_text is not null and (new.source <> 'youtube' or new.caption_cues is not null)
-                   and new.flagged_at is null
-                   and (new.list_requested or new.list_date >= current_date - everything_list_days());
-  if tg_op = 'INSERT' or new.requested_since is distinct from old.requested_since then
-    select * into v_counts from everything_item_reservation_counts(new.id, new.requested_since);
-    new.list_team_count := v_counts.team;
-    new.list_all_count := v_counts.everyone;
+    new.list_requested := false;
+    new.list_open := false;
   end if;
   return new;
 end;
 $$;
+create trigger everything_items_list_flagged before insert or update on everything_items
+  for each row execute function everything_items_list_flagged();
 
 -- everything_reserve of migration 184, plus: a flagged post is refused.
 create or replace function everything_reserve(w everything_notewriters, p_item uuid, p_at_most int) returns jsonb
