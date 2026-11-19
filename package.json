@@ -90,6 +90,8 @@
     "hot-links": "bun run src/minisite-finder/hotLinks.ts",
     "noted-items": "bun run src/minisite-finder/notedItems.ts",
     "read-page": "bun run src/minisite-finder/readPage.ts",
+    "site-checks": "bun run src/site-checks/run.ts",
+    "site-checks-latest": "bun run src/site-checks/latest.ts",
     "candidate-notes": "bun run src/postable-notes/candidateNotes.ts",
     "curation-taste": "bun run src/postable-notes/curationTaste.ts",
     "backfill-ranking-decisions": "bun run src/scripts/backfillRankingDecisions.ts",

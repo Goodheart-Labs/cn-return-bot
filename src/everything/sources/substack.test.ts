@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { readListing } from "../../pipeline/fetch/readListing";
-import { fetchFeedPosts } from "./substack";
+import { fetchArchivePosts, fetchFeedPosts } from "./substack";
 
 const FEED = `<?xml version="1.0"?><rss><channel>
 <title><![CDATA[Don't Worry About the Vase]]></title>
@@ -35,5 +35,37 @@ describe("readListing", () => {
   it("lists only a feed in the form we store, so it cannot fetch any other address", async () => {
     await expect(readListing({ feedUrl: "https://example.com", limit: 3 })).rejects.toThrow("Not a feed we list");
     await expect(readListing({ feedUrl: "https://thezvi.substack.com/api/v1/archive", limit: 3 })).rejects.toThrow("Not a feed we list");
+  });
+});
+
+describe("fetchArchivePosts", () => {
+  const post = (title: string, audience = "everyone") => ({
+    title,
+    audience,
+    type: "newsletter",
+    canonical_url: `https://thezvi.substack.com/p/${title}`,
+    post_date: "2026-11-01T12:00:00.000Z",
+  });
+  const withArchiveAnswer = async (answer: unknown, use: () => Promise<void>) => {
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async () => Response.json(answer)) as unknown as typeof fetch;
+    try {
+      await use();
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  };
+
+  it("reads the free posts out of the answer's posts list", async () => {
+    await withArchiveAnswer({ posts: [post("a"), post("paid", "only_paid"), post("b")] }, async () => {
+      const posts = await fetchArchivePosts("https://thezvi.substack.com", 5);
+      expect(posts.map((p) => p.title)).toEqual(["a", "b"]);
+    });
+  });
+
+  it("fails loudly on an answer without a posts list, such as the bare list Substack sent until November 2026", async () => {
+    await withArchiveAnswer([post("a")], async () => {
+      await expect(fetchArchivePosts("https://thezvi.substack.com", 5)).rejects.toThrow("without a list of posts");
+    });
   });
 });

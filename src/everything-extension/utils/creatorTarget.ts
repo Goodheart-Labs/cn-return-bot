@@ -40,11 +40,17 @@ export function substackCreatorTarget(pageUrl: string): CreatorTarget | null {
 
 /** Reads the publication's identity out of a Substack page itself, which is
  *  how a newsletter on a custom domain becomes followable. Every Substack
- *  page embeds its publication data as an escaped JSON blob inside a script
- *  tag, and that raw text is visible to a content script even though the
- *  page's own JavaScript variables are not. The subdomain in that blob is the
- *  *.substack.com form the follow pipeline needs. Null on any page that is
- *  not Substack.
+ *  page embeds its data as JSON in `<script type="application/json"
+ *  id="preloads-json">`, and the text of that tag is visible to a content
+ *  script even though the page's own JavaScript variables are not. The
+ *  object's `pub` is the publication the page belongs to, and its subdomain
+ *  is the *.substack.com form the follow pipeline needs. Null on any page
+ *  that is not Substack.
+ *
+ *  Until about 2026-10-16 Substack put this data into an inline script that
+ *  assigned `window._preloads`, as an escaped string. It then moved it into
+ *  the JSON tag, and newsletters on their own domain stopped being recognised
+ *  for a month (GOO-774).
  *
  *  On substack.com itself the answer is always null. Those pages are the
  *  reader's own feed, inbox and profiles, so the blob describes the reader
@@ -58,17 +64,18 @@ export function substackCreatorTarget(pageUrl: string): CreatorTarget | null {
  *  stay self-contained: the serialized function has no imports over there. */
 export function readSubstackPublicationFromPage(): { subdomain: string; name: string } | null {
   if (/^(www\.)?substack\.com$/.test(location.hostname)) return null;
-  for (const script of Array.from(document.querySelectorAll("script"))) {
-    const text = script.textContent ?? "";
-    if (!text.includes("_preloads")) continue;
-    // The blob is JSON inside a JSON string, so the quotes around the value
-    // usually arrive escaped. The pattern tolerates both forms.
-    const m = text.match(/subdomain\\?":\\?"([\w-]+)\\?"/);
-    if (!m) continue;
-    const name = document.querySelector<HTMLMetaElement>('meta[property="og:site_name"]')?.content;
-    return { subdomain: m[1]!, name: name || m[1]! };
+  const preloads = document.querySelector('script#preloads-json[type="application/json"]')?.textContent;
+  if (!preloads) return null;
+  let pub: { subdomain?: unknown; name?: unknown } | undefined;
+  try {
+    pub = JSON.parse(preloads)?.pub;
+  } catch {
+    // Some other site's tag with the same id is not a Substack publication.
+    return null;
   }
-  return null;
+  if (typeof pub?.subdomain !== "string" || !/^[\w-]+$/.test(pub.subdomain)) return null;
+  const name = typeof pub.name === "string" ? pub.name.trim() : "";
+  return { subdomain: pub.subdomain, name: name || pub.subdomain };
 }
 
 /** The follow target for a publication read out of a page. */
@@ -214,6 +221,15 @@ export function youtubeChannelPath(pageUrl: string): string | null {
   } catch {
     return null;
   }
+}
+
+/** Reads the channel out of a YouTube watch page's owner box. It runs inside
+ *  the watch page, so it must stay self-contained: executeScript
+ *  serializes the function and imports would not exist over there. The visit
+ *  recorder also calls it directly, because its content script IS the page. */
+export function readWatchPageChannel() {
+  const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
+  return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
 }
 
 /** The follow target for a YouTube channel link or channel page URL. `title`

@@ -222,7 +222,8 @@ export function classifyMarkdown(markdown: string): ContentClass {
   return "good";
 }
 
-async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
+/** Exported for the daily site checks. */
+export async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
   try {
     const availabilityResp = await fetch(
       `https://archive.org/wayback/available?url=${encodeURIComponent(originalUrl)}`,

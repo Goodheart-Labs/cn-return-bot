@@ -2,7 +2,6 @@ import { browser } from "#imports";
 import { insertVisit } from "@cn/core/visits";
 import type { PageItem } from "@cn/core/items";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
-import { readWatchPageChannel } from "./authorFeed";
 import { isSubstackPostPage } from "./pageShape";
 import {
   EA_FORUM_ORIGIN,
@@ -12,6 +11,7 @@ import {
   isForumPostPage,
   readForumPostAuthorFromPage,
   readSubstackPublicationFromPage,
+  readWatchPageChannel,
   substackCreatorTarget,
   substackTargetFromPublication,
   youtubeChannelTarget,

@@ -8,10 +8,7 @@
 // (or build-ext) first. The profile directory is kept between runs, which
 // keeps the background's synced coverage cache warm; on a cold profile the
 // script reloads the page until the sync has landed and badges can render.
-import { openPageWithExtension } from "./browser";
-
-const BADGE_WAIT_ROUNDS = 6;
-const BADGE_WAIT_PER_ROUND_MS = 4000;
+import { openPageWithExtension, waitForBadges } from "./browser";
 
 const [url, out, flag] = process.argv.slice(2);
 if (!url || !out) {
@@ -21,17 +18,7 @@ if (!url || !out) {
 
 const { context, page } = await openPageWithExtension(url);
 
-// On a cold profile the badges cannot render before the background has synced
-// the note counts, so we give the page a few reload rounds to get there.
-for (let round = 0; round < BADGE_WAIT_ROUNDS; round++) {
-  await page.waitForTimeout(BADGE_WAIT_PER_ROUND_MS);
-  const badges = await page.locator(".cn-coverage-badge").count();
-  if (badges > 0 || round === BADGE_WAIT_ROUNDS - 1) {
-    console.log(`${badges} coverage badge(s) on the page`);
-    break;
-  }
-  await page.reload({ waitUntil: "domcontentloaded" });
-}
+console.log(`${await waitForBadges(page)} coverage badge(s) on the page`);
 
 await page.screenshot({ path: out, fullPage: flag === "--full" });
 console.log(`screenshot: ${out}`);
