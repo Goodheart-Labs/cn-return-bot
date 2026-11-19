@@ -86,7 +86,14 @@ const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, peop
 /** Every creator with priority or attention, most important first. The
  *  auto-enqueue walks this list from the top until a creator has something
  *  unchecked. */
-export async function rankCreators(): Promise<RankedCreator[]> {
+export const rankCreators = async (): Promise<RankedCreator[]> => (await rankKnownCreators()).walked;
+
+/** The walked creators (rankCreators), and `rest`: every other creator with
+ *  a project, highest score first. Their posts are listed below every walked
+ *  creator's, so the notewriters reach them only with capacity to spare
+ *  (GOO-791, src/walk/main.ts). A creator who was only visited and has no
+ *  project is in neither list: there were 15,739 of them on 2026-11-19. */
+export async function rankKnownCreators(): Promise<{ walked: RankedCreator[]; rest: RankedCreator[] }> {
   const [projects, scores] = await Promise.all([fetchCreatorProjects(), fetchCreatorVisitScores()]);
 
   // The database already groups creators case-insensitively, so there is one
@@ -148,5 +155,25 @@ export async function rankCreators(): Promise<RankedCreator[]> {
   }
 
   ranked.sort(byWalkOrder);
-  return ranked;
+
+  const walkedUrls = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
+  const rest: RankedCreator[] = [];
+  for (const p of projects) {
+    const key = normalizeFeedUrl(p.feed_url);
+    const feed = canonicalFeed(p.feed_url);
+    if (walkedUrls.has(key) || !feed) continue;
+    walkedUrls.add(key);
+    const score = scoreByUrl.get(key)?.score ?? NO_VISITS;
+    rest.push({
+      project_slug: p.project_slug,
+      feed_type: feed.feed_type,
+      feed_url: p.feed_url,
+      prioritized: false,
+      priorityUntil: null,
+      score,
+      walkScore: creatorScore(score, averageReaders),
+    });
+  }
+  rest.sort(byWalkOrder);
+  return { walked: ranked, rest };
 }

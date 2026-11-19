@@ -13,7 +13,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { rankCreators } = await import("./creatorRanking");
+const { rankCreators, rankKnownCreators } = await import("./creatorRanking");
 
 const DAY_MS = 24 * 3600_000;
 const inDays = (days: number) => new Date(Date.now() + days * DAY_MS).toISOString();
@@ -177,5 +177,27 @@ describe("rankCreators, priority and projects", () => {
   test("a visited feed URL of no known shape is skipped", async () => {
     dbState.creatorVisitScores = [visited("https://example.com/some-blog")];
     expect(await rankedSlugs()).toEqual([]);
+  });
+});
+
+describe("rankKnownCreators, the creators below the walk's bar", () => {
+  test("every project the walk leaves out is in the rest, highest score first, and no creator is in both", async () => {
+    dbState.creatorProjects = [creator("walked"), creator("onereader"), creator("nobody"), creator("onepost"), creator("held", { priority_until: inDays(2) })];
+    dbState.creatorVisitScores = [
+      ...typicalCreators(40),
+      visited("https://walked.substack.com"),
+      visited("https://onereader.substack.com", { perPost: 1, posts: 10 }),
+      visited("https://onepost.substack.com", { perPost: 30, posts: 1 }),
+      visited("https://noproject.substack.com", { perPost: 1, posts: 1 }),
+    ];
+    const { walked, rest } = await rankKnownCreators();
+    expect(walked.map((c) => c.project_slug)).toEqual(["held", "walked"]);
+    expect(rest.map((c) => c.project_slug)).toEqual(["onepost", "onereader", "nobody"]);
+    expect(rest.every((c) => !c.prioritized)).toBe(true);
+  });
+
+  test("a project whose feed is of no known shape is left out", async () => {
+    dbState.creatorProjects = [{ ...creator("odd"), feed_url: "https://example.com/some-blog" }];
+    expect((await rankKnownCreators()).rest).toEqual([]);
   });
 });
