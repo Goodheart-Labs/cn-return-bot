@@ -1,22 +1,20 @@
 /**
  * The read log: a record of every read the page reader does, so we can look
- * later at which step served which site, how long each took and what came
- * back (GOO-766).
+ * later at which step served which site and how long each took (GOO-766).
  *
  * Only the services keep it, because their unit files set PAGE_READ_LOG_DIR.
  * A read anywhere else, such as a script on the devbox, records nothing.
  *
  * Each read becomes one row in the table page_reads: the service that read,
  * the address, every step it tried with its result, and the outcome. The same
- * record plus the text that came back goes as one line into a file per day in
- * PAGE_READ_LOG_DIR. The text stays out of the database, because all reads
- * together come to tens of megabytes a day. The files are kept 30 days.
+ * record goes as one line into a file per day in PAGE_READ_LOG_DIR, and the
+ * files are kept 30 days.
  *
- * A text the process already stored for the same address is not stored again.
- * Its line names the read that holds it in `text_same_as`. The walk reads the
- * same creator listings every few minutes, and one Substack feed carries every
- * recent post in full, up to a few megabytes. Storing each copy filled 4.5 GB
- * of files on 2026-11-16 alone.
+ * Until 2026-11-19 each line also held the text that came back. The walk reads
+ * every Substack feed every few minutes, and a feed carries its recent posts in
+ * full, so the files grew by 7 to 9 GB a day and would have filled the services
+ * box's disk within a week. Jim had enough texts to study the fetcher by then,
+ * so the log keeps only the record (GOO-826).
  *
  * The steps are collected without passing anything along: a read runs inside
  * an AsyncLocalStorage, a Node feature that keeps a value for everything one
@@ -24,7 +22,7 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { appendFile, readdir, unlink } from "node:fs/promises";
 import path from "node:path";
 import { getSupabaseClient } from "../../api/supabaseClient";
@@ -45,13 +43,12 @@ export interface ReadStep {
   ms: number;
 }
 
-/** What a finished read gave. `text` goes only into the day's file. */
+/** What a finished read gave. */
 export interface ReadOutcome {
   outcome: string;
   via: string | null;
   chars: number | null;
   reason: string | null;
-  text: string | null;
 }
 
 interface ReadTrail {
@@ -65,9 +62,6 @@ const LOG_FILE = /^(\d{4}-\d{2}-\d{2})\.jsonl$/;
 
 const trails = new AsyncLocalStorage<ReadTrail>();
 let lastPrunedDay: string | null = null;
-/** For each address, the read whose line holds the text this process stored
- *  last, and that text's hash. */
-const lastStoredText = new Map<string, { id: string; hash: string }>();
 
 /** Runs a step of the read and adds it to the read's record. `describe` turns
  *  the step's answer into its result and size. A step that throws is recorded
@@ -119,12 +113,12 @@ export async function logRead<T>(kind: "page" | "listing", input: string, read: 
     finish(summarize(answer));
     return answer;
   } catch (err) {
-    finish({ outcome: "error", via: null, chars: null, reason: (err as Error).message, text: null });
+    finish({ outcome: "error", via: null, chars: null, reason: (err as Error).message });
     throw err;
   }
 }
 
-async function writeRecord(dir: string, kind: "page" | "listing", input: string, trail: ReadTrail, { text, ...outcome }: ReadOutcome): Promise<void> {
+async function writeRecord(dir: string, kind: "page" | "listing", input: string, trail: ReadTrail, outcome: ReadOutcome): Promise<void> {
   const readAt = new Date(trail.startedAt).toISOString();
   const record = {
     id: randomUUID(),
@@ -137,20 +131,10 @@ async function writeRecord(dir: string, kind: "page" | "listing", input: string,
     steps: trail.steps,
   };
   const day = readAt.slice(0, 10);
-  await appendFile(path.join(dir, `${day}.jsonl`), `${JSON.stringify({ ...record, ...textForLine(record.id, input, text) })}\n`);
+  await appendFile(path.join(dir, `${day}.jsonl`), `${JSON.stringify(record)}\n`);
   if (lastPrunedDay !== day) await pruneOldFiles(dir, day);
   const { error } = await getSupabaseClient().from("page_reads").insert(record);
   if (error) throw new Error(error.message);
-}
-
-/** The text for the day's file, or the read that already holds it. */
-function textForLine(id: string, input: string, text: string | null): { text: string | null } | { text: null; text_same_as: string } {
-  if (text === null) return { text };
-  const hash = createHash("sha256").update(text).digest("hex");
-  const stored = lastStoredText.get(input);
-  if (stored?.hash === hash) return { text: null, text_same_as: stored.id };
-  lastStoredText.set(input, { id, hash });
-  return { text };
 }
 
 /** Deletes the day files older than DAYS_KEPT, once a day per process. */

@@ -90,15 +90,15 @@ function describePageRead(read: PageRead): Pick<ReadStep, "result" | "chars"> {
   return { result: read.type, chars: read.type === "page" ? read.page.text.length : undefined };
 }
 
-/** The read log's summary of a page read: what it gave, which stage served
- *  it, and its title and text for the day's file. */
+/** The read log's summary of a page read: what it gave and which stage
+ *  served it. */
 function summarizePageRead(read: PageRead): ReadOutcome {
   if (read.type === "page") {
-    const { source, title, text } = read.page;
+    const { source, text } = read.page;
     const via = source.kind === "ladder" ? `ladder${source.via ? `: ${source.via}` : ""}` : source.kind;
-    return { outcome: "page", via, chars: text.length, reason: null, text: title ? `# ${title}\n\n${text}` : text };
+    return { outcome: "page", via, chars: text.length, reason: null };
   }
-  return { outcome: read.type, via: null, chars: null, reason: read.type === "shortform" ? null : read.reason, text: null };
+  return { outcome: read.type, via: null, chars: null, reason: read.type === "shortform" ? null : read.reason };
 }
 
 function describeJinaFailure(jina: Awaited<ReturnType<typeof fetchWithJinaReader>>): string {

@@ -34,9 +34,9 @@ async function readListingHere(request: ListingRequest): Promise<Listing> {
 }
 
 function summarizeListing(listing: Listing): ReadOutcome {
-  if (listing.kind === "not_modified") return { outcome: "listing", via: "not modified", chars: 0, reason: null, text: "" };
+  if (listing.kind === "not_modified") return { outcome: "listing", via: "not modified", chars: 0, reason: null };
   const text = listing.kind === "substack" ? listing.xml : JSON.stringify(listing.listing);
-  return { outcome: "listing", via: listing.kind, chars: text.length, reason: null, text };
+  return { outcome: "listing", via: listing.kind, chars: text.length, reason: null };
 }
 
 /** A forum author's name, picture and latest `limit` posts. */
@@ -57,8 +57,10 @@ async function readSubstackFeed(publicationUrl: string, etag: string | undefined
  *  which reads outside addresses through the fetcher. Recorded in the read
  *  log like every listing. */
 export function readForumNewestPosts(origin: string, limit: number): Promise<NewestForumPost[]> {
-  return logRead("listing", `${origin}/graphql (newest posts)`, () => readForumNewest(origin, limit), (posts) => {
-    const text = JSON.stringify(posts);
-    return { outcome: "listing", via: "forum", chars: text.length, reason: null, text };
-  });
+  return logRead("listing", `${origin}/graphql (newest posts)`, () => readForumNewest(origin, limit), (posts) => ({
+    outcome: "listing",
+    via: "forum",
+    chars: JSON.stringify(posts).length,
+    reason: null,
+  }));
 }

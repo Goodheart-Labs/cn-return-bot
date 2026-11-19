@@ -45,7 +45,7 @@ async function loggedRecords(): Promise<Array<Record<string, unknown>>> {
 }
 
 describe("logRead", () => {
-  test("records the input, every step in order, the outcome and the text", async () => {
+  test("records the input, every step in order and the outcome, without the text", async () => {
     const answer = await logRead(
       "page",
       "https://example.com/post",
@@ -53,11 +53,12 @@ describe("logRead", () => {
         addSteps([{ step: "ladder: desktop", result: "wall", status: 200, chars: 120, ms: 5 }], Date.now());
         return readStep("Jina Reader", async () => "the page text", (text) => ({ result: "good", chars: text.length }));
       },
-      (text) => ({ outcome: "page", via: "jina", chars: text.length, reason: null, text }),
+      (text) => ({ outcome: "page", via: "jina", chars: text.length, reason: null }),
     );
     expect(answer).toBe("the page text");
     const [record] = await loggedRecords();
-    expect(record).toMatchObject({ service: "test", kind: "page", input: "https://example.com/post", outcome: "page", via: "jina", chars: 13, text: "the page text" });
+    expect(record).toMatchObject({ service: "test", kind: "page", input: "https://example.com/post", outcome: "page", via: "jina", chars: 13 });
+    expect(record).not.toHaveProperty("text");
     expect((record!.steps as Array<{ step: string }>).map((step) => step.step)).toEqual(["ladder: desktop", "Jina Reader"]);
   });
 
@@ -65,33 +66,15 @@ describe("logRead", () => {
     await expect(
       logRead("listing", "https://x.substack.com", async () => {
         throw new Error("feed refused");
-      }, () => ({ outcome: "listing", via: null, chars: null, reason: null, text: null })),
+      }, () => ({ outcome: "listing", via: null, chars: null, reason: null })),
     ).rejects.toThrow("feed refused");
     const [record] = await loggedRecords();
     expect(record).toMatchObject({ kind: "listing", outcome: "error", reason: "feed refused" });
   });
 
-  test("stores a text the same address gave before only once", async () => {
-    const readFeed = (text: string) =>
-      logRead("listing", "https://x.substack.com", async () => text, (feed) => ({ outcome: "listing", via: "substack", chars: feed.length, reason: null, text: feed }));
-    await readFeed("<rss>one post</rss>");
-    await readFeed("<rss>one post</rss>");
-    await readFeed("<rss>two posts</rss>");
-    const deadline = Date.now() + FILE_WAIT_MS;
-    let records = await loggedRecords();
-    while (records.length < 3 && Date.now() < deadline) {
-      await Bun.sleep(20);
-      records = await loggedRecords();
-    }
-    // The lines are appended without waiting for each other, so the file's order is not the reads' order.
-    expect(records.map((record) => String(record.text)).sort()).toEqual(["<rss>one post</rss>", "<rss>two posts</rss>", "null"]);
-    const first = records.find((record) => record.text === "<rss>one post</rss>")!;
-    expect(records.find((record) => record.text === null)!.text_same_as).toBe(first.id);
-  });
-
   test("records nothing outside the services", async () => {
     delete process.env.PAGE_READ_LOG_DIR;
-    await logRead("page", "https://example.com", async () => "text", () => ({ outcome: "page", via: null, chars: 4, reason: null, text: "text" }));
+    await logRead("page", "https://example.com", async () => "text", () => ({ outcome: "page", via: null, chars: 4, reason: null }));
     await Bun.sleep(50);
     expect(readdirSync(dir)).toEqual([]);
   });
