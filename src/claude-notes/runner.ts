@@ -61,6 +61,7 @@ import { readUsage, type UsageReading } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { screenImages } from "./imageScreen";
 import { failXTweet, openXTweets, type XTweet } from "./xTweets";
+import { CLAUDE_TWEET_MAX_WAIT_MINUTES } from "../pipeline/orchestration/claudeTweets";
 
 const POLL_MS = 30_000;
 /** Posts in progress at once. The queue hands out reader requests first, so a
@@ -77,6 +78,14 @@ const MAX_TWEETS_RUNNING = 6;
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 
 const PAUSE_FILE = process.env.CN_PAUSE_FILE ?? "/srv/ai-box/PAUSE";
+/** The deploy's freeze (ops/ai-box/deploy.sh). While this file exists the
+ *  runner starts no Claude, and the work that comes in waits in the database.
+ *  Once nothing is at work any more, the deploy updates the code, removes the
+ *  file and restarts the runner, which then starts the waiting work. */
+const DRAIN_FILE = process.env.CN_DRAIN_FILE ?? "/var/lib/cn-notes-deploy/draining";
+/** A tweet with less time than this before the X run sweeps it is not
+ *  started: its Claude would be stopped before it could answer. */
+const MIN_TIME_TO_START_TWEET_MS = 20 * 60_000;
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 const ENV_FILE = process.env.CN_ENV_FILE ?? "/etc/cn-notes/env";
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
@@ -90,6 +99,9 @@ const CLAUDE_EFFORT = "high";
  *  user, and a day of run folders is more than a gigabyte, which filled the
  *  quota on 2026-10-30 and crashed the runner. */
 const RUNS_DIR = process.env.CN_RUNS_DIR ?? "/var/tmp/cn-notes";
+/** What the runner is doing, written on every round for the deploy to read:
+ *  plain lines of name=value, so the deploy never runs anything from it. */
+const RUNNER_STATE_FILE = path.join(RUNS_DIR, "runner-state");
 /** A second runner on another Claude plan (CN_POSTS_ONLY=1, with its own
  *  CN_NOTEWRITER) writes Common Notes posts and nothing else: X tweets,
  *  reviewer answers, X account lookups and the judge stay with claude-ai-box.
@@ -108,7 +120,30 @@ const X_ACCOUNT_SESSION_PREFIX = "cn-xacct-";
  *  from crowding out posts. */
 const MAX_X_ACCOUNT_LOOKUPS_RUNNING = 1;
 
-type Run = { session: string; runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null };
+/** One Claude session of the runner. `stopAt` is when the runner stops it if
+ *  it is still at work, and `timedOut` says that it did. */
+type Run = { session: string; runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null; stopAt: number; timedOut?: boolean };
+
+/** A Claude is stopped this long before the job's own deadline, so the runner
+ *  still has time to save what it did and end the job itself. Without it, a
+ *  post whose Claude outlived its reservation could no longer be finished. */
+const STOP_BEFORE_DEADLINE_MS = 10 * 60_000;
+/** Reviewer answers and X handle lookups have no deadline of their own. A
+ *  Claude that works on one for this long is stuck. */
+const SMALL_JOB_MAX_MS = 60 * 60_000;
+/** A post's Claude must stop before its reservation ends. */
+const postStopAt = (post: HeldPost) => Date.parse(post.deadline) - STOP_BEFORE_DEADLINE_MS;
+/** A tweet's Claude must stop before the X run sweeps the tweet as failed. */
+const tweetStopAt = (tweet: XTweet) => Date.parse(tweet.createdAt) + CLAUDE_TWEET_MAX_WAIT_MINUTES * 60_000 - STOP_BEFORE_DEADLINE_MS;
+
+/** Stops a Claude that is still at work at its stop time. The next round of
+ *  the loop sees its session gone and closes the job without another try. */
+function stopIfOverdue(run: Run) {
+  if (Date.now() < run.stopAt || !tmuxAlive(run.session)) return;
+  spawnSync("tmux", ["kill-session", "-t", `=${run.session}`]);
+  run.timedOut = true;
+  console.error(`Stopped ${run.session}: it was still at work ${Math.round((Date.now() - run.startedAt) / 60_000)} minutes after it started, at its time limit`);
+}
 
 const posts = new Map<string, Run & HeldPost>();
 const tweets = new Map<string, Run & { tweet: XTweet }>();
@@ -120,7 +155,7 @@ const unanswerable = new Set<string>();
 const xAccountsGivenUp = new Set<string>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
-const judge = noteJudge({ runFolder, mayStart: mayStartPosts, claudeEnded });
+const judge = noteJudge({ runFolder, mayStart: mayStartClaudes, claudeEnded });
 
 // ---------------------------------------------------------------------------
 // Claude sessions
@@ -225,8 +260,8 @@ async function weeklyUsage(): Promise<number | null> {
   return usage?.weekly ?? null;
 }
 
-async function mayStartPosts(): Promise<boolean> {
-  if (existsSync(PAUSE_FILE)) return false;
+async function mayStartClaudes(): Promise<boolean> {
+  if (existsSync(PAUSE_FILE) || existsSync(DRAIN_FILE)) return false;
   const weekly = await weeklyUsage();
   return weekly !== null && weekly < stopAtPercent();
 }
@@ -238,8 +273,8 @@ async function mayStartPosts(): Promise<boolean> {
 /** Closes a Claude session's books: counts it for the failure alert and
  *  reports what it cost. */
 async function ended(run: Run): Promise<JobEnd> {
-  await claudeEnded(claudeFailure(run.runDir));
-  return { weeklyAtEnd: await weeklyUsage(), apiCostUsd: runCost(run.runDir) };
+  await claudeEnded(run.timedOut ? `${run.session} was stopped at its time limit` : claudeFailure(run.runDir));
+  return { weeklyAtEnd: await weeklyUsage(), apiCostUsd: runCost(run.runDir), timedOut: run.timedOut === true };
 }
 
 async function startPost(post: HeldPost, attempt = 1) {
@@ -251,7 +286,7 @@ async function startPost(post: HeldPost, attempt = 1) {
   const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
   const { postRun } = start;
   startClaude(session, runDir, postPrompt({ item, dir: start.dir, runDir, picks: postRun.picks, asked: start.asked }), ["--append-system-prompt-file", EXAMPLES_PATH], { [RUN_ID_ENV]: postRun.runId });
-  posts.set(item.id, { ...post, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
+  posts.set(item.id, { ...post, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage(), stopAt: postStopAt(post) });
   console.log(`Started ${session} on ${item.url} (attempt ${attempt})`);
 }
 
@@ -274,7 +309,7 @@ async function adoptHeldPosts(held: HeldPost[]) {
     // The prompt file is written when the post's Claude starts.
     const promptFile = path.join(runDir, "prompt.md");
     const startedAt = existsSync(promptFile) ? statSync(promptFile).mtimeMs : Date.now();
-    const run = { ...post, session, runDir, attempt: 1, startedAt, weeklyAtStart: null };
+    const run = { ...post, session, runDir, attempt: 1, startedAt, weeklyAtStart: null, stopAt: postStopAt(post) };
     if (tmuxAlive(session)) posts.set(item.id, run);
     else if (readReport(runDir)) await endPostSession(run);
     else await startPost(post);
@@ -306,7 +341,7 @@ async function startTweet(tweet: XTweet, attempt = 1) {
   const session = TWEET_SESSION_PREFIX + tweet.runId.slice(0, 8);
   await beginTweet(tweet, attempt);
   startClaude(session, runDir, tweetPrompt({ tweet, runDir }), ["--append-system-prompt-file", X_EXAMPLES_PATH]);
-  tweets.set(tweet.runId, { tweet, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
+  tweets.set(tweet.runId, { tweet, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage(), stopAt: tweetStopAt(tweet) });
   console.log(`Started ${session} on tweet ${tweet.tweetId} (attempt ${attempt})`);
 }
 
@@ -320,7 +355,7 @@ async function endTweetSession(run: Run & { tweet: XTweet }) {
 async function adoptRunningTweets(running: XTweet[]) {
   for (const tweet of running) {
     const session = TWEET_SESSION_PREFIX + tweet.runId.slice(0, 8);
-    if (tmuxAlive(session)) tweets.set(tweet.runId, { tweet, session, runDir: runFolder(`x-${tweet.runId}`), attempt: 1, startedAt: Date.now(), weeklyAtStart: null });
+    if (tmuxAlive(session)) tweets.set(tweet.runId, { tweet, session, runDir: runFolder(`x-${tweet.runId}`), attempt: 1, startedAt: Date.now(), weeklyAtStart: null, stopAt: tweetStopAt(tweet) });
     else await startTweet(tweet);
   }
 }
@@ -332,7 +367,8 @@ async function tickTweets(first: boolean) {
   const open = await openXTweets();
   if (first) await adoptRunningTweets(open.running);
   for (const tweet of open.waiting) {
-    if (tweets.size >= MAX_TWEETS_RUNNING || !(await mayStartPosts())) break;
+    if (tweets.size >= MAX_TWEETS_RUNNING || !(await mayStartClaudes())) break;
+    if (tweetStopAt(tweet) - Date.now() < MIN_TIME_TO_START_TWEET_MS) continue;
     await startTweet(tweet);
   }
 }
@@ -352,7 +388,7 @@ async function startAnswer(draftId: string, message: ReviewerMessage, attempt: n
   const runDir = runFolder(`message-${draftId}-${Date.now()}`);
   const session = MESSAGE_SESSION_PREFIX + draftId.slice(0, 8);
   startClaude(session, runDir, messagePrompt({ ...message, ...(await messageContext(draftId)), runDir }), ["--append-system-prompt-file", EXAMPLES_PATH]);
-  answers.set(draftId, { session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: null });
+  answers.set(draftId, { session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: null, stopAt: Date.now() + SMALL_JOB_MAX_MS });
   console.log(`Started ${session} to answer ${message.from} on draft ${draftId}`);
 }
 
@@ -377,7 +413,7 @@ async function startXAccountLookup(creator: CreatorToLookUp, attempt: number) {
   const runDir = runFolder(`xacct-${creator.slug}-${Date.now()}`);
   const session = X_ACCOUNT_SESSION_PREFIX + creator.slug.slice(0, 20);
   startClaude(session, runDir, xAccountPrompt({ creator, runDir }));
-  xAccountLookups.set(creator.slug, { creator, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
+  xAccountLookups.set(creator.slug, { creator, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage(), stopAt: Date.now() + SMALL_JOB_MAX_MS });
   console.log(`Started ${session} to find the X account of ${creator.name} (attempt ${attempt})`);
 }
 
@@ -392,7 +428,7 @@ async function tickXAccounts() {
     if (outcome === "gave_up") xAccountsGivenUp.add(slug);
     if (outcome === "retry") await startXAccountLookup(run.creator, run.attempt + 1);
   }
-  if (xAccountLookups.size >= MAX_X_ACCOUNT_LOOKUPS_RUNNING || !(await mayStartPosts())) return;
+  if (xAccountLookups.size >= MAX_X_ACCOUNT_LOOKUPS_RUNNING || !(await mayStartClaudes())) return;
   const next = (await creatorsToLookUp()).find((c) => !xAccountLookups.has(c.slug) && !xAccountsGivenUp.has(c.slug));
   if (next) await startXAccountLookup(next, 1);
 }
@@ -406,20 +442,30 @@ async function tick(first: boolean) {
   // for. On v1 the subscription every 5 minutes is.
   await claudeQueue().signOfLife();
   await weeklyUsage();
+  for (const run of [...posts.values(), ...tweets.values(), ...answers.values(), ...xAccountLookups.values()]) stopIfOverdue(run);
   for (const run of [...posts.values()]) if (!tmuxAlive(run.session)) await endPostSession(run);
   if (!POSTS_ONLY) {
     await endAnswers();
     await tickTweets(first);
     await tickXAccounts();
     await judge.tick(first);
-    if (!existsSync(PAUSE_FILE)) await startAnswers();
+    if (!existsSync(PAUSE_FILE) && !existsSync(DRAIN_FILE)) await startAnswers();
   }
   if (first) await adoptHeldPosts(await heldClaudePosts());
-  while (posts.size < MAX_POSTS_RUNNING && (await mayStartPosts())) {
+  while (posts.size < MAX_POSTS_RUNNING && (await mayStartClaudes())) {
     const post = await nextClaudePost();
     if (!post) break;
     await startPost(post);
   }
+  writeRunnerState();
+}
+
+/** Tells the deploy whether the freeze has taken hold: the runner saw the
+ *  drain file and no Claude of it is at work, judges included. */
+function writeRunnerState() {
+  const running = posts.size + tweets.size + answers.size + xAccountLookups.size + judge.running();
+  const lines = [`at=${Math.floor(Date.now() / 1000)}`, `draining=${existsSync(DRAIN_FILE) ? 1 : 0}`, `running=${running}`];
+  writeFileSync(RUNNER_STATE_FILE, `${lines.join("\n")}\n`);
 }
 
 let prunedAt = 0;

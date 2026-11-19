@@ -34,6 +34,7 @@ goes through the image screen (`src/claude-notes/imageScreen.ts`, GOO-815).
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
 | `~nathan/.local/share/cn-notes/note-examples.md` | The examples file, rebuilt once a day by the runner. |
 | `/srv/ai-box/PAUSE` | Nathan's pause switch. While it exists, the runner starts nothing. |
+| `/var/lib/cn-notes-deploy/draining` | The deploy's freeze. While it exists, the runner starts nothing, so the deploy can restart it once the Claudes at work have finished. |
 | `/srv/ai-box/run-settings.json` | Nathan's guard hook, which every Claude of the runner runs under. |
 
 ## Logging in to the notewriter account
@@ -88,5 +89,6 @@ Then log in to the notewriter account as above.
 
 - `journalctl -u cn-notes-runner -f` shows what the runner starts and ends.
 - `sudo -u nathan tmux attach -t cn-post-<first 8 characters of the item id>` shows a Claude at work.
-- A merged PR reaches the box within 5 minutes, as soon as no Claude of the runner is at work, and after an hour of waiting even while one is (`journalctl -u cn-notes-deploy`). The restart stops only the runner; the new runner adopts the Claudes still at work.
+- A merged PR reaches the box through a freeze (`journalctl -u cn-notes-deploy`). Within 5 minutes the deploy creates `/var/lib/cn-notes-deploy/draining`, and the runner stops starting Claudes while new work waits in the database. When the runner reports in `/var/tmp/cn-notes/runner-state` that nothing is at work any more, the deploy updates the checkout, removes the file and restarts the runner. Nothing is cut off and nothing is lost. A freeze lasts as long as the longest Claude still at work, usually under an hour.
+- Every Claude has a time limit. A post's Claude is stopped 10 minutes before its reservation ends, a tweet's 10 minutes before the X run would sweep the tweet, and a reviewer answer or X handle lookup after an hour. A stopped job gets no second try: drafts it saved stay, and the post or tweet is closed by the runner.
 - A changed unit file must be copied to `/etc/systemd/system/` by hand, followed by `systemctl daemon-reload`.

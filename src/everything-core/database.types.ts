@@ -709,6 +709,8 @@ export type Database = {
           created_at: string
           error: string | null
           first_checked_at: string | null
+          flagged_at: string | null
+          flagged_reason: string | null
           full_text: string | null
           id: string
           priority: number
@@ -741,6 +743,8 @@ export type Database = {
           created_at?: string
           error?: string | null
           first_checked_at?: string | null
+          flagged_at?: string | null
+          flagged_reason?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -773,6 +777,8 @@ export type Database = {
           created_at?: string
           error?: string | null
           first_checked_at?: string | null
+          flagged_at?: string | null
+          flagged_reason?: string | null
           full_text?: string | null
           id?: string
           priority?: number
@@ -3420,6 +3426,7 @@ export type Database = {
         }[]
       }
       everything_feed_slug: { Args: { feed_url: string }; Returns: string }
+      everything_flag_item: { Args: { p_item: string; p_reason: string }; Returns: number }
       everything_feed_stream: {
         Args: {
           p_after: Json

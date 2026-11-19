@@ -9,11 +9,11 @@ import { openPassageRequests, type PassageRequest } from "../everything/passageR
 import { isWholePageChecked } from "../everything-core/wholePageChecked";
 import { tellSlack } from "./alerts";
 import { screenImages } from "./imageScreen";
-import { draftedPassages, nathanNotedItem, postDir, readItem } from "./store";
+import { FLAGGED_SKIP_REASON } from "../everything-core/requestProgress";
+import { draftedPassages, flagItem, nathanNotedItem, postDir, readItem } from "./store";
 
 /** Nathan's own fact-checks are not redone. */
 const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
-const FLAGGED_IMAGE_SKIP_REASON = "An image on this post was flagged by the image screen";
 
 /** The passages readers asked about. `onlyThese` is true when the post was
  *  already checked in full, so Claude checks these passages and nothing else.
@@ -41,8 +41,11 @@ export async function take(itemId: string): Promise<Take> {
   const item = await readItem(itemId);
   const screen = await screenImages(item.full_text ?? "");
   if (screen.kind === "flagged") {
-    await tellSlack(`The image screen stopped the post ${item.id}: one of its images scored ${screen.sexualScore.toFixed(2)} for sexual content. No Claude saw it.`);
-    return { kind: "skipped", reason: FLAGGED_IMAGE_SKIP_REASON };
+    // The flag keeps every notewriter away from the post, and fails the
+    // readers' requests before finishing the reservation could answer them.
+    const failedRequests = await flagItem(item.id, `sexual score ${screen.sexualScore.toFixed(2)}`);
+    await tellSlack(`The image screen stopped the post ${item.id}: one of its images scored ${screen.sexualScore.toFixed(2)} for sexual content. No Claude saw it, no notewriter will get it, and ${failedRequests} reader requests on it failed.`);
+    return { kind: "skipped", reason: FLAGGED_SKIP_REASON };
   }
   const dir = postDir(item.url);
   mkdirSync(dir, { recursive: true });

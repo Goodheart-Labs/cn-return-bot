@@ -317,6 +317,15 @@ export async function recordClaudeRun(run: {
   );
 }
 
+/** Marks a post as flagged by the image screen (GOO-815, migration 188): it
+ *  leaves the post list for every notewriter, and its open reader requests
+ *  fail. Returns how many requests failed. */
+export async function flagItem(itemId: string, reason: string): Promise<number> {
+  const { data, error } = await db().rpc("everything_flag_item", { p_item: itemId, p_reason: reason });
+  if (error) throw new Error(JSON.stringify(error));
+  return data;
+}
+
 /** The environment variable through which a post's Claude, and every command
  *  it runs, knows its run row. The draft command stores it on each draft. */
 export const RUN_ID_ENV = "CN_RUN_ID";

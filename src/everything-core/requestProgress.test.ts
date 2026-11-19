@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   deriveRequestProgress,
+  FLAGGED_SKIP_REASON,
   PASSAGE_CHECK,
   progressIsTerminal,
   progressLines,
@@ -119,6 +120,13 @@ describe("deriveRequestProgress", () => {
     expect(progressLines(progress)).toEqual(["failed, no captions available"]);
   });
 
+  test("a page the image screen flagged cannot be checked, even though its request errored", () => {
+    const progress = deriveRequestProgress(item({ status: "done", skip_reason: FLAGGED_SKIP_REASON }), [], request({ status: "error", item_id: "item-1" }));
+    expect(progress).toEqual({ kind: "uncheckable" });
+    expect(progressIsTerminal(progress)).toBe(true);
+    expect(progressLines(progress)).toEqual(["failed, this page can't be checked"]);
+  });
+
   test("any other skip reason on a done item still reads as done", () => {
     expect(deriveRequestProgress(item({ status: "done", skip_reason: "a personal update" }), [], null)).toEqual({ kind: "done", notes: 0 });
   });
@@ -200,6 +208,7 @@ describe("progressLines", () => {
       { kind: "failed" },
       { kind: "unreadable", reason: "no captions" },
       { kind: "unreadable", reason: "age-restricted" },
+      { kind: "uncheckable" },
       { kind: "unavailable" },
     ] as const;
     for (const state of states) {

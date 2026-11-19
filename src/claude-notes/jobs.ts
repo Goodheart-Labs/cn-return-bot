@@ -43,9 +43,13 @@ import { CLAUDE_RUN_TAGS, type ClaudeRunTag } from "./usageShare";
 export const MAX_ATTEMPTS = 2;
 
 /** One Claude's work on a job. The host fills in what the run cost on the API
- *  when the Claude ends, or null when it cannot tell. */
+ *  when the Claude ends, or null when it cannot tell, and whether it stopped
+ *  the Claude because the job ran out of time. Such a job gets no second try. */
 export type JobRun = { runDir: string; attempt: number; startedAt: number; weeklyAtStart: number | null };
-export type JobEnd = { weeklyAtEnd: number | null; apiCostUsd: number | null };
+export type JobEnd = { weeklyAtEnd: number | null; apiCostUsd: number | null; timedOut: boolean };
+
+/** Whether a Claude that ended without its answer gets another try. */
+const mayRetry = (run: JobRun, end: JobEnd) => run.attempt < MAX_ATTEMPTS && !end.timedOut;
 /** After a Claude ended: the job is closed, or it should get another Claude. */
 export type JobOutcome = "closed" | "retry";
 
@@ -99,19 +103,20 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
 // Posts
 // ---------------------------------------------------------------------------
 
-/** A post Claude reserved. `assignment` is the reservation, under API v1's name. */
-export type HeldPost = { assignment: string; item: QueueItem };
+/** A post Claude reserved. `assignment` is the reservation, under API v1's
+ *  name, and `deadline` when the reservation ends unless it is finished. */
+export type HeldPost = { assignment: string; deadline: string; item: QueueItem };
 
 /** Reserves one more post. Null when none is due or waiting. */
 export async function nextClaudePost(): Promise<HeldPost | null> {
   const held = await claudeQueue().next();
-  return held && { assignment: held.reservation, item: await readItem(held.itemId) };
+  return held && { assignment: held.reservation, deadline: held.deadline, item: await readItem(held.itemId) };
 }
 
 /** The posts Claude holds now, for a host that starts again. */
 export async function heldClaudePosts(): Promise<HeldPost[]> {
   const held: HeldPost[] = [];
-  for (const open of await claudeQueue().held()) held.push({ assignment: open.reservation, item: await readItem(open.itemId) });
+  for (const open of await claudeQueue().held()) held.push({ assignment: open.reservation, deadline: open.deadline, item: await readItem(open.itemId) });
   return held;
 }
 
@@ -204,9 +209,9 @@ export async function endPost(run: JobRun & HeldPost, end: JobEnd): Promise<JobO
     await endReservation(run, () => claudeQueue().finish(run.assignment, { summary: { incomplete: true, reason: `Claude exited without a report after saving drafts; see ${run.runDir}`, ...usageNote } }));
     return "closed";
   }
-  if (run.attempt < MAX_ATTEMPTS) return "retry";
+  if (mayRetry(run, end)) return "retry";
   await record("failed");
-  await failPost(run, `Claude exited twice without a report; see ${run.runDir}`);
+  await failPost(run, end.timedOut ? `Claude was stopped before the reservation's deadline without a report; see ${run.runDir}` : `Claude exited twice without a report; see ${run.runDir}`);
   return "closed";
 }
 
@@ -257,8 +262,8 @@ export async function endTweet(run: JobRun & { tweet: XTweet }, end: JobEnd): Pr
   await recordRun(run, end, [CLAUDE_RUN_TAGS.x, CLAUDE_RUN_TAGS.tweet], { pipeline_run_id: run.tweet.runId });
   console.log(`The Claude on tweet ${run.tweet.tweetId} ended after ${Math.round((Date.now() - run.startedAt) / 60_000)} minutes`);
   if (!(await xTweetIsOpen(run.tweet.runId))) return "closed";
-  if (run.attempt < MAX_ATTEMPTS) return "retry";
-  await failXTweet(run.tweet.runId, `The Claude note writer exited twice without an answer; see ${run.runDir}`);
+  if (mayRetry(run, end)) return "retry";
+  await failXTweet(run.tweet.runId, end.timedOut ? `The Claude note writer was stopped before the X run's sweep without an answer; see ${run.runDir}` : `The Claude note writer exited twice without an answer; see ${run.runDir}`);
   return "closed";
 }
 
@@ -287,7 +292,7 @@ export async function messageContext(draftId: string) {
 export async function endAnswer(draftId: string, run: JobRun, end: JobEnd): Promise<JobOutcome | "gave_up"> {
   await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.reviewAnswer], { draft_id: draftId });
   if (!(await waitingMessages()).has(draftId)) return "closed";
-  if (run.attempt < MAX_ATTEMPTS) return "retry";
+  if (mayRetry(run, end)) return "retry";
   await logEvent({ actor: "claude", type: "answer_failed", draftId, data: { runDir: run.runDir } });
   return "gave_up";
 }
@@ -303,7 +308,7 @@ export async function endXAccountLookup(run: JobRun & { creator: CreatorToLookUp
   await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.xAccount], null);
   console.log(`The Claude looking up ${run.creator.name}'s X account ended after ${Math.round((Date.now() - run.startedAt) / 60_000)} minutes`);
   if (await xHandleChecked(run.creator.slug)) return "closed";
-  if (run.attempt < MAX_ATTEMPTS) return "retry";
+  if (mayRetry(run, end)) return "retry";
   console.error(`Gave up on the X account of ${run.creator.name}: two Claudes ended without an answer; see ${run.runDir}`);
   return "gave_up";
 }
@@ -411,7 +416,7 @@ export function noteJudge(host: { runFolder: (name: string) => string; mayStart:
     }
   }
 
-  return { tick };
+  return { tick, running: () => judging.size };
 }
 
 // ---------------------------------------------------------------------------
