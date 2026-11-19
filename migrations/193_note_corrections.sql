@@ -3,7 +3,7 @@
 -- One row per note after which the author changed their post. An admin adds
 -- the row on the page, with a link that shows the correction (the author's
 -- reply, an edit notice, the post itself), and can take it off again. Everyone
--- may read it, because the page is public. Every row must carry its evidence:
+-- reads it through the page function below. Every row must carry its evidence:
 -- we do not publish "the author corrected this" without a link a reader can
 -- check.
 
@@ -17,8 +17,11 @@ create index everything_note_corrections_recent on everything_note_corrections (
 alter table everything_note_corrections enable row level security;
 grant all on everything_note_corrections to service_role;
 
-create policy note_corrections_read on everything_note_corrections for select to anon, authenticated using (true);
-grant select on everything_note_corrections to anon, authenticated;
+-- Readers get the list through everything_corrections_page, which leaves out
+-- hidden notes. Only admins read the table itself.
+create policy note_corrections_admin_read on everything_note_corrections for select to authenticated
+  using (everything_is_admin());
+grant select on everything_note_corrections to authenticated;
 
 create policy note_corrections_admin_insert on everything_note_corrections for insert to authenticated
   with check (everything_is_admin());

@@ -86,7 +86,10 @@ export function CorrectionsPage({ navigate }: { navigate: (route: Route) => void
             <ConfirmDelete
               label="Take off the corrections"
               iconSize={15}
-              onDelete={() => void removeCorrection(note.id).then(reload, (err: Error) => setError(err.message))}
+              onDelete={() => {
+                setError(null);
+                void removeCorrection(note.id).then(reload, (err: Error) => setError(err.message));
+              }}
             />
           </span>
         )}

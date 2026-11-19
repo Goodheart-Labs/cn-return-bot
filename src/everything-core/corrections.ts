@@ -68,5 +68,5 @@ export async function addCorrection(noteId: string, evidenceUrl: string): Promis
 export async function removeCorrection(noteId: string): Promise<void> {
   const { data, error } = await supabase.from(TABLE).delete().eq("note_id", noteId).select("note_id");
   if (error) throw new Error(`could not take the correction off: ${error.message}`);
-  if (data.length === 0) throw new Error("could not take the correction off: only admins may change the list");
+  if (data.length === 0) throw new Error("could not take the correction off: it is no longer on the list, or you are not an admin");
 }

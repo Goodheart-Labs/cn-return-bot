@@ -52,8 +52,10 @@ reset role;
 -- A signed-in reader who is not an admin cannot take one off.
 set role authenticated;
 delete from everything_note_corrections;
-insert into result select 'reader_cannot_remove', count(*) = 5 from everything_note_corrections;
+insert into result select 'reader_cannot_read_table', count(*) = 0 from everything_note_corrections;
 reset role;
+
+insert into result select 'reader_cannot_remove', count(*) = 5 from everything_note_corrections;
 
 -- An admin takes one off.
 set test.admin = 'true';
