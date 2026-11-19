@@ -3,7 +3,7 @@ import { browser } from "#imports";
 import { fetchCoveredPageUrls, fetchCoveredPageUrlsSince, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
 import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
-import { fetchReaderCanonical } from "@cn/core/pageUrls";
+import { extractYoutubeVideoId, fetchReaderCanonical } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { canonicalizePageUrl, isSubstackReaderUrl } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
@@ -19,6 +19,7 @@ import { capturePageFromTab } from "../utils/pageCapture";
 import { VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
+import { deliverManualNote } from "../utils/manualNoteDelivery";
 
 const WRITE_MENU_ID = "cn-write-note";
 const REQUEST_MENU_ID = "cn-request-note";
@@ -33,6 +34,35 @@ const INJECT_RETRY_ATTEMPTS = 10;
 const SYNC_ALARM = "cn-sync-noted-sites";
 const SYNC_PERIOD_MINUTES = 5;
 const SYNC_STATE_KEY = "cn:notedSitesSyncState";
+
+async function openManualNote(tab: { id?: number; url?: string }, selection: string): Promise<boolean> {
+  if (tab.id == null || !tab.url || !/^https?:/.test(tab.url)) return false;
+  const tabId = tab.id;
+  const hostname = new URL(tab.url).hostname;
+  const script = /(^|\.)youtube\.com$/.test(hostname) ? "youtube" : /(^|\.)substack\.com$/.test(hostname) ? "notes" : "generic";
+  return deliverManualNote({
+    send: () => browser.tabs.sendMessage(tabId, { type: "cn-write-note", selection }),
+    inject: () => browser.scripting.executeScript({ target: { tabId }, files: [`/content-scripts/${script}.js`] }),
+    pause: () => new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS)),
+  });
+}
+
+/** The popup's manual action is independent of the bot's state and queue. */
+async function writeFromPopup(): Promise<{ ok: boolean; error?: string }> {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  if (tab?.id == null || !tab.url || !/^https?:/.test(tab.url)) return { ok: false, error: "Open a web page or YouTube video first." };
+  let selection: string;
+  try {
+    const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: () => window.getSelection()?.toString() ?? "" });
+    selection = String(result?.result ?? "").trim();
+  } catch {
+    return { ok: false, error: "This browser page does not allow notes. Try an ordinary web page." };
+  }
+  if (!selection && !extractYoutubeVideoId(tab.url)) return { ok: false, error: "Select the passage on the page, then click Write your own note. You can also right-click the selection." };
+  return await openManualNote(tab, selection)
+    ? { ok: true }
+    : { ok: false, error: "Could not open the editor. Reload the page and try again." };
+}
 
 /** The hostnames of covered pages that are not static sites. These are the
  *  hostnames the generic content script belongs on. */
@@ -413,13 +443,17 @@ export default defineBackground(() => {
     }
     if ((info.menuItemId === WRITE_MENU_ID || info.menuItemId === WRITE_VIDEO_MENU_ID) && tab?.id != null) {
       const tabId = tab.id;
-      void sendToTabWithInjection(tabId, { type: "cn-write-note", selection: info.selectionText ?? "" }).then((delivered) => {
+      void openManualNote(tab, info.selectionText ?? "").then((delivered) => {
         if (!delivered) flashBadge(tabId, "!");
       });
     }
   });
 
   browser.runtime.onMessage.addListener((message: unknown, sender, sendResponse) => {
+    if ((message as { type?: string })?.type === "cn-open-manual-note" && sender.url === browser.runtime.getURL("/popup.html")) {
+      writeFromPopup().then(sendResponse, () => sendResponse({ ok: false, error: "Could not open the editor. Reload the page and try again." }));
+      return true;
+    }
     // This reloads the unpacked extension from disk when a content script asks
     // for it. See utils/devReload.ts. Store builds compile it out.
     if (import.meta.env.VITE_CN_DEV_RELOAD && (message as { type?: string })?.type === "cn-dev-reload") {

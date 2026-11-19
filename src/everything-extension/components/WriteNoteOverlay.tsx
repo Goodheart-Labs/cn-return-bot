@@ -57,6 +57,7 @@ export function WriteNoteOverlay({ item, pageForItem, anchor, children, onClose,
 
   return (
     <Modal title="Write a note" onClose={onClose} widthClassName="max-w-[35rem]">
+        <p className="mb-3 text-sm text-fg-secondary">Your note will appear on this page as soon as you post it. You do not need to wait for an automated check.</p>
         {children}
         {!session ? (
           // Signing in happens right here in the overlay. Once the session
@@ -70,7 +71,7 @@ export function WriteNoteOverlay({ item, pageForItem, anchor, children, onClose,
             onTextChange={setNote}
             placeholder="Write your correction"
             rows={4}
-            submitLabel="Post draft note"
+            submitLabel="Post note"
             onSubmit={submit}
             onCancel={onClose}
             pending={post.isPending}
