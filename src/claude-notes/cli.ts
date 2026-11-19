@@ -18,13 +18,9 @@
  *   x-handle <creator slug> <handle | none> <evidence>
  *                                 records a creator's X account, or that they have none
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
- *   run                           the runner on ai-box (src/claude-notes/runner.ts)
- *   dispatch                      on the devbox: waits for jobs, starts them, prints their prompts and exits (src/claude-notes/dispatch.ts)
- *   dispatch-end <job key>        on the devbox: closes a job after its subagent returned, or prints its retry prompt
- *   dispatch-services             on the devbox: rebuilds the examples once a day, all the time */
+ *   run                           the runner on ai-box (src/claude-notes/runner.ts) */
 
 import { readFileSync, writeFileSync } from "fs";
-import { dispatch, dispatchEnd, dispatchServices } from "./dispatch";
 import { JUDGE_EXAMPLES_PATH } from "./judge";
 import { addDraft, answerMessage, judgeExamples, type NewDraft, postedSince, propose, unansweredMessages, withdraw } from "./store";
 import { readUsage } from "./usage";
@@ -63,12 +59,6 @@ async function main() {
       return import("./runner");
     case "messages":
       return print(await unansweredMessages());
-    case "dispatch":
-      return dispatch();
-    case "dispatch-end":
-      return dispatchEnd(arg(0));
-    case "dispatch-services":
-      return dispatchServices();
     case "answer":
       return answer(arg(0));
     case "withdraw":

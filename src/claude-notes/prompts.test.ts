@@ -6,22 +6,20 @@ const item = { id: "item-1", url: "https://example.com/post", title: "A post" } 
 const tweet = { runId: "run-1", input: "A tweet", picks: {} } as any;
 
 describe("writer prompts never ask for images", () => {
-  for (const host of ["ai-box", "devbox"] as any[]) {
-    test(`post prompt on ${host}`, () => {
-      const p = postPrompt({ host, item, dir: "/d", runDir: "/r", runId: "run-1", picks: {}, asked: { requests: [] } as any });
-      expect(p).toContain(NO_IMAGES);
-      expect(p).not.toMatch(/download (them|the images)|look at (them|the images)|If the post has images/);
-    });
-    test(`tweet prompt on ${host}`, () => {
-      const p = tweetPrompt({ host, tweet, runDir: "/r" });
-      expect(p).toContain(NO_IMAGES);
-      expect(p).not.toMatch(/download (them|the images)|look at (them|the images)|If the post has images/);
-    });
-  }
+  test("post prompt", () => {
+    const p = postPrompt({ item, dir: "/d", runDir: "/r", picks: {}, asked: { requests: [] } as any });
+    expect(p).toContain(NO_IMAGES);
+    expect(p).not.toMatch(/download (them|the images)|look at (them|the images)|If the post has images/);
+  });
+  test("tweet prompt", () => {
+    const p = tweetPrompt({ tweet, runDir: "/r" });
+    expect(p).toContain(NO_IMAGES);
+    expect(p).not.toMatch(/download (them|the images)|look at (them|the images)|If the post has images/);
+  });
 });
 
 describe("a post that is checked again", () => {
-  const prompt = (asked: any) => postPrompt({ host: "ai-box", item, dir: "/d", runDir: "/r", runId: "run-1", picks: {}, asked });
+  const prompt = (asked: any) => postPrompt({ item, dir: "/d", runDir: "/r", picks: {}, asked });
   const long = "x".repeat(300);
   test("lists the passages that already have a draft, cut to 200 characters", () => {
     const p = prompt({ requests: [], onlyThese: false, alreadyChecked: ["GDP fell 3%", long] });

@@ -36,11 +36,13 @@
  * own work on the weekend. On 2026-11-12 he raised it back to 90%, and on
  * 2026-11-14 he raised it to 98% and turned the Claude tweets back on. On
  * 2026-11-15 he lowered it to 70% again, and on 2026-11-16 raised it to 80%.
+ * On 2026-11-19 the note writer moved to a Claude account of its own
+ * (GOO-787), and Jim set the target to 90% and the stop to 95%.
  *
  * The interval is stretched by 10%, so the week most likely ends a little
  * under the target rather than over it. Once the week is at the target, the
  * runner takes no new feed post until the reset, and it still takes reader
- * requests until its own stop at 81% (MAX_WEEKLY_USAGE_PERCENT). Above that it
+ * requests until its own stop at 95% (MAX_WEEKLY_USAGE_PERCENT). Above that it
  * takes nothing, and queued items wait for the reset. Jim set these rules on
  * 2026-10-26. */
 
@@ -50,8 +52,9 @@ import { duration } from "./logFormat";
  *  picked 80% on 2026-10-26, raised it to 90% on 2026-11-05 and lowered it to
  *  60% on 2026-11-10, to keep usage for the weekend, raised it back to 90%
  *  on 2026-11-12, raised it to 98% on 2026-11-14, lowered it to 70% on
- *  2026-11-15 and raised it to 80% on 2026-11-16. */
-export const WEEKLY_USAGE_TARGET_PERCENT = 80;
+ *  2026-11-15, raised it to 80% on 2026-11-16, and to 90% on 2026-11-19, when
+ *  the note writer got a Claude account that is used for nothing else. */
+export const WEEKLY_USAGE_TARGET_PERCENT = 90;
 
 /** The interval is stretched by this factor, so that an estimate a little too
  *  low does not carry the week past the target. */
@@ -70,14 +73,15 @@ export const MIN_POSTS_FOR_USAGE_ESTIMATE = 5;
  *  weekly usage rose from 0% to 3% over 29 posts. */
 export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
 
-/** Above this share of Nathan's weekly limit the runner on ai-box starts no
- *  new Claude. The feed run already stops giving Claude feed posts at the
+/** Above this share of the notewriter's weekly limit the runner on ai-box
+ *  starts no new Claude. The feed run already stops giving Claude feed posts at the
  *  target, so this stop holds back mainly reader requests, which Claude takes
  *  without pacing, and X tweets. Everything queued then waits for the weekly
- *  reset. It sits 1 point above the target, so that queued work still runs
- *  for a while after the feed posts stop, while the week still ends close to
- *  the target. */
-export const MAX_WEEKLY_USAGE_PERCENT = 81;
+ *  reset. It sits 5 points above the target, so that reader requests and
+ *  tweets still run for a while after the feed posts stop. Jim chose 95% on
+ *  2026-11-19 (GOO-787); while the note writer shared his own plan it was 1
+ *  point above the target. */
+export const MAX_WEEKLY_USAGE_PERCENT = 95;
 
 /** The runner reads the usage every 5 minutes. A newest reading older than
  *  this means the runner on ai-box is down, so the X run hands it no tweet
@@ -149,14 +153,4 @@ export function describeClaudePacing(pacing: ClaudePacing, snapshot: UsageSnapsh
       ? "         the target is reached · no new feed post until the reset"
       : `         one post every ${duration(pacing.intervalMs)}, ${INTERVAL_SAFETY_FACTOR}× the even spacing`,
   ].join("\n");
-}
-
-/** Whether a judge may start, by the plan's newest usage reading. The judges
- *  stop where the runner on the ai-box stops them: at MAX_WEEKLY_USAGE_PERCENT,
- *  or when no reading is recent, because the devbox's `dispatch` reads the usage only while
- *  the session answers. Without this they ran on past the stop and used the
- *  week that reader requests and tweets wait for. */
-export function judgeMayStartAt(reading: { at: Date; weekly: number } | null, now: Date): boolean {
-  if (!reading || now.getTime() - reading.at.getTime() > MAX_USAGE_READING_AGE_MS) return false;
-  return reading.weekly < MAX_WEEKLY_USAGE_PERCENT;
 }

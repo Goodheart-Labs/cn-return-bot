@@ -21,7 +21,6 @@ import { mkdirSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
 import { guardedSettingsFile } from "./imageGuard";
-import { NOTE_WRITER_ACCOUNT_ENV } from "./usage";
 
 export interface JudgedNote {
   post: { title: string | null; url: string; creator: string | null };
@@ -67,16 +66,16 @@ export const JUDGE_EXAMPLES_PATH = path.join(import.meta.dir, "judge-examples.js
 export const JUDGE_MODEL = "sonnet";
 
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-/** Nathan's guard hook, which every unattended Claude on the ai-box runs under.
- *  The devbox passes its own settings to runJudge. */
+/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 /** A judge that researches for longer than this is stuck. */
 const JUDGE_TIMEOUT_MS = 20 * 60_000;
 /** The website shows each note's votes, which are what the judge predicts. */
 const BLOCKED_TOOLS = ["WebFetch(domain:commonnotes.net)", "WebFetch(domain:www.commonnotes.net)"];
-/** The only environment the judge gets. Claude Code finds its login in the
- *  home folder, and the runner's database keys stay out of reach. */
-const JUDGE_ENV_NAMES = ["HOME", "PATH", "USER", "LANG"];
+/** The only environment the judge gets, so the runner's database keys stay out
+ *  of reach. Claude Code finds its login in CLAUDE_CONFIG_DIR, the config
+ *  folder of the notewriter's own Claude account, or else in the home folder. */
+const JUDGE_ENV_NAMES = ["HOME", "PATH", "USER", "LANG", "CLAUDE_CONFIG_DIR"];
 
 export function noteBlock(note: JudgedNote, withParagraph: boolean): string {
   const sources = note.sources.map((s, i) => `${i + 1}. ${s.url}\n   Quote: ${s.quote}\n   Why it matters: ${s.explanation}`).join("\n");
@@ -135,34 +134,9 @@ You may research the passage, the post and the sources on the web. Do not look t
 export const judgePrompt = (note: JudgedNote, examples: JudgeExample[] = []) =>
   [JUDGE_INTRO, ...(examples.length > 0 ? [examplesBlock(examples), "## The note to judge"] : []), noteBlock(note, true), JUDGE_QUESTIONS].join("\n\n");
 
-/** The file a judge subagent of the devbox session writes its answer to, in
- *  its run folder. */
-export const JUDGEMENT_FILE = "judgement.json";
-
-/** The prompt of a judge that runs as a subagent of the devbox session. Such a
- *  judge works in the session's checkout and could read the votes, so the
- *  prompt forbids it. It answers in a file, because a subagent has no JSON
- *  output mode. */
-export const judgeSubagentPrompt = (note: JudgedNote, examples: JudgeExample[], runDir: string) =>
-  [
-    judgePrompt(note, examples),
-    "Do not read the Common Notes database, the repository or the claude-notes tool either.",
-    `When you are done, write your answer to ${path.join(runDir, JUDGEMENT_FILE)} as JSON with the keys "reasoning" (written first), "p_helpful" and "p_impactful" (numbers from 0 to 1).`,
-  ].join("\n\n");
-
-/** Reads a judge subagent's answer file. Throws when it is not a valid answer. */
-export function parseJudgement(text: string): Judgement {
-  const answer = JSON.parse(text);
-  const isProbability = (p: unknown) => typeof p === "number" && p >= 0 && p <= 1;
-  if (typeof answer.reasoning !== "string" || !isProbability(answer.p_helpful) || !isProbability(answer.p_impactful)) {
-    throw new Error(`Not a judgement: ${text.slice(0, 300)}`);
-  }
-  return { reasoning: answer.reasoning, pHelpful: answer.p_helpful, pImpactful: answer.p_impactful };
-}
-
 /** Runs one judge in its own empty folder and returns its answer. The folder
  *  keeps the prompt and Claude Code's full output for later reading. */
-export async function runJudge(runDir: string, prompt: string, settings = RUN_SETTINGS): Promise<Judgement & { turns: number }> {
+export async function runJudge(runDir: string, prompt: string): Promise<Judgement & { turns: number }> {
   mkdirSync(runDir, { recursive: true });
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   const child = Bun.spawn(
@@ -175,7 +149,7 @@ export async function runJudge(runDir: string, prompt: string, settings = RUN_SE
       "--permission-mode",
       "bypassPermissions",
       "--settings",
-      guardedSettingsFile(runDir, settings),
+      guardedSettingsFile(runDir, RUN_SETTINGS),
       "--disallowedTools",
       ...BLOCKED_TOOLS,
       "--output-format",
@@ -186,10 +160,7 @@ export async function runJudge(runDir: string, prompt: string, settings = RUN_SE
     ],
     {
       cwd: runDir,
-      env: {
-        ...Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
-        ...NOTE_WRITER_ACCOUNT_ENV,
-      },
+      env: Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
       stdout: "pipe",
       stderr: "pipe",
       timeout: JUDGE_TIMEOUT_MS,

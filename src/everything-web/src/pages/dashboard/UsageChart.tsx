@@ -119,7 +119,8 @@ function UsageLines({ points, width }: { points: Point[]; width: number }) {
 const toPoints = (rows: ClaudeUsageRow[]): Point[] => rows.map((row) => ({ date: new Date(row.at), weekly: row.weekly }));
 
 /** How much of the weekly limit the Claude note writer's plan has used, read
- *  every 5 minutes by the runner on Nathan's ai-box. The line climbs during
+ *  every 5 minutes by the runner on Nathan's ai-box. Since GOO-787 that is
+ *  Jim's notewriter account. The line climbs during
  *  the week and drops when the limit resets. */
 export function UsageChart() {
   const [rangeId, setRangeId] = useState<RangeId>("7");
@@ -136,8 +137,8 @@ export function UsageChart() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-fg-secondary">
           {latest
-            ? `${latest.weekly}% of Nathan's weekly limit used${latest.weekly_resets_at ? `. It resets ${formatTime(new Date(latest.weekly_resets_at))}` : ""}.`
-            : "Share of Nathan's weekly Claude limit the note writer runs on."}
+            ? `${latest.weekly}% of the note writer's weekly limit used${latest.weekly_resets_at ? `. It resets ${formatTime(new Date(latest.weekly_resets_at))}` : ""}.`
+            : "Share of the weekly limit of the note writer's Claude plan."}
         </p>
         <SegmentedControl label="Time range" options={RANGES} value={rangeId} onChange={setRangeId} />
       </div>

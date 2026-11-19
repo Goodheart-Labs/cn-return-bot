@@ -11,7 +11,7 @@ const costs = (xCostUsd: number, commonNotesCostUsd: number) => [
   { tags: ["common-notes", "post"], apiCostUsd: commonNotesCostUsd },
 ];
 
-/** Halfway through the week, so X may have used 10% by now. */
+/** Halfway through the week, so X may have used 15% by now. */
 function snapshot(overrides: Partial<XShareSnapshot> & { weekly?: number } = {}): XShareSnapshot {
   const { weekly = 40, ...rest } = overrides;
   return {
@@ -26,16 +26,16 @@ function snapshot(overrides: Partial<XShareSnapshot> & { weekly?: number } = {})
 describe("computeXShare", () => {
   test("splits the week's usage by the cost of the runs", () => {
     const share = computeXShare(snapshot());
-    expect(share).toEqual({ kind: "measured", usedPercent: 4, allowedPercent: 10 });
+    expect(share).toEqual({ kind: "measured", usedPercent: 4, allowedPercent: 15 });
     expect(xShareProblem(share)).toBeNull();
   });
 
   test("splits only the usage that rose since costs were first recorded", () => {
-    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }))).toEqual({ kind: "measured", usedPercent: 1, allowedPercent: 10 });
+    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }))).toEqual({ kind: "measured", usedPercent: 1, allowedPercent: 15 });
   });
 
   test("is unavailable once X used more than its allowance so far", () => {
-    expect(xShareProblem(computeXShare(snapshot({ runs: costs(30, 70) })))).toContain("X has used 12.00%");
+    expect(xShareProblem(computeXShare(snapshot({ runs: costs(40, 60) })))).toContain("X has used 16.00%");
   });
 
   test("lets X start right after the reset, before any run has a cost", () => {

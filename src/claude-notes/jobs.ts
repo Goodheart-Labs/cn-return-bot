@@ -1,10 +1,7 @@
 /* What happens before and after a Claude works on one job of the note writer:
- * a post, an X tweet, a reviewer message or a creator's X account. Both hosts share it: the runner
- * on Nathan's ai-box (runner.ts), which starts a `claude -p` per job, and the
- * dispatcher on the devbox (dispatch.ts), which hands each job to the
- * permanent Claude session there. The host only starts the Claude and notices
- * when it ended. Everything written to the database is done here, the same
- * way on both. */
+ * a post, an X tweet, a reviewer message or a creator's X account. The runner
+ * (runner.ts) only starts the Claude and notices when it ended. Everything
+ * written to the database is done here. */
 
 import { spawnSync } from "child_process";
 import { copyFileSync, existsSync, readFileSync, rmSync, writeFileSync } from "fs";
@@ -27,7 +24,7 @@ import {
   startPostRun,
   unansweredMessages,
 } from "./store";
-import { JUDGE_EXAMPLES_PATH, type JudgedNote, JUDGEMENT_FILE, judgePrompt, parseJudgement, runJudge, type JudgeExample } from "./judge";
+import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
 import { REPO } from "./prompts";
 import { take, type AskedPassages } from "./take";
 import { fetchUsageSnapshot } from "../everything/db";
@@ -101,8 +98,7 @@ export async function updateClaudeSubscription(weekly: number | null, paused: bo
 // Posts
 // ---------------------------------------------------------------------------
 
-/** A post Claude reserved. `assignment` is the reservation, under API v1's
- *  name, because the devbox keeps its open jobs in a file under that name. */
+/** A post Claude reserved. `assignment` is the reservation, under API v1's name. */
 export type HeldPost = { assignment: string; item: QueueItem };
 
 /** Reserves one more post. Null when none is due or waiting. */
@@ -301,8 +297,7 @@ export async function endXAccountLookup(run: JobRun & { creator: CreatorToLookUp
 
 /** What the run would have cost on the API, as Claude Code reports it in the
  *  last event of its output: stream.jsonl for the runner's sessions, and
- *  output.json for a judge. Null when the run died before it reported, and
- *  for a subagent of the devbox session, which writes neither. */
+ *  output.json for a judge. Null when the run died before it reported. */
 export function runCost(runDir: string): number | null {
   const output = ["stream.jsonl", "output.json"].map((file) => path.join(runDir, file)).find(existsSync);
   if (!output) return null;
@@ -317,22 +312,6 @@ export function runCost(runDir: string): number | null {
   return null;
 }
 
-/** After a judge subagent of the devbox session returned: saves its answer
- *  for the text it judged. A judge without a valid answer gets one more try,
- *  and after that its note waits for a restart of the queue. */
-export async function endJudge(run: JobRun & { draftId: string; note: JudgedNote }, end: JobEnd): Promise<JobOutcome | "gave_up"> {
-  await recordRun(run, end, [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge], { draft_id: run.draftId });
-  try {
-    const judgement = parseJudgement(readFileSync(path.join(run.runDir, JUDGEMENT_FILE), "utf8"));
-    await saveJudgement(run.draftId, run.note.note, judgement);
-    console.log(`Judged draft ${run.draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
-    return "closed";
-  } catch (err) {
-    console.error(`The judge of draft ${run.draftId} gave no answer: ${(err as Error).message}`);
-  }
-  return run.attempt < MAX_ATTEMPTS ? "retry" : "gave_up";
-}
-
 /** Judges running at once. They share the plan's weekly limit with the posts,
  *  so they run one at a time. */
 const MAX_JUDGES_RUNNING = 1;
@@ -341,9 +320,9 @@ const MAX_JUDGES_RUNNING = 1;
  *  may start Claudes. On its first tick it also queues every note that still
  *  has no answer for its current text, newest first. After that it only reads
  *  the posts the log recorded since the last tick. The judge is its own
- *  `claude -p` on both hosts, because it must not see the database keys or the
+ *  `claude -p`, because it must not see the database keys or the
  *  votes it predicts. */
-export function noteJudge(host: { runFolder: (name: string) => string; mayStart: () => Promise<boolean>; runSettings?: string }) {
+export function noteJudge(host: { runFolder: (name: string) => string; mayStart: () => Promise<boolean> }) {
   /** Drafts being judged now, the ones still to judge, the last "posted"
    *  entry of the log seen so far, and how often the judge failed on each
    *  draft. A draft that failed MAX_ATTEMPTS times waits for a restart. */
@@ -359,7 +338,7 @@ export function noteJudge(host: { runFolder: (name: string) => string; mayStart:
     try {
       const note = await readJudgedNote(draftId);
       const examples = examplesForJudge.filter((e) => e.draftId !== draftId);
-      const judgement = await runJudge(run.runDir, judgePrompt(note, examples), host.runSettings);
+      const judgement = await runJudge(run.runDir, judgePrompt(note, examples));
       await saveJudgement(draftId, note.note, judgement);
       console.log(`Judged draft ${draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
     } catch (err) {

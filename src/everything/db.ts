@@ -522,8 +522,8 @@ export async function recordReadFailure(itemId: string, reason: string): Promise
 }
 
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
- *  the usage readings and the posts this host's Claude reserved over the
- *  window. Every assignment of migration 168 became a reservation with the
+ *  the usage readings of this host's notewriter and the posts it reserved over
+ *  the window. Every assignment of migration 168 became a reservation with the
  *  same id (migration 184). */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const now = new Date();
@@ -531,7 +531,7 @@ export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const db = getSupabaseClient();
   const [readings, reserved] = await Promise.all([
     fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
-      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CLAUDE_NOTEWRITER).gte("at", since),
       "id",
       { label: "claudeUsage" },
     ),

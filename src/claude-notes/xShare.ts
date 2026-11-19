@@ -1,19 +1,21 @@
-/* The X note writer's share of Nathan's Claude plan (GOO-527, GOO-617).
+/* The X note writer's share of the Claude plan it runs on (GOO-527, GOO-617).
  *
- * The Claude Code note writer on the ai-box writes Common Notes and, since
- * GOO-527, notes for some of the X bot's tweets. Both are paid for by Nathan's
- * Claude subscription. Jim gave X 20% of the week on 2026-10-27, and Common
- * Notes the rest of the weekly target that usagePacing.ts aims at.
+ * The runner on the ai-box writes Common Notes and, since GOO-527, notes for
+ * some of the X bot's tweets. Since GOO-787 (2026-11-19) both are paid for by
+ * Jim's notewriter account, a Claude plan used for nothing else. Jim gave X
+ * 20% of the week on 2026-10-27 and 30% on 2026-11-19, and Common Notes the
+ * rest of the weekly target that usagePacing.ts aims at.
  *
  * How much of the week X used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every
- * Claude run on the ai-box. Nathan's own work on the plan has no cost row, so
- * it makes X's share look bigger. That only means X stops a little early.
+ * Claude run of the notewriter that takes the tweets. Only that notewriter's
+ * readings and runs count, so Nathan's hq posts, which run on his own plan,
+ * do not water the share down.
  *
  * X may not use its whole share at the start of the week. Its allowance grows
- * evenly from 0% at the weekly reset to 20% at the next one. Without that, a
- * third of all tweets would use up the share in about a day and a half, and X
- * would get no Claude notes for the rest of the week.
+ * evenly from 0% at the weekly reset to 30% at the next one. Without that, the
+ * tweets would use up the share in a few days, and X would get no Claude
+ * notes for the rest of the week.
  *
  * The X run reads this once at its start. While X is over its allowance, or
  * the runner on the ai-box would not start a Claude, a tweet that draws Claude
@@ -22,8 +24,9 @@
  * usage is part of that total, so Common Notes gets whatever X leaves. */
 
 import { MAX_USAGE_READING_AGE_MS, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import { AI_BOX_NOTEWRITER } from "../notewriters/ids";
 import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type UsageSnapshot } from "./usageShare";
-export const X_SHARE_PERCENT = 20;
+export const X_SHARE_PERCENT = 30;
 const WEEK_MS = 7 * 24 * 3600_000;
 
 export type XShareSnapshot = UsageSnapshot & { now: Date };
@@ -37,17 +40,17 @@ export type XShare =
 export function computeXShare(snapshot: XShareSnapshot): XShare {
   const { latest, now } = snapshot;
   if (!latest || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
-    return { kind: "runner_down", reason: "The runner on ai-box has not reported the usage of Nathan's plan in the last 30 minutes" };
+    return { kind: "runner_down", reason: "The runner on ai-box has not reported the usage of its Claude plan in the last 30 minutes" };
   }
   if (latest.weekly >= MAX_WEEKLY_USAGE_PERCENT) {
-    return { kind: "runner_down", reason: `Nathan's plan is at ${latest.weekly}% of its week, where the runner starts no Claude` };
+    return { kind: "runner_down", reason: `The note writer's plan is at ${latest.weekly}% of its week, where the runner starts no Claude` };
   }
   const weekElapsed = Math.min(1, Math.max(0, 1 - (latest.weeklyResetsAt.getTime() - now.getTime()) / WEEK_MS));
   return { kind: "measured", usedPercent: usageShare(snapshot, CLAUDE_RUN_TAGS.x), allowedPercent: X_SHARE_PERCENT * weekElapsed };
 }
 
 const describeUse = (share: Extract<XShare, { kind: "measured" }>) =>
-  `X has used ${share.usedPercent.toFixed(2)}% of Nathan's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARE_PERCENT}% by the reset)`;
+  `X has used ${share.usedPercent.toFixed(2)}% of the note writer's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARE_PERCENT}% by the reset)`;
 
 /** Why a tweet that draws Claude cannot go to Claude now, or null when it can. */
 export function xShareProblem(share: XShare): string | null {
@@ -58,7 +61,8 @@ export function xShareProblem(share: XShare): string | null {
 /** Reads the share once, logs it, and says why this X run cannot send tweets
  *  to Claude, or null when it can. */
 export async function claudeUnavailableReason(): Promise<string | null> {
-  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot()) });
+  // The X run's Claude tweets go to the runner on the ai-box.
+  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(AI_BOX_NOTEWRITER)) });
   const problem = xShareProblem(share);
   if (problem) console.log(`[claude] ${problem}. Tweets that draw Claude fail in this run.`);
   else if (share.kind === "measured") console.log(`[claude] ${describeUse(share)}. Tweets that draw Claude go to the ai-box.`);

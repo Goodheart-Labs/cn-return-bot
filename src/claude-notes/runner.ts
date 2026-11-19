@@ -1,6 +1,10 @@
 /* The Claude note writer's runner (GOO-580). It runs all the time on Nathan's
- * ai-box as a systemd service, under Nathan's user, because Claude Code uses
- * the login in his home folder. It is the notewriter claude-ai-box, on API v1
+ * ai-box as a systemd service, under Nathan's user. Since GOO-787 its Claudes
+ * run on Jim's notewriter account, whose login is in its own config folder:
+ * the unit file sets CLAUDE_CONFIG_DIR, and every Claude the runner starts
+ * gets it too. Nathan's own login in his home folder is not used. Without the
+ * variable, Claude Code uses the login in the home folder, as on hq.
+ * It is the notewriter claude-ai-box, on API v1
  * of the notewriters (GOO-724, src/notewriters/v1.ts) until Nathan gives it a
  * key (GOO-791, see src/claude-notes/queue.ts): it asks for a post whenever it
  * has a free slot, starts one Claude for each post it gets, and finishes the
@@ -49,7 +53,7 @@ import {
 import { guardedSettingsFile } from "./imageGuard";
 import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES_PATH, xAccountPrompt } from "./prompts";
 import { recordUsage, RUN_ID_ENV } from "./store";
-import { NOTE_WRITER_ACCOUNT_ENV, readUsage, type UsageReading } from "./usage";
+import { readUsage, type UsageReading } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
 import { openXTweets, type XTweet } from "./xTweets";
 
@@ -61,8 +65,9 @@ const POLL_MS = 30_000;
 const MAX_POSTS_RUNNING = 5;
 /** X tweets in progress at once, on top of the posts. The X share of the week
  *  (src/claude-notes/xShare.ts) decides how many tweets come; this only stops
- *  a burst from one X run from starting all its tweets at the same moment. */
-const MAX_TWEETS_RUNNING = 3;
+ *  a burst from one X run from starting all its tweets at the same moment.
+ *  About 180 tweets a day draw Claude since GOO-787, so 6 at a time keep up. */
+const MAX_TWEETS_RUNNING = 6;
 /** The usage endpoint is rate limited, and Nathan's pacer reads it too. */
 const USAGE_READ_EVERY_MS = 5 * 60_000;
 
@@ -70,6 +75,12 @@ const PAUSE_FILE = process.env.CN_PAUSE_FILE ?? "/srv/ai-box/PAUSE";
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 const ENV_FILE = process.env.CN_ENV_FILE ?? "/etc/cn-notes/env";
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
+/** The config folder of the notewriter's Claude account, or undefined for the
+ *  login in the home folder. */
+const CLAUDE_CONFIG_DIR = process.env.CLAUDE_CONFIG_DIR;
+/** Jim asked for high effort on 2026-11-15, when the note writers ran as
+ *  subagents on the devbox. The judge sets its own model and effort. */
+const CLAUDE_EFFORT = "high";
 /** On the main disk. /tmp on ai-box is a small tmpfs in memory with a quota per
  *  user, and a day of run folders is more than a gigabyte, which filled the
  *  quota on 2026-10-30 and crashed the runner. */
@@ -115,18 +126,21 @@ const tmuxAlive = (session: string) => spawnSync("tmux", ["has-session", "-t", `
 /** Starts `claude -p` in a detached tmux session. The secrets come from the
  *  env file inside the session, so they never appear in a process's
  *  arguments. The service secret is removed again, because the agents never
- *  call the services box; only `take` in this runner does. */
+ *  call the services box; only `take` in this runner does. The script sets
+ *  CLAUDE_CONFIG_DIR itself, because a tmux session takes its environment from
+ *  the tmux server, which may have started long before this runner. */
 function startClaude(session: string, runDir: string, prompt: string, extraArgs: string[] = [], env: Record<string, string> = {}) {
+  const account = CLAUDE_CONFIG_DIR ? { CLAUDE_CONFIG_DIR } : {};
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   const script = [
     "set -a",
     `. ${ENV_FILE}`,
     "set +a",
     "unset SERVICE_AUTH_SECRET EXTRACTION_URL",
-    ...Object.entries({ ...NOTE_WRITER_ACCOUNT_ENV, ...env }).map(([name, value]) => `export ${name}=${value}`),
+    ...Object.entries({ ...account, ...env }).map(([name, value]) => `export ${name}=${value}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
     `cd ${REPO}`,
-    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --permission-mode bypassPermissions --settings ${guardedSettingsFile(runDir, RUN_SETTINGS)} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
+    `"${CLAUDE_BIN}" -p "$(cat ${runDir}/prompt.md)" --model opus --effort ${CLAUDE_EFFORT} --permission-mode bypassPermissions --settings ${guardedSettingsFile(runDir, RUN_SETTINGS)} ${extraArgs.join(" ")} --output-format stream-json --verbose > ${runDir}/stream.jsonl 2> ${runDir}/stderr.txt`,
     `echo $? > ${runDir}/exit-code`,
   ].join("\n");
   writeFileSync(path.join(runDir, "run.sh"), script);
@@ -141,7 +155,7 @@ function runFolder(name: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Usage of Nathan's plan
+// Usage of the notewriter's plan
 // ---------------------------------------------------------------------------
 
 /** Claude Code renews its login token only when it runs. While no post runs,
@@ -199,7 +213,7 @@ async function startPost(post: HeldPost, attempt = 1) {
   if (start.kind !== "ready") return;
   const session = POST_SESSION_PREFIX + item.id.slice(0, 8);
   const { postRun } = start;
-  startClaude(session, runDir, postPrompt({ host: "ai-box", item, dir: start.dir, runDir, runId: postRun.runId, picks: postRun.picks, asked: start.asked }), ["--append-system-prompt-file", EXAMPLES_PATH], { [RUN_ID_ENV]: postRun.runId });
+  startClaude(session, runDir, postPrompt({ item, dir: start.dir, runDir, picks: postRun.picks, asked: start.asked }), ["--append-system-prompt-file", EXAMPLES_PATH], { [RUN_ID_ENV]: postRun.runId });
   posts.set(item.id, { ...post, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
   console.log(`Started ${session} on ${item.url} (attempt ${attempt})`);
 }
@@ -238,7 +252,7 @@ async function startTweet(tweet: XTweet, attempt = 1) {
   const runDir = runFolder(`x-${tweet.runId}`);
   const session = TWEET_SESSION_PREFIX + tweet.runId.slice(0, 8);
   await beginTweet(tweet, attempt);
-  startClaude(session, runDir, tweetPrompt({ host: "ai-box", tweet, runDir }), ["--append-system-prompt-file", X_EXAMPLES_PATH]);
+  startClaude(session, runDir, tweetPrompt({ tweet, runDir }), ["--append-system-prompt-file", X_EXAMPLES_PATH]);
   tweets.set(tweet.runId, { tweet, session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: await weeklyUsage() });
   console.log(`Started ${session} on tweet ${tweet.tweetId} (attempt ${attempt})`);
 }
@@ -284,7 +298,7 @@ async function startAnswers() {
 async function startAnswer(draftId: string, message: ReviewerMessage, attempt: number) {
   const runDir = runFolder(`message-${draftId}-${Date.now()}`);
   const session = MESSAGE_SESSION_PREFIX + draftId.slice(0, 8);
-  startClaude(session, runDir, messagePrompt({ host: "ai-box", ...message, ...(await messageContext(draftId)), runDir }), ["--append-system-prompt-file", EXAMPLES_PATH]);
+  startClaude(session, runDir, messagePrompt({ ...message, ...(await messageContext(draftId)), runDir }), ["--append-system-prompt-file", EXAMPLES_PATH]);
   answers.set(draftId, { session, runDir, attempt, startedAt: Date.now(), weeklyAtStart: null });
   console.log(`Started ${session} to answer ${message.from} on draft ${draftId}`);
 }
