@@ -25,6 +25,7 @@ import {
   unansweredMessages,
 } from "./store";
 import { JUDGE_EXAMPLES_PATH, judgePrompt, runJudge, type JudgeExample } from "./judge";
+import { claudeEnded } from "./alerts";
 import { REPO } from "./prompts";
 import { take, type AskedPassages } from "./take";
 import { fetchUsageSnapshot } from "../everything/db";
@@ -145,6 +146,7 @@ export async function beginPost(post: HeldPost, runDir: string, attempt: number)
     taken = await take(post.item.id);
   } catch (err) {
     await failPost(post, (err as Error).message);
+    await claudeEnded(`Could not take ${post.item.url}: ${(err as Error).message}`);
     return { kind: "not_started" };
   }
   if (taken.kind === "skipped") {
@@ -295,21 +297,44 @@ export async function endXAccountLookup(run: JobRun & { creator: CreatorToLookUp
 // The note judge
 // ---------------------------------------------------------------------------
 
-/** What the run would have cost on the API, as Claude Code reports it in the
- *  last event of its output: stream.jsonl for the runner's sessions, and
- *  output.json for a judge. Null when the run died before it reported. */
-export function runCost(runDir: string): number | null {
+type ResultEvent = { type: "result"; is_error?: boolean; result?: unknown; total_cost_usd?: number };
+
+/** The last event of Claude Code's output, which reports how the run ended
+ *  and what it cost: stream.jsonl for the runner's sessions, and output.json
+ *  for a judge. Null when the run died before it reported. */
+function resultEvent(runDir: string): ResultEvent | null {
   const output = ["stream.jsonl", "output.json"].map((file) => path.join(runDir, file)).find(existsSync);
   if (!output) return null;
   for (const line of readFileSync(output, "utf8").trim().split("\n").reverse()) {
     try {
       const event = JSON.parse(line);
-      if (event.type === "result" && typeof event.total_cost_usd === "number") return event.total_cost_usd;
+      if (event.type === "result") return event;
     } catch {
       // A run killed mid-write leaves a cut-off last line.
     }
   }
   return null;
+}
+
+/** What the run would have cost on the API, as Claude Code reports it. */
+export function runCost(runDir: string): number | null {
+  const cost = resultEvent(runDir)?.total_cost_usd;
+  return typeof cost === "number" ? cost : null;
+}
+
+const MAX_FAILURE_TEXT_CHARS = 300;
+const readIfExists = (file: string) => (existsSync(file) ? readFileSync(file, "utf8").trim() : "");
+
+/** What went wrong in one of the runner's Claude sessions, or null when Claude
+ *  Code finished without an error. A banned account, a rate limit or a broken
+ *  install all end this way, whatever the job was. */
+export function claudeFailure(runDir: string): string | null {
+  const exitCode = readIfExists(path.join(runDir, "exit-code"));
+  const result = resultEvent(runDir);
+  if (exitCode === "0" && result && !result.is_error) return null;
+  const stderr = readIfExists(path.join(runDir, "stderr.txt")).split("\n")[0];
+  const said = (result?.is_error && String(result.result)) || stderr || `Claude Code exited with ${exitCode || "no exit code"} and no result`;
+  return said.slice(0, MAX_FAILURE_TEXT_CHARS);
 }
 
 /** Judges running at once. They share the plan's weekly limit with the posts,
@@ -322,7 +347,7 @@ const MAX_JUDGES_RUNNING = 1;
  *  the posts the log recorded since the last tick. The judge is its own
  *  `claude -p`, because it must not see the database keys or the
  *  votes it predicts. */
-export function noteJudge(host: { runFolder: (name: string) => string; mayStart: () => Promise<boolean> }) {
+export function noteJudge(host: { runFolder: (name: string) => string; mayStart: () => Promise<boolean>; claudeEnded: (failure: string | null) => Promise<void> }) {
   /** Drafts being judged now, the ones still to judge, the last "posted"
    *  entry of the log seen so far, and how often the judge failed on each
    *  draft. A draft that failed MAX_ATTEMPTS times waits for a restart. */
@@ -341,9 +366,11 @@ export function noteJudge(host: { runFolder: (name: string) => string; mayStart:
       const judgement = await runJudge(run.runDir, judgePrompt(note, examples));
       await saveJudgement(draftId, note.note, judgement);
       console.log(`Judged draft ${draftId}: P(helpful) ${judgement.pHelpful}, P(impactful) ${judgement.pImpactful}`);
+      await host.claudeEnded(null);
     } catch (err) {
       judgeFailures.set(draftId, (judgeFailures.get(draftId) ?? 0) + 1);
       console.error(`Could not judge draft ${draftId}: ${(err as Error).message}`);
+      await host.claudeEnded(`The judge of draft ${draftId}: ${(err as Error).message}`);
     }
     await recordClaudeRun({ tags: [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge], ...run, apiCostUsd: runCost(run.runDir), ref: { draft_id: draftId } });
   }

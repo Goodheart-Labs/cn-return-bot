@@ -29,9 +29,11 @@ import { spawnSync } from "child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "fs";
 import { homedir } from "os";
 import * as path from "path";
+import { claudeEnded, problemCleared, problemStarted, tellSlack } from "./alerts";
 import {
   beginPost,
   beginTweet,
+  claudeFailure,
   endAnswer,
   endPost,
   endTweet,
@@ -55,7 +57,8 @@ import { EXAMPLES_PATH, messagePrompt, postPrompt, REPO, tweetPrompt, X_EXAMPLES
 import { recordUsage, RUN_ID_ENV } from "./store";
 import { readUsage, type UsageReading } from "./usage";
 import { creatorsToLookUp, type CreatorToLookUp } from "./xAccounts";
-import { openXTweets, type XTweet } from "./xTweets";
+import { screenImages } from "./imageScreen";
+import { failXTweet, openXTweets, type XTweet } from "./xTweets";
 
 const POLL_MS = 30_000;
 /** Posts in progress at once. The queue hands out reader requests first, so a
@@ -115,7 +118,7 @@ const unanswerable = new Set<string>();
 const xAccountsGivenUp = new Set<string>();
 let usage: UsageReading | null = null;
 let usageReadAt = 0;
-const judge = noteJudge({ runFolder, mayStart: mayStartPosts });
+const judge = noteJudge({ runFolder, mayStart: mayStartPosts, claudeEnded });
 
 // ---------------------------------------------------------------------------
 // Claude sessions
@@ -166,13 +169,36 @@ function renewClaudeLogin() {
   console.log(renewed.status === 0 ? "Renewed the Claude login" : `Could not renew the Claude login: ${renewed.stderr}`);
 }
 
+const isUnauthorized = (err: unknown) => (err as Error).message.includes(" 401");
+
 async function readUsageRenewingLogin(): Promise<UsageReading> {
   try {
     return await readUsage();
   } catch (err) {
-    if (!(err as Error).message.includes(" 401")) throw err;
+    if (!isUnauthorized(err)) throw err;
     renewClaudeLogin();
     return readUsage();
+  }
+}
+
+/** Slack hears of a usage endpoint that fails for this long. Without a
+ *  reading the runner starts nothing. */
+const USAGE_ALERT_AFTER_MS = 30 * 60_000;
+let usageGoodAt = Date.now();
+
+/** Tells Slack when the login is dead or the usage cannot be read, and again
+ *  when it works again. */
+async function alertAboutUsage(err: unknown) {
+  if (err === null) {
+    usageGoodAt = Date.now();
+    await problemCleared("login", "The Claude login works again.");
+    return problemCleared("usage", "The usage of the Claude plan can be read again.");
+  }
+  if (isUnauthorized(err)) {
+    return problemStarted("login", "The Claude login no longer works, even after a renewal, so the runner starts no Claude. Someone has to log in again (ops/ai-box/README.md).");
+  }
+  if (Date.now() - usageGoodAt > USAGE_ALERT_AFTER_MS) {
+    await problemStarted("usage", `The runner has not read the usage of its Claude plan for 30 minutes, so it starts no Claude. The last error: ${(err as Error).message}`);
   }
 }
 
@@ -185,8 +211,10 @@ async function weeklyUsage(): Promise<number | null> {
     try {
       usage = await readUsageRenewingLogin();
       if (!POSTS_ONLY) await recordUsage(usage);
+      await alertAboutUsage(null);
     } catch (err) {
       console.error(`Could not read the usage: ${(err as Error).message}`);
+      await alertAboutUsage(err);
     }
     await updateClaudeSubscription(usage?.weekly ?? null, existsSync(PAUSE_FILE));
   }
@@ -203,7 +231,12 @@ async function mayStartPosts(): Promise<boolean> {
 // Posts
 // ---------------------------------------------------------------------------
 
-const ended = async (run: Run): Promise<JobEnd> => ({ weeklyAtEnd: await weeklyUsage(), apiCostUsd: runCost(run.runDir) });
+/** Closes a Claude session's books: counts it for the failure alert and
+ *  reports what it cost. */
+async function ended(run: Run): Promise<JobEnd> {
+  await claudeEnded(claudeFailure(run.runDir));
+  return { weeklyAtEnd: await weeklyUsage(), apiCostUsd: runCost(run.runDir) };
+}
 
 async function startPost(post: HeldPost, attempt = 1) {
   const { item } = post;
@@ -248,7 +281,23 @@ async function adoptHeldPosts(held: HeldPost[]) {
 // X tweets
 // ---------------------------------------------------------------------------
 
+/** Whether the tweet's images passed the image screen (GOO-815). A tweet
+ *  they did not pass fails, and Slack hears of it. */
+async function tweetPassesScreen(tweet: XTweet): Promise<boolean> {
+  try {
+    const screen = await screenImages(tweet.input);
+    if (screen.kind === "clear") return true;
+    await failXTweet(tweet.runId, `The image screen flagged an image (sexual score ${screen.sexualScore.toFixed(2)}), so no Claude saw this tweet`, "image_flagged");
+    await tellSlack(`The image screen stopped X tweet run ${tweet.runId}: one of its images scored ${screen.sexualScore.toFixed(2)} for sexual content. No Claude saw it.`);
+  } catch (err) {
+    await failXTweet(tweet.runId, `The image screen could not run: ${(err as Error).message}`, "image_screen_failed");
+    await claudeEnded(`The image screen on X tweet run ${tweet.runId}: ${(err as Error).message}`);
+  }
+  return false;
+}
+
 async function startTweet(tweet: XTweet, attempt = 1) {
+  if (attempt === 1 && !(await tweetPassesScreen(tweet))) return;
   const runDir = runFolder(`x-${tweet.runId}`);
   const session = TWEET_SESSION_PREFIX + tweet.runId.slice(0, 8);
   await beginTweet(tweet, attempt);

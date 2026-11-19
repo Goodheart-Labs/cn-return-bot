@@ -102,8 +102,12 @@ export async function declineXTweet(runId: string, reason: string) {
   });
 }
 
-export async function failXTweet(runId: string, reason: string) {
-  await updateOpenRow(runId, { failure: reason }, { outcome: "failed", outcome_reason: "claude_no_answer", final_stage: "error", error_message: reason });
+/** Why the runner gave up on a tweet: its Claude never answered, the image
+ *  screen stopped it, or the image screen could not run (GOO-815). */
+type XTweetFailure = "claude_no_answer" | "image_flagged" | "image_screen_failed";
+
+export async function failXTweet(runId: string, reason: string, outcomeReason: XTweetFailure = "claude_no_answer") {
+  await updateOpenRow(runId, { failure: reason }, { outcome: "failed", outcome_reason: outcomeReason, final_stage: "error", error_message: reason });
 }
 
 export async function xTweetIsOpen(runId: string): Promise<boolean> {
