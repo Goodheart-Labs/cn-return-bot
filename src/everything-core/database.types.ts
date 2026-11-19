@@ -1015,6 +1015,32 @@ export type Database = {
           },
         ]
       }
+      everything_note_corrections: {
+        Row: {
+          corrected_at: string
+          evidence_url: string
+          note_id: string
+        }
+        Insert: {
+          corrected_at?: string
+          evidence_url: string
+          note_id: string
+        }
+        Update: {
+          corrected_at?: string
+          evidence_url?: string
+          note_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "everything_note_corrections_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: true
+            referencedRelation: "everything_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       everything_note_not_needed: {
         Row: {
           author_id: string | null
@@ -3405,6 +3431,18 @@ export type Database = {
         Returns: undefined
       }
       everything_click_counts: { Args: { p_since: string }; Returns: Json }
+      everything_corrections_page: {
+        Args: {
+          p_after_at?: string
+          p_after_note_id?: string
+          p_limit?: number
+        }
+        Returns: {
+          corrected_at: string
+          evidence_url: string
+          note_id: string
+        }[]
+      }
       everything_cost_since: { Args: { since: string }; Returns: number }
       everything_create_minisite: {
         Args: {
