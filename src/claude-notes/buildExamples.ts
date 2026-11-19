@@ -18,7 +18,7 @@ import { createClient } from "@supabase/supabase-js";
 import Papa from "papaparse";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { teamVoterIds } from "../everything/teamAccounts";
-import { MIN_PUBLIC_VOTES, publicVerdicts } from "./publicVerdicts";
+import { MAX_PUBLIC_HELPFUL, MIN_PUBLIC_VOTES, publicVerdicts } from "./publicVerdicts";
 
 const NATHAN_USER_ID = "963d0c31-33e5-47da-8aa1-386bc3289efb";
 /** Nathan posted his Claude Code batch on 2026-10-21 between 00:19 and 01:00
@@ -125,8 +125,9 @@ async function publicVotes(): Promise<string[]> {
     "id",
   );
   const noteById = new Map(notes.map((n) => [n.id, n]));
-  return verdicts
-    .filter((v) => noteById.get(v.noteId)?.claim)
+  // The cap comes after the filter, so a note we have since withdrawn does not use up a place.
+  const shown = verdicts.filter((v) => noteById.get(v.noteId)?.claim);
+  return [...shown.filter((v) => v.verdict === "Not helpful"), ...shown.filter((v) => v.verdict === "Helpful").slice(0, MAX_PUBLIC_HELPFUL)]
     .map((v) => {
       const n = noteById.get(v.noteId)!;
       return noteSection(`Readers rated ${v.verdict} (${v.helpful} Helpful, ${v.notHelpful} Not helpful)`, n.claim as unknown as ClaimContext, n.note);
