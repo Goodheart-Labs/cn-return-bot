@@ -1,4 +1,4 @@
--- Checks for migration 187. Run it after the migration. It changes nothing.
+-- Checks for migration 189. Run it after the migration. It changes nothing.
 -- Every value should be true.
 select
   (select relrowsecurity from pg_class where relname = 'site_check_runs') as row_level_security_on,
