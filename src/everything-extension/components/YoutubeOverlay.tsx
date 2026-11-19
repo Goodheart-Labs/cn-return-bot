@@ -364,7 +364,7 @@ export function YoutubeOverlayApp({ itemId, projectSlug, video, player }: {
           label="Common Note on this part of the video"
           header={
             <>
-              <NextNoteButton position={displayedIndex + 1} total={groups.length} onNext={jumpNext} />
+              <NextNoteButton position={displayedIndex + 1} total={groups.length} onNext={jumpNext} where="in this video" />
               {!playheadAtClaim && <PlayFromButton seconds={group.startSeconds} onPlay={() => playFromClaim(group)} />}
             </>
           }
