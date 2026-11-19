@@ -20,6 +20,10 @@ export const FEED_READS_PER_DAY = 50_000;
 /** No feed is read more often than this. */
 export const MIN_SECONDS_BETWEEN_FEED_READS = 20;
 
+/** A Substack below the walk's bar is read this often, out of the same budget
+ *  (restFeedSchedule). Its posts wait behind every walked creator's anyway. */
+export const REST_FEED_READS_PER_DAY = 24;
+
 const DAY_MS = 24 * 3600_000;
 const MAX_READS_PER_FEED = DAY_MS / (MIN_SECONDS_BETWEEN_FEED_READS * 1000);
 
@@ -48,4 +52,33 @@ export function feedWaits(feeds: ScheduledFeed[], readsPerDay = FEED_READS_PER_D
 export function nextDue(lastDue: number, wait: number, now: number): number {
   const next = lastDue + wait;
   return next < now - wait ? now : next;
+}
+
+/** The waiting time of every Substack below the walk's bar, and the budget
+ *  that leaves the walked ones. When the rest would take more than a fifth of
+ *  the budget, each of them is read less often instead. */
+export function restFeedSchedule(restFeeds: number, readsPerDay = FEED_READS_PER_DAY): { restWait: number; walkedReadsPerDay: number } {
+  const restReads = Math.min(restFeeds * REST_FEED_READS_PER_DAY, readsPerDay / 5);
+  return { restWait: restFeeds > 0 ? (DAY_MS * restFeeds) / restReads : DAY_MS, walkedReadsPerDay: readsPerDay - restReads };
+}
+
+/** The highest list rank of a creator below the walk's bar. The lowest walked
+ *  creator ranks MIN_SCORE_TO_WALK, which is 1. */
+export const MAX_REST_RANK = 0.99;
+
+/** A creator's place in the post list (everything_projects.list_rank): a
+ *  walked creator's score, above every score while holding priority. A creator
+ *  below the bar keeps their score but never reaches 1, because one post that
+ *  many people opened can score above 1 and still be below the bar. */
+export const listRank = (creator: { prioritized: boolean; walkScore: number }, walked: boolean, priorityRank: number): number =>
+  walked ? (creator.prioritized ? priorityRank : 0) + creator.walkScore : Math.min(creator.walkScore, MAX_REST_RANK);
+
+/** Which kinds of creators below the bar get their posts listed too, from
+ *  EVERYTHING_WALK_BELOW_BAR: kinds separated by commas. Unset means the text
+ *  kinds. Videos are left out because each one is read through the paid
+ *  proxy; "substack,lesswrong,youtube" adds them, and "0" lists nobody below
+ *  the bar. */
+export function kindsBelowBar(value: string | undefined): Set<string> {
+  const kinds = (value ?? "substack,lesswrong").split(",").map((k) => k.trim());
+  return new Set(kinds.filter((k) => k === "substack" || k === "lesswrong" || k === "youtube"));
 }

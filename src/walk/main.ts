@@ -11,6 +11,12 @@
  * MAX_WALKED_CREATORS, reloaded every 10 minutes. Each reload also sets every
  * creator's place in the list (everything_projects.list_rank).
  *
+ * Every other creator with a project gets their posts listed too, below every
+ * walked creator's, so the notewriters check them with capacity to spare:
+ * Substacks once an hour and forum authors from the newest-posts query, which
+ * costs no read. EVERYTHING_WALK_BELOW_BAR picks the kinds, and "0" switches
+ * this off (kindsBelowBar in feedSchedule.ts).
+ *
  * How each kind of feed is read:
  *   - YouTube: a channel is listed when YouTube's push notice (WebSub) came,
  *     or its last listing is a day old (youtubeChannels.ts). Checked every
@@ -45,7 +51,7 @@
  */
 
 import "dotenv/config";
-import { rankCreators, type RankedCreator } from "../everything/creatorRanking";
+import { rankKnownCreators, type RankedCreator } from "../everything/creatorRanking";
 import { fetchItemOutcomesSince, fetchRetryableErrorItems, fetchYoutubeChannelStates, requeueErroredItem, setListRanks, tidyList } from "../everything/db";
 import { queueDemandedPages } from "../everything/demandQueue";
 import { AVATARS_PER_RUN, refreshStaleAvatars } from "../everything/projectAvatars";
@@ -56,7 +62,7 @@ import { channelDue, youtubeChannelUploads } from "../everything/youtubeChannels
 import { quotaRanOutThisRun, YoutubeQuotaExceededError } from "../pipeline/media/youtubeDataApi";
 import { readForumListing, readForumNewestPosts } from "../pipeline/fetch/readListing";
 import { forumOrigin, parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
-import { feedWaits, nextDue } from "./feedSchedule";
+import { feedWaits, kindsBelowBar, listRank, nextDue, restFeedSchedule } from "./feedSchedule";
 import { addNewPosts, forumEntries, listWindowStart, substackEntries, youtubeEntries } from "./posts";
 
 /** At most this many creators of the ranking are walked, creators holding
@@ -97,6 +103,10 @@ type Job = { name: string; due: number; run: () => Promise<void> };
 type SubstackFeed = { creator: RankedCreator; wait: number; due: number; etag?: string };
 
 let walked: RankedCreator[] = [];
+/** The creators below the walk's bar whose posts are listed too. */
+let rest: RankedCreator[] = [];
+const belowBar = kindsBelowBar(process.env.EVERYTHING_WALK_BELOW_BAR);
+const ofKind = (kind: RankedCreator["feed_type"]) => [...walked, ...rest].filter((c) => c.feed_type === kind);
 const substackFeeds = new Map<string, SubstackFeed>();
 /** When each walked forum author was last listed on their own profile. */
 const authorListedAt = new Map<string, number>();
@@ -105,13 +115,22 @@ let youtubeFirstPass = true;
 let quotaLogged = false;
 
 async function refreshRanking(): Promise<void> {
-  walked = (await rankCreators()).slice(0, MAX_WALKED_CREATORS);
-  const rank = (c: RankedCreator) => (c.prioritized ? PRIORITY_RANK : 0) + c.walkScore;
-  const changed = dryRun ? 0 : await setListRanks(walked.map((c) => ({ feed_url: c.feed_url, rank: rank(c) })));
-  const substacks = walked.filter((c) => c.feed_type === "substack");
-  const waits = feedWaits(substacks.map((c) => ({ feedUrl: c.feed_url, score: c.walkScore, prioritized: c.prioritized })));
+  const known = await rankKnownCreators();
+  walked = known.walked.slice(0, MAX_WALKED_CREATORS);
+  rest = [...known.walked.slice(MAX_WALKED_CREATORS), ...known.rest].filter((c) => belowBar.has(c.feed_type));
+  const ranks = [
+    ...walked.map((c) => ({ feed_url: c.feed_url, rank: listRank(c, true, PRIORITY_RANK) })),
+    ...rest.map((c) => ({ feed_url: c.feed_url, rank: listRank(c, false, PRIORITY_RANK) })),
+  ];
+  const changed = dryRun ? 0 : await setListRanks(ranks);
+  const walkedSubstacks = walked.filter((c) => c.feed_type === "substack");
+  const restSubstacks = rest.filter((c) => c.feed_type === "substack");
+  const { restWait, walkedReadsPerDay } = restFeedSchedule(restSubstacks.length);
+  const waits = feedWaits(walkedSubstacks.map((c) => ({ feedUrl: c.feed_url, score: c.walkScore, prioritized: c.prioritized })), walkedReadsPerDay);
+  for (const c of restSubstacks) waits.set(c.feed_url, restWait);
+  const substacks = [...walkedSubstacks, ...restSubstacks];
   const now = Date.now();
-  for (const url of substackFeeds.keys()) if (!substacks.some((c) => c.feed_url === url)) substackFeeds.delete(url);
+  for (const url of substackFeeds.keys()) if (!waits.has(url)) substackFeeds.delete(url);
   for (const creator of substacks) {
     const wait = waits.get(creator.feed_url)!;
     const known = substackFeeds.get(creator.feed_url);
@@ -119,7 +138,7 @@ async function refreshRanking(): Promise<void> {
   }
   const kinds = (kind: RankedCreator["feed_type"]) => walked.filter((c) => c.feed_type === kind).length;
   console.log(
-    `[walk] walking ${walked.length} creators: ${kinds("youtube")} YouTube channels, ${kinds("lesswrong")} forum authors, ${kinds("substack")} Substacks · ${changed} list ranks changed`,
+    `[walk] walking ${walked.length} creators: ${kinds("youtube")} YouTube channels, ${kinds("lesswrong")} forum authors, ${kinds("substack")} Substacks · ${rest.length} more below the bar (${[...belowBar].join(", ") || "none"}) · ${changed} list ranks changed`,
   );
 }
 
@@ -139,7 +158,7 @@ async function readNextSubstack(feed: SubstackFeed): Promise<void> {
 }
 
 async function readForums(): Promise<void> {
-  const authors = walked.filter((c) => c.feed_type === "lesswrong");
+  const authors = ofKind("lesswrong");
   const origins = [...new Set(authors.map((c) => forumOrigin(c.feed_url)).filter((o): o is string => o !== null))];
   for (const origin of origins) {
     let posts;
@@ -156,7 +175,7 @@ async function readForums(): Promise<void> {
       if (theirs.length) await addNewPosts(author, undefined, forumEntries(theirs), dryRun);
     }
   }
-  await listOneForumAuthor(authors);
+  await listOneForumAuthor(walked.filter((c) => c.feed_type === "lesswrong"));
 }
 
 /** Lists the walked forum author whose own profile was listed longest ago.
@@ -190,7 +209,7 @@ async function readYoutube(): Promise<void> {
   quotaLogged = false;
   const now = new Date();
   const states = new Map((await fetchYoutubeChannelStates()).map((row) => [row.feed_url, row]));
-  for (const channel of walked.filter((c) => c.feed_type === "youtube")) {
+  for (const channel of ofKind("youtube")) {
     if (!youtubeFirstPass && !channelDue(states.get(channel.feed_url), now)) continue;
     try {
       const { title, uploads } = await youtubeChannelUploads(channel.feed_url, LISTING_POSTS);

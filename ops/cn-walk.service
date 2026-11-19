@@ -26,6 +26,10 @@ Environment=CN_SERVICE=walk
 #Environment=EVERYTHING_DEMAND_TEXT_DAILY_CAP=20
 #Environment=EVERYTHING_DEMAND_YOUTUBE_READERS=5
 #Environment=EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP=20
+# The creators below the walk's bar whose posts are listed too, below every
+# walked creator's (kindsBelowBar in src/walk/feedSchedule.ts). Unset means
+# the text kinds. Add youtube for the channels; 0 switches it off.
+#Environment=EVERYTHING_WALK_BELOW_BAR=substack,lesswrong
 ExecStart=/home/cnbot/.bun/bin/bun run src/walk/main.ts
 Restart=always
 RestartSec=5
