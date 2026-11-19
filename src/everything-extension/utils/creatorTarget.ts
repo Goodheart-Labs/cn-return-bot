@@ -223,6 +223,15 @@ export function youtubeChannelPath(pageUrl: string): string | null {
   }
 }
 
+/** Reads the channel out of a YouTube watch page's owner box. It runs inside
+ *  the watch page, so it must stay self-contained: executeScript
+ *  serializes the function and imports would not exist over there. The visit
+ *  recorder also calls it directly, because its content script IS the page. */
+export function readWatchPageChannel() {
+  const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
+  return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
+}
+
 /** The follow target for a YouTube channel link or channel page URL. `title`
  *  is the channel name as the caller knows it. Null when the URL is not a
  *  channel path. */

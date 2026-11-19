@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { readListing } from "../../pipeline/fetch/readListing";
-import { fetchFeedPosts } from "./substack";
+import { fetchFeedPosts, mostLikedArchivePosts } from "./substack";
 
 const FEED = `<?xml version="1.0"?><rss><channel>
 <title><![CDATA[Don't Worry About the Vase]]></title>
@@ -35,5 +35,28 @@ describe("readListing", () => {
   it("lists only a feed in the form we store, so it cannot fetch any other address", async () => {
     await expect(readListing({ feedUrl: "https://example.com", limit: 3 })).rejects.toThrow("Not a feed we list");
     await expect(readListing({ feedUrl: "https://thezvi.substack.com/api/v1/archive", limit: 3 })).rejects.toThrow("Not a feed we list");
+  });
+});
+
+describe("the archive API's top sort", () => {
+  const post = (title: string, likes: number, audience = "everyone") => ({
+    title,
+    audience,
+    type: "newsletter",
+    canonical_url: `https://thezvi.substack.com/p/${title}`,
+    post_date: "2026-11-01T12:00:00.000Z",
+    reactions: { "❤": likes },
+  });
+
+  it("reads the posts out of the answer's posts list, most liked free post first", () => {
+    const answer = { posts: [post("a", 5), post("b", 40), post("paid", 900, "only_paid")] };
+    expect(mostLikedArchivePosts(answer, 2).map((p) => [p.title, p.likes])).toEqual([
+      ["b", 40],
+      ["a", 5],
+    ]);
+  });
+
+  it("fails loudly on an answer without a posts list, such as the bare list Substack sent until November 2026", () => {
+    expect(() => mostLikedArchivePosts([post("a", 5)], 1)).toThrow("without a list of posts");
   });
 });

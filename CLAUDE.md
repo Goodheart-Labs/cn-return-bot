@@ -205,6 +205,10 @@ Things that are easy to get wrong:
 - **Settings** writes store only the keys the reader changed (`patchSyncObject` in `utils/settings.ts`), so a changed default reaches everyone who never touched that setting.
 - The extension IDs are pinned (Chrome by the manifest `key`, Firefox by `gecko.id` = `extension@commonnotes.net`), so the X sign-in redirect URLs are fixed. Never delete an AMO listing: the old Firefox id was permanently burned that way.
 
+## Daily site checks
+
+Much of our code depends on how Substack, YouTube and the three forums build their pages and API answers, and such code tends to find nothing instead of crashing when a site changes. `bun run site-checks` (`src/site-checks/`, GOO-804) tests each such dependency against a real page: the posts, listings and captions the services read (asked of the services box through `/read-page` and `/read-listing`), the page reader's Jina and Wayback steps, and what the extension does on the page in headless Chromium with the built extension (the creator readers, anchoring, listing badges, menu rows, the progress-bar pins). It needs `bun run build-ext-dev` first. The devbox's `daily-ci-report` runs it every morning right before the CI checker Claude, which reads the report. A failed check gets one retry a minute later. A check the devbox cannot run, such as a YouTube watch page that YouTube refuses to play to a datacenter address, is listed apart. When you change code that reads a site, add or update its check. The pages it opens are in `src/site-checks/pages.ts`.
+
 ## Review dashboard
 
 `bun run review` (prod) or `bun run review-local` serves it on port 8001 and frees the port first.

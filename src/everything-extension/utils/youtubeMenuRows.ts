@@ -1,26 +1,17 @@
 import { extractYoutubeVideoId, youtubeWatchUrl } from "@cn/core/pageUrls";
 import { formatVideoTime } from "@cn/core/videoTime";
-import { readWatchPageChannel } from "./authorFeed";
-import { youtubeChannelPath, youtubeChannelTarget, type CreatorTarget } from "./creatorTarget";
+import { readWatchPageChannel, youtubeChannelPath, youtubeChannelTarget, type CreatorTarget } from "./creatorTarget";
 import type { MenuRow, MenuSite, MenuSubject } from "./menuRows";
+import { YOUTUBE_CARD, YOUTUBE_MENU_TRIGGER, YOUTUBE_WATCH_MENU_TRIGGER } from "./menuTriggers";
 import type { OpenVideoNoteEditor } from "./videoNoteWriter";
 import { watchPageTitle, writableVideo } from "./youtubePlayer";
 
 // YouTube's three-dot menus: the one on every video card in a listing, and the
-// one under the playing video. Every selector they depend on lives here. Most
+// one under the playing video. Every selector they depend on lives here,
+// except the menu buttons' and the cards', which are in menuTriggers.ts. Most
 // come from Tidy Web's src/content/video-menu.ts, which was checked against
 // the live site.
 
-// The menu buttons. YouTube draws cards in two generations of markup, the
-// older ytd-menu-renderer and the newer lockup view model, and the last entry
-// is the newer generation's three-dot icon itself.
-const TRIGGER_SELECTOR =
-  'ytd-menu-renderer, .ytLockupMetadataViewModelMenuButton, .yt-lockup-metadata-view-model__menu-button, button:has(svg path[d^="M12 4a2 2 0 100 4 2 2 0 000-4Zm0 6"])';
-// The menu under the playing video shares its ytd-menu-renderer with Like,
-// Share and Save, so only its own dropdown button counts as its trigger.
-const WATCH_TRIGGER_SELECTOR = "ytd-watch-metadata #actions ytd-menu-renderer > :is(#button-shape, yt-icon-button#button)";
-const CARD_SELECTOR =
-  "ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-playlist-video-renderer, ytd-playlist-panel-video-renderer, yt-lockup-view-model";
 const CARD_TITLE_SELECTOR = "#video-title, .ytLockupMetadataViewModelTitle, h3";
 // The menu YouTube's player opens on a right-click. YouTube keeps it in the
 // page's body and only hides it while closed.
@@ -88,15 +79,15 @@ export const youtubeMenuSite = (openEditor: OpenVideoNoteEditor): MenuSite => ({
   name: "youtube",
   triggerFor(target) {
     if (!target.closest('button, yt-icon-button, [role="button"]')) return null;
-    return target.closest<HTMLElement>(WATCH_TRIGGER_SELECTOR) ?? target.closest<HTMLElement>(TRIGGER_SELECTOR);
+    return target.closest<HTMLElement>(YOUTUBE_WATCH_MENU_TRIGGER) ?? target.closest<HTMLElement>(YOUTUBE_MENU_TRIGGER);
   },
   subjectFor(trigger) {
-    if (trigger.matches(WATCH_TRIGGER_SELECTOR)) return watchPageSubject(openEditor);
+    if (trigger.matches(YOUTUBE_WATCH_MENU_TRIGGER)) return watchPageSubject(openEditor);
     // The watch page's other buttons, such as Like and Share, sit in the same
     // ytd-menu-renderer and match the general selector. They open no menu of
     // ours.
     if (trigger.closest("ytd-watch-metadata")) return null;
-    const card = trigger.closest(CARD_SELECTOR);
+    const card = trigger.closest(YOUTUBE_CARD);
     return card ? cardSubject(card) : null;
   },
   // YouTube keeps a closed popup in the page, so we pick the one on screen.

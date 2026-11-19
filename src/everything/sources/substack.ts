@@ -42,6 +42,16 @@ async function fetchPublication(handle: string): Promise<{ subdomain: string; na
 // are filtered out afterwards.
 const ARCHIVE_FETCH_LIMIT = 20;
 
+/** The posts in an answer of the archive API. Substack answered with a bare
+ *  list of posts until November 2026, and with an object that holds them
+ *  under `posts` since then. Every archive read failed for two weeks before a
+ *  site check noticed (GOO-804). */
+function archivePosts(archive: unknown): any[] {
+  const posts = (archive as { posts?: unknown } | null)?.posts;
+  if (!Array.isArray(posts)) throw new Error(`The archive API answered without a list of posts: ${JSON.stringify(archive).slice(0, 200)}`);
+  return posts;
+}
+
 export interface ArchivePost {
   url: string;
   title: string;
@@ -52,7 +62,7 @@ export interface ArchivePost {
 /** Latest N free text posts of a publication ("https://thezvi.substack.com"), newest first. */
 export async function fetchArchivePosts(publicationUrl: string, n: number): Promise<ArchivePost[]> {
   const archive = await fetchJson(`${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=new&limit=${ARCHIVE_FETCH_LIMIT}`);
-  return (archive as any[])
+  return archivePosts(archive)
     .filter((p) => p.audience === "everyone" && p.type !== "podcast")
     .slice(0, n)
     .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
@@ -85,10 +95,16 @@ export interface TopArchivePost {
  *  makes public besides restacks. Paid posts are left out, because we could
  *  not read their bodies anyway. */
 export async function fetchTopArchivePosts(publicationUrl: string, n: number): Promise<TopArchivePost[]> {
-  const archive = await fetchJsonViaResidentialProxy(
-    `${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=top&limit=${ARCHIVE_FETCH_LIMIT}`,
-  );
-  return (archive as any[])
+  const archive = await fetchJsonViaResidentialProxy(topArchiveUrl(publicationUrl));
+  return mostLikedArchivePosts(archive, n);
+}
+
+export const topArchiveUrl = (publicationUrl: string): string =>
+  `${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=top&limit=${ARCHIVE_FETCH_LIMIT}`;
+
+/** The n most liked free text posts in an answer of the archive API. */
+export function mostLikedArchivePosts(archive: unknown, n: number): TopArchivePost[] {
+  return archivePosts(archive)
     .filter((p) => p.audience === "everyone" && p.type !== "podcast")
     .map((p) => ({
       url: p.canonical_url as string,
@@ -142,7 +158,10 @@ export interface SubstackFeed {
 export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFeed> {
   const listing = await readListing({ feedUrl: publicationUrl.replace(/\/$/, ""), limit: 0 });
   if (listing.kind !== "substack") throw new Error(`Not a Substack publication: ${publicationUrl}`);
-  const { xml } = listing;
+  return parseSubstackFeed(listing.xml);
+}
+
+export function parseSubstackFeed(xml: string): SubstackFeed {
   // The channel's own title is the first <title> before any <item>. The items
   // carry <title> tags too, so the channel block is cut out first.
   const channelXml = xml.split("<item>")[0]!;
