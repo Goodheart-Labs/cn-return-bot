@@ -31,7 +31,7 @@ goes through the image screen (`src/claude-notes/imageScreen.ts`, GOO-815).
 |---|---|
 | `/srv/cn-notes` | A checkout of main, owned by `nathan`, group `team`. Only the deploy timer changes it, and it follows whatever branch is checked out. |
 | `/home/nathan/.claude-cn-notewriter` | The config folder of Jim's notewriter account: its login in `.credentials.json` and Claude Code's own files. The unit file points Claude Code here with `CLAUDE_CONFIG_DIR`, so Nathan's own login in `~/.claude` is never used. |
-| `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `CN_NOTEWRITER_KEY` (the notewriter API v2 key of `claude-ai-box`, made with `bun run notewriter new-key claude-ai-box`), `SLACK_BOT_TOKEN` (the alerts) and `OPENAI_API_KEY` (the image screen). Owned by root, readable by `nathan` only. The runner removes all but the database keys from its Claudes' environment. |
+| `/etc/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `CN_NOTEWRITER_KEY` (the notewriter API v2 key of `claude-ai-box`, made with `bun run notewriter new-key claude-ai-box`), `SLACK_BOT_TOKEN` (the alerts), and `ARACHNID_SHIELD_USERNAME`, `ARACHNID_SHIELD_PASSWORD` and `OPENAI_API_KEY` (the image screen). Owned by root, readable by `nathan` only. The runner removes all but the database keys from its Claudes' environment. |
 | `/var/tmp/cn-notes/<kind>/<key>/` | One run folder per job, the same for every try: the prompt, the start script, Claude Code's output, stderr and the exit code, plus what the job keeps (a post's drafts and `report.json`, a tweet's `note.json`). The runner deletes folders older than 3 days. |
 | `~nathan/.local/share/claude-note-finder/posts/` | The post texts that `take` writes. |
 | `~nathan/.local/share/cn-notes/note-examples.md` | The examples file, rebuilt once a day by the runner. |
@@ -79,7 +79,7 @@ git clone https://github.com/Goodheart-Labs/cn-return-bot.git /srv/cn-notes
 chown -R nathan:team /srv/cn-notes
 runuser -u nathan -- bash -lc 'cd /srv/cn-notes && ~/.bun/bin/bun install --frozen-lockfile'
 install -d -m 750 -o root -g nathan /etc/cn-notes
-install -m 640 -o root -g nathan /dev/null /etc/cn-notes/env   # then fill in the seven variables
+install -m 640 -o root -g nathan /dev/null /etc/cn-notes/env   # then fill in the nine variables
 cp /srv/cn-notes/ops/ai-box/cn-notes-*.{service,timer} /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now cn-notes-runner cn-notes-deploy.timer
