@@ -19,6 +19,7 @@ import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
+import { CLAUDE_NOTEWRITER } from "../notewriters/ids";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
 import type { ClaudeRunTag } from "./usageShare";
 import type { UsageReading } from "./usage";
@@ -312,8 +313,17 @@ export async function recordClaudeRun(run: {
   check(
     await db()
       .from("everything_claude_runs")
-      .insert({ tags: run.tags, started_at: new Date(run.startedAt).toISOString(), run_dir: run.runDir, api_cost_usd: run.apiCostUsd, ...run.ref }),
+      .insert({ tags: run.tags, started_at: new Date(run.startedAt).toISOString(), run_dir: run.runDir, api_cost_usd: run.apiCostUsd, notewriter: CLAUDE_NOTEWRITER, ...run.ref }),
   );
+}
+
+/** Marks a post as flagged by the image screen (GOO-815, migration 188): it
+ *  leaves the post list for every notewriter, and its open reader requests
+ *  fail. Returns how many requests failed. */
+export async function flagItem(itemId: string, reason: string): Promise<number> {
+  const { data, error } = await db().rpc("everything_flag_item", { p_item: itemId, p_reason: reason });
+  if (error) throw new Error(JSON.stringify(error));
+  return data;
 }
 
 /** The environment variable through which a post's Claude, and every command
@@ -345,6 +355,7 @@ export async function endPostRun(runId: string, outcome: PostRunOutcome, logs: R
 export async function recordUsage(reading: UsageReading) {
   check(
     await db().from("everything_claude_usage").insert({
+      notewriter: CLAUDE_NOTEWRITER,
       weekly: reading.weekly,
       weekly_resets_at: reading.weeklyResetsAt,
     }),
@@ -354,13 +365,6 @@ export async function recordUsage(reading: UsageReading) {
 /** How many drafts Claude saved on an item since a time. */
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
-  if (error) throw new Error(JSON.stringify(error));
-  return count ?? 0;
-}
-
-/** How many Claude runs with this tag started since a time. */
-export async function claudeRunsSince(tag: ClaudeRunTag, since: Date): Promise<number> {
-  const { count, error } = await db().from("everything_claude_runs").select("id", { count: "exact", head: true }).contains("tags", [tag]).gte("started_at", since.toISOString());
   if (error) throw new Error(JSON.stringify(error));
   return count ?? 0;
 }

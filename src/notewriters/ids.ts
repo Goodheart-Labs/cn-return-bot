@@ -1,10 +1,10 @@
 /** Our own notewriters (GOO-724). A Claude host names its notewriter in
- *  CN_NOTEWRITER: claude-hq-nathan on hq, claude-devbox on the devbox
- *  (GOO-791). The ai-box runner leaves it unset. */
-export const CLAUDE_NOTEWRITER = process.env.CN_NOTEWRITER || "claude-ai-box";
+ *  CN_NOTEWRITER: claude-hq-nathan on hq (GOO-791). The ai-box runner, Jim's
+ *  notewriter on its own Claude account, leaves it unset and calls API v2 with
+ *  its own key (GOO-787). claude-devbox was the devbox's dispatcher, which
+ *  GOO-787 removed. Until 2026-11-19 that dispatcher called itself
+ *  claude-ai-box, so the posts claude-ai-box reserved in the week before the
+ *  rollout ran on Jim's main plan. */
+export const AI_BOX_NOTEWRITER = "claude-ai-box";
+export const CLAUDE_NOTEWRITER = process.env.CN_NOTEWRITER || AI_BOX_NOTEWRITER;
 export const PIPELINE_NOTEWRITER = "pipeline";
-/** The notewriters that write on Nathan's main Claude plan, whose usage the
- *  usage pacing reads. The devbox's dispatcher called itself claude-ai-box
- *  until 2026-11-19 and claude-devbox since (GOO-791). The pacing counts the
- *  posts of both, so its usage per post did not start over with the new name. */
-export const MAIN_PLAN_NOTEWRITERS = ["claude-ai-box", "claude-devbox"];

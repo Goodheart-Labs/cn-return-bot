@@ -5,7 +5,7 @@
  * checked by the pipeline. Instead the X run asks the claim-check service to
  * build the tweet's input (src/pipeline/input/claudeTweetInput.ts) and leaves
  * the tweet's pipeline_runs row open, at the final stage `claude_waiting`.
- * The runner on Nathan's ai-box (src/claude-notes/runner.ts) finds the row and
+ * The runner on Nathan's ai-box (src/claude-notes/jobs/tweet.ts) finds the row and
  * starts one Claude Opus for it. That Claude saves its note on the same row and
  * puts it in the note queue (noteQueue.ts). The next X run then rates it and
  * submits it like every other queued note, under the same daily limit and the

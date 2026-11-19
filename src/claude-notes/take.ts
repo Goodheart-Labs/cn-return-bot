@@ -1,13 +1,16 @@
 /* Takes one post the notewriter protocol handed to the Claude note writer
- * (GOO-507, GOO-724): writes its text where the note-finding agents read it.
- * The intake service already stored the text, and a video's caption
- * timings, before the post was handed out. */
+ * (GOO-507, GOO-724): screens its images (GOO-815) and writes its text where
+ * the note-finding agents read it. The intake service already stored the
+ * text, and a video's caption timings, before the post was handed out. */
 
 import { mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
 import { openPassageRequests, type PassageRequest } from "../everything/passageRequests";
 import { isWholePageChecked } from "../everything-core/wholePageChecked";
-import { draftedPassages, nathanNotedItem, postDir, readItem } from "./store";
+import { tellSlack } from "./alerts";
+import { screenImages } from "./imageScreen";
+import { FLAGGED_SKIP_REASON } from "../everything-core/requestProgress";
+import { draftedPassages, flagItem, nathanNotedItem, postDir, readItem } from "./store";
 
 /** Nathan's own fact-checks are not redone. */
 const NATHAN_SKIP_REASON = "Nathan already fact-checked this post by hand";
@@ -28,13 +31,22 @@ export function postMarkdown(item: Awaited<ReturnType<typeof readItem>>): string
 }
 
 
-/** A skipped post gets no Claude, and the caller finishes it with the reason. */
+/** A skipped post gets no Claude, and the caller finishes it with the reason.
+ *  A post whose images cannot be screened throws, so it gets no Claude either. */
 export async function take(itemId: string): Promise<Take> {
   // A reader's question about a passage is answered even on a post Nathan
   // fact-checked, because the reader asked for it.
   const requests = await openPassageRequests(itemId);
   if (!requests.length && (await nathanNotedItem(itemId))) return { kind: "skipped", reason: NATHAN_SKIP_REASON };
   const item = await readItem(itemId);
+  const screen = await screenImages(item.full_text ?? "");
+  if (screen.kind === "flagged") {
+    // The flag keeps every notewriter away from the post, and fails the
+    // readers' requests before finishing the reservation could answer them.
+    const failedRequests = await flagItem(item.id, screen.reason);
+    await tellSlack(`The image screen stopped the post ${item.id} (${screen.reason}). No Claude saw it, no notewriter will get it, and ${failedRequests} reader requests on it failed.`);
+    return { kind: "skipped", reason: FLAGGED_SKIP_REASON };
+  }
   const dir = postDir(item.url);
   mkdirSync(dir, { recursive: true });
   if (item.caption_cues) writeFileSync(path.join(dir, "cues.json"), JSON.stringify(item.caption_cues));
