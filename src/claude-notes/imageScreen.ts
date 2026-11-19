@@ -22,7 +22,15 @@
  * itself, and Arachnid fetches only from domains listed on our account. An
  * image that cannot be downloaded, or that OpenAI cannot read, is passed over,
  * because no Claude can see it either. Any other failure of either service
- * throws, so the job does not start. */
+ * throws, so the job does not start.
+ *
+ * The screen runs only on a host that has the Arachnid Shield login. Jim
+ * decided on 2026-11-19 (GOO-822) that a host without it, such as Nathan's hq,
+ * must keep working when it pulls main. Such a host starts its Claudes without
+ * the screen. It still has the two older layers: the prompt rule against
+ * opening images and the hook that refuses every Read of one. A host that has
+ * the login but lacks the password or the OpenAI key throws on its first
+ * image, because it was clearly meant to screen. */
 
 const ARACHNID_MEDIA_URL = "https://shield.projectarachnid.com/v1/media";
 /** Arachnid's answer for an image on none of its lists. Anything else, a known
@@ -49,9 +57,12 @@ export function imageLinksIn(text: string): string[] {
   return [...new Set(text.match(IMAGE_LINK) ?? [])];
 }
 
+/** Whether this host screens images: it has the Arachnid Shield login. */
+export const imageScreenOn = () => Boolean(process.env.ARACHNID_SHIELD_USERNAME);
+
 /** `reason` says which check stopped the job and what it saw, never the
- *  image's address. */
-export type ImageScreen = { kind: "clear"; screened: number; passedOver: number } | { kind: "flagged"; reason: string };
+ *  image's address. "off" means the host has no Arachnid Shield login. */
+export type ImageScreen = { kind: "clear"; screened: number; passedOver: number } | { kind: "flagged"; reason: string } | { kind: "off" };
 
 type Image = { type: string; bytes: Buffer };
 
@@ -113,6 +124,7 @@ async function screenImage(image: Image): Promise<string | null | undefined> {
 
 /** Screens every image the text links to. Stops at the first flagged one. */
 export async function screenImages(text: string): Promise<ImageScreen> {
+  if (!imageScreenOn()) return { kind: "off" };
   let screened = 0;
   let passedOver = 0;
   for (const url of imageLinksIn(text)) {
