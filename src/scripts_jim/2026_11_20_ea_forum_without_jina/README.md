@@ -123,6 +123,39 @@ the page reader's own code with Jina switched off:
 | A post, through `readPage` | 0.5 s | 30,179 characters, read through the forum's API |
 | A topic page, through the fetch ladder | 5.8 s | 3,315 characters, via the headless browser |
 
+## Does it help beyond the EA Forum
+
+The services recorded every page read from 2026-11-12 to 2026-11-19 in the
+table `page_reads`. In that week Jina served 324 of the 4,493 page reads, on
+167 sites (`jinaRescuedPages.ts`). I took one page from each of the 60 sites
+with the most such reads and ran the fetch ladder on them twice at the same
+time, from the services box's address: once as on main and once with this
+change (`ladderComparison.ts`).
+
+| | main | this change |
+|---|---|---|
+| Pages read, of 60 | 22 | 30 |
+| Read by the browser step | 0 | 5 |
+
+Main reads 22 of them today although Jina had to read all of them last week,
+mostly because the Wayback Machine has a snapshot by now. With this change the
+browser step read 5 pages, where main's browser step read none. Four of them
+main could not read at all, and the fifth it read from a Wayback snapshot. One
+of the five, nbcpalmsprings.com, stands behind Vercel's check like the EA
+Forum and passed it in 1.5 seconds. The other four answered the browser
+directly, now that it neither announces automation nor sends the forced
+headers. I did not separate those two causes. The remaining differences (five
+pages gained through a Wayback snapshot, one lost) came from the Wayback
+Machine answering one run and not the other, which is chance.
+
+Seven of the 60 pages stand behind Cloudflare's challenge, and it never let
+our browser through (`botCheckKinds.ts`). The browser step first waited 20
+seconds on each of them. It now waits 8, because Vercel's check passed within
+2.3 seconds in every test.
+
+So 30 of the 60 pages still need Jina: Facebook, Instagram, Reddit, the
+Cloudflare sites and others.
+
 ## How the tests left from the services box's address
 
 Nothing ran on the services box except one read-only test at the end. The

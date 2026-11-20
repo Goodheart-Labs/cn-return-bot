@@ -18,10 +18,14 @@ import type { Page, Response } from "playwright";
 const BOT_CHECK_HEADERS = ["x-vercel-mitigated", "cf-mitigated"];
 const BOT_CHECK_VALUE = "challenge";
 
-/** How long the browser waits for the page behind a bot check. From the
- *  services machine, Vercel's check let the browser through within 2 seconds
- *  (GOO-832). */
-const BOT_CHECK_PATIENCE_MS = 20_000;
+/** How long the browser may take to get the first answer for an address. */
+const OPEN_TIMEOUT_MS = 20_000;
+
+/** How long the browser waits for the page behind a bot check. Vercel's check
+ *  let our browser through within 2.3 seconds in every test from the services
+ *  machine. Cloudflare's never did, on 7 pages of 7, so a longer wait would
+ *  only delay the step that comes after (GOO-832). */
+const BOT_CHECK_PATIENCE_MS = 8_000;
 
 const FIRST_REDIRECT_STATUS = 300;
 const FIRST_ERROR_STATUS = 400;
@@ -39,22 +43,12 @@ export const isBotCheckPage = (document: Response) => isBotCheck((name) => docum
  *  never does, it returns the check's own page, which isBotCheckPage tells
  *  apart. */
 export async function openPastBotCheck(page: Page, address: string): Promise<Response> {
-  const documents: Response[] = [];
-  const isBehindTheCheck = (response: Response) => {
+  const opened = await page.goto(address, { waitUntil: "commit", timeout: OPEN_TIMEOUT_MS });
+  if (!opened) throw new Error(`the browser got no answer for ${address}`);
+  if (!isBotCheckPage(opened)) return opened;
+  const isPageBehindTheCheck = (response: Response) => {
     const isRedirect = response.status() >= FIRST_REDIRECT_STATUS && response.status() < FIRST_ERROR_STATUS;
-    if (isRedirect || !response.request().isNavigationRequest() || response.frame() !== page.mainFrame()) return false;
-    documents.push(response);
-    return !isBotCheckPage(response);
+    return response.request().isNavigationRequest() && response.frame() === page.mainFrame() && !isRedirect && !isBotCheckPage(response);
   };
-  try {
-    const [served] = await Promise.all([
-      page.waitForResponse(isBehindTheCheck, { timeout: BOT_CHECK_PATIENCE_MS }),
-      page.goto(address, { waitUntil: "commit", timeout: BOT_CHECK_PATIENCE_MS }),
-    ]);
-    return served;
-  } catch (err) {
-    const lastDocument = documents.at(-1);
-    if (!lastDocument) throw err;
-    return lastDocument;
-  }
+  return page.waitForResponse(isPageBehindTheCheck, { timeout: BOT_CHECK_PATIENCE_MS }).catch(() => opened);
 }

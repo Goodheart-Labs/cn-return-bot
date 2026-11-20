@@ -2,17 +2,19 @@
  * Which pages could only Jina read? The page reader recorded every read from
  * 2026-11-12 to 2026-11-19 in the table page_reads (GOO-766). This lists the
  * page reads of that week by outcome and by the step that served them, and
- * writes one page per site that Jina served to jina_rescued_pages.json, as
- * the test set for ladderComparison.ts.
+ * writes one page per site that Jina served to the given file, as the test
+ * set for ladderComparison.ts. The file holds addresses from production
+ * reads, so it belongs outside the repository, which is public.
  *
- *   bun run src/scripts_jim/2026_11_20_ea_forum_without_jina/jinaRescuedPages.ts
+ *   bun run src/scripts_jim/2026_11_20_ea_forum_without_jina/jinaRescuedPages.ts <pages file>
  */
 import "dotenv/config";
 import { writeFileSync } from "node:fs";
 import { getSupabaseClient } from "../../api/supabaseClient";
 import { fetchAllRows } from "../../everything-core/paging";
 
-const OUT_FILE = `${import.meta.dir}/jina_rescued_pages.json`;
+const OUT_FILE = process.argv[2];
+if (!OUT_FILE) throw new Error("usage: jinaRescuedPages.ts <pages file>");
 const PAGES_IN_TEST_SET = 60;
 
 interface PageReadRow {
