@@ -31,7 +31,9 @@ export interface ABTest {
 // On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work,
 // and on 2026-11-14 he turned them back on at their old weight. On 2026-11-19 (GOO-787)
 // the note writer got a Claude account of its own, and Jim doubled the weight to 100, so
-// Claude gets two fifths of the tweets and X 30% of that account's week.
+// Claude gets two fifths of the tweets and X 30% of that account's week. On 2026-11-20
+// (GOO-829) the tweet Claudes became about half as expensive, and Jim doubled the weight
+// again, to 200, so Claude gets 4 of every 7 tweets.
 // 2026-11-12 (GOO-734): the agent note writer of src/agent-notes/ on GPT-6.1 Terra and on
 // Sonnet 5.5, with our Serper search and page fetch (src/bots/agentBots.ts). Each gets a
 // sixth of the tweets, the weight of 25 Jim chose for GPT on 2026-11-09.
@@ -39,7 +41,7 @@ export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",       overrides: { botId: "simple-bot" }},       weight: 100 },
-    { variant: { name: "claude-code",      overrides: { botId: "claude-code" }},      weight: 100 },
+    { variant: { name: "claude-code",      overrides: { botId: "claude-code" }},      weight: 200 },
     { variant: { name: "gpt61terra-agent", overrides: { botId: "gpt61terra-agent" }}, weight: 25 },
     { variant: { name: "sonnet55-agent",   overrides: { botId: "sonnet55-agent" }},   weight: 25 },
   ],

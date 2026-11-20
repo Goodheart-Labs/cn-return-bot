@@ -15,8 +15,8 @@ import { type JobKind, mayRetry, STOP_BEFORE_DEADLINE_MS } from "./kind";
 
 /** Tweets in progress at once. The X share of the week (xShare.ts) decides
  *  how many tweets come; this only stops a burst from one X run from starting
- *  all its tweets at the same moment. About 180 tweets a day draw Claude since
- *  GOO-787, so 6 at a time keep up. */
+ *  all its tweets at the same moment. A tweet's Claude takes about a minute,
+ *  so 6 at a time finish the dozen tweets of one X run in a few minutes. */
 const MAX_TWEETS_RUNNING = 6;
 /** A tweet needs the web, the shell for the claude-notes commands, and files
  *  in its run folder. It gets no subagents: in the 219 runs of 2026-11-17 to

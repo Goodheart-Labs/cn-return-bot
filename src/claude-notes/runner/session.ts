@@ -157,12 +157,6 @@ export function resultEvent(runDir: string): ResultEvent | null {
   return null;
 }
 
-/** What the run would have cost on the API, as Claude Code reports it. */
-export function runCost(runDir: string): number | null {
-  const cost = resultEvent(runDir)?.total_cost_usd;
-  return typeof cost === "number" ? cost : null;
-}
-
 const MAX_FAILURE_TEXT_CHARS = 300;
 const readIfExists = (file: string) => (existsSync(file) ? readFileSync(file, "utf8").trim() : "");
 
