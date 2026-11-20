@@ -490,11 +490,16 @@ export type Database = {
           ended_at: string
           everything_pipeline_run_id: string | null
           id: string
+          model: string | null
+          model_usage: Json | null
           notewriter: string | null
           pipeline_run_id: string | null
           run_dir: string
           started_at: string
+          subagent_calls: number | null
           tags: string[]
+          tool_calls: Json | null
+          turns: number | null
         }
         Insert: {
           api_cost_usd?: number | null
@@ -502,11 +507,16 @@ export type Database = {
           ended_at?: string
           everything_pipeline_run_id?: string | null
           id?: string
+          model?: string | null
+          model_usage?: Json | null
           notewriter?: string | null
           pipeline_run_id?: string | null
           run_dir: string
           started_at: string
+          subagent_calls?: number | null
           tags: string[]
+          tool_calls?: Json | null
+          turns?: number | null
         }
         Update: {
           api_cost_usd?: number | null
@@ -514,11 +524,16 @@ export type Database = {
           ended_at?: string
           everything_pipeline_run_id?: string | null
           id?: string
+          model?: string | null
+          model_usage?: Json | null
           notewriter?: string | null
           pipeline_run_id?: string | null
           run_dir?: string
           started_at?: string
+          subagent_calls?: number | null
           tags?: string[]
+          tool_calls?: Json | null
+          turns?: number | null
         }
         Relationships: [
           {
@@ -533,6 +548,13 @@ export type Database = {
             columns: ["everything_pipeline_run_id"]
             isOneToOne: false
             referencedRelation: "everything_pipeline_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "everything_claude_runs_notewriter_fkey"
+            columns: ["notewriter"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriter_health"
             referencedColumns: ["id"]
           },
           {
@@ -600,6 +622,13 @@ export type Database = {
           weekly_resets_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "everything_claude_usage_notewriter_fkey"
+            columns: ["notewriter"]
+            isOneToOne: false
+            referencedRelation: "everything_notewriter_health"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "everything_claude_usage_notewriter_fkey"
             columns: ["notewriter"]
@@ -2106,6 +2135,45 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_tweet_views: {
+        Row: {
+          bookmarks: number | null
+          impressions: number | null
+          likes: number | null
+          observed_at: string
+          quotes: number | null
+          replies: number | null
+          retweets: number | null
+          tier: string
+          tweet_id: number
+          xl_rank: number
+        }
+        Insert: {
+          bookmarks?: number | null
+          impressions?: number | null
+          likes?: number | null
+          observed_at: string
+          quotes?: number | null
+          replies?: number | null
+          retweets?: number | null
+          tier: string
+          tweet_id: number
+          xl_rank: number
+        }
+        Update: {
+          bookmarks?: number | null
+          impressions?: number | null
+          likes?: number | null
+          observed_at?: string
+          quotes?: number | null
+          replies?: number | null
+          retweets?: number | null
+          tier?: string
+          tweet_id?: number
+          xl_rank?: number
+        }
+        Relationships: []
+      }
       feed_tweets: {
         Row: {
           author_description: string | null
@@ -2193,6 +2261,45 @@ export type Database = {
           text?: string | null
           tweet_id?: string
           video_duration_ms?: number | null
+        }
+        Relationships: []
+      }
+      feed_view_walks: {
+        Row: {
+          complete: boolean
+          finished_at: string
+          id: number
+          large_posts: number
+          pages: number
+          rate_remaining: number | null
+          small_posts: number
+          started_at: string
+          stop_reason: string | null
+          xl_posts: number
+        }
+        Insert: {
+          complete: boolean
+          finished_at: string
+          id?: never
+          large_posts: number
+          pages: number
+          rate_remaining?: number | null
+          small_posts: number
+          started_at: string
+          stop_reason?: string | null
+          xl_posts: number
+        }
+        Update: {
+          complete?: boolean
+          finished_at?: string
+          id?: never
+          large_posts?: number
+          pages?: number
+          rate_remaining?: number | null
+          small_posts?: number
+          started_at?: string
+          stop_reason?: string | null
+          xl_posts?: number
         }
         Relationships: []
       }
@@ -2995,6 +3102,36 @@ export type Database = {
         }
         Relationships: []
       }
+      site_check_runs: {
+        Row: {
+          cannot_run: number
+          failed: number
+          id: number
+          passed: number
+          report: string
+          results: Json
+          started_at: string
+        }
+        Insert: {
+          cannot_run: number
+          failed: number
+          id?: never
+          passed: number
+          report: string
+          results: Json
+          started_at: string
+        }
+        Update: {
+          cannot_run?: number
+          failed?: number
+          id?: never
+          passed?: number
+          report?: string
+          results?: Json
+          started_at?: string
+        }
+        Relationships: []
+      }
       trending_posts: {
         Row: {
           post_id: string
@@ -3405,6 +3542,10 @@ export type Database = {
         Returns: undefined
       }
       everything_click_counts: { Args: { p_since: string }; Returns: Json }
+      everything_context_paragraph: {
+        Args: { p_passage: string; p_text: string }
+        Returns: string
+      }
       everything_cost_since: { Args: { since: string }; Returns: number }
       everything_create_minisite: {
         Args: {
@@ -3585,7 +3726,6 @@ export type Database = {
         }[]
       }
       everything_feed_slug: { Args: { feed_url: string }; Returns: string }
-      everything_flag_item: { Args: { p_item: string; p_reason: string }; Returns: number }
       everything_feed_stream: {
         Args: {
           p_after: Json
@@ -3611,6 +3751,11 @@ export type Database = {
         }
         Returns: Json
       }
+      everything_flag_item: {
+        Args: { p_item: string; p_reason: string }
+        Returns: number
+      }
+      everything_flagged_request_reason: { Args: never; Returns: string }
       everything_funnel: {
         Args: { window_days?: number }
         Returns: {
@@ -3685,6 +3830,8 @@ export type Database = {
           demanded_at: string | null
           error: string | null
           first_checked_at: string | null
+          flagged_at: string | null
+          flagged_reason: string | null
           full_text: string | null
           id: string
           list_all_count: number

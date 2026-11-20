@@ -28,12 +28,13 @@ import { claudeQueue } from "../queue";
 import { recordClaudeRun } from "../store";
 import { DRAIN_FILE, mayStartClaudes, POSTS_ONLY, weeklyUsage } from "./planUsage";
 import { createScheduler } from "./scheduler";
-import { claudeFailure, runCost, runFolder, RUNS_DIR, sessionAlive, sessionStartedAt, startSession, stopSession } from "./session";
+import { runUsage } from "./runUsage";
+import { claudeFailure, runFolder, RUNS_DIR, sessionAlive, sessionStartedAt, startSession, stopSession } from "./session";
 
 const POLL_MS = 30_000;
 /** Run folders older than this are deleted. By then their job is closed and
  *  everything that matters is in the database. */
-const KEEP_RUN_FOLDERS_MS = 3 * 24 * 3600_000;
+const KEEP_RUN_FOLDERS_MS = 30 * 24 * 3600_000;
 const DAY_MS = 24 * 3600_000;
 /** What the runner is doing, written on every round for the deploy to read:
  *  plain lines of name=value, so the deploy never runs anything from it. */
@@ -45,7 +46,7 @@ const KINDS: JobKind<any>[] = POSTS_ONLY ? [postJob] : [reviewAnswerJob, tweetJo
 
 const scheduler = createScheduler({
   kinds: KINDS,
-  sessions: { start: startSession, alive: sessionAlive, stop: stopSession, startedAt: sessionStartedAt, failure: claudeFailure, cost: runCost },
+  sessions: { start: startSession, alive: sessionAlive, stop: stopSession, startedAt: sessionStartedAt, failure: claudeFailure, usage: runUsage },
   runFolder,
   mayStart: mayStartClaudes,
   weekly: weeklyUsage,
@@ -75,7 +76,8 @@ function refreshExamples() {
 
 let prunedAt = 0;
 
-/** Deletes the run folders not touched for three days, once a day. */
+/** Deletes the run folders not touched for 30 days, once a day. A tweet's
+ *  folder is about 100 KB, so a month of them is about half a gigabyte. */
 function pruneRunFolders() {
   if (Date.now() - prunedAt < DAY_MS) return;
   prunedAt = Date.now();
@@ -83,7 +85,7 @@ function pruneRunFolders() {
   const kindFolders = KINDS.map((kind) => path.join(RUNS_DIR, kind.name)).filter(existsSync);
   const old = kindFolders.flatMap((folder) => readdirSync(folder).map((name) => path.join(folder, name))).filter((dir) => statSync(dir).mtimeMs < cutoff);
   for (const dir of old) rmSync(dir, { recursive: true, force: true });
-  if (old.length > 0) console.log(`Deleted ${old.length} run folders older than 3 days`);
+  if (old.length > 0) console.log(`Deleted ${old.length} run folders older than 30 days`);
 }
 
 mkdirSync(RUNS_DIR, { recursive: true });
