@@ -72,12 +72,12 @@ import { generatePangramCandidates } from "../pipeline/pangram-monitoring/genera
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
-import { computeMaxPosts } from "../pipeline/orchestration/computeMaxPosts";
+import { computeMaxPosts, type RecentChecks } from "../pipeline/orchestration/computeMaxPosts";
 import { startOfUtcDay } from "../pipeline/utils/utcDay";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
 import { getForcedPicks, withForcedPicks } from "../pipeline/ab-testing/abTests";
-import { CLAUDE_TWEET_MAX_WAIT_MINUTES, PIPELINE_BOT } from "../pipeline/orchestration/claudeTweets";
+import { CLAUDE_TWEET_MAX_WAIT_MINUTES, PIPELINE_BOT, waitForClaudeTweets } from "../pipeline/orchestration/claudeTweets";
 import { claudeUnavailableReason } from "../claude-notes/xShare";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
 import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
@@ -177,6 +177,19 @@ async function assertCheckServiceHealthy(): Promise<void> {
   }
 }
 
+/** The window over which the X run measures how many of its checks end in a note. */
+const CHECKS_SAMPLE_HOURS = 32;
+/** A check whose note was submitted, or waits in the queue to be. */
+const NOTED_OUTCOMES = ["candidate", "submitted"];
+
+async function fetchRecentChecks(logger: SupabaseLogger): Promise<RecentChecks> {
+  const [checked, noted] = await Promise.all([
+    logger.countRecentPipelineRuns(CHECKS_SAMPLE_HOURS),
+    logger.countRecentPipelineRunsByOutcomes(CHECKS_SAMPLE_HOURS, NOTED_OUTCOMES),
+  ]);
+  return { checked, noted };
+}
+
 async function main() {
   try {
     await assertCheckServiceHealthy();
@@ -248,11 +261,16 @@ async function main() {
       }
     }
 
-    let { maxPosts } = isLocal
-      ? { maxPosts: MAX_POSTS_LOCAL }
-      : capacity
-        ? computeMaxPosts(capacity)
-        : { maxPosts: MAX_POSTS_FALLBACK };
+    // The queued notes that would actually go out fill X's room before any new tweet is checked.
+    const queuedReady = submittableQueued(queued, raterBarValue).length;
+    let maxPosts = isLocal
+      ? MAX_POSTS_LOCAL
+      : capacity && supabaseLogger
+        ? computeMaxPosts(capacity, await fetchRecentChecks(supabaseLogger), queuedReady)
+        : MAX_POSTS_FALLBACK;
+    if (capacity) {
+      console.log(`[max-posts] X has room for ${capacity.probe ? "1 (cooldown probe)" : capacity.remaining ?? "an unknown number of"} note(s), ${queuedReady} queued note(s) fill it first; checking ${maxPosts} tweet(s)`);
+    }
 
     if (!isLocal && supabaseLogger) {
       const spentTodayUsd = await supabaseLogger.fetchCostSinceUsd(startOfUtcDay());
@@ -261,16 +279,6 @@ async function main() {
         console.log("[spend-cap] daily spend cap reached: no new tweets until midnight UTC, queued notes still go out");
         maxPosts = 0;
       }
-    }
-
-    // A cooldown probe needs only one note, and the queue already holds
-    // written ones, so the probe spends no money on new posts. Only a queued
-    // note that would actually be submitted counts: in time, above the
-    // velocity floor, and not below the bar.
-    const queuedReady = submittableQueued(queued, raterBarValue).length;
-    if (capacity?.probe && queuedReady > 0) {
-      console.log(`[noteQueue] cooldown probe: trying the best of ${queuedReady} queued note(s); no new posts this run`);
-      maxPosts = 0;
     }
 
     if (maxPosts === 0 && queued.length === 0) {
@@ -406,6 +414,12 @@ async function main() {
     // ranked by velocity. Those go ahead of the regular notes. The rest fall in
     // behind them, so a day heavy with topic posts cannot eat the whole daily
     // cap.
+    // The notes of this run's Claude tweets go into the queue, so the run waits
+    // for them and loads the queue again before it submits.
+    if (queueOn && maxPosts > 0) {
+      await waitForClaudeTweets(supabaseLogger!, new Date(RUN_STARTED_AT_MS), SOFT_DEADLINE_AT_MS);
+      queued = await loadNoteQueue(supabaseLogger!);
+    }
     const misinfoReserve = supabaseLogger ? await misinfoReserveRemaining(supabaseLogger) : 0;
     const candidates = mergeWithQueue([
       ...misinfoCandidates.slice(0, misinfoReserve),
