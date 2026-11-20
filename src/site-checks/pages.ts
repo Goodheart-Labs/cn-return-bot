@@ -17,14 +17,19 @@ export const SUBSTACK_PUBLICATION = "https://thezvi.substack.com";
 export const SUBSTACK_PROFILE_HANDLE = "thezvi";
 export const SUBSTACK_PROFILE = `https://substack.com/@${SUBSTACK_PROFILE_HANDLE}`;
 
-/** A video with 36 timestamped notes. */
+/** A video with 36 timestamped notes. It is a collaboration of Chris
+ *  Williamson, who uploaded it, and The Fat Electrician, so its owner box
+ *  names both channels and links neither. */
 export const YOUTUBE_VIDEO = { url: "https://www.youtube.com/watch?v=zB6PhTxnj7U", channelPath: "/@ChrisWillx" };
 export const YOUTUBE_CHANNEL = "https://www.youtube.com/@ChrisWillx";
 /** A channel page whose first rows list videos we noted. */
 export const YOUTUBE_CHANNEL_VIDEOS = "https://www.youtube.com/@veritasium/videos";
-/** The first video ever uploaded. Nobody follows its channel or requests
- *  it, so its three-dot menu always offers our rows. */
-export const YOUTUBE_UNFOLLOWED_VIDEO = "https://www.youtube.com/watch?v=jNQXAC9IVRw";
+/** The first video ever uploaded, and the only video on its channel. Nobody
+ *  follows the channel or requests the video, so the video's three-dot menus
+ *  always offer our rows. A channel we walk would not do: we check its new
+ *  videos within hours, and then a card offers no row. */
+export const YOUTUBE_UNFOLLOWED_VIDEO = { url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", channelPath: "/@jawed" };
+export const YOUTUBE_UNFOLLOWED_CHANNEL_VIDEOS = "https://www.youtube.com/@jawed/videos";
 
 export const LESSWRONG_POST = { url: "https://www.lesswrong.com/posts/DZPodskqJJNEkMLvH/ai-189-new-math", author: "https://www.lesswrong.com/users/zvi" };
 export const LESSWRONG_AUTHOR = "https://www.lesswrong.com/users/zvi";
