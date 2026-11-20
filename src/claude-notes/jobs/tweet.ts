@@ -8,14 +8,15 @@ import { CLAUDE_CODE_BOT, CLAUDE_TWEET_MAX_WAIT_MINUTES } from "../../pipeline/o
 import { tellSlack } from "../alerts";
 import { screenImages } from "../imageScreen";
 import { tweetPrompt, X_EXAMPLES_PATH } from "../prompts";
+import { tweetHasExamples, tweetModel } from "../tweetArms";
 import { CLAUDE_RUN_TAGS } from "../usageShare";
 import { failXTweet, markXTweetRunning, openXTweets, xTweetIsOpen, type XTweet } from "../xTweets";
 import { type JobKind, mayRetry, STOP_BEFORE_DEADLINE_MS } from "./kind";
 
 /** Tweets in progress at once. The X share of the week (xShare.ts) decides
  *  how many tweets come; this only stops a burst from one X run from starting
- *  all its tweets at the same moment. About 180 tweets a day draw Claude since
- *  GOO-787, so 6 at a time keep up. */
+ *  all its tweets at the same moment. A tweet's Claude takes about a minute,
+ *  so 6 at a time finish the dozen tweets of one X run in a few minutes. */
 const MAX_TWEETS_RUNNING = 6;
 /** A tweet with less time than this before the X run sweeps it is not
  *  started: its Claude would be stopped before it could answer. */
@@ -61,7 +62,13 @@ export const tweetJob: JobKind<XTweet> = {
   async prepare(tweet, runDir, attempt) {
     if (attempt === 1 && !(await passesScreen(tweet))) return null;
     await markXTweetRunning(tweet.runId, attempt);
-    return { prompt: tweetPrompt({ tweet, runDir }), command: { model: "opus", effort: "high", appendSystemPromptFile: X_EXAMPLES_PATH } };
+    return {
+      prompt: tweetPrompt({ tweet, runDir }),
+      command: {
+        ...tweetModel(tweet.picks),
+        ...(tweetHasExamples(tweet.picks) && { appendSystemPromptFile: X_EXAMPLES_PATH }),
+      },
+    };
   },
 
   stopAt: (tweet) => sweptAt(tweet) - STOP_BEFORE_DEADLINE_MS,

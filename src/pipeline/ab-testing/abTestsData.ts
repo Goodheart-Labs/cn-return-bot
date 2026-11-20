@@ -31,7 +31,9 @@ export interface ABTest {
 // On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work,
 // and on 2026-11-14 he turned them back on at their old weight. On 2026-11-19 (GOO-787)
 // the note writer got a Claude account of its own, and Jim doubled the weight to 100, so
-// Claude gets two fifths of the tweets and X 30% of that account's week.
+// Claude gets two fifths of the tweets and X 30% of that account's week. On 2026-11-20
+// (GOO-829) the tweet Claudes became about half as expensive, and Jim doubled the weight
+// again, to 200, so Claude gets 4 of every 7 tweets.
 // 2026-11-12 (GOO-734): the agent note writer of src/agent-notes/ on GPT-6.1 Terra and on
 // Sonnet 5.5, with our Serper search and page fetch (src/bots/agentBots.ts). Each gets a
 // sixth of the tweets, the weight of 25 Jim chose for GPT on 2026-11-09.
@@ -39,7 +41,7 @@ export const BOT_TEST: ABTest = {
   name: "bot",
   variants: [
     { variant: { name: "simple-bot",       overrides: { botId: "simple-bot" }},       weight: 100 },
-    { variant: { name: "claude-code",      overrides: { botId: "claude-code" }},      weight: 100 },
+    { variant: { name: "claude-code",      overrides: { botId: "claude-code" }},      weight: 200 },
     { variant: { name: "gpt61terra-agent", overrides: { botId: "gpt61terra-agent" }}, weight: 25 },
     { variant: { name: "sonnet55-agent",   overrides: { botId: "sonnet55-agent" }},   weight: 25 },
   ],
@@ -346,7 +348,31 @@ const CLAUDE_X_RESEARCH_NUDGE_TEST: ABTest = {
   ],
 };
 
-export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST];
+// 2026-11-20 (GOO-838): which Claude writes the claude-code bot's tweets, and
+// whether its system prompt has the 100 example notes. Jim asked for Sonnet
+// and medium effort next to Opus at high effort, the only setup until then.
+// The runner on ai-box turns the picks into its command (src/claude-notes/tweetArms.ts).
+const CLAUDE_X_MODEL_TEST: ABTest = {
+  name: "claude_x_model",
+  prerequisites: { botId: ["claude-code"] },
+  variants: [
+    { variant: { name: "opus_high",     overrides: {} }, weight: 25 },
+    { variant: { name: "opus_medium",   overrides: {} }, weight: 25 },
+    { variant: { name: "sonnet_high",   overrides: {} }, weight: 25 },
+    { variant: { name: "sonnet_medium", overrides: {} }, weight: 25 },
+  ],
+};
+
+const CLAUDE_X_EXAMPLES_TEST: ABTest = {
+  name: "claude_x_examples",
+  prerequisites: { botId: ["claude-code"] },
+  variants: [
+    { variant: { name: "with",    overrides: {} }, weight: 50 },
+    { variant: { name: "without", overrides: {} }, weight: 50 },
+  ],
+};
+
+export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST, CLAUDE_X_MODEL_TEST, CLAUDE_X_EXAMPLES_TEST];
 
 // The same taste test for the Claude note writer's Common Notes posts. The
 // runner on ai-box draws it when it takes a post and records the pick on the

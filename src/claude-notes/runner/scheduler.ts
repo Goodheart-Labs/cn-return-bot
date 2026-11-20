@@ -14,6 +14,7 @@
 
 import type { recordClaudeRun } from "../store";
 import type { EndedRun, JobKind } from "../jobs/kind";
+import type { RunUsage } from "./runUsage";
 import type { ClaudeCommand } from "./session";
 
 /** What the scheduler needs from the world, so a test can stand in for it. */
@@ -26,7 +27,7 @@ export type SchedulerDeps = {
     /** When a picked-up session started, or null when it never did. */
     startedAt(runDir: string): number | null;
     failure(runDir: string): string | null;
-    cost(runDir: string): number | null;
+    usage(runDir: string): RunUsage;
   };
   runFolder(kind: string, key: string): string;
   mayStart(): Promise<boolean>;
@@ -101,7 +102,7 @@ export function createScheduler(deps: SchedulerDeps) {
   async function close(run: Running) {
     running.delete(id(run.kind, run.key));
     await deps.claudeEnded(run.timedOut ? `${run.session} was stopped at its time limit` : deps.sessions.failure(run.runDir));
-    await deps.recordRun({ tags: run.kind.tags, startedAt: run.startedAt, runDir: run.runDir, apiCostUsd: deps.sessions.cost(run.runDir), ref: run.kind.ref(run.work, run.runDir) });
+    await deps.recordRun({ tags: run.kind.tags, startedAt: run.startedAt, runDir: run.runDir, usage: deps.sessions.usage(run.runDir), ref: run.kind.ref(run.work, run.runDir) });
     const ended: EndedRun = { runDir: run.runDir, attempt: run.attempt, startedAt: run.startedAt, weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await deps.weekly(), timedOut: run.timedOut };
     const outcome = await run.kind.close(run.work, ended);
     if (outcome === "gave_up") gaveUp.add(id(run.kind, run.key));

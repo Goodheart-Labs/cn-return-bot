@@ -7,9 +7,11 @@
  * the tweet's pipeline_runs row open, at the final stage `claude_waiting`.
  * The runner on Nathan's ai-box (src/claude-notes/jobs/tweet.ts) finds the row and
  * starts one Claude Opus for it. That Claude saves its note on the same row and
- * puts it in the note queue (noteQueue.ts). The next X run then rates it and
- * submits it like every other queued note, under the same daily limit and the
- * same rater bar.
+ * puts it in the note queue (noteQueue.ts). The X run that handed the tweet
+ * over waits for its Claudes before it submits (waitForClaudeTweets), then
+ * rates the note and submits it like every other queued note, under the same
+ * daily limit and the same rater bar. A note Claude saves after that run ends
+ * goes out with the next run.
  *
  * The row moves through these stages while it stays `in_progress`:
  *   claude_waiting   the X run built the input
@@ -72,4 +74,24 @@ export async function handTweetToClaude(params: {
   } catch (err) {
     await fail("claude_input_failed", `Could not build the input for Claude: ${(err as Error).message ?? String(err)}`);
   }
+}
+
+/** How often the X run asks whether its Claudes have answered. */
+const CLAUDE_POLL_MS = 15_000;
+
+/** Waits until every tweet this run handed to Claude has an answer, or until
+ *  the deadline. A Claude answers in about a minute, so the notes go out in
+ *  the run that found their tweets instead of waiting half an hour for the
+ *  next one (GOO-839). */
+export async function waitForClaudeTweets(logger: SupabaseLogger, since: Date, deadlineMs: number): Promise<void> {
+  const startedAt = Date.now();
+  let open = await logger.countOpenClaudeTweets(since);
+  if (open === 0) return;
+  console.log(`[claude] waiting for ${open} Claude tweet(s) before submitting`);
+  while (open > 0 && Date.now() + CLAUDE_POLL_MS < deadlineMs) {
+    await new Promise((resolve) => setTimeout(resolve, CLAUDE_POLL_MS));
+    open = await logger.countOpenClaudeTweets(since);
+  }
+  const waited = Math.round((Date.now() - startedAt) / 1000);
+  console.log(open === 0 ? `[claude] every Claude tweet answered after ${waited}s` : `[claude] ${open} Claude tweet(s) still open at the deadline after ${waited}s; the next run submits their notes`);
 }

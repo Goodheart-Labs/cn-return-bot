@@ -13,6 +13,7 @@ import {
   readSubstackPublicationFromPage,
   readWatchPageChannel,
   resolveProfileCreatorTarget,
+  youtubeVideoChannelTarget,
 } from "../everything-extension/utils/creatorTarget";
 import {
   SUBSTACK_MENU_TRIGGER,
@@ -20,7 +21,7 @@ import {
   YOUTUBE_MENU_TRIGGER,
   YOUTUBE_WATCH_MENU_TRIGGER,
 } from "../everything-extension/utils/menuTriggers";
-import { fetchReaderCanonical } from "../everything-core/pageUrls";
+import { extractYoutubeVideoId, fetchReaderCanonical } from "../everything-core/pageUrls";
 import { CannotRunError, must, type SiteCheck } from "./siteCheck";
 import * as pages from "./pages";
 
@@ -127,6 +128,15 @@ function forumPageAuthorCheck(context: BrowserContext, name: string, post: { url
   };
 }
 
+/** Waits until readWatchPageChannel finds a channel on the open watch page,
+ *  and checks that it is the video's own. */
+async function readChannelOutOfPage(page: Page, video: { url: string; channelPath: string }): Promise<string> {
+  await page.waitForFunction(readWatchPageChannel, undefined, { timeout: LOG_WAIT_MS }).catch(() => {});
+  const channel = await page.evaluate(readWatchPageChannel);
+  must(channel && new URL(channel.href).pathname === video.channelPath, `the page reader found the channel ${channel?.href ?? "none"} on ${video.url}`);
+  return channel.name.trim();
+}
+
 function anchorEveryClaim(context: BrowserContext, url: string): Promise<string> {
   return withPage(context, url, async (page, lines) => {
     const [, anchored, total] = (await waitForLog(page, lines, /anchored (\d+)\/(\d+) claims/)).map(Number);
@@ -209,17 +219,28 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
     name: "Our rows appear in a video card's three-dot menu",
     code: "youtubeMenuSite (src/everything-extension/utils/youtubeMenuRows.ts) and installMenuRows",
     run: () =>
-      withPage(context, pages.YOUTUBE_CHANNEL_VIDEOS, async (page) => {
+      withPage(context, pages.YOUTUBE_UNFOLLOWED_CHANNEL_VIDEOS, async (page) => {
         await page.waitForTimeout(PAGE_SETTLE_MS);
         // A card's buttons appear when the pointer is over it.
         const card = page.locator(YOUTUBE_CARD).locator("visible=true").first();
         await card.hover();
         const rows = await ourMenuRows(page, card.locator(YOUTUBE_MENU_TRIGGER).locator("visible=true").last());
-        // The newest video gets "Check this video" until we check it, and
-        // the channel's row until someone gives it priority.
-        must(rows.length > 0, "the card's menu got no rows. Either YouTube's menu changed, or its newest video is checked and the channel has priority");
+        // A card on a channel's own page does not link the channel, so the
+        // only row is "Check this video", which stays until someone asks us
+        // to check the video.
+        must(rows.length > 0, "the card's menu got no rows. Either YouTube's menu changed, or someone asked us to check Me at the zoo");
         return rows.join(" · ");
       }),
+  },
+  {
+    site: "YouTube",
+    name: "YouTube's oEmbed endpoint names the channel that uploaded a collaboration video",
+    code: "youtubeVideoChannelTarget (src/everything-extension/utils/creatorTarget.ts)",
+    run: async () => {
+      const target = await youtubeVideoChannelTarget(extractYoutubeVideoId(pages.YOUTUBE_VIDEO.url)!);
+      must(target && new URL(target.feedUrl).pathname === pages.YOUTUBE_VIDEO.channelPath, `oEmbed named ${target?.feedUrl ?? "no channel"}`);
+      return target.title;
+    },
   },
   forumPageAuthorCheck(context, "a LessWrong", pages.LESSWRONG_POST),
   forumPageAuthorCheck(context, "an Alignment Forum", pages.ALIGNMENT_FORUM_POST),
@@ -248,14 +269,15 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
 export const watchPageChecks = (context: BrowserContext): SiteCheck[] => [
   {
     site: "YouTube",
-    name: "A watch page's channel is read out of the page",
+    name: "A watch page's channel is read out of the page, on an ordinary video and on a collaboration video",
     code: "readWatchPageChannel (src/everything-extension/utils/creatorTarget.ts)",
-    run: () =>
-      withPlayingVideo(context, pages.YOUTUBE_VIDEO.url, async (page) => {
-        const channel = await page.evaluate(readWatchPageChannel);
-        must(channel && new URL(channel.href).pathname === pages.YOUTUBE_VIDEO.channelPath, `the page reader found the channel ${channel?.href ?? "none"}`);
-        return channel.name.trim();
-      }),
+    run: async () => {
+      const names = [];
+      for (const video of [pages.YOUTUBE_UNFOLLOWED_VIDEO, pages.YOUTUBE_VIDEO]) {
+        names.push(await withPlayingVideo(context, video.url, (page) => readChannelOutOfPage(page, video)));
+      }
+      return names.join(" · ");
+    },
   },
   {
     site: "YouTube",
@@ -275,7 +297,7 @@ export const watchPageChecks = (context: BrowserContext): SiteCheck[] => [
     name: "Our rows appear in the three-dot menu under a playing video",
     code: "youtubeMenuSite (src/everything-extension/utils/youtubeMenuRows.ts) and installMenuRows",
     run: () =>
-      withPlayingVideo(context, pages.YOUTUBE_UNFOLLOWED_VIDEO, async (page) => {
+      withPlayingVideo(context, pages.YOUTUBE_UNFOLLOWED_VIDEO.url, async (page) => {
         const rows = await ourMenuRows(page, page.locator(YOUTUBE_WATCH_MENU_TRIGGER).locator("visible=true").first());
         must(rows.length > 0, "the menu under the video got no rows");
         return rows.join(" · ");
