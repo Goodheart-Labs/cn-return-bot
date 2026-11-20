@@ -1,0 +1,612 @@
+{
+ "dataset": {
+  "tweets": 35799,
+  "by_split": [
+   {
+    "split": "dev",
+    "tweets": 21723,
+    "helpful": 0.1086
+   },
+   {
+    "split": "test",
+    "tweets": 14076,
+    "helpful": 0.1162
+   }
+  ],
+  "outcome_shares": {
+   "no notes": 0.5034,
+   "noted, little attention": 0.2239,
+   "stalemate": 0.1611,
+   "helpful": 0.1116
+  },
+  "helpful_by_tier": [
+   {
+    "feed_size": "large",
+    "mean": 0.1198,
+    "size": 13460
+   },
+   {
+    "feed_size": "small",
+    "mean": 0.187,
+    "size": 5411
+   },
+   {
+    "feed_size": "xl",
+    "mean": 0.0799,
+    "size": 16778
+   }
+  ]
+ },
+ "existing_prefilter": [
+  {
+   "filter": "deepseek prefilter (dev)",
+   "tweets": 21439,
+   "helpful": 2328,
+   "recall": 0.6155,
+   "pass_rate": 0.423,
+   "lift": 1.4552,
+   "cost_per_tweet": 0.0029
+  },
+  {
+   "filter": "deepseek prefilter (test)",
+   "tweets": 8072,
+   "helpful": 920,
+   "recall": 0.5543,
+   "pass_rate": 0.4151,
+   "lift": 1.3353,
+   "cost_per_tweet": 0.0037
+  }
+ ],
+ "dev_runs": [
+  {
+   "filter": "v1_plain_low_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.5572,
+   "pass@90": 0.966,
+   "lift@90": 0.9317,
+   "pass@95": 0.966,
+   "lift@95": 0.9834,
+   "errors": 0,
+   "in_tokens": 844.642,
+   "out_tokens": 122.612,
+   "search_share": 0.0,
+   "usd_per_1k": 0.1458,
+   "label": "Prompt v1, tweet only"
+  },
+  {
+   "filter": "v1_neighbours_low_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.6091,
+   "pass@90": 0.8613,
+   "lift@90": 1.0449,
+   "pass@95": 0.986,
+   "lift@95": 0.9635,
+   "errors": 0,
+   "in_tokens": 1816.69,
+   "out_tokens": 77.1567,
+   "search_share": 0.0,
+   "usd_per_1k": 0.2202,
+   "label": "Prompt v1, with similar tweets"
+  },
+  {
+   "filter": "v2_plain_low_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.5883,
+   "pass@90": 0.8713,
+   "lift@90": 1.0329,
+   "pass@95": 0.9113,
+   "lift@95": 1.0424,
+   "errors": 0,
+   "in_tokens": 913.642,
+   "out_tokens": 80.3947,
+   "search_share": 0.0,
+   "usd_per_1k": 0.1316,
+   "label": "Prompt v2, tweet only"
+  },
+  {
+   "filter": "v2_neighbours_off_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.6286,
+   "pass@90": 0.788,
+   "lift@90": 1.1421,
+   "pass@95": 0.8833,
+   "lift@95": 1.0755,
+   "errors": 0,
+   "in_tokens": 1884.69,
+   "out_tokens": 55.2833,
+   "search_share": 0.0,
+   "usd_per_1k": 0.2161,
+   "label": "Prompt v2, similar tweets, no thinking"
+  },
+  {
+   "filter": "v2_neighbours_low_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.6428,
+   "pass@90": 0.8033,
+   "lift@90": 1.1203,
+   "pass@95": 0.922,
+   "lift@95": 1.0304,
+   "errors": 0,
+   "in_tokens": 1885.69,
+   "out_tokens": 67.1,
+   "search_share": 0.0,
+   "usd_per_1k": 0.2221,
+   "label": "Prompt v2, similar tweets, low thinking"
+  },
+  {
+   "filter": "v2_neighbours_medium_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.6734,
+   "pass@90": 0.8067,
+   "lift@90": 1.1157,
+   "pass@95": 0.8773,
+   "lift@95": 1.0828,
+   "errors": 0,
+   "in_tokens": 1885.69,
+   "out_tokens": 186.7593,
+   "search_share": 0.0,
+   "usd_per_1k": 0.2819,
+   "label": "Prompt v2, similar tweets, medium thinking"
+  },
+  {
+   "filter": "v2_neighbours_search_low_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.6474,
+   "pass@90": 0.9067,
+   "lift@90": 0.9926,
+   "pass@95": 0.9067,
+   "lift@95": 1.0478,
+   "errors": 0,
+   "in_tokens": 2974.1407,
+   "out_tokens": 216.7407,
+   "search_share": 0.004,
+   "usd_per_1k": 0.4906,
+   "label": "Prompt v2, similar tweets, web search allowed"
+  },
+  {
+   "filter": "v3_neighbours_off_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.5956,
+   "pass@90": 0.8713,
+   "lift@90": 1.0329,
+   "pass@95": 0.9373,
+   "lift@95": 1.0135,
+   "errors": 0,
+   "in_tokens": 2071.69,
+   "out_tokens": 105.7547,
+   "search_share": 0.0,
+   "usd_per_1k": 0.26,
+   "label": "Prompt v3 (five part questions), similar tweets"
+  },
+  {
+   "filter": "claude-sonnet-5.5_v2_neighbours_low_dev_1500_0",
+   "tweets": 1500,
+   "helpful": 154,
+   "auc": 0.6616,
+   "pass@90": 0.798,
+   "lift@90": 1.1278,
+   "pass@95": 0.9047,
+   "lift@95": 1.0501,
+   "errors": 0,
+   "in_tokens": 1885.69,
+   "out_tokens": 57.9087,
+   "search_share": 0.0,
+   "usd_per_1k": 4.3505,
+   "label": "Sonnet 5.5 instead of Haiku, prompt v2, similar tweets"
+  }
+ ],
+ "test": [
+  {
+   "filter": "metadata only",
+   "tweets": 4000,
+   "helpful": 449,
+   "auc": 0.7364,
+   "pass@90": 0.6595,
+   "lift@90": 1.3647,
+   "pass@95": 0.7925,
+   "lift@95": 1.1987
+  },
+  {
+   "filter": "Haiku only",
+   "tweets": 4000,
+   "helpful": 449,
+   "auc": 0.6331,
+   "pass@90": 0.8642,
+   "lift@90": 1.0414,
+   "pass@95": 0.9355,
+   "lift@95": 1.0155
+  },
+  {
+   "filter": "Haiku and metadata combined",
+   "tweets": 4000,
+   "helpful": 449,
+   "auc": 0.7382,
+   "pass@90": 0.6215,
+   "lift@90": 1.4481,
+   "pass@95": 0.7598,
+   "lift@95": 1.2504
+  }
+ ],
+ "test_cost": {
+  "filter": "v2_neighbours_medium_test_4000_0",
+  "tweets": 4000,
+  "helpful": 449,
+  "auc": 0.6331,
+  "pass@90": 0.8642,
+  "lift@90": 1.0414,
+  "pass@95": 0.9355,
+  "lift@95": 1.0155,
+  "errors": 0,
+  "in_tokens": 1884.4055,
+  "out_tokens": 170.8055,
+  "search_share": 0.0,
+  "usd_per_1k": 0.2738
+ },
+ "test_metadata_all_tweets": {
+  "filter": "metadata only, every test tweet",
+  "tweets": 14076,
+  "helpful": 1635,
+  "auc": 0.732,
+  "pass@90": 0.6723,
+  "lift@90": 1.3387,
+  "pass@95": 0.7931,
+  "lift@95": 1.1979
+ },
+ "test_curves": {
+  "metadata only": [
+   {
+    "recall": 0.5,
+    "pass_rate": 0.2238
+   },
+   {
+    "recall": 0.52,
+    "pass_rate": 0.2372
+   },
+   {
+    "recall": 0.54,
+    "pass_rate": 0.2507
+   },
+   {
+    "recall": 0.56,
+    "pass_rate": 0.27
+   },
+   {
+    "recall": 0.58,
+    "pass_rate": 0.2858
+   },
+   {
+    "recall": 0.6,
+    "pass_rate": 0.295
+   },
+   {
+    "recall": 0.62,
+    "pass_rate": 0.317
+   },
+   {
+    "recall": 0.64,
+    "pass_rate": 0.3282
+   },
+   {
+    "recall": 0.66,
+    "pass_rate": 0.3483
+   },
+   {
+    "recall": 0.68,
+    "pass_rate": 0.38
+   },
+   {
+    "recall": 0.7,
+    "pass_rate": 0.3995
+   },
+   {
+    "recall": 0.72,
+    "pass_rate": 0.428
+   },
+   {
+    "recall": 0.74,
+    "pass_rate": 0.4465
+   },
+   {
+    "recall": 0.76,
+    "pass_rate": 0.4615
+   },
+   {
+    "recall": 0.78,
+    "pass_rate": 0.4838
+   },
+   {
+    "recall": 0.8,
+    "pass_rate": 0.51
+   },
+   {
+    "recall": 0.82,
+    "pass_rate": 0.5302
+   },
+   {
+    "recall": 0.84,
+    "pass_rate": 0.573
+   },
+   {
+    "recall": 0.86,
+    "pass_rate": 0.5903
+   },
+   {
+    "recall": 0.88,
+    "pass_rate": 0.6278
+   },
+   {
+    "recall": 0.9,
+    "pass_rate": 0.6595
+   },
+   {
+    "recall": 0.92,
+    "pass_rate": 0.7115
+   },
+   {
+    "recall": 0.94,
+    "pass_rate": 0.7648
+   },
+   {
+    "recall": 0.96,
+    "pass_rate": 0.8403
+   },
+   {
+    "recall": 0.98,
+    "pass_rate": 0.8932
+   },
+   {
+    "recall": 1.0,
+    "pass_rate": 0.9872
+   }
+  ],
+  "Haiku only": [
+   {
+    "recall": 0.5,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.52,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.54,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.56,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.58,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.6,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.62,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.64,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.66,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.68,
+    "pass_rate": 0.5282
+   },
+   {
+    "recall": 0.7,
+    "pass_rate": 0.575
+   },
+   {
+    "recall": 0.72,
+    "pass_rate": 0.575
+   },
+   {
+    "recall": 0.74,
+    "pass_rate": 0.7057
+   },
+   {
+    "recall": 0.76,
+    "pass_rate": 0.7057
+   },
+   {
+    "recall": 0.78,
+    "pass_rate": 0.7057
+   },
+   {
+    "recall": 0.8,
+    "pass_rate": 0.7057
+   },
+   {
+    "recall": 0.82,
+    "pass_rate": 0.7057
+   },
+   {
+    "recall": 0.84,
+    "pass_rate": 0.7823
+   },
+   {
+    "recall": 0.86,
+    "pass_rate": 0.7823
+   },
+   {
+    "recall": 0.88,
+    "pass_rate": 0.7823
+   },
+   {
+    "recall": 0.9,
+    "pass_rate": 0.8642
+   },
+   {
+    "recall": 0.92,
+    "pass_rate": 0.9355
+   },
+   {
+    "recall": 0.94,
+    "pass_rate": 0.9355
+   },
+   {
+    "recall": 0.96,
+    "pass_rate": 0.9888
+   },
+   {
+    "recall": 0.98,
+    "pass_rate": 0.9888
+   },
+   {
+    "recall": 1.0,
+    "pass_rate": 0.9998
+   }
+  ],
+  "Haiku and metadata combined": [
+   {
+    "recall": 0.5,
+    "pass_rate": 0.235
+   },
+   {
+    "recall": 0.52,
+    "pass_rate": 0.252
+   },
+   {
+    "recall": 0.54,
+    "pass_rate": 0.265
+   },
+   {
+    "recall": 0.56,
+    "pass_rate": 0.2855
+   },
+   {
+    "recall": 0.58,
+    "pass_rate": 0.297
+   },
+   {
+    "recall": 0.6,
+    "pass_rate": 0.3078
+   },
+   {
+    "recall": 0.62,
+    "pass_rate": 0.327
+   },
+   {
+    "recall": 0.64,
+    "pass_rate": 0.3367
+   },
+   {
+    "recall": 0.66,
+    "pass_rate": 0.3548
+   },
+   {
+    "recall": 0.68,
+    "pass_rate": 0.38
+   },
+   {
+    "recall": 0.7,
+    "pass_rate": 0.404
+   },
+   {
+    "recall": 0.72,
+    "pass_rate": 0.4243
+   },
+   {
+    "recall": 0.74,
+    "pass_rate": 0.4395
+   },
+   {
+    "recall": 0.76,
+    "pass_rate": 0.447
+   },
+   {
+    "recall": 0.78,
+    "pass_rate": 0.4833
+   },
+   {
+    "recall": 0.8,
+    "pass_rate": 0.4995
+   },
+   {
+    "recall": 0.82,
+    "pass_rate": 0.5202
+   },
+   {
+    "recall": 0.84,
+    "pass_rate": 0.5375
+   },
+   {
+    "recall": 0.86,
+    "pass_rate": 0.5625
+   },
+   {
+    "recall": 0.88,
+    "pass_rate": 0.588
+   },
+   {
+    "recall": 0.9,
+    "pass_rate": 0.6215
+   },
+   {
+    "recall": 0.92,
+    "pass_rate": 0.6767
+   },
+   {
+    "recall": 0.94,
+    "pass_rate": 0.7518
+   },
+   {
+    "recall": 0.96,
+    "pass_rate": 0.85
+   },
+   {
+    "recall": 0.98,
+    "pass_rate": 0.9035
+   },
+   {
+    "recall": 1.0,
+    "pass_rate": 0.9905
+   }
+  ]
+ },
+ "test_outcome_pass_rates": {
+  "metadata only": {
+   "helpful": 0.902,
+   "no notes": 0.5587,
+   "noted, little attention": 0.7737,
+   "stalemate": 0.6195,
+   "views of helpful-note tweets": 0.9315
+  },
+  "Haiku only": {
+   "helpful": 0.9176,
+   "no notes": 0.8149,
+   "noted, little attention": 0.9273,
+   "stalemate": 0.8822,
+   "views of helpful-note tweets": 0.942
+  },
+  "Haiku and metadata combined": {
+   "helpful": 0.902,
+   "no notes": 0.4967,
+   "noted, little attention": 0.7646,
+   "stalemate": 0.5842,
+   "views of helpful-note tweets": 0.9207
+  }
+ },
+ "combiner_weights": [
+  [
+   0.8141,
+   0.6818
+  ]
+ ]
+}
