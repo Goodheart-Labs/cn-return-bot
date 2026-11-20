@@ -3,6 +3,9 @@
  *  to check their new posts. Whether that creator is already prioritised is a
  *  separate question, answered by unlessPrioritized in prioritizedCreators.ts
  *  against the synced list. */
+import { youtubeWatchUrl } from "@cn/core/pageUrls";
+
+const YOUTUBE_OEMBED_URL = "https://www.youtube.com/oembed";
 
 export interface CreatorTarget {
   feedType: "substack" | "youtube" | "lesswrong";
@@ -223,13 +226,39 @@ export function youtubeChannelPath(pageUrl: string): string | null {
   }
 }
 
-/** Reads the channel out of a YouTube watch page's owner box. It runs inside
- *  the watch page, so it must stay self-contained: executeScript
- *  serializes the function and imports would not exist over there. The visit
- *  recorder also calls it directly, because its content script IS the page. */
+/** Asks YouTube's oEmbed endpoint which channel uploaded a video. The answer
+ *  belongs to the video id. So unlike the watch page, which YouTube updates
+ *  some time after it switched videos in place, it can never name the channel
+ *  of the video the reader watched before. Null when YouTube does not answer,
+ *  for example for a video whose owner turned off embedding. Callers then read
+ *  the channel from the page itself (readWatchPageChannel). */
+export async function youtubeVideoChannelTarget(videoId: string): Promise<CreatorTarget | null> {
+  try {
+    const res = await fetch(`${YOUTUBE_OEMBED_URL}?format=json&url=${encodeURIComponent(youtubeWatchUrl(videoId))}`, { credentials: "omit" });
+    if (!res.ok) return null;
+    const { author_url: channelUrl, author_name: channelName } = (await res.json()) as { author_url?: string; author_name?: string };
+    return channelUrl ? youtubeChannelTarget(channelUrl, channelName ?? "") : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Reads the channel that uploaded the video out of a YouTube watch page. On
+ *  most videos the owner box under the video links it. A collaboration video
+ *  names several channels in its owner box and links none of them, and YouTube
+ *  hides the usual channel name there. So for such a video we read the channel
+ *  card at the end of the description, which links the uploader on every
+ *  video. The hidden channel name can still hold the link of the previous
+ *  video after YouTube switched videos in place, so it is never read.
+ *  This function runs inside the watch page, so it must stay self-contained:
+ *  executeScript serializes the function and imports would not exist over
+ *  there. The visit recorder also calls it directly, because its content
+ *  script IS the page. */
 export function readWatchPageChannel() {
-  const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
-  return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
+  const ownerLink = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name:not([hidden]) a");
+  if (ownerLink?.href) return { href: ownerLink.href, name: ownerLink.textContent ?? "" };
+  const cardLink = document.querySelector<HTMLAnchorElement>("ytd-watch-metadata ytd-video-description-infocards-section-renderer a#header");
+  return cardLink?.href ? { href: cardLink.href, name: cardLink.querySelector("#title")?.textContent ?? "" } : null;
 }
 
 /** The follow target for a YouTube channel link or channel page URL. `title`
