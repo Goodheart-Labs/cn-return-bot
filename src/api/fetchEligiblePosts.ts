@@ -128,48 +128,68 @@ async function fetchPage(
   });
 }
 
+/** One page of the eligible-posts feed, as walkEligiblePages yields it. */
+export type FeedPage = {
+  posts: Post[];
+  /** How many requests X says are left in the endpoint's 15-minute window, or
+   *  null when the answer did not say. */
+  rateRemaining: number | null;
+  isLastPage: boolean;
+};
+
+/**
+ * Reads the feed one page at a time, in X's order, until X has no next page.
+ * It makes the next request only when the caller asks for the next page, so a
+ * caller that stops iterating makes no further requests.
+ */
+export async function* walkEligiblePages(
+  postSelection: string | undefined,
+  pageSize: number = MAX_POSTS_PER_PAGE,
+): AsyncGenerator<FeedPage> {
+  let nextToken: string | undefined;
+  do {
+    const response = await fetchPage(pageSize, postSelection, nextToken);
+    nextToken = response.data.meta?.next_token;
+    const remaining = response.headers?.["x-rate-limit-remaining"];
+    yield {
+      posts: parsePostsResponse(response.data),
+      rateRemaining: remaining === undefined ? null : Number(remaining),
+      isLastPage: !nextToken,
+    };
+  } while (nextToken);
+}
+
 export async function fetchEligiblePosts(
   maxResults: number = 10,
   maxPages: number = 3,
   postSelection?: string
 ): Promise<Post[]> {
+  if (maxResults <= 0 || maxPages <= 0) return [];
   const allEligiblePosts: Post[] = [];
   const seenPostIds = new Set<string>();
-  let nextToken: string | undefined;
   let pageCount = 0;
   let totalDuplicatesSkipped = 0;
 
-  while (pageCount < maxPages && allEligiblePosts.length < maxResults) {
+  for await (const page of walkEligiblePages(postSelection, Math.min(maxResults, MAX_POSTS_PER_PAGE))) {
     pageCount++;
 
-    const response = await fetchPage(Math.min(maxResults, MAX_POSTS_PER_PAGE), postSelection, nextToken);
-
-    const allPosts = parsePostsResponse(response.data);
-
-    let pageDuplicates = 0;
-    const newPosts = allPosts.filter((post) => {
+    for (const post of page.posts) {
       if (seenPostIds.has(post.id)) {
-        pageDuplicates++;
-        return false;
+        totalDuplicatesSkipped++;
+        continue;
       }
       seenPostIds.add(post.id);
-      return true;
-    });
-    totalDuplicatesSkipped += pageDuplicates;
-
-    allEligiblePosts.push(...newPosts);
-
-    nextToken = response.data.meta?.next_token;
-
-    if (!nextToken) {
-      break;
+      allEligiblePosts.push(post);
     }
+
+    if (page.isLastPage || pageCount >= maxPages || allEligiblePosts.length >= maxResults) break;
 
     // Every response reports how much of the endpoint's rate budget is left.
     // The budget is 500 requests per 15 minute window, and every fetch in a run
-    // draws on the same budget. We stop before making the request that would be
+    // draws on the same budget. So does the feed view recorder on the services
+    // box (src/feed-views/). We stop before making the request that would be
     // rejected with a 429, rather than reacting once it has failed.
-    if (response.headers?.["x-rate-limit-remaining"] === "0") {
+    if (page.rateRemaining === 0) {
       console.warn(
         `[generate] Rate budget exhausted after page ${pageCount}; keeping the ${allEligiblePosts.length} posts already fetched`
       );

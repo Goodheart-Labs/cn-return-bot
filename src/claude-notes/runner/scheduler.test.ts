@@ -28,7 +28,7 @@ function fakeWorld() {
       },
       startedAt: () => null,
       failure: () => null,
-      cost: () => 0.5,
+      usage: () => ({ apiCostUsd: 0.5, model: null, turns: null, toolCalls: {}, subagentCalls: 0, modelUsage: null }),
     },
     runFolder: (kind, key) => `/runs/${kind}/${key}`,
     mayStart: async () => mayStart,

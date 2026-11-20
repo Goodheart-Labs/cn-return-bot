@@ -1,6 +1,12 @@
 import { extractYoutubeVideoId, youtubeWatchUrl } from "@cn/core/pageUrls";
 import { formatVideoTime } from "@cn/core/videoTime";
-import { readWatchPageChannel, youtubeChannelPath, youtubeChannelTarget, type CreatorTarget } from "./creatorTarget";
+import {
+  readWatchPageChannel,
+  youtubeChannelPath,
+  youtubeChannelTarget,
+  youtubeVideoChannelTarget,
+  type CreatorTarget,
+} from "./creatorTarget";
 import type { MenuRow, MenuSite, MenuSubject } from "./menuRows";
 import { YOUTUBE_CARD, YOUTUBE_MENU_TRIGGER, YOUTUBE_WATCH_MENU_TRIGGER } from "./menuTriggers";
 import type { OpenVideoNoteEditor } from "./videoNoteWriter";
@@ -42,6 +48,8 @@ function watchPageSubject(openEditor: OpenVideoNoteEditor): MenuSubject | null {
   return {
     page: { url: youtubeWatchUrl(videoId), title: watchPageTitle(), noun: "video", current: true },
     creator: async () => {
+      const uploader = await youtubeVideoChannelTarget(videoId);
+      if (uploader) return uploader;
       const channel = readWatchPageChannel();
       return channel ? youtubeChannelTarget(channel.href, channel.name.trim()) : null;
     },
