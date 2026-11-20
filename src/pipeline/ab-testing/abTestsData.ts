@@ -346,7 +346,31 @@ const CLAUDE_X_RESEARCH_NUDGE_TEST: ABTest = {
   ],
 };
 
-export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST];
+// 2026-11-20 (GOO-838): which Claude writes the claude-code bot's tweets, and
+// whether its system prompt has the 100 example notes. Jim asked for Sonnet
+// and medium effort next to Opus at high effort, the only setup until then.
+// The runner on ai-box turns the picks into its command (src/claude-notes/tweetArms.ts).
+const CLAUDE_X_MODEL_TEST: ABTest = {
+  name: "claude_x_model",
+  prerequisites: { botId: ["claude-code"] },
+  variants: [
+    { variant: { name: "opus_high",     overrides: {} }, weight: 25 },
+    { variant: { name: "opus_medium",   overrides: {} }, weight: 25 },
+    { variant: { name: "sonnet_high",   overrides: {} }, weight: 25 },
+    { variant: { name: "sonnet_medium", overrides: {} }, weight: 25 },
+  ],
+};
+
+const CLAUDE_X_EXAMPLES_TEST: ABTest = {
+  name: "claude_x_examples",
+  prerequisites: { botId: ["claude-code"] },
+  variants: [
+    { variant: { name: "with",    overrides: {} }, weight: 50 },
+    { variant: { name: "without", overrides: {} }, weight: 50 },
+  ],
+};
+
+export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST, CLAUDE_X_MODEL_TEST, CLAUDE_X_EXAMPLES_TEST];
 
 // The same taste test for the Claude note writer's Common Notes posts. The
 // runner on ai-box draws it when it takes a post and records the pick on the

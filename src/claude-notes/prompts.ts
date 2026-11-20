@@ -8,6 +8,7 @@
 import * as path from "path";
 import type { QueueItem } from "./store";
 import type { AskedPassages } from "./take";
+import { tweetHasExamples } from "./tweetArms";
 import type { CreatorToLookUp } from "./xAccounts";
 import { X_NOTE_MAX_CHARS, type XTweet } from "./xTweets";
 
@@ -120,9 +121,10 @@ When you are done, write ${runDir}/report.json as { "passages": [{ "passage": ".
 }
 
 /** What an X tweet asks of the model, shared like postTask. The picks are the X run's A/B picks. */
-export function tweetTask(params: { modelName: string; examplesAt: string; picks: Record<string, string> }): string {
+export function tweetTask(params: { modelName: string; examplesAt: string | null; picks: Record<string, string> }): string {
   const { modelName, examplesAt, picks } = params;
-  return `Hi ${modelName}, please check if we should write a Community Note on this tweet. Do research on this and think about whether the tweet is misleading or broadly correct. ${examplesAt} there are lots of examples of Community Notes that were rated helpful and Community Notes that were rated unhelpful. ${picks.claude_x_taste === WITH_THOUGHTS ? X_THOUGHTS : ""}You always need to provide at least one source, so you always need to do at least one web search (if you think a note is potentially needed).${picks.claude_x_research_nudge === "on" ? X_RESEARCH_NUDGE : ""}`;
+  const examples = examplesAt ? `${examplesAt} there are lots of examples of Community Notes that were rated helpful and Community Notes that were rated unhelpful. ` : "";
+  return `Hi ${modelName}, please check if we should write a Community Note on this tweet. Do research on this and think about whether the tweet is misleading or broadly correct. ${examples}${picks.claude_x_taste === WITH_THOUGHTS ? X_THOUGHTS : ""}You always need to provide at least one source, so you always need to do at least one web search (if you think a note is potentially needed).${picks.claude_x_research_nudge === "on" ? X_RESEARCH_NUDGE : ""}`;
 }
 
 /** The last part of every tweet prompt: the tweet itself. */
@@ -132,13 +134,11 @@ ${input}`;
 
 export function tweetPrompt(params: { tweet: XTweet; runDir: string }): string {
   const { tweet, runDir } = params;
-  return `${tweetTask({ modelName: "Claude", examplesAt: EXAMPLES_PLACE, picks: tweet.picks })}
+  return `${tweetTask({ modelName: "Claude", examplesAt: tweetHasExamples(tweet.picks) ? EXAMPLES_PLACE : null, picks: tweet.picks })}
 
 ${NO_IMAGES_TWEET} Your run folder is ${runDir}; write every file there.
 
 If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\`. Stop once one of the two has succeeded.
-
-If you use subagents, ${subagentRule("submit the note")}
 
 ${tweetInputSection(tweet.input)}`;
 }

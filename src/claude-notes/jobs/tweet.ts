@@ -8,6 +8,7 @@ import { CLAUDE_CODE_BOT, CLAUDE_TWEET_MAX_WAIT_MINUTES } from "../../pipeline/o
 import { tellSlack } from "../alerts";
 import { screenImages } from "../imageScreen";
 import { tweetPrompt, X_EXAMPLES_PATH } from "../prompts";
+import { tweetHasExamples, tweetModel } from "../tweetArms";
 import { CLAUDE_RUN_TAGS } from "../usageShare";
 import { failXTweet, markXTweetRunning, openXTweets, xTweetIsOpen, type XTweet } from "../xTweets";
 import { type JobKind, mayRetry, STOP_BEFORE_DEADLINE_MS } from "./kind";
@@ -17,6 +18,10 @@ import { type JobKind, mayRetry, STOP_BEFORE_DEADLINE_MS } from "./kind";
  *  all its tweets at the same moment. About 180 tweets a day draw Claude since
  *  GOO-787, so 6 at a time keep up. */
 const MAX_TWEETS_RUNNING = 6;
+/** A tweet needs the web, the shell for the claude-notes commands, and files
+ *  in its run folder. It gets no subagents: in the 219 runs of 2026-11-17 to
+ *  2026-11-20, 48 started one, always only to read a page. */
+const TWEET_TOOLS = ["Bash", "Read", "Write", "WebSearch", "WebFetch"];
 /** A tweet with less time than this before the X run sweeps it is not
  *  started: its Claude would be stopped before it could answer. */
 const MIN_TIME_TO_START_MS = 20 * 60_000;
@@ -61,7 +66,15 @@ export const tweetJob: JobKind<XTweet> = {
   async prepare(tweet, runDir, attempt) {
     if (attempt === 1 && !(await passesScreen(tweet))) return null;
     await markXTweetRunning(tweet.runId, attempt);
-    return { prompt: tweetPrompt({ tweet, runDir }), command: { model: "opus", effort: "high", appendSystemPromptFile: X_EXAMPLES_PATH } };
+    return {
+      prompt: tweetPrompt({ tweet, runDir }),
+      command: {
+        ...tweetModel(tweet.picks),
+        ...(tweetHasExamples(tweet.picks) && { appendSystemPromptFile: X_EXAMPLES_PATH }),
+        tools: TWEET_TOOLS,
+        startInRunFolder: true,
+      },
+    };
   },
 
   stopAt: (tweet) => sweptAt(tweet) - STOP_BEFORE_DEADLINE_MS,

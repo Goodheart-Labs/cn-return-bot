@@ -46,8 +46,14 @@ export const RUNS_DIR = process.env.CN_RUNS_DIR ?? "/var/tmp/cn-notes";
  *  one JSON object, so it can never read the votes it predicts. */
 export type ClaudeCommand = {
   model: "opus" | "sonnet";
-  effort?: "high";
+  effort?: "high" | "medium";
   appendSystemPromptFile?: string;
+  /** The built-in tools the Claude gets. Without it, a writer gets all of
+   *  Claude Code's tools, whose descriptions fill tens of thousands of tokens. */
+  tools?: string[];
+  /** A writer that starts in its run folder does not read the checkout's
+   *  CLAUDE.md and skills, which only a Claude that works on the code needs. */
+  startInRunFolder?: boolean;
   /** Extra variables a writer's commands read, such as its run id. */
   env?: Record<string, string>;
   isolated?: { jsonSchema: object; disallowedTools: string[] };
@@ -69,6 +75,13 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
     `--model ${command.model}`,
     ...(command.effort ? [`--effort ${command.effort}`] : []),
     ...(command.appendSystemPromptFile ? [`--append-system-prompt-file ${quoted(command.appendSystemPromptFile)}`] : []),
+    ...(command.tools ? [`--tools ${command.tools.join(",")}`] : []),
+    // Claude Code puts the working folder, the git status and similar parts that
+    // change from run to run into its system prompt, before the appended
+    // examples. Each run then missed the prompt cache and wrote the examples
+    // into it again, which was half of what a tweet cost (GOO-836). This flag
+    // moves those parts into the first user message.
+    "--exclude-dynamic-system-prompt-sections",
     "--permission-mode bypassPermissions",
     `--settings ${file("settings.json")}`,
     "--output-format stream-json --verbose",
@@ -82,7 +95,7 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
     // older than the runner, so the account's folder is set here.
     ...Object.entries(exports).map(([name, value]) => `export ${name}=${quoted(value)}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
-    `cd ${REPO}`,
+    `cd ${command.startInRunFolder ? runDir : REPO}`,
     `"${CLAUDE_BIN}" -p "$(cat ${file("prompt.md")})" ${flags.join(" ")} > ${file("stream.jsonl")} 2> ${file("stderr.txt")}`,
   ];
 }
