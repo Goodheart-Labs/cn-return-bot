@@ -1,0 +1,25 @@
+# The cn-feed-views service (GOO-834): every 10 minutes it reads the small,
+# large and XL tiers of X's eligible-posts feed and stores one reading of each
+# XL post's public counts (src/feed-views/main.ts). It calls only X's API and
+# Supabase, never a page a stranger chose, so it needs no cn-fetch. A new unit
+# is installed by hand once (ops/README.md); autodeploy restarts it after.
+[Unit]
+Description=X feed view recorder
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=cnbot
+WorkingDirectory=/opt/cn-return-bot
+EnvironmentFile=/etc/cn-return-bot/service.env
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/cnbot/.bun/bin/bun run src/feed-views/main.ts
+Restart=always
+RestartSec=5
+PrivateTmp=yes
+# No process in this service may talk to a link-local address, where the cloud
+# provider's metadata service lives.
+IPAddressDeny=link-local
+
+[Install]
+WantedBy=multi-user.target
