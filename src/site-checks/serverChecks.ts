@@ -8,9 +8,11 @@
 import { requestListing, requestPageRead } from "../service/client";
 import type { PageRead, ReadPage } from "../service/contract";
 import { postPublication } from "../pipeline/fetch/sites/substack";
+import { fetchApi } from "../pipeline/fetch/fetchApi";
 import { BROWSER_HEADERS, classifyMarkdown, tryWayback } from "../pipeline/fetch/fetchLadder";
 import { fetchWithJinaReader } from "../pipeline/fetch/jinaReader";
 import { fetchChannelUploads, resolveChannel } from "../pipeline/media/youtubeDataApi";
+import { closeBrowser } from "../pipeline/utils/browserManager";
 import { fetchArchivePosts, fetchLatestFreePosts, parseSubstackFeed } from "../everything/sources/substack";
 import { substackFeedInPageHtml } from "../everything/feedUrls";
 import { pageFromArticleHtml, pageFromSubstackPost } from "../everything/minisites/readPage";
@@ -197,6 +199,38 @@ export const serverChecks: SiteCheck[] = [
       must(listing.imageUrl, "the author has no profile picture");
       must(await answersWithImage(listing.imageUrl), `the profile picture does not load: ${listing.imageUrl}`);
       return `${listing.authorName}: ${listing.posts.length} posts and a picture`;
+    },
+  },
+  {
+    site: "Forums",
+    name: "The EA Forum's bot check lets our own browser through, so its API is read without Jina",
+    code: "fetchApi (src/pipeline/fetch/fetchApi.ts), openPastBotCheck (botCheck.ts), HIDE_AUTOMATION_FLAG (src/pipeline/utils/browserManager.ts)",
+    // The reads through the services box above pass with Jina's help too.
+    // fetchApi never asks Jina, and it runs here, on the machine the nightly
+    // run is on, so it meets the bot check that the fetcher meets.
+    run: async () => {
+      try {
+        const answer = await fetchApi(pages.EA_FORUM_NEWEST_POSTS_QUERY);
+        must(answer.type === "answer", answer.type === "bot_check" ? "the bot check stopped the plain request and our browser" : `the request ${answer.type === "failed" ? `failed: ${answer.reason}` : "was answered as not modified"}`);
+        const posts = JSON.parse(answer.body).data?.posts?.results;
+        must(posts?.length === 2, `the answer lists ${posts?.length ?? "no"} posts: ${answer.body.slice(0, 200)}`);
+        return `the 2 newest posts, first "${posts[0].title}"`;
+      } finally {
+        await closeBrowser();
+      }
+    },
+  },
+  {
+    site: "Page reader",
+    name: "The fetch ladder's browser reads a page behind the EA Forum's bot check",
+    code: "tryBrowserRender (src/pipeline/fetch/fetchLadder.ts) and openPastBotCheck (botCheck.ts) in cn-fetch",
+    run: async () => {
+      // The archives hold no snapshot of an address with a query nobody used
+      // before, so the ladder goes on to its browser step.
+      const page = await readThroughServices(`${pages.EA_FORUM_TOPIC_PAGE}?site-check=${Date.now()}`);
+      must(page.source.kind === "ladder" && page.source.via === "headless browser", `the page was read by ${page.source.kind === "ladder" ? (page.source.via ?? "a plain request") : page.source.kind}, not by the ladder's browser`);
+      must(page.text.length >= MIN_POST_CHARS, `the page's text has only ${page.text.length} characters`);
+      return `${page.text.length} characters`;
     },
   },
   {
