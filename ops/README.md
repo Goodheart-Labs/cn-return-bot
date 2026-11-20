@@ -13,6 +13,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
+| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed (GOO-834) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake and the walk are callers: they hold the service key and write the rows.
@@ -172,6 +173,26 @@ systemctl daemon-reload && systemctl enable --now cn-site-checks.timer
 systemctl start --no-block cn-site-checks   # a first run now, to see it work
 journalctl -u cn-site-checks -f
 ```
+
+## The feed view recorder
+
+`cn-feed-views` (src/feed-views/main.ts, GOO-834) reads the small, large and
+XL tiers of X's eligible-posts feed every 10 minutes, on the clock, with the
+notewriter keys in service.env. It stores one reading of each XL post's views
+and other counts in `feed_tweet_views`, and one row per walk of the feed in
+`feed_view_walks` (migration 193). X's budget of 500 requests per 15 minutes
+is shared with the X run, so a walk stops when fewer than 150 are left. When
+an hour passes without a walk that completed and was stored, it tells Slack.
+It does not write `feed_tweets`, which keeps what the X run saw first. It is a one-time
+collection of at most 14 days (GOO-845). Once, as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-feed-views
+journalctl -u cn-feed-views -f      # a "walk complete" line every 10 minutes
+```
+
+`bun run cn-feed-views --dry-run` makes one walk and writes nothing.
 
 ## Deploys
 
