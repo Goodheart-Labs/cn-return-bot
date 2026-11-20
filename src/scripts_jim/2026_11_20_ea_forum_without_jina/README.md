@@ -156,6 +156,42 @@ seconds on each of them. It now waits 8, because Vercel's check passed within
 So 30 of the 60 pages still need Jina: Facebook, Instagram, Reddit, the
 Cloudflare sites and others.
 
+## Running our own copy of Jina Reader
+
+Jina publishes its reader under the Apache licence, with a ready Docker image
+(`ghcr.io/jina-ai/reader:oss`, 5.2 GB). It runs without keys. I ran it on the
+devbox with its whole traffic leaving from the services box's address, so it
+saw the sites as it would if it ran there (`selfHostedJina.ts` says how). Each
+page got Jina's default engine first and then its browser engine.
+
+**The EA Forum.** With Jina's default settings our copy got the bot check's
+page for the post, the topic page and the API, from both engines. Hosted Jina
+never had that problem, because its Google Cloud addresses are not checked.
+With a longer wait (`x-timeout: 25`) its browser engine got through, which is
+the same trick PR #759 builds in. So for the EA Forum our copy adds nothing.
+
+**The 60 pages that only hosted Jina could read last week:**
+
+| | Our ladder with PR #759 | Our copy of Jina |
+|---|---|---|
+| Pages read, of 60 | 30 | 21 |
+| Of those, read live rather than from a Wayback snapshot | 6 | 21 |
+| Pages the other one could not read | 19 | 10 |
+
+Together the two read 40 of the 60. Our copy read 11 pages with its default
+engine, which sends a plain request with Chrome's TLS fingerprint and headers
+(curl-impersonate), and 10 with its browser engine. The 20 pages neither
+could read include Reddit, X, TikTok, Politico, ESPN and CNBC.
+
+Hosted Jina read all 60. What our copy lacks is in Jina's code
+(`src/api/crawler.ts`): when a page comes back nearly empty or with an error
+status, hosted Jina retries it through a residential proxy pool it pays for
+(Thordata). The open-source copy has that code but no pool.
+
+**Cost.** With four pages at a time the container used 1.7 to 4.2 GB of
+memory and up to 6.7 processor cores. A page took 13.5 seconds at the median.
+The services box has 8 GB and 4 cores for every service together.
+
 ## How the tests left from the services box's address
 
 Nothing ran on the services box except one read-only test at the end. The
