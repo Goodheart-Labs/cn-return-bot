@@ -182,7 +182,8 @@ notewriter keys in service.env. It stores one reading of each XL post's views
 and other counts in `feed_tweet_views`, and one row per walk of the feed in
 `feed_view_walks` (migration 193). X's budget of 500 requests per 15 minutes
 is shared with the X run, so a walk stops when fewer than 150 are left. When
-an hour passes without a complete walk, it tells Slack. It is a one-time
+an hour passes without a walk that completed and was stored, it tells Slack.
+It does not write `feed_tweets`, which keeps what the X run saw first. It is a one-time
 collection of at most 14 days (GOO-845). Once, as root:
 
 ```bash

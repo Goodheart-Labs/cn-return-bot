@@ -1,5 +1,5 @@
-/** The feed view recorder's writes (migration 193). A failed write throws, and
- *  the daemon crashes on purpose so that systemd starts it again. */
+/** The feed view recorder's writes (migration 193). A failed write throws.
+ *  The daemon counts that walk as failed (main.ts). */
 
 import { getSupabaseClient } from "../api/supabaseClient";
 import type { WalkResult } from "./walk";

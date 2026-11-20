@@ -164,6 +164,7 @@ export async function fetchEligiblePosts(
   maxPages: number = 3,
   postSelection?: string
 ): Promise<Post[]> {
+  if (maxResults <= 0 || maxPages <= 0) return [];
   const allEligiblePosts: Post[] = [];
   const seenPostIds = new Set<string>();
   let pageCount = 0;

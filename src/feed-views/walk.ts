@@ -9,6 +9,7 @@
  * feed. main.ts stores what it returns.
  */
 
+import { describeXError } from "../api/describeXError";
 import type { FeedPage, Post } from "../api/fetchEligiblePosts";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 
@@ -18,8 +19,10 @@ export type RecordedTier = Exclude<FeedSize, "xxl">;
 export const RECORDED_TIERS: readonly RecordedTier[] = ["small", "large", "xl"];
 
 /** X allows 500 requests per 15 minutes on the feed, and the X run draws on
- *  the same budget with about 100 requests per run. The walk stops when fewer
- *  than this many requests are left, so the X run always has room. */
+ *  the same budget. Its ladder of small, large and XL takes about 98 requests.
+ *  Its Pangram and misinfo pre-passes would read the feed too, but both are
+ *  switched off in runPipeline.ts. The walk stops when fewer than this many
+ *  requests are left, so the X run always has room. */
 export const RATE_RESERVE = 150;
 
 export type Reading = {
@@ -35,6 +38,7 @@ export type WalkResult = {
   finishedAt: Date;
   /** Null when the walk read all three tiers to the end. */
   stopReason: string | null;
+  /** Distinct posts per tier. X can repeat a post across pages. */
   postsPerTier: Record<RecordedTier, number>;
   pages: number;
   rateRemaining: number | null;
@@ -48,9 +52,8 @@ export type PageSource = (tier: RecordedTier) => AsyncIterable<FeedPage>;
 export async function walkFeed(readPages: PageSource, now: () => Date = () => new Date()): Promise<WalkResult> {
   const startedAt = now();
   const smallestTier = new Map<string, RecordedTier>();
-  const postsPerTier: Record<RecordedTier, number> = { small: 0, large: 0, xl: 0 };
+  const idsPerTier: Record<RecordedTier, Set<string>> = { small: new Set(), large: new Set(), xl: new Set() };
   const readings: Reading[] = [];
-  const readIds = new Set<string>();
   let pages = 0;
   let rateRemaining: number | null = null;
 
@@ -64,12 +67,10 @@ export async function walkFeed(readPages: PageSource, now: () => Date = () => ne
           for (const post of page.posts) {
             if (!smallestTier.has(post.id)) smallestTier.set(post.id, tier);
             // X can repeat a post across pages. The first sighting counts.
-            if (tier === "xl" && !readIds.has(post.id)) {
-              readIds.add(post.id);
-              readings.push({ post, observedAt, tier: smallestTier.get(post.id)!, xlRank: readings.length + 1 });
-            }
+            if (idsPerTier[tier].has(post.id)) continue;
+            idsPerTier[tier].add(post.id);
+            if (tier === "xl") readings.push({ post, observedAt, tier: smallestTier.get(post.id)!, xlRank: readings.length + 1 });
           }
-          postsPerTier[tier] += page.posts.length;
           const walkIsOver = page.isLastPage && tier === RECORDED_TIERS.at(-1);
           if (!walkIsOver && rateRemaining !== null && rateRemaining < RATE_RESERVE) {
             return `rate reserve: X said ${rateRemaining} requests are left, during the ${tier} tier`;
@@ -82,13 +83,6 @@ export async function walkFeed(readPages: PageSource, now: () => Date = () => ne
     }
   })();
 
+  const postsPerTier = { small: idsPerTier.small.size, large: idsPerTier.large.size, xl: idsPerTier.xl.size };
   return { startedAt, finishedAt: now(), stopReason, postsPerTier, pages, rateRemaining, readings };
-}
-
-/** axios puts X's own explanation in the response body, which its message
- *  leaves out. */
-function describeXError(err: unknown): string {
-  const response = (err as { response?: { status?: number; data?: unknown } }).response;
-  if (response) return `HTTP ${response.status} ${JSON.stringify(response.data).slice(0, 300)}`;
-  return err instanceof Error ? err.message : String(err);
 }

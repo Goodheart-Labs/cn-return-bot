@@ -27,7 +27,7 @@ create table feed_tweet_views (
   -- The smallest tier the post was in during this walk.
   tier text not null check (tier in ('small', 'large', 'xl')),
   -- The post's position in X's order of the XL list, starting at 1.
-  xl_rank smallint not null,
+  xl_rank integer not null,
   primary key (tweet_id, observed_at)
 );
 

@@ -31,7 +31,7 @@ describe("a walk of the feed", () => {
       ["x", "xl", 2],
       ["s", "small", 3],
     ]);
-    expect(walk.postsPerTier).toEqual({ small: 1, large: 2, xl: 4 });
+    expect(walk.postsPerTier).toEqual({ small: 1, large: 2, xl: 3 });
     expect(walk.pages).toBe(4);
   });
 
@@ -58,7 +58,7 @@ describe("a walk of the feed", () => {
       throw Object.assign(new Error("Request failed"), { response: { status: 503, data: { title: "Service Unavailable" } } });
     };
     const walk = await walkFeed(readPages);
-    expect(walk.stopReason).toBe('X error: HTTP 503 {"title":"Service Unavailable"}');
+    expect(walk.stopReason).toBe('X error: Request failed; status 503 body={"title":"Service Unavailable"}');
     expect(walk.readings.map((r) => r.post.id)).toEqual(["a"]);
   });
 });
