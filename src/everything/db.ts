@@ -530,25 +530,31 @@ export async function recordReadFailure(itemId: string, reason: string): Promise
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
  *  the usage readings of this host's notewriter and the posts it reserved over
  *  the window. Every assignment of migration 168 became a reservation with the
- *  same id (migration 184). */
+ *  same id (migration 184).
+ *  The posts are counted only from the first reading in the window on, because
+ *  the usage rise is measured only from there. Posts before it were paid by a
+ *  plan whose readings we do not have. That happened when claude-ai-box moved
+ *  to its own Claude account on 2026-11-19 (GOO-787): its earlier posts would
+ *  have made each post look cheaper than it is, so the posts came too often. */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const now = new Date();
   const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
   const db = getSupabaseClient();
-  const [readings, reserved] = await Promise.all([
-    fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
-      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CLAUDE_NOTEWRITER).gte("at", since),
-      "id",
-      { label: "claudeUsage" },
-    ),
-    db.from("everything_reservations").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
-  ]);
+  const readings = await fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
+    () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CLAUDE_NOTEWRITER).gte("at", since),
+    "id",
+    { label: "claudeUsage" },
+  );
+  readings.sort((a, b) => a.at.localeCompare(b.at));
+  const reserved = await db
+    .from("everything_reservations")
+    .select("id", { count: "exact", head: true })
+    .eq("notewriter_id", CLAUDE_NOTEWRITER)
+    .gte("started_at", readings[0]?.at ?? since);
   if (reserved.error) throw new Error(`Supabase: ${reserved.error.message}`);
   return {
     now,
-    readings: readings
-      .sort((a, b) => a.at.localeCompare(b.at))
-      .map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
+    readings: readings.map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
     postsTaken: reserved.count ?? 0,
   };
 }
