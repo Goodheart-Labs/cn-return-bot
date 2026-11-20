@@ -38,8 +38,8 @@ const WITH_THOUGHTS = "with_thoughts";
 const EXAMPLES_PLACE = "In your system prompt";
 
 /** How the job's Claude may split its work. */
-const subagentRule = (submits: string) =>
-  `use only fork subagents: the Agent tool with subagent_type "fork". A fork starts with your whole context, so it knows this prompt and the examples in your system prompt. A fork may ${submits} itself, or put what it found in its answer to you. Both are fine.`;
+const subagentRule = (submits: string, withExamples = true) =>
+  `use only fork subagents: the Agent tool with subagent_type "fork". A fork starts with your whole context, so it knows this prompt${withExamples ? " and the examples in your system prompt" : ""}. A fork may ${submits} itself, or put what it found in its answer to you. Both are fine.`;
 
 /** The prompt's section on the passages readers asked about, or nothing when
  *  no reader asked. A reader's reason comes from an anonymous stranger, so the
@@ -134,11 +134,14 @@ ${input}`;
 
 export function tweetPrompt(params: { tweet: XTweet; runDir: string }): string {
   const { tweet, runDir } = params;
-  return `${tweetTask({ modelName: "Claude", examplesAt: tweetHasExamples(tweet.picks) ? EXAMPLES_PLACE : null, picks: tweet.picks })}
+  const withExamples = tweetHasExamples(tweet.picks);
+  return `${tweetTask({ modelName: "Claude", examplesAt: withExamples ? EXAMPLES_PLACE : null, picks: tweet.picks })}
 
 ${NO_IMAGES_TWEET} Your run folder is ${runDir}; write every file there.
 
 If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\` from the same folder. Stop once one of the two has succeeded.
+
+If you use subagents, ${subagentRule("submit the note", withExamples)}
 
 ${tweetInputSection(tweet.input)}`;
 }
