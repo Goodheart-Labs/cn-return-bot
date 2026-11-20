@@ -138,7 +138,7 @@ export function tweetPrompt(params: { tweet: XTweet; runDir: string }): string {
 
 ${NO_IMAGES_TWEET} Your run folder is ${runDir}; write every file there.
 
-If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\`. Stop once one of the two has succeeded.
+If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\` from the same folder. Stop once one of the two has succeeded.
 
 ${tweetInputSection(tweet.input)}`;
 }
@@ -169,5 +169,5 @@ Their feed: ${creator.feedUrl ?? "unknown"}
 
 Search the web first. Only if that finds no account, ask Grok, which can search X itself, exactly once: \`bun run trending-on-x --ask "<your question>"\` from ${REPO}. Grok costs money, so do not ask it a second time. A call that fails without an answer, for example because xAI is at capacity, did not search X: wait a minute and ask once more. Make sure the account is really theirs: their site or channel links to it, or its name, bio and posts match their work. A fan account, a namesake or a parody is not theirs.
 
-When you have found it, run \`bun run claude-notes x-handle ${creator.slug} <handle> "<one or two sentences of evidence>"\` from ${REPO}. If you cannot confirm an account, run \`bun run claude-notes x-handle ${creator.slug} none "<what you checked>"\`. Your run folder is ${runDir}; write every file there. Stop once the command has succeeded.`;
+When you have found it, run \`bun run claude-notes x-handle ${creator.slug} <handle> "<one or two sentences of evidence>"\` from ${REPO}. If you cannot confirm an account, run \`bun run claude-notes x-handle ${creator.slug} none "<what you checked>"\` from the same folder. Your run folder is ${runDir}; write every file there. Stop once the command has succeeded.`;
 }

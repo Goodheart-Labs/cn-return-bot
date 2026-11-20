@@ -9,7 +9,6 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "fs
 import { homedir } from "os";
 import * as path from "path";
 import { guardedSettingsFile } from "../imageGuard";
-import { REPO } from "../prompts";
 
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
 /** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
@@ -40,7 +39,7 @@ const ISOLATED_ENV_NAMES = ["HOME", "PATH", "USER", "LANG"];
  *  quota on 2026-10-30 and crashed the runner. */
 export const RUNS_DIR = process.env.CN_RUNS_DIR ?? "/var/tmp/cn-notes";
 
-/** How to run one Claude. A writer works in the checkout with the runner's
+/** How to run one Claude. A writer works in its run folder with the runner's
  *  database keys and streams its output. An isolated Claude, the note judge,
  *  works in its empty run folder with none of the runner's secrets and answers
  *  one JSON object, so it can never read the votes it predicts. */
@@ -51,9 +50,6 @@ export type ClaudeCommand = {
   /** The built-in tools the Claude gets. Without it, a writer gets all of
    *  Claude Code's tools, whose descriptions fill tens of thousands of tokens. */
   tools?: string[];
-  /** A writer that starts in its run folder does not read the checkout's
-   *  CLAUDE.md and skills, which only a Claude that works on the code needs. */
-  startInRunFolder?: boolean;
   /** Extra variables a writer's commands read, such as its run id. */
   env?: Record<string, string>;
   isolated?: { jsonSchema: object; disallowedTools: string[] };
@@ -95,7 +91,10 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
     // older than the runner, so the account's folder is set here.
     ...Object.entries(exports).map(([name, value]) => `export ${name}=${quoted(value)}`),
     `export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"`,
-    `cd ${command.startInRunFolder ? runDir : REPO}`,
+    // Every prompt names its folders and commands in full, so a writer starts in
+    // its run folder. In the checkout it would read the repository's CLAUDE.md
+    // and skills, about 20,000 tokens that only a Claude working on the code needs.
+    `cd ${runDir}`,
     `"${CLAUDE_BIN}" -p "$(cat ${file("prompt.md")})" ${flags.join(" ")} > ${file("stream.jsonl")} 2> ${file("stderr.txt")}`,
   ];
 }

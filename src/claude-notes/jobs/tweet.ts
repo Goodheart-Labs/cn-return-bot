@@ -72,7 +72,6 @@ export const tweetJob: JobKind<XTweet> = {
         ...tweetModel(tweet.picks),
         ...(tweetHasExamples(tweet.picks) && { appendSystemPromptFile: X_EXAMPLES_PATH }),
         tools: TWEET_TOOLS,
-        startInRunFolder: true,
       },
     };
   },
