@@ -40,6 +40,30 @@ def describe_filter(name: str, scores, labels) -> dict:
     return row
 
 
+def tweet_outcome(df: pd.DataFrame) -> pd.Series:
+    """Sorts each tweet into one of four outcomes. "stalemate" means notes were
+    written and at least one got 30 or more ratings, yet none became helpful.
+    That is the case Jim described: enough raters looked, but they split."""
+    return pd.Series(np.select(
+        [df["helpful"], df["attended_unhelpful_notes"] > 0, df["notes"] > 0],
+        ["helpful", "stalemate", "noted, little attention"],
+        "no notes",
+    ), index=df.index)
+
+
+def pass_rates_by_outcome(scores, df: pd.DataFrame, recall: float = TARGET_RECALLS[0]) -> pd.Series:
+    """At the threshold that keeps `recall` of the helpful-note tweets, the
+    share of each outcome that passes, and the share of views that pass."""
+    scores = np.asarray(scores, dtype=float)
+    _, threshold = pass_rate_at_recall(scores, df["helpful"].to_numpy(), recall)
+    passed = scores >= threshold
+    rates = pd.Series(passed, index=df.index).groupby(tweet_outcome(df)).mean()
+    views = df["impressions"].astype(float).to_numpy()
+    helpful = df["helpful"].to_numpy()
+    rates["views of helpful-note tweets"] = views[passed & helpful].sum() / views[helpful].sum()
+    return rates
+
+
 def describe_binary_filter(name: str, passed, labels) -> dict:
     passed = np.asarray(passed, dtype=bool)
     labels = np.asarray(labels, dtype=bool)

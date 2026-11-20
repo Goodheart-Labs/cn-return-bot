@@ -68,24 +68,37 @@ Answer in JSON: {"probability": <number from 0 to 1>, "reason": "<at most 15 wor
 Estimate the probability that this post ends up with a helpful note. Helpful notes here often say that a video or image is AI-generated, edited, old, or shows someone else; that a quote or story is made up, often by a parody or engagement account; that an ad is a scam; or that a factual claim is false or leaves out key context. Posts with nothing checkable rarely get one, and notes on bitterly partisan claims often stall because raters split.
 
 Answer in JSON: {"probability": <number from 0 to 1>, "reason": "<at most 15 words>"}""",
+    # v3 asks for the parts separately. Each part is a probability, and the
+    # combination step in combine.py learns how much each one matters.
+    "v3": """You screen X posts before an expensive Community Notes writer looks at them. A Community Note adds context to a misleading post, and it is shown only when raters who usually disagree with each other both rate it helpful. About 1 in 9 posts you see ends up with a helpful note.
+
+Give five probabilities from 0 to 1:
+- fake_media: the post's video or image is AI-generated, edited, old, or shows someone or something else.
+- made_up: a quote, story or event in the post is made up, for example by a parody or engagement account, or an ad is a scam.
+- false_claim: the post makes another factual claim that sources can show is false or leaves out key context.
+- partisan: the topic is so politically divisive that raters from the two sides would disagree about any note.
+- raters_care: ordinary readers would care enough about the topic to rate a note on it.
+Then give probability: that this post ends up with a helpful note.
+
+Answer in JSON with those six numbers and "reason": at most 15 words.""",
 }
+
+PART_NAMES = ("fake_media", "made_up", "false_claim", "partisan", "raters_care")
 
 SEARCH_LINE = "\n\nYou may search the web, but only when you cannot judge the post without it."
 NEIGHBOUR_LINE = "\n\nYou also see similar earlier posts and whether they got a helpful note."
 
-RESPONSE_FORMAT = {
-    "type": "json_schema",
-    "json_schema": {
-        "name": "verdict",
-        "strict": True,
-        "schema": {
-            "type": "object",
-            "properties": {"probability": {"type": "number"}, "reason": {"type": "string"}},
-            "required": ["probability", "reason"],
-            "additionalProperties": False,
+def response_format(prompt: str) -> dict:
+    numbers = ["probability", *(PART_NAMES if prompt == "v3" else ())]
+    properties = {name: {"type": "number"} for name in numbers} | {"reason": {"type": "string"}}
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "verdict",
+            "strict": True,
+            "schema": {"type": "object", "properties": properties, "required": list(properties), "additionalProperties": False},
         },
-    },
-}
+    }
 
 
 def format_count(value) -> str:
@@ -182,7 +195,7 @@ def build_request(card: str, variant: str, neighbours: str, reasoning: str, prom
         "model": model,
         "usage": {"include": True},
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-        "response_format": RESPONSE_FORMAT,
+        "response_format": response_format(prompt),
         "reasoning": {"enabled": False} if reasoning == "off" else {"effort": reasoning},
     }
     if "search" in variant:
@@ -199,6 +212,7 @@ def parse_answer(response: dict) -> dict:
     return {
         "probability": float(answer["probability"]),
         "reason": answer.get("reason", ""),
+        **{name: float(answer[name]) for name in PART_NAMES if name in answer},
         "prompt_tokens": usage.get("prompt_tokens"),
         "completion_tokens": usage.get("completion_tokens"),
         "reasoning_tokens": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
@@ -285,4 +299,5 @@ def main() -> None:
     asyncio.run(run(args))
 
 
-main()
+if __name__ == "__main__":
+    main()

@@ -61,4 +61,5 @@ def main() -> None:
     print_table(rows)
 
 
-main()
+if __name__ == "__main__":
+    main()

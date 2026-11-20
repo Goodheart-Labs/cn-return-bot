@@ -24,8 +24,9 @@ from sklearn.model_selection import cross_val_predict
 
 sys.path.insert(0, str(Path(__file__).parent))
 from evaluate import RUNS_DIR, load_run  # noqa: E402
+from haiku_filter import PART_NAMES  # noqa: E402
 from features import DATA_DIR, fit_metadata_model, metadata_features  # noqa: E402
-from metrics import describe_filter, print_table  # noqa: E402
+from metrics import describe_filter, pass_rates_by_outcome, print_table  # noqa: E402
 
 DEV_FOLDS = 5
 PROBABILITY_FLOOR = 1e-3
@@ -54,7 +55,10 @@ def metadata_scores(df: pd.DataFrame) -> pd.Series:
 
 
 def combined_inputs(run: pd.DataFrame, metadata: pd.Series) -> np.ndarray:
-    return np.column_stack([log_odds(metadata.loc[run["tweet_id"]].to_numpy()), log_odds(run["probability"])])
+    """Columns: the metadata score, the model's probability, and the model's
+    part answers when the prompt asked for them (prompt v3)."""
+    parts = [log_odds(run[name].fillna(0.5)) for name in PART_NAMES if name in run]
+    return np.column_stack([log_odds(metadata.loc[run["tweet_id"]].to_numpy()), log_odds(run["probability"]), *parts])
 
 
 def main() -> None:
@@ -72,6 +76,7 @@ def main() -> None:
         describe_filter(f"{dev_name}: model only", dev_inputs[:, 1], dev_labels),
         describe_filter(f"{dev_name}: combined", dev_combined, dev_labels),
     ]
+    outcome_rates = {f"{dev_name}: combined": pass_rates_by_outcome(dev_combined, df.set_index("tweet_id").loc[dev_run["tweet_id"]])}
     combiner.fit(dev_inputs, dev_labels)
     print(f"combination weights (metadata, model): {combiner.coef_.round(2).tolist()}")
     if len(sys.argv) > 2:
@@ -84,7 +89,12 @@ def main() -> None:
             describe_filter(f"{test_name}: model only", test_inputs[:, 1], test_labels),
             describe_filter(f"{test_name}: combined", combiner.predict_proba(test_inputs)[:, 1], test_labels),
         ]
+        test_rows = df.set_index("tweet_id").loc[test_run["tweet_id"]]
+        outcome_rates[f"{test_name}: metadata only"] = pass_rates_by_outcome(test_inputs[:, 0], test_rows)
+        outcome_rates[f"{test_name}: combined"] = pass_rates_by_outcome(combiner.predict_proba(test_inputs)[:, 1], test_rows)
     print_table(rows)
+    print("\nShare that passes at the threshold that keeps 90% of helpful-note tweets:")
+    print(pd.DataFrame(outcome_rates).round(3).to_string())
 
 
 if __name__ == "__main__":
