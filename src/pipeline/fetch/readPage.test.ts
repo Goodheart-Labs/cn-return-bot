@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import * as client from "../../service/client";
-import { FETCH_API_IN_BROWSER_PATH, FETCH_API_PATH, FETCH_PAGE_PATH, type ApiAnswer, type LadderAnswer } from "../../service/contract";
+import { FETCH_API_PATH, FETCH_PAGE_PATH, type ApiAnswer, type LadderAnswer } from "../../service/contract";
 import * as jina from "./jinaReader";
 import { readPage } from "./readPage";
 
@@ -24,7 +24,7 @@ const spies: Array<{ mockRestore: () => void }> = [];
 
 /** Fakes the fetcher's routes and Jina. Each route answers from its own list,
  *  one answer per call. */
-function fake(answers: { [FETCH_API_PATH]?: ApiAnswer[]; [FETCH_API_IN_BROWSER_PATH]?: ApiAnswer[]; [FETCH_PAGE_PATH]?: LadderAnswer[]; jinaApi?: ApiAnswer[]; jinaPage?: jina.JinaReaderResult[] }) {
+function fake(answers: { [FETCH_API_PATH]?: ApiAnswer[]; [FETCH_PAGE_PATH]?: LadderAnswer[]; jinaApi?: ApiAnswer[]; jinaPage?: jina.JinaReaderResult[] }) {
   const next = <T,>(list: T[] | undefined, step: string): T => {
     steps.push(step);
     const answer = list?.shift();
@@ -49,17 +49,11 @@ afterEach(() => {
 });
 
 describe("readPage", () => {
-  test("a forum post behind a bot check goes plain request, then headless browser, then Jina, and never reaches the ladder", async () => {
-    fake({ [FETCH_API_PATH]: [{ type: "bot_check" }], [FETCH_API_IN_BROWSER_PATH]: [{ type: "bot_check" }], jinaApi: [FORUM_POST_ANSWER] });
+  test("a forum post whose bot check stops the fetcher goes to Jina, and never reaches the ladder", async () => {
+    fake({ [FETCH_API_PATH]: [{ type: "bot_check" }], jinaApi: [FORUM_POST_ANSWER] });
     const read = await readPage(FORUM_POST);
-    expect(steps).toEqual([FETCH_API_PATH, FETCH_API_IN_BROWSER_PATH, "jina api"]);
+    expect(steps).toEqual([FETCH_API_PATH, "jina api"]);
     expect(read).toMatchObject({ type: "page", page: { title: "Generalized atheism", text: "The post's body.", authorName: "Eliezer Yudkowsky", source: { kind: "forum", authorFeedUrl: "https://www.lesswrong.com/users/eliezer_yudkowsky" } } });
-  });
-
-  test("a forum post that the browser could read stops there", async () => {
-    fake({ [FETCH_API_PATH]: [{ type: "bot_check" }], [FETCH_API_IN_BROWSER_PATH]: [FORUM_POST_ANSWER] });
-    expect((await readPage(FORUM_POST)).type).toBe("page");
-    expect(steps).toEqual([FETCH_API_PATH, FETCH_API_IN_BROWSER_PATH]);
   });
 
   test("a shortform page ends at the API, because its web page has no text either", async () => {

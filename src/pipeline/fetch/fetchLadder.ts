@@ -5,6 +5,7 @@ import { extractText, getDocumentProxy } from "unpdf";
 import type { LadderAnswer } from "../../service/contract";
 import { getBrowser } from "../utils/browserManager";
 import { isWebUrl } from "../utils/webUrl";
+import { openPastBotCheck } from "./botCheck";
 
 /**
  * The fetch ladder: the free steps that read an outside page. On the services
@@ -32,9 +33,10 @@ import { isWebUrl } from "../utils/webUrl";
  *      captures of paywalled pages Wayback is refused on.
  *   6. Render the page with headless Chromium through the shared
  *      browserManager. This catches single-page apps that only work with
- *      JavaScript, and sites that answer 403 to a plain HTTP request but render
- *      fine for a real browser. It costs about 3 seconds, so it only runs when
- *      steps 1 to 5 have all failed.
+ *      JavaScript, sites that answer 403 to a plain HTTP request but render
+ *      fine for a real browser, and sites behind a bot check that lets a real
+ *      browser through (botCheck.ts). It costs about 3 seconds, so it only
+ *      runs when steps 1 to 5 have all failed.
  *
  * The HTML each step produces goes through `classifyContent`. That function
  * counts a 200 OK whose body is a login wall as a failure, so we never accept a
@@ -73,6 +75,7 @@ export const FETCH_UAS = {
 const MIN_GOOD_CONTENT_CHARS = 300;
 const FETCH_TIMEOUT_MS = 15_000;
 const BROWSER_RENDER_TIMEOUT_MS = 20_000;
+const FIRST_ERROR_STATUS = 400;
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
@@ -253,7 +256,10 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
   // Render the page in a real Chromium through the shared browser. This defeats
   // the client-side anti-bot walls, such as the one on TrueAchievements, that
   // answer 403 to a plain HTTP request. Each call gets its own browser context,
-  // so cookies and other state from one fetch cannot leak into the next.
+  // so cookies and other state from one fetch cannot leak into the next. The
+  // browser sends its own headers. BROWSER_HEADERS are those of a page load,
+  // and forced onto every request they also went out with the requests of a
+  // bot check's script, which Vercel's check then refused (GOO-832).
   let context: import("playwright").BrowserContext | null = null;
   try {
     const browser = await getBrowser();
@@ -261,19 +267,15 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
       userAgent: FETCH_UAS.desktop,
       viewport: { width: 1280, height: 800 },
       locale: "en-US",
-      extraHTTPHeaders: { ...BROWSER_HEADERS },
     });
     const page = await context.newPage();
-    const response = await page.goto(url, {
-      waitUntil: "domcontentloaded",
-      timeout: BROWSER_RENDER_TIMEOUT_MS,
-    });
+    const status = (await openPastBotCheck(page, url)).status();
+    await page.waitForLoadState("domcontentloaded", { timeout: BROWSER_RENDER_TIMEOUT_MS });
     // Wait a moment so that content rendered by JavaScript can appear. Sites like
     // TrueAchievements hydrate quickly.
     await page.waitForTimeout(1_500);
-    const status = response?.status();
     const body = await page.content();
-    return { ok: status !== undefined && status < 400, status, contentType: "text/html", body };
+    return { ok: status < FIRST_ERROR_STATUS, status, contentType: "text/html", body };
   } catch (err: any) {
     return { ok: false, error: err?.message?.slice(0, 200) ?? "browser render error" };
   } finally {
