@@ -490,11 +490,16 @@ export type Database = {
           ended_at: string
           everything_pipeline_run_id: string | null
           id: string
+          model: string | null
+          model_usage: Json | null
           notewriter: string | null
           pipeline_run_id: string | null
           run_dir: string
           started_at: string
+          subagent_calls: number | null
           tags: string[]
+          tool_calls: Json | null
+          turns: number | null
         }
         Insert: {
           api_cost_usd?: number | null
@@ -502,11 +507,16 @@ export type Database = {
           ended_at?: string
           everything_pipeline_run_id?: string | null
           id?: string
+          model?: string | null
+          model_usage?: Json | null
           notewriter?: string | null
           pipeline_run_id?: string | null
           run_dir: string
           started_at: string
+          subagent_calls?: number | null
           tags: string[]
+          tool_calls?: Json | null
+          turns?: number | null
         }
         Update: {
           api_cost_usd?: number | null
@@ -514,11 +524,16 @@ export type Database = {
           ended_at?: string
           everything_pipeline_run_id?: string | null
           id?: string
+          model?: string | null
+          model_usage?: Json | null
           notewriter?: string | null
           pipeline_run_id?: string | null
           run_dir?: string
           started_at?: string
+          subagent_calls?: number | null
           tags?: string[]
+          tool_calls?: Json | null
+          turns?: number | null
         }
         Relationships: [
           {
