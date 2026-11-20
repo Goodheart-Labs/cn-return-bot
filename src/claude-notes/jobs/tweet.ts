@@ -18,11 +18,6 @@ import { type JobKind, mayRetry, STOP_BEFORE_DEADLINE_MS } from "./kind";
  *  all its tweets at the same moment. A tweet's Claude takes about a minute,
  *  so 6 at a time finish the dozen tweets of one X run in a few minutes. */
 const MAX_TWEETS_RUNNING = 6;
-/** A tweet needs the web, the shell for the claude-notes commands, files in
- *  its run folder, and subagents. In the 219 runs of 2026-11-17 to 2026-11-20,
- *  48 started a subagent, always the web-fetch agent, which reads a page on
- *  Haiku. That is cheap, so it stays. */
-const TWEET_TOOLS = ["Bash", "Read", "Write", "WebSearch", "WebFetch", "Agent"];
 /** A tweet with less time than this before the X run sweeps it is not
  *  started: its Claude would be stopped before it could answer. */
 const MIN_TIME_TO_START_MS = 20 * 60_000;
@@ -72,7 +67,6 @@ export const tweetJob: JobKind<XTweet> = {
       command: {
         ...tweetModel(tweet.picks),
         ...(tweetHasExamples(tweet.picks) && { appendSystemPromptFile: X_EXAMPLES_PATH }),
-        tools: TWEET_TOOLS,
       },
     };
   },

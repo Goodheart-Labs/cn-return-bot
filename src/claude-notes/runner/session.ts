@@ -47,9 +47,6 @@ export type ClaudeCommand = {
   model: "opus" | "sonnet";
   effort?: "high" | "medium";
   appendSystemPromptFile?: string;
-  /** The built-in tools the Claude gets. Without it, a writer gets all of
-   *  Claude Code's tools, whose descriptions fill tens of thousands of tokens. */
-  tools?: string[];
   /** Extra variables a writer's commands read, such as its run id. */
   env?: Record<string, string>;
   isolated?: { jsonSchema: object; disallowedTools: string[] };
@@ -71,7 +68,6 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
     `--model ${command.model}`,
     ...(command.effort ? [`--effort ${command.effort}`] : []),
     ...(command.appendSystemPromptFile ? [`--append-system-prompt-file ${quoted(command.appendSystemPromptFile)}`] : []),
-    ...(command.tools ? [`--tools ${command.tools.join(",")}`] : []),
     // Claude Code puts the working folder, the git status and similar parts that
     // change from run to run into its system prompt, before the appended
     // examples. Each run then missed the prompt cache and wrote the examples
