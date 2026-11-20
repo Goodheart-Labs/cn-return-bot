@@ -1,4 +1,4 @@
--- 193: what each Claude run used, next to what it cost (GOO-837).
+-- 194: what each Claude run used, next to what it cost (GOO-837).
 --
 -- everything_claude_runs had only the cost of a run. The transcript that shows
 -- how the Claude spent it stayed in the run folder on the ai-box, which the
