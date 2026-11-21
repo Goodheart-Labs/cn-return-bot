@@ -8,9 +8,11 @@
  * The readings let us see how a post's views grow, and learn to predict them.
  * This is a one-time collection of at most 14 days (GOO-845).
  *
- * It does not write feed_tweets. That table freezes what the X run saw when it
- * first met a post, and floor analyses replay it, so a second writer would
- * change its meaning. The model reads a post's text and author from there.
+ * The first time it sees a post, it also stores the post's profile in
+ * feed_view_posts: when it was posted, its author's size, its kind and its
+ * text. It does not write feed_tweets. That table freezes what the X run saw
+ * when it first met a post, and floor analyses replay it, so a second writer
+ * would change its meaning.
  *
  * If a walk takes longer than 10 minutes, the next one starts at the next
  * full slot, so walks never pile up. A walk counts as failed when X stopped it
@@ -29,7 +31,7 @@ import "dotenv/config";
 import { walkEligiblePages } from "../api/fetchEligiblePosts";
 import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
-import { lastCompleteWalkAt, saveWalk } from "./db";
+import { lastCompleteWalkAt, savePosts, saveWalk } from "./db";
 import { type RecordedTier, type WalkResult, walkFeed } from "./walk";
 
 const WALK_INTERVAL_MS = 10 * 60_000;
@@ -45,9 +47,15 @@ function describeWalk(walk: WalkResult): string {
   return `[feed-views] walk ${outcome}: small ${small}, large ${large}, xl ${xl} posts, ${walk.pages} pages in ${seconds}s, ${walk.rateRemaining ?? "?"} requests left`;
 }
 
-/** Stores the walk and returns null, or returns why it could not be stored. */
-async function storeWalk(walk: WalkResult): Promise<string | null> {
+/** Stores the walk and the profiles of posts not stored before. Returns null,
+ *  or why the walk could not be stored. The ids already stored are kept in
+ *  memory, so after a restart the first walk sends every profile once more,
+ *  and the database keeps the first. */
+async function storeWalk(walk: WalkResult, storedPostIds: Set<string>): Promise<string | null> {
   try {
+    const newPosts = walk.readings.map((r) => r.post).filter((post) => !storedPostIds.has(post.id));
+    await savePosts(newPosts);
+    for (const post of newPosts) storedPostIds.add(post.id);
     await saveWalk(walk);
     return null;
   } catch (err) {
@@ -88,12 +96,13 @@ async function startOfSilenceWatch(): Promise<Date> {
 
 async function runDaemon(): Promise<never> {
   const watch: SilenceWatch = { lastSuccessAt: await startOfSilenceWatch(), warned: false };
+  const storedPostIds = new Set<string>();
   console.log(`[feed-views] started; last complete walk ended ${watch.lastSuccessAt.toISOString()}`);
   for (;;) {
     const nextSlot = Math.ceil(Date.now() / WALK_INTERVAL_MS) * WALK_INTERVAL_MS;
     await Bun.sleep(nextSlot - Date.now());
     const walk = await walkFeed(readTier);
-    const storeFailure = await storeWalk(walk);
+    const storeFailure = await storeWalk(walk, storedPostIds);
     console.log(`${describeWalk(walk)}${storeFailure ? `, NOT STORED: ${storeFailure}` : `, ${walk.readings.length} readings stored`}`);
     await watchSilence(watch, walk.finishedAt, storeFailure ?? walk.stopReason);
   }
