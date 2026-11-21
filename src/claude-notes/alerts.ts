@@ -27,18 +27,20 @@ let failuresInARow = 0;
  *  message Slack cannot take goes to the log instead: an alert must never stop
  *  the runner, and hq's runner has no Slack token (it crashed every 30 minutes
  *  while its login was dead, 2026-11-21). */
-export async function tellSlack(text: string): Promise<void> {
+export async function tellSlack(text: string): Promise<boolean> {
   try {
     await postToSlack(NOTEWRITERS_SLACK_CHANNEL, `${CLAUDE_NOTEWRITER}: ${text}`);
+    return true;
   } catch (err) {
-    console.error(`Alert not sent to Slack (${(err as Error).message}): ${text}`);
+    console.error(`Alert not sent to Slack (${err instanceof Error ? err.message : String(err)}): ${text}`);
+    return false;
   }
 }
 
 export async function problemStarted(problem: Problem, text: string): Promise<void> {
   if (openProblems.has(problem)) return;
-  openProblems.add(problem);
-  await tellSlack(`:warning: ${text}`);
+  // Open only once Slack has it, so an alert that failed is sent again.
+  if (await tellSlack(`:warning: ${text}`)) openProblems.add(problem);
 }
 
 export async function problemCleared(problem: Problem, text: string): Promise<void> {
