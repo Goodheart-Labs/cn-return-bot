@@ -2264,6 +2264,51 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_view_posts: {
+        Row: {
+          author_followers: number | null
+          author_id: string | null
+          author_tweet_count: number | null
+          author_verified_type: string | null
+          has_photo: boolean
+          has_video: boolean
+          lang: string | null
+          posted_at: string
+          referenced_type: string | null
+          text: string | null
+          tweet_id: number
+          video_duration_ms: number | null
+        }
+        Insert: {
+          author_followers?: number | null
+          author_id?: string | null
+          author_tweet_count?: number | null
+          author_verified_type?: string | null
+          has_photo: boolean
+          has_video: boolean
+          lang?: string | null
+          posted_at: string
+          referenced_type?: string | null
+          text?: string | null
+          tweet_id: number
+          video_duration_ms?: number | null
+        }
+        Update: {
+          author_followers?: number | null
+          author_id?: string | null
+          author_tweet_count?: number | null
+          author_verified_type?: string | null
+          has_photo?: boolean
+          has_video?: boolean
+          lang?: string | null
+          posted_at?: string
+          referenced_type?: string | null
+          text?: string | null
+          tweet_id?: number
+          video_duration_ms?: number | null
+        }
+        Relationships: []
+      }
       feed_view_walks: {
         Row: {
           complete: boolean
