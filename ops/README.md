@@ -179,8 +179,9 @@ journalctl -u cn-site-checks -f
 `cn-feed-views` (src/feed-views/main.ts, GOO-834) reads the small, large and
 XL tiers of X's eligible-posts feed every 10 minutes, on the clock, with the
 notewriter keys in service.env. It stores one reading of each XL post's views
-and other counts in `feed_tweet_views`, and one row per walk of the feed in
-`feed_view_walks` (migration 193). X's budget of 500 requests per 15 minutes
+and other counts in `feed_tweet_views`, one row per walk of the feed in
+`feed_view_walks` (migration 193), and each post's profile at first sight in
+`feed_view_posts` (migration 195). X's budget of 500 requests per 15 minutes
 is shared with the X run, so a walk stops when fewer than 150 are left. When
 an hour passes without a walk that completed and was stored, it tells Slack.
 It does not write `feed_tweets`, which keeps what the X run saw first. It is a one-time

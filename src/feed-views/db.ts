@@ -1,12 +1,44 @@
-/** The feed view recorder's writes (migration 193). A failed write throws.
+/** The feed view recorder's writes (migrations 193 and 195). A failed write throws.
  *  The daemon counts that walk as failed (main.ts). */
 
+import type { Post } from "../api/fetchEligiblePosts";
 import { getSupabaseClient } from "../api/supabaseClient";
 import type { WalkResult } from "./walk";
 
 /** The rows are narrow, so a chunk of this size stays far below PostgREST's
  *  body limit while keeping a walk to about 7 requests. */
 const VIEWS_WRITE_CHUNK = 1000;
+/** Post rows carry the text, which can run to thousands of characters. */
+const POSTS_WRITE_CHUNK = 200;
+
+/** Stores the profile of each post. A post stored before, for example before a
+ *  restart, keeps its first row. */
+export async function savePosts(posts: Post[]): Promise<void> {
+  const rows = posts.map((post) => {
+    const author = post.raw?.includes.author as { verified_type?: string } | null | undefined;
+    const video = post.media.find((m) => m.type === "video");
+    return {
+      tweet_id: post.id,
+      posted_at: post.created_at,
+      author_id: post.author_id,
+      author_followers: post.author_followers,
+      author_tweet_count: post.author_tweet_count,
+      author_verified_type: author?.verified_type ?? null,
+      lang: (post.raw?.lang as string | undefined) ?? null,
+      referenced_type: post.referenced_tweets?.find((r) => r.type !== "retweeted")?.type ?? null,
+      has_video: !!video,
+      has_photo: post.media.some((m) => m.type === "photo"),
+      video_duration_ms: video?.duration_ms ?? null,
+      text: post.text,
+    };
+  });
+  for (let i = 0; i < rows.length; i += POSTS_WRITE_CHUNK) {
+    const { error } = await getSupabaseClient()
+      .from("feed_view_posts")
+      .upsert(rows.slice(i, i + POSTS_WRITE_CHUNK), { onConflict: "tweet_id", ignoreDuplicates: true });
+    if (error) throw new Error(`Could not store feed view posts: ${error.message}`);
+  }
+}
 
 /** Stores the readings first and the walk row last, so a walk row always
  *  means that its readings are in. */
