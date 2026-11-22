@@ -7,8 +7,9 @@ let browserInstance: Browser | null = null;
  *  bot check such as Vercel's Security Checkpoint looks at it: from the
  *  services machine, the check refused our browser while the value was true
  *  and let the same browser through once it was not (GOO-832). Jina Reader
- *  starts its Chrome with the same flag. */
-const HIDE_AUTOMATION_FLAG = "--disable-blink-features=AutomationControlled";
+ *  starts its Chrome with the same flag, and so does the site checks'
+ *  browser (src/everything-extension/scripts/browser.ts). */
+export const HIDE_AUTOMATION_FLAG = "--disable-blink-features=AutomationControlled";
 
 /**
  * Returns the shared browser. A new one is launched when there is none yet or
