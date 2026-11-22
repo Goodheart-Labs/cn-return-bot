@@ -33,7 +33,10 @@ export interface UsageReading {
 export function readingFromHeaders(headers: Headers, at: Date): UsageReading {
   const used = headers.get("anthropic-ratelimit-unified-7d-utilization");
   const reset = headers.get("anthropic-ratelimit-unified-7d-reset");
-  if (!used || !reset) throw new Error("The inference response carried no weekly usage headers");
+  // A NaN reading would pass every "under the stop" comparison.
+  if (!used || !reset || !Number.isFinite(Number(used)) || !Number.isFinite(Number(reset))) {
+    throw new Error("The inference response carried no weekly usage headers");
+  }
   return { at: at.toISOString(), weekly: Number(used) * 100, weeklyResetsAt: new Date(Number(reset) * 1000).toISOString() };
 }
 

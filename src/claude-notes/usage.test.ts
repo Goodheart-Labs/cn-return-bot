@@ -18,3 +18,11 @@ test("the weekly usage is read from an inference response's rate-limit headers",
 test("a response without the weekly headers is an error, not a reading of 0%", () => {
   expect(() => readingFromHeaders(new Headers(), at)).toThrow("no weekly usage headers");
 });
+
+test("a weekly header that is not a number is an error", () => {
+  const headers = new Headers({
+    "anthropic-ratelimit-unified-7d-utilization": "soon",
+    "anthropic-ratelimit-unified-7d-reset": "1795453200",
+  });
+  expect(() => readingFromHeaders(headers, at)).toThrow("no weekly usage headers");
+});
