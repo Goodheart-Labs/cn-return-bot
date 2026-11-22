@@ -116,6 +116,8 @@ const optionText = (option: MenuOption) => (option.text ?? (typeof option.label 
 
 /** A search box above a long list of options. Beside its menu it stays at the
  *  top while the list scrolls. On a phone the Back row stays there instead.
+ *  It pulls itself up to the panel's edge only when it is the panel's first
+ *  row, because a row above it, such as a filter's Exclude box, would be hidden.
  *  The menu reads typed letters as jumps to an entry, so the box keeps them to
  *  itself, except the keys that leave it: the down arrow moves into the list,
  *  and Escape closes the menu. */
@@ -125,7 +127,7 @@ function OptionSearch({ query, onChange }: { query: string; onChange: (query: st
     if (event.key !== "ArrowDown" && event.key !== "Escape") event.stopPropagation();
   };
   return (
-    <div className={cn("mb-1", !onPhone && "sticky -top-1.5 z-10 -mx-1.5 -mt-1.5 bg-surface p-1.5")}>
+    <div className={cn("mb-1", !onPhone && "sticky -top-1.5 z-10 -mx-1.5 bg-surface p-1.5 first:-mt-1.5")}>
       <input
         type="search"
         autoFocus

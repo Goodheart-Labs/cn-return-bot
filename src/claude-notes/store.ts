@@ -19,7 +19,9 @@ import type { SubtitleCue } from "../pipeline/media/youtubeCaptions";
 import type { NoteTallyFields } from "../everything-core/noteBelief";
 import { noteStatus } from "../everything-core/noteScore";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
+import { CLAUDE_NOTEWRITER } from "../notewriters/ids";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
+import type { RunUsage } from "./runner/runUsage";
 import type { ClaudeRunTag } from "./usageShare";
 import type { UsageReading } from "./usage";
 
@@ -147,6 +149,12 @@ async function personNoteOnPassage(itemId: string, passage: string): Promise<{ n
   return null;
 }
 
+/** The passages of this post that already have a Claude draft, oldest first. */
+export async function draftedPassages(itemId: string): Promise<string[]> {
+  const rows = unwrap(await db().from("everything_claude_drafts").select("passage").eq("item_id", itemId).order("created_at"));
+  return [...new Set(rows.map((r) => r.passage).filter(Boolean))];
+}
+
 /** The draft the post already has with this passage, outcome and note text,
  *  if any. An agent that saves the same file twice would otherwise post the
  *  same note twice. */
@@ -256,14 +264,13 @@ export async function unansweredMessages(): Promise<EventRow[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Items: the posts the note writer gets from the notewriter protocol
+// Items: the posts the note writer reserves through the notewriter API
 // ---------------------------------------------------------------------------
 
 export interface QueueItem {
   id: string;
   url: string;
   title: string | null;
-  priority: number;
   status: string;
   published_at: string | null;
   created_at: string;
@@ -279,7 +286,7 @@ export async function readItem(itemId: string): Promise<QueueItem & {
   return unwrap(
     await db()
       .from("everything_items")
-      .select("id, url, title, priority, status, full_text, checked_scope, first_checked_at, caption_cues, published_at, created_at, project:everything_projects(name, slug)")
+      .select("id, url, title, status, full_text, checked_scope, first_checked_at, caption_cues, published_at, created_at, project:everything_projects(name, slug)")
       .eq("id", itemId)
       .single(),
   ) as never;
@@ -295,20 +302,42 @@ export async function nathanNotedItem(itemId: string): Promise<boolean> {
 export type PostRunOutcome = "done" | "skipped" | "incomplete" | "failed";
 
 /** Writes one everything_claude_runs row for a Claude run that ended, with
- *  what it would have cost on the API. usageShare.ts splits the plan's usage
- *  by these costs. `ref` names what the run was for. */
+ *  what it used and would have cost on the API. usageShare.ts splits the
+ *  plan's usage by these costs. `ref` names what the run was for. */
 export async function recordClaudeRun(run: {
   tags: ClaudeRunTag[];
   startedAt: number;
   runDir: string;
-  apiCostUsd: number | null;
+  usage: RunUsage;
   ref: { pipeline_run_id: string } | { everything_pipeline_run_id: string } | { draft_id: string } | null;
 }) {
+  const { usage } = run;
   check(
     await db()
       .from("everything_claude_runs")
-      .insert({ tags: run.tags, started_at: new Date(run.startedAt).toISOString(), run_dir: run.runDir, api_cost_usd: run.apiCostUsd, ...run.ref }),
+      .insert({
+        tags: run.tags,
+        started_at: new Date(run.startedAt).toISOString(),
+        run_dir: run.runDir,
+        api_cost_usd: usage.apiCostUsd,
+        model: usage.model,
+        turns: usage.turns,
+        tool_calls: usage.toolCalls,
+        subagent_calls: usage.subagentCalls,
+        model_usage: usage.modelUsage as Json,
+        notewriter: CLAUDE_NOTEWRITER,
+        ...run.ref,
+      }),
   );
+}
+
+/** Marks a post as flagged by the image screen (GOO-815, migration 188): it
+ *  leaves the post list for every notewriter, and its open reader requests
+ *  fail. Returns how many requests failed. */
+export async function flagItem(itemId: string, reason: string): Promise<number> {
+  const { data, error } = await db().rpc("everything_flag_item", { p_item: itemId, p_reason: reason });
+  if (error) throw new Error(JSON.stringify(error));
+  return data;
 }
 
 /** The environment variable through which a post's Claude, and every command
@@ -340,6 +369,7 @@ export async function endPostRun(runId: string, outcome: PostRunOutcome, logs: R
 export async function recordUsage(reading: UsageReading) {
   check(
     await db().from("everything_claude_usage").insert({
+      notewriter: CLAUDE_NOTEWRITER,
       weekly: reading.weekly,
       weekly_resets_at: reading.weeklyResetsAt,
     }),
@@ -349,13 +379,6 @@ export async function recordUsage(reading: UsageReading) {
 /** How many drafts Claude saved on an item since a time. */
 export async function claudeDraftsSince(itemId: string, since: string): Promise<number> {
   const { count, error } = await db().from("everything_claude_drafts").select("id", { count: "exact", head: true }).eq("item_id", itemId).gte("created_at", since);
-  if (error) throw new Error(JSON.stringify(error));
-  return count ?? 0;
-}
-
-/** How many Claude runs with this tag started since a time. */
-export async function claudeRunsSince(tag: ClaudeRunTag, since: Date): Promise<number> {
-  const { count, error } = await db().from("everything_claude_runs").select("id", { count: "exact", head: true }).contains("tags", [tag]).gte("started_at", since.toISOString());
   if (error) throw new Error(JSON.stringify(error));
   return count ?? 0;
 }

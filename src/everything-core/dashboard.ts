@@ -194,11 +194,16 @@ export interface ClaudeUsageRow {
   weekly_resets_at: string | null;
 }
 
-/** Every reading of the Claude plan's usage since a time, oldest first. Only
- *  admins can read the table, through its row-level policy. */
+/** The notewriter whose plan the chart shows: the runner on the ai-box, on
+ *  Jim's notewriter account (GOO-787). Its id is AI_BOX_NOTEWRITER in
+ *  src/notewriters/ids.ts, which this layer may not import. */
+const CHART_NOTEWRITER = "claude-ai-box";
+
+/** Every reading of the note writer's Claude plan since a time, oldest first.
+ *  Only admins can read the table, through its row-level policy. */
 export async function fetchClaudeUsage(since: string): Promise<ClaudeUsageRow[]> {
   const rows = await fetchAllRows<ClaudeUsageRow & { id: number }>(
-    () => supabase.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+    () => supabase.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CHART_NOTEWRITER).gte("at", since),
     "id",
     { label: "claude usage" },
   );
@@ -239,28 +244,35 @@ export async function fetchClickCounts(since: Date): Promise<ClickCounts> {
   return { noteOpens: counts.note_opens, notes: counts.notes, getExtension: counts.get_extension, stores: counts.stores };
 }
 
-// --- The notewriters (migration 168) ---
+// --- The notewriters (migrations 168 and 184) ---
 
-/** One AI notewriter of the notewriter protocol (GOO-724), as the dashboard's
- *  Notewriters section shows it. */
+/** One notewriter and its health numbers (everything_notewriter_health,
+ *  GOO-791), as the dashboard's Notewriters section shows it. */
 export interface NotewriterRow {
   id: string;
   name: string;
   owner: string;
-  /** How often it wants a feed post. Null when it wants none. */
+  /** Run by someone outside the team. */
+  outside: boolean;
+  disabled_at: string | null;
+  /** API v1's subscription: how often it wants a feed post. Null when it
+   *  wants none, or paces itself on API v2. */
   every_minutes: number | null;
   takes_reader_requests: boolean;
   lease_minutes: number;
-  failures_in_a_row: number;
-  cooldown_until: string | null;
+  /** Null means no limit. */
+  notes_per_day: number | null;
+  max_open: number | null;
   last_seen_at: string | null;
-  open_posts: number;
+  open_reservations: number;
   done_7d: number;
+  skipped_7d: number;
   failed_7d: number;
-  last_failure: string | null;
-  last_failure_at: string | null;
+  expired_7d: number;
   notes_7d: number;
   notes_total: number;
+  last_failure: string | null;
+  last_failure_at: string | null;
 }
 
 export async function fetchNotewriters(): Promise<NotewriterRow[]> {

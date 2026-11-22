@@ -1,8 +1,10 @@
-/* Reads how much of Jim's Claude Code plan is used (GOO-507), so the note
- * writer can keep its share of the weekly limit in check. It asks the same
- * endpoint Claude Code's /usage screen reads, with the login Claude Code keeps
- * on this machine, and appends every reading to a log so the trend can be
- * estimated. */
+/* Reads how much of the notewriter's Claude Code plan is used (GOO-507), so
+ * the note writer can keep its share of the weekly limit in check. It asks the
+ * same endpoint Claude Code's /usage screen reads, with the login Claude Code
+ * keeps in its config folder, and appends every reading to a log so the trend
+ * can be estimated. The config folder is CLAUDE_CONFIG_DIR when it is set: on
+ * the ai-box that is the folder of Jim's notewriter account (GOO-787), so the
+ * runner never uses Nathan's own login. */
 
 import { appendFileSync, mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";
@@ -11,10 +13,6 @@ import * as path from "path";
 const CREDENTIALS_PATH = path.join(process.env.CLAUDE_CONFIG_DIR ?? path.join(homedir(), ".claude"), ".credentials.json");
 const USAGE_URL = "https://api.anthropic.com/api/oauth/usage";
 
-/** Jim's devbox can run a Claude on either of two Claude Code accounts, and its
- *  account switch picks one for new Claudes (devbox claude-account, GOO-772).
- *  The note writer budgets the main account's plan, so its Claudes always run there. */
-export const NOTE_WRITER_ACCOUNT_ENV = { CLAUDE_ACCOUNT: "main" };
 const USAGE_LOG_PATH = path.join(homedir(), ".local/share/claude-note-finder/usage.jsonl");
 
 interface Window {

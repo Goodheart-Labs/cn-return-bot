@@ -1,6 +1,6 @@
 # The services machine
 
-One always-on Linux server runs six systemd services. It is the Hetzner Cloud
+One always-on Linux server runs these systemd services. It is the Hetzner Cloud
 server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 `ssh root@95.217.155.79` (see `docs/prod-config.md`).
 
@@ -9,12 +9,15 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-claim-check` | one claim in, a note with verified sources out | 8787 |
 | `cn-extraction` | text in, the claims in it out | 8788 |
 | `cn-intake` | watches reader requests and drives them through the other two | none |
+| `cn-walk` | keeps every walked creator's feed on a schedule and adds their new posts to the post list (GOO-791) | none |
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
+| `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
+| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed (GOO-834) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
-Intake is a caller: it holds the service key and writes the rows. The Actions
-pipelines are the monitor; nothing on this machine phones home.
+Intake and the walk are callers: they hold the service key and write the rows.
+The walk also tells Slack when one of our own notewriters has gone silent.
 
 Intake is outside the feed pacing. It processes reader-requested pages at once
 and spends from the full daily cap. Its spend still counts in the day's total,
@@ -46,8 +49,19 @@ themselves, because their units want it, and autodeploy restarts it with them.
 git clone https://github.com/Goodheart-Labs/cn-return-bot.git /opt/cn-return-bot
 bash /opt/cn-return-bot/ops/setup-vm.sh
 # fill in /etc/cn-return-bot/service.env (below)
-systemctl start cn-claim-check cn-extraction cn-intake
+systemctl start cn-claim-check cn-extraction cn-intake cn-walk
 ```
+
+On a machine set up before cn-walk existed (GOO-791), add YOUTUBE_WEBSUB_SECRET
+and SLACK_BOT_TOKEN to service.env (below), then run once as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-walk.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-walk
+```
+
+Before that, `bun run cn-walk --dry-run` on the devbox reads the Substack and
+forum feeds against production and prints what it would add, writing nothing.
 
 ## /etc/cn-return-bot/service.env
 
@@ -87,9 +101,15 @@ SUPABASE_SERVICE_KEY=
 CLAIM_CHECK_URL=http://localhost:8787
 EXTRACTION_URL=http://localhost:8788
 
-# YouTube Data API key (intake): video details for a requested YouTube page.
-# The same key the feed run uses; 10,000 free quota units a day per project.
+# YouTube Data API key: video details for a requested YouTube page (intake),
+# and the walk's channel listings. 10,000 free quota units a day per project.
 YOUTUBE_DATA_V3_API_KEY=
+
+# The walk: shared with the youtube-websub Edge Function. The walk sends it to
+# Google's WebSub hub with each channel subscription.
+YOUTUBE_WEBSUB_SECRET=
+# The walk: the bot token of the Slack app "Claudy", for the silence warnings.
+SLACK_BOT_TOKEN=
 
 # YouTube needs the residential proxy here, exactly as it does on GitHub's
 # runners. Measured on this machine on 2026-09-08: every per-video call answers
@@ -131,6 +151,48 @@ Then add `YOUTUBE_DATA_V3_API_KEY=` to the environment file and
 `systemctl restart cn-intake`. A caption download without the provider fails
 with "The PO token provider at http://127.0.0.1:4416 did not answer", which
 is the line to look for in `journalctl -u cn-intake`.
+
+## The daily site checks
+
+`cn-site-checks.timer` starts `cn-site-checks.service` every night at 22:00
+UTC. It builds the extension against production, runs `bun run site-checks
+--save` (src/site-checks/), and saves the report in the table
+`site_check_runs`. The devbox's CI checker Claude reads it at 23:00 UTC with
+`bun run site-checks-latest`. The checks run here because Substack refuses
+GitHub's machines (measured 2026-11-19: its API answered 403 and its pages
+never loaded), and because this machine holds the residential proxy, which the
+YouTube watch-page checks go through. The proxy is paid per gigabyte, so the
+report says how many megabytes they took.
+
+The build needs `SUPABASE_ANON_KEY` in service.env, the public key that every
+copy of the extension carries. Once, as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-site-checks.service /opt/cn-return-bot/ops/cn-site-checks.timer /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-site-checks.timer
+systemctl start --no-block cn-site-checks   # a first run now, to see it work
+journalctl -u cn-site-checks -f
+```
+
+## The feed view recorder
+
+`cn-feed-views` (src/feed-views/main.ts, GOO-834) reads the small, large and
+XL tiers of X's eligible-posts feed every 10 minutes, on the clock, with the
+notewriter keys in service.env. It stores one reading of each XL post's views
+and other counts in `feed_tweet_views`, and one row per walk of the feed in
+`feed_view_walks` (migration 193). X's budget of 500 requests per 15 minutes
+is shared with the X run, so a walk stops when fewer than 150 are left. When
+an hour passes without a walk that completed and was stored, it tells Slack.
+It does not write `feed_tweets`, which keeps what the X run saw first. It is a one-time
+collection of at most 14 days (GOO-845). Once, as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-feed-views
+journalctl -u cn-feed-views -f      # a "walk complete" line every 10 minutes
+```
+
+`bun run cn-feed-views --dry-run` makes one walk and writes nothing.
 
 ## Deploys
 
@@ -208,11 +270,14 @@ journalctl -u cn-intake -f                 # live logs, same for the other units
 curl -H "x-cn-service-key: $SECRET" http://localhost:8787/health
 ```
 
-Every page and listing the services read is a row in the table `page_reads`,
-and the same record with the text that came back is a line in
-`/var/lib/cn-page-reads/<day>.jsonl`, kept 30 days (`src/pipeline/fetch/readLog.ts`).
+From 2026-11-12 to 2026-11-19 the services recorded every page and listing
+they read (GOO-766): a row in the table `page_reads`, and the same record with
+the text that came back as a line in `/var/lib/cn-page-reads/<day>.jsonl`. A
+line with `text_same_as` names the line that holds its text. The recording
+was removed once there was enough data to study the fetcher (GOO-826). The
+table and the files stay for that.
 
 ```bash
-jq -c 'select(.outcome != "page") | {input, reason, steps}' /var/lib/cn-page-reads/$(date -u +%F).jsonl   # today's failed reads
+jq -c 'select(.outcome != "page") | {input, reason, steps}' /var/lib/cn-page-reads/<day>.jsonl                              # one day's failed reads
 jq -r 'select(.input == "<url>") | .text' /var/lib/cn-page-reads/<day>.jsonl                              # what one read gave
 ```

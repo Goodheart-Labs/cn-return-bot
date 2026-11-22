@@ -19,10 +19,9 @@
 import { chmodSync } from "node:fs";
 import { downloadImageInlineData } from "../../pipeline/media/mediaAnalysisGemini";
 import { minisitePageAnswer } from "../../everything/minisites/readPage";
-import { fetchApiInBrowser, fetchApiPlain } from "../../pipeline/fetch/fetchApi";
+import { fetchApi } from "../../pipeline/fetch/fetchApi";
 import { fetchPageWithLadder } from "../../pipeline/fetch/fetchLadder";
 import {
-  FETCH_API_IN_BROWSER_PATH,
   FETCH_API_PATH,
   FETCH_IMAGE_PATH,
   FETCH_PAGE_PATH,
@@ -47,8 +46,7 @@ const SOCKET_MODE = 0o666;
 
 const routes: Record<string, (body: any) => Promise<unknown>> = {
   [FETCH_PAGE_PATH]: (body: FetchUrlRequest) => fetchPageWithLadder(body.url),
-  [FETCH_API_PATH]: (body: FetchUrlRequest) => fetchApiPlain(body.url),
-  [FETCH_API_IN_BROWSER_PATH]: (body: FetchUrlRequest) => fetchApiInBrowser(body.url),
+  [FETCH_API_PATH]: (body: FetchUrlRequest) => fetchApi(body.url, body.etag),
   [MINISITE_PAGE_PATH]: (body: MinisitePageRequest) => minisitePageAnswer(body.url, body.page),
   [FETCH_IMAGE_PATH]: (body: FetchUrlRequest) => downloadImageInlineData(body.url),
 };

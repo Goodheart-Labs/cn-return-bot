@@ -12,6 +12,10 @@
  *   date     a moment, filtered by how many days back it lies
  *   choice   one of a list of values, filtered by the values to keep
  *
+ * Any filter can be negated. It then keeps exactly the rows it would have
+ * left out, including the rows where the field has no value. So "Specific
+ * creators: not Astral Codex Ten" also keeps the notes without a creator.
+ *
  * A list can be sorted by any number of fields, one after another. With more
  * than one level the sort runs in two passes. The first pass sorts by the
  * buckets of every level: the same thresholds and day spans the filters use.
@@ -87,8 +91,9 @@ export type DateSpanId = (typeof DATE_SPANS)[number]["id"];
 
 /** One active filter. A count or percent field keeps the rows past a
  *  threshold, where a count threshold of 0 means "none at all". A date field
- *  keeps a day span. A choice field keeps the listed values. */
-export type FieldFilter = { field: string; threshold: number } | { field: string; span: DateSpanId } | { field: string; values: string[] };
+ *  keeps a day span. A choice field keeps the listed values. A negated filter
+ *  keeps every other row instead. */
+export type FieldFilter = ({ field: string; threshold: number } | { field: string; span: DateSpanId } | { field: string; values: string[] }) & { negated?: boolean };
 
 export interface FieldSort {
   field: string;
@@ -108,7 +113,7 @@ export interface FieldQuery {
  *  value reaches. A sort with `order` sorts a choice by its position in that
  *  list, worst first. */
 export interface QueryRequest {
-  filters: ({ column: string; min?: number; max?: number } | { column: string; in: string[] })[];
+  filters: (({ column: string; min?: number; max?: number } | { column: string; in: string[] }) & { not?: boolean })[];
   sorts: { column: string; descending: boolean; buckets?: number[]; order?: string[] }[];
 }
 
@@ -140,11 +145,11 @@ export function filterOptions(field: Exclude<FieldDef, ChoiceField>): FieldOptio
   return field.bound === "atLeast" && field.offerNone ? [{ value: "0", label: "None" }, ...options] : options;
 }
 
-/** The filter a picked option stands for. */
-export function filterFromOption(field: FieldDef, values: string[]): FieldFilter {
-  if (field.kind === "choice") return { field: field.id, values };
-  if (field.kind === "date") return { field: field.id, span: values[0] as DateSpanId };
-  return { field: field.id, threshold: Number(values[0]) };
+/** The filter that picked options stand for. */
+export function filterFromOption(field: FieldDef, values: string[], negated = false): FieldFilter {
+  const filter: FieldFilter =
+    field.kind === "choice" ? { field: field.id, values } : field.kind === "date" ? { field: field.id, span: values[0] as DateSpanId } : { field: field.id, threshold: Number(values[0]) };
+  return negated ? { ...filter, negated } : filter;
 }
 
 /** The option values a filter has picked, the reverse of `filterFromOption`. */
@@ -155,8 +160,15 @@ export function selectedOptions(filter: FieldFilter | undefined): string[] {
   return [String(filter.threshold)];
 }
 
-/** What a filter keeps, in the words of its chip, for example "3 or more". */
+/** What a filter keeps, in the words of its chip, for example "3 or more" or
+ *  "not Zvi". */
 export function filterText(field: FieldDef, filter: FieldFilter, labels: Record<string, string> = {}): string {
+  const text = pickedText(field, filter, labels);
+  return filter.negated ? `not ${text}` : text;
+}
+
+/** The options a filter picked, in words. */
+function pickedText(field: FieldDef, filter: FieldFilter, labels: Record<string, string>): string {
   if ("values" in filter) {
     const names = filter.values.map((value) => field.kind === "choice" && field.options?.find((o) => o.value === value)?.label || labels[value] || value);
     const MAX_NAMED_VALUES = 2;
@@ -169,6 +181,11 @@ export function filterText(field: FieldDef, filter: FieldFilter, labels: Record<
 }
 
 function filterRequest(field: FieldDef, filter: FieldFilter, now: Date): QueryRequest["filters"][number] {
+  const request = pickedRequest(field, filter, now);
+  return filter.negated ? { ...request, not: true } : request;
+}
+
+function pickedRequest(field: FieldDef, filter: FieldFilter, now: Date): QueryRequest["filters"][number] {
   if ("values" in filter) return { column: field.id, in: filter.values };
   if ("span" in filter) return { column: field.id, min: seconds(startOfDay(now, DATE_SPANS.find((span) => span.id === filter.span)!.daysBack)) };
   if (filter.threshold === 0) return { column: field.id, max: 0 };
@@ -249,15 +266,17 @@ export function buildRequest(fields: readonly FieldDef[], query: Pick<FieldQuery
 export const QUERY_PARAMS = { filters: "filter", sorts: "sort", display: "show" } as const;
 
 const LIST_SEPARATOR = ",";
+/** Starts the values of a negated filter in the address, as in filter=creator:!thezvi. */
+const NEGATION_MARK = "!";
 
 /** Writes a query into address parameters, for example
- *  filter=helpful_votes:3&filter=on_x:not_posted&sort=-rating&show=chat. A
+ *  filter=helpful_votes:3&filter=creator:!thezvi&sort=-rating&show=chat. A
  *  part that is empty is left out, because reading a missing part gives an
  *  empty one. A query that is empty everywhere still writes an empty filter,
  *  so the address says that it carries a query. */
 export function writeQuery(query: FieldQuery, params: URLSearchParams): void {
   for (const name of Object.values(QUERY_PARAMS)) params.delete(name);
-  for (const filter of query.filters) params.append(QUERY_PARAMS.filters, `${filter.field}:${selectedOptions(filter).join(LIST_SEPARATOR)}`);
+  for (const filter of query.filters) params.append(QUERY_PARAMS.filters, `${filter.field}:${filter.negated ? NEGATION_MARK : ""}${selectedOptions(filter).join(LIST_SEPARATOR)}`);
   for (const sort of query.sorts) params.append(QUERY_PARAMS.sorts, `${sort.descending ? "-" : ""}${sort.field}`);
   if (query.display.length > 0) params.set(QUERY_PARAMS.display, query.display.join(LIST_SEPARATOR));
   if (![...params.keys()].some((name) => (Object.values(QUERY_PARAMS) as string[]).includes(name))) params.set(QUERY_PARAMS.filters, "");
@@ -272,14 +291,16 @@ const knownValue = (field: ChoiceField, value: string) => !field.options || fiel
 function readFilter(fields: readonly FieldDef[], text: string): FieldFilter | null {
   const colon = text.indexOf(":");
   const field = fieldById(fields, text.slice(0, colon));
-  const values = text.slice(colon + 1).split(LIST_SEPARATOR).filter(Boolean);
+  const picked = text.slice(colon + 1);
+  const negated = picked.startsWith(NEGATION_MARK);
+  const values = (negated ? picked.slice(NEGATION_MARK.length) : picked).split(LIST_SEPARATOR).filter(Boolean);
   if (!field || colon < 0 || values.length === 0) return null;
   if (field.kind === "choice") {
     const kept = values.filter((value) => knownValue(field, value));
-    return kept.length > 0 ? { field: field.id, values: field.multiple ? kept : kept.slice(0, 1) } : null;
+    return kept.length > 0 ? filterFromOption(field, field.multiple ? kept : kept.slice(0, 1), negated) : null;
   }
   if (!filterOptions(field).some((option) => option.value === values[0])) return null;
-  return filterFromOption(field, values);
+  return filterFromOption(field, values, negated);
 }
 
 /** Reads a query from the address, or null when the address carries none.

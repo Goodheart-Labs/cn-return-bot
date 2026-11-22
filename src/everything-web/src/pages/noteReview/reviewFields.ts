@@ -134,7 +134,18 @@ export const REVIEW_FIELDS: FieldDef[] = [
   },
   { id: "jim_vote", group: "Jim and Nathan", label: "Jim's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
   { id: "nathan_vote", group: "Jim and Nathan", label: "Nathan's vote", kind: "choice", multiple: true, sortable: false, options: VOTES },
-  { id: "leaderboard", label: "On our leaderboard", kind: "choice", multiple: false, sortable: false, options: YES_NO },
+  {
+    id: "leaderboard",
+    label: "Leaderboard",
+    kind: "choice",
+    multiple: true,
+    sortable: false,
+    options: [
+      { value: "on", label: "On the leaderboard" },
+      { value: "declined", label: "Won't add", hint: "We decided not to add it" },
+      { value: "undecided", label: "Undecided" },
+    ],
+  },
   { id: "few_shot", label: "Few-shot example", hint: "Notes we picked to show the note writer as examples", kind: "choice", multiple: false, sortable: false, options: YES_NO },
   {
     id: "outcome", group: "Note",
@@ -205,14 +216,14 @@ export const REVIEW_FIELDS: FieldDef[] = [
 
 /** The buttons a card can show, each switched on or off in the Display menu. */
 export const DISPLAY = {
-  postOnX: { value: "post_on_x", label: "Post on X", hint: "Opens the tweet and schedules it in Typefully's next free slot." },
+  postOnX: { value: "post_on_x", label: "Post on X", hint: "Schedules the proposed tweet in Typefully's next free slot in one click; Edit first opens it for changes." },
   markPosted: { value: "mark_posted", label: "Posted on X", hint: "Marks a note that was posted on X without the posting tool" },
   wontPost: { value: "wont_post", label: "We won't post this" },
   chat: { value: "chat", label: "Chat with Claude" },
   improve: { value: "improve", label: "Improve the note" },
   skip: { value: "skip", label: "Skip" },
   fewShot: { value: "few_shot", label: "Few-shot example" },
-  leaderboard: { value: "leaderboard", label: "Add to leaderboard" },
+  leaderboard: { value: "leaderboard", label: "Add to leaderboard", hint: "Also shows Won't add to leaderboard" },
   delete: { value: "delete", label: "Delete from the site" },
 } satisfies Record<string, FieldOption>;
 

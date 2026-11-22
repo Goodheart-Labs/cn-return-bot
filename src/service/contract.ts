@@ -181,11 +181,9 @@ export interface RateClaimsResponse {
 
 /** The fetch ladder for one page (fetchPageWithLadder). */
 export const FETCH_PAGE_PATH = "/fetch-page";
-/** One plain request to an API address (fetchApiPlain). */
+/** One request to an API address: sent plainly, and through the fetcher's
+ *  headless browser when a bot check answers the plain request (fetchApi). */
 export const FETCH_API_PATH = "/fetch-api";
-/** The same request, made from inside a headless browser page on the site, for
- *  a site whose bot check stopped the plain request (fetchApiInBrowser). */
-export const FETCH_API_IN_BROWSER_PATH = "/fetch-api-in-browser";
 /** Turns a page that readPage read into a minisite's article
  *  (minisitePageAnswer), so the page's HTML is parsed inside the sandbox and
  *  never in a service that holds keys. */
@@ -200,32 +198,27 @@ export const FETCH_SERVICE_SOCKET_VARIABLE = "FETCH_SERVICE_SOCKET";
 
 export interface FetchUrlRequest {
   url: string;
+  /** For an API request: the version tag (ETag) of the last answer. A site
+   *  whose answer has not changed then answers 304 with no body. */
+  etag?: string;
 }
 
 /** A page as the fetch ladder accepted it, or the ladder's best guess at why
  *  it could not. `fetchedUrl` is the archive snapshot when the ladder fell back
  *  to one, and the requested address otherwise. `via` names the fallback step
  *  that produced the page, and is null when a plain request did. */
-/** One request of the fetch ladder, for the read log: which step, what came
- *  back (good, wall, thin or fail), the HTTP status, the characters and the
- *  time it took. */
-export interface LadderAttempt {
-  label: string;
-  result: string;
-  status?: number;
-  chars: number;
-  ms: number;
-}
-
 export type LadderAnswer =
-  | { ok: true; html: string; markdown: string; fetchedUrl: string; via: string | null; attempts: LadderAttempt[] }
-  | { ok: false; diagnostic: string; attempts: LadderAttempt[] };
+  | { ok: true; html: string; markdown: string; fetchedUrl: string; via: string | null }
+  | { ok: false; diagnostic: string };
 
 /** What one request to an API address got back. `bot_check` means the site
  *  answered with a challenge page meant to stop programs, such as Vercel's
- *  Security Checkpoint, so a request from a real browser may still pass. */
+ *  Security Checkpoint, and did not let the fetcher's browser through either.
+ *  `not_modified` answers a request that sent the ETag of an answer that has
+ *  not changed since. */
 export type ApiAnswer =
-  | { type: "answer"; body: string }
+  | { type: "answer"; body: string; etag?: string }
+  | { type: "not_modified" }
   | { type: "bot_check" }
   | { type: "failed"; reason: string };
 
@@ -287,10 +280,13 @@ export type PageSource =
 export interface ListingRequest {
   feedUrl: string;
   limit: number;
+  /** For a Substack feed: the ETag of the last answer (cn-walk, GOO-791). */
+  etag?: string;
 }
 
 export type Listing =
-  | { kind: "substack"; xml: string }
+  | { kind: "substack"; xml: string; etag: string | null }
+  | { kind: "not_modified" }
   | { kind: "forum"; listing: ForumListing };
 
 /** An image as Gemini takes it inline: its media type and its bytes in

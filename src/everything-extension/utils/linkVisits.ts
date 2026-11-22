@@ -2,7 +2,6 @@ import { browser } from "#imports";
 import { insertVisit } from "@cn/core/visits";
 import type { PageItem } from "@cn/core/items";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
-import { readWatchPageChannel } from "./authorFeed";
 import { isSubstackPostPage } from "./pageShape";
 import {
   EA_FORUM_ORIGIN,
@@ -12,9 +11,11 @@ import {
   isForumPostPage,
   readForumPostAuthorFromPage,
   readSubstackPublicationFromPage,
+  readWatchPageChannel,
   substackCreatorTarget,
   substackTargetFromPublication,
   youtubeChannelTarget,
+  youtubeVideoChannelTarget,
 } from "./creatorTarget";
 import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
 import { visitReaderHash } from "./visitReader";
@@ -48,10 +49,11 @@ const WATCH_CHANNEL_POLL_MS = 500;
 const WATCH_CHANNEL_POLL_TRIES = 20;
 
 /** The creator's feed URL for the visited page: the Substack publication from
- *  the hostname or the page's preloads blob, the YouTube channel from the
- *  watch page's owner box, the forum author from the site's own API or, when
- *  that does not answer, from the post's header. Null when
- *  the page has no followable creator. The pipeline ranks creators by these
+ *  the hostname or the page's preloads blob, the YouTube channel from
+ *  YouTube's oEmbed endpoint or, when that does not answer, from the watch
+ *  page, the forum author from the site's own API or, when that does not
+ *  answer, from the post's header. Null when the page has no followable
+ *  creator. The pipeline ranks creators by these
  *  (creatorRanking.ts), which is why the visit records the creator at all: a
  *  creator is not derivable on the server from a watch URL or a custom-domain
  *  post URL. */
@@ -65,6 +67,9 @@ async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string
     return author?.feedUrl ?? null;
   }
   if (kind !== "youtube") return null;
+  const videoId = extractYoutubeVideoId(pageUrl);
+  const uploader = videoId ? await youtubeVideoChannelTarget(videoId) : null;
+  if (uploader) return uploader.feedUrl;
   for (let attempt = 0; attempt < WATCH_CHANNEL_POLL_TRIES; attempt++) {
     const channel = readWatchPageChannel();
     if (channel) return youtubeChannelTarget(channel.href, channel.name)?.feedUrl ?? null;

@@ -89,7 +89,9 @@ export interface ReviewDraft {
   proposal: { note: string; sources: ReviewDraftSource[] } | null;
   /** The note judge's answer for the note's current text. */
   judge: { pHelpful: number; pImpactful: number; reasoning: string } | null;
-  onLeaderboard: boolean;
+  /** Whether the note is on the leaderboard, an admin decided against it, or
+   *  nobody decided yet. */
+  leaderboard: "on" | "declined" | "undecided";
   /** Whether the note was posted on X or the admins decided not to post it. */
   xMark: XMark | null;
   fewShot: boolean;
@@ -148,7 +150,7 @@ function toReviewDraft(row: ReviewRow): ReviewDraft {
     messages: row.messages as unknown as ReviewDraft["messages"],
     proposal: row.proposed_note ? { note: row.proposed_note, sources: (row.proposed_sources ?? row.sources) as unknown as ReviewDraftSource[] } : null,
     judge: pHelpful === null ? null : { pHelpful, pImpactful: fields.p_impactful as number, reasoning: row.judge_reasoning! },
-    onLeaderboard: fields.leaderboard as boolean,
+    leaderboard: fields.leaderboard as ReviewDraft["leaderboard"],
     xMark: fields.on_x === "not_posted" ? null : (fields.on_x as XMark),
     fewShot: fields.few_shot as boolean,
     reviewerVotes: row.reviewer_votes as unknown as ReviewDraft["reviewerVotes"],

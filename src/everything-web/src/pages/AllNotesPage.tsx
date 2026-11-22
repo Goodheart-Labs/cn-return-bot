@@ -57,7 +57,9 @@ export function AllNotesPage({ navigate }: { navigate: (route: Route) => void })
   // The Newest order's dividers are drawn on the reader's calendar, from the
   // moment the page opened.
   const [starts] = useState(() => spanStarts(new Date()));
-  const filterProps = { fields: ALL_NOTES_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }) };
+  // The feed's database function knows only its own few filters, so they
+  // cannot exclude.
+  const filterProps = { fields: ALL_NOTES_FIELDS, filters: query.filters, onChange: (filters: FieldFilter[]) => setQuery({ ...query, filters }), canExclude: false };
   const { list, summary } = useNoteFeed(EVERY_PROJECT, order, noteFiltersOf(query.filters), order === "recent" ? starts : []);
   const counts = summary.data;
   const byline = useCallback(

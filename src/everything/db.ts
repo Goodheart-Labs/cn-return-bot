@@ -4,25 +4,15 @@
 import { getSupabaseClient } from "../api/supabaseClient";
 import { extractYoutubeVideoId } from "../everything-core/pageUrls";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
+import { SOURCE_UNREACHABLE_TEXT } from "../pipeline/media/youtubeCaptions";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
 import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
 import { CLAUDE_NOTEWRITER, PIPELINE_NOTEWRITER } from "../notewriters/ids";
+import type { HandedOutPost } from "../notewriters/v1";
 import type { WatchedNotewriter } from "./notewriterSilence";
-import type { ItemSource, NoteSourceCitation } from "./types";
-
-/** The queue's priority tiers. The worker takes the highest tier first, and the
- *  newest published content within a tier. */
-export const QUEUE_PRIORITY = {
-  /** A post by a creator we walk only because readers visited them. */
-  backlog: 0,
-  /** A post by a creator whose priority window is still open, because someone
-   *  pressed the button or ran everything-prioritize. */
-  prioritized: 1,
-  /** A page a reader explicitly requested notes on. */
-  requested: 2,
-} as const;
+import type { ItemSource } from "./types";
 
 export interface EverythingItem {
   id: string;
@@ -32,9 +22,9 @@ export interface EverythingItem {
   title: string | null;
   published_at: string | null;
   status: "queued" | "processing" | "done" | "error";
-  /** Which queue tier the item sits in, from QUEUE_PRIORITY. It is what tells a
-   *  page a reader is waiting on apart from the backlog. */
-  priority: number;
+  /** Set while a reader waits on the post: when the oldest open request came
+   *  in (migration 184). It is what tells reader work apart from feed work. */
+  requested_since: string | null;
   /** The body text supplied up front for a local `--doc` item, read from a file
    *  at enqueue time. It is null for a live URL that the worker fetches. Once an
    *  item has been ingested this column also holds the text that the public
@@ -47,7 +37,7 @@ export interface EverythingItem {
   first_checked_at: string | null;
 }
 
-const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, priority, full_text, checked_scope, first_checked_at, retries";
+const ITEM_COLUMNS = "id, project_id, source, url, title, published_at, status, requested_since, full_text, checked_scope, first_checked_at, retries";
 
 export type ClaimStatus = "pending" | "skipped" | "no_note" | "note" | "error";
 
@@ -219,7 +209,8 @@ export interface EnqueueRow {
   full_text?: string; // The body we already have. A live URL carries none here.
   published_at?: string; // We know this at enqueue for an RSS-fed item. Otherwise the worker sets it.
   published_time?: string; // The exact moment of publication, when the walk's listing gives one.
-  priority?: number; // A QUEUE_PRIORITY tier. Left out it defaults to the backlog tier.
+  requested_since?: string; // Set for a page a reader asked for, so it goes to the top of the list.
+  demanded_at?: string; // Set for a page several readers opened (GOO-793), which ranks like a priority creator's post.
   checked_scope?: "page" | "paragraph"; // Left out it defaults to a whole-page check.
 }
 
@@ -227,7 +218,9 @@ export interface EnqueueRow {
  *  already have is ignored. Every row is padded to the same set of keys, because
  *  PostgREST rejects a bulk insert whose rows have differing keys. */
 export async function enqueueItems(rows: EnqueueRow[]): Promise<number> {
-  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, published_time: null, priority: QUEUE_PRIORITY.backlog, checked_scope: "page", ...r }));
+  // A key left undefined would drop out of the JSON and break the padding.
+  const defined = (row: EnqueueRow) => Object.fromEntries(Object.entries(row).filter(([, value]) => value !== undefined));
+  const padded = rows.map((r) => ({ title: null, full_text: null, published_at: null, published_time: null, requested_since: null, demanded_at: null, checked_scope: "page", ...defined(r) }));
   const inserted = throwOnError(
     await getSupabaseClient()
       .from("everything_items")
@@ -247,10 +240,11 @@ export async function insertQueuedItem(row: EnqueueRow): Promise<string> {
   return inserted.id;
 }
 
-/** Raises an item's priority to at least the given tier. It never lowers one. */
-export async function raiseItemPriority(id: string, priority: number): Promise<void> {
+/** Marks a post as requested, so it goes to the top of the list. A post that
+ *  is requested already keeps the time of its oldest open request. */
+export async function markItemRequested(id: string): Promise<void> {
   throwOnError(
-    await getSupabaseClient().from("everything_items").update({ priority }).eq("id", id).lt("priority", priority),
+    await getSupabaseClient().from("everything_items").update({ requested_since: new Date().toISOString() }).eq("id", id).is("requested_since", null),
   );
 }
 
@@ -288,19 +282,19 @@ export async function findItemForPageUrl(
 }
 
 /** Turns an existing item into a whole-page check and puts it back in the
- *  queue at the given priority tier. The item's claims and notes are kept, and
+ *  queue, as requested when a reader asked for it. The item's claims and notes are kept, and
  *  the worker redoes only the unfinished ones. full_text is always
  *  overwritten. Keeping a paragraph item's old text would make the worker
  *  re-check the same paragraph and then record it as a whole-page check. Null
  *  makes the worker fetch the page itself. */
-export async function promoteItemToWholePage(id: string, fullText: string | null, priority: number): Promise<void> {
+export async function promoteItemToWholePage(id: string, fullText: string | null, options: { requested: boolean }): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
       .update({ checked_scope: "page", full_text: fullText, status: "queued", error: null })
       .eq("id", id),
   );
-  await raiseItemPriority(id, priority);
+  if (options.requested) await markItemRequested(id);
 }
 
 /** An existing item row seen from the feed walker: where it lives and what
@@ -332,20 +326,8 @@ export async function fetchItemUrlsContaining(fragments: string[]): Promise<Know
   ) as KnownItemUrl[];
 }
 
-/** Returns the items of one tier that a killed run left stranded in
- *  `processing`. This is only meaningful while no worker of that tier is
- *  running. Each tier has its own worker: the feed run, whose concurrency group
- *  guarantees there is one, and the intake service, which is a single process.
- *  Looking at the other tier would take items its worker is still checking. */
-export async function fetchOrphanedProcessingItems(tier: "requested" | "feed"): Promise<{ id: string; url: string }[]> {
-  const query = getSupabaseClient().from("everything_items").select("id, url").eq("status", "processing");
-  return throwOnError(
-    await (tier === "requested" ? query.gte("priority", QUEUE_PRIORITY.requested) : query.lt("priority", QUEUE_PRIORITY.requested)),
-  ) as { id: string; url: string }[];
-}
-
-/** Puts a stranded item back in the queue so the worker resumes it. Its claims
- *  already exist, and the worker redoes only the unfinished ones. */
+/** Puts an item back in the queue, for example a checked page a reader asks
+ *  about again. Its claims and notes are kept. */
 export async function requeueItem(id: string): Promise<void> {
   throwOnError(await getSupabaseClient().from("everything_items").update({ status: "queued" }).eq("id", id));
 }
@@ -355,54 +337,91 @@ export async function requeueItem(id: string): Promise<void> {
  *  null when its project follows no feed. */
 export interface RetryableErrorItem {
   id: string;
+  source: ItemSource;
   url: string;
   title: string | null;
   published_at: string | null;
   retries: number;
-  priority: number;
   feed_url: string | null;
 }
 
-/** Returns the errored items of one worker's tiers that are due another
- *  attempt. `waitHours[n]` is how long an item that has been retried n times
+/** How old an item may be and still get attempts beyond its listed ones
+ *  because its source could not be reached. */
+const SOURCE_DOWN_RETRY_DAYS = 7;
+
+/** Returns the errored items that are due another attempt. Since the list
+ *  (GOO-791) only a post the intake service could not read ends in error, so
+ *  this is how a page that was down is read again. `waitHours[n]` is how long an item that has been retried n times
  *  waits after its last failure, so an item retried as often as the list is
  *  long is never returned. The wait spaces the attempts out. Without it a
  *  failure whose cause lasts a while, say a broken proxy or an exhausted API
  *  key, would burn every retry within minutes and the item would be dead
- *  again before the cause clears. */
-export async function fetchRetryableErrorItems(
-  waitHours: readonly number[],
-  tier: "requested" | "feed",
-): Promise<RetryableErrorItem[]> {
-  const due = waitHours.map((hours, retries) => {
-    const failedBefore = new Date(Date.now() - hours * 3600_000).toISOString();
-    return `and(retries.eq.${retries},processed_at.lt."${failedBefore}")`;
-  });
-  const rows = await fetchAllRows<Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null }>(
-    () => {
-      const query = getSupabaseClient()
-        .from("everything_items")
-        .select("id, url, title, published_at, retries, priority, everything_projects(feed_url)")
-        .eq("status", "error")
-        .or(due.join(","));
-      return tier === "requested"
-        ? query.gte("priority", QUEUE_PRIORITY.requested)
-        : query.lt("priority", QUEUE_PRIORITY.requested);
-    },
-    "id",
-    { label: "retryableErrorItems" },
-  );
+ *  again before the cause clears.
+ *
+ *  An item whose source could not be reached is returned beyond the list too,
+ *  every time the list's last wait has passed, until the item is
+ *  SOURCE_DOWN_RETRY_DAYS old. Such a failure says nothing about the page. On
+ *  2026-11-17 the YouTube proxy ran out of traffic for more than 20 hours, and
+ *  8 of the 20 videos reader demand had queued spent every attempt on it, so
+ *  they would have stayed in error after the proxy came back.
+ *
+ *  Only a post the list can still show is retried: a requested post, or one
+ *  whose list day is `listedFrom` or later. An older post is never listed
+ *  again, so another attempt would only move it from error to queued. */
+export async function fetchRetryableErrorItems(waitHours: readonly number[], listedFrom: string): Promise<RetryableErrorItem[]> {
+  const hoursAgo = (hours: number) => new Date(Date.now() - hours * 3600_000).toISOString();
+  const due = waitHours.map((hours, retries) => `and(retries.eq.${retries},processed_at.lt."${hoursAgo(hours)}")`);
+  type Row = Omit<RetryableErrorItem, "feed_url"> & { everything_projects: { feed_url: string | null } | null };
+  const errored = () =>
+    getSupabaseClient()
+      .from("everything_items")
+      .select("id, source, url, title, published_at, retries, everything_projects(feed_url)")
+      .eq("status", "error")
+      .or(`requested_since.not.is.null,list_date.gte.${listedFrom}`);
+  const rows = [
+    ...(await fetchAllRows<Row>(() => errored().or(due.join(",")), "id", { label: "retryableErrorItems" })),
+    ...(await fetchAllRows<Row>(
+      () =>
+        errored()
+          .gte("retries", waitHours.length)
+          .like("error", `%${SOURCE_UNREACHABLE_TEXT}%`)
+          .lt("processed_at", hoursAgo(waitHours[waitHours.length - 1]!))
+          .gte("created_at", hoursAgo(SOURCE_DOWN_RETRY_DAYS * 24)),
+      "id",
+      { label: "sourceDownErrorItems" },
+    )),
+  ];
   return rows.map(({ everything_projects, ...item }) => ({ ...item, feed_url: everything_projects?.feed_url ?? null }));
 }
 
-/** Puts an errored item back in the queue at the given tier for a repeat
- *  attempt, and counts the attempt. The last error text stays on the row until
- *  the item finishes, so a waiting retry still shows why the item failed. */
-export async function requeueErroredItem(item: RetryableErrorItem, priority: number): Promise<void> {
+/** How one feed item's check ended: its source, and whether it failed. A post
+ *  finished with a skip reason, such as a video without captions, counts as
+ *  neither a failure nor a read. */
+export interface ItemOutcome {
+  source: string;
+  outcome: "failed" | "read" | "skipped";
+}
+
+/** The outcomes of the items whose check ended since the given time. */
+export async function fetchItemOutcomesSince(since: Date): Promise<ItemOutcome[]> {
+  const rows = throwOnError(
+    await getSupabaseClient()
+      .from("everything_items")
+      .select("source, status, skip_reason")
+      .in("status", ["done", "error"])
+      .gte("processed_at", since.toISOString()),
+  ) as { source: string; status: "done" | "error"; skip_reason: string | null }[];
+  return rows.map((r) => ({ source: r.source, outcome: r.status === "error" ? "failed" : r.skip_reason ? "skipped" : "read" }));
+}
+
+/** Puts an errored item back in the queue for a repeat attempt, and counts
+ *  the attempt. The last error text stays on the row until the item finishes,
+ *  so a waiting retry still shows why the item failed. */
+export async function requeueErroredItem(item: RetryableErrorItem): Promise<void> {
   throwOnError(
     await getSupabaseClient()
       .from("everything_items")
-      .update({ status: "queued", retries: item.retries + 1, priority })
+      .update({ status: "queued", retries: item.retries + 1 })
       .eq("id", item.id),
   );
 }
@@ -431,67 +450,49 @@ export async function fetchItemClaims(itemId: string): Promise<ItemClaimRow[]> {
   return claims.sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
-/** Whether the pipeline writes notes on this tier of the queue. The pipeline
- *  is the notewriter `pipeline` (GOO-724). Any subscription means it takes
- *  feed posts, and takes_reader_requests means it takes reader requests. Its
+/** Whether the pipeline takes reader requests and whether it takes feed
+ *  posts. The pipeline is the notewriter `pipeline` of API v1 (GOO-724). Its
  *  pace comes from the money pacing in pacing.ts, not from its interval. */
-async function pipelineTakes(tier: "requested" | "feed"): Promise<boolean> {
+export async function pipelineSubscription(): Promise<{ requests: boolean; feed: boolean }> {
   const row = throwOnError(
     await getSupabaseClient().from("everything_notewriters").select("every_minutes, takes_reader_requests").eq("id", PIPELINE_NOTEWRITER).single(),
   ) as { every_minutes: number | null; takes_reader_requests: boolean };
-  return tier === "feed" ? row.every_minutes !== null : row.takes_reader_requests;
+  return { requests: row.takes_reader_requests, feed: row.every_minutes !== null };
 }
 
-/** The items a notewriter holds now. The pipeline never takes one of them. */
-async function heldItemIds(): Promise<string[]> {
-  const rows = throwOnError(await getSupabaseClient().from("everything_assignments").select("item_id").is("ended_at", null)) as { item_id: string }[];
-  return rows.map((row) => row.item_id);
+/** Reserves the top requested post that no notewriter of the team holds or
+ *  finished since the request, for the intake service. It takes reader
+ *  requests for the pipeline, and must not take a feed post, which v1's
+ *  next_post would hand out once one is due. Null when none waits. */
+export async function reserveRequestedPost(notewriter: string): Promise<HandedOutPost | null> {
+  return throwOnError(await getSupabaseClient().rpc("everything_take_requested_post", { p_notewriter: notewriter })) as HandedOutPost | null;
 }
 
-/** A post a notewriter failed on, or held past its deadline. */
-export interface NotewriterFailure {
-  notewriter: string;
-  endedAt: string;
-  url: string;
-  reason: string;
+/** What changes with the clock alone (migration 184): open reservations past
+ *  their deadline end as expired, and listed posts that turned 14 days old
+ *  leave the list. */
+export async function tidyList(): Promise<{ expired: number; closed: number }> {
+  // A function with OUT parameters returns one row, which PostgREST sends as
+  // a single object, not as an array.
+  return throwOnError(await getSupabaseClient().rpc("notewriter_tidy_list")) as { expired: number; closed: number };
 }
 
-/** A run reports at most this many failures. Any more wait for the next run,
- *  which is red anyway. */
-const MAX_FAILURES_PER_RUN = 50;
-
-/** The failed and expired assignments that no feed run has reported yet. They
- *  are marked as reported here, so each failure turns exactly one run red,
- *  however far apart the runs are. */
-export async function takeUnreportedFailures(): Promise<NotewriterFailure[]> {
-  const db = getSupabaseClient();
-  const schedule = throwOnError(await db.from("everything_feed_schedule").select("failures_reported_through").single()) as {
-    failures_reported_through: string;
-  };
-  // The client is untyped, so it takes the embedded item for a list. An
-  // assignment has one item, and PostgREST sends it as one object.
-  const rows = throwOnError(
-    await db
-      .from("everything_assignments")
-      .select("notewriter_id, ended_at, reason, item:everything_items(url)")
-      .in("outcome", ["failed", "expired"])
-      .gt("ended_at", schedule.failures_reported_through)
-      .order("ended_at")
-      .limit(MAX_FAILURES_PER_RUN),
-  ) as unknown as { notewriter_id: string; ended_at: string; reason: string; item: { url: string } }[];
-  if (rows.length === 0) return [];
-  throwOnError(await db.from("everything_feed_schedule").update({ failures_reported_through: rows.at(-1)!.ended_at }).eq("id", true));
-  return rows.map((row) => ({ notewriter: row.notewriter_id, endedAt: row.ended_at, url: row.item.url, reason: row.reason }));
+/** Sets every creator's place in the list: list_rank of everything_projects.
+ *  Returns how many creators changed. */
+export async function setListRanks(ranks: { feed_url: string; rank: number }[]): Promise<number> {
+  return throwOnError(await getSupabaseClient().rpc("notewriter_set_list_ranks", { p_ranks: ranks })) as number;
 }
 
+/** Our own notewriters that are switched on. Slack hears of their silences,
+ *  never of an outside notewriter's. */
 export async function fetchWatchedNotewriters(): Promise<WatchedNotewriter[]> {
-  const rows = throwOnError(
+  return throwOnError(
     await getSupabaseClient()
       .from("everything_notewriters")
-      .select("id, name, owner, every_minutes, takes_reader_requests, last_seen_at, silence_warned_for, everything_assignments(id)")
-      .is("everything_assignments.ended_at", null),
-  ) as (Omit<WatchedNotewriter, "holdsPost"> & { everything_assignments: { id: string }[] })[];
-  return rows.map(({ everything_assignments, ...row }) => ({ ...row, holdsPost: everything_assignments.length > 0 }));
+      .select("id, name, owner, last_seen_at, silence_warned_for")
+      .eq("outside", false)
+      .is("disabled_at", null),
+  ) as WatchedNotewriter[];
 }
 
 export async function setSilenceWarnedFor(notewriter: string, warnedFor: Date | null): Promise<void> {
@@ -500,23 +501,11 @@ export async function setSilenceWarnedFor(notewriter: string, warnedFor: Date | 
   );
 }
 
-/** The posts the notewriters want waiting, one for each subscribed notewriter
- *  that is not on a break, and how many feed posts wait that nobody holds. */
-export async function fetchFeedPostsWanted(): Promise<{ wanted: number; waiting: number }> {
-  const rows = throwOnError(await getSupabaseClient().rpc("notewriter_feed_posts_wanted")) as { wanted: number; waiting: number }[];
-  return rows[0]!;
-}
-
-/** Takes back every post held past its deadline, as a failure of its holder. */
-export async function takeBackOverduePosts(): Promise<number> {
-  return throwOnError(await getSupabaseClient().rpc("notewriter_take_back_overdue")) as number;
-}
-
 /** How many queued posts one pass of the intake service's preparer reads. */
 const ITEMS_PREPARED_PER_PASS = 20;
 
 /** Queued posts no notewriter can get yet: ones without stored text, and
- *  videos without their caption timings. Reader requests come first. */
+ *  videos without their caption timings. Requested posts come first. */
 export async function fetchItemsToPrepare(): Promise<EverythingItem[]> {
   return throwOnError(
     await getSupabaseClient()
@@ -524,7 +513,7 @@ export async function fetchItemsToPrepare(): Promise<EverythingItem[]> {
       .select(ITEM_COLUMNS)
       .eq("status", "queued")
       .or("full_text.is.null,and(source.eq.youtube,caption_cues.is.null)")
-      .order("priority", { ascending: false })
+      .order("requested_since", { ascending: true, nullsFirst: false })
       .order("created_at")
       .limit(ITEMS_PREPARED_PER_PASS),
   ) as EverythingItem[];
@@ -538,80 +527,30 @@ export async function recordReadFailure(itemId: string, reason: string): Promise
   throwOnError(await getSupabaseClient().from("everything_read_failures").insert({ item_id: itemId, reason }));
 }
 
-/** The posts the preparer could not read that no feed run has reported yet.
- *  They are marked as reported here, so each turns exactly one run red. */
-export async function takeUnreportedReadFailures(): Promise<{ at: string; url: string; reason: string }[]> {
-  const db = getSupabaseClient();
-  const rows = throwOnError(
-    await db.from("everything_read_failures").select("id, at, reason, item:everything_items(url)").is("reported_at", null).order("id").limit(MAX_FAILURES_PER_RUN),
-  ) as unknown as { id: number; at: string; reason: string; item: { url: string } }[];
-  if (rows.length === 0) return [];
-  throwOnError(await db.from("everything_read_failures").update({ reported_at: new Date().toISOString() }).in("id", rows.map((row) => row.id)));
-  return rows.map((row) => ({ at: row.at, url: row.item.url, reason: row.reason }));
-}
-
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
- *  the usage readings and the posts Claude took over the window. Before the
- *  notewriter protocol (GOO-724), Claude logged each post it took as an
- *  item_taken event, and since then each post is an assignment. For the 7
- *  days after the switch the window holds both, so both are counted. */
+ *  the usage readings of this host's notewriter and the posts it reserved over
+ *  the window. Every assignment of migration 168 became a reservation with the
+ *  same id (migration 184). */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const now = new Date();
   const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
   const db = getSupabaseClient();
-  const [readings, assigned, takenBefore] = await Promise.all([
+  const [readings, reserved] = await Promise.all([
     fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
-      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").gte("at", since),
+      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CLAUDE_NOTEWRITER).gte("at", since),
       "id",
       { label: "claudeUsage" },
     ),
-    db.from("everything_assignments").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
-    db.from("everything_claude_events").select("id", { count: "exact", head: true }).eq("type", "item_taken").gte("at", since),
+    db.from("everything_reservations").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
   ]);
-  if (assigned.error) throw new Error(`Supabase: ${assigned.error.message}`);
-  if (takenBefore.error) throw new Error(`Supabase: ${takenBefore.error.message}`);
+  if (reserved.error) throw new Error(`Supabase: ${reserved.error.message}`);
   return {
     now,
     readings: readings
       .sort((a, b) => a.at.localeCompare(b.at))
       .map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
-    postsTaken: (assigned.count ?? 0) + (takenBefore.count ?? 0),
+    postsTaken: reserved.count ?? 0,
   };
-}
-
-/** Moves the next queued item to `processing` and returns it. The highest
- *  priority tier wins, and within a tier the newest published content comes
- *  first. An item with no published date yet, which is typically a freshly
- *  requested live URL, sorts before the dated ones of its tier, and the oldest
- *  request among those is served first.
- *
- *  The take itself is a read followed by a write, with no locking. That is
- *  safe because each tier has exactly one worker: the intake service on the
- *  machine takes only the requested tier, and the Actions feed run takes only
- *  the tiers below it. Two workers exist, but they can never want the same
- *  row. Both take items only while the notewriter `pipeline` is subscribed,
- *  and never an item another notewriter holds. */
-export async function claimNextQueuedItem(tier: "requested" | "feed"): Promise<EverythingItem | null> {
-  if (!(await pipelineTakes(tier))) return null;
-  const db = getSupabaseClient();
-  let query = db.from("everything_items").select(ITEM_COLUMNS).eq("status", "queued");
-  const held = await heldItemIds();
-  if (held.length > 0) query = query.not("id", "in", `(${held.join(",")})`);
-  query =
-    tier === "requested"
-      ? query.gte("priority", QUEUE_PRIORITY.requested)
-      : query.lt("priority", QUEUE_PRIORITY.requested);
-  const item = throwOnError<EverythingItem | null>(
-    await query
-      .order("priority", { ascending: false })
-      .order("published_at", { ascending: false, nullsFirst: true })
-      .order("created_at")
-      .limit(1)
-      .maybeSingle(),
-  );
-  if (!item) return null;
-  throwOnError(await db.from("everything_items").update({ status: "processing" }).eq("id", item.id));
-  return { ...item, status: "processing" };
 }
 
 export async function fetchItem(id: string): Promise<EverythingItem> {
@@ -637,6 +576,12 @@ export async function markItemDone(id: string, skipReason: string | null): Promi
       .update({ status: "done", error: null, progress: null, skip_reason: skipReason, processed_at: new Date().toISOString() })
       .eq("id", id),
   );
+}
+
+/** Marks a post the pipeline is checking, which the reader's progress card
+ *  shows and the feed pacing counts from (migration 096). */
+export async function markItemProcessing(id: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ status: "processing" }).eq("id", id));
 }
 
 export async function markItemError(id: string, error: string): Promise<void> {
@@ -793,7 +738,7 @@ export async function markRequestedQueueBudgetExhausted(): Promise<void> {
       .from("everything_items")
       .update({ progress: { stage: "budget_exhausted" } })
       .eq("status", "queued")
-      .gte("priority", QUEUE_PRIORITY.requested),
+      .not("requested_since", "is", null),
   );
 }
 
@@ -859,8 +804,8 @@ export interface CreatorVisitScore {
 }
 
 /** A creator we already know: a project row carrying the feed we poll. A
- *  creator IS a project (migration 086), so this is where their slug, their
- *  priority window and their top-posts stamp all live. The slug is derived
+ *  creator IS a project (migration 086), so this is where their slug and their
+ *  priority window live. The slug is derived
  *  from the URL, with a suffix when two creators share a handle, so the URL is
  *  the reliable key and the slug is not. */
 export interface CreatorProject {
@@ -870,12 +815,6 @@ export interface CreatorProject {
    *  qualify only on visits. Null means they are walked only if readers visit
    *  them. */
   priority_until: string | null;
-  /** When the creator's everything_top_posts rows were last recomputed. Null
-   *  means never. */
-  top_posts_refreshed_at: string | null;
-  /** When a refresh was last tried and failed (migration 101). Null means no
-   *  failed attempt since the last success. */
-  top_posts_attempted_at: string | null;
 }
 
 /** Every creator we have a project for, whether or not they hold priority right
@@ -883,10 +822,10 @@ export interface CreatorProject {
  *  creator walked on visits alone still has to be recognised as their existing
  *  project, or their notes would land in a second one under a derived slug. */
 export async function fetchCreatorProjects(): Promise<CreatorProject[]> {
-  const rows = await fetchAllRows<{ slug: string; feed_url: string; priority_until: string | null; top_posts_refreshed_at: string | null; top_posts_attempted_at: string | null }>(
+  const rows = await fetchAllRows<{ slug: string; feed_url: string; priority_until: string | null }>(
     () => getSupabaseClient()
       .from("everything_projects")
-      .select("id, slug, feed_url, priority_until, top_posts_refreshed_at, top_posts_attempted_at")
+      .select("id, slug, feed_url, priority_until")
       .not("feed_url", "is", null),
     "id",
     { label: "creatorProjects" },
@@ -895,8 +834,6 @@ export async function fetchCreatorProjects(): Promise<CreatorProject[]> {
     project_slug: r.slug,
     feed_url: r.feed_url,
     priority_until: r.priority_until,
-    top_posts_refreshed_at: r.top_posts_refreshed_at,
-    top_posts_attempted_at: r.top_posts_attempted_at,
   }));
 }
 
@@ -942,58 +879,6 @@ export async function upsertCreatorPriority(feed: CanonicalFeed, until: Date): P
   );
 }
 
-/** A cached top post of a followed creator (everything_top_posts, migration
- *  085). Popularity is the platform's own signal: view count for a YouTube
- *  video, like count for a Substack post. */
-export interface TopPostRow {
-  feed_url: string;
-  source: "substack" | "youtube";
-  url: string;
-  title: string | null;
-  published_at: string | null;
-  popularity: number;
-  rank: number;
-}
-
-/** Every cached top post, most popular first within each feed. The whole
- *  table is a few rows per followed creator. */
-export async function fetchAllTopPosts(): Promise<TopPostRow[]> {
-  const rows = await fetchAllRows<TopPostRow & { id: string }>(
-    () => getSupabaseClient().from("everything_top_posts").select("id, feed_url, source, url, title, published_at, popularity, rank"),
-    "id",
-    { label: "topPosts" },
-  );
-  return rows.sort((a, b) => a.feed_url.localeCompare(b.feed_url) || a.rank - b.rank);
-}
-
-/** Replaces one feed's cached top list with a fresh one and stamps the feed
- *  as refreshed. The stamp is set even for an empty list, because a creator
- *  with no checkable top posts must not look permanently stale. */
-export async function replaceFeedTopPosts(feedUrl: string, rows: Omit<TopPostRow, "feed_url">[]): Promise<void> {
-  const db = getSupabaseClient();
-  throwOnError(await db.from("everything_top_posts").delete().eq("feed_url", feedUrl));
-  if (rows.length > 0) {
-    throwOnError(await db.from("everything_top_posts").insert(rows.map((r) => ({ ...r, feed_url: feedUrl }))));
-  }
-  throwOnError(
-    await db
-      .from("everything_projects")
-      .update({ top_posts_refreshed_at: new Date().toISOString(), top_posts_attempted_at: null })
-      .eq("feed_url", feedUrl),
-  );
-}
-
-/** Records that a refresh of this feed's top list was tried and failed, so
- *  the feed is not tried again until the retry wait has passed. */
-export async function stampTopPostsAttempt(feedUrl: string): Promise<void> {
-  throwOnError(
-    await getSupabaseClient()
-      .from("everything_projects")
-      .update({ top_posts_attempted_at: new Date().toISOString() })
-      .eq("feed_url", feedUrl),
-  );
-}
-
 /** One upload in a YouTube channel's stored listing. */
 export interface StoredUpload {
   videoId: string;
@@ -1030,6 +915,17 @@ export async function fetchYoutubeChannel(feedUrl: string): Promise<YoutubeChann
   ) as YoutubeChannelRow | null;
 }
 
+/** When each stored channel was last listed, notified and subscribed, for
+ *  cn-walk's check every minute of which channels are due. The uploads are
+ *  left out, so the read stays small. */
+export async function fetchYoutubeChannelStates(): Promise<Pick<YoutubeChannelRow, "feed_url" | "listed_at" | "notified_at" | "subscribed_at">[]> {
+  return fetchAllRows<Pick<YoutubeChannelRow, "feed_url" | "listed_at" | "notified_at" | "subscribed_at">>(
+    () => getSupabaseClient().from("everything_youtube_channels").select("feed_url, listed_at, notified_at, subscribed_at"),
+    "feed_url",
+    { label: "youtubeChannelStates" },
+  );
+}
+
 /** Writes everything the walk owns on the row. notified_at is not written, so
  *  a notification that arrives while the walk lists the channel is kept. */
 export async function saveYoutubeChannel(row: Omit<YoutubeChannelRow, "notified_at">): Promise<void> {
@@ -1045,64 +941,6 @@ export async function saveYoutubeChannel(row: Omit<YoutubeChannelRow, "notified_
         subscribed_at: row.subscribed_at,
       }),
   );
-}
-
-/** How many YouTube channels the hub told us about since `notifiedSince`, and
- *  how many we subscribed to since `subscribedSince`, which is how many hold a
- *  live subscription. The run log prints both, so a hub that stopped sending
- *  shows up as a zero. */
-export async function countYoutubeNotifications(notifiedSince: Date, subscribedSince: Date): Promise<{ notified: number; subscribed: number }> {
-  const db = getSupabaseClient();
-  const countSince = async (column: "notified_at" | "subscribed_at", since: Date) => {
-    const { count, error } = await db
-      .from("everything_youtube_channels")
-      .select("feed_url", { count: "exact", head: true })
-      .gte(column, since.toISOString());
-    if (error) throw new Error(`Supabase: ${error.message}`);
-    return count ?? 0;
-  };
-  return { notified: await countSince("notified_at", notifiedSince), subscribed: await countSince("subscribed_at", subscribedSince) };
-}
-
-/** One waiting item, for the queue overview the run logs. */
-export interface QueuedItemSummary {
-  id: string;
-  status: "queued" | "processing";
-  source: ItemSource;
-  url: string;
-  title: string | null;
-  priority: number;
-  created_at: string;
-}
-
-/** Everything waiting or in flight, in the order the worker takes it. The
- *  worker itself only ever sees one row at a time (claimNextQueuedItem), so
- *  this is the one read that can say how long the queue is and what is on it.
- *  It names its columns rather than selecting everything, so it never pulls the
- *  large full_text bodies. */
-export async function fetchQueueOverview(): Promise<QueuedItemSummary[]> {
-  const items = await fetchAllRows<QueuedItemSummary & { published_at: string | null }>(
-    () => getSupabaseClient()
-      .from("everything_items")
-      .select("id, status, source, url, title, priority, published_at, created_at")
-      .in("status", ["queued", "processing"]),
-    "id",
-    { label: "queueOverview" },
-  );
-  return items.sort(inWorkerOrder);
-}
-
-/** The order claimNextQueuedItem takes items in: the highest priority tier
- *  first, then the newest published content, with undated items ahead of the
- *  dated ones, and the oldest request first among equals. */
-function inWorkerOrder(a: { priority: number; published_at: string | null; created_at: string }, b: typeof a): number {
-  if (a.priority !== b.priority) return b.priority - a.priority;
-  if (a.published_at !== b.published_at) {
-    if (a.published_at === null) return -1;
-    if (b.published_at === null) return 1;
-    return b.published_at.localeCompare(a.published_at);
-  }
-  return a.created_at.localeCompare(b.created_at);
 }
 
 /** Every visited creator's visit numbers over their LAST_POSTS_PER_CREATOR
@@ -1172,26 +1010,6 @@ export async function fetchFeedPacing(rule: MeanCostRule): Promise<FeedPacingSna
   };
 }
 
-/** Inserts an AI note and one everything_note_sources row per cited snippet. */
-export async function insertNote(claimId: string, note: string, sources: NoteSourceCitation[]): Promise<void> {
-  const db = getSupabaseClient();
-  const inserted = throwOnError(
-    await db.from("everything_notes").insert({ claim_id: claimId, note }).select("id").single(),
-  ) as { id: string };
-  if (sources.length === 0) return;
-  throwOnError(
-    await db.from("everything_note_sources").insert(
-      sources.map((s, i) => ({
-        note_id: inserted.id,
-        url: s.url,
-        quote: s.quote,
-        explanation: s.explanation,
-        sort_order: i,
-      })),
-    ),
-  );
-}
-
 /** Sets the alarm the database starts the next feed run on (migration 098).
  *  The reason is stored next to it so the schedule table explains itself. */
 export async function setFeedAlarm(at: Date, reason: string): Promise<void> {
@@ -1226,3 +1044,40 @@ export async function recordAvatarAttempt(projectId: string, avatarUrl: string |
   const stamp = { avatar_refreshed_at: attemptedAt.toISOString() };
   throwOnError(await getSupabaseClient().from("everything_projects").update(avatarUrl ? { ...stamp, avatar_url: avatarUrl } : stamp).eq("id", projectId));
 }
+
+/** A page without an item that enough different readers opened in the last 7
+ *  days (everything_demanded_pages, migration 183). */
+export interface DemandedPage {
+  page_url: string;
+  feed_url: string | null;
+  kind: "text" | "youtube";
+  readers: number;
+}
+
+/** The pages reader demand would queue now, most readers first. A null bar
+ *  leaves that kind out. */
+export async function fetchDemandedPages(textReaders: number | null, youtubeReaders: number | null): Promise<DemandedPage[]> {
+  return throwOnError(
+    await getSupabaseClient().rpc("everything_demanded_pages", { p_text_readers: textReaders, p_youtube_readers: youtubeReaders }),
+  ) as DemandedPage[];
+}
+
+/** One kind's row of everything_demand_report. */
+export interface DemandReportRow {
+  kind: "text" | "youtube";
+  queued_24h: number;
+  settled: number;
+  checked: number;
+  with_notes: number;
+}
+
+export async function fetchDemandReport(): Promise<DemandReportRow[]> {
+  return throwOnError(await getSupabaseClient().rpc("everything_demand_report")) as DemandReportRow[];
+}
+
+/** Records that the demand rule took a page, so it never takes it again.
+ *  `queued` is false for a page that already had an item. */
+export async function recordDemandQueued(row: { page_url: string; kind: string; readers: number; queued: boolean }): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_demand_queued").insert(row));
+}
+

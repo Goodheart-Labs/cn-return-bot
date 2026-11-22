@@ -73,11 +73,6 @@ export function duration(ms: number): string {
   return `${Math.floor(minutes / 60)}h${String(minutes % 60).padStart(2, "0")}m`;
 }
 
-/** How long ago a timestamp was, in the same units as `duration`. */
-export function age(since: string): string {
-  return duration(Date.now() - Date.parse(since));
-}
-
 /** "$2.14". Costs here are small and two decimals is the resolution the spend
  *  cap is written in. */
 export const money = (usd: number): string => `$${usd.toFixed(2)}`;

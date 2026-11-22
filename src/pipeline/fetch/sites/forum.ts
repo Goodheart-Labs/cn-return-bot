@@ -11,7 +11,7 @@
  *
  * Every query is a GET request through readApi, so a forum behind a bot check
  * is read the same way as any other API. The EA Forum is behind Vercel's
- * Security Checkpoint (GOO-745).
+ * Security Checkpoint, which lets the fetcher's browser through (GOO-832).
  */
 
 import type { PageRead } from "../../../service/contract";
@@ -61,9 +61,10 @@ export function parsePostUrl(url: string): { origin: string; postId: string } | 
 
 type GraphqlRead = { type: "data"; data: any } | { type: "unreadable"; reason: string };
 
-/** Runs one query, sent as a GET request because Jina Reader, the last step
- *  of readApi, can only make GET requests. A GraphQL error, such as an unknown
- *  post id, comes back as unreadable too. */
+/** Runs one query, sent as a GET request. The two steps of readApi that get
+ *  past a bot check can only make GET requests: the fetcher's browser opens
+ *  the address like a page, and Jina Reader fetches it. A GraphQL error, such
+ *  as an unknown post id, comes back as unreadable too. */
 async function readGraphql(origin: string, query: string): Promise<GraphqlRead> {
   const read = await readJsonApi(`${origin}/graphql?query=${encodeURIComponent(query)}`);
   if (read.type === "unreadable") return read;
@@ -161,4 +162,23 @@ export async function readForumAuthor(author: ForumAuthorFeed, limit: number): P
     .filter((p: any) => p.htmlBody?.trim() && !isForeignCrosspost(p))
     .map((p: any) => ({ postId: p._id, url: p.pageUrl, title: p.title, postedAt: p.postedAt, text: htmlToText(p.htmlBody) }));
   return { authorName: user.displayName ?? null, imageUrl: user.profileImageId ? profileImageUrl(author.origin, user.profileImageId) : null, posts };
+}
+
+/** A forum's newest post, with the slug of its author. */
+export type NewestForumPost = ForumPost & { authorSlug: string | null };
+
+/** The forum's newest `limit` posts of every author, newest first (cn-walk,
+ *  GOO-791). One query a minute covers every walked author of the forum,
+ *  where a query per author read the forum 11,000 to 15,000 times a day.
+ *  Posts without a body and copies of crossposts are left out, as in
+ *  readForumAuthor. */
+export async function readForumNewest(origin: string, limit: number): Promise<NewestForumPost[]> {
+  const data = await graphqlData(
+    origin,
+    `{ posts(input: {terms: {view: "new", limit: ${limit}}}) {
+        results { _id pageUrl title postedAt htmlBody fmCrosspost { isCrosspost hostedHere } user { slug } } } }`,
+  );
+  return (data.posts?.results ?? [])
+    .filter((p: any) => p.htmlBody?.trim() && !isForeignCrosspost(p))
+    .map((p: any) => ({ postId: p._id, url: p.pageUrl, title: p.title, postedAt: p.postedAt, text: htmlToText(p.htmlBody), authorSlug: p.user?.slug ?? null }));
 }

@@ -7,11 +7,11 @@
  * skipped once the day's reader budget is spent, and the item keeps the raw
  * capture.
  *
- * Note requests ("check this page") become queue items at the requested
- * priority tier, so the worker takes them before any feed backlog. A request
- * for a page we already ingested resolves against that item instead: a queued
- * item is bumped to the requested tier, a finished item marks the request done,
- * and an errored item is put back in the queue. A request on selected words
+ * Note requests ("check this page") become requested posts, which go to the
+ * top of the post list (GOO-791). A request for a page we already ingested
+ * resolves against that item instead: a waiting post is marked requested, a
+ * finished one marks the request done, and an errored one is put back in the
+ * queue. A request on selected words
  * always puts its page in the queue, even when the page was already checked
  * in full, because the whole-page check can have passed over those words.
  *
@@ -37,9 +37,8 @@ import {
   findItemForPageUrl,
   insertItemRun,
   insertQueuedItem,
+  markItemRequested,
   promoteItemToWholePage,
-  QUEUE_PRIORITY,
-  raiseItemPriority,
   requeueItem,
   resolveNoteRequest,
   resolveProjectId,
@@ -51,7 +50,7 @@ import type { ItemSource } from "./types";
  *  fetches its transcript and cues for timestamped claims. Every other page is
  *  a plain `web` item that the worker fetches through the X pipeline's
  *  web-fetch ladder, Substack posts included — no special-casing. */
-function classifyRequestSource(pageUrl: string): ItemSource {
+export function classifyRequestSource(pageUrl: string): ItemSource {
   return extractYoutubeVideoId(pageUrl) ? "youtube" : "web";
 }
 
@@ -61,14 +60,14 @@ function classifyRequestSource(pageUrl: string): ItemSource {
  *  when it parses as a creator feed. A request that names no creator, such as
  *  one from an extension copy older than migration 110, still gets its
  *  creator when the page sits on a *.substack.com subdomain. */
-function creatorOfRequest(request: NoteRequestRow): CanonicalFeed | null {
+function creatorOfRequest(request: Pick<NoteRequestRow, "feed_url" | "page_url">): CanonicalFeed | null {
   return (request.feed_url ? canonicalFeed(request.feed_url) : null) ?? substackFeedOfPage(request.page_url);
 }
 
 /** The project a newly requested page goes under: its creator's, created if we
  *  have never met them, or the catch-all "Around the web" for a page that has
  *  no creator we know how to follow. */
-async function projectForRequest(request: NoteRequestRow): Promise<string> {
+export async function projectForRequest(request: Pick<NoteRequestRow, "feed_url" | "page_url">): Promise<string> {
   const creator = creatorOfRequest(request);
   return creator
     ? resolveProjectId({ slug: creator.project_slug, feedUrl: creator.feed_url })
@@ -113,7 +112,7 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
       // or rated it true and skipped it. So the page goes back in the queue,
       // and the note writer checks only the passages readers asked about.
       await requeueItem(existing.id);
-      await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
+      await markItemRequested(existing.id);
       await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
       return { kind: "queued", detail: `requeued a checked page for a selected passage: ${request.page_url}` };
     }
@@ -129,7 +128,7 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
         fullText = cleaned.text;
         await recordCaptureCost(existing.id, cleaned.costUsd);
       }
-      await promoteItemToWholePage(existing.id, fullText, QUEUE_PRIORITY.requested);
+      await promoteItemToWholePage(existing.id, fullText, { requested: true });
       // A paragraph request on an existing item cannot be honoured as a
       // paragraph check, because one item holds one body text. The whole page
       // contains the paragraph, so it is checked instead, and the note writer
@@ -137,13 +136,13 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
       await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
       return { kind: "queued", detail: `promoted existing item to a whole-page check: ${request.page_url}` };
     }
-    // A whole-page item that is queued or errored goes back in the queue at
-    // the requested tier. Its full_text stays as it is. A Substack item's RSS
-    // body must survive, because CI cannot fetch Substack pages itself.
+    // A whole-page item that is queued or errored goes back in the queue as
+    // requested. Its full_text stays as it is. A Substack item's RSS body
+    // must survive, because CI cannot fetch Substack pages itself.
     if (existing.status === "error") await requeueItem(existing.id);
-    await raiseItemPriority(existing.id, QUEUE_PRIORITY.requested);
+    await markItemRequested(existing.id);
     await resolveNoteRequest(request.id, "enqueued", passageReason, existing.id);
-    return { kind: "queued", detail: `bumped existing item to requested priority: ${request.page_url}` };
+    return { kind: "queued", detail: `marked existing item as requested: ${request.page_url}` };
   }
 
   const source = classifyRequestSource(request.page_url);
@@ -168,7 +167,7 @@ export async function consumeNoteRequest(rawRequest: NoteRequestRow): Promise<No
     url: request.page_url,
     title: request.page_title || undefined,
     full_text: fullText,
-    priority: QUEUE_PRIORITY.requested,
+    requested_since: new Date().toISOString(),
     checked_scope: request.selection ? "paragraph" : "page",
   });
   await recordCaptureCost(itemId, captureCostUsd);

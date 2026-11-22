@@ -1,4 +1,4 @@
-import { isSubstackReaderUrl, normalizePageUrl } from "@cn/core/pageUrls";
+import { normalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
 import {
   readSubstackPublicationFromPage,
   resolveProfileCreatorTarget,
@@ -7,12 +7,13 @@ import {
   substackTargetFromPublication,
 } from "./creatorTarget";
 import type { MenuSite, MenuSubject } from "./menuRows";
+import { SUBSTACK_MENU_TRIGGER } from "./menuTriggers";
 import { isSubstackPostPage } from "./pageShape";
 
 // Substack's three-dot menus: the one on a post in the substack.com feed, the
 // one in an open post's action bar, and the one at the top of a post opened as
 // an overlay in substack.com's reader. Every selector they depend on lives
-// here. Substack builds its menus with Base UI, a React component library. Its
+// here, except the menu button's, which is in menuTriggers.ts. Substack builds its menus with Base UI, a React component library. Its
 // menu button names its open menu in `aria-controls`, and the menu names its
 // button in `aria-labelledby`. Substack used Radix before, which sets the same
 // attributes. Tidy Web's src/content/substack-menu.ts finds the
@@ -26,7 +27,6 @@ import { isSubstackPostPage } from "./pageShape";
 // post, and about the author when the page is a profile, which gets only the
 // author's row. Elsewhere it gets no rows.
 
-const TRIGGER_SELECTOR = 'button[aria-haspopup="menu"]:is(:has(svg.lucide-ellipsis), [class*="moreButton-"])';
 // Comments have the same three-dot menu, and we do not check comments.
 const COMMENT_SELECTOR = '[class*="comment-menu"]';
 // substack.com itself hosts the reader, never a publication's posts.
@@ -51,7 +51,7 @@ const AUTHOR_LINK_SELECTOR = 'a[href*="utm_source=substack-feed-item"]';
  *  so the background resolves it when the check starts, and the reader view
  *  gets no creator row. */
 function openPostSubject(): MenuSubject | null {
-  if (!isSubstackPostPage(location.href) && !isSubstackReaderUrl(location.href)) return null;
+  if (!isSubstackPostPage(location.href) && !substackReaderPostId(location.href)) return null;
   return {
     page: { url: normalizePageUrl(location.href, document), title: document.title, noun: "post", current: true },
     creator: async () =>
@@ -119,7 +119,7 @@ function profileSubject(): MenuSubject | null {
 export const substackMenuSite: MenuSite = {
   name: "substack",
   triggerFor(target) {
-    const trigger = target.closest<HTMLElement>(TRIGGER_SELECTOR);
+    const trigger = target.closest<HTMLElement>(SUBSTACK_MENU_TRIGGER);
     return trigger && !trigger.closest(COMMENT_SELECTOR) ? trigger : null;
   },
   subjectFor(trigger) {

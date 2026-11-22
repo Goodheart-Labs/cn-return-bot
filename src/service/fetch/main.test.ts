@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PageReadError, readPageForMinisite } from "../../everything/minisites/readPage";
-import { fetchApiPlain } from "../../pipeline/fetch/fetchApi";
+import { fetchApi } from "../../pipeline/fetch/fetchApi";
 import { fetchPageWithLadder } from "../../pipeline/fetch/fetchLadder";
 import { readPage, readPageForModel } from "../../pipeline/fetch/readPage";
 import { callFetchService } from "../client";
@@ -95,7 +95,7 @@ describe("the fetcher", () => {
 describe("an address that is not http or https", () => {
   test("is refused by the page reader, the ladder and the API request", async () => {
     expect(await readPage("file:///etc/hostname")).toEqual({ type: "unreadable", reason: "only http and https addresses are read" });
-    expect(await fetchPageWithLadder("file:///etc/hostname")).toEqual({ ok: false, diagnostic: "only http and https addresses are fetched", attempts: [] });
-    expect(await fetchApiPlain("file:///etc/hostname")).toEqual({ type: "failed", reason: "only http and https addresses are fetched" });
+    expect(await fetchPageWithLadder("file:///etc/hostname")).toEqual({ ok: false, diagnostic: "only http and https addresses are fetched" });
+    expect(await fetchApi("file:///etc/hostname")).toEqual({ type: "failed", reason: "only http and https addresses are fetched" });
   });
 });

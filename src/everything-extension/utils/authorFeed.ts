@@ -8,11 +8,13 @@ import {
   isForumPostPage,
   readForumPostAuthorFromPage,
   readSubstackPublicationFromPage,
+  readWatchPageChannel,
   resolveProfileCreatorTarget,
   substackCreatorTarget,
   substackProfileHandle,
   substackTargetFromPublication,
   youtubeChannelTarget,
+  youtubeVideoChannelTarget,
   type CreatorTarget,
 } from "./creatorTarget";
 
@@ -20,22 +22,14 @@ import {
  *  answers with the creator's feed URL, or null when the page has none. */
 export const TAB_CREATOR_MESSAGE_TYPE = "cn-tab-creator";
 
-/** Runs inside the watch page, so it must stay self-contained: executeScript
- *  serializes the function and imports would not exist over there. The visit
- *  recorder also calls it directly, because its content script IS the page. */
-export function readWatchPageChannel() {
-  const link = document.querySelector<HTMLAnchorElement>("ytd-video-owner-renderer ytd-channel-name a");
-  return link?.href ? { href: link.href, name: link.textContent ?? "" } : null;
-}
-
 /** The creator a tab belongs to: a Substack publication (from its subdomain or
- *  a profile page), a YouTube channel (from a channel page, or read out of a
- *  watch page's owner box), or a forum author (from their profile page, or on
- *  a post page asked of the site's own API, or read out of the page when the
- *  API does not answer). Null when the
- *  page has no creator. Reading the watch page's owner box needs the tab to be
- *  scriptable, which the popup and a context-menu click both have through
- *  activeTab. */
+ *  a profile page), a YouTube channel (from a channel page, or on a watch
+ *  page asked of YouTube's oEmbed endpoint, or read out of the page when that
+ *  does not answer), or a forum author (from their profile page, or on a post
+ *  page asked of the site's own API, or read out of the page when the API does
+ *  not answer). Null when the page has no creator. Reading a page needs the
+ *  tab to be scriptable, which the popup and a context-menu click both have
+ *  through activeTab. */
 export async function authorFeedForTab(tab: { id?: number; url?: string; title?: string }): Promise<CreatorTarget | null> {
   const url = tab.url;
   if (!url) return null;
@@ -50,7 +44,10 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
   const forumTarget = forumAuthorTarget(url, (tab.title ?? "").replace(/\s[—–-]\s*(LessWrong|AI Alignment Forum|EA Forum)$/, ""));
   if (forumTarget) return forumTarget;
   if (isForumPostPage(url)) return (await forumPostAuthorTarget(url)) ?? (await forumPostAuthorFromTab(tab.id));
-  if (extractYoutubeVideoId(url) && tab.id != null) {
+  const videoId = extractYoutubeVideoId(url);
+  const uploader = videoId ? await youtubeVideoChannelTarget(videoId) : null;
+  if (uploader) return uploader;
+  if (videoId && tab.id != null) {
     try {
       const [result] = await browser.scripting.executeScript({ target: { tabId: tab.id }, func: readWatchPageChannel });
       const channel = result?.result as { href: string; name: string } | null;
