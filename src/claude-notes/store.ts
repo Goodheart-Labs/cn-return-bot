@@ -21,6 +21,7 @@ import { noteStatus } from "../everything-core/noteScore";
 import { CLAUDE_CODE_BOT } from "../pipeline/orchestration/claudeTweets";
 import { CLAUDE_NOTEWRITER } from "../notewriters/ids";
 import { shuffled, type JudgedNote, type JudgeExample, type Judgement } from "./judge";
+import type { RunUsage } from "./runner/runUsage";
 import type { ClaudeRunTag } from "./usageShare";
 import type { UsageReading } from "./usage";
 
@@ -301,19 +302,32 @@ export async function nathanNotedItem(itemId: string): Promise<boolean> {
 export type PostRunOutcome = "done" | "skipped" | "incomplete" | "failed";
 
 /** Writes one everything_claude_runs row for a Claude run that ended, with
- *  what it would have cost on the API. usageShare.ts splits the plan's usage
- *  by these costs. `ref` names what the run was for. */
+ *  what it used and would have cost on the API. usageShare.ts splits the
+ *  plan's usage by these costs. `ref` names what the run was for. */
 export async function recordClaudeRun(run: {
   tags: ClaudeRunTag[];
   startedAt: number;
   runDir: string;
-  apiCostUsd: number | null;
+  usage: RunUsage;
   ref: { pipeline_run_id: string } | { everything_pipeline_run_id: string } | { draft_id: string } | null;
 }) {
+  const { usage } = run;
   check(
     await db()
       .from("everything_claude_runs")
-      .insert({ tags: run.tags, started_at: new Date(run.startedAt).toISOString(), run_dir: run.runDir, api_cost_usd: run.apiCostUsd, notewriter: CLAUDE_NOTEWRITER, ...run.ref }),
+      .insert({
+        tags: run.tags,
+        started_at: new Date(run.startedAt).toISOString(),
+        run_dir: run.runDir,
+        api_cost_usd: usage.apiCostUsd,
+        model: usage.model,
+        turns: usage.turns,
+        tool_calls: usage.toolCalls,
+        subagent_calls: usage.subagentCalls,
+        model_usage: usage.modelUsage as Json,
+        notewriter: CLAUDE_NOTEWRITER,
+        ...run.ref,
+      }),
   );
 }
 

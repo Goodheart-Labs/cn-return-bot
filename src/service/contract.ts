@@ -181,11 +181,9 @@ export interface RateClaimsResponse {
 
 /** The fetch ladder for one page (fetchPageWithLadder). */
 export const FETCH_PAGE_PATH = "/fetch-page";
-/** One plain request to an API address (fetchApiPlain). */
+/** One request to an API address: sent plainly, and through the fetcher's
+ *  headless browser when a bot check answers the plain request (fetchApi). */
 export const FETCH_API_PATH = "/fetch-api";
-/** The same request, made from inside a headless browser page on the site, for
- *  a site whose bot check stopped the plain request (fetchApiInBrowser). */
-export const FETCH_API_IN_BROWSER_PATH = "/fetch-api-in-browser";
 /** Turns a page that readPage read into a minisite's article
  *  (minisitePageAnswer), so the page's HTML is parsed inside the sandbox and
  *  never in a service that holds keys. */
@@ -215,7 +213,7 @@ export type LadderAnswer =
 
 /** What one request to an API address got back. `bot_check` means the site
  *  answered with a challenge page meant to stop programs, such as Vercel's
- *  Security Checkpoint, so a request from a real browser may still pass.
+ *  Security Checkpoint, and did not let the fetcher's browser through either.
  *  `not_modified` answers a request that sent the ETag of an answer that has
  *  not changed since. */
 export type ApiAnswer =

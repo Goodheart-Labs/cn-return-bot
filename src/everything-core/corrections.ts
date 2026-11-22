@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-/* The corrections page (migration 193): notes after which the author changed
+/* The corrections page (migration 197): notes after which the author changed
  * their post. A note gets on it when the daily job finds its passage changed
  * (everything_claims.updated_quote), or when an admin adds it with a link that
  * shows the correction, and can take such a row off again. Everyone can read

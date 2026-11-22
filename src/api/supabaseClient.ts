@@ -851,6 +851,21 @@ export class SupabaseLogger {
 
   /** Leaves a tweet's run open for the Claude Code note writer on the ai-box
    *  (GOO-527). The runner there finds it by its final stage. */
+  /** The tweets handed to the Claude note writer since `since` that it has not answered yet. */
+  async countOpenClaudeTweets(since: Date): Promise<number> {
+    return this.runExactCount(
+      (head) =>
+        this.client
+          .from("pipeline_runs")
+          .select("id", { count: "exact", head })
+          .eq("bot_name", CLAUDE_CODE_BOT)
+          .eq("outcome", "in_progress")
+          .gte("created_at", since.toISOString())
+          .limit(1),
+      "open Claude tweets",
+    );
+  }
+
   async markRunWaitingForClaude(runId: string, data: { picks: Record<string, string>; logs: Record<string, unknown> }): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
