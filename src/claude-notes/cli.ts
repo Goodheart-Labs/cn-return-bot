@@ -13,7 +13,7 @@
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
  *   examples                      regenerates the examples file from prod
- *   x-note <note.json>            { runId, note, reasoning }: queues a note on an X tweet for the next X run
+ *   x-note <note.json>            { runId, note, reasoning, sources? }: queues a note on an X tweet for the next X run
  *   x-no-note <run id> <reason>   records that an X tweet needs no note
  *   x-handle <creator slug> <handle | none> <evidence>
  *                                 records a creator's X account, or that they have none
@@ -68,7 +68,7 @@ async function main() {
     case "examples":
       return import("./buildExamples");
     case "x-note": {
-      const note: { runId: string; note: string; reasoning: string } = readJson(arg(0));
+      const note: { runId: string; note: string; reasoning: string; sources?: NewDraft["sources"] } = readJson(arg(0));
       await saveXNote(note.runId, note);
       return console.log("Saved. The next X run rates the note and submits it if X has room.");
     }
