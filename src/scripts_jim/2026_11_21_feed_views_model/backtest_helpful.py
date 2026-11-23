@@ -25,7 +25,8 @@ published at least DUMP_SETTLE_DAYS before the dump's newest note are counted.
 
 It also prints the same comparison for other floors, as the share of all posts
 let through against the share of helpful-note posts let through, so a floor
-can be chosen on it.
+can be chosen on it. Each helpful-note post, with its notes, its link and both
+rules' numbers, goes to backtest_helpful_posts.json in the data folder.
 
     uv run src/scripts_jim/2026_11_21_feed_views_model/backtest_helpful.py
 """
@@ -75,14 +76,13 @@ def newest_dump() -> tuple[str, dict[str, list]]:
     raise SystemExit("no public dump in the last week")
 
 
-def helpful_posts(paths: dict[str, list]) -> tuple[set[str], pd.Timestamp]:
-    """The posts with a helpful misleading note, and when the dump's newest note was written."""
-    notes = pd.concat(pd.read_csv(p, sep="\t", compression="zip", usecols=["noteId", "createdAtMillis", "tweetId", "classification"],
+def helpful_notes(paths: dict[str, list]) -> tuple[pd.DataFrame, pd.Timestamp]:
+    """The helpful misleading notes, and when the dump's newest note was written."""
+    notes = pd.concat(pd.read_csv(p, sep="\t", compression="zip", usecols=["noteId", "createdAtMillis", "tweetId", "classification", "summary"],
                                   dtype={"noteId": str, "tweetId": str}) for p in paths["notes"])
     status = pd.read_csv(paths["noteStatusHistory"][0], sep="\t", compression="zip", usecols=["noteId", "currentStatus"], dtype={"noteId": str})
     newest = pd.to_datetime(notes.createdAtMillis.max(), unit="ms", utc=True)
-    helpful = notes[notes.classification == MISLEADING].merge(status[status.currentStatus == HELPFUL], on="noteId")
-    return set(helpful.tweetId), newest
+    return notes[notes.classification == MISLEADING].merge(status[status.currentStatus == HELPFUL], on="noteId"), newest
 
 
 def first_admissions(runs: pd.DataFrame, column: str, floor: float) -> pd.DataFrame:
@@ -91,12 +91,38 @@ def first_admissions(runs: pd.DataFrame, column: str, floor: float) -> pd.DataFr
     return hit.assign(tweet_id=hit.tweet_id.astype(str)).groupby("tweet_id").first()
 
 
+def write_details(hits: set[str], runs: pd.DataFrame, notes: pd.DataFrame, v48: dict) -> None:
+    """Each helpful-note post with its notes, its link and both rules' numbers at the replayed runs."""
+    runs = runs.assign(tweet_id=runs.tweet_id.astype(str))
+    out = []
+    for t in sorted(hits):
+        r = runs[runs.tweet_id == t].sort_values("run")
+        first = r.iloc[0]
+        old = r[r.velocity >= pf.VELOCITY_FLOOR_PER_H]
+        new = r[r.predicted >= VIEWS_FLOOR]
+        out.append({
+            "tweet": f"https://x.com/i/status/{t}",
+            "notes": notes[notes.tweetId == t].summary.tolist(),
+            "first_seen_age_h": round(float(first.age), 1),
+            "views_at_48h": v48.get(t),
+            "velocity_first_seen": round(float(first.velocity)),
+            "predicted_first_seen": None if pd.isna(first.predicted) else round(float(first.predicted)),
+            "predicted_max_before_24h": None if r.predicted.isna().all() else round(float(r.predicted.max())),
+            "old_rule_lets_through_at_age_h": round(float(old.iloc[0].age), 1) if len(old) else None,
+            "new_rule_lets_through_at_age_h": round(float(new.iloc[0].age), 1) if len(new) else None,
+        })
+    path = ev.DATA_DIR / "backtest_helpful_posts.json"
+    path.write_text(json.dumps(out, indent=1))
+    print(f"  wrote {len(out)} helpful-note posts with their notes and numbers to {path}")
+
+
 def main() -> None:
     p = json.loads((ev.DATA_DIR / "live_cliff.json").read_text())
     views, _ = ev.load()
     started = views.observed_at.min()
     day, paths = newest_dump()
-    helpful, newest_note = helpful_posts(paths)
+    notes, newest_note = helpful_notes(paths)
+    helpful = set(notes.tweetId)
     cutoff = newest_note - pd.Timedelta(days=DUMP_SETTLE_DAYS)
     print(f"dump {day}: newest note {newest_note:%Y-%m-%d %H:%M}, counting posts published {started:%m-%d %H:%M} to {cutoff:%m-%d %H:%M} UTC")
 
@@ -137,6 +163,8 @@ def main() -> None:
     matched = float(grid[int(np.argmin(np.abs(np.array(shares) - old["all"])))])
     m = let_through("predicted", matched)
     print(f"  at the same share of posts let through ({m['all']:.1%}), the new rule's floor is {matched:,.0f} and it lets through {m['helpful']:.1%} of helpful-note posts")
+
+    write_details(hits, runs, notes, v48)
 
     print("\nOther floors: share of all posts let through, share of helpful-note posts let through")
     for column, floors, unit in [("velocity", VELOCITY_FLOORS, "views/h"), ("predicted", VIEWS_FLOORS, "views to come")]:
