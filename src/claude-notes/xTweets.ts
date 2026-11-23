@@ -5,6 +5,7 @@
  * that answers twice, or a retry after a note was saved, changes nothing. */
 
 import type { XAccount } from "../api/xAccount";
+import type { DraftSource } from "./store";
 import type { Json } from "../everything-core/database.types";
 import { fetchAllRows } from "../everything-core/paging";
 import { CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
@@ -72,6 +73,11 @@ export async function markXTweetRunning(runId: string, attempt: number) {
   await updateOpenRow(runId, { startedAt: new Date().toISOString(), attempt }, { final_stage: CLAUDE_RUNNING_STAGE });
 }
 
+/** The X accounts whose notes must name their sources, each with a quote from
+ *  the page and what it supports, as Common Notes' drafts do (GOO-851). Their
+ *  Claude checks every source with a Haiku subagent first (prompts.ts). */
+export const ACCOUNTS_WITH_SOURCE_DETAILS: readonly XAccount[] = ["wsdm"];
+
 /** Everything that is wrong with a note by X's rules. */
 export function xNoteProblems(note: string): string[] {
   const problems: string[] = [];
@@ -81,13 +87,32 @@ export function xNoteProblems(note: string): string[] {
   return problems;
 }
 
+/** Everything that is wrong with a note's source details: every link of the
+ *  note needs one, with a quote and what it supports. */
+export function sourceProblems(note: string, sources: DraftSource[] | undefined): string[] {
+  if (!sources?.length) return ["The note has no sources. Give each of its links in \"sources\" with a quote and what it supports."];
+  const problems = sources.filter((s) => !s.url || !s.quote?.trim() || !s.explanation?.trim()).map((s) => `The source ${s.url || "without a url"} needs a url, a quote and an explanation.`);
+  const sourceUrls = new Set(sources.map((s) => s.url));
+  for (const link of note.match(URL_PATTERN) ?? []) {
+    if (!sourceUrls.has(link)) problems.push(`The link ${link} is in the note but not in "sources".`);
+  }
+  return problems;
+}
+
+async function readXAccount(runId: string): Promise<XAccount> {
+  const { data, error } = await db().from("pipeline_runs").select("x_account").eq("id", runId).single();
+  if (error) throw new Error(JSON.stringify(error));
+  return data.x_account as XAccount;
+}
+
 /** Saves Claude's note and puts it in the note queue, from where the next X
- *  run rates and submits it. */
-export async function saveXNote(runId: string, note: { note: string; reasoning: string }) {
+ *  run rates and submits it. The sources are kept in logs.claude.sources. */
+export async function saveXNote(runId: string, note: { note: string; reasoning: string; sources?: DraftSource[] }) {
   const text = note.note.trim();
-  const problems = xNoteProblems(text);
+  const needsSources = ACCOUNTS_WITH_SOURCE_DETAILS.includes(await readXAccount(runId));
+  const problems = [...xNoteProblems(text), ...(needsSources ? sourceProblems(text, note.sources) : [])];
   if (problems.length) throw new Error(`The note was not saved. ${problems.join(" ")}`);
-  await updateOpenRow(runId, { note: text, reasoning: note.reasoning, answeredAt: new Date().toISOString() }, {
+  await updateOpenRow(runId, { note: text, reasoning: note.reasoning, ...(note.sources && { sources: note.sources }), answeredAt: new Date().toISOString() }, {
     outcome: "candidate",
     outcome_reason: "queued",
     final_stage: "candidate",
