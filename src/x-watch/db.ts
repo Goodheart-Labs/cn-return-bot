@@ -4,7 +4,8 @@
 
 import { getSupabaseClient, type SupabaseLogger } from "../api/supabaseClient";
 import { currentXAccount } from "../api/xAccount";
-import { fetchInBatches } from "../everything-core/paging";
+import type { WrittenNote } from "../api/fetchNotesWritten";
+import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import { NEW_WRITER_DAILY_LIMIT, type WriterState } from "./room";
 
 /** What a test-mode note's run says instead of a note id. Test notes are not
@@ -75,6 +76,25 @@ export async function queuedNotes(): Promise<QueuedNote[]> {
     .order("created_at", { ascending: true });
   if (error) throw new Error(`Could not read the queued notes: ${error.message}`);
   return data.map((row) => ({ runId: row.id, tweetId: row.tweet_id, noteText: row.note_text ?? "", sourceUrl: row.source_url ?? "" }));
+}
+
+/** Stores the status X gives each of the account's public notes, such as
+ *  CURRENTLY_RATED_HELPFUL, in the uppercase form the rest of the system uses.
+ *  The feedback job does this for the first account only. A row is written
+ *  only when its status changed. */
+export async function storeNoteStatuses(written: WrittenNote[]): Promise<number> {
+  const stored = await fetchAllRows<{ note_id: string; cn_status: string | null }>(
+    () => getSupabaseClient().from("notes").select("note_id, cn_status").eq("x_account", currentXAccount()),
+    "note_id",
+    { label: "x-watch.noteStatuses" },
+  );
+  const storedStatus = new Map(stored.map((row) => [row.note_id, row.cn_status]));
+  const changed = written.filter((note) => note.status && storedStatus.has(note.id) && storedStatus.get(note.id) !== note.status.toUpperCase());
+  for (const note of changed) {
+    const { error } = await getSupabaseClient().from("notes").update({ cn_status: note.status!.toUpperCase() }).eq("note_id", note.id);
+    if (error) throw new Error(`Could not store the status of note ${note.id}: ${error.message}`);
+  }
+  return changed.length;
 }
 
 export async function markTestNoteSubmitted(runId: string): Promise<void> {

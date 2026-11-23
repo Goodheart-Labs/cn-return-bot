@@ -17,6 +17,9 @@
  * appeared in the feed. The account's share of the notewriter plan is its own
  * (src/claude-notes/xShare.ts). While it is used up, new posts wait.
  *
+ * Once an hour it also stores the status X gives each of the account's public
+ * notes, because the feedback job reads only the first account's notes.
+ *
  * Until X admits the account it works in test mode: it writes 50 test notes,
  * which X scores but never shows, and then checks once an hour whether X
  * admitted it (admission.ts). Slack hears once when the 50 test notes are
@@ -27,7 +30,8 @@
  * daemon. When an hour passes without a good tick, Slack hears it once, and
  * again when ticks succeed again.
  *
- *   X_ACCOUNT=wsdm bun run src/x-watch/main.ts
+ *   X_ACCOUNT=wsdm bun run src/x-watch/main.ts             the daemon
+ *   X_ACCOUNT=wsdm bun run src/x-watch/main.ts --dry-run   one read-only look: the state, the room and the posts it would hand over
  */
 
 import "dotenv/config";
@@ -42,12 +46,14 @@ import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStra
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
 import { fetchClaimCheckHealth } from "../service/client";
 import { describeSummary, isAdmitted, summariseTestNotes } from "./admission";
-import { countOpenNotes, handledTweetIds, queuedNotes, readWriterState, stateKey } from "./db";
+import { countOpenNotes, handledTweetIds, queuedNotes, readWriterState, stateKey, storeNoteStatuses } from "./db";
 import { inLimitCooldown, limitAfterSuccess, pickNewPosts, roomForChecks, TEST_NOTES_FOR_ADMISSION, type WriterState } from "./room";
 import { submitQueuedNote } from "./submit";
 
 const TICK_MS = 30_000;
-const ADMISSION_CHECK_MS = 60 * 60_000;
+/** How often the daemon asks X about admission, and later about its notes'
+ *  statuses. */
+const HOURLY_MS = 60 * 60_000;
 const SILENCE_WARNING_MS = 60 * 60_000;
 /** A run that never got as far as Claude, because the daemon stopped in
  *  between, is swept after this long, as in the X run. */
@@ -118,15 +124,16 @@ async function checkAdmission(state: Extract<WriterState, { kind: "testing" }>):
   await logger.setPipelineState(stateKey("test_notes_announced"), new Date().toISOString());
 }
 
-type Watch = { lastAdmissionCheckAt: number; lastGoodTickAt: number; warned: boolean };
+type Watch = { lastHourlyAt: number; lastGoodTickAt: number; warned: boolean };
 
 async function tick(watch: Watch): Promise<void> {
   await logger.sweepStuckRuns({ olderThanMinutes: STUCK_RUN_MINUTES, claudeOlderThanMinutes: CLAUDE_TWEET_MAX_WAIT_MINUTES });
   await logger.expireQueuedRuns(QUEUE_MAX_AGE_HOURS);
   const before = await readWriterState(logger);
-  if (before.kind === "testing" && Date.now() - watch.lastAdmissionCheckAt >= ADMISSION_CHECK_MS) {
-    watch.lastAdmissionCheckAt = Date.now();
-    await checkAdmission(before);
+  if (Date.now() - watch.lastHourlyAt >= HOURLY_MS) {
+    watch.lastHourlyAt = Date.now();
+    if (before.kind === "testing") await checkAdmission(before);
+    else console.log(`[x-watch] stored ${await storeNoteStatuses(await fetchNotesWritten())} changed note status(es)`);
   }
   await submitQueue(await readWriterState(logger));
 
@@ -149,7 +156,7 @@ async function tick(watch: Watch): Promise<void> {
 }
 
 async function runDaemon(): Promise<never> {
-  const watch: Watch = { lastAdmissionCheckAt: 0, lastGoodTickAt: Date.now(), warned: false };
+  const watch: Watch = { lastHourlyAt: 0, lastGoodTickAt: Date.now(), warned: false };
   console.log(`[x-watch] started for X account ${account}`);
   for (;;) {
     const startedAt = Date.now();
@@ -169,4 +176,17 @@ async function runDaemon(): Promise<never> {
   }
 }
 
-await runDaemon();
+async function dryRun(): Promise<void> {
+  const state = await readWriterState(logger);
+  const openNotes = await countOpenNotes();
+  const room = roomForChecks(state, openNotes, new Date());
+  console.log(`[x-watch] state ${JSON.stringify(state)}, ${openNotes} open, room ${room}, admitted now: ${await isAdmitted()}`);
+  const posts = await readSmallFeed(state.kind === "testing");
+  const picked = pickNewPosts(posts, await handledTweetIds(posts.map((post) => post.id)), room);
+  console.log(`[x-watch] the feed has ${posts.length} posts; these ${picked.length} would go to Claude:`);
+  for (const post of picked) console.log(`  https://x.com/i/status/${post.id} posted ${post.created_at}`);
+  console.log(`[x-watch] Claude: ${(await claudeUnavailableReason()) ?? "available"}`);
+}
+
+if (process.argv.includes("--dry-run")) await dryRun();
+else await runDaemon();
