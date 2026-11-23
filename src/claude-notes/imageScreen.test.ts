@@ -40,34 +40,41 @@ describe("screenImages", () => {
 
   test("a known image on Arachnid's list stops the job before OpenAI sees it", async () => {
     const calls = fakeNetwork({ arachnid: { classification: "csam", match_type: "near" } });
-    expect(await screenImages(text)).toEqual({ kind: "flagged", reason: "Arachnid Shield: csam (near match)" });
+    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "flagged", reason: "Arachnid Shield: csam (near match)" });
     expect(calls.some((url) => url.includes("openai"))).toBe(false);
     globalThis.fetch = realFetch;
   });
 
   test("an image OpenAI scores as sexual stops the job", async () => {
     fakeNetwork({ arachnid: noMatch, openai: sexual(0.4) });
-    expect(await screenImages(text)).toEqual({ kind: "flagged", reason: "OpenAI moderation: sexual score 0.40" });
+    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "flagged", reason: "OpenAI moderation: sexual score 0.40" });
     globalThis.fetch = realFetch;
   });
 
   test("an image both checks pass is clear", async () => {
     fakeNetwork({ arachnid: noMatch, openai: sexual(0.01) });
-    expect(await screenImages(text)).toEqual({ kind: "clear", screened: 1, passedOver: 0 });
+    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "clear", screened: 1, passedOver: 0 });
+    globalThis.fetch = realFetch;
+  });
+
+  test("without the sexual content check, OpenAI is never asked", async () => {
+    const calls = fakeNetwork({ arachnid: noMatch, openai: sexual(0.9) });
+    expect(await screenImages(text, { sexualContent: false })).toEqual({ kind: "clear", screened: 1, passedOver: 0 });
+    expect(calls.some((url) => url.includes("openai"))).toBe(false);
     globalThis.fetch = realFetch;
   });
 
   test("a host without the Arachnid login screens nothing and calls no service", async () => {
     const calls = fakeNetwork({ arachnid: noMatch, openai: sexual(0.9) });
     delete process.env.ARACHNID_SHIELD_USERNAME;
-    expect(await screenImages(text)).toEqual({ kind: "off" });
+    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "off" });
     expect(calls).toEqual([]);
     globalThis.fetch = realFetch;
   });
 
   test("a failing Arachnid stops the job instead of letting it through", async () => {
     fakeNetwork({ arachnid: { detail: "down" }, arachnidStatus: 503 });
-    await expect(screenImages(text)).rejects.toThrow("Arachnid Shield answered 503");
+    await expect(screenImages(text, { sexualContent: true })).rejects.toThrow("Arachnid Shield answered 503");
     globalThis.fetch = realFetch;
   });
 });

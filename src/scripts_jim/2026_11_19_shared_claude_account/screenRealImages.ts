@@ -11,5 +11,5 @@ const texts = [
 ].filter((t) => imageLinksIn(t.text).length > 0).slice(0, 8);
 for (const t of texts) {
   const started = Date.now();
-  console.log(`${t.what}: ${imageLinksIn(t.text).length} images ->`, JSON.stringify(await screenImages(t.text)), `${Date.now() - started} ms`);
+  console.log(`${t.what}: ${imageLinksIn(t.text).length} images ->`, JSON.stringify(await screenImages(t.text, { sexualContent: true })), `${Date.now() - started} ms`);
 }

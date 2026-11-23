@@ -16,7 +16,13 @@
  *    scores images only for sexual content in general; its category for
  *    minors works on text only (checked on 2026-11-19). So it refuses any
  *    image that looks sexual at all, with a low bar. A false alarm costs one
- *    tweet or one post.
+ *    post.
+ *
+ * X tweets get only the first check (GOO-852). The X run already drops every
+ * tweet that X marked as possibly sensitive (isPossiblySensitive in
+ * src/api/fetchEligiblePosts.ts), and Jim chose that flag over OpenAI's score
+ * for tweets. Arachnid stays, because the flag misses images: from 2026-11-19
+ * to 2026-11-23 none of the 7 tweets that OpenAI's score stopped had it.
  *
  * The image's bytes are sent, not its address: OpenAI cannot fetch some hosts
  * itself, and Arachnid fetches only from domains listed on our account. An
@@ -114,22 +120,26 @@ async function sexualScore(image: Image): Promise<number | null> {
 
 /** Why the image stops the job, or null when it passes; undefined when no
  *  check could read it. */
-async function screenImage(image: Image): Promise<string | null | undefined> {
+async function screenImage(image: Image, checks: ImageChecks): Promise<string | null | undefined> {
   const arachnid = await arachnidVerdict(image);
   if (arachnid.classification !== ARACHNID_NO_MATCH) return `Arachnid Shield: ${arachnid.classification} (${arachnid.matchType ?? "unknown"} match)`;
+  if (!checks.sexualContent) return null;
   const score = await sexualScore(image);
   if (score === null) return undefined;
   return score >= SEXUAL_SCORE_LIMIT ? `OpenAI moderation: sexual score ${score.toFixed(2)}` : null;
 }
 
+/** Arachnid's check always runs. `sexualContent` adds OpenAI's score. */
+export type ImageChecks = { sexualContent: boolean };
+
 /** Screens every image the text links to. Stops at the first flagged one. */
-export async function screenImages(text: string): Promise<ImageScreen> {
+export async function screenImages(text: string, checks: ImageChecks): Promise<ImageScreen> {
   if (!imageScreenOn()) return { kind: "off" };
   let screened = 0;
   let passedOver = 0;
   for (const url of imageLinksIn(text)) {
     const image = await downloadImage(url);
-    const verdict = image === null ? undefined : await screenImage(image);
+    const verdict = image === null ? undefined : await screenImage(image, checks);
     if (verdict === undefined) {
       passedOver++;
       continue;
