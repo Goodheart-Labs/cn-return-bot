@@ -33,7 +33,7 @@ export const reviewAnswerJob: JobKind<ReviewerMessage> = {
   name: "review-answer",
   sessionPrefix: "cn-msg-",
   maxRunning: MAX_ANSWERS_RUNNING,
-  tags: [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.reviewAnswer],
+  tags: () => [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.reviewAnswer],
   key: (message) => message.draftId,
   waiting: async () => [...(await waitingMessages()).values()],
 

@@ -41,7 +41,8 @@ export interface JobKind<Work> {
   /** Its Claudes run in tmux sessions named this plus the start of the key. */
   sessionPrefix: string;
   maxRunning: number;
-  tags: ClaudeRunTag[];
+  /** What the run was for, on its cost row (usageShare.ts). */
+  tags(work: Work): ClaudeRunTag[];
   key(work: Work): string;
   /** Work ready to start, best first. The scheduler leaves out the keys it is
    *  running or gave up on and starts at most `limit`. Called only while

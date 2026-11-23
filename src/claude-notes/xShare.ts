@@ -1,12 +1,16 @@
-/* The X note writer's share of the Claude plan it runs on (GOO-527, GOO-617).
+/* The X note writers' shares of the Claude plan they run on (GOO-527,
+ * GOO-617, GOO-851).
  *
  * The runner on the ai-box writes Common Notes and, since GOO-527, notes for
  * some of the X bot's tweets. Since GOO-787 (2026-11-19) both are paid for by
  * Jim's notewriter account, a Claude plan used for nothing else. Jim gave X
  * 20% of the week on 2026-10-27 and 30% on 2026-11-19, and Common Notes the
- * rest of the weekly target that usagePacing.ts aims at.
+ * rest of the weekly target that usagePacing.ts aims at. Each X account has a
+ * share of its own (src/api/xAccount.ts). The WSDM Cup account got 30% on
+ * 2026-11-23, on top of the first account's 30%, so Common Notes now gets what
+ * both leave.
  *
- * How much of the week X used so far is its tag's share of the plan's usage
+ * How much of the week an account used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every
  * Claude run of the notewriter that takes the tweets. Only that notewriter's
  * readings and runs count, so Nathan's hq posts, which run on his own plan,
@@ -24,20 +28,26 @@
  * usage is part of that total, so Common Notes gets whatever X leaves. */
 
 import { MAX_USAGE_READING_AGE_MS, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
+import { currentXAccount, type XAccount } from "../api/xAccount";
 import { AI_BOX_NOTEWRITER } from "../notewriters/ids";
-import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type UsageSnapshot } from "./usageShare";
-export const X_SHARE_PERCENT = 30;
+import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type ClaudeRunTag, type UsageSnapshot } from "./usageShare";
+
+/** The tag on each account's Claude runs, and its share of the week in percent. */
+export const X_SHARES: Record<XAccount, { tag: ClaudeRunTag; percent: number }> = {
+  stilt: { tag: CLAUDE_RUN_TAGS.x, percent: 30 },
+  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, percent: 30 },
+};
 const WEEK_MS = 7 * 24 * 3600_000;
 
 export type XShareSnapshot = UsageSnapshot & { now: Date };
 
 export type XShare =
-  | { kind: "measured"; usedPercent: number; allowedPercent: number }
+  | { kind: "measured"; account: XAccount; usedPercent: number; allowedPercent: number }
   /** The runner on the ai-box would not start a Claude now. */
   | { kind: "runner_down"; reason: string };
 
 
-export function computeXShare(snapshot: XShareSnapshot): XShare {
+export function computeXShare(snapshot: XShareSnapshot, account: XAccount): XShare {
   const { latest, now } = snapshot;
   if (!latest || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
     return { kind: "runner_down", reason: "The runner on ai-box has not reported the usage of its Claude plan in the last 30 minutes" };
@@ -46,11 +56,12 @@ export function computeXShare(snapshot: XShareSnapshot): XShare {
     return { kind: "runner_down", reason: `The note writer's plan is at ${latest.weekly}% of its week, where the runner starts no Claude` };
   }
   const weekElapsed = Math.min(1, Math.max(0, 1 - (latest.weeklyResetsAt.getTime() - now.getTime()) / WEEK_MS));
-  return { kind: "measured", usedPercent: usageShare(snapshot, CLAUDE_RUN_TAGS.x), allowedPercent: X_SHARE_PERCENT * weekElapsed };
+  const { tag, percent } = X_SHARES[account];
+  return { kind: "measured", account, usedPercent: usageShare(snapshot, tag), allowedPercent: percent * weekElapsed };
 }
 
 const describeUse = (share: Extract<XShare, { kind: "measured" }>) =>
-  `X has used ${share.usedPercent.toFixed(2)}% of the note writer's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARE_PERCENT}% by the reset)`;
+  `X account ${share.account} has used ${share.usedPercent.toFixed(2)}% of the note writer's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARES[share.account].percent}% by the reset)`;
 
 /** Why a tweet that draws Claude cannot go to Claude now, or null when it can. */
 export function xShareProblem(share: XShare): string | null {
@@ -58,11 +69,11 @@ export function xShareProblem(share: XShare): string | null {
   return share.usedPercent < share.allowedPercent ? null : describeUse(share);
 }
 
-/** Reads the share once, logs it, and says why this X run cannot send tweets
- *  to Claude, or null when it can. */
+/** Reads the share of this process's X account once, logs it, and says why
+ *  it cannot send tweets to Claude, or null when it can. */
 export async function claudeUnavailableReason(): Promise<string | null> {
   // The X run's Claude tweets go to the runner on the ai-box.
-  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(AI_BOX_NOTEWRITER)) });
+  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(AI_BOX_NOTEWRITER)) }, currentXAccount());
   const problem = xShareProblem(share);
   if (problem) console.log(`[claude] ${problem}. Tweets that draw Claude fail in this run.`);
   else if (share.kind === "measured") console.log(`[claude] ${describeUse(share)}. Tweets that draw Claude go to the ai-box.`);
