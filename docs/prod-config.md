@@ -388,8 +388,11 @@ requests fail.
 
 Jina Reader (r.jina.ai) is a paid service that fetches a page or an API answer
 with its own browsers. The page reader asks it for every page that the free
-fetch steps failed on, and for every API answer that a bot check kept closed,
-which is how the EA Forum is read (GOO-755, GOO-745). Its key is
+fetch steps failed on, and for every API answer that a bot check kept closed
+to our own browser too. Until GOO-832 (2026-11-20) that was how the EA Forum
+was read; since then the fetcher's own browser reads it, and no API we read
+needs Jina. Its balance ran out on 2026-11-19 at 21:42 UTC. Until someone
+tops it up or replaces the key, every read that needs Jina throws. Its key is
 `JINA_API_KEY`, in `/etc/cn-return-bot/service.env` on the services machine
 and in the local `.env` files. GitHub has no copy, because Actions never reads
 an outside page itself. Today's key will be replaced by one from an account

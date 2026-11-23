@@ -5,7 +5,17 @@
 import os from "node:os";
 import fs from "node:fs";
 import path from "node:path";
-import { chromium, type BrowserContext, type Page } from "playwright";
+import { chromium, devices, type BrowserContext, type Page } from "playwright";
+import { isBotCheckPage, openPastBotCheck } from "../../pipeline/fetch/botCheck";
+import { HIDE_AUTOMATION_FLAG } from "../../pipeline/utils/browserManager";
+
+/** Chromium in the new headless mode calls itself "HeadlessChrome" in its
+ *  user agent, and Vercel's bot check in front of the EA Forum refuses that
+ *  name. Playwright's description of a desktop Chrome carries the version of
+ *  the Chromium it bundles, so this is the same browser under the name a
+ *  person's Chrome sends. Together with HIDE_AUTOMATION_FLAG the check lets
+ *  the browser through, as it lets the fetcher's through (GOO-832). */
+const CHROME_USER_AGENT = devices["Desktop Chrome"].userAgent;
 
 const BADGE_WAIT_ROUNDS = 6;
 const BADGE_WAIT_PER_ROUND_MS = 4000;
@@ -32,21 +42,28 @@ export async function launchWithExtension(proxy?: { server: string; username: st
     channel: "chromium",
     headless: true,
     viewport: { width: 1440, height: 1000 },
+    userAgent: CHROME_USER_AGENT,
     proxy,
-    args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`],
+    args: [`--disable-extensions-except=${extensionDir}`, `--load-extension=${extensionDir}`, HIDE_AUTOMATION_FLAG],
   });
 }
 
 /** Opens `url` in a new tab and declines YouTube's consent page if it shows
  *  up. A fresh European profile gets one, and the choice sticks in the kept
- *  profile. Every console line of the extension goes to `onLog`. */
+ *  profile. Every console line of the extension goes to `onLog`. A page
+ *  behind a bot check is waited for until the check lets the browser
+ *  through, and when it never does, this throws. */
 export async function openPage(context: BrowserContext, url: string, onLog: (line: string) => void): Promise<Page> {
   const page = await context.newPage();
   page.on("console", (message) => {
     const text = message.text();
     if (text.includes("[common-notes]")) onLog(text);
   });
-  await page.goto(url, { waitUntil: "domcontentloaded" });
+  if (isBotCheckPage(await openPastBotCheck(page, url))) {
+    await page.close();
+    throw new Error(`the site's bot check never let the browser through to ${url}`);
+  }
+  await page.waitForLoadState("domcontentloaded");
 
   const consent = page.getByRole("button", { name: /alle ablehnen|reject all/i }).first();
   if (await consent.isVisible({ timeout: 3000 }).catch(() => false)) {

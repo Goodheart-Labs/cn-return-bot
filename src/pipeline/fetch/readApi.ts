@@ -1,35 +1,34 @@
 /**
  * Every request the page reader sends to a site's API goes through readApi:
- * a forum's GraphQL query, Substack's post endpoint, a Substack RSS feed. It
- * takes the same steps as the page ladder. First one plain request from the
- * fetcher. When a bot check answers, headless Chromium in the fetcher opens
- * the site's front page, which runs the bot check's script, and makes the
- * request from inside that page. When a bot check still answers, Jina Reader
- * fetches the address with its own browsers. Jina runs here and not in the
- * fetcher, because it needs a key.
+ * a forum's GraphQL query, Substack's post endpoint, a Substack RSS feed. The
+ * fetcher sends one plain request, and when a bot check answers, it opens the
+ * address in its headless Chromium, which the check lets through
+ * (fetchApi.ts). When a bot check stops the browser too, Jina Reader fetches
+ * the address with its own browsers. Jina runs here and not in the fetcher,
+ * because it needs a key.
  */
 
 import { askFetcher } from "../../service/client";
-import { FETCH_API_IN_BROWSER_PATH, FETCH_API_PATH, type ApiAnswer } from "../../service/contract";
-import { fetchApiInBrowser, fetchApiPlain } from "./fetchApi";
+import { FETCH_API_PATH, type ApiAnswer } from "../../service/contract";
+import { fetchApi } from "./fetchApi";
 import { fetchApiWithJina, JINA_FALLBACK } from "./jinaReader";
-
-type ApiStep = "the headless browser" | "Jina Reader";
 
 export type ApiRead = { type: "answer"; body: string; etag?: string } | { type: "not_modified" } | { type: "unreadable"; reason: string };
 
 export type JsonRead = { type: "json"; json: unknown } | { type: "unreadable"; reason: string };
 
-/** `etag` is the version tag of the last answer. Only the plain request sends
- *  it, so a site behind a bot check answers in full each time. */
+/** `etag` is the version tag of the last answer. A site whose answer has not
+ *  changed since then answers that it was not modified. */
 export async function readApi(address: string, options: { etag?: string } = {}): Promise<ApiRead> {
   const { etag } = options;
-  const plain = await askFetcher<ApiAnswer>(FETCH_API_PATH, { url: address, ...(etag && { etag }) }, () => fetchApiPlain(address, etag));
-  if (plain.type !== "bot_check") return toApiRead(plain);
-  const inBrowser = await askFetcher<ApiAnswer>(FETCH_API_IN_BROWSER_PATH, { url: address }, () => fetchApiInBrowser(address));
-  if (inBrowser.type !== "bot_check") return logStep(toApiRead(inBrowser), address, "the headless browser");
-  if (!JINA_FALLBACK) return toApiRead(inBrowser);
-  return logStep(toApiRead(await fetchApiWithJina(address)), address, "Jina Reader");
+  const fetched = await askFetcher<ApiAnswer>(FETCH_API_PATH, { url: address, ...(etag && { etag }) }, () => fetchApi(address, etag));
+  if (fetched.type !== "bot_check" || !JINA_FALLBACK) return toApiRead(fetched);
+  const read = toApiRead(await fetchApiWithJina(address));
+  // Our own browser gets through the bot checks we know, and Jina costs
+  // money, so the run log says when Jina had to be asked.
+  const outcome = read.type === "unreadable" ? `failed too (${read.reason})` : "got an answer";
+  console.log(`[read-api] a bot check stopped the fetcher's request and its browser at ${new URL(address).origin}, and Jina Reader ${outcome}`);
+  return read;
 }
 
 export async function readJsonApi(address: string): Promise<JsonRead> {
@@ -46,12 +45,4 @@ export async function readJsonApi(address: string): Promise<JsonRead> {
 function toApiRead(answer: ApiAnswer): ApiRead {
   if (answer.type === "answer" || answer.type === "not_modified") return answer;
   return { type: "unreadable", reason: answer.type === "bot_check" ? "a bot check stopped every request" : answer.reason };
-}
-
-/** A bot check in front of an API is rare, so the run log says which step got
- *  past it. */
-function logStep(read: ApiRead, address: string, step: ApiStep): ApiRead {
-  const outcome = read.type === "unreadable" ? `failed too (${read.reason})` : "got an answer";
-  console.log(`[read-api] a bot check stopped the plain request to ${new URL(address).origin}, and ${step} ${outcome}`);
-  return read;
 }

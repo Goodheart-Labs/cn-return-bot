@@ -3,53 +3,59 @@
  * post endpoint. On the services machine only the sandboxed fetcher runs
  * these, like the fetch ladder. readApi in readApi.ts asks the fetcher for
  * them, and runs them in its own process where there is no fetcher.
+ *
+ * A request is sent plainly first. When a bot check answers it, the headless
+ * browser opens the same address, waits for the check to let it through, and
+ * reads the answer as the browser shows it (botCheck.ts).
  */
 
+import type { BrowserContext, Cookie } from "playwright";
 import type { ApiAnswer } from "../../service/contract";
 import { getBrowser } from "../utils/browserManager";
 import { isWebUrl } from "../utils/webUrl";
+import { isBotCheck, isBotCheckPage, openPastBotCheck } from "./botCheck";
 import { FETCH_UAS } from "./fetchLadder";
 
 const API_TIMEOUT_MS = 15_000;
-
-/** How long the headless browser may take to open the site's front page. */
-const FRONT_PAGE_TIMEOUT_MS = 20_000;
-
-/** How long the browser keeps asking while the site's bot check is still
- *  running its script, and how long it waits between two tries. Vercel's
- *  checkpoint passed within a few seconds on the devbox (GOO-745). */
-const BOT_CHECK_PATIENCE_MS = 20_000;
-const BOT_CHECK_RETRY_MS = 2_000;
 
 /** JSON first, because some APIs answer a request that prefers HTML with a
  *  page for people instead. LessWrong's GraphQL endpoint shows its landing
  *  page then. */
 const API_ACCEPT = "application/json, */*;q=0.8";
 
-const REFUSED_NON_WEB_URL = "only http and https addresses are fetched";
-
-/** The headers by which a site says it answered with a bot check: Vercel's
- *  Security Checkpoint and Cloudflare's challenge page. Both answer with a
- *  page that runs a script in the browser before the site lets it through. */
-const BOT_CHECK_HEADERS = ["x-vercel-mitigated", "cf-mitigated"];
-const BOT_CHECK_VALUE = "challenge";
-
-const isBotCheck = (headers: { get(name: string): string | null }) =>
-  BOT_CHECK_HEADERS.some((name) => headers.get(name) === BOT_CHECK_VALUE);
-
 const NOT_MODIFIED = 304;
+const FIRST_ERROR_STATUS = 400;
 
-/** One plain request. With the ETag of the last answer, a site whose answer
- *  has not changed answers 304 with no body. */
-export async function fetchApiPlain(address: string, etag?: string): Promise<ApiAnswer> {
-  if (!isWebUrl(address)) return { type: "failed", reason: REFUSED_NON_WEB_URL };
+/** The cookies each site gave our browser, by the site's origin. Among them
+ *  is the pass of the site's bot check. A browser that comes back with the
+ *  pass is not checked again while it lasts, which is an hour at Vercel. So
+ *  the browser passes the EA Forum's check once an hour, not on each of the
+ *  walk's three requests a minute. A site is in this map from the moment its
+ *  bot check let the browser through, and such a site is asked through the
+ *  browser at once, because its bot check stops every plain request. */
+const sitePasses = new Map<string, Cookie[]>();
+
+/** `etag` is the version tag of the last answer. Only the plain request sends
+ *  it, and a site whose answer has not changed then answers 304 with no body.
+ *  So a site behind a bot check answers in full each time. */
+export async function fetchApi(address: string, etag?: string): Promise<ApiAnswer> {
+  if (!isWebUrl(address)) return { type: "failed", reason: "only http and https addresses are fetched" };
+  const { origin } = new URL(address);
+  if (!sitePasses.has(origin)) {
+    const plain = await fetchApiPlain(address, etag);
+    if (plain.type !== "bot_check") return plain;
+  }
+  return fetchApiInBrowser(address, origin);
+}
+
+async function fetchApiPlain(address: string, etag?: string): Promise<ApiAnswer> {
   try {
     const response = await fetch(address, {
       headers: { "User-Agent": FETCH_UAS.desktop, Accept: API_ACCEPT, ...(etag && { "If-None-Match": etag }) },
       redirect: "follow",
       signal: AbortSignal.timeout(API_TIMEOUT_MS),
     });
-    if (isBotCheck(response.headers)) return { type: "bot_check" };
+    if (isBotCheck((name) => response.headers.get(name))) return { type: "bot_check" };
     if (response.status === NOT_MODIFIED) return { type: "not_modified" };
     if (!response.ok) return { type: "failed", reason: `HTTP ${response.status}` };
     return { type: "answer", body: await response.text(), ...(response.headers.get("etag") && { etag: response.headers.get("etag")! }) };
@@ -58,51 +64,29 @@ export async function fetchApiPlain(address: string, etag?: string): Promise<Api
   }
 }
 
-/** What one request made from inside the page found. */
-type InPageAnswer = { type: "answer"; status: number; botCheck: boolean; body: string } | { type: "lost"; reason: string };
-
-/** The same request, made by headless Chromium from inside the site's own
- *  front page. Opening the front page runs the bot check's script, which is
- *  what a site behind Vercel's or Cloudflare's check wants to see, and a
- *  request from that page then carries what the check gave the browser. Each
- *  call gets its own browser context, so nothing carries over to the next. */
-export async function fetchApiInBrowser(address: string): Promise<ApiAnswer> {
-  if (!isWebUrl(address)) return { type: "failed", reason: REFUSED_NON_WEB_URL };
-  let context: import("playwright").BrowserContext | null = null;
+/** Opens the address in headless Chromium, as a person would open it in a
+ *  tab, and returns what the site served once its bot check had passed. The
+ *  browser context starts with the site's cookies from the last request and
+ *  is closed afterwards, so nothing else carries over. */
+async function fetchApiInBrowser(address: string, origin: string): Promise<ApiAnswer> {
+  let context: BrowserContext | null = null;
   try {
-    context = await (await getBrowser()).newContext({ userAgent: FETCH_UAS.desktop, locale: "en-US" });
-    const page = await context.newPage();
-    await page.goto(new URL(address).origin, { waitUntil: "domcontentloaded", timeout: FRONT_PAGE_TIMEOUT_MS });
-    const deadline = Date.now() + BOT_CHECK_PATIENCE_MS;
-    while (true) {
-      const answer = await requestFromPage(page, address);
-      if (answer.type === "answer" && !answer.botCheck) {
-        return answer.status < 400 ? { type: "answer", body: answer.body } : { type: "failed", reason: `HTTP ${answer.status} in the browser` };
-      }
-      if (Date.now() > deadline) return answer.type === "lost" ? { type: "failed", reason: answer.reason } : { type: "bot_check" };
-      await page.waitForTimeout(BOT_CHECK_RETRY_MS);
+    context = await (await getBrowser()).newContext({
+      userAgent: FETCH_UAS.desktop,
+      locale: "en-US",
+      storageState: { cookies: sitePasses.get(origin) ?? [], origins: [] },
+    });
+    const served = await openPastBotCheck(await context.newPage(), address);
+    if (isBotCheckPage(served)) {
+      sitePasses.delete(origin);
+      return { type: "bot_check" };
     }
+    sitePasses.set(origin, await context.cookies());
+    if (served.status() >= FIRST_ERROR_STATUS) return { type: "failed", reason: `HTTP ${served.status()} in the browser` };
+    return { type: "answer", body: await served.text() };
   } catch (err: any) {
     return { type: "failed", reason: err?.message?.slice(0, 200) ?? "browser error" };
   } finally {
     if (context) await context.close().catch(() => {});
-  }
-}
-
-/** Makes the request from inside the page. The bot check reloads the page
- *  once its script has passed, and a request running during that reload is
- *  lost. The caller then simply tries again. */
-async function requestFromPage(page: import("playwright").Page, address: string): Promise<InPageAnswer> {
-  try {
-    return await page.evaluate(
-      async ({ address, accept, headerNames, botCheckValue }) => {
-        const response = await fetch(address, { headers: { Accept: accept } });
-        const botCheck = headerNames.some((name) => response.headers.get(name) === botCheckValue);
-        return { type: "answer" as const, status: response.status, botCheck, body: await response.text() };
-      },
-      { address, accept: API_ACCEPT, headerNames: BOT_CHECK_HEADERS, botCheckValue: BOT_CHECK_VALUE },
-    );
-  } catch (err: any) {
-    return { type: "lost", reason: err?.message?.slice(0, 200) ?? "the request inside the page failed" };
   }
 }

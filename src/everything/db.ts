@@ -8,7 +8,8 @@ import { SOURCE_UNREACHABLE_TEXT } from "../pipeline/media/youtubeCaptions";
 import { stripNullChars } from "../utils/stripNullChars";
 import type { CanonicalFeed } from "./feedUrls";
 import type { FeedPacingSnapshot, MeanCostRule } from "./pacing";
-import { USAGE_WINDOW_HOURS, type UsageSnapshot } from "./usagePacing";
+import { USAGE_WINDOW_HOURS, type UsageSnapshot, type WindowCosts } from "./usagePacing";
+import { CLAUDE_RUN_TAGS } from "../claude-notes/usageShare";
 import { CLAUDE_NOTEWRITER, PIPELINE_NOTEWRITER } from "../notewriters/ids";
 import type { HandedOutPost } from "../notewriters/v1";
 import type { WatchedNotewriter } from "./notewriterSilence";
@@ -527,29 +528,41 @@ export async function recordReadFailure(itemId: string, reason: string): Promise
   throwOnError(await getSupabaseClient().from("everything_read_failures").insert({ item_id: itemId, reason }));
 }
 
+/** The runs' costs of the Claude note writer since a moment, split into the
+ *  posts' runs and all other runs (migration 195). */
+async function fetchWindowCosts(since: string): Promise<WindowCosts> {
+  const rows = throwOnError(
+    await getSupabaseClient().rpc("everything_claude_costs_since", { p_notewriter: CLAUDE_NOTEWRITER, p_since: since }),
+  ) as { tags: string[]; runs: number; api_cost_usd: number }[];
+  const costs: WindowCosts = { postRuns: 0, postCostUsd: 0, otherCostUsd: 0 };
+  for (const row of rows) {
+    if (row.tags.includes(CLAUDE_RUN_TAGS.post)) {
+      costs.postRuns += Number(row.runs);
+      costs.postCostUsd += Number(row.api_cost_usd);
+    } else {
+      costs.otherCostUsd += Number(row.api_cost_usd);
+    }
+  }
+  return costs;
+}
+
 /** What the usage pacing of the Claude note writer needs (usagePacing.ts):
- *  the usage readings of this host's notewriter and the posts it reserved over
- *  the window. Every assignment of migration 168 became a reservation with the
- *  same id (migration 184). */
+ *  the usage readings of this host's notewriter over the window, and the costs
+ *  of its runs since the first of those readings. Both cover the same time, so
+ *  runs from before the notewriter's account had readings cannot count. */
 export async function fetchUsageSnapshot(): Promise<UsageSnapshot> {
   const now = new Date();
   const since = new Date(now.getTime() - USAGE_WINDOW_HOURS * 3600_000).toISOString();
-  const db = getSupabaseClient();
-  const [readings, reserved] = await Promise.all([
-    fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
-      () => db.from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CLAUDE_NOTEWRITER).gte("at", since),
-      "id",
-      { label: "claudeUsage" },
-    ),
-    db.from("everything_reservations").select("id", { count: "exact", head: true }).eq("notewriter_id", CLAUDE_NOTEWRITER).gte("started_at", since),
-  ]);
-  if (reserved.error) throw new Error(`Supabase: ${reserved.error.message}`);
+  const readings = await fetchAllRows<{ id: number; at: string; weekly: number; weekly_resets_at: string | null }>(
+    () => getSupabaseClient().from("everything_claude_usage").select("id, at, weekly, weekly_resets_at").eq("notewriter", CLAUDE_NOTEWRITER).gte("at", since),
+    "id",
+    { label: "claudeUsage" },
+  );
+  readings.sort((a, b) => a.at.localeCompare(b.at));
   return {
     now,
-    readings: readings
-      .sort((a, b) => a.at.localeCompare(b.at))
-      .map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
-    postsTaken: reserved.count ?? 0,
+    readings: readings.map((r) => ({ at: new Date(r.at), weekly: r.weekly, weeklyResetsAt: r.weekly_resets_at ? new Date(r.weekly_resets_at) : null })),
+    costs: await fetchWindowCosts(readings[0]?.at ?? since),
   };
 }
 

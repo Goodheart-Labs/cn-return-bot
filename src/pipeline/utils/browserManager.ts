@@ -2,6 +2,15 @@ import { chromium, Browser } from "playwright";
 
 let browserInstance: Browser | null = null;
 
+/** Chromium tells every page when a program drives it, by setting
+ *  navigator.webdriver to true. This flag switches that off. The script of a
+ *  bot check such as Vercel's Security Checkpoint looks at it: from the
+ *  services machine, the check refused our browser while the value was true
+ *  and let the same browser through once it was not (GOO-832). Jina Reader
+ *  starts its Chrome with the same flag, and so does the site checks'
+ *  browser (src/everything-extension/scripts/browser.ts). */
+export const HIDE_AUTOMATION_FLAG = "--disable-blink-features=AutomationControlled";
+
 /**
  * Returns the shared browser. A new one is launched when there is none yet or
  * the old one has disconnected. Reusing one browser across page loads avoids
@@ -18,7 +27,7 @@ let browserInstance: Browser | null = null;
  */
 export async function getBrowser(): Promise<Browser> {
   if (!browserInstance || !browserInstance.isConnected()) {
-    browserInstance = await chromium.launch({ handleSIGTERM: false });
+    browserInstance = await chromium.launch({ handleSIGTERM: false, args: [HIDE_AUTOMATION_FLAG] });
   }
   return browserInstance;
 }
