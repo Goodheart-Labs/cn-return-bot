@@ -10,7 +10,7 @@ For comparison, the metadata model's recall on all test tweets at the same
 pass rate.
 
 Run from the worktree root:
-  uv run --with pandas --with pyarrow --with scikit-learn src/scripts_jim/2026_11_20_tweet_note_prefilter/claude_filter_report.py
+  uv run --with pandas --with pyarrow --with scikit-learn --with httpx --with python-dotenv src/scripts_jim/2026_11_20_tweet_note_prefilter/claude_filter_report.py
 """
 
 import json
