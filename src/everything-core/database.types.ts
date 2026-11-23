@@ -2146,6 +2146,7 @@ export type Database = {
           retweets: number | null
           tier: string
           tweet_id: number
+          views_to_come: number | null
           xl_rank: number
         }
         Insert: {
@@ -2158,6 +2159,7 @@ export type Database = {
           retweets?: number | null
           tier: string
           tweet_id: number
+          views_to_come?: number | null
           xl_rank: number
         }
         Update: {
@@ -2170,6 +2172,7 @@ export type Database = {
           retweets?: number | null
           tier?: string
           tweet_id?: number
+          views_to_come?: number | null
           xl_rank?: number
         }
         Relationships: []
