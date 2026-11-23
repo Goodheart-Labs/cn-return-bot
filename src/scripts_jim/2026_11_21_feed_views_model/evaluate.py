@@ -349,4 +349,5 @@ def main() -> None:
     (DATA_DIR / "results.json").write_text(json.dumps(results))
     print(f"\nwrote {DATA_DIR / 'results.json'}")
 
-main()
+if __name__ == "__main__":
+    main()
