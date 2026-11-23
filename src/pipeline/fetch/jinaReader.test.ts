@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
-import { fetchWithJinaReader, JinaAccountError } from "./jinaReader";
-import { getCostTracker, withCostTracker } from "../cost-tracking/costTracker";
+import { afterEach, describe, expect, spyOn, test } from "bun:test";
+import { fetchWithJinaReader, JinaUnavailableError } from "./jinaReader";
 
 // The shapes below are copied from real Jina answers recorded during GOO-167.
 const GOOD_PAGE = {
@@ -20,29 +19,20 @@ const CAPTCHA = {
   data: { title: "cbo.gov", content: "", warning: "This page maybe requiring CAPTCHA, please make sure you are authorized to access this page.", usage: { tokens: 0 } },
 };
 
-const savedKey = process.env.JINA_API_KEY;
 let fetchSpy: ReturnType<typeof spyOn<typeof globalThis, "fetch">>;
 
 function answer(status: number, body: unknown) {
   fetchSpy = spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body), { status }));
 }
 
-beforeEach(() => {
-  process.env.JINA_API_KEY = "test";
-});
 afterEach(() => {
   fetchSpy?.mockRestore();
-  if (savedKey === undefined) delete process.env.JINA_API_KEY;
-  else process.env.JINA_API_KEY = savedKey;
 });
 
 describe("fetchWithJinaReader", () => {
-  test("a readable page comes back as markdown under its title, and its cost is tracked", async () => {
+  test("a readable page comes back as markdown under its title", async () => {
     answer(200, GOOD_PAGE);
-    const { result, costs } = await withCostTracker(async () => ({ result: await fetchWithJinaReader("https://example.com/a"), costs: getCostTracker() }));
-    expect(result).toEqual({ type: "page", markdown: `# ${GOOD_PAGE.data.title}\n\n${GOOD_PAGE.data.content}` });
-    expect(costs).toHaveLength(1);
-    expect(costs[0]!.cost).toBeCloseTo(9397 * 0.05 / 1_000_000, 10);
+    expect(await fetchWithJinaReader("https://example.com/a")).toEqual({ type: "page", markdown: `# ${GOOD_PAGE.data.title}\n\n${GOOD_PAGE.data.content}` });
   });
 
   test("the site's own 404 behind a 200 from Jina is a target error with that status", async () => {
@@ -55,21 +45,19 @@ describe("fetchWithJinaReader", () => {
     expect(await fetchWithJinaReader("https://example.com/walled")).toEqual({ type: "challenge" });
   });
 
-  test("a domain Jina refuses to read is one failed step", async () => {
-    answer(451, { code: 451, message: "This domain is excluded from Jina Reader" });
-    const result = await fetchWithJinaReader("https://example.com/excluded");
+  test("an error answer from Jina is one failed step", async () => {
+    answer(422, { code: 422, name: "AssertionFailureError", message: "Unexpected empty file: https://example.com" });
+    const result = await fetchWithJinaReader("https://example.com/empty");
     expect(result.type).toBe("failed");
   });
 
-  test("a used-up balance throws, because a person has to top it up", async () => {
-    answer(402, { code: 402, message: "Insufficient balance" });
-    await expect(fetchWithJinaReader("https://example.com/a")).rejects.toBeInstanceOf(JinaAccountError);
+  test("a container that is not running throws, because a person has to start it", async () => {
+    fetchSpy = spyOn(globalThis, "fetch").mockRejectedValue(Object.assign(new TypeError("Unable to connect"), { code: "ECONNREFUSED" }));
+    await expect(fetchWithJinaReader("https://example.com/a")).rejects.toBeInstanceOf(JinaUnavailableError);
   });
 
-  test("a missing key throws before any request", async () => {
-    delete process.env.JINA_API_KEY;
-    fetchSpy = spyOn(globalThis, "fetch");
-    await expect(fetchWithJinaReader("https://example.com/a")).rejects.toThrow("JINA_API_KEY missing");
-    expect(fetchSpy).not.toHaveBeenCalled();
+  test("a read that times out is one failed step", async () => {
+    fetchSpy = spyOn(globalThis, "fetch").mockRejectedValue(new DOMException("The operation timed out.", "TimeoutError"));
+    expect((await fetchWithJinaReader("https://example.com/slow")).type).toBe("failed");
   });
 });

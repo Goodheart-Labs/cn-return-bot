@@ -1,34 +1,36 @@
 /**
- * The client for Jina Reader (r.jina.ai), a hosted service that fetches a page
- * with its own browsers from its own addresses and returns the text as markdown.
+ * The client for Jina Reader, the open-source page reader of Jina AI. It fetches
+ * a page with curl-impersonate or its own headless Chrome and returns the text
+ * as markdown. We run it in Docker on the services box (ops/cn-jina-reader.service,
+ * GOO-853). It first fetches from the box's own address, and fetches the page's
+ * HTML once more through the residential proxy when that fails.
+ *
  * readPage in readPage.ts asks it for a page only after every step of the free
  * fetch ladder has failed, and for an API answer only after a bot check stopped
- * both our plain request and our headless browser. It runs in the calling
- * service, not in the sandboxed fetcher, because it needs a key.
+ * both our plain request and our headless browser.
  *
- * In the GOO-167 investigation it recovered 230 of the 385 pages our ladder had
- * failed on in two weeks, including about half of the pages behind Cloudflare
- * and DataDome challenges (src/scripts_jim/2026_09_16_unfetchable_sources/).
- *
- * JINA_API_KEY must be set. Jina bills the tokens of the text it returns.
+ * Until GOO-853 we paid for Jina's hosted copy at r.jina.ai. In the GOO-167
+ * investigation that copy recovered 230 of the 385 pages our ladder had failed
+ * on in two weeks (src/scripts_jim/2026_09_16_unfetchable_sources/). The
+ * self-hosted copy was compared with it on the read log of GOO-766
+ * (src/scripts_jim/2026_11_23_self_hosted_jina/).
  */
 
 import type { ApiAnswer } from "../../service/contract";
-import { trackLlmCall } from "../cost-tracking/costTracker";
-import { JINA_READER_USD_PER_MILLION_TOKENS } from "../cost-tracking/pricing";
 
 /** Whether the page reader asks Jina Reader when every free step failed, for
  *  every caller alike: claim checks, reading a post for the queue, minisites
  *  and the walk's listings. Until 2026-11-09 it was an A/B test, jina_fetch,
- *  that was off (GOO-755). Where this is on and Jina is needed, a missing
- *  JINA_API_KEY throws. */
+ *  that was off (GOO-755). */
 export const JINA_FALLBACK = true;
 
-const JINA_READER_URL = "https://r.jina.ai/";
-// Jina renders the page in a browser before it answers, so it needs longer than
-// one of our plain HTTP steps.
+/** cn-jina-reader's port on the services box. On another machine, run the
+ *  same image on this port to read pages through Jina (ops/README.md). */
+const JINA_READER_URL = "http://127.0.0.1:8789/";
+// Jina renders the page in a browser before it answers, and it may fetch the
+// page a second time through the proxy, so it needs longer than one of our
+// plain HTTP steps.
 const JINA_TIMEOUT_MS = 30_000;
-const COST_NAME = "web_fetch.jina_reader";
 
 // Jina answers 200 even when the site behind it refused. It says so in a
 // warning field. "Target URL returned error 404: Not Found" carries the site's
@@ -49,20 +51,18 @@ const BOT_CHECK_STATUSES = new Set([403, 429]);
  *  a copy it fetched earlier, and an API answer changes. */
 const API_HEADERS = { "X-Return-Format": "text", "X-No-Cache": "true" };
 
-// A 401 means the key is wrong and a 402 means the balance is used up. Both
-// need a person to act, so they throw instead of passing as one failed step.
-const ACCOUNT_ERROR_STATUSES = new Set([401, 402]);
-
 export type JinaReaderResult =
   | { type: "page"; markdown: string }
   | { type: "target_error"; status: number }
   | { type: "challenge" }
   | { type: "failed"; status?: number; reason: string };
 
-export class JinaAccountError extends Error {
-  constructor(status: number, body: string) {
-    super(`Jina Reader refused the API key (HTTP ${status}): ${body.slice(0, 200)}`);
-    this.name = "JinaAccountError";
+/** Thrown when nothing answers on Jina's port. Then the container is down,
+ *  and a person has to look, so this is not one failed step of one read. */
+export class JinaUnavailableError extends Error {
+  constructor(cause: unknown) {
+    super(`Jina Reader is not running at ${JINA_READER_URL}`, { cause });
+    this.name = "JinaUnavailableError";
   }
 }
 
@@ -76,7 +76,6 @@ interface JinaData {
   /** The body, when the request asked for the text format. */
   text?: string;
   warning?: string;
-  usage?: { tokens?: number };
 }
 
 type JinaAnswer = { type: "data"; data: JinaData } | { type: "failed"; status?: number; reason: string };
@@ -99,25 +98,19 @@ export async function fetchApiWithJina(address: string): Promise<ApiAnswer> {
 }
 
 async function askJina(target: string, extraHeaders: Record<string, string>): Promise<JinaAnswer> {
-  const key = process.env.JINA_API_KEY;
-  if (!key) throw new Error("JINA_API_KEY missing");
-
   let response: Response;
   try {
     response = await fetch(`${JINA_READER_URL}${target}`, {
-      headers: { Authorization: `Bearer ${key}`, Accept: "application/json", ...extraHeaders },
+      headers: { Accept: "application/json", ...extraHeaders },
       signal: AbortSignal.timeout(JINA_TIMEOUT_MS),
     });
   } catch (err: any) {
+    if (err?.code === "ECONNREFUSED") throw new JinaUnavailableError(err);
     return { type: "failed", reason: err?.message?.slice(0, 200) ?? "network error" };
   }
   const text = await response.text();
-  if (ACCOUNT_ERROR_STATUSES.has(response.status)) throw new JinaAccountError(response.status, text);
   if (!response.ok) return { type: "failed", status: response.status, reason: text.slice(0, 200) };
-
-  const data = (JSON.parse(text) as JinaResponseBody).data ?? {};
-  trackJinaCost(data.usage?.tokens ?? 0);
-  return { type: "data", data };
+  return { type: "data", data: (JSON.parse(text) as JinaResponseBody).data ?? {} };
 }
 
 function interpretJinaData(data: JinaData): JinaReaderResult {
@@ -126,18 +119,4 @@ function interpretJinaData(data: JinaData): JinaReaderResult {
   if (data.warning?.includes(CHALLENGE_WARNING)) return { type: "challenge" };
   const titleLine = data.title ? `# ${data.title}\n\n` : "";
   return { type: "page", markdown: titleLine + (data.content ?? "") };
-}
-
-/** Jina bills every answer it returns, a site's "page not found" page included,
- *  so the cost is recorded before the answer is judged. The tokens are Jina's,
- *  not a model's, so they stay out of the token counts and only the dollars are
- *  recorded. */
-function trackJinaCost(tokens: number): void {
-  trackLlmCall({
-    name: COST_NAME,
-    input_tokens: 0,
-    output_tokens: 0,
-    cost: (tokens / 1_000_000) * JINA_READER_USD_PER_MILLION_TOKENS,
-    tools: [],
-  });
 }

@@ -151,8 +151,3 @@ export function addTokenCost(acc: TokenCost, add: TokenCost): void {
   if (add.cached_tokens !== undefined) acc.cached_tokens = (acc.cached_tokens ?? 0) + add.cached_tokens;
   if (add.cache_write_tokens !== undefined) acc.cache_write_tokens = (acc.cache_write_tokens ?? 0) + add.cache_write_tokens;
 }
-
-
-/** Jina Reader's price for the tokens of the text it returns: $50 buys one
- *  billion tokens (jina.ai/api-dashboard/pricing, September 2026). */
-export const JINA_READER_USD_PER_MILLION_TOKENS = 0.05;
