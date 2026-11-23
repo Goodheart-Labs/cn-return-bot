@@ -129,4 +129,5 @@ def score(name: str, ex: pd.DataFrame, pred: np.ndarray) -> None:
     print(f"  {name:30s} top 2% {np.mean(top2):.0%} [{np.percentile(boots, 2.5):.0%}-{np.percentile(boots, 97.5):.0%}]  top 10% {np.mean(top10):.0%}  rank corr {np.mean(rho):.3f}")
 
 
-main()
+if __name__ == "__main__":
+    main()
