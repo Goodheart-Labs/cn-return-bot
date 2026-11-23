@@ -1,7 +1,7 @@
 /* An X tweet the X run handed to Claude (GOO-527, see
  * src/pipeline/orchestration/claudeTweets.ts). The X run leaves the tweet's
  * pipeline_runs row waiting at claude_waiting. The runner screens the tweet's
- * images for known abuse images, starts one Claude, and the Claude answers with `claude-notes x-note`
+ * images, starts one Claude, and the Claude answers with `claude-notes x-note`
  * or `x-no-note`. The next X run rates a queued note and submits it. */
 
 import { CLAUDE_CODE_BOT, CLAUDE_TWEET_MAX_WAIT_MINUTES } from "../../pipeline/orchestration/claudeTweets";
@@ -31,7 +31,7 @@ const sweptAt = (tweet: XTweet) => Date.parse(tweet.createdAt) + CLAUDE_TWEET_MA
 async function passesScreen(tweet: XTweet): Promise<boolean> {
   let screen;
   try {
-    screen = await screenImages(tweet.input, { sexualContent: false });
+    screen = await screenImages(tweet.input);
   } catch (err) {
     await failXTweet(tweet.runId, `The image screen could not run: ${(err as Error).message}`, "image_screen_failed");
     throw err;

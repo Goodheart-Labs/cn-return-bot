@@ -19,62 +19,45 @@ describe("imageLinksIn", () => {
 
 describe("screenImages", () => {
   const realFetch = globalThis.fetch;
-  /** One image link; the image host answers with a PNG, and each service with what the test says. */
-  function fakeNetwork(answers: { arachnid: unknown; arachnidStatus?: number; openai?: unknown }) {
+  /** One image link; the image host answers with a PNG, and Arachnid with what the test says. */
+  function fakeNetwork(answers: { arachnid: unknown; arachnidStatus?: number }) {
     process.env.ARACHNID_SHIELD_USERNAME = "user";
     process.env.ARACHNID_SHIELD_PASSWORD = "password";
-    process.env.OPENAI_API_KEY = "key";
     const calls: string[] = [];
     globalThis.fetch = (async (input: string | URL | Request) => {
       const url = String(input);
       calls.push(url);
       if (url.startsWith("https://shield.projectarachnid.com")) return Response.json(answers.arachnid, { status: answers.arachnidStatus ?? 200 });
-      if (url.startsWith("https://api.openai.com")) return Response.json(answers.openai);
       return new Response(new Uint8Array([137, 80, 78, 71]), { headers: { "content-type": "image/png" } });
     }) as typeof fetch;
     return calls;
   }
   const text = "A post with https://example.com/photo.png in it";
   const noMatch = { classification: "no-known-match", match_type: null };
-  const sexual = (score: number) => ({ results: [{ category_scores: { sexual: score } }] });
 
-  test("a known image on Arachnid's list stops the job before OpenAI sees it", async () => {
-    const calls = fakeNetwork({ arachnid: { classification: "csam", match_type: "near" } });
-    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "flagged", reason: "Arachnid Shield: csam (near match)" });
-    expect(calls.some((url) => url.includes("openai"))).toBe(false);
+  test("a known image on Arachnid's list stops the job", async () => {
+    fakeNetwork({ arachnid: { classification: "csam", match_type: "near" } });
+    expect(await screenImages(text)).toEqual({ kind: "flagged", reason: "Arachnid Shield: csam (near match)" });
     globalThis.fetch = realFetch;
   });
 
-  test("an image OpenAI scores as sexual stops the job", async () => {
-    fakeNetwork({ arachnid: noMatch, openai: sexual(0.4) });
-    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "flagged", reason: "OpenAI moderation: sexual score 0.40" });
-    globalThis.fetch = realFetch;
-  });
-
-  test("an image both checks pass is clear", async () => {
-    fakeNetwork({ arachnid: noMatch, openai: sexual(0.01) });
-    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "clear", screened: 1, passedOver: 0 });
-    globalThis.fetch = realFetch;
-  });
-
-  test("without the sexual content check, OpenAI is never asked", async () => {
-    const calls = fakeNetwork({ arachnid: noMatch, openai: sexual(0.9) });
-    expect(await screenImages(text, { sexualContent: false })).toEqual({ kind: "clear", screened: 1, passedOver: 0 });
-    expect(calls.some((url) => url.includes("openai"))).toBe(false);
+  test("an image Arachnid does not know is clear", async () => {
+    fakeNetwork({ arachnid: noMatch });
+    expect(await screenImages(text)).toEqual({ kind: "clear", screened: 1, passedOver: 0 });
     globalThis.fetch = realFetch;
   });
 
   test("a host without the Arachnid login screens nothing and calls no service", async () => {
-    const calls = fakeNetwork({ arachnid: noMatch, openai: sexual(0.9) });
+    const calls = fakeNetwork({ arachnid: noMatch });
     delete process.env.ARACHNID_SHIELD_USERNAME;
-    expect(await screenImages(text, { sexualContent: true })).toEqual({ kind: "off" });
+    expect(await screenImages(text)).toEqual({ kind: "off" });
     expect(calls).toEqual([]);
     globalThis.fetch = realFetch;
   });
 
   test("a failing Arachnid stops the job instead of letting it through", async () => {
     fakeNetwork({ arachnid: { detail: "down" }, arachnidStatus: 503 });
-    await expect(screenImages(text, { sexualContent: true })).rejects.toThrow("Arachnid Shield answered 503");
+    await expect(screenImages(text)).rejects.toThrow("Arachnid Shield answered 503");
     globalThis.fetch = realFetch;
   });
 });

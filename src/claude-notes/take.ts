@@ -39,7 +39,7 @@ export async function take(itemId: string): Promise<Take> {
   const requests = await openPassageRequests(itemId);
   if (!requests.length && (await nathanNotedItem(itemId))) return { kind: "skipped", reason: NATHAN_SKIP_REASON };
   const item = await readItem(itemId);
-  const screen = await screenImages(item.full_text ?? "", { sexualContent: true });
+  const screen = await screenImages(item.full_text ?? "");
   if (screen.kind === "flagged") {
     // The flag keeps every notewriter away from the post, and fails the
     // readers' requests before finishing the reservation could answer them.
