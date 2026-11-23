@@ -48,8 +48,10 @@ const MIN_CLAIM_OPINION_HIGH_SHARE = 0.3;
 const MAX_CLAIM_OPINION_LOW_SHARE = 0.3;
 const MIN_URL_VALIDITY_HIGH_SHARE = 0.95;
 
+/** X writes the buckets capitalised, for example "High", while its guide
+ *  writes them in lowercase, so they are compared in lowercase. */
 const bucket = (note: WrittenNote, evaluator: string) =>
-  note.test_result?.evaluation_outcome?.find((outcome) => outcome.evaluator_type === evaluator)?.evaluator_score_bucket;
+  note.test_result?.evaluation_outcome?.find((outcome) => outcome.evaluator_type === evaluator)?.evaluator_score_bucket.toLowerCase();
 
 /** X's admission rule applied to the given test notes, which should be the 50
  *  most recent. Shares are taken over all of them, so an unscored note

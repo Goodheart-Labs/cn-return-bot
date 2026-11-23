@@ -25,6 +25,10 @@ test("one low ClaimOpinion too many, or three broken links, miss the bar", () =>
   expect(summariseTestNotes([...repeat(47, () => note("high")), ...repeat(3, () => note("high", "low"))]).meetsCriteria).toBe(false);
 });
 
+test("reads the buckets as X writes them, capitalised", () => {
+  expect(summariseTestNotes([note("High", "High"), note("Low", "High"), note("Medium", "High")])).toMatchObject({ claimOpinionHigh: 1, claimOpinionLow: 1, urlValidityHigh: 3 });
+});
+
 test("unscored notes count as neither high nor low", () => {
   expect(summariseTestNotes([...repeat(20, () => note("high")), ...repeat(30, () => note(null))])).toMatchObject({ unscored: 30, meetsCriteria: false });
 });
