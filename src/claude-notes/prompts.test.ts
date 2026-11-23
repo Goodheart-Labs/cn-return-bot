@@ -18,6 +18,20 @@ describe("writer prompts never ask for images", () => {
   });
 });
 
+describe("the WSDM Cup account's tweet prompt", () => {
+  test("asks for source details and a Haiku check of each source", () => {
+    const p = tweetPrompt({ tweet: { ...tweet, xAccount: "wsdm" }, runDir: "/r" });
+    expect(p).toContain('"sources": [{');
+    expect(p).toContain('model "haiku"');
+    expect(p).toContain("If you use subagents for anything else");
+  });
+  test("the first account's prompt is unchanged", () => {
+    const p = tweetPrompt({ tweet: { ...tweet, xAccount: "stilt" }, runDir: "/r" });
+    expect(p).not.toContain('"sources"');
+    expect(p).not.toContain("haiku");
+  });
+});
+
 describe("a post that is checked again", () => {
   const prompt = (asked: any) => postPrompt({ item, dir: "/d", runDir: "/r", picks: {}, asked });
   const long = "x".repeat(300);

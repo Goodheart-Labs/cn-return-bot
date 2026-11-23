@@ -10,7 +10,7 @@ import type { QueueItem } from "./store";
 import type { AskedPassages } from "./take";
 import { tweetHasExamples } from "./tweetArms";
 import type { CreatorToLookUp } from "./xAccounts";
-import { X_NOTE_MAX_CHARS, type XTweet } from "./xTweets";
+import { ACCOUNTS_WITH_SOURCE_DETAILS, X_NOTE_MAX_CHARS, type XTweet } from "./xTweets";
 
 export const REPO = path.resolve(import.meta.dir, "../..");
 /** Built from prod by `claude-notes examples`, and rebuilt by the runner once
@@ -132,16 +132,22 @@ export const tweetInputSection = (input: string) => `The post, as our pipeline s
 
 ${input}`;
 
+/** For an account whose notes name their sources (GOO-851): a Haiku subagent
+ *  checks each source, as X's link check and the raters would. */
+const SOURCE_CHECK = `Before you use a source, check it with a Haiku subagent: the Agent tool with subagent_type "general-purpose" and model "haiku", one per source. Give it the note, the source's address and the rule on images above, and ask it to download the page with curl and answer three things: whether the page answers with HTTP status 200, because X rejects a note whose links do not; whether the page supports the note; and if it does, a quote of at most 2 sentences copied exactly from the page, which it found in the download with grep -F, and what the quote supports. Use only sources a Haiku subagent confirmed, and put its quote and explanation in note.json.`;
+
 export function tweetPrompt(params: { tweet: XTweet; runDir: string }): string {
   const { tweet, runDir } = params;
   const withExamples = tweetHasExamples(tweet.picks);
+  const withSourceDetails = ACCOUNTS_WITH_SOURCE_DETAILS.includes(tweet.xAccount);
+  const sourcesField = withSourceDetails ? `, "sources": [{ "url": "<a link of the note, exactly as in the note>", "quote": "<at most 2 sentences copied exactly from the page>", "explanation": "<what it supports>" }]` : "";
   return `${tweetTask({ modelName: "Claude", examplesAt: withExamples ? EXAMPLES_PLACE : null, picks: tweet.picks })}
 
 ${NO_IMAGES_TWEET} Your run folder is ${runDir}; write every file there.
 
-If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>" } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link. If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\` from the same folder. Stop once one of the two has succeeded.
-
-If you use subagents, ${subagentRule("submit the note", withExamples)}
+If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>"${sourcesField} } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link.${withSourceDetails ? " Every link in the note must be one of the sources." : ""} If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\` from the same folder. Stop once one of the two has succeeded.
+${withSourceDetails ? `\n${SOURCE_CHECK}\n` : ""}
+If you use subagents${withSourceDetails ? " for anything else" : ""}, ${subagentRule("submit the note", withExamples)}
 
 ${tweetInputSection(tweet.input)}`;
 }
