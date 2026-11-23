@@ -28,11 +28,11 @@ SERVICE_USER="cnbot"
 # A deploy runs the copy of this script that was installed before it. So a
 # unit added to this list is first installed by the deploy after the one that
 # adds it. A new unit must be installed by hand once (cp, daemon-reload,
-# enable --now), as cn-fetch was on 2026-09-28, cn-walk for GOO-791 and
-# cn-feed-views for GOO-834.
+# enable --now), as cn-fetch was on 2026-09-28, cn-walk for GOO-791,
+# cn-feed-views for GOO-834 and cn-x-watch for GOO-851.
 # cn-site-checks runs once a night from its timer, which is installed by hand
 # too. A deploy during its run restarts it on the new code.
-UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-feed-views)
+UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-feed-views cn-x-watch)
 
 # When yt-dlp was last upgraded. The file's modification time is the record.
 YT_DLP_UPGRADE_STAMP="/var/lib/cn-autodeploy/yt-dlp-upgraded"

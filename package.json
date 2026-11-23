@@ -110,6 +110,8 @@
     "everything-enqueue": "bun run src/everything/enqueue.ts",
     "cn-walk": "bun run src/walk/main.ts",
     "cn-feed-views": "bun run src/feed-views/main.ts",
+    "cn-x-watch": "bun run src/x-watch/main.ts",
+    "x-watch-test-notes": "bun run src/x-watch/testNotes.ts",
     "everything-consume-requests": "bun run src/everything/consumeRequests.ts",
     "everything-refresh-avatars": "bun run src/everything/projectAvatars.ts",
     "everything-prioritize": "bun run src/everything/prioritize.ts",
