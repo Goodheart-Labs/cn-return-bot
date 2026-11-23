@@ -33,13 +33,15 @@ language sql stable set search_path = public as $$
      group by 1
     having count(distinct v.reader_hash) >= least(coalesce(p_text_readers, p_youtube_readers), coalesce(p_youtube_readers, p_text_readers))
   ), waiting as (
-    select i.id as item_id, o.page_url, o.readers,
+    -- One item per page: everything_demand_queued holds a page once.
+    select distinct on (o.page_url) i.id as item_id, o.page_url, o.readers,
            case when i.source = 'youtube' then 'youtube' else 'text' end as kind
       from everything_items i
       join opened o on o.page_url = everything_visit_page(i.url)
      where i.list_open and i.status = 'queued' and i.first_checked_at is null
        and i.demanded_at is null and not i.list_requested
        and not exists (select 1 from everything_demand_queued q where q.page_url = o.page_url)
+     order by o.page_url, i.created_at
   ), wanted as (
     select w.*, row_number() over (partition by w.kind order by w.readers desc, w.page_url) as place
       from waiting w

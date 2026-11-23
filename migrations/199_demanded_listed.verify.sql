@@ -12,7 +12,7 @@ select
         or i.demanded_at is not null or i.list_requested or d.readers < 2
         or exists (select 1 from everything_demand_queued q where q.page_url = d.page_url)
   ) as lists_only_waiting_posts_over_the_bar,
-  (select count(*) = count(distinct item_id) from everything_demanded_listed(2, 2, 1000)) as lists_each_post_once,
+  (select count(*) = count(distinct item_id) and count(*) = count(distinct page_url) from everything_demanded_listed(2, 2, 1000)) as lists_each_post_and_page_once,
   -- A null bar switches that kind off.
   not exists (select 1 from everything_demanded_listed(null, 2, 1000) where kind = 'text') as text_off_lists_no_text,
   not exists (select 1 from everything_demanded_listed(2, null, 1000) where kind = 'youtube') as youtube_off_lists_no_videos;
