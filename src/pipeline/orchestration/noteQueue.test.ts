@@ -77,7 +77,7 @@ describe("submitCandidates with the queue on", () => {
     const submit = spyOn(submission, "submitNoteForTweet").mockResolvedValue({ status: "submitted", noteId: "n1" });
     const { logger, completePipelineRun } = loggerMock();
     const old = candidate("old", [0.9, 0], "2026-09-21T01:00:00Z");
-    old.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
+    old.post.created_at = new Date(now - 49 * 3_600_000).toISOString();
     expect(await submitCandidates([old], logger, false, options)).toBe(0);
     expect(submit).not.toHaveBeenCalled();
     expect(completePipelineRun.mock.calls[0]).toEqual(["run-old", { outcome: "rejected", outcome_reason: "stale_at_submit", final_stage: "submission" }] as any);
@@ -138,7 +138,7 @@ describe("submitCandidates with the queue on", () => {
 describe("queue rows", () => {
   const run: QueuedRun = {
     id: "r1", tweet_id: "2101082614044258712", note_text: "Note text https://example.com",
-    source_url: "https://example.com", bot_name: "simple-bot", created_at: "2026-09-21T08:00:00Z", velocity: 12_000, evaluationScore: 0.4,
+    source_url: "https://example.com", bot_name: "simple-bot", created_at: "2026-09-21T08:00:00Z", velocity: 12_000, viewsToCome: 90_000, evaluationScore: 0.4,
     rating: { pHelpful: 0.3, pNotHelpful: 0.05, model: "m", cost: 0.002 },
     tweet: {
       tweet_id: "2101082614044258712", author_id: "9", author_name: "A", author_description: null, author_followers: 5,
@@ -151,7 +151,7 @@ describe("queue rows", () => {
     const c = candidateFromQueuedRun(run)!;
     expect(c.post).toMatchObject({ id: run.tweet_id, text: "post", created_at: "2026-09-21T02:00:00Z", author_followers: 5 });
     expect(c.tweetResult).toMatchObject({ pipelineRunId: "r1", noteText: run.note_text, outcome: "candidate", evaluationScore: 0.4 });
-    expect(c).toMatchObject({ velocity: 12_000, queuedAt: run.created_at, sourceUrl: "https://example.com" });
+    expect(c).toMatchObject({ velocity: 12_000, viewsToCome: 90_000, queuedAt: run.created_at, sourceUrl: "https://example.com" });
   });
 
   test("a row without note text is dropped; a missing tweets row still submits", () => {
@@ -171,7 +171,10 @@ describe("queue rows", () => {
 test("submittableQueued keeps only notes in time, above the floor, and not below the bar", () => {
   const ok = candidate("ok", [0.5, 0.05], "x"); const low = candidate("low", [0.1, 0.05], "x"); const unrated = candidate("unrated", null, "x");
   const slow = candidate("slow", [0.6, 0.05], "x"); slow.velocity = 8_000;
-  const stale = candidate("stale", [0.6, 0.05], "x"); stale.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
-  expect(submittableQueued([ok, low, unrated, slow, stale], 0.2).map((c) => c.post.id)).toEqual(["ok", "unrated"]);
+  // Judged on its prediction, which clears the floor, not on its slow velocity.
+  const predictedOk = candidate("predictedOk", [0.6, 0.05], "x"); predictedOk.velocity = 8_000; predictedOk.viewsToCome = 500_000;
+  const predictedLow = candidate("predictedLow", [0.6, 0.05], "x"); predictedLow.viewsToCome = 20_000;
+  const stale = candidate("stale", [0.6, 0.05], "x"); stale.post.created_at = new Date(now - 49 * 3_600_000).toISOString();
+  expect(submittableQueued([ok, low, unrated, slow, predictedOk, predictedLow, stale], 0.2).map((c) => c.post.id)).toEqual(["ok", "unrated", "predictedOk"]);
   expect(submittableQueued([ok, low], null).map((c) => c.post.id)).toEqual(["ok", "low"]);
 });

@@ -1,10 +1,14 @@
 import type { Post } from "../../api/fetchEligiblePosts";
 import { velocityPerHour } from "../utils/velocity";
+import { VIEWS_TO_COME_FLOOR } from "../utils/viewsToCome";
 
 export interface RankFeatures {
   hasMedia: boolean;
   authorFollowers: number | null;
   velocityPerHour: number | null;
+  /** Predicted views still to come, frozen at fetch (viewsToCome.ts). Null
+   *  when the run had no feed view recorder readings for the post. */
+  viewsToCome: number | null;
   ageHoursAtFetch: number | null;
   tierRank: number | null;
 }
@@ -12,6 +16,7 @@ export interface RankFeatures {
 export function featuresFromPost(
   post: Post,
   velocity: number | null | undefined,
+  viewsToCome: number | null | undefined,
   tierRank: number | null,
   asOfMs: number = Date.now(),
 ): RankFeatures {
@@ -21,6 +26,7 @@ export function featuresFromPost(
     hasMedia: Array.isArray(post.media) && post.media.some((m) => m?.type === "photo" || m?.type === "video"),
     authorFollowers: post.author_followers ?? null,
     velocityPerHour: velocity ?? velocityPerHour(post, asOfMs),
+    viewsToCome: viewsToCome ?? null,
     ageHoursAtFetch: Number.isFinite(createdMs) ? (asOfMs - createdMs) / 3_600_000 : null,
     tierRank,
   };
@@ -44,6 +50,7 @@ export function featuresFromTweetRow(row: TweetRow): RankFeatures {
     hasMedia: !!(row.has_video || row.has_photo),
     authorFollowers: row.author_followers,
     velocityPerHour: ok ? velocityPerHour(fake, seenMs) : null,
+    viewsToCome: null,
     ageHoursAtFetch: ok ? (seenMs - postedMs) / 3_600_000 : null,
     tierRank: null,
   };
@@ -64,12 +71,16 @@ export interface Flags {
   freshWindow: boolean;
 }
 
-// Unknown values count as passing, matching the fail-open velocity floor.
+// Unknown values count as passing, matching the fail-open velocity floor. A post
+// with a prediction is fast when it clears the floor on predicted views still
+// to come; one without falls back to the velocity cut.
 export function flagsOf(f: RankFeatures, cuts: FlagCuts): Flags {
   return {
     media: f.hasMedia,
     smallAuthor: f.authorFollowers === null || f.authorFollowers < cuts.followerCeiling,
-    fast: f.velocityPerHour === null || f.velocityPerHour >= cuts.velocityFloorPerHour,
+    fast: f.viewsToCome !== null
+      ? f.viewsToCome >= VIEWS_TO_COME_FLOOR
+      : f.velocityPerHour === null || f.velocityPerHour >= cuts.velocityFloorPerHour,
     freshWindow:
       f.ageHoursAtFetch === null || (f.ageHoursAtFetch >= cuts.ageMinHours && f.ageHoursAtFetch < cuts.ageMaxHours),
   };

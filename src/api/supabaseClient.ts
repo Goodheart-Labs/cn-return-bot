@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllRows as fetchAllRowsShared, fetchInBatches } from "../everything-core/paging";
 import type { Post } from "./fetchEligiblePosts";
+import type { ViewReading } from "../pipeline/utils/viewsToCome";
 import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
 import { raterPriority, type NoteRating } from "../pipeline/score/noteRater";
@@ -197,6 +198,12 @@ function postToTweetRow(post: Post) {
     media_count: post.media?.length ?? 0,
     video_duration_ms: videoMedia?.duration_ms,
   };
+}
+
+/** One walk of the feed view recorder (cn-feed-views), as its start and end. */
+export interface RecorderWalk {
+  startedAt: string;
+  finishedAt: string;
 }
 
 export class SupabaseLogger {
@@ -927,7 +934,7 @@ export class SupabaseLogger {
     const runs = (await this.fetchAllRows<Record<string, unknown> & { id: string; tweet_id: string; created_at: string }>(
       (client) => client
         .from("pipeline_runs")
-        .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour")
+        .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour, viewsToCome:logs->ranking->features->viewsToCome")
         .eq("x_account", currentXAccount())
         .eq("outcome", "candidate")
         .eq("final_stage", "candidate")
@@ -987,6 +994,7 @@ export class SupabaseLogger {
       bot_name: r.bot_name as string | null,
       created_at: r.created_at as string,
       velocity: typeof r.velocity === "number" ? r.velocity : null,
+      viewsToCome: typeof r.viewsToCome === "number" ? r.viewsToCome : null,
       evaluationScore: evalByRun.get(r.id as string) ?? null,
       tweet: tweetById.get(r.tweet_id as string) ?? null,
       rating: ratingByRun.get(r.id as string) ?? null,
@@ -1137,6 +1145,46 @@ export class SupabaseLogger {
     );
     const checkedByThisAccount = new Set(own.map((r) => r.tweet_id));
     return checkedByOthers.filter((tweetId) => !checkedByThisAccount.has(tweetId));
+  }
+
+  // ============================================
+  // Feed view recorder readings (GOO-863)
+  // ============================================
+
+  /**
+   * The newest walk of the feed view recorder that started between `from` and
+   * `to` and read part of the XL tier, or null when there is none. Its readings
+   * are the earlier reading for predicted views still to come.
+   */
+  async findRecorderWalk(from: Date, to: Date): Promise<RecorderWalk | null> {
+    const { data, error } = await this.client.from("feed_view_walks")
+      .select("started_at, finished_at")
+      .gte("started_at", from.toISOString())
+      .lte("started_at", to.toISOString())
+      .gt("xl_posts", 0)
+      .order("started_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return data ? { startedAt: data.started_at, finishedAt: data.finished_at } : null;
+  }
+
+  /** The view counts the given walk read for the given tweets. A tweet the walk
+   *  did not see is missing from the map. */
+  async getRecordedViews(tweetIds: string[], walk: RecorderWalk): Promise<Map<string, ViewReading>> {
+    // tweet_id is a bigint, which JSON would round, so it is read as text.
+    const rows = await fetchInBatches<{ tweet_id: string; impressions: number | null; observed_at: string }>(
+      (chunk) => this.client.from("feed_tweet_views").select("tweet_id::text, impressions, observed_at")
+        .gte("observed_at", walk.startedAt)
+        .lte("observed_at", walk.finishedAt)
+        .in("tweet_id", chunk),
+      tweetIds,
+      "tweet_id",
+      { label: "getRecordedViews" },
+    );
+    // A reading without a count is no reading: counting it as 0 views would make
+    // the post look as if it had gained all its views in 10 minutes.
+    return new Map(rows.filter((r) => r.impressions !== null).map((r) => [r.tweet_id, { impressions: Number(r.impressions), observedAtMs: Date.parse(r.observed_at) }]));
   }
 
   // ============================================

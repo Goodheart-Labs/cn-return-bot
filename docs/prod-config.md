@@ -192,7 +192,7 @@ so the live list is recorded here (checked on 2026-10-01):
 
 | Job name | Timetable | What it does | Created by |
 |---|---|---|---|
-| `dispatch-create-notes` | `18,48 * * * *` | Starts the Create Notes Routine workflow twice an hour. | [migrations/047](../migrations/047_schedule_create_notes_dispatch.sql) |
+| `dispatch-create-notes` | removed | Started the Create Notes Routine workflow twice an hour until GOO-865, when the X note writer moved into cn-feed-views on the services box. | [migrations/047](../migrations/047_schedule_create_notes_dispatch.sql), removed by [migrations/198](../migrations/198_stop_create_notes_dispatch.sql) |
 | `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. Since 2026-11-19 it does so only while the notewriter `pipeline` takes feed posts, which it has not since 2026-10-21, so it starts nothing (GOO-791). | [migrations/098](../migrations/098_feed_alarm.sql), [migrations/185](../migrations/185_feed_run_only_for_pipeline.sql) |
 | `cleanup-cron-history` | `17 3 * * *` | Deletes pg_cron's own history older than 7 days. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `refresh-review-dashboard-base` | `0 * * * *` | Refreshes the review dashboard's cached table. | [migrations/080](../migrations/080_slow_review_dashboard_refresh.sql) |

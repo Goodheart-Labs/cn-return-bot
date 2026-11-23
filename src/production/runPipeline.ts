@@ -72,7 +72,7 @@ import { generatePangramCandidates } from "../pipeline/pangram-monitoring/genera
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
-import { computeMaxPosts, type RecentChecks } from "../pipeline/orchestration/computeMaxPosts";
+import { computeMaxPosts, fetchRecentChecks, X_DAILY_SPEND_CAP_USD } from "../pipeline/orchestration/computeMaxPosts";
 import { startOfUtcDay } from "../pipeline/utils/utcDay";
 import { buildRunName, initOutputFolder, resultToCsvRow, type OutputFolder } from "../local/outputWriter";
 import { autoOpenInDashboard } from "../local/dashboardAutoOpen";
@@ -80,9 +80,9 @@ import { getForcedPicks, withForcedPicks } from "../pipeline/ab-testing/abTests"
 import { CLAUDE_TWEET_MAX_WAIT_MINUTES, PIPELINE_BOT, waitForClaudeTweets } from "../pipeline/orchestration/claudeTweets";
 import { claudeUnavailableReason } from "../claude-notes/xShare";
 import { activeScorer, pickRankingPolicy } from "../pipeline/ranking/policy";
-import { barEnabled, barFor, estimateWindow, EXPLORE_SHARE, type Window } from "../pipeline/capacity/window";
+import { barEnabled, barFor, estimateWindow, type Window } from "../pipeline/capacity/window";
 import { automaticGenerationPreflight, type SubmissionCapacity } from "../pipeline/capacity/submissionReserve";
-import { loadNoteQueue, mergeWithQueue, noteQueueEnabled, submittableQueued } from "../pipeline/orchestration/noteQueue";
+import { loadNoteQueue, mergeWithQueue, noteQueueEnabled, shouldExploreFirst, submittableQueued } from "../pipeline/orchestration/noteQueue";
 import { raterBar } from "../pipeline/score/raterBar";
 import { syncAbTests } from "../pipeline/ab-testing/syncAbTests";
 
@@ -156,13 +156,6 @@ const EST_WALL_MS_PER_POST = 1 * 60 * 1000;
 // the pre-pass leaves, which this floor keeps at ~15 of the 22 minutes.
 const MISINFO_PROCESSING_BUDGET_MS = 7 * 60 * 1000;
 
-// The X bot may spend at most this much on LLM calls per UTC day (Jim,
-// 2026-11-04, GOO-698). Once the day's checks have cost this much, a run checks
-// no new tweets until midnight UTC. It still submits the notes that wait in the
-// note queue, because that costs nothing. The check happens at the start of a
-// run, so the last run of a day can go over by what one run costs, about $2 to $3.
-const X_DAILY_SPEND_CAP_USD = 30;
-
 /** The tweets are checked by the claim-check service, so a run without a
  *  healthy service can only burn its dispatch slot. Failing here makes a dead
  *  or wedged machine show up as a red run, which is the only monitoring the
@@ -175,19 +168,6 @@ async function assertCheckServiceHealthy(): Promise<void> {
   if (queueIsStuck(health)) {
     throw new Error("The claim-check service is stuck. Failing the run so this is seen.");
   }
-}
-
-/** The window over which the X run measures how many of its checks end in a note. */
-const CHECKS_SAMPLE_HOURS = 32;
-/** A check whose note was submitted, or waits in the queue to be. */
-const NOTED_OUTCOMES = ["candidate", "submitted"];
-
-async function fetchRecentChecks(logger: SupabaseLogger): Promise<RecentChecks> {
-  const [checked, noted] = await Promise.all([
-    logger.countRecentPipelineRuns(CHECKS_SAMPLE_HOURS),
-    logger.countRecentPipelineRunsByOutcomes(CHECKS_SAMPLE_HOURS, NOTED_OUTCOMES),
-  ]);
-  return { checked, noted };
 }
 
 async function main() {
@@ -246,19 +226,7 @@ async function main() {
       }
       raterBarValue = raterBar();
       console.log(`[raterBar] a note goes out when its calibrated helpful minus not-helpful chance is at least ${raterBarValue === null ? "(no bar)" : raterBarValue}`);
-      // Exploration is paced over the day: the drawn note goes ahead of the
-      // above-bar ones only while explored notes are under their share of
-      // what went out, and never fewer than one a day.
-      try {
-        const [explored, sent] = await Promise.all([
-          supabaseLogger!.countRankingDecisions(["explored"], 24),
-          supabaseLogger!.countRankingDecisions(["submitted", "explored"], 24),
-        ]);
-        exploreFirst = explored < Math.max(1, EXPLORE_SHARE * sent);
-        console.log(`[raterBar] explored ${explored} of ${sent} sent in the last 24h; the exploration slice goes ${exploreFirst ? "first" : "last"} this run`);
-      } catch (err) {
-        console.warn("[raterBar] could not count recent decisions; the exploration slice goes last:", err);
-      }
+      exploreFirst = await shouldExploreFirst(supabaseLogger!);
     }
 
     // The queued notes that would actually go out fill X's room before any new tweet is checked.
