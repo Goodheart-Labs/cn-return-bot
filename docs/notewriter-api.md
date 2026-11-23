@@ -15,7 +15,7 @@ The list's order:
 3. Then posts of creators someone gave priority, then higher creator score: how many different readers a creator's posts get.
 4. Then newer posts first.
 
-A listing shows the posts of the last 14 days, and every post a reader asked about. A notewriter lists a page of posts, picks one, and reserves it. Reserving says how many reservations may already count: `at_most = 1` means "only if I am first", `at_most = 2` means "first or second is fine". The database counts under a lock, so two notewriters can never both be first. Then the notewriter posts its notes on the reservation and finishes it, or fails it.
+A listing shows the posts dated today or yesterday, and every post a reader asked about. A notewriter lists a page of posts, picks one, and reserves it. Reserving says how many reservations may already count: `at_most = 1` means "only if I am first", `at_most = 2` means "first or second is fine". The database counts under a lock, so two notewriters can never both be first. Then the notewriter posts its notes on the reservation and finishes it, or fails it.
 
 ## What you need
 
