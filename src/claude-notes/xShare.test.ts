@@ -25,33 +25,40 @@ function snapshot(overrides: Partial<XShareSnapshot> & { weekly?: number } = {})
 
 describe("computeXShare", () => {
   test("splits the week's usage by the cost of the runs", () => {
-    const share = computeXShare(snapshot());
-    expect(share).toEqual({ kind: "measured", usedPercent: 4, allowedPercent: 15 });
+    const share = computeXShare(snapshot(), "stilt");
+    expect(share).toEqual({ kind: "measured", account: "stilt", usedPercent: 4, allowedPercent: 15 });
     expect(xShareProblem(share)).toBeNull();
   });
 
   test("splits only the usage that rose since costs were first recorded", () => {
-    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }))).toEqual({ kind: "measured", usedPercent: 1, allowedPercent: 15 });
+    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }), "stilt")).toEqual({ kind: "measured", account: "stilt", usedPercent: 1, allowedPercent: 15 });
   });
 
   test("is unavailable once X used more than its allowance so far", () => {
-    expect(xShareProblem(computeXShare(snapshot({ runs: costs(40, 60) })))).toContain("X has used 16.00%");
+    expect(xShareProblem(computeXShare(snapshot({ runs: costs(40, 60) }), "stilt"))).toContain("X account stilt has used 16.00%");
+  });
+
+  test("counts each account's runs only against its own share", () => {
+    const runs = [...costs(10, 80), { tags: ["x-wsdm", "tweet"], apiCostUsd: 10 }];
+    expect(computeXShare(snapshot({ runs }), "stilt")).toMatchObject({ usedPercent: 4, allowedPercent: 15 });
+    expect(computeXShare(snapshot({ runs }), "wsdm")).toMatchObject({ usedPercent: 4, allowedPercent: 15 });
+    expect(computeXShare(snapshot({ runs: costs(10, 90) }), "wsdm")).toMatchObject({ usedPercent: 0 });
   });
 
   test("lets X start right after the reset, before any run has a cost", () => {
     const justReset = snapshot({ weekly: 0, runs: [] });
     justReset.latest!.weeklyResetsAt = new Date(now.getTime() + 167 * HOUR);
-    expect(xShareProblem(computeXShare(justReset))).toBeNull();
+    expect(xShareProblem(computeXShare(justReset, "stilt"))).toBeNull();
   });
 
   test("is unavailable when the runner stopped reporting", () => {
     const stale = snapshot();
     stale.latest!.at = new Date(now.getTime() - 31 * 60_000);
-    expect(computeXShare(stale).kind).toBe("runner_down");
-    expect(computeXShare(snapshot({ latest: null })).kind).toBe("runner_down");
+    expect(computeXShare(stale, "stilt").kind).toBe("runner_down");
+    expect(computeXShare(snapshot({ latest: null }), "stilt").kind).toBe("runner_down");
   });
 
   test("is unavailable when the runner would not start a Claude", () => {
-    expect(computeXShare(snapshot({ weekly: MAX_WEEKLY_USAGE_PERCENT })).kind).toBe("runner_down");
+    expect(computeXShare(snapshot({ weekly: MAX_WEEKLY_USAGE_PERCENT }), "stilt").kind).toBe("runner_down");
   });
 });

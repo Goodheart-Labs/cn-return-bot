@@ -440,7 +440,7 @@ backup of it.
 
 ## X developer apps
 
-Two separate X apps exist, in X's developer portal.
+Three separate X apps exist, in X's developer portal.
 
 1. **The notewriter app.** It acts as the bot's notewriter account to read
    posts, submit notes and read their ratings. Its four credentials are the
@@ -448,6 +448,14 @@ Two separate X apps exist, in X's developer portal.
    `X_ACCESS_TOKEN_SECRET`, in GitHub and on the services machine. The code
    that signs requests with them is
    [src/api/getOAuthToken.ts](../src/api/getOAuthToken.ts).
+1. **The WSDM Cup notewriter app** (GOO-851, 2026-11-23). It acts as the
+   second notewriter account, which `cn-x-watch` writes for
+   ([src/x-watch/main.ts](../src/x-watch/main.ts)). Its four credentials are
+   `X_WSDM_API_KEY`, `X_WSDM_API_KEY_SECRET`, `X_WSDM_ACCESS_TOKEN` and
+   `X_WSDM_ACCESS_TOKEN_SECRET`, only in the services machine's
+   `service.env`. Its app is connected only to X's Community Notes package,
+   so X's ordinary endpoints such as `/2/users/me` refuse it with
+   `client-not-enrolled`.
 2. **The sign-in app.** It powers "Sign in with X" on the website and in the
    extension. Its key and secret are entered in Supabase under Authentication
    → Sign In / Providers → Twitter. Supabase's "Twitter" provider uses OAuth

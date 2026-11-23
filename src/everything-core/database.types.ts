@@ -2536,6 +2536,7 @@ export type Database = {
           submitted_at: string | null
           tweet_id: string
           view_count: number | null
+          x_account: string
         }
         Insert: {
           cn_status?: string | null
@@ -2556,6 +2557,7 @@ export type Database = {
           submitted_at?: string | null
           tweet_id: string
           view_count?: number | null
+          x_account?: string
         }
         Update: {
           cn_status?: string | null
@@ -2576,6 +2578,7 @@ export type Database = {
           submitted_at?: string | null
           tweet_id?: string
           view_count?: number | null
+          x_account?: string
         }
         Relationships: []
       }
@@ -2714,6 +2717,7 @@ export type Database = {
           source_url: string | null
           tweet_id: string
           warnings: string[] | null
+          x_account: string
         }
         Insert: {
           ab_test_picks?: Json | null
@@ -2736,6 +2740,7 @@ export type Database = {
           source_url?: string | null
           tweet_id: string
           warnings?: string[] | null
+          x_account?: string
         }
         Update: {
           ab_test_picks?: Json | null
@@ -2758,6 +2763,7 @@ export type Database = {
           source_url?: string | null
           tweet_id?: string
           warnings?: string[] | null
+          x_account?: string
         }
         Relationships: [
           {

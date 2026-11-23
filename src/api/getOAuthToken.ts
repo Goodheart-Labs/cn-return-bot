@@ -1,8 +1,10 @@
 import crypto from "crypto";
 import OAuth from "oauth-1.0a";
+import { currentXAccount, X_ACCOUNT_KEY_PREFIX } from "./xAccount";
 
 // The four X credentials read below come from the app's settings in the
-// Twitter/X Developer Portal.
+// Twitter/X Developer Portal. The writer keys are those of the account this
+// process works for (xAccount.ts).
 function getRequiredEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -22,7 +24,7 @@ export function getOAuth1Headers(
 ) {
   const readerConfigured = profile === "reader" &&
     ["API_KEY", "API_KEY_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"].some((suffix) => process.env[`X_READ_${suffix}`]);
-  const prefix = readerConfigured ? "X_READ" : "X";
+  const prefix = readerConfigured ? "X_READ" : X_ACCOUNT_KEY_PREFIX[currentXAccount()];
   const consumer_key = getRequiredEnv(`${prefix}_API_KEY`);
   const consumer_secret = getRequiredEnv(`${prefix}_API_KEY_SECRET`);
   const access_token = getRequiredEnv(`${prefix}_ACCESS_TOKEN`);

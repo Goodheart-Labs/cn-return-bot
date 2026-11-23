@@ -20,7 +20,7 @@ export const xHandleJob: JobKind<CreatorToLookUp> = {
   name: "x-handle",
   sessionPrefix: "cn-xacct-",
   maxRunning: MAX_LOOKUPS_RUNNING,
-  tags: [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.xAccount],
+  tags: () => [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.xAccount],
   key: (creator) => creator.slug,
   waiting: () => creatorsToLookUp(),
 
