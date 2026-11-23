@@ -42,6 +42,12 @@ export const EA_FORUM_POST = {
   author: "https://forum.effectivealtruism.org/users/jordanstone",
 };
 export const EA_FORUM_AUTHOR = "https://forum.effectivealtruism.org/users/toby-tremlett";
+/** The EA Forum's two newest posts, asked of its GraphQL API. The forum
+ *  stands behind Vercel's bot check. */
+export const EA_FORUM_NEWEST_POSTS_QUERY = `https://forum.effectivealtruism.org/graphql?query=${encodeURIComponent('{ posts(input: {terms: {view: "new", limit: 2}}) { results { _id title } } }')}`;
+/** An EA Forum page that is not a post. No API gives it, so the fetch ladder
+ *  reads it. */
+export const EA_FORUM_TOPIC_PAGE = "https://forum.effectivealtruism.org/topics/ai-safety";
 
 /** An ordinary article on a site without an API of its own, for the fetch
  *  ladder and Jina. */
