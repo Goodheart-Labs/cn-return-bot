@@ -1,3 +1,4 @@
+import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { SubmissionCapacity } from "../capacity/submissionReserve";
 
 export const MAX_POSTS_CAP = 20;
@@ -11,6 +12,25 @@ const MIN_CHECKS_FOR_RATE = 20;
 /** The X bot's checks of a recent window: how many tweets it checked, and how
  *  many of those ended in a note that was submitted or waits to be. */
 export type RecentChecks = { checked: number; noted: number };
+
+/** The window over which the X bot measures how many of its checks end in a note. */
+const CHECKS_SAMPLE_HOURS = 32;
+/** A check whose note was submitted, or waits in the queue to be. */
+const NOTED_OUTCOMES = ["candidate", "submitted"];
+
+export async function fetchRecentChecks(logger: SupabaseLogger): Promise<RecentChecks> {
+  const [checked, noted] = await Promise.all([
+    logger.countRecentPipelineRuns(CHECKS_SAMPLE_HOURS),
+    logger.countRecentPipelineRunsByOutcomes(CHECKS_SAMPLE_HOURS, NOTED_OUTCOMES),
+  ]);
+  return { checked, noted };
+}
+
+// The X bot's own daily ceiling on what its checks cost (GOO-698). Once the
+// day's checks have cost this much, it checks no new tweets until midnight
+// UTC. It still submits the notes that wait in the note queue, because that
+// costs nothing.
+export const X_DAILY_SPEND_CAP_USD = 30;
 
 /**
  * How many tweets this run checks (GOO-839). It checks as many as it takes to

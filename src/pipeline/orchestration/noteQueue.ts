@@ -15,6 +15,7 @@ import type { Candidate } from "./submitCandidates";
 import { orderForSubmit } from "../ranking/submitOrder";
 import { raterPriority, rateCandidate, noteRaterEnabled, type NoteRating } from "../score/noteRater";
 import type { SupabaseLogger } from "../../api/supabaseClient";
+import { EXPLORE_SHARE } from "../capacity/window";
 
 // The queue orders by the rater, so it needs the rater on. Switch the queue
 // off alone with the repo variable NOTE_QUEUE_ENABLED=false.
@@ -125,6 +126,25 @@ export function candidateFromQueuedRun(run: QueuedRun): Candidate | null {
 export function submittableQueued(queued: Candidate[], bar: number | null): Candidate[] {
   return partitionByStaleCutoff(queued).kept.filter((c) =>
     clearsFloor(c.viewsToCome, c.velocity) && (bar === null || !c.rating || raterPriority(c.rating) >= bar));
+}
+
+/** Whether the exploration slice goes ahead of the above-bar notes now.
+ *  Exploration is paced over the day: the drawn note goes first only while
+ *  explored notes are under their share of what went out, and never fewer than
+ *  one a day. A failed count puts it last. */
+export async function shouldExploreFirst(logger: SupabaseLogger): Promise<boolean> {
+  try {
+    const [explored, sent] = await Promise.all([
+      logger.countRankingDecisions(["explored"], 24),
+      logger.countRankingDecisions(["submitted", "explored"], 24),
+    ]);
+    const first = explored < Math.max(1, EXPLORE_SHARE * sent);
+    console.log(`[raterBar] explored ${explored} of ${sent} sent in the last 24h; the exploration slice goes ${first ? "first" : "last"}`);
+    return first;
+  } catch (err) {
+    console.warn("[raterBar] could not count recent decisions; the exploration slice goes last:", err);
+    return false;
+  }
 }
 
 /** Drops queued candidates whose run is already among this run's fresh ones. */
