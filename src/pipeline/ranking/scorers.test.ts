@@ -3,7 +3,7 @@ import { featuresFromPost, featuresFromTweetRow, flagCount, flagsOf, type RankFe
 import { FLAG_CUTS_2026_08 as cuts, flagsThenEval, getScorer, makeFlagsThenEval, velocityOnly } from "./scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
 
-const base: RankFeatures = { hasMedia: true, authorFollowers: 50_000, velocityPerHour: 40_000, ageHoursAtFetch: 6, tierRank: 1 };
+const base: RankFeatures = { hasMedia: true, authorFollowers: 50_000, velocityPerHour: 40_000, viewsToCome: null, ageHoursAtFetch: 6, tierRank: 1 };
 
 describe("flags", () => {
   test("all four pass on a media post from a small account, fast and 3-12h old", () => {
@@ -16,13 +16,16 @@ describe("flags", () => {
     expect(flagsOf({ ...base, authorFollowers: 999_999 }, cuts).smallAuthor).toBe(true);
     expect(flagsOf({ ...base, velocityPerHour: 14_999 }, cuts).fast).toBe(false);
     expect(flagsOf({ ...base, velocityPerHour: 15_000 }, cuts).fast).toBe(true);
+    // A post with a prediction is judged on it, not on its velocity.
+    expect(flagsOf({ ...base, velocityPerHour: 1_000, viewsToCome: 80_000 }, cuts).fast).toBe(true);
+    expect(flagsOf({ ...base, velocityPerHour: 900_000, viewsToCome: 79_999 }, cuts).fast).toBe(false);
     expect(flagsOf({ ...base, ageHoursAtFetch: 2.9 }, cuts).freshWindow).toBe(false);
     expect(flagsOf({ ...base, ageHoursAtFetch: 12 }, cuts).freshWindow).toBe(false);
     expect(flagsOf({ ...base, ageHoursAtFetch: 3 }, cuts).freshWindow).toBe(true);
   });
 
   test("unknown values fail open", () => {
-    expect(flagCount({ hasMedia: true, authorFollowers: null, velocityPerHour: null, ageHoursAtFetch: null, tierRank: null }, cuts)).toBe(4);
+    expect(flagCount({ hasMedia: true, authorFollowers: null, velocityPerHour: null, viewsToCome: null, ageHoursAtFetch: null, tierRank: null }, cuts)).toBe(4);
   });
 });
 
@@ -39,7 +42,7 @@ describe("featuresFromPost", () => {
   } as unknown as Post;
 
   test("derives age and velocity from the post when no frozen velocity is given", () => {
-    const f = featuresFromPost(post, undefined, 0, now);
+    const f = featuresFromPost(post, undefined, undefined, 0, now);
     expect(f.ageHoursAtFetch).toBe(6);
     expect(f.velocityPerHour).toBe(20_000);
     expect(f.hasMedia).toBe(true);
@@ -48,11 +51,11 @@ describe("featuresFromPost", () => {
 
   test("a gif or link card is not media, matching the tweets table", () => {
     const gif = { ...post, media: [{ type: "animated_gif" }] } as unknown as Post;
-    expect(featuresFromPost(gif, undefined, 0, now).hasMedia).toBe(false);
+    expect(featuresFromPost(gif, undefined, undefined, 0, now).hasMedia).toBe(false);
   });
 
   test("prefers the frozen velocity", () => {
-    expect(featuresFromPost(post, 55_000, 0, now).velocityPerHour).toBe(55_000);
+    expect(featuresFromPost(post, 55_000, undefined, 0, now).velocityPerHour).toBe(55_000);
   });
 
   test("tweet rows and posts give the same features", () => {
@@ -64,7 +67,7 @@ describe("featuresFromPost", () => {
       has_video: false,
       has_photo: true,
     });
-    const fromPost = featuresFromPost(post, undefined, null, now);
+    const fromPost = featuresFromPost(post, undefined, undefined, null, now);
     expect(fromRow).toEqual(fromPost);
   });
 });

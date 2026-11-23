@@ -1,6 +1,7 @@
 # The cn-feed-views service (GOO-834): every 10 minutes it reads the small,
 # large and XL tiers of X's eligible-posts feed and stores one reading of each
-# XL post's public counts (src/feed-views/main.ts). It calls only X's API and
+# XL post's public counts (src/feed-views/main.ts), which the X run predicts
+# views from, and keeps the last 3 days of them. It calls only X's API and
 # Supabase, never a page a stranger chose, so it needs no cn-fetch. A new unit
 # is installed by hand once (ops/README.md); autodeploy restarts it after.
 [Unit]

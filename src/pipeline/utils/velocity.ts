@@ -101,6 +101,11 @@ export function formatVelocity(v: number | null): string {
 // after that about a quarter of our notes went on posts under 15k views an
 // hour, and those are rated helpful about half as often (5.7% against 11-15%).
 // Raising it back costs no notes, because we write more than X accepts.
+//
+// Since GOO-863 the regular feed is selected on predicted views still to come
+// instead (viewsToCome.ts). This floor is the fallback for a run in which the
+// feed view recorder has no recent walk, and the rule for posts selected
+// without a prediction.
 export const REGULAR_VELOCITY_FLOOR_PER_HOUR = 15_000;
 
 // ── Topic velocity floor ────────────────────────────────────────────────────

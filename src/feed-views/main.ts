@@ -5,8 +5,12 @@
  * eligible-posts feed (walk.ts) and stores one reading of each XL post's public
  * counts in feed_tweet_views, plus one row about the walk in feed_view_walks.
  *
- * The readings let us see how a post's views grow, and learn to predict them.
- * This is a one-time collection of at most 14 days (GOO-845).
+ * The X run predicts a post's views still to come from the speed between this
+ * recorder's reading and its own (src/pipeline/utils/viewsToCome.ts, GOO-863).
+ * The readings were first collected to learn that prediction (GOO-834). The
+ * recorder keeps the last 3 days of walks and their readings. After each walk
+ * it deletes up to an hour's worth of older ones, oldest first, so a backlog
+ * after an outage clears at six times the speed it built up.
  *
  * The first time it sees a post, it also stores the post's profile in
  * feed_view_posts: when it was posted, its author's size, its kind and its
@@ -31,12 +35,14 @@ import "dotenv/config";
 import { walkEligiblePages } from "../api/fetchEligiblePosts";
 import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
-import { lastCompleteWalkAt, savePosts, saveWalk } from "./db";
+import { lastCompleteWalkAt, pruneWalks, savePosts, saveWalk } from "./db";
 import { type RecordedTier, type WalkResult, walkFeed } from "./walk";
 
 const WALK_INTERVAL_MS = 10 * 60_000;
 const SILENCE_WARNING_MS = 60 * 60_000;
 const DRY_RUN_READINGS_SHOWN = 10;
+const WALKS_KEPT_MS = 3 * 24 * 60 * 60_000;
+const WALKS_PRUNED_PER_WALK = 6;
 
 const readTier = (tier: RecordedTier) => walkEligiblePages(buildPostSelection(tier));
 
@@ -47,16 +53,17 @@ function describeWalk(walk: WalkResult): string {
   return `[feed-views] walk ${outcome}: small ${small}, large ${large}, xl ${xl} posts, ${walk.pages} pages in ${seconds}s, ${walk.rateRemaining ?? "?"} requests left`;
 }
 
-/** Stores the walk and the profiles of posts not stored before. Returns null,
- *  or why the walk could not be stored. The ids already stored are kept in
- *  memory, so after a restart the first walk sends every profile once more,
- *  and the database keeps the first. */
+/** Stores the walk and the profiles of posts not stored before, then deletes
+ *  the walks that are too old. Returns null, or why that failed. The ids
+ *  already stored are kept in memory, so after a restart the first walk sends
+ *  every profile once more, and the database keeps the first. */
 async function storeWalk(walk: WalkResult, storedPostIds: Set<string>): Promise<string | null> {
   try {
     const newPosts = walk.readings.map((r) => r.post).filter((post) => !storedPostIds.has(post.id));
     await savePosts(newPosts);
     for (const post of newPosts) storedPostIds.add(post.id);
     await saveWalk(walk);
+    await pruneWalks(new Date(walk.startedAt.getTime() - WALKS_KEPT_MS), WALKS_PRUNED_PER_WALK);
     return null;
   } catch (err) {
     return `database error: ${err instanceof Error ? err.message : String(err)}`;

@@ -89,3 +89,31 @@ describe("collectFastPosts", () => {
     expect(fresh.map((s) => s.post.id)).toEqual(["l1", "l3"]);
   });
 });
+
+describe("collectFastPosts with the recorder's earlier readings", () => {
+  // Each post's count now is its velocity times its age. The earlier reading
+  // sits 10 minutes before NOW, `gain` views lower.
+  const earlierBy = (gains: Record<string, number>) => async (ids: string[]) =>
+    new Map(ids.filter((id) => id in gains).map((id) => {
+      const p = [...feedsWithGains.small, ...feedsWithGains.large].find((q) => q.id === id)!;
+      return [id, { impressions: p.public_metrics!.impression_count! - gains[id]!, observedAtMs: NOW - 10 * 60_000 }];
+    }));
+  const feedsWithGains: Record<FeedSize, Post[]> = {
+    // s-fast grows fast now although its velocity is low; s-slow is the reverse.
+    small: [post("s-fast", 5_000), post("s-slow", 900_000), post("s-new", 900_000)],
+    large: [post("l-mid", 20_000)],
+    xl: [],
+    xxl: [],
+  };
+
+  test("admits and orders by predicted views to come, and waits on posts without an earlier reading", async () => {
+    // 10-minute gains of 2,000, 100, and 1,500 views: 12,000, 600 and 9,000
+    // views per hour, times about 12.3 hours left at 6 hours old.
+    const read = earlierBy({ "s-fast": 2_000, "s-slow": 100, "l-mid": 1_500 });
+    const { selected, fresh } = await collectFastPosts(5, noSkips, async (size) => feedsWithGains[size] ?? [], NOW, null, read);
+    expect(selected.map((s) => s.post.id)).toEqual(["s-fast", "l-mid"]);
+    expect(selected[0]!.viewsToCome).toBeGreaterThan(140_000);
+    // The new post had no earlier reading: it is not selected but stays in fresh.
+    expect(fresh.find((s) => s.post.id === "s-new")!.viewsToCome).toBeNull();
+  });
+});

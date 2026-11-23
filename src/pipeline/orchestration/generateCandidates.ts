@@ -1,14 +1,14 @@
 /**
  * Generate Candidates
  *
- * Walks the feed ladder for posts moving fast enough to be worth a note, runs
- * bot pipelines over them, scores them, and returns candidates that pass the
- * configured eval-score threshold.
+ * Walks the feed ladder for posts that will still get enough views to be worth
+ * a note, runs bot pipelines over them, scores them, and returns candidates
+ * that pass the configured eval-score threshold.
  */
 
 import { describeXError } from "../../api/describeXError";
 import { fetchEligiblePosts } from "../../api/fetchEligiblePosts";
-import { SupabaseLogger } from "../../api/supabaseClient";
+import { SupabaseLogger, type RecorderWalk } from "../../api/supabaseClient";
 import { beginTweetRun, finishTweetRun, type ProcessTweetResult } from "./processTweet";
 import { requestTweetCheck } from "../../service/client";
 import { STALE_TWEET_CUTOFF_HOURS, tweetAgeHours, type Candidate } from "./submitCandidates";
@@ -29,6 +29,14 @@ import {
   REGULAR_VELOCITY_FLOOR_PER_HOUR,
   MISINFO_TOPIC_VELOCITY_FLOOR_PER_HOUR,
 } from "../utils/velocity";
+import {
+  EARLIER_READING_MAX_AGE_MINUTES,
+  EARLIER_READING_MIN_AGE_MINUTES,
+  formatViewsToCome,
+  predictViewsToCome,
+  VIEWS_TO_COME_FLOOR,
+  type ViewReading,
+} from "../utils/viewsToCome";
 import { featuresFromPost } from "../ranking/features";
 import { shadowScores, type Scorer } from "../ranking/scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
@@ -61,38 +69,51 @@ const FEED_MAX_PAGES = 500;
 export const REGULAR_FEED_LADDER: FeedSize[] = ["small", "large", "xl"];
 
 /**
- * A post together with the feed tier it was fetched from and its velocity. The
- * tier is logged, and it is also recorded for each post in
- * `ab_test_picks.feed_size`, so outcomes can be sliced by tier. The velocity is
- * frozen at fetch time. Freezing matters because velocity is impressions divided
- * by age. Deriving it again after a pipeline run has taken time would shrink it,
- * because the impression count stays at its fetch-time value while the age keeps
- * growing. Posts we deliberately selected would then fall below the floor at
- * submission and be dropped.
+ * A post together with the feed tier it was fetched from, its velocity and its
+ * predicted views still to come. The tier is logged, and it is also recorded
+ * for each post in `ab_test_picks.feed_size`, so outcomes can be sliced by tier.
+ * Both numbers are frozen at fetch time. Freezing matters because deriving them
+ * again after a pipeline run has taken time would shrink them, so posts we
+ * deliberately selected would fall below the floor at submission and be
+ * dropped. The prediction is null when the run had no recorder readings, or
+ * none for this post.
  */
 export interface SourcedPost {
   post: Post;
   feedSize: FeedSize;
   velocity: number | null;
+  viewsToCome: number | null;
 }
 
 type FeedFetcher = (feedSize: FeedSize) => Promise<Post[]>;
 /** Returns which of the given tweet ids must be skipped. */
 type SkipLookup = (tweetIds: string[]) => Promise<Set<string>>;
+/** Returns the feed view recorder's earlier reading of each given tweet that it has one for. */
+type EarlierViewsLookup = (tweetIds: string[]) => Promise<Map<string, ViewReading>>;
 
 /**
  * Walk the feed ladder one tier at a time. For each tier this fetches the posts,
- * asks `findSkippedIds` which of them to drop, computes each post's velocity, and keeps only the
- * posts that clear the floor and are not already past the stale cutoff. It stops
- * as soon as `maxPosts` of them are pooled, and otherwise broadens to the next
- * tier. Filtering here rather than at submission means a slow or already-stale
- * post never costs a pipeline run.
+ * asks `findSkippedIds` which of them to drop, and works out each post's
+ * predicted views still to come (viewsToCome.ts) from the reading now and the
+ * feed view recorder's earlier one. It keeps only the posts at or above
+ * VIEWS_TO_COME_FLOOR that are not already past the stale cutoff. It stops as
+ * soon as `maxPosts` of them are pooled, and otherwise broadens to the next
+ * tier. Filtering here rather than at submission means a post with few views
+ * left or an already-stale post never costs a pipeline run.
  *
- * `selected` is ordered by feed tier first, so every above-floor small post
- * comes before any large one, and every large one before any XL one. Within a
- * tier it is ordered by velocity. A curated small post is therefore never bumped
- * by a faster post from a broader tier. A post whose velocity is unknown is
- * kept, because the floor fails open, and it sorts last within its tier.
+ * A post the recorder has no earlier reading of is not selected in this run. It
+ * entered the feed in the last 10 to 40 minutes, and the next run, half an hour
+ * later, can measure it.
+ *
+ * When `readEarlierViews` is null, because the recorder has no recent walk, the
+ * run falls back to the old rule: the velocity floor of 15,000 views per hour,
+ * and velocity order. A post whose velocity is unknown is then kept, because
+ * that floor fails open, and it sorts last within its tier.
+ *
+ * `selected` is ordered by feed tier first, so every admitted small post comes
+ * before any large one, and every large one before any XL one. Within a tier it
+ * is ordered by predicted views still to come, or by velocity in the fallback.
+ * A curated small post is therefore never bumped by a post from a broader tier.
  *
  * `fresh` is every new post the walked tiers surfaced, including the ones below
  * the floor. Topic curation matches against that list. A curated topic post
@@ -108,6 +129,7 @@ export async function collectFastPosts(
   fetchFeed: FeedFetcher,
   asOfMs: number = Date.now(),
   scorer: Scorer | null = null,
+  readEarlierViews: EarlierViewsLookup | null = null,
 ): Promise<{ selected: SourcedPost[]; fresh: SourcedPost[] }> {
   const pool = new Map<string, SourcedPost>();
   const allFresh: SourcedPost[] = [];
@@ -124,11 +146,17 @@ export async function collectFastPosts(
     const earlierTierIds = new Set(allFresh.map((s) => s.post.id));
     const unseen = posts.filter((p) => !earlierTierIds.has(p.id));
     const skippedIds = await findSkippedIds(unseen.map((p) => p.id));
-    const fresh = unseen
-      .filter((p) => !skippedIds.has(p.id))
-      .map((post) => ({ post, feedSize, velocity: velocityPerHour(post, asOfMs) }));
+    const kept = unseen.filter((p) => !skippedIds.has(p.id));
+    const earlier = readEarlierViews ? await readEarlierViews(kept.map((p) => p.id)) : null;
+    const fresh = kept.map((post) => ({
+      post,
+      feedSize,
+      velocity: velocityPerHour(post, asOfMs),
+      viewsToCome: earlier ? viewsToComeNow(post, earlier.get(post.id), asOfMs) : null,
+    }));
     allFresh.push(...fresh);
-    const fastEnough = fresh.filter((s) => isAboveVelocityFloor(s.velocity));
+    const fastEnough = fresh.filter((s) =>
+      earlier ? s.viewsToCome !== null && s.viewsToCome >= VIEWS_TO_COME_FLOOR : isAboveVelocityFloor(s.velocity));
     // The submit phase discards any regular note whose tweet is older than the
     // stale cutoff. A post that is already past the cutoff here can therefore
     // never be submitted, and admitting it would pay a full pipeline run for a
@@ -141,9 +169,12 @@ export async function collectFastPosts(
       return age === null || age <= STALE_TWEET_CUTOFF_HOURS;
     });
     const staleCount = fastEnough.length - admissible.length;
+    const floorText = earlier
+      ? `${fastEnough.length} with at least ${formatViewsToCome(VIEWS_TO_COME_FLOOR)} predicted views to come ` +
+        `(${fresh.filter((s) => s.viewsToCome === null).length} without an earlier reading)`
+      : `${fastEnough.length} above the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} velocity floor`;
     console.log(
-      `[generate] Feed ${feedSize}: ${posts.length} posts, ${fresh.length} new, ` +
-        `${fastEnough.length} above the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} floor` +
+      `[generate] Feed ${feedSize}: ${posts.length} posts, ${fresh.length} new, ${floorText}` +
         (staleCount > 0 ? `, ${staleCount} dropped as already past the ${STALE_TWEET_CUTOFF_HOURS}h stale cutoff` : ""),
     );
     for (const sourced of admissible) pool.set(sourced.post.id, sourced);
@@ -156,18 +187,51 @@ export async function collectFastPosts(
   }
 
   const tierRank = (feedSize: FeedSize) => REGULAR_FEED_LADDER.indexOf(feedSize);
-  const byTierThenVelocity = (a: SourcedPost, b: SourcedPost) =>
-    tierRank(a.feedSize) - tierRank(b.feedSize) || (b.velocity ?? -Infinity) - (a.velocity ?? -Infinity);
+  const reach = (s: SourcedPost) => (readEarlierViews ? s.viewsToCome : s.velocity) ?? -Infinity;
+  const byTierThenReach = (a: SourcedPost, b: SourcedPost) =>
+    tierRank(a.feedSize) - tierRank(b.feedSize) || reach(b) - reach(a);
   const byScorer = (a: SourcedPost, b: SourcedPost) =>
-    scorer!.scoreAdmission(featuresFromPost(b.post, b.velocity, tierRank(b.feedSize), asOfMs)) -
-    scorer!.scoreAdmission(featuresFromPost(a.post, a.velocity, tierRank(a.feedSize), asOfMs));
-  const selected = [...pool.values()].sort(scorer ? byScorer : byTierThenVelocity).slice(0, maxPosts);
+    scorer!.scoreAdmission(featuresFromPost(b.post, b.velocity, b.viewsToCome, tierRank(b.feedSize), asOfMs)) -
+    scorer!.scoreAdmission(featuresFromPost(a.post, a.velocity, a.viewsToCome, tierRank(a.feedSize), asOfMs));
+  const selected = [...pool.values()].sort(scorer ? byScorer : byTierThenReach).slice(0, maxPosts);
   return { selected, fresh: allFresh };
+}
+
+/** The views the post will still get, from its count in this run's fetch and
+ *  the recorder's earlier reading. */
+function viewsToComeNow(post: Post, earlier: ViewReading | undefined, asOfMs: number): number | null {
+  const ageHours = tweetAgeHours(post, asOfMs);
+  const impressions = post.public_metrics?.impression_count;
+  if (ageHours === null || impressions == null) return null;
+  return predictViewsToCome(asOfMs - ageHours * 3_600_000, earlier, { impressions, observedAtMs: asOfMs });
 }
 
 // ---------------------------------------------------------------------------
 // Post fetching
 // ---------------------------------------------------------------------------
+
+/**
+ * Picks the recorder walk that serves as the earlier reading: the newest one
+ * that started 10 to 40 minutes before this run. Returns null when there is
+ * none, which means the recorder is down. The run then falls back to the
+ * velocity floor. The recorder itself warns Slack after an hour without a
+ * walk, so the fallback does not go unnoticed.
+ */
+async function findEarlierWalk(supabaseLogger: SupabaseLogger, asOfMs: number): Promise<RecorderWalk | null> {
+  const walk = await supabaseLogger.findRecorderWalk(
+    new Date(asOfMs - EARLIER_READING_MAX_AGE_MINUTES * 60_000),
+    new Date(asOfMs - EARLIER_READING_MIN_AGE_MINUTES * 60_000),
+  );
+  if (walk) {
+    console.log(`[generate] Predicting views still to come against the feed view recorder's walk of ${walk.startedAt}`);
+  } else {
+    console.warn(
+      `[generate] The feed view recorder has no walk from ${EARLIER_READING_MIN_AGE_MINUTES} to ${EARLIER_READING_MAX_AGE_MINUTES} minutes ago. ` +
+        `This run falls back to the ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} velocity floor.`,
+    );
+  }
+  return walk;
+}
 
 async function fetchPosts(
   supabaseLogger: SupabaseLogger | null,
@@ -190,6 +254,9 @@ async function fetchPosts(
     return new Set([...skipped, ...cooldown, ...known]);
   };
 
+  const asOfMs = Date.now();
+  const walk = supabaseLogger ? await findEarlierWalk(supabaseLogger, asOfMs) : null;
+
   // The insert into the tweets table and the selection log both happen in
   // generateCandidates, after topic curation. Curation can swap out a few posts,
   // so waiting until then means only the posts that actually run are recorded
@@ -198,8 +265,9 @@ async function fetchPosts(
     maxPosts,
     findSkippedIds,
     (feedSize) => fetchEligiblePosts(FEED_MAX_POSTS, FEED_MAX_PAGES, buildPostSelection(feedSize)),
-    Date.now(),
+    asOfMs,
     scorer,
+    supabaseLogger && walk ? (tweetIds) => supabaseLogger.getRecordedViews(tweetIds, walk) : null,
   );
 }
 
@@ -213,7 +281,7 @@ function logSelection(selected: SourcedPost[], topicIdByTweet: Map<string, strin
     const imp = s.post.public_metrics?.impression_count ?? 0;
     const age = ageInHours(s.post);
     const topic = topicIdByTweet.get(s.post.id);
-    console.log(`[generate]   #${i + 1}: ${s.post.id} | ${s.feedSize} | vel=${formatVelocity(s.velocity)} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${topic ? ` | topic=${topic}` : ""}`);
+    console.log(`[generate]   #${i + 1}: ${s.post.id} | ${s.feedSize} | to come=${formatViewsToCome(s.viewsToCome)} | vel=${formatVelocity(s.velocity)} | ${formatCount(imp)} imp | ${age.toFixed(1)}h ago${topic ? ` | topic=${topic}` : ""}`);
   }
 }
 
@@ -247,11 +315,12 @@ export interface TweetProcessedEvent {
 export interface ProcessPostItem {
   post: Post;
   monitoring?: MonitoringContext;
-  /** The velocity frozen when the post was fetched. It is carried onto the
-   *  candidate so that the floor check at submission time does not derive a
-   *  decayed value of its own. Callers that select posts some other way, such as
-   *  the pre-passes, leave it out. */
+  /** The velocity and the predicted views still to come, frozen when the post
+   *  was fetched. They are carried onto the candidate so that the floor check at
+   *  submission time does not derive decayed values of its own. Callers that
+   *  select posts some other way, such as the pre-passes, leave them out. */
   velocity?: number | null;
+  viewsToCome?: number | null;
   /** The feed tier this post was fetched from, recorded as its feed_size pick.
    *  When a caller leaves it out, the pick falls back to the A/B test default,
    *  which is `small`. */
@@ -300,7 +369,7 @@ export async function processPosts(
   // concurrently, so pushing on completion would return them in whatever order
   // they happened to finish. Submission goes in this order, so it has to stay
   // the order `items` came in. That order is the selection ranking: curated
-  // topic posts first, then by feed tier, then by velocity.
+  // topic posts first, then by feed tier, then by predicted views still to come.
   const candidateByIndex: (Candidate | undefined)[] = new Array(items.length);
   const skippedByIndex: (Post | undefined)[] = new Array(items.length);
 
@@ -333,7 +402,7 @@ export async function processPosts(
       const localLog = createTweetLog();
       localLog.set("tweet.index", idx + 1);
       localLog.set("tweet.total", items.length);
-      const rankFeatures = featuresFromPost(item.post, item.velocity, item.feedSize ? REGULAR_FEED_LADDER.indexOf(item.feedSize) : null);
+      const rankFeatures = featuresFromPost(item.post, item.velocity, item.viewsToCome, item.feedSize ? REGULAR_FEED_LADDER.indexOf(item.feedSize) : null);
       localLog.set("ranking.features", rankFeatures);
       localLog.set("ranking.admission", shadowScores(rankFeatures));
 
@@ -381,7 +450,7 @@ export async function processPosts(
       if (tweetResult.outcome === "candidate" && tweetResult.pipelineRunId) {
         // The note is a candidate before the forecast comes back, so a slow
         // rater at the deadline cannot drop it.
-        const candidate: Candidate = { post: item.post, tweetResult, botId, velocity: item.velocity };
+        const candidate: Candidate = { post: item.post, tweetResult, botId, velocity: item.velocity, viewsToCome: item.viewsToCome };
         candidateByIndex[idx] = candidate;
         candidate.rating = await rateCandidate(supabaseLogger, {
           tweetId: item.post.id,
@@ -452,7 +521,7 @@ export interface GenerateCandidatesOptions {
    *  skips them even when writing them to the tweets table failed. */
   processedThisRun?: ReadonlySet<string>;
   onTweetProcessed?: (event: TweetProcessedEvent) => void | Promise<void>;
-  /** Ranks fetched posts across tiers. Null keeps the tier-then-velocity ladder. */
+  /** Ranks fetched posts across tiers. Null keeps the ladder: tier first, then predicted views still to come. */
   scorer?: Scorer | null;
   /** The curated topics to match the regular pool against. A confirmed post gets
    *  the full monitoring treatment, answers to the topic velocity floor instead
@@ -566,6 +635,7 @@ export async function generateCandidates(
     return {
       post: s.post,
       velocity: s.velocity,
+      viewsToCome: s.viewsToCome,
       feedSize: s.feedSize,
       monitoring: topic
         ? { topicId: topic.id, topicTitle: topic.title, documentUrl: topic.documentUrl, document: topic.document }

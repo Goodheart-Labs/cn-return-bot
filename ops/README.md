@@ -13,7 +13,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
-| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed (GOO-834) | none |
+| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed, which the X run predicts views from (GOO-834, GOO-863) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake and the walk are callers: they hold the service key and write the rows.
@@ -184,8 +184,10 @@ and other counts in `feed_tweet_views`, one row per walk of the feed in
 `feed_view_posts` (migration 195). X's budget of 500 requests per 15 minutes
 is shared with the X run, so a walk stops when fewer than 150 are left. When
 an hour passes without a walk that completed and was stored, it tells Slack.
-It does not write `feed_tweets`, which keeps what the X run saw first. It is a one-time
-collection of at most 14 days (GOO-845). Once, as root:
+It does not write `feed_tweets`, which keeps what the X run saw first. The X
+run reads its readings to predict each post's views still to come (GOO-863),
+so it runs for good and keeps the last 3 days of walks. After each walk it
+deletes up to six older walks with their readings. Once, as root:
 
 ```bash
 cp /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/

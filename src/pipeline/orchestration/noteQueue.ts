@@ -9,7 +9,7 @@
  */
 
 import type { Post } from "../../api/fetchEligiblePosts";
-import { isAboveVelocityFloor } from "../utils/velocity";
+import { clearsFloor } from "../utils/viewsToCome";
 import { partitionByStaleCutoff } from "./submitCandidates";
 import type { Candidate } from "./submitCandidates";
 import { orderForSubmit } from "../ranking/submitOrder";
@@ -61,6 +61,7 @@ export interface QueuedRun {
   bot_name: string | null;
   created_at: string;
   velocity: number | null;
+  viewsToCome: number | null;
   evaluationScore: number | null;
   tweet: QueuedTweetRow | null;
   rating: NoteRating | null;
@@ -103,6 +104,7 @@ export function candidateFromQueuedRun(run: QueuedRun): Candidate | null {
     post,
     botId: run.bot_name ?? "simple-bot",
     velocity: run.velocity,
+    viewsToCome: run.viewsToCome,
     rating: run.rating,
     queuedAt: run.created_at,
     sourceUrl: run.source_url ?? undefined,
@@ -119,10 +121,10 @@ export function candidateFromQueuedRun(run: QueuedRun): Candidate | null {
 }
 
 /** The queued notes that submitCandidates would actually send: in time, above
- *  the velocity floor, and not below the bar (an unrated note is never below it). */
+ *  the floor, and not below the bar (an unrated note is never below it). */
 export function submittableQueued(queued: Candidate[], bar: number | null): Candidate[] {
   return partitionByStaleCutoff(queued).kept.filter((c) =>
-    isAboveVelocityFloor(c.velocity ?? null) && (bar === null || !c.rating || raterPriority(c.rating) >= bar));
+    clearsFloor(c.viewsToCome, c.velocity) && (bar === null || !c.rating || raterPriority(c.rating) >= bar));
 }
 
 /** Drops queued candidates whose run is already among this run's fresh ones. */
