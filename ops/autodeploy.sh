@@ -34,7 +34,7 @@ SERVICE_USER="cnbot"
 # too. A deploy during its run restarts it on the new code.
 UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-feed-views cn-jina-reader)
 # The files cn-jina-reader's image is built from (GOO-853).
-JINA_READER_FILES=(ops/jina-reader/Dockerfile ops/jina-reader/dataimpulse-proxy.patch)
+JINA_READER_FILES=(ops/jina-reader/Dockerfile ops/jina-reader/cn-return-bot.patch)
 JINA_READER_IMAGE=cn-jina-reader
 
 # When yt-dlp was last upgraded. The file's modification time is the record.

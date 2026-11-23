@@ -23,7 +23,10 @@ ExecStartPre=-/usr/bin/docker rm -f cn-jina-reader
 # speaks only HTTP/2, which Bun's fetch cannot use without TLS.
 # Jina runs a headless Chrome and LibreOffice. The memory limit keeps a page
 # that blows up Chrome from starving the other services of this 8 GB machine.
-ExecStart=/usr/bin/docker run --rm --name cn-jina-reader -p 127.0.0.1:8789:8081 --memory 3g -e DATAIMPULSE_PROXY_URL=${YTDLP_PROXY_URL} cn-jina-reader
+# Without a heap limit, Jina's Node process grew to the container's limit
+# within a few hundred reads and was killed. The heap limit makes it collect
+# garbage before that.
+ExecStart=/usr/bin/docker run --rm --name cn-jina-reader -p 127.0.0.1:8789:8081 --memory 4g -e NODE_OPTIONS=--max-old-space-size=1536 -e DATAIMPULSE_PROXY_URL=${YTDLP_PROXY_URL} cn-jina-reader
 ExecStop=/usr/bin/docker stop cn-jina-reader
 Restart=always
 RestartSec=5

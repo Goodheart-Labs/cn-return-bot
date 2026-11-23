@@ -6,7 +6,7 @@ const GOOD_PAGE = {
   code: 200,
   data: {
     title: "What's next for Lindsay Clancy after mistrial?",
-    content: "Sept 4 (Reuters) - A judge declared a mistrial ...",
+    content: "Sept 4 (Reuters) - A judge declared a mistrial in the trial of Lindsay Clancy. ".repeat(20),
     usage: { tokens: 9397 },
   },
 };
@@ -22,7 +22,16 @@ const CAPTCHA = {
 let fetchSpy: ReturnType<typeof spyOn<typeof globalThis, "fetch">>;
 
 function answer(status: number, body: unknown) {
-  fetchSpy = spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(body), { status }));
+  fetchSpy = spyOn(globalThis, "fetch").mockImplementation((async () => new Response(JSON.stringify(body), { status })) as unknown as typeof fetch);
+}
+
+function answerInTurn(...bodies: unknown[]) {
+  fetchSpy = spyOn(globalThis, "fetch");
+  for (const body of bodies) fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify(body), { status: 200 }));
+}
+
+function proxyHeaderOfCall(n: number): string | undefined {
+  return (fetchSpy.mock.calls[n]![1]!.headers as Record<string, string>)["X-Proxy"];
 }
 
 afterEach(() => {
@@ -35,9 +44,24 @@ describe("fetchWithJinaReader", () => {
     expect(await fetchWithJinaReader("https://example.com/a")).toEqual({ type: "page", markdown: `# ${GOOD_PAGE.data.title}\n\n${GOOD_PAGE.data.content}` });
   });
 
-  test("the site's own 404 behind a 200 from Jina is a target error with that status", async () => {
+  test("a page read directly is not asked for again through the proxy", async () => {
+    answer(200, GOOD_PAGE);
+    await fetchWithJinaReader("https://example.com/a");
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test("the site's own 404 is a target error and is not asked for again", async () => {
     answer(200, SITE_404);
     expect(await fetchWithJinaReader("https://example.com/gone")).toEqual({ type: "target_error", status: 404 });
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test("a page the site refused is asked for again through the proxy", async () => {
+    const SITE_403 = { code: 200, data: { title: "Access Denied", content: "", warning: "Target URL returned error 403: Forbidden" } };
+    answerInTurn(SITE_403, GOOD_PAGE);
+    expect((await fetchWithJinaReader("https://example.com/a")).type).toBe("page");
+    expect(proxyHeaderOfCall(0)).toBeUndefined();
+    expect(proxyHeaderOfCall(1)).toBe("auto");
   });
 
   test("a CAPTCHA warning is a challenge", async () => {

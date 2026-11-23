@@ -1,0 +1,103 @@
+diff --git a/src/dto/base-auth.ts b/src/dto/base-auth.ts
+index 5a4448c..70e83ba 100644
+--- a/src/dto/base-auth.ts
++++ b/src/dto/base-auth.ts
+@@ -61,7 +61,9 @@ export class BaseAuthDTO<U extends object = object> extends Coercible {
+ 
+             if (ctx.ip) {
+                 instance.ip = ctx.ip;
+-                instance.isInternal = ctx.ips.length <= 2 && isIPInNonPublicRange(ctx.ip);
++                // A dual-stack server sees an IPv4 caller as ::ffff:a.b.c.d, which the
++                // range check does not know as private. Patched by cn-return-bot (GOO-853).
++                instance.isInternal = ctx.ips.length <= 2 && isIPInNonPublicRange(ctx.ip.replace(/^::ffff:(?=\d+\.)/, ''));
+             }
+         }
+ 
+diff --git a/src/services/logger.ts b/src/services/logger.ts
+index a930e9b..46f2eb1 100644
+--- a/src/services/logger.ts
++++ b/src/services/logger.ts
+@@ -16,7 +16,9 @@ const levelToSeverityMap: { [k: string]: string | undefined; } = {
+ @singleton()
+ export class GlobalLogger extends AbstractPinoLogger {
+     loggerOptions = {
+-        level: 'debug',
++        // Debug lines carry the allocated proxy's address with its password.
++        // Patched by cn-return-bot (GOO-853).
++        level: 'info',
+         base: {
+             tid: threadId,
+         }
+diff --git a/src/services/misc.ts b/src/services/misc.ts
+index 9169fc2..c152601 100644
+--- a/src/services/misc.ts
++++ b/src/services/misc.ts
+@@ -12,7 +12,10 @@ import _ from 'lodash';
+ 
+ const normalizeUrl = require('@esm2cjs/normalize-url').default;
+ 
+-export const privateIpNotAcceptable = Boolean(process.env['NODE_ENV']?.toLowerCase()?.includes('prod') && process.env['GCLOUD_PROJECT']);
++// Upstream refuses private addresses only on Google Cloud. We refuse them
++// everywhere, so a page cannot make Jina read the Docker host's services or
++// the cloud provider's metadata address. Patched by cn-return-bot (GOO-853).
++export const privateIpNotAcceptable = true;
+ 
+ @singleton()
+ export class MiscService extends AsyncService {
+diff --git a/src/services/proxy-provider/dataimpulse.ts b/src/services/proxy-provider/dataimpulse.ts
+new file mode 100644
+index 0000000..f0d5872
+--- /dev/null
++++ b/src/services/proxy-provider/dataimpulse.ts
+@@ -0,0 +1,28 @@
++const TWO_LETTER_COUNTRY_CODE = /^[a-z]{2}$/;
++
++/**
++ * DataImpulse's residential proxy gateway. It gives every new connection a
++ * different device, so one fixed address serves every allocation. The country
++ * goes into the username as "__cr.<code>", which is DataImpulse's own syntax.
++ * Added by cn-return-bot (GOO-853); it is not part of upstream Jina Reader.
++ */
++export class DataImpulseProxyProvider {
++    baseProxyUrl: URL;
++
++    constructor(gatewayUrl: string) {
++        this.baseProxyUrl = new URL(gatewayUrl);
++    }
++
++    supports(countryCode: string) {
++        return countryCode === 'any' || TWO_LETTER_COUNTRY_CODE.test(countryCode);
++    }
++
++    async alloc(inputCountryCode?: string) {
++        const countryCode = inputCountryCode?.toLowerCase() || 'any';
++        const url = new URL(this.baseProxyUrl);
++        if (countryCode !== 'any' && countryCode !== 'auto') {
++            url.username = `${this.baseProxyUrl.username}__cr.${countryCode}`;
++        }
++        return url;
++    }
++}
+diff --git a/src/services/proxy-provider/index.ts b/src/services/proxy-provider/index.ts
+index a66b24f..1f19bd7 100644
+--- a/src/services/proxy-provider/index.ts
++++ b/src/services/proxy-provider/index.ts
+@@ -1,6 +1,7 @@
+ import { singleton } from 'tsyringe';
+ import { EnvConfig } from '../envconfig';
+ import { ThorDataProxyProvider } from './thordata';
++import { DataImpulseProxyProvider } from './dataimpulse';
+ // import { BrightDataProxyProvider } from './brightdata';
+ import { AsyncService } from 'civkit/async-service';
+ import { randomPick } from 'civkit/random';
+@@ -26,6 +27,10 @@ export class ProxyProviderService extends AsyncService {
+ 
+     override async init() {
+         await this.dependencyReady();
++        // Read from process.env, because envConfig.dynamic always answers ''.
++        if (process.env.DATAIMPULSE_PROXY_URL) {
++            this.clients.push(new DataImpulseProxyProvider(process.env.DATAIMPULSE_PROXY_URL));
++        }
+         if (this.envConfig.THORDATA_PROXY_URL) {
+             this.clients.push(new ThorDataProxyProvider(
+                 this.envConfig.THORDATA_PROXY_URL,

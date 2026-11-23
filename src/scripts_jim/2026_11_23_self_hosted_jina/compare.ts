@@ -21,7 +21,11 @@ import { classifyMarkdown } from "../../pipeline/fetch/fetchLadder";
 import { fetchWithJinaReader } from "../../pipeline/fetch/jinaReader";
 
 const DATA_DIR = `${homedir()}/dev/data/goo-853`;
-const PARALLEL_READS = 4;
+const PARALLEL_READS = 2;
+/** Through the SSH tunnel, a Jina container that is restarting shows as a
+ *  reset connection. The read then waits for it instead of counting as failed. */
+const RESTART_WAIT_MS = 10_000;
+const MAX_RESTART_WAITS = 12;
 
 interface LoggedStep {
   step: string;
@@ -57,8 +61,13 @@ await Promise.all(Array.from({ length: PARALLEL_READS }, async () => {
 
 async function compare(read: LoggedRead) {
   const hostedStep = read.steps.find((step) => step.step === "Jina Reader")!;
-  const started = Date.now();
-  const selfHosted = await fetchWithJinaReader(read.input);
+  let started = Date.now();
+  let selfHosted = await fetchWithJinaReader(read.input);
+  for (let wait = 0; isRestarting(selfHosted) && wait < MAX_RESTART_WAITS; wait++) {
+    await Bun.sleep(RESTART_WAIT_MS);
+    started = Date.now();
+    selfHosted = await fetchWithJinaReader(read.input);
+  }
   const ms = Date.now() - started;
   const markdown = selfHosted.type === "page" ? selfHosted.markdown : "";
   const verdict = selfHosted.type === "page" ? classifyMarkdown(markdown) : selfHosted.type;
@@ -71,6 +80,10 @@ async function compare(read: LoggedRead) {
     wordOverlap: read.outcome === "page" && read.text ? wordOverlap(read.text, markdown) : null,
     text: markdown,
   };
+}
+
+function isRestarting(result: Awaited<ReturnType<typeof fetchWithJinaReader>>): boolean {
+  return result.type === "failed" && /ECONNRESET|socket connection was closed/.test(result.reason);
 }
 
 /** The share of the hosted text's distinct words that the self-hosted text

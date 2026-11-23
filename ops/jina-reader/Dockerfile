@@ -1,5 +1,8 @@
 # Jina Reader, built from its open-source repository at a pinned commit, plus
-# our patch that lets it use the DataImpulse residential proxy (GOO-853).
+# our patch (GOO-853). The patch adds DataImpulse as a proxy Jina can retry
+# through, and makes Jina treat our calls from the Docker host as internal.
+# Without that second fix Jina takes them for anonymous outside callers, and
+# it never uses a proxy for those.
 # The cn-jina-reader unit builds this image on the services box and runs it.
 #
 # The final stage copies upstream's own Dockerfile for amd64, the services
@@ -15,8 +18,8 @@ WORKDIR /src
 RUN git init -q . \
     && git fetch -q --depth 1 https://github.com/jina-ai/reader.git "$JINA_READER_COMMIT" \
     && git checkout -q FETCH_HEAD
-COPY dataimpulse-proxy.patch /tmp/
-RUN git apply /tmp/dataimpulse-proxy.patch
+COPY cn-return-bot.patch /tmp/
+RUN git apply /tmp/cn-return-bot.patch
 RUN npm ci && bash download-external-assets.sh && npm run build
 
 FROM node:24

@@ -153,7 +153,9 @@ The page reader's last step is Jina Reader, Jina AI's open-source page
 reader, run by `cn-jina-reader.service` on 127.0.0.1:8789 (GOO-853). Its
 image is built from `ops/jina-reader/`: a pinned commit of
 github.com/jina-ai/reader plus our patch, which adds DataImpulse as the proxy
-Jina retries through when its direct fetch of a page fails. The container
+Jina retries through when its direct fetch of a page fails. The patch also
+makes Jina treat calls from the Docker host as internal, because it never
+uses a proxy for an anonymous outside caller. The container
 gets the proxy's address from `YTDLP_PROXY_URL` in the environment file and
 nothing else. `cn-autodeploy` builds the image on every deploy, from the
 deployed commit's files as GitHub serves them, and restarts the unit.

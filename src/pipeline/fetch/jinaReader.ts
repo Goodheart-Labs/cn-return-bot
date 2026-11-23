@@ -2,8 +2,9 @@
  * The client for Jina Reader, the open-source page reader of Jina AI. It fetches
  * a page with curl-impersonate or its own headless Chrome and returns the text
  * as markdown. We run it in Docker on the services box (ops/cn-jina-reader.service,
- * GOO-853). It first fetches from the box's own address, and fetches the page's
- * HTML once more through the residential proxy when that fails.
+ * GOO-853). We ask it twice at most. The first request lets Jina fetch from the
+ * box's own address. When that gives no usable page, the second request makes
+ * Jina fetch the page through the residential proxy from the start.
  *
  * readPage in readPage.ts asks it for a page only after every step of the free
  * fetch ladder has failed, and for an API answer only after a bot check stopped
@@ -17,6 +18,7 @@
  */
 
 import type { ApiAnswer } from "../../service/contract";
+import { classifyMarkdown } from "./fetchLadder";
 
 /** Whether the page reader asks Jina Reader when every free step failed, for
  *  every caller alike: claim checks, reading a post for the queue, minisites
@@ -51,6 +53,16 @@ const BOT_CHECK_STATUSES = new Set([403, 429]);
  *  a copy it fetched earlier, and an API answer changes. */
 const API_HEADERS = { "X-Return-Format": "text", "X-No-Cache": "true" };
 
+/** Makes Jina fetch the page and its scripts' requests through the proxy, but
+ *  not its images and style sheets, which only cost proxy traffic. Jina has
+ *  its own fallback to the proxy, but it skips it on some errors, such as a
+ *  broken stream from curl, and its browser can then overwrite a page the
+ *  proxy did get with the site's 403. So we ask again ourselves. */
+const PROXY_HEADERS = { "X-Proxy": "auto" };
+
+/** A site that says the page does not exist says the same to any address. */
+const PAGE_GONE_STATUSES = new Set([404, 410]);
+
 export type JinaReaderResult =
   | { type: "page"; markdown: string }
   | { type: "target_error"; status: number }
@@ -81,8 +93,19 @@ interface JinaData {
 type JinaAnswer = { type: "data"; data: JinaData } | { type: "failed"; status?: number; reason: string };
 
 export async function fetchWithJinaReader(url: string): Promise<JinaReaderResult> {
-  const answer = await askJina(url, {});
+  const direct = await readPageWithJina(url, {});
+  if (!worthAskingThroughProxy(direct)) return direct;
+  return readPageWithJina(url, PROXY_HEADERS);
+}
+
+async function readPageWithJina(url: string, headers: Record<string, string>): Promise<JinaReaderResult> {
+  const answer = await askJina(url, headers);
   return answer.type === "data" ? interpretJinaData(answer.data) : answer;
+}
+
+function worthAskingThroughProxy(result: JinaReaderResult): boolean {
+  if (result.type === "page") return classifyMarkdown(result.markdown) !== "good";
+  return !(result.type === "target_error" && PAGE_GONE_STATUSES.has(result.status));
 }
 
 /** Reads an API answer through Jina, such as a forum's GraphQL query sent as
