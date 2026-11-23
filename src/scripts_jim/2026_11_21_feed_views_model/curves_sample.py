@@ -5,8 +5,8 @@
 """Writes a random sample of recorded view curves for the findings page.
 
 Only posts that entered the feed after the recording started, so their first
-reading is their real entry, that were at most 72 hours old then, and that
-have at least 3 hours of readings.
+reading is their real entry, and whose readings run until they are 48 hours
+old, so every curve is complete.
 
     uv run src/scripts_jim/2026_11_21_feed_views_model/curves_sample.py <out.json>
 """
@@ -23,8 +23,8 @@ X_EPOCH_MS = 1288834974657
 SAMPLE_SIZE = 480
 MIN_READINGS = 18
 ENTRY_AFTER_START = pd.Timedelta(minutes=15)
-# A few posts enter the feed years after posting. They squash the chart, so they are left out.
-MAX_AGE_AT_ENTRY_H = 72
+# Only posts whose readings run until they are 48 hours old, so every curve is complete.
+FULL_AGE_H = 48
 
 views = pd.concat(pd.read_parquet(p, columns=["tweet_id", "observed_at", "impressions"]) for p in sorted((DATA_DIR / "views").glob("*.parquet")))
 views["observed_at"] = pd.to_datetime(views["observed_at"], format="ISO8601")
@@ -35,7 +35,8 @@ start = views.observed_at.min()
 first_seen = views.groupby("tweet_id").observed_at.transform("min")
 counts = views.groupby("tweet_id").observed_at.transform("count")
 age_at_entry = views.groupby("tweet_id").age_h.transform("min")
-eligible = views[(first_seen > start + ENTRY_AFTER_START) & (counts >= MIN_READINGS) & (age_at_entry <= MAX_AGE_AT_ENTRY_H)]
+age_at_last = views.groupby("tweet_id").age_h.transform("max")
+eligible = views[(first_seen > start + ENTRY_AFTER_START) & (counts >= MIN_READINGS) & (age_at_entry < FULL_AGE_H) & (age_at_last >= FULL_AGE_H)]
 ids = eligible.tweet_id.drop_duplicates().sample(SAMPLE_SIZE, random_state=0)
 posts = []
 for tid in ids:
