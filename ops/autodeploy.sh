@@ -29,10 +29,13 @@ SERVICE_USER="cnbot"
 # unit added to this list is first installed by the deploy after the one that
 # adds it. A new unit must be installed by hand once (cp, daemon-reload,
 # enable --now), as cn-fetch was on 2026-09-28, cn-walk for GOO-791 and
-# cn-feed-views for GOO-834.
+# cn-feed-views for GOO-834, and cn-jina-reader for GOO-853.
 # cn-site-checks runs once a night from its timer, which is installed by hand
 # too. A deploy during its run restarts it on the new code.
-UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-feed-views)
+UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-feed-views cn-jina-reader)
+# The files cn-jina-reader's image is built from (GOO-853).
+JINA_READER_FILES=(ops/jina-reader/Dockerfile ops/jina-reader/dataimpulse-proxy.patch)
+JINA_READER_IMAGE=cn-jina-reader
 
 # When yt-dlp was last upgraded. The file's modification time is the record.
 YT_DLP_UPGRADE_STAMP="/var/lib/cn-autodeploy/yt-dlp-upgraded"
@@ -86,6 +89,7 @@ deploy_new_code() {
   staging=$(mktemp -d)
   trap 'rm -rf "$staging"' EXIT
   download_root_files "$upstream" "$staging"
+  build_jina_reader_image "$upstream" "$staging/jina-reader"
 
   echo "deploying $DEPLOY_BRANCH ${upstream:0:10} (was ${here:0:10})"
   sudo -u "$SERVICE_USER" git -C "$REPO_DIR" fetch --quiet origin "$DEPLOY_BRANCH"
@@ -120,6 +124,19 @@ download_root_files() {
   for unit in "${UNITS[@]}"; do
     download "$commit" "ops/$unit.service" "$staging" optional || return 1
   done
+}
+
+# Builds the self-hosted Jina Reader's image from the deployed commit's files,
+# as GitHub serves them, like the unit files. When the files did not change,
+# Docker's build cache makes this take about a second. A failed build stops
+# the deploy before anything changed, and the next tick tries again.
+build_jina_reader_image() {
+  local commit="$1" context="$2" path
+  mkdir -p "$context"
+  for path in "${JINA_READER_FILES[@]}"; do
+    download "$commit" "$path" "$context" required || return 1
+  done
+  docker build --quiet --tag "$JINA_READER_IMAGE" "$context"
 }
 
 download() {

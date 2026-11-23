@@ -1,0 +1,30 @@
+# Jina Reader, the open-source page reader of Jina AI, run on this machine
+# (GOO-853). The page reader asks it for a page after every step of the fetch
+# ladder failed (src/pipeline/fetch/jinaReader.ts). Until then we paid for
+# Jina's hosted copy at r.jina.ai.
+#
+# The image is built from ops/jina-reader/ by cn-autodeploy on every deploy,
+# from the files of the deployed commit as GitHub serves them. Docker's build
+# cache makes that a no-op when nothing in that folder changed.
+#
+# Jina first fetches a page directly from this machine. When that fails, it
+# fetches the page's HTML once more through the residential proxy, and our
+# patch is what lets it use DataImpulse for that. So the container gets the
+# proxy's address and nothing else from the environment file.
+[Unit]
+Description=Jina Reader, self-hosted
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+EnvironmentFile=/etc/cn-return-bot/service.env
+ExecStartPre=-/usr/bin/docker rm -f cn-jina-reader
+# Jina runs a headless Chrome and LibreOffice. The memory limit keeps a page
+# that blows up Chrome from starving the other services of this 8 GB machine.
+ExecStart=/usr/bin/docker run --rm --name cn-jina-reader -p 127.0.0.1:8789:8080 --memory 3g -e DATAIMPULSE_PROXY_URL=${YTDLP_PROXY_URL} cn-jina-reader
+ExecStop=/usr/bin/docker stop cn-jina-reader
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

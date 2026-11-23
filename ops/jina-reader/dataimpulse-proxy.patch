@@ -1,0 +1,56 @@
+diff --git a/src/services/proxy-provider/dataimpulse.ts b/src/services/proxy-provider/dataimpulse.ts
+new file mode 100644
+index 0000000..f0d5872
+--- /dev/null
++++ b/src/services/proxy-provider/dataimpulse.ts
+@@ -0,0 +1,28 @@
++const TWO_LETTER_COUNTRY_CODE = /^[a-z]{2}$/;
++
++/**
++ * DataImpulse's residential proxy gateway. It gives every new connection a
++ * different device, so one fixed address serves every allocation. The country
++ * goes into the username as "__cr.<code>", which is DataImpulse's own syntax.
++ * Added by cn-return-bot (GOO-853); it is not part of upstream Jina Reader.
++ */
++export class DataImpulseProxyProvider {
++    baseProxyUrl: URL;
++
++    constructor(gatewayUrl: string) {
++        this.baseProxyUrl = new URL(gatewayUrl);
++    }
++
++    supports(countryCode: string) {
++        return countryCode === 'any' || TWO_LETTER_COUNTRY_CODE.test(countryCode);
++    }
++
++    async alloc(inputCountryCode?: string) {
++        const countryCode = inputCountryCode?.toLowerCase() || 'any';
++        const url = new URL(this.baseProxyUrl);
++        if (countryCode !== 'any' && countryCode !== 'auto') {
++            url.username = `${this.baseProxyUrl.username}__cr.${countryCode}`;
++        }
++        return url;
++    }
++}
+diff --git a/src/services/proxy-provider/index.ts b/src/services/proxy-provider/index.ts
+index a66b24f..6d78c73 100644
+--- a/src/services/proxy-provider/index.ts
++++ b/src/services/proxy-provider/index.ts
+@@ -1,6 +1,7 @@
+ import { singleton } from 'tsyringe';
+ import { EnvConfig } from '../envconfig';
+ import { ThorDataProxyProvider } from './thordata';
++import { DataImpulseProxyProvider } from './dataimpulse';
+ // import { BrightDataProxyProvider } from './brightdata';
+ import { AsyncService } from 'civkit/async-service';
+ import { randomPick } from 'civkit/random';
+@@ -26,6 +27,9 @@ export class ProxyProviderService extends AsyncService {
+ 
+     override async init() {
+         await this.dependencyReady();
++        if (this.envConfig.dynamic.DATAIMPULSE_PROXY_URL) {
++            this.clients.push(new DataImpulseProxyProvider(this.envConfig.dynamic.DATAIMPULSE_PROXY_URL));
++        }
+         if (this.envConfig.THORDATA_PROXY_URL) {
+             this.clients.push(new ThorDataProxyProvider(
+                 this.envConfig.THORDATA_PROXY_URL,
