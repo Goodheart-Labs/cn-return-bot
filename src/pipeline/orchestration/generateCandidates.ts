@@ -197,6 +197,14 @@ export async function collectFastPosts(
   return { selected, fresh: allFresh };
 }
 
+/** The commit the code runs on: GitHub's on Actions, the checkout's on the
+ *  services box. Each pipeline run records it. */
+function deployedCommit(): string | undefined {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA;
+  const head = Bun.spawnSync(["git", "rev-parse", "HEAD"]);
+  return head.success ? head.stdout.toString().trim() : undefined;
+}
+
 /** The views the post will still get, from its count in this run's fetch and
  *  the recorder's earlier reading. */
 function viewsToComeNow(post: Post, earlier: ViewReading | undefined, asOfMs: number): number | null {
@@ -343,6 +351,8 @@ export interface ProcessPostsOptions {
   /** Why the Claude Code note writer cannot take tweets in this run, or null
    *  when it can. A tweet that draws Claude then fails. See claudeTweets.ts. */
   claudeUnavailable?: string | null;
+  /** Called when a post's check throws instead of ending in an outcome. */
+  onTweetFailed?: (post: Post, err: unknown) => void | Promise<void>;
 }
 
 /**
@@ -356,11 +366,11 @@ export interface ProcessPostsOptions {
 export async function processPosts(
   items: ProcessPostItem[],
   supabaseLogger: SupabaseLogger | null,
-  { onTweetProcessed, label = "generate", deadlineMs, claudeUnavailable = null }: ProcessPostsOptions,
+  { onTweetProcessed, onTweetFailed, label = "generate", deadlineMs, claudeUnavailable = null }: ProcessPostsOptions,
 ): Promise<Candidate[]> {
   if (!items.length) return [];
 
-  const commit = process.env.GITHUB_SHA;
+  const commit = deployedCommit();
   const outerForcedPicks = getForcedPicks();
 
   const queue = new PQueue({ concurrency: CONCURRENCY_LIMIT });
@@ -460,6 +470,13 @@ export async function processPosts(
           pipelineRunId: tweetResult.pipelineRunId,
         });
       }
+    }).catch(async (err) => {
+      // A check that throws, for example because the claim-check service
+      // refused it, must not become an unhandled rejection: in the feed daemon
+      // that would end the process and every other check running in it. Its
+      // run row stays open until the sweep closes it.
+      console.error(`[${label}] the check of ${item.post.id} failed:`, err);
+      await onTweetFailed?.(item.post, err);
     });
   }
 

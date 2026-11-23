@@ -32,6 +32,7 @@ import "dotenv/config";
 import { walkEligiblePages } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { currentXAccount } from "../api/xAccount";
+import { syncAbTests } from "../pipeline/ab-testing/syncAbTests";
 import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
 import { formatViewsToCome, type ViewReading } from "../pipeline/utils/viewsToCome";
@@ -120,6 +121,10 @@ async function runDaemon(): Promise<never> {
   const writer = new XNoteWriter(logger, tellSlack);
   const storedPostIds = new Set<string>();
   let before: Map<string, ViewReading> | null = null;
+  // The notewriter page counts runs from before a test existed as its default
+  // arm, so every test of AB_TESTS must be in x_ab_tests. A deploy restarts
+  // the daemon, so syncing at start catches every new test.
+  await syncAbTests().catch((err) => console.error("[x-notes] could not sync the A/B tests:", err));
   console.log("[feed-views] started");
   for (;;) {
     const nextSlot = Math.ceil(Date.now() / WALK_INTERVAL_MS) * WALK_INTERVAL_MS;

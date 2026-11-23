@@ -1173,7 +1173,7 @@ export class SupabaseLogger {
    *  did not see is missing from the map. */
   async getRecordedViews(tweetIds: string[], walk: RecorderWalk): Promise<Map<string, ViewReading>> {
     // tweet_id is a bigint, which JSON would round, so it is read as text.
-    const rows = await fetchInBatches<{ tweet_id: string; impressions: number; observed_at: string }>(
+    const rows = await fetchInBatches<{ tweet_id: string; impressions: number | null; observed_at: string }>(
       (chunk) => this.client.from("feed_tweet_views").select("tweet_id::text, impressions, observed_at")
         .gte("observed_at", walk.startedAt)
         .lte("observed_at", walk.finishedAt)
@@ -1182,7 +1182,9 @@ export class SupabaseLogger {
       "tweet_id",
       { label: "getRecordedViews" },
     );
-    return new Map(rows.map((r) => [r.tweet_id, { impressions: Number(r.impressions), observedAtMs: Date.parse(r.observed_at) }]));
+    // A reading without a count is no reading: counting it as 0 views would make
+    // the post look as if it had gained all its views in 10 minutes.
+    return new Map(rows.filter((r) => r.impressions !== null).map((r) => [r.tweet_id, { impressions: Number(r.impressions), observedAtMs: Date.parse(r.observed_at) }]));
   }
 
   // ============================================

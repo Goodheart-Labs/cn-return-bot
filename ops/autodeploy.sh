@@ -84,7 +84,8 @@ deploy_new_code() {
     return 0
   fi
   if ! machine_is_idle; then
-    touch "$DRAIN_FILE"
+    # Created once, so its age tells the note writer how long new checks have been paused.
+    [ -e "$DRAIN_FILE" ] || touch "$DRAIN_FILE"
     echo "deferring deploy of ${upstream:0:10}; new tweet checks are paused until the services are idle"
     return 0
   fi

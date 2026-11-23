@@ -8,7 +8,11 @@ export interface Scorer {
 }
 
 // Predicted views still to come when the post has a prediction, velocity when
-// not. Within one run either every admitted post has a prediction or none has.
+// not. At admission all posts of a round are of one kind. At submission they
+// can mix, for example a queued note from before GOO-863 with fresh ones, so
+// the velocity_only arm's submit score compares unlike numbers then. With the
+// note queue on, the note rater orders submissions, so that score is only
+// logged.
 const logReach = (f: RankFeatures) => {
   const v = f.viewsToCome ?? f.velocityPerHour;
   return v === null ? 0 : Math.min(9, Math.log10(Math.max(v, 1)));

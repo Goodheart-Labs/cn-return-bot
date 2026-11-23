@@ -23,7 +23,7 @@
  * claim-check service is stuck. Queued notes still go out.
  */
 
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import type { SupabaseLogger } from "../api/supabaseClient";
 import { claudeUnavailableReason } from "../claude-notes/xShare";
 import type { WalkResult } from "../feed-views/walk";
@@ -53,6 +53,9 @@ const FAILED_CHECKS_ALARM = 10;
 /** ops/autodeploy.sh creates this file while a deploy waits for the services
  *  to go idle, and removes it after the deploy. */
 const DRAIN_FILE = "/run/cn-autodeploy-drain";
+/** A deploy should drain the services within minutes. A pause longer than
+ *  this fails the round, so the daemon's silence watch tells Slack. */
+const DRAIN_ALARM_MS = 30 * 60_000;
 
 export class XNoteWriter {
   private runningChecks = 0;
@@ -94,6 +97,10 @@ export class XNoteWriter {
   /** How many new tweets to check now, or 0 when none may be checked. */
   private async checkBudget(): Promise<number> {
     if (existsSync(DRAIN_FILE)) {
+      const pausedMs = Date.now() - statSync(DRAIN_FILE).mtimeMs;
+      if (pausedMs > DRAIN_ALARM_MS) {
+        throw new Error(`a deploy has paused new tweet checks for ${Math.round(pausedMs / 60_000)} minutes; it waits for the services to go idle (${DRAIN_FILE})`);
+      }
       console.log("[x-notes] a deploy waits for the services to go idle; no new tweets until it is done");
       return 0;
     }
@@ -131,11 +138,17 @@ export class XNoteWriter {
     this.runningChecks++;
     try {
       const candidates = await withForcedPicks({ ...getForcedPicks(), ranking_policy: policy }, () =>
-        processPosts([sourced], this.logger, { label: "x-notes", claudeUnavailable, onTweetProcessed: (event) => this.countOutcome(event.tweetResult.outcome) }));
+        processPosts([sourced], this.logger, {
+          label: "x-notes",
+          claudeUnavailable,
+          onTweetProcessed: (event) => this.countOutcome(event.tweetResult.outcome),
+          onTweetFailed: () => this.countOutcome("failed"),
+        }));
       const runIds = candidates.map((c) => c.tweetResult.pipelineRunId).filter((id): id is string => !!id);
       if (runIds.length) {
         await this.logger.markRunsQueued(runIds);
-        await this.submitQueue();
+        // A failure here is not the check's; the next round submits the queue again.
+        await this.submitQueue().catch((err) => console.error("[x-notes] submitting the queue failed:", err));
       }
     } catch (err) {
       console.error(`[x-notes] the check of ${sourced.post.id} failed:`, err);
@@ -157,10 +170,13 @@ export class XNoteWriter {
     await this.tellSlack(`The X note writer's last ${this.failedInARow} tweet checks all failed. Their reasons are in pipeline_runs.error_message and in journalctl -u cn-feed-views.`);
   }
 
-  /** Submits the note queue. Calls never overlap: each waits for the one before. */
-  submitQueue(): Promise<void> {
-    this.submission = this.submission.then(() => this.submitQueueNow()).catch((err) => console.error("[x-notes] submitting the queue failed:", err));
-    return this.submission;
+  /** Submits the note queue. Calls never overlap: each waits for the one
+   *  before. A failure rejects this call, so a round fails and the silence
+   *  watch hears of it, but does not stop the next call. */
+  private submitQueue(): Promise<void> {
+    const run = this.submission.then(() => this.submitQueueNow());
+    this.submission = run.catch(() => undefined);
+    return run;
   }
 
   private async submitQueueNow(): Promise<void> {
