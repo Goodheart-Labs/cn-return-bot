@@ -9,10 +9,13 @@
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 
-/** A self-hosted text this much shorter or longer than hosted's counts as a
- *  different text, not the same page. */
-const SIMILAR_LENGTH_RATIO = 0.5;
+/** Self-hosted found the same page when its text has this share of the hosted
+ *  text's distinct words. Pages with comments or feeds change over the days
+ *  between the two reads, so they score lower. */
 const SIMILAR_WORD_OVERLAP = 0.8;
+/** A self-hosted text this many times longer than hosted's is reported apart,
+ *  because every extra character is a token for the model that reads it. */
+const MUCH_LONGER_FACTOR = 3;
 const PASS_SHARE = 0.9;
 
 interface Comparison {
@@ -35,6 +38,8 @@ console.log(`${rows.length} pages compared`);
 console.log(`hosted Jina read ${hostedRead.length}. Self-hosted read ${bothRead.length} of them (${percent(bothRead.length, hostedRead.length)}), ${similar.length} with a similar text (${percent(similar.length, hostedRead.length)}).`);
 console.log(`bar: ${PASS_SHARE * 100}% of hosted's reads with a similar text -> ${similar.length >= PASS_SHARE * hostedRead.length ? "PASSED" : "NOT PASSED"}`);
 console.log(`hosted Jina failed on ${hostedFailed.length}. Self-hosted read ${onlySelfHosted.length} of those.`);
+const muchLonger = bothRead.filter((row) => row.selfHosted.chars > MUCH_LONGER_FACTOR * row.hosted.chars);
+console.log(`${muchLonger.length} of the pages both read came back more than ${MUCH_LONGER_FACTOR} times longer from self-hosted. Total characters: hosted ${sum(bothRead.map((row) => row.hosted.chars))}, self-hosted ${sum(bothRead.map((row) => row.selfHosted.chars))}.`);
 console.log(`median time ${median(rows.map((row) => row.selfHosted.ms))} ms, slowest ${Math.max(...rows.map((row) => row.selfHosted.ms))} ms`);
 
 console.log("\nWhat self-hosted did on the pages hosted Jina read:");
@@ -48,9 +53,11 @@ for (const row of hostedRead.filter((row) => !isSimilar(row))) {
 }
 
 function isSimilar(row: Comparison): boolean {
-  if (row.selfHosted.result !== "good") return false;
-  const lengthRatio = Math.min(row.selfHosted.chars, row.hosted.chars) / Math.max(row.selfHosted.chars, row.hosted.chars);
-  return lengthRatio >= SIMILAR_LENGTH_RATIO && (row.wordOverlap ?? 0) >= SIMILAR_WORD_OVERLAP;
+  return row.selfHosted.result === "good" && (row.wordOverlap ?? 0) >= SIMILAR_WORD_OVERLAP;
+}
+
+function sum(values: number[]): number {
+  return values.reduce((total, value) => total + value, 0);
 }
 
 function describe(row: Comparison): string {
