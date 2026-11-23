@@ -47,7 +47,7 @@ own proxy pools, which get through more often.
 
 ## Running it
 
-- Jina's Node process grows by about 15 MB per read and does not give the
+- Jina's Node process grows by about 20 MB per read and does not give the
   memory back, also with a V8 heap limit. The container reached its 4 GB limit
   and was killed 3 times in the 563 reads, so about once per 190 reads.
 - A read takes 10 seconds in the median, and up to 60 when both requests time
