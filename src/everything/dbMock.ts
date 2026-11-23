@@ -15,6 +15,9 @@ export const dbState = {
   existingItem: null as { id: string; status: string; checked_scope: "page" | "paragraph" | null; first_checked_at: string | null } | null,
   /** What fetchDemandedPages answers, before the bars are applied. */
   demandedPages: [] as { page_url: string; feed_url: string | null; kind: "text" | "youtube"; readers: number }[],
+  /** What fetchDemandedListed answers, before the bars are applied. Null is
+   *  a database without migration 199. */
+  demandedListed: [] as { item_id: string; page_url: string; kind: "text" | "youtube"; readers: number }[] | null,
   /** Makes recordDemandQueued fail, as when its table cannot be written. */
   recordDemandFails: false,
   /** What fetchItemOutcomesSince answers: the last hour of reads. */
@@ -50,6 +53,7 @@ export const resetDbState = () => {
   dbState.creatorProjects = [];
   dbState.demandedPages = [];
   dbState.demandReport = [];
+  dbState.demandedListed = [];
   dbState.recordDemandFails = false;
   dbState.itemOutcomes = [];
   dbState.creatorVisitScores = [];
@@ -110,6 +114,14 @@ export const dbMock = () => ({
         return bar !== null && p.readers >= bar;
       }),
     ),
+  fetchDemandedListed: (textReaders: number | null, youtubeReaders: number | null) =>
+    Promise.resolve(
+      dbState.demandedListed?.filter((p) => {
+        const bar = p.kind === "text" ? textReaders : youtubeReaders;
+        return bar !== null && p.readers >= bar;
+      }) ?? null,
+    ),
+  markItemDemanded: record("markItemDemanded"),
   fetchDemandReport: () => Promise.resolve(dbState.demandReport),
   recordDemandQueued: (...args: unknown[]) =>
     dbState.recordDemandFails ? Promise.reject(new Error("log is down")) : record("recordDemandQueued")(...args),

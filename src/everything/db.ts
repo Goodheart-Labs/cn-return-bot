@@ -1075,6 +1075,29 @@ export async function fetchDemandedPages(textReaders: number | null, youtubeRead
   ) as DemandedPage[];
 }
 
+/** A waiting post on the list that enough different readers opened in the last
+ *  7 days (everything_demanded_listed, migration 199). */
+export interface DemandedListedPost {
+  item_id: string;
+  page_url: string;
+  kind: "text" | "youtube";
+  readers: number;
+}
+
+/** The waiting posts reader demand would move up now, most readers first. A
+ *  null bar leaves that kind out. Null while migration 199 is not applied. */
+export async function fetchDemandedListed(textReaders: number | null, youtubeReaders: number | null): Promise<DemandedListedPost[] | null> {
+  const { data, error } = await getSupabaseClient().rpc("everything_demanded_listed", { p_text_readers: textReaders, p_youtube_readers: youtubeReaders });
+  // PGRST202 is PostgREST's "no such function".
+  if (error?.code === "PGRST202") return null;
+  return throwOnError({ data, error }) as DemandedListedPost[];
+}
+
+/** Marks a waiting post as demanded by readers, which moves it up the list. */
+export async function markItemDemanded(itemId: string): Promise<void> {
+  throwOnError(await getSupabaseClient().from("everything_items").update({ demanded_at: new Date().toISOString() }).eq("id", itemId).is("demanded_at", null));
+}
+
 /** One kind's row of everything_demand_report. */
 export interface DemandReportRow {
   kind: "text" | "youtube";

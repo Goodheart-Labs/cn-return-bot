@@ -3735,6 +3735,19 @@ export type Database = {
           with_notes: number
         }[]
       }
+      everything_demanded_listed: {
+        Args: {
+          p_limit?: number
+          p_text_readers: number
+          p_youtube_readers: number
+        }
+        Returns: {
+          item_id: string
+          kind: string
+          page_url: string
+          readers: number
+        }[]
+      }
       everything_demanded_pages: {
         Args: {
           p_limit?: number

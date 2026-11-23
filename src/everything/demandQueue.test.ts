@@ -95,6 +95,56 @@ describe("queueDemandedPages", () => {
   });
 });
 
+describe("a post already waiting on the list", () => {
+  const listed = (n: number, kind: "text" | "youtube", readers: number) => ({
+    item_id: `item-${kind}-${n}`,
+    page_url: kind === "text" ? text(n).page_url : video(n).page_url,
+    kind,
+    readers,
+  });
+  const movedIds = () => (dbState.calls.markItemDemanded ?? []).map(([id]) => id);
+
+  test("moves up at its second reader, is recorded, and gets no second item", async () => {
+    dbState.demandedListed = [listed(1, "text", 2), listed(2, "text", 1), listed(1, "youtube", 2)];
+    expect(await queueDemandedPages(demandSettings({}))).toBe(2);
+    expect(movedIds()).toEqual(["item-text-1", "item-youtube-1"]);
+    expect(dbState.calls.insertQueuedItem).toBeUndefined();
+    expect(dbState.calls.recordDemandQueued![0]![0]).toEqual({ page_url: text(1).page_url, kind: "text", readers: 2, queued: true });
+  });
+
+  test("shares the daily cap with the pages that had no item", async () => {
+    dbState.demandedPages = [video(1)];
+    dbState.demandedListed = [listed(2, "youtube", 4), listed(3, "youtube", 3)];
+    dbState.demandReport = [{ kind: "youtube", queued_24h: 18, settled: 0, checked: 0, with_notes: 0 }];
+    expect(await queueDemandedPages(demandSettings({}))).toBe(2);
+    expect(queuedUrls()).toEqual([video(1).page_url]);
+    expect(movedIds()).toEqual(["item-youtube-2"]);
+  });
+
+  test("0 switches it off for a kind, and the other rule still runs", async () => {
+    dbState.demandedPages = [text(1)];
+    dbState.demandedListed = [listed(2, "text", 9), listed(1, "youtube", 9)];
+    const settings = demandSettings({ EVERYTHING_DEMAND_LISTED_TEXT_READERS: "0", EVERYTHING_DEMAND_YOUTUBE_READERS: "0" });
+    expect(await queueDemandedPages(settings)).toBe(2);
+    expect(queuedUrls()).toEqual([text(1).page_url]);
+    expect(movedIds()).toEqual(["item-youtube-1"]);
+  });
+
+  test("is not moved while the log cannot record it", async () => {
+    dbState.demandedListed = [listed(1, "text", 2)];
+    dbState.recordDemandFails = true;
+    await expect(queueDemandedPages(demandSettings({}))).rejects.toThrow("log is down");
+    expect(dbState.calls.markItemDemanded).toBeUndefined();
+  });
+
+  test("a database without migration 199 changes nothing for the first rule", async () => {
+    dbState.demandedPages = [text(1)];
+    dbState.demandedListed = null;
+    expect(await queueDemandedPages(demandSettings({}))).toBe(1);
+    expect(dbState.calls.markItemDemanded).toBeUndefined();
+  });
+});
+
 describe("a source that is failing", () => {
   const failed = { source: "youtube", outcome: "failed" as const };
 

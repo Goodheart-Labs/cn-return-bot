@@ -21,6 +21,10 @@ Environment=FETCH_SERVICE_SOCKET=/run/cn-fetch/fetch.sock
 #Environment=EVERYTHING_DEMAND_TEXT_DAILY_CAP=20
 #Environment=EVERYTHING_DEMAND_YOUTUBE_READERS=5
 #Environment=EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP=20
+# A post already waiting on the list moves up at its 2nd reader, within the
+# same daily caps. 0 switches a kind off.
+#Environment=EVERYTHING_DEMAND_LISTED_TEXT_READERS=2
+#Environment=EVERYTHING_DEMAND_LISTED_YOUTUBE_READERS=2
 # The creators below the walk's bar whose posts are listed too, below every
 # walked creator's (kindsBelowBar in src/walk/feedSchedule.ts). Unset means
 # the text kinds. Add youtube for the channels; 0 switches it off.

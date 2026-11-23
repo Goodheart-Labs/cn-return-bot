@@ -17,11 +17,13 @@
 
 import { classifyRequestSource, projectForRequest } from "./consumeRequests";
 import {
+  fetchDemandedListed,
   fetchDemandedPages,
   fetchDemandReport,
   fetchItemOutcomesSince,
   findItemForPageUrl,
   insertQueuedItem,
+  markItemDemanded,
   recordDemandQueued,
   type DemandedPage,
 } from "./db";
@@ -33,8 +35,11 @@ type Kind = DemandedPage["kind"];
  *  services box (ops/cn-walk.service). A bar or a cap of 0 switches that kind
  *  off. Videos need more readers than text
  *  posts: at 3 readers a queued video drew no more later readers than a walk
- *  post (0.79 against 0.83 over 10 days to 2026-11-17), at 5 it drew 1.39. */
-const DEFAULTS = { textReaders: 3, textDailyCap: 20, youtubeReaders: 5, youtubeDailyCap: 20 };
+ *  post (0.79 against 0.83 over 10 days to 2026-11-17), at 5 it drew 1.39.
+ *  A post already waiting on the list moves up at its second reader: replayed
+ *  on 2026-11-19 to 11-23 that moved 4 text posts and 23 videos a day, which 15
+ *  later readers a day opened, and the posts they put back drew 0.06 each. */
+const DEFAULTS = { textReaders: 3, textDailyCap: 20, youtubeReaders: 5, youtubeDailyCap: 20, listedTextReaders: 2, listedYoutubeReaders: 2 };
 
 /** An unset or unreadable variable means the default; "0" means off. */
 export function setting(raw: string | undefined, fallback: number): number {
@@ -42,14 +47,16 @@ export function setting(raw: string | undefined, fallback: number): number {
   return Number.isInteger(value) && value >= 0 ? value : fallback;
 }
 
-export function demandSettings(env: Record<string, string | undefined> = process.env): Record<Kind, { readers: number; dailyCap: number }> {
+export function demandSettings(env: Record<string, string | undefined> = process.env): Record<Kind, { readers: number; listedReaders: number; dailyCap: number }> {
   return {
     text: {
       readers: setting(env.EVERYTHING_DEMAND_TEXT_READERS, DEFAULTS.textReaders),
+      listedReaders: setting(env.EVERYTHING_DEMAND_LISTED_TEXT_READERS, DEFAULTS.listedTextReaders),
       dailyCap: setting(env.EVERYTHING_DEMAND_TEXT_DAILY_CAP, DEFAULTS.textDailyCap),
     },
     youtube: {
       readers: setting(env.EVERYTHING_DEMAND_YOUTUBE_READERS, DEFAULTS.youtubeReaders),
+      listedReaders: setting(env.EVERYTHING_DEMAND_LISTED_YOUTUBE_READERS, DEFAULTS.listedYoutubeReaders),
       dailyCap: setting(env.EVERYTHING_DEMAND_YOUTUBE_DAILY_CAP, DEFAULTS.youtubeDailyCap),
     },
   };
@@ -60,17 +67,19 @@ const NAME: Record<Kind, string> = { text: "text posts", youtube: "videos" };
 /** The item source each kind is queued as (classifyRequestSource). */
 const SOURCE: Record<Kind, string> = { text: "web", youtube: "youtube" };
 
-/** Queues the pages readers opened, up to each kind's daily cap. Returns how
- *  many it queued. */
+/** Queues the pages readers opened and moves up the waiting posts they
+ *  opened, up to each kind's daily cap, which both share. Returns how many it
+ *  queued or moved up. */
 export async function queueDemandedPages(settings = demandSettings()): Promise<number> {
   console.log("\nREADER DEMAND · pages without notes that several readers opened in the last 7 days");
   const report = await fetchDemandReport();
   const left = {} as Record<Kind, number>;
   for (const kind of KINDS) {
     const row = report.find((r) => r.kind === kind);
-    const { readers, dailyCap } = settings[kind];
-    left[kind] = readers > 0 ? Math.max(0, dailyCap - (row?.queued_24h ?? 0)) : 0;
-    const state = readers === 0 || dailyCap === 0 ? "off" : `from ${readers} readers · ${row?.queued_24h ?? 0} of ${dailyCap} queued in the last 24 h`;
+    const { readers, listedReaders, dailyCap } = settings[kind];
+    left[kind] = Math.max(0, dailyCap - (row?.queued_24h ?? 0));
+    const bars = [readers > 0 ? `from ${readers} readers` : "", listedReaders > 0 ? `already listed from ${listedReaders}` : ""].filter(Boolean).join(", ");
+    const state = !bars || dailyCap === 0 ? "off" : `${bars} · ${row?.queued_24h ?? 0} of ${dailyCap} queued in the last 24 h`;
     // What became of the pages queued 2 to 9 days ago is what the bars and
     // caps are tuned by, above all for videos, many of which are music.
     const outcome = row?.settled ? ` · of ${row.settled} queued 2 to 9 days ago, ${row.checked} were checked and ${row.with_notes} got a note` : "";
@@ -87,7 +96,8 @@ export async function queueDemandedPages(settings = demandSettings()): Promise<n
   }
   if (KINDS.every((kind) => left[kind] === 0)) return 0;
 
-  const pages = await fetchDemandedPages(left.text > 0 ? settings.text.readers : null, left.youtube > 0 ? settings.youtube.readers : null);
+  const bar = (kind: Kind, readers: number) => (left[kind] > 0 && readers > 0 ? readers : null);
+  const pages = await fetchDemandedPages(bar("text", settings.text.readers), bar("youtube", settings.youtube.readers));
   let queued = 0;
   for (const page of pages) {
     if (left[page.kind] === 0) continue;
@@ -116,6 +126,35 @@ export async function queueDemandedPages(settings = demandSettings()): Promise<n
       console.log(`  could not queue ${page.page_url}: ${err?.message ?? "unknown error"}`);
     }
   }
+  queued += await moveUpListedPosts(bar("text", settings.text.listedReaders), bar("youtube", settings.youtube.listedReaders), left);
   if (queued === 0) console.log("  nothing new to queue");
   return queued;
+}
+
+/** Moves up the posts that wait on the list while readers open them
+ *  (everything_demanded_listed, migration 199). Since cn-walk lists every
+ *  known creator's posts, most pages readers open already have an item, which
+ *  the rule above never takes. */
+async function moveUpListedPosts(textReaders: number | null, youtubeReaders: number | null, left: Record<Kind, number>): Promise<number> {
+  if (textReaders === null && youtubeReaders === null) return 0;
+  const posts = await fetchDemandedListed(textReaders, youtubeReaders);
+  if (posts === null) {
+    console.log("  waiting posts are not moved up: migration 199 is not applied");
+    return 0;
+  }
+  let moved = 0;
+  for (const post of posts) {
+    if (left[post.kind] === 0) continue;
+    // Recorded first, as above, so the daily cap always holds.
+    await recordDemandQueued({ page_url: post.page_url, kind: post.kind, readers: post.readers, queued: true });
+    left[post.kind]--;
+    try {
+      await markItemDemanded(post.item_id);
+      moved++;
+      console.log(`  moved up, ${post.readers} readers: ${post.page_url}`);
+    } catch (err: any) {
+      console.log(`  could not move up ${post.page_url}: ${err?.message ?? "unknown error"}`);
+    }
+  }
+  return moved;
 }
