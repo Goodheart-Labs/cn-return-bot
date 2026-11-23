@@ -19,9 +19,11 @@ Requires=docker.service
 [Service]
 EnvironmentFile=/etc/cn-return-bot/service.env
 ExecStartPre=-/usr/bin/docker rm -f cn-jina-reader
+# Inside the container Jina serves plain HTTP/1.1 on 8081. Its port 8080
+# speaks only HTTP/2, which Bun's fetch cannot use without TLS.
 # Jina runs a headless Chrome and LibreOffice. The memory limit keeps a page
 # that blows up Chrome from starving the other services of this 8 GB machine.
-ExecStart=/usr/bin/docker run --rm --name cn-jina-reader -p 127.0.0.1:8789:8080 --memory 3g -e DATAIMPULSE_PROXY_URL=${YTDLP_PROXY_URL} cn-jina-reader
+ExecStart=/usr/bin/docker run --rm --name cn-jina-reader -p 127.0.0.1:8789:8081 --memory 3g -e DATAIMPULSE_PROXY_URL=${YTDLP_PROXY_URL} cn-jina-reader
 ExecStop=/usr/bin/docker stop cn-jina-reader
 Restart=always
 RestartSec=5

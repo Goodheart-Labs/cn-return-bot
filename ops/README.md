@@ -12,6 +12,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-walk` | keeps every walked creator's feed on a schedule and adds their new posts to the post list (GOO-791) | none |
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
+| `cn-jina-reader` | a Docker container that runs Jina Reader, the page reader's last step (GOO-853) | 127.0.0.1:8789 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
 | `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed (GOO-834) | none |
 
@@ -79,12 +80,6 @@ GEMINI_API_KEY_FREE=
 GROQ_API_KEY=
 XAI_API_KEY=
 SERPER_API_KEY=
-# Jina Reader: a paid last resort for a page that every free fetch step failed
-# on, and for an API that a bot check keeps closed even to headless Chromium,
-# such as the EA Forum's. Every service that reads pages uses it while
-# JINA_FALLBACK in src/pipeline/fetch/jinaReader.ts is on. A missing key throws
-# on the first read that needs Jina.
-JINA_API_KEY=
 
 # The scoring step inside a claim check calls X's evaluate-note API
 # (read by src/api/getOAuthToken.ts)
@@ -151,6 +146,32 @@ Then add `YOUTUBE_DATA_V3_API_KEY=` to the environment file and
 `systemctl restart cn-intake`. A caption download without the provider fails
 with "The PO token provider at http://127.0.0.1:4416 did not answer", which
 is the line to look for in `journalctl -u cn-intake`.
+
+## Jina Reader
+
+The page reader's last step is Jina Reader, Jina AI's open-source page
+reader, run by `cn-jina-reader.service` on 127.0.0.1:8789 (GOO-853). Its
+image is built from `ops/jina-reader/`: a pinned commit of
+github.com/jina-ai/reader plus our patch, which adds DataImpulse as the proxy
+Jina retries through when its direct fetch of a page fails. The container
+gets the proxy's address from `YTDLP_PROXY_URL` in the environment file and
+nothing else. `cn-autodeploy` builds the image on every deploy, from the
+deployed commit's files as GitHub serves them, and restarts the unit.
+
+On a machine set up before this existed, run once as root:
+
+```bash
+cd /opt/cn-return-bot/ops/jina-reader && docker build --tag cn-jina-reader .
+cp /opt/cn-return-bot/ops/cn-jina-reader.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-jina-reader
+curl -s -H 'Accept: application/json' http://127.0.0.1:8789/https://example.com | jq .data.title
+```
+
+A read that needs Jina while nothing answers on the port throws
+`JinaUnavailableError`. To read pages through Jina on another machine, such
+as the devbox, build the image the same way and run
+`docker run --rm -p 127.0.0.1:8789:8081 cn-jina-reader`, or forward the
+box's port with `ssh -N -L 8789:127.0.0.1:8789 root@95.217.155.79`.
 
 ## The daily site checks
 

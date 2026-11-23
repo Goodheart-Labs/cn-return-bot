@@ -41,6 +41,7 @@ RUN rm -rf ~/.config/chromium && mkdir -p ~/.config/chromium
 RUN NODE_COMPILE_CACHE=node_modules npm run dry-run
 ENV NODE_COMPILE_CACHE=node_modules
 ENV PORT=8080
-EXPOSE 8080
+# 8080 speaks only HTTP/2. The plain HTTP/1.1 server listens on 8081.
+EXPOSE 8081
 ENTRYPOINT ["node"]
 CMD ["build/stand-alone/crawl.js"]
