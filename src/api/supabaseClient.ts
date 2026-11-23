@@ -6,6 +6,7 @@ import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy"
 import { NOTE_RATER_SCORE_TYPE } from "../pipeline/prompts/noteRater";
 import { raterPriority, type NoteRating } from "../pipeline/score/noteRater";
 import { stripNullChars } from "../utils/stripNullChars";
+import { currentXAccount } from "./xAccount";
 import { RETRY_WINDOW_HOURS, retryEligibleTweetIds, type RunRow } from "../pipeline/orchestration/retryableFailures";
 import type { QueuedRun, QueuedTweetRow } from "../pipeline/orchestration/noteQueue";
 
@@ -236,7 +237,7 @@ export class SupabaseLogger {
   async logNoteSubmission(note: NoteInsert): Promise<Note | null> {
     const { data, error } = await this.client
       .from("notes")
-      .upsert(note, { onConflict: "note_id" })
+      .upsert({ ...note, x_account: currentXAccount() }, { onConflict: "note_id" })
       .select()
       .single();
 
@@ -256,6 +257,7 @@ export class SupabaseLogger {
     const { data, error } = await this.client
       .from("notes")
       .select("note_id, tweet_id, note_text, submitted_at")
+      .eq("x_account", currentXAccount())
       .gte("submitted_at", since)
       .order("submitted_at", { ascending: true })
       .limit(limit);
@@ -271,6 +273,7 @@ export class SupabaseLogger {
     const { data, error } = await this.client
       .from("pipeline_runs")
       .select("tweet_id, created_at, outcome, outcome_reason, final_stage")
+      .eq("x_account", currentXAccount())
       .gt("created_at", since)
       .order("created_at", { ascending: true })
       .limit(limit);
@@ -691,6 +694,7 @@ export class SupabaseLogger {
       .from("pipeline_runs")
       .insert({
         tweet_id: data.tweet_id,
+        x_account: currentXAccount(),
         bot_name: data.bot_name,
         ab_test_picks: data.ab_test_picks,
         bot_config: data.bot_config,
@@ -852,6 +856,7 @@ export class SupabaseLogger {
         error_message: `Run did not finish (sweeper marked failed after ${olderThanMinutes} min)`,
         final_stage: "error",
       })
+      .eq("x_account", currentXAccount())
       .eq("outcome", "in_progress")
       .lt("created_at", new Date(Date.now() - olderThanMinutes * 60_000).toISOString());
   }
@@ -865,6 +870,7 @@ export class SupabaseLogger {
         this.client
           .from("pipeline_runs")
           .select("id", { count: "exact", head })
+          .eq("x_account", currentXAccount())
           .eq("bot_name", CLAUDE_CODE_BOT)
           .eq("outcome", "in_progress")
           .gte("created_at", since.toISOString())
@@ -929,6 +935,7 @@ export class SupabaseLogger {
       (client) => client
         .from("pipeline_runs")
         .select("id, tweet_id, note_text, source_url, bot_name, created_at, velocity:logs->ranking->features->velocityPerHour, viewsToCome:logs->ranking->features->viewsToCome")
+        .eq("x_account", currentXAccount())
         .eq("outcome", "candidate")
         .eq("final_stage", "candidate")
         .eq("outcome_reason", QUEUED_REASON)
@@ -1000,6 +1007,7 @@ export class SupabaseLogger {
     const { data, error } = await this.client
       .from("pipeline_runs")
       .update({ outcome: "rejected", outcome_reason: "queue_expired", final_stage: "submission" })
+      .eq("x_account", currentXAccount())
       .eq("outcome", "candidate")
       .eq("final_stage", "candidate")
       .eq("outcome_reason", QUEUED_REASON)
@@ -1034,13 +1042,13 @@ export class SupabaseLogger {
   async getCooldownTweetIds(tweetIds: string[]): Promise<Set<string>> {
     const [notes, rejectedRuns] = await Promise.all([
       fetchInBatches<{ note_id: string; tweet_id: string }>(
-        (chunk) => this.client.from("notes").select("note_id, tweet_id").in("tweet_id", chunk),
+        (chunk) => this.client.from("notes").select("note_id, tweet_id").eq("x_account", currentXAccount()).in("tweet_id", chunk),
         tweetIds,
         "note_id",
         { label: "getCooldownTweetIds.notes" },
       ),
       fetchInBatches<{ id: string; tweet_id: string; created_at: string }>(
-        (chunk) => this.client.from("pipeline_runs").select("id, tweet_id, created_at").eq("outcome", "rejected").in("tweet_id", chunk),
+        (chunk) => this.client.from("pipeline_runs").select("id, tweet_id, created_at").eq("x_account", currentXAccount()).eq("outcome", "rejected").in("tweet_id", chunk),
         tweetIds,
         "id",
         { label: "getCooldownTweetIds.rejected" },
@@ -1098,6 +1106,7 @@ export class SupabaseLogger {
       ),
       fetchInBatches<RunRow & { id: string }>(
         (chunk) => this.client.from("pipeline_runs").select("id, tweet_id, outcome, outcome_reason, created_at")
+          .eq("x_account", currentXAccount())
           .gte("created_at", since)
           .in("tweet_id", chunk),
         tweetIds,
@@ -1106,10 +1115,36 @@ export class SupabaseLogger {
       ),
     ]);
     const known = new Set(rows.map((r) => r.tweet_id));
+    for (const tweetId of await this.handledOnlyByOtherAccounts([...known])) known.delete(tweetId);
     const retry = retryEligibleTweetIds(recentRuns);
     for (const tweetId of retry) known.delete(tweetId);
     if (retry.size) console.log(`[SupabaseLogger] ${retry.size} tweet(s) failed once for a transient reason and get another pass`);
     return known;
+  }
+
+  /**
+   * The given tweets that another X account checked and this one never did
+   * (GOO-851). Both accounts store the tweets they check in the tweets table,
+   * so a tweet there is not yet known to this account. The rows of other
+   * accounts are few and have their own index, so the first read is small.
+   */
+  private async handledOnlyByOtherAccounts(tweetIds: string[]): Promise<string[]> {
+    const account = currentXAccount();
+    const others = await fetchInBatches<{ id: string; tweet_id: string }>(
+      (chunk) => this.client.from("pipeline_runs").select("id, tweet_id").neq("x_account", account).in("tweet_id", chunk),
+      tweetIds,
+      "id",
+      { label: "handledOnlyByOtherAccounts.others" },
+    );
+    const checkedByOthers = [...new Set(others.map((r) => r.tweet_id))];
+    const own = await fetchInBatches<{ id: string; tweet_id: string }>(
+      (chunk) => this.client.from("pipeline_runs").select("id, tweet_id").eq("x_account", account).in("tweet_id", chunk),
+      checkedByOthers,
+      "id",
+      { label: "handledOnlyByOtherAccounts.own" },
+    );
+    const checkedByThisAccount = new Set(own.map((r) => r.tweet_id));
+    return checkedByOthers.filter((tweetId) => !checkedByThisAccount.has(tweetId));
   }
 
   // ============================================
@@ -1673,7 +1708,7 @@ export class SupabaseLogger {
   async countRecentSubmissions(hours: number): Promise<number> {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
-      (head) => this.client.from("notes").select("id", { count: "exact", head }).gte("submitted_at", since).limit(1),
+      (head) => this.client.from("notes").select("id", { count: "exact", head }).eq("x_account", currentXAccount()).gte("submitted_at", since).limit(1),
       "recent submissions",
     );
   }
@@ -1750,6 +1785,7 @@ export class SupabaseLogger {
       const { count, error } = await this.client
         .from("notes")
         .select("id", { count: "exact", head: true })
+        .eq("x_account", currentXAccount())
         .in("tweet_id", tweetIds.slice(i, i + 200))
         .gte("submitted_at", submitSince);
       if (error) throw error;
@@ -1762,7 +1798,7 @@ export class SupabaseLogger {
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
     return this.runExactCount(
       (head) =>
-        this.client.from("pipeline_runs").select("id", { count: "exact", head }).gte("created_at", since).limit(1),
+        this.client.from("pipeline_runs").select("id", { count: "exact", head }).eq("x_account", currentXAccount()).gte("created_at", since).limit(1),
       "recent pipeline runs",
     );
   }
@@ -1774,6 +1810,7 @@ export class SupabaseLogger {
         this.client
           .from("pipeline_runs")
           .select("id", { count: "exact", head })
+          .eq("x_account", currentXAccount())
           .gte("created_at", since)
           .in("outcome", outcomes)
           .limit(1),

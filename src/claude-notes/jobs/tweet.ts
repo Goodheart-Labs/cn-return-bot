@@ -10,6 +10,7 @@ import { screenImages } from "../imageScreen";
 import { tweetPrompt, X_EXAMPLES_PATH } from "../prompts";
 import { tweetHasExamples, tweetModel } from "../tweetArms";
 import { CLAUDE_RUN_TAGS } from "../usageShare";
+import { X_SHARES } from "../xShare";
 import { failXTweet, markXTweetRunning, openXTweets, xTweetIsOpen, type XTweet } from "../xTweets";
 import { type JobKind, mayRetry, STOP_BEFORE_DEADLINE_MS } from "./kind";
 
@@ -46,7 +47,7 @@ export const tweetJob: JobKind<XTweet> = {
   name: "tweet",
   sessionPrefix: "cn-x-",
   maxRunning: MAX_TWEETS_RUNNING,
-  tags: [CLAUDE_RUN_TAGS.x, CLAUDE_RUN_TAGS.tweet],
+  tags: (tweet) => [X_SHARES[tweet.xAccount].tag, CLAUDE_RUN_TAGS.tweet],
   key: (tweet) => tweet.runId,
 
   /** X tweets are not part of Claude's pace, because the X run already decided

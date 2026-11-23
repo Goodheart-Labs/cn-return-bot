@@ -102,7 +102,7 @@ export function createScheduler(deps: SchedulerDeps) {
   async function close(run: Running) {
     running.delete(id(run.kind, run.key));
     await deps.claudeEnded(run.timedOut ? `${run.session} was stopped at its time limit` : deps.sessions.failure(run.runDir));
-    await deps.recordRun({ tags: run.kind.tags, startedAt: run.startedAt, runDir: run.runDir, usage: deps.sessions.usage(run.runDir), ref: run.kind.ref(run.work, run.runDir) });
+    await deps.recordRun({ tags: run.kind.tags(run.work), startedAt: run.startedAt, runDir: run.runDir, usage: deps.sessions.usage(run.runDir), ref: run.kind.ref(run.work, run.runDir) });
     const ended: EndedRun = { runDir: run.runDir, attempt: run.attempt, startedAt: run.startedAt, weeklyAtStart: run.weeklyAtStart, weeklyAtEnd: await deps.weekly(), timedOut: run.timedOut };
     const outcome = await run.kind.close(run.work, ended);
     if (outcome === "gave_up") gaveUp.add(id(run.kind, run.key));

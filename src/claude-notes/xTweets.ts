@@ -4,6 +4,7 @@
  * pipeline_runs rows. Every write is guarded by the row's stage, so a Claude
  * that answers twice, or a retry after a note was saved, changes nothing. */
 
+import type { XAccount } from "../api/xAccount";
 import type { Json } from "../everything-core/database.types";
 import { fetchAllRows } from "../everything-core/paging";
 import { CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
@@ -19,6 +20,8 @@ const NOTE_STATUS = "CORRECTION WITH TRUSTWORTHY CITATION";
 export interface XTweet {
   runId: string;
   tweetId: string;
+  /** The X account the note is for. Its share of the plan pays (xShare.ts). */
+  xAccount: XAccount;
   createdAt: string;
   stage: string;
   input: string;
@@ -27,10 +30,10 @@ export interface XTweet {
 }
 
 export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTweet[] }> {
-  const rows = await fetchAllRows<{ id: string; tweet_id: string; created_at: string; final_stage: string; input: string; ab_test_picks: Record<string, string> }>(
+  const rows = await fetchAllRows<{ id: string; tweet_id: string; x_account: XAccount; created_at: string; final_stage: string; input: string; ab_test_picks: Record<string, string> }>(
     () => db()
       .from("pipeline_runs")
-      .select("id, tweet_id, created_at, final_stage, input:logs->claude->>input, ab_test_picks")
+      .select("id, tweet_id, x_account, created_at, final_stage, input:logs->claude->>input, ab_test_picks")
       .eq("bot_name", CLAUDE_CODE_BOT)
       .eq("outcome", "in_progress")
       .in("final_stage", [CLAUDE_WAITING_STAGE, CLAUDE_RUNNING_STAGE]),
@@ -38,7 +41,7 @@ export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTwee
     { label: "openXTweets" },
   );
   const tweets = rows
-    .map((r) => ({ runId: r.id, tweetId: r.tweet_id, createdAt: r.created_at, stage: r.final_stage, input: r.input, picks: r.ab_test_picks }))
+    .map((r) => ({ runId: r.id, tweetId: r.tweet_id, xAccount: r.x_account, createdAt: r.created_at, stage: r.final_stage, input: r.input, picks: r.ab_test_picks }))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   return { waiting: tweets.filter((t) => t.stage === CLAUDE_WAITING_STAGE), running: tweets.filter((t) => t.stage === CLAUDE_RUNNING_STAGE) };
 }

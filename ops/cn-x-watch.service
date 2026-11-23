@@ -1,0 +1,29 @@
+# The cn-x-watch service (GOO-851): the feed watcher of the WSDM Cup notewriter
+# account. Every 30 seconds it reads the account's small feed, hands each new
+# post to the Claude note writer on ai-box while the account's writing limit
+# has room, and submits the notes Claude wrote (src/x-watch/main.ts). It calls
+# X's API, Supabase and the claim-check service on this machine, never a page
+# a stranger chose, so it needs no cn-fetch. The account's keys are the
+# X_WSDM_* lines of service.env. A new unit is installed by hand once
+# (ops/README.md); autodeploy restarts it after.
+[Unit]
+Description=X feed watcher of the WSDM Cup notewriter account
+After=network-online.target cn-claim-check.service
+Wants=network-online.target
+
+[Service]
+User=cnbot
+WorkingDirectory=/opt/cn-return-bot
+EnvironmentFile=/etc/cn-return-bot/service.env
+Environment=PATH=/home/cnbot/.bun/bin:/home/cnbot/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=X_ACCOUNT=wsdm
+ExecStart=/home/cnbot/.bun/bin/bun run src/x-watch/main.ts
+Restart=always
+RestartSec=5
+PrivateTmp=yes
+# No process in this service may talk to a link-local address, where the cloud
+# provider's metadata service lives.
+IPAddressDeny=link-local
+
+[Install]
+WantedBy=multi-user.target

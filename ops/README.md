@@ -14,6 +14,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
 | `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed, which the X run predicts views from (GOO-834, GOO-863) | none |
+| `cn-x-watch` | every 30 seconds: the WSDM Cup notewriter account's feed watcher, which hands new small-feed posts to Claude and submits its notes (GOO-851) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
 Intake and the walk are callers: they hold the service key and write the rows.
@@ -196,6 +197,37 @@ journalctl -u cn-feed-views -f      # a "walk complete" line every 10 minutes
 ```
 
 `bun run cn-feed-views --dry-run` makes one walk and writes nothing.
+
+## The WSDM Cup notewriter's feed watcher
+
+`cn-x-watch` (src/x-watch/main.ts, GOO-851) writes the notes of the second X
+notewriter account, the WSDM Cup account. The unit sets `X_ACCOUNT=wsdm`, and
+the account's four keys are these lines of service.env:
+
+```
+X_WSDM_API_KEY=
+X_WSDM_API_KEY_SECRET=
+X_WSDM_ACCESS_TOKEN=
+X_WSDM_ACCESS_TOKEN_SECRET=
+```
+
+Every 30 seconds it sweeps the account's stale Claude tweets, submits the
+notes Claude wrote, and, while the writing limit has room, reads the account's
+small feed and hands each new post to the runner on ai-box. Until X admits the
+account it works in test mode: it writes only as many test notes as allowed,
+and checks hourly whether X admitted it. `bun run x-watch-allow-test-notes <n>`
+allows n more, and Slack hears when a batch is written and scored. The account has its own budget of 500 feed requests per
+15 minutes, so it shares nothing with the X run or cn-feed-views. When an hour
+passes without a good tick, it tells Slack. Once, as root:
+
+```bash
+cp /opt/cn-return-bot/ops/cn-x-watch.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-x-watch
+journalctl -u cn-x-watch -f
+```
+
+`bun run x-watch-test-notes` lists the account's test notes
+with X's evaluator scores.
 
 ## Deploys
 

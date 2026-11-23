@@ -112,9 +112,10 @@ export function singleTweetFieldParams(): Record<string, string> {
 async function fetchPage(
   maxResults: number,
   postSelection: string | undefined,
-  paginationToken: string | undefined
+  paginationToken: string | undefined,
+  testMode: boolean,
 ) {
-  const params = new URLSearchParams({ ...POST_API_FIELD_PARAMS, test_mode: "false", max_results: String(maxResults) });
+  const params = new URLSearchParams({ ...POST_API_FIELD_PARAMS, test_mode: String(testMode), max_results: String(maxResults) });
   if (postSelection) params.append("post_selection", postSelection);
   if (paginationToken) params.append("pagination_token", paginationToken);
 
@@ -141,14 +142,18 @@ export type FeedPage = {
  * Reads the feed one page at a time, in X's order, until X has no next page.
  * It makes the next request only when the caller asks for the next page, so a
  * caller that stops iterating makes no further requests.
+ *
+ * A writer that X has not admitted yet may only read the feed in test mode.
+ * X then serves the small feed, and a request outside test mode answers 403.
  */
 export async function* walkEligiblePages(
   postSelection: string | undefined,
   pageSize: number = MAX_POSTS_PER_PAGE,
+  testMode = false,
 ): AsyncGenerator<FeedPage> {
   let nextToken: string | undefined;
   do {
-    const response = await fetchPage(pageSize, postSelection, nextToken);
+    const response = await fetchPage(pageSize, postSelection, nextToken, testMode);
     nextToken = response.data.meta?.next_token;
     const remaining = response.headers?.["x-rate-limit-remaining"];
     yield {
