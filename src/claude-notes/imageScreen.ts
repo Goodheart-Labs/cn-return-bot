@@ -6,22 +6,20 @@
  * refuses every Read of one. This is one more layer in front: a job whose
  * input links to a flagged image gets no Claude at all.
  *
- * Each image is downloaded into memory, never onto the disk, and checked
- * twice:
- * 1. Arachnid Shield, the Canadian Centre for Child Protection's free API,
- *    compares the image with its list of fingerprints of known abuse images,
- *    including resized and edited copies. A known image is what gets an
- *    account banned, and the list almost never raises a false alarm.
- * 2. OpenAI's free moderation scores the image for sexual content. That model
- *    scores images only for sexual content in general; its category for
- *    minors works on text only (checked on 2026-11-19). So it refuses any
- *    image that looks sexual at all, with a low bar. A false alarm costs one
- *    tweet or one post.
+ * Each image is downloaded into memory, never onto the disk, and sent to
+ * Arachnid Shield, the Canadian Centre for Child Protection's free API. It
+ * compares the image with its list of fingerprints of known abuse images,
+ * including resized and edited copies. A known image is what gets an account
+ * banned, and the list almost never raises a false alarm.
  *
- * The image's bytes are sent, not its address: OpenAI cannot fetch some hosts
- * itself, and Arachnid fetches only from domains listed on our account. An
- * image that cannot be downloaded, or that OpenAI cannot read, is passed over,
- * because no Claude can see it either. Any other failure of either service
+ * Until GOO-852 (2026-11-23) OpenAI's moderation also scored every image for
+ * sexual content, and a low score stopped the job. Jim removed that check.
+ * For X tweets, the X run now drops every tweet that X marked as possibly
+ * sensitive (isPossiblySensitive in src/api/fetchEligiblePosts.ts).
+ *
+ * The image's bytes are sent, not its address, because Arachnid fetches only
+ * from domains listed on our account. An image that cannot be downloaded is
+ * passed over, because no Claude can see it either. Any failure of Arachnid
  * throws, so the job does not start.
  *
  * The screen runs only on a host that has the Arachnid Shield login. Jim
@@ -29,24 +27,18 @@
  * must keep working when it pulls main. Such a host starts its Claudes without
  * the screen. It still has the two older layers: the prompt rule against
  * opening images and the hook that refuses every Read of one. A host that has
- * the login but lacks the password or the OpenAI key throws on its first
- * image, because it was clearly meant to screen. */
+ * the login but lacks the password throws on its first image, because it was
+ * clearly meant to screen. */
 
 const ARACHNID_MEDIA_URL = "https://shield.projectarachnid.com/v1/media";
 /** Arachnid's answer for an image on none of its lists. Anything else, a known
  *  abuse image, harmful material or Arachnid's own test image, stops the job. */
 const ARACHNID_NO_MATCH = "no-known-match";
-const MODERATION_URL = "https://api.openai.com/v1/moderations";
-const MODERATION_MODEL = "omni-moderation-latest";
-/** The score of OpenAI's "sexual" category from which an image stops the job.
- *  OpenAI's own flag sits higher. Jim asked for a filter that does an okay job,
- *  and a missed image costs far more than a skipped job. */
-const SEXUAL_SCORE_LIMIT = 0.2;
-/** OpenAI accepts images up to 20 MB. */
+/** A cap on what one image download may hold in memory. */
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 const DOWNLOAD_TIMEOUT_MS = 30_000;
-/** The formats OpenAI's moderation reads. Hosts such as Substack's CDN pick a
- *  format by this header, and would otherwise send AVIF. */
+/** Common image formats. Hosts such as Substack's CDN pick a format by this
+ *  header, and would otherwise send AVIF. */
 const ACCEPTED_IMAGE_TYPES = "image/png,image/jpeg,image/webp,image/gif";
 
 /** An image file's address: a usual image extension, or a host that serves
@@ -60,8 +52,7 @@ export function imageLinksIn(text: string): string[] {
 /** Whether this host screens images: it has the Arachnid Shield login. */
 export const imageScreenOn = () => Boolean(process.env.ARACHNID_SHIELD_USERNAME);
 
-/** `reason` says which check stopped the job and what it saw, never the
- *  image's address. "off" means the host has no Arachnid Shield login. */
+/** `reason` says what Arachnid matched, never the image's address. "off" means the host has no Arachnid Shield login. */
 export type ImageScreen = { kind: "clear"; screened: number; passedOver: number } | { kind: "flagged"; reason: string } | { kind: "off" };
 
 type Image = { type: string; bytes: Buffer };
@@ -99,27 +90,10 @@ async function arachnidVerdict(image: Image): Promise<{ classification: string; 
   return { classification: body.classification, matchType: body.match_type };
 }
 
-/** OpenAI's "sexual" score of the image, or null when OpenAI cannot read its format. */
-async function sexualScore(image: Image): Promise<number | null> {
-  const response = await fetch(MODERATION_URL, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${requiredEnv("OPENAI_API_KEY")}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: MODERATION_MODEL, input: [{ type: "image_url", image_url: { url: `data:${image.type};base64,${image.bytes.toString("base64")}` } }] }),
-  });
-  const body = (await response.json()) as { results?: { category_scores: Record<string, number> }[]; error?: { code?: string; message?: string } };
-  if (body.error?.code === "invalid_image_format") return null;
-  if (!response.ok || !body.results?.[0]) throw new Error(`OpenAI's moderation answered ${response.status}: ${body.error?.message ?? JSON.stringify(body).slice(0, 300)}`);
-  return body.results[0].category_scores.sexual ?? 0;
-}
-
-/** Why the image stops the job, or null when it passes; undefined when no
- *  check could read it. */
-async function screenImage(image: Image): Promise<string | null | undefined> {
+/** Why the image stops the job, or null when it passes. */
+async function screenImage(image: Image): Promise<string | null> {
   const arachnid = await arachnidVerdict(image);
-  if (arachnid.classification !== ARACHNID_NO_MATCH) return `Arachnid Shield: ${arachnid.classification} (${arachnid.matchType ?? "unknown"} match)`;
-  const score = await sexualScore(image);
-  if (score === null) return undefined;
-  return score >= SEXUAL_SCORE_LIMIT ? `OpenAI moderation: sexual score ${score.toFixed(2)}` : null;
+  return arachnid.classification === ARACHNID_NO_MATCH ? null : `Arachnid Shield: ${arachnid.classification} (${arachnid.matchType ?? "unknown"} match)`;
 }
 
 /** Screens every image the text links to. Stops at the first flagged one. */
@@ -129,11 +103,11 @@ export async function screenImages(text: string): Promise<ImageScreen> {
   let passedOver = 0;
   for (const url of imageLinksIn(text)) {
     const image = await downloadImage(url);
-    const verdict = image === null ? undefined : await screenImage(image);
-    if (verdict === undefined) {
+    if (image === null) {
       passedOver++;
       continue;
     }
+    const verdict = await screenImage(image);
     if (verdict !== null) return { kind: "flagged", reason: verdict };
     screened++;
   }
