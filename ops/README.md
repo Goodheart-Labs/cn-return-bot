@@ -212,8 +212,9 @@ X_WSDM_ACCESS_TOKEN_SECRET=
 Every 30 seconds it sweeps the account's stale Claude tweets, submits the
 notes Claude wrote, and, while the writing limit has room, reads the account's
 small feed and hands each new post to the runner on ai-box. Until X admits the
-account it works in test mode, writes 50 test notes and then checks hourly
-whether X admitted it. The account has its own budget of 500 feed requests per
+account it works in test mode: it writes only as many test notes as allowed,
+and checks hourly whether X admitted it. `bun run x-watch-allow-test-notes <n>`
+allows n more, and Slack hears when a batch is written and scored. The account has its own budget of 500 feed requests per
 15 minutes, so it shares nothing with the X run or cn-feed-views. When an hour
 passes without a good tick, it tells Slack. Once, as root:
 
@@ -223,7 +224,7 @@ systemctl daemon-reload && systemctl enable --now cn-x-watch
 journalctl -u cn-x-watch -f
 ```
 
-`X_ACCOUNT=wsdm bun run x-watch-test-notes` lists the account's test notes
+`bun run x-watch-test-notes` lists the account's test notes
 with X's evaluator scores.
 
 ## Deploys

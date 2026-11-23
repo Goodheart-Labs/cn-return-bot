@@ -20,10 +20,11 @@
  * Once an hour it also stores the status X gives each of the account's public
  * notes, because the feedback job reads only the first account's notes.
  *
- * Until X admits the account it works in test mode: it writes 50 test notes,
- * which X scores but never shows, and then checks once an hour whether X
- * admitted it (admission.ts). Slack hears once when the 50 test notes are
- * scored and once when X admits the account.
+ * Until X admits the account it works in test mode: it writes as many test
+ * notes as Jim allowed (room.ts), which X scores but never shows, and checks
+ * once an hour whether X admitted it (admission.ts). When a batch of test
+ * notes is written and X has scored all of them, Slack hears it once, with
+ * the scores. Slack also hears once when X admits the account.
  *
  * The process works for the account named by X_ACCOUNT and refuses the first
  * account, whose notes the X run writes. A failed tick does not crash the
@@ -48,12 +49,16 @@ import { fetchClaimCheckHealth } from "../service/client";
 import { describeSummary, isAdmitted, summariseTestNotes } from "./admission";
 import { countOpenNotes, handledTweetIds, queuedNotes, readWriterState, stateKey, storeNoteStatuses } from "./db";
 import { inLimitCooldown, limitAfterSuccess, pickNewPosts, roomForChecks, TEST_NOTES_FOR_ADMISSION, type WriterState } from "./room";
+
+type TestingState = Extract<WriterState, { kind: "testing" }>;
 import { submitQueuedNote } from "./submit";
 
 const TICK_MS = 30_000;
 /** How often the daemon asks X about admission, and later about its notes'
  *  statuses. */
 const HOURLY_MS = 60 * 60_000;
+/** How often the daemon asks X whether a finished batch of test notes is scored. */
+const SCORE_CHECK_MS = 5 * 60_000;
 const SILENCE_WARNING_MS = 60 * 60_000;
 /** A run that never got as far as Claude, because the daemon stopped in
  *  between, is swept after this long, as in the X run. */
@@ -109,22 +114,29 @@ async function submitQueue(state: WriterState): Promise<void> {
   }
 }
 
-/** Once an hour while the account is not admitted: asks X whether it is now,
- *  and tells Slack once when the 50 test notes are all scored. */
-async function checkAdmission(state: Extract<WriterState, { kind: "testing" }>): Promise<void> {
-  if (await isAdmitted()) {
-    await logger.setPipelineState(stateKey("admitted_at"), new Date().toISOString());
-    await tellSlack("X admitted the account as an AI Note Writer. From now on its notes are public, and it checks posts while its writing limit has room.");
-    return;
-  }
-  if (state.testNotesSubmitted < TEST_NOTES_FOR_ADMISSION || (await logger.getPipelineState(stateKey("test_notes_announced")))) return;
-  const summary = summariseTestNotes(await fetchNotesWritten({ testMode: true, maxNotes: TEST_NOTES_FOR_ADMISSION }));
-  if (summary.unscored > 0) return;
-  await tellSlack(`All ${TEST_NOTES_FOR_ADMISSION} test notes are scored. ${describeSummary(summary)} \`bun run x-watch-test-notes\` lists them.`);
-  await logger.setPipelineState(stateKey("test_notes_announced"), new Date().toISOString());
+/** Once an hour while the account is not admitted: asks X whether it is now. */
+async function checkAdmission(): Promise<void> {
+  if (!(await isAdmitted())) return;
+  await logger.setPipelineState(stateKey("admitted_at"), new Date().toISOString());
+  await tellSlack("X admitted the account as an AI Note Writer. From now on its notes are public, and it checks posts while its writing limit has room.");
 }
 
-type Watch = { lastHourlyAt: number; lastGoodTickAt: number; warned: boolean };
+/** Tells Slack once per batch when every test note it allowed is written and
+ *  scored. `test_notes_announced` keeps the allowance last announced. */
+async function announceScoredBatch(state: TestingState): Promise<void> {
+  const { testNotesSubmitted, testNoteAllowance } = state;
+  if (testNoteAllowance === 0 || testNotesSubmitted < testNoteAllowance) return;
+  if ((await logger.getPipelineState(stateKey("test_notes_announced"))) === String(testNoteAllowance)) return;
+  const summary = summariseTestNotes(await fetchNotesWritten({ testMode: true, maxNotes: Math.min(testNotesSubmitted, TEST_NOTES_FOR_ADMISSION) }));
+  if (summary.unscored > 0) return;
+  await tellSlack(
+    `All ${testNotesSubmitted} test notes it was allowed are written and scored. ${describeSummary(summary)} `
+      + `\`bun run x-watch-test-notes\` lists them, and \`bun run x-watch-allow-test-notes <n>\` lets it write n more.`,
+  );
+  await logger.setPipelineState(stateKey("test_notes_announced"), String(testNoteAllowance));
+}
+
+type Watch = { lastHourlyAt: number; lastScoreCheckAt: number; lastGoodTickAt: number; warned: boolean };
 
 async function tick(watch: Watch): Promise<void> {
   await logger.sweepStuckRuns({ olderThanMinutes: STUCK_RUN_MINUTES, claudeOlderThanMinutes: CLAUDE_TWEET_MAX_WAIT_MINUTES });
@@ -132,8 +144,12 @@ async function tick(watch: Watch): Promise<void> {
   const before = await readWriterState(logger);
   if (Date.now() - watch.lastHourlyAt >= HOURLY_MS) {
     watch.lastHourlyAt = Date.now();
-    if (before.kind === "testing") await checkAdmission(before);
+    if (before.kind === "testing") await checkAdmission();
     else console.log(`[x-watch] stored ${await storeNoteStatuses(await fetchNotesWritten())} changed note status(es)`);
+  }
+  if (before.kind === "testing" && Date.now() - watch.lastScoreCheckAt >= SCORE_CHECK_MS) {
+    watch.lastScoreCheckAt = Date.now();
+    await announceScoredBatch(before);
   }
   await submitQueue(await readWriterState(logger));
 
@@ -156,7 +172,7 @@ async function tick(watch: Watch): Promise<void> {
 }
 
 async function runDaemon(): Promise<never> {
-  const watch: Watch = { lastHourlyAt: 0, lastGoodTickAt: Date.now(), warned: false };
+  const watch: Watch = { lastHourlyAt: 0, lastScoreCheckAt: 0, lastGoodTickAt: Date.now(), warned: false };
   console.log(`[x-watch] started for X account ${account}`);
   for (;;) {
     const startedAt = Date.now();

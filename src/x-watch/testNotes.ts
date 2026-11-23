@@ -3,7 +3,7 @@
  * evaluator gave them, and whether they meet X's admission criteria
  * (admission.ts, GOO-851). It reads only X's API and changes nothing.
  *
- *   X_ACCOUNT=wsdm bun run x-watch-test-notes [--max-notes N]
+ *   bun run x-watch-test-notes [--max-notes N]
  */
 
 import "dotenv/config";

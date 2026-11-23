@@ -17,7 +17,7 @@ const SUBMISSION_WINDOW_HOURS = 24;
 const runs = () => getSupabaseClient().from("pipeline_runs");
 
 /** The account's own keys in pipeline_state, such as `wsdm:writing_limit`. */
-export const stateKey = (name: "admitted_at" | "writing_limit" | "limit_hit_at" | "test_notes_announced") => `${currentXAccount()}:${name}`;
+export const stateKey = (name: "admitted_at" | "writing_limit" | "limit_hit_at" | "test_note_allowance" | "test_notes_announced") => `${currentXAccount()}:${name}`;
 
 async function count(query: PromiseLike<{ count: number | null; error: { message: string } | null }>, label: string): Promise<number> {
   const { count: rows, error } = await query;
@@ -52,7 +52,8 @@ export async function readWriterState(logger: SupabaseLogger): Promise<WriterSta
       runs().select("id", { count: "exact", head: true }).eq("x_account", currentXAccount()).eq("outcome_reason", TEST_MODE_REASON),
       "test notes",
     );
-    return { kind: "testing", testNotesSubmitted };
+    const allowance = await logger.getPipelineState(stateKey("test_note_allowance"));
+    return { kind: "testing", testNotesSubmitted, testNoteAllowance: allowance === null ? 0 : Number(allowance) };
   }
   const storedLimit = await logger.getPipelineState(stateKey("writing_limit"));
   const limitHitAt = await logger.getPipelineState(stateKey("limit_hit_at"));
