@@ -77,7 +77,7 @@ describe("submitCandidates with the queue on", () => {
     const submit = spyOn(submission, "submitNoteForTweet").mockResolvedValue({ status: "submitted", noteId: "n1" });
     const { logger, completePipelineRun } = loggerMock();
     const old = candidate("old", [0.9, 0], "2026-09-21T01:00:00Z");
-    old.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
+    old.post.created_at = new Date(now - 49 * 3_600_000).toISOString();
     expect(await submitCandidates([old], logger, false, options)).toBe(0);
     expect(submit).not.toHaveBeenCalled();
     expect(completePipelineRun.mock.calls[0]).toEqual(["run-old", { outcome: "rejected", outcome_reason: "stale_at_submit", final_stage: "submission" }] as any);
@@ -174,7 +174,7 @@ test("submittableQueued keeps only notes in time, above the floor, and not below
   // Judged on its prediction, which clears the floor, not on its slow velocity.
   const predictedOk = candidate("predictedOk", [0.6, 0.05], "x"); predictedOk.velocity = 8_000; predictedOk.viewsToCome = 500_000;
   const predictedLow = candidate("predictedLow", [0.6, 0.05], "x"); predictedLow.viewsToCome = 20_000;
-  const stale = candidate("stale", [0.6, 0.05], "x"); stale.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
+  const stale = candidate("stale", [0.6, 0.05], "x"); stale.post.created_at = new Date(now - 49 * 3_600_000).toISOString();
   expect(submittableQueued([ok, low, unrated, slow, predictedOk, predictedLow, stale], 0.2).map((c) => c.post.id)).toEqual(["ok", "unrated", "predictedOk"]);
   expect(submittableQueued([ok, low], null).map((c) => c.post.id)).toEqual(["ok", "low"]);
 });

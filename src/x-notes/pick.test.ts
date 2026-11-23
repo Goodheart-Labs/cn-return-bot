@@ -33,7 +33,8 @@ describe("scoring and picking a walk", () => {
     ["small-ok", "small", 100_000, 100_000 + gainFor(1.1 * VIEWS_TO_COME_FLOOR)],
     ["large-huge", "large", 100_000, 100_000 + gainFor(50 * VIEWS_TO_COME_FLOOR)],
     ["xl-slow", "xl", 100_000, 100_000 + gainFor(0.5 * VIEWS_TO_COME_FLOOR)],
-    ["xl-stale", "xl", 100_000, 100_000 + gainFor(50 * VIEWS_TO_COME_FLOOR), { ageH: 25 }],
+    ["xl-past-48h", "xl", 100_000, 100_000 + gainFor(50 * VIEWS_TO_COME_FLOOR), { ageH: 49 }],
+    ["xl-day-old", "xl", 100_000, 100_000 + gainFor(50 * VIEWS_TO_COME_FLOOR), { ageH: 30 }],
     ["xl-sensitive", "xl", 100_000, 100_000 + gainFor(50 * VIEWS_TO_COME_FLOOR), { sensitive: true }],
   ];
   const before = walk(NOW - TEN_MINUTES, posts.map(([id, tier, then, , opts]) => [post(id, then, opts), tier]));
@@ -46,13 +47,13 @@ describe("scoring and picking a walk", () => {
     expect(scores.get("xl-new")).toBeNull();
   });
 
-  test("leaves out posts below the floor, past 24 hours, sensitive, or without a score", () => {
-    expect(eligible.map((s) => s.post.id).sort()).toEqual(["large-huge", "small-best", "small-ok"]);
+  test("leaves out posts below the floor, past 48 hours, sensitive, or without a score, but not older ones above the floor", () => {
+    expect(eligible.map((s) => s.post.id).sort()).toEqual(["large-huge", "small-best", "small-ok", "xl-day-old"]);
   });
 
   test("picks the ladder's order within the budget and skips posts handled before", () => {
     expect(pickPosts(eligible, new Set(), 2, null, NOW).map((s) => s.post.id)).toEqual(["small-best", "small-ok"]);
-    expect(pickPosts(eligible, new Set(["small-best"]), 5, null, NOW).map((s) => s.post.id)).toEqual(["small-ok", "large-huge"]);
+    expect(pickPosts(eligible, new Set(["small-best"]), 5, null, NOW).map((s) => s.post.id)).toEqual(["small-ok", "large-huge", "xl-day-old"]);
     expect(pickPosts(eligible, new Set(), 0, null, NOW)).toEqual([]);
   });
 

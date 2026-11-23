@@ -52,7 +52,7 @@ describe("collectFastPosts", () => {
     // The stale post is 30 hours old with a huge velocity. Selecting it would
     // waste a run, because the submit phase discards notes on tweets past 24h.
     const staleFeeds: Record<FeedSize, Post[]> = {
-      small: [post("fresh", 16_000), post("stale", 500_000, { ageH: 30 })],
+      small: [post("fresh", 16_000), post("stale", 500_000, { ageH: 50 })],
       large: [],
       xl: [],
       xxl: [],
