@@ -1,0 +1,22 @@
+-- The post list keeps a post for 1 day after its date instead of 14: today's
+-- and yesterday's posts, 24 to 48 hours each.
+--
+-- Since migration 184 about 150 to 270 posts a day come in and our
+-- notewriters check about 170, so the list holds over 1,000 unchecked posts
+-- and its order (creator rank before date) spends most checks on old ones.
+-- Posts first checked in the 7 days to 2026-11-23, by the time from
+-- publication to the first check, with the notes that drew a public vote:
+--   under 2 hours:   246 posts, 210 notes, 52 voted
+--   2 to 24 hours:   190 posts, 111 notes, 10 voted
+--   1 to 3 days:     218 posts, 186 notes,  1 voted
+--   3 to 14 days:    502 posts, 501 notes,  5 voted
+-- Readers come in the first day, so a note written later is seen by nobody.
+-- A post a reader asks about is listed whatever its age, as before.
+--
+-- The next notewriter_tidy_list (cn-walk, every 5 minutes) closes the older
+-- posts. To undo, put 14 back and reopen them:
+--   create or replace function everything_list_days() ... select 14 ...;
+--   update everything_items set list_date = list_date
+--    where not list_open and list_date >= current_date - 14;
+create or replace function everything_list_days() returns int
+language sql immutable set search_path = public as $$ select 1 $$;
