@@ -159,6 +159,20 @@ export async function* walkEligiblePages(
   } while (nextToken);
 }
 
+/** Whether X marked the post, or a post it quotes, retweets or replies to, as
+ *  possibly sensitive. X sets this flag when the author or X found adult or
+ *  graphic media or links on the post, and the eligible-posts feed does not
+ *  filter such posts out. X's Community Notes team advised on 2026-11-20 to
+ *  drop them, so that no model provider is sent their contents. The flag does
+ *  not catch everything, so the image screen still checks every image a Claude
+ *  would see (src/claude-notes/imageScreen.ts). */
+export function isPossiblySensitive(post: Post): boolean {
+  if (!post.raw) return false;
+  return post.raw.possibly_sensitive === true || post.raw.includes.referenced_tweets.some((referenced) => referenced.possibly_sensitive === true);
+}
+
+/** The eligible posts the bots may work on: duplicates and posts X marked as
+ *  possibly sensitive are left out. */
 export async function fetchEligiblePosts(
   maxResults: number = 10,
   maxPages: number = 3,
@@ -169,6 +183,7 @@ export async function fetchEligiblePosts(
   const seenPostIds = new Set<string>();
   let pageCount = 0;
   let totalDuplicatesSkipped = 0;
+  let sensitiveSkipped = 0;
 
   for await (const page of walkEligiblePages(postSelection, Math.min(maxResults, MAX_POSTS_PER_PAGE))) {
     pageCount++;
@@ -179,6 +194,10 @@ export async function fetchEligiblePosts(
         continue;
       }
       seenPostIds.add(post.id);
+      if (isPossiblySensitive(post)) {
+        sensitiveSkipped++;
+        continue;
+      }
       allEligiblePosts.push(post);
     }
 
@@ -198,7 +217,7 @@ export async function fetchEligiblePosts(
   }
 
   console.log(
-    `[generate] Fetched ${allEligiblePosts.length} eligible posts across ${pageCount} pages (${totalDuplicatesSkipped} duplicates skipped)`
+    `[generate] Fetched ${allEligiblePosts.length} eligible posts across ${pageCount} pages (${totalDuplicatesSkipped} duplicates and ${sensitiveSkipped} possibly sensitive posts skipped)`
   );
 
   return allEligiblePosts.slice(0, maxResults);

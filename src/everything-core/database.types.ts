@@ -3514,6 +3514,14 @@ export type Database = {
         Returns: number
       }
       everything_claude_actor: { Args: { p_actor: string }; Returns: string }
+      everything_claude_costs_since: {
+        Args: { p_notewriter: string; p_since: string }
+        Returns: {
+          api_cost_usd: number
+          runs: number
+          tags: string[]
+        }[]
+      }
       everything_claude_delete_note: {
         Args: { p_actor?: string; p_draft: string }
         Returns: undefined
