@@ -172,7 +172,7 @@ test("submittableQueued keeps only notes in time, above the floor, and not below
   const ok = candidate("ok", [0.5, 0.05], "x"); const low = candidate("low", [0.1, 0.05], "x"); const unrated = candidate("unrated", null, "x");
   const slow = candidate("slow", [0.6, 0.05], "x"); slow.velocity = 8_000;
   // Judged on its prediction, which clears the floor, not on its slow velocity.
-  const predictedOk = candidate("predictedOk", [0.6, 0.05], "x"); predictedOk.velocity = 8_000; predictedOk.viewsToCome = 200_000;
+  const predictedOk = candidate("predictedOk", [0.6, 0.05], "x"); predictedOk.velocity = 8_000; predictedOk.viewsToCome = 500_000;
   const predictedLow = candidate("predictedLow", [0.6, 0.05], "x"); predictedLow.viewsToCome = 20_000;
   const stale = candidate("stale", [0.6, 0.05], "x"); stale.post.created_at = new Date(now - 25 * 3_600_000).toISOString();
   expect(submittableQueued([ok, low, unrated, slow, predictedOk, predictedLow, stale], 0.2).map((c) => c.post.id)).toEqual(["ok", "unrated", "predictedOk"]);

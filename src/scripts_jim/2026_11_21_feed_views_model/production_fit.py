@@ -50,11 +50,12 @@ def replay(views: pd.DataFrame, p) -> pd.DataFrame:
         now = v[v.slot == run].set_index("tweet_id")
         before = v[v.slot == run - pd.Timedelta(minutes=10)].set_index("tweet_id")
         now = now[(now.age_h > 0) & (now.age_h <= STALE_CUTOFF_H)]
-        joined = now.join(before[["impressions", "observed_at"]], rsuffix="_before", how="left")
+        joined = now.join(before[["impressions", "observed_at"]].add_suffix("_before"), how="left")
         hours = (joined.observed_at - joined.observed_at_before).dt.total_seconds() / 3600
         rate = np.clip(joined.impressions - joined.impressions_before, 0, None) / hours
         rows.append(pd.DataFrame({
             "run": run, "tweet_id": joined.index, "tier": joined.tier.to_numpy(), "age": joined.age_h.to_numpy(),
+            "impressions": joined.impressions.to_numpy(),
             "velocity": joined.impressions.to_numpy() / np.maximum(joined.age_h.to_numpy(), 0.25),
             "predicted": (rate * live_hours(joined.age_h.to_numpy(), p)).to_numpy(),
         }))

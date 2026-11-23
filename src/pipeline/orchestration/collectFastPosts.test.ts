@@ -107,12 +107,12 @@ describe("collectFastPosts with the recorder's earlier readings", () => {
   };
 
   test("admits and orders by predicted views to come, and waits on posts without an earlier reading", async () => {
-    // 10-minute gains of 2,000, 100, and 1,500 views: 12,000, 600 and 9,000
+    // 10-minute gains of 4,000, 100, and 3,000 views: 24,000, 600 and 18,000
     // views per hour, times about 12.3 hours left at 6 hours old.
-    const read = earlierBy({ "s-fast": 2_000, "s-slow": 100, "l-mid": 1_500 });
+    const read = earlierBy({ "s-fast": 4_000, "s-slow": 100, "l-mid": 3_000 });
     const { selected, fresh } = await collectFastPosts(5, noSkips, async (size) => feedsWithGains[size] ?? [], NOW, null, read);
     expect(selected.map((s) => s.post.id)).toEqual(["s-fast", "l-mid"]);
-    expect(selected[0]!.viewsToCome).toBeGreaterThan(140_000);
+    expect(selected[0]!.viewsToCome).toBeGreaterThan(290_000);
     // The new post had no earlier reading: it is not selected but stays in fresh.
     expect(fresh.find((s) => s.post.id === "s-new")!.viewsToCome).toBeNull();
   });

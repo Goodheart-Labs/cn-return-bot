@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { featuresFromPost, featuresFromTweetRow, flagCount, flagsOf, type RankFeatures } from "./features";
 import { FLAG_CUTS_2026_08 as cuts, flagsThenEval, getScorer, makeFlagsThenEval, velocityOnly } from "./scorers";
 import type { Post } from "../../api/fetchEligiblePosts";
+import { VIEWS_TO_COME_FLOOR } from "../utils/viewsToCome";
 
 const base: RankFeatures = { hasMedia: true, authorFollowers: 50_000, velocityPerHour: 40_000, viewsToCome: null, ageHoursAtFetch: 6, tierRank: 1 };
 
@@ -17,8 +18,8 @@ describe("flags", () => {
     expect(flagsOf({ ...base, velocityPerHour: 14_999 }, cuts).fast).toBe(false);
     expect(flagsOf({ ...base, velocityPerHour: 15_000 }, cuts).fast).toBe(true);
     // A post with a prediction is judged on it, not on its velocity.
-    expect(flagsOf({ ...base, velocityPerHour: 1_000, viewsToCome: 80_000 }, cuts).fast).toBe(true);
-    expect(flagsOf({ ...base, velocityPerHour: 900_000, viewsToCome: 79_999 }, cuts).fast).toBe(false);
+    expect(flagsOf({ ...base, velocityPerHour: 1_000, viewsToCome: VIEWS_TO_COME_FLOOR }, cuts).fast).toBe(true);
+    expect(flagsOf({ ...base, velocityPerHour: 900_000, viewsToCome: VIEWS_TO_COME_FLOOR - 1 }, cuts).fast).toBe(false);
     expect(flagsOf({ ...base, ageHoursAtFetch: 2.9 }, cuts).freshWindow).toBe(false);
     expect(flagsOf({ ...base, ageHoursAtFetch: 12 }, cuts).freshWindow).toBe(false);
     expect(flagsOf({ ...base, ageHoursAtFetch: 3 }, cuts).freshWindow).toBe(true);

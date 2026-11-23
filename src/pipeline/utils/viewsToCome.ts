@@ -37,11 +37,15 @@ const MIN_AGE_HOURS = 0.25;
 
 /**
  * The floor on predicted views still to come. A post below it is not checked.
- * 80,000 admits as many posts as the old floor of 15,000 views per hour did:
- * about 426 of the posts under 24 hours old at each X run, replayed over 117
- * runs from 2026-11-20 to 2026-11-23. 80% of them are the same posts.
+ * 200,000 lets through as many different posts as the old floor of 15,000
+ * views per hour did: about 700 a day, replayed over every half hour from
+ * 2026-11-20 to 2026-11-23. A prediction swings with each 10-minute gain, so a
+ * post can clear the floor at one run and not at the next. Matched per run
+ * instead, the floor would be 80,000, and it would let through 40% more
+ * different posts a day. Today neither floor limits the X run, which takes the
+ * best few of the hundreds of posts above it; the order decides.
  */
-export const VIEWS_TO_COME_FLOOR = 80_000;
+export const VIEWS_TO_COME_FLOOR = 200_000;
 
 /** The hours left at today's speed until the post is 48 hours old, given the
  *  fading and the 24-hour cliff described above. */
