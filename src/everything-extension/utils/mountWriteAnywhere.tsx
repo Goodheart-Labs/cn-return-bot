@@ -23,11 +23,10 @@ function WriteAnywhereApp({ pageUrl, onPosted }: { pageUrl: string; onPosted: ()
   const [creatorFeedUrl, setCreatorFeedUrl] = useState<Promise<string | null>>();
 
   useEffect(() => {
-    const listener = (message: unknown, _sender: unknown, sendResponse: (response: unknown) => void) => {
+    const listener = (message: unknown) => {
       const { type, selection: selected } = (message as { type?: string; selection?: string }) ?? {};
       if (type !== "cn-write-note" || !selected?.trim()) return;
       setSelection(selected.trim());
-      sendResponse({ opened: true });
       setCreatorFeedUrl(
         browser.runtime.sendMessage({ type: TAB_CREATOR_MESSAGE_TYPE }).then(
           (feedUrl: string | null) => feedUrl,

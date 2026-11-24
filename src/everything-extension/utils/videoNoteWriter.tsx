@@ -76,10 +76,8 @@ export function installVideoNoteWriter(ctx: ContentScriptContext, onPosted: () =
     void ui.then((mounted) => mounted.mount());
   };
 
-  const listener = (message: unknown, _sender: unknown, sendResponse: (response: unknown) => void) => {
-    if ((message as { type?: string })?.type !== "cn-write-note" || !writableVideo() || ctx.isInvalid) return;
-    openEditor();
-    sendResponse({ opened: true });
+  const listener = (message: unknown) => {
+    if ((message as { type?: string })?.type === "cn-write-note") openEditor();
   };
   browser.runtime.onMessage.addListener(listener);
   ctx.onInvalidated(() => browser.runtime.onMessage.removeListener(listener));

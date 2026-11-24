@@ -394,36 +394,6 @@ function FeedbackLinks() {
   );
 }
 
-/** Available even while automated notes are queued or their status is loading. */
-function ManualNoteButton() {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const tab = useQuery({ queryKey: ["manualNoteTab"], queryFn: activeTab }).data;
-  if (!tab?.url || !/^https?:/.test(tab.url)) return null;
-  const open = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      const reply = await browser.runtime.sendMessage({ type: "cn-open-manual-note" }) as { ok?: boolean; error?: string } | undefined;
-      if (reply?.ok) window.close();
-      else setError(reply?.error ?? "Could not open the editor. Reload the page and try again.");
-    } catch {
-      setError("Could not open the editor. Reload the extension and try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <div className="space-y-2">
-      <Button variant="secondary" className="w-full" onClick={() => void open()} disabled={busy}>
-        {busy ? "Opening editor…" : "Write your own note"}
-      </Button>
-      <p className="text-xs text-fg-muted">Select a passage, or pause a YouTube video. You can post without waiting for an automated check.</p>
-      {error && <p role="alert" className="text-sm text-negative">{error}</p>}
-    </div>
-  );
-}
-
 export function PopupApp() {
   const state = usePageState();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -443,7 +413,6 @@ export function PopupApp() {
   return (
     <div className="p-4 space-y-4 bg-canvas min-h-[120px]">
       <PrimaryAction state={state} counts={counts} jumped={jumped} access={access} />
-      <ManualNoteButton />
 
       <div className="flex items-center gap-4 border-t border-line pt-4">
         <Button
