@@ -219,10 +219,10 @@ export type Database = {
           image_urls: Json
           item_id: string
           judgement: string
+          quote_updated_at: string | null
           start_seconds: number | null
           status: string
           status_reason: string | null
-          quote_updated_at: string | null
           updated_quote: string | null
         }
         Insert: {
@@ -237,10 +237,10 @@ export type Database = {
           image_urls?: Json
           item_id: string
           judgement: string
+          quote_updated_at?: string | null
           start_seconds?: number | null
           status?: string
           status_reason?: string | null
-          quote_updated_at?: string | null
           updated_quote?: string | null
         }
         Update: {
@@ -255,10 +255,10 @@ export type Database = {
           image_urls?: Json
           item_id?: string
           judgement?: string
+          quote_updated_at?: string | null
           start_seconds?: number | null
           status?: string
           status_reason?: string | null
-          quote_updated_at?: string | null
           updated_quote?: string | null
         }
         Relationships: [
