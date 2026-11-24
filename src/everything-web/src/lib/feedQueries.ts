@@ -9,6 +9,7 @@ import {
   type CurationFilters,
   type CurationRow,
 } from "@cn/core/bestNotes";
+import { CORRECTIONS_PAGE_SIZE, fetchCorrectionsPage, type CorrectionRow } from "@cn/core/corrections";
 import { fetchProjectBySlug, fetchProjectsPage, PROJECTS_PAGE_SIZE, type ProjectOrder } from "@cn/core/creators";
 import {
   fetchFeedPageIds,
@@ -167,6 +168,24 @@ export function useLeaderboardPages(filters: Omit<CurationFilters, "votedBefore"
     nextBookmark: (page) => afterFullPage(CURATION_PAGE_SIZE)(page.entries)?.row,
   });
 }
+
+/** One note of the corrections, with its row. */
+export interface CorrectionEntry {
+  noteId: string;
+  row: CorrectionRow;
+}
+
+/** The pages of the corrections, the most recent first. */
+export const useCorrections = () =>
+  usePagedList({
+    queryKey: queryKeys.corrections,
+    fetchPage: async (after: CorrectionRow | null) => {
+      const rows = await fetchCorrectionsPage(after);
+      return loadCardPage(rows.map((row) => ({ noteId: row.note_id, row })));
+    },
+    firstBookmark: null as CorrectionRow | null,
+    nextBookmark: (page) => afterFullPage(CORRECTIONS_PAGE_SIZE)(page.entries)?.row,
+  });
 
 /** How many notes the leaderboard holds, and its creators. */
 export const useCurationSummary = () => useQuery({ queryKey: queryKeys.curationSummary, queryFn: fetchCurationSummary });
