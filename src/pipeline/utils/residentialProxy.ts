@@ -22,10 +22,6 @@
  *  roughly once in two thousand requests. */
 const PROXY_ATTEMPTS = 3;
 
-/** How long one proxied fetch may take. A healthy one through the proxy takes
- *  one to eight seconds. One still waiting after this is stuck on a dead
- *  device, and a fresh connection helps more than waiting longer. */
-const PROXY_FETCH_TIMEOUT_MS = 30_000;
 
 /** How much of an error goes into a retry log line. */
 const MAX_REASON_LENGTH = 200;
@@ -44,6 +40,17 @@ function residentialProxyUrl(): string | undefined {
 export function hideProxyAddress(text: string): string {
   const proxyUrl = residentialProxyUrl();
   return proxyUrl ? text.replaceAll(proxyUrl, "<residential proxy>") : text;
+}
+
+/** The proxy in the form Playwright takes it, or undefined when none is
+ *  configured. The daily site checks open YouTube watch pages through it,
+ *  because YouTube will not play a video to the services machine
+ *  (src/site-checks/run.ts). */
+export function residentialProxyForBrowser(): { server: string; username: string; password: string } | undefined {
+  const proxyUrl = residentialProxyUrl();
+  if (!proxyUrl) return undefined;
+  const url = new URL(proxyUrl);
+  return { server: `${url.protocol}//${url.host}`, username: decodeURIComponent(url.username), password: decodeURIComponent(url.password) };
 }
 
 /**
@@ -74,36 +81,3 @@ export async function withResidentialProxy<T>(
     }
   }
 }
-
-/** A site answered with an error status. */
-class HttpStatusError extends Error {
-  constructor(readonly status: number, url: string, statusText: string) {
-    super(`${status} ${statusText} for ${url}`);
-  }
-}
-
-/** Statuses a different device might not get: the site refused this device's
- *  address (403), rate-limited it (429), or something between the proxy and
- *  the site failed (5xx). Any other error status is the site's real answer. */
-function isRetryableStatus(status: number): boolean {
-  return status === 403 || status === 429 || status >= 500;
-}
-
-/** GETs a URL through the residential proxy and reads the answer with
- *  `read`. The body is read inside the retry, so a connection that drops
- *  halfway through the answer is retried too. */
-async function fetchViaResidentialProxy<T>(url: string, read: (res: Response) => Promise<T>): Promise<T> {
-  return withResidentialProxy(
-    url,
-    async (proxy) => {
-      const res = await fetch(url, { proxy, signal: AbortSignal.timeout(PROXY_FETCH_TIMEOUT_MS) } as RequestInit);
-      if (!res.ok) throw new HttpStatusError(res.status, url, res.statusText);
-      return read(res);
-    },
-    (err) => !(err instanceof HttpStatusError) || isRetryableStatus(err.status),
-  );
-}
-
-export const fetchJsonViaResidentialProxy = (url: string): Promise<any> => fetchViaResidentialProxy(url, (res) => res.json());
-
-export const fetchTextViaResidentialProxy = (url: string): Promise<string> => fetchViaResidentialProxy(url, (res) => res.text());

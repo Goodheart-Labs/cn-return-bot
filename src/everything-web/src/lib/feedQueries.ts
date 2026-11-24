@@ -9,6 +9,7 @@ import {
   type CurationFilters,
   type CurationRow,
 } from "@cn/core/bestNotes";
+import { CORRECTIONS_PAGE_SIZE, fetchCorrectionsPage, type CorrectionRow } from "@cn/core/corrections";
 import { fetchProjectBySlug, fetchProjectsPage, PROJECTS_PAGE_SIZE, type ProjectOrder } from "@cn/core/creators";
 import {
   fetchFeedPageIds,
@@ -168,16 +169,33 @@ export function useLeaderboardPages(filters: Omit<CurationFilters, "votedBefore"
   });
 }
 
+/** One note of the corrections, with its row. */
+export interface CorrectionEntry {
+  noteId: string;
+  row: CorrectionRow;
+}
+
+/** The pages of the corrections, the most recent first. */
+export const useCorrections = () =>
+  usePagedList({
+    queryKey: queryKeys.corrections,
+    fetchPage: async (after: CorrectionRow | null) => {
+      const rows = await fetchCorrectionsPage(after);
+      return loadCardPage(rows.map((row) => ({ noteId: row.note_id, row })));
+    },
+    firstBookmark: null as CorrectionRow | null,
+    nextBookmark: (page) => afterFullPage(CORRECTIONS_PAGE_SIZE)(page.entries)?.row,
+  });
+
 /** How many notes the leaderboard holds, and its creators. */
 export const useCurationSummary = () => useQuery({ queryKey: queryKeys.curationSummary, queryFn: fetchCurationSummary });
 
 /** The whole leaderboard with its cards, which only the reorder mode loads. */
-export const useWholeLeaderboard = (enabled: boolean) =>
+export const useWholeLeaderboard = () =>
   useQuery({
     queryKey: queryKeys.wholeLeaderboard,
     queryFn: async (): Promise<CardPage<{ noteId: string; row: CuratedNoteRow }>> =>
       loadCardPage((await fetchLeaderboard()).map((row) => ({ noteId: row.note_id, row }))),
-    enabled,
   });
 
 /** Keeps the notes of an open project current over a realtime channel, a

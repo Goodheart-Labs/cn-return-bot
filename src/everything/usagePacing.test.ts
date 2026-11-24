@@ -1,17 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import {
   computeClaudePacing,
-  judgeMayStartAt,
   DEFAULT_USAGE_PER_POST_PERCENT,
+  WEEKLY_USAGE_TARGET_PERCENT,
   usageRise,
   type UsageReading,
   type UsageSnapshot,
 } from "./usagePacing";
 
-/* Covers the usage pacing of the Claude note writer (GOO-587): the interval
- * between posts is 1.1 times the time until the weekly reset times the usage
- * per post, divided by the usage left below 98%; the usage per post is
- * measured; and no new post comes at the target. */
+/* Covers the usage pacing of the Claude note writer (GOO-587, GOO-831): the
+ * usage per API dollar is the rise over the runs' costs, a post uses that times
+ * its average cost, the other runs keep their usage per hour until the reset,
+ * and the posts share what is left of the target until the reset. */
 
 const HOUR_MS = 3600_000;
 const NOW = new Date("2026-10-26T12:00:00Z");
@@ -23,10 +23,14 @@ const reading = (hoursAgo: number, weekly: number, weeklyResetsAt: Date | null =
   weeklyResetsAt,
 });
 
+/** 48 hours of readings with a 10-point rise, over $200 of runs: 0.05% per
+ *  dollar. The 50 post runs cost $100, so a post costs $2 and uses 0.1%. The
+ *  other runs cost $100 in 48 hours, which is 5 points, so they use about 15
+ *  points in the 144 hours until the reset. */
 const snapshot = (overrides: Partial<UsageSnapshot> = {}): UsageSnapshot => ({
   now: NOW,
   readings: [reading(48, 10), reading(0, 20)],
-  postsTaken: 100,
+  costs: { postRuns: 50, postCostUsd: 100, otherCostUsd: 100 },
   ...overrides,
 });
 
@@ -43,19 +47,30 @@ describe("usageRise", () => {
 });
 
 describe("computeClaudePacing", () => {
-  test("spreads the usage left over the time until the reset", () => {
-    // 10 points over 100 posts is 0.1 per post. 78 points are left below 98%,
-    // which is 780 posts in the 144 hours until the reset: one about every
-    // 11.1 minutes, stretched by 10% to 12.2.
+  test("spreads what the other runs leave of the target over the time until the reset", () => {
+    // The usage is at 20% and the other runs will use 15 points, so 55 points
+    // are left for posts at 0.1% each: 550 posts in 144 hours, one about every
+    // 15.7 minutes, stretched by 10%.
     const pacing = claude(snapshot());
+    expect(pacing.usagePerDollar).toBeCloseTo(0.05);
     expect(pacing.usagePerPost).toBeCloseTo(0.1);
-    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 780, -3);
+    expect(pacing.otherUsageUntilReset).toBeCloseTo(15);
+    expect(pacing.intervalMs).toBeCloseTo((1.1 * 144 * HOUR_MS) / 550, -3);
   });
 
-  test("more usage by other work makes a post look dearer, so posts slow down", () => {
+  test("more usage by the other runs leaves less for the posts, so the posts slow down", () => {
     const alone = claude(snapshot());
-    const alongsideOtherWork = claude(snapshot({ readings: [reading(48, 0), reading(0, 20)] }));
-    expect(alongsideOtherWork.intervalMs).toBeGreaterThan(alone.intervalMs);
+    // The other runs cost twice as much and the usage rose 5 points more.
+    const busy = snapshot({ readings: [reading(48, 10), reading(0, 25)], costs: { postRuns: 50, postCostUsd: 100, otherCostUsd: 200 } });
+    const alongsideMoreOtherWork = claude(busy);
+    expect(alongsideMoreOtherWork.intervalMs).toBeGreaterThan(alone.intervalMs);
+  });
+
+  test("when the other runs will use up the target, no feed post is due", () => {
+    // A 50-point rise in 48 hours, almost all of it by other runs, would carry
+    // the other runs about 140 points further by the reset.
+    const busy = snapshot({ readings: [reading(48, 10), reading(0, 60)], costs: { postRuns: 50, postCostUsd: 10, otherCostUsd: 190 } });
+    expect(claude(busy).intervalMs).toBe(Infinity);
   });
 
   test("close to the reset with usage left, the posts come faster", () => {
@@ -66,10 +81,11 @@ describe("computeClaudePacing", () => {
     expect(late.intervalMs).toBeLessThan(early.intervalMs);
   });
 
-  test("with too few posts to measure, the default usage per post stands in", () => {
-    const pacing = claude(snapshot({ postsTaken: 2 }));
+  test("with too few post runs to measure, the default usage per post stands in", () => {
+    const pacing = claude(snapshot({ costs: { postRuns: 2, postCostUsd: 4, otherCostUsd: 100 } }));
     expect(pacing.usagePerPost).toBe(DEFAULT_USAGE_PER_POST_PERCENT);
-    expect(pacing.usagePerPostIsDefault).toBe(true);
+    expect(pacing.usagePerDollar).toBeNull();
+    expect(pacing.otherUsageUntilReset).toBe(0);
   });
 
   test("a window without any rise uses the default, so the posts are not due all at once", () => {
@@ -77,7 +93,7 @@ describe("computeClaudePacing", () => {
   });
 
   test("at the target no new feed post is due until the reset", () => {
-    expect(claude(snapshot({ readings: [reading(1, 97), reading(0, 98)] })).intervalMs).toBe(Infinity);
+    expect(claude(snapshot({ readings: [reading(1, WEEKLY_USAGE_TARGET_PERCENT - 1), reading(0, WEEKLY_USAGE_TARGET_PERCENT)] })).intervalMs).toBe(Infinity);
   });
 
   test("with no reading at all there is no pacing", () => {
@@ -86,23 +102,5 @@ describe("computeClaudePacing", () => {
 
   test("a reading that does not say when the week resets cannot pace", () => {
     expect(computeClaudePacing(snapshot({ readings: [reading(0, 20, null)] }))).toBeNull();
-  });
-});
-
-describe("judgeMayStartAt", () => {
-  const now = new Date("2026-11-05T21:00:00Z");
-  const minutesAgo = (m: number) => new Date(now.getTime() - m * 60_000);
-
-  test("a judge starts below the weekly stop with a recent reading", () => {
-    expect(judgeMayStartAt({ at: minutesAgo(5), weekly: 98 }, now)).toBe(true);
-  });
-
-  test("no judge starts at the weekly stop", () => {
-    expect(judgeMayStartAt({ at: minutesAgo(5), weekly: 99 }, now)).toBe(false);
-  });
-
-  test("no judge starts without a recent reading", () => {
-    expect(judgeMayStartAt({ at: minutesAgo(31), weekly: 10 }, now)).toBe(false);
-    expect(judgeMayStartAt(null, now)).toBe(false);
   });
 });

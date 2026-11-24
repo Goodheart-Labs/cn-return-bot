@@ -9,9 +9,9 @@
  *   2. Their score is at least 1 over at least 2 visited posts (see THE SCORE
  *      below).
  *
- * Prioritised creators come first, then everyone else by their score. The walk
- * in autoEnqueue.ts goes down this list from the top and stops at the first
- * creator with a post we have not checked.
+ * Prioritised creators come first, then everyone else by their score. cn-walk
+ * (src/walk/) keeps the feeds of this list read, and the list's order ranks
+ * their posts by it (everything_projects.list_rank, GOO-791).
  *
  * Both sides are needed because a creator nobody has ever checked has no row
  * anywhere. Prioritised creators are project rows; visited creators are
@@ -49,7 +49,7 @@
  * behind posts that a single reader had opened.
  */
 
-import { fetchCreatorProjects, fetchCreatorVisitScores, QUEUE_PRIORITY, type CreatorVisitScore } from "./db";
+import { fetchCreatorProjects, fetchCreatorVisitScores, type CreatorVisitScore } from "./db";
 import { canonicalFeed, type FeedType } from "./feedUrls";
 import { normalizeFeedUrl } from "../everything-core/pageUrls";
 import {
@@ -65,8 +65,6 @@ export interface RankedCreator {
   /** Derived from the URL at read time, never stored, so it cannot drift. */
   feed_type: FeedType;
   feed_url: string;
-  /** The QUEUE_PRIORITY tier this creator's items enqueue at. */
-  priority: number;
   /** True while the creator's priority window is open. Such a creator ranks
    *  strictly above every creator walked on attention alone. */
   prioritized: boolean;
@@ -78,10 +76,6 @@ export interface RankedCreator {
   score: Omit<CreatorVisitScore, "feed_url">;
   /** The score the walk ranks on (creatorScore). */
   walkScore: number;
-  /** When this creator's top posts were last recomputed (GOO-81). */
-  top_posts_refreshed_at: string | null;
-  /** When a refresh was last tried and failed (migration 101). */
-  top_posts_attempted_at: string | null;
 }
 
 const isOpen = (priorityUntil: string | null): boolean =>
@@ -92,7 +86,14 @@ const NO_VISITS: RankedCreator["score"] = { visitors_per_post: 0, posts: 0, peop
 /** Every creator with priority or attention, most important first. The
  *  auto-enqueue walks this list from the top until a creator has something
  *  unchecked. */
-export async function rankCreators(): Promise<RankedCreator[]> {
+export const rankCreators = async (): Promise<RankedCreator[]> => (await rankKnownCreators()).walked;
+
+/** The walked creators (rankCreators), and `rest`: every other creator with
+ *  a project, highest score first. Their posts are listed below every walked
+ *  creator's, so the notewriters reach them only with capacity to spare
+ *  (GOO-791, src/walk/main.ts). A creator who was only visited and has no
+ *  project is in neither list: there were 15,739 of them on 2026-11-19. */
+export async function rankKnownCreators(): Promise<{ walked: RankedCreator[]; rest: RankedCreator[] }> {
   const [projects, scores] = await Promise.all([fetchCreatorProjects(), fetchCreatorVisitScores()]);
 
   // The database already groups creators case-insensitively, so there is one
@@ -122,13 +123,10 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       project_slug: p.project_slug,
       feed_type: feed.feed_type,
       feed_url: p.feed_url,
-      priority: QUEUE_PRIORITY.prioritized,
       prioritized: true,
       priorityUntil: p.priority_until,
       score: visited?.score ?? NO_VISITS,
       walkScore: creatorScore(visited?.score ?? NO_VISITS, averageReaders),
-      top_posts_refreshed_at: p.top_posts_refreshed_at,
-      top_posts_attempted_at: p.top_posts_attempted_at,
     });
   }
   const alreadyRanked = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
@@ -149,18 +147,33 @@ export async function rankCreators(): Promise<RankedCreator[]> {
       project_slug: known?.project_slug ?? feed.project_slug,
       feed_type: feed.feed_type,
       feed_url: known?.feed_url ?? feed.feed_url,
-      priority: QUEUE_PRIORITY.backlog,
       prioritized: false,
       priorityUntil: null,
       score: visited.score,
       walkScore,
-      // A creator with no project yet has no refresh stamp, so their top posts
-      // are computed the first time they are walked.
-      top_posts_refreshed_at: known?.top_posts_refreshed_at ?? null,
-      top_posts_attempted_at: known?.top_posts_attempted_at ?? null,
     });
   }
 
   ranked.sort(byWalkOrder);
-  return ranked;
+
+  const walkedUrls = new Set(ranked.map((c) => normalizeFeedUrl(c.feed_url)));
+  const rest: RankedCreator[] = [];
+  for (const p of projects) {
+    const key = normalizeFeedUrl(p.feed_url);
+    const feed = canonicalFeed(p.feed_url);
+    if (walkedUrls.has(key) || !feed) continue;
+    walkedUrls.add(key);
+    const score = scoreByUrl.get(key)?.score ?? NO_VISITS;
+    rest.push({
+      project_slug: p.project_slug,
+      feed_type: feed.feed_type,
+      feed_url: p.feed_url,
+      prioritized: false,
+      priorityUntil: null,
+      score,
+      walkScore: creatorScore(score, averageReaders),
+    });
+  }
+  rest.sort(byWalkOrder);
+  return { walked: ranked, rest };
 }

@@ -11,11 +11,61 @@
  *
  * Usage: bun run src/scripts_jim/2026_10_26_note_judge/runJudges.ts <zero|few> [--parallel N] [--limit N] */
 
-import { appendFileSync } from "fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "fs";
 import * as path from "path";
-import { runJudge } from "../../claude-notes/judge";
+import { homedir } from "os";
+import { guardedSettingsFile } from "../../claude-notes/imageGuard";
+import { BLOCKED_TOOLS, type Judgement, JUDGE_MODEL, JUDGE_SCHEMA, JUDGE_TIMEOUT_MS, judgementFrom } from "../../claude-notes/judge";
 import { judgePrompt } from "./judge";
 import { readDataset, readResults, resultsPath, splitForMode, type JudgeResult, type Mode } from "./dataFiles";
+
+const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
+const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
+/** The only environment the judge gets, so the runner's database keys stay out
+ *  of reach. Claude Code finds its login in CLAUDE_CONFIG_DIR, the config
+ *  folder of the notewriter's own Claude account, or else in the home folder. */
+const JUDGE_ENV_NAMES = ["HOME", "PATH", "USER", "LANG", "CLAUDE_CONFIG_DIR"];
+
+/** Runs one judge in its own empty folder and returns its answer. The folder
+ *  keeps the prompt and Claude Code's full output for later reading. */
+async function runJudge(runDir: string, prompt: string): Promise<Judgement & { turns: number }> {
+  mkdirSync(runDir, { recursive: true });
+  writeFileSync(path.join(runDir, "prompt.md"), prompt);
+  const child = Bun.spawn(
+    [
+      CLAUDE_BIN,
+      "-p",
+      prompt,
+      "--model",
+      JUDGE_MODEL,
+      "--permission-mode",
+      "bypassPermissions",
+      "--settings",
+      guardedSettingsFile(runDir, RUN_SETTINGS),
+      "--disallowedTools",
+      ...BLOCKED_TOOLS,
+      "--output-format",
+      "json",
+      "--json-schema",
+      JSON.stringify(JUDGE_SCHEMA),
+      "--no-session-persistence",
+    ],
+    {
+      cwd: runDir,
+      env: Object.fromEntries(JUDGE_ENV_NAMES.flatMap((name) => (process.env[name] ? [[name, process.env[name]]] : []))),
+      stdout: "pipe",
+      stderr: "pipe",
+      timeout: JUDGE_TIMEOUT_MS,
+    },
+  );
+  const [stdout, stderr, exitCode] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text(), child.exited]);
+  writeFileSync(path.join(runDir, "output.json"), stdout);
+  if (stderr) writeFileSync(path.join(runDir, "stderr.txt"), stderr);
+  if (exitCode !== 0) throw new Error(`The judge exited with ${exitCode}: ${stderr.slice(0, 500)}`);
+  const output = JSON.parse(stdout);
+  return { ...judgementFrom(output), turns: output.num_turns };
+}
+
 
 /** Judges at once. Nathan's note writer shares the same weekly limit. */
 const DEFAULT_PARALLEL = 3;

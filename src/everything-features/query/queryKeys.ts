@@ -25,6 +25,9 @@ export const queryKeys = {
   curationSection: (filters: unknown) => ["noteSet", "curation", "section", filters] as const,
   wholeLeaderboard: ["noteSet", "curation", "wholeLeaderboard"] as const,
   curationSummary: ["curationSummary"] as const,
+  /** The pages of the corrections: notes after which the author changed
+   *  their post. */
+  corrections: ["noteSet", "corrections"] as const,
   /** The pages of the projects overview in one order. */
   projectsPage: (order: string) => ["projects", order] as const,
   project: (slug: string) => ["project", slug] as const,

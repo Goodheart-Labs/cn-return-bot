@@ -2,9 +2,10 @@ import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
 import TurndownService from "turndown";
 import { extractText, getDocumentProxy } from "unpdf";
-import type { LadderAnswer, LadderAttempt } from "../../service/contract";
+import type { LadderAnswer } from "../../service/contract";
 import { getBrowser } from "../utils/browserManager";
 import { isWebUrl } from "../utils/webUrl";
+import { openPastBotCheck } from "./botCheck";
 
 /**
  * The fetch ladder: the free steps that read an outside page. On the services
@@ -32,9 +33,10 @@ import { isWebUrl } from "../utils/webUrl";
  *      captures of paywalled pages Wayback is refused on.
  *   6. Render the page with headless Chromium through the shared
  *      browserManager. This catches single-page apps that only work with
- *      JavaScript, and sites that answer 403 to a plain HTTP request but render
- *      fine for a real browser. It costs about 3 seconds, so it only runs when
- *      steps 1 to 5 have all failed.
+ *      JavaScript, sites that answer 403 to a plain HTTP request but render
+ *      fine for a real browser, and sites behind a bot check that lets a real
+ *      browser through (botCheck.ts). It costs about 3 seconds, so it only
+ *      runs when steps 1 to 5 have all failed.
  *
  * The HTML each step produces goes through `classifyContent`. That function
  * counts a 200 OK whose body is a login wall as a failure, so we never accept a
@@ -73,6 +75,7 @@ export const FETCH_UAS = {
 const MIN_GOOD_CONTENT_CHARS = 300;
 const FETCH_TIMEOUT_MS = 15_000;
 const BROWSER_RENDER_TIMEOUT_MS = 20_000;
+const FIRST_ERROR_STATUS = 400;
 
 const turndown = new TurndownService({ headingStyle: "atx", codeBlockStyle: "fenced" });
 
@@ -222,7 +225,8 @@ export function classifyMarkdown(markdown: string): ContentClass {
   return "good";
 }
 
-async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
+/** Exported for the daily site checks. */
+export async function tryWayback(originalUrl: string): Promise<RawFetchResult> {
   try {
     const availabilityResp = await fetch(
       `https://archive.org/wayback/available?url=${encodeURIComponent(originalUrl)}`,
@@ -252,7 +256,10 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
   // Render the page in a real Chromium through the shared browser. This defeats
   // the client-side anti-bot walls, such as the one on TrueAchievements, that
   // answer 403 to a plain HTTP request. Each call gets its own browser context,
-  // so cookies and other state from one fetch cannot leak into the next.
+  // so cookies and other state from one fetch cannot leak into the next. The
+  // browser sends its own headers. BROWSER_HEADERS are those of a page load,
+  // and forced onto every request they also went out with the requests of a
+  // bot check's script, which Vercel's check then refused (GOO-832).
   let context: import("playwright").BrowserContext | null = null;
   try {
     const browser = await getBrowser();
@@ -260,19 +267,15 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
       userAgent: FETCH_UAS.desktop,
       viewport: { width: 1280, height: 800 },
       locale: "en-US",
-      extraHTTPHeaders: { ...BROWSER_HEADERS },
     });
     const page = await context.newPage();
-    const response = await page.goto(url, {
-      waitUntil: "domcontentloaded",
-      timeout: BROWSER_RENDER_TIMEOUT_MS,
-    });
+    const status = (await openPastBotCheck(page, url)).status();
+    await page.waitForLoadState("domcontentloaded", { timeout: BROWSER_RENDER_TIMEOUT_MS });
     // Wait a moment so that content rendered by JavaScript can appear. Sites like
     // TrueAchievements hydrate quickly.
     await page.waitForTimeout(1_500);
-    const status = response?.status();
     const body = await page.content();
-    return { ok: status !== undefined && status < 400, status, contentType: "text/html", body };
+    return { ok: status < FIRST_ERROR_STATUS, status, contentType: "text/html", body };
   } catch (err: any) {
     return { ok: false, error: err?.message?.slice(0, 200) ?? "browser render error" };
   } finally {
@@ -283,13 +286,12 @@ async function tryBrowserRender(url: string): Promise<RawFetchResult> {
 /** Walks the ladder for one page. The fetcher runs this, and so does a
  *  process that has no fetcher. */
 export async function fetchPageWithLadder(url: string): Promise<LadderAnswer> {
-  if (!isWebUrl(url)) return { ok: false, diagnostic: "only http and https addresses are fetched", attempts: [] };
+  if (!isWebUrl(url)) return { ok: false, diagnostic: "only http and https addresses are fetched" };
   return runFetchLadder(url);
 }
 
 async function runFetchLadder(url: string): Promise<LadderAnswer> {
-  const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number; ms: number }> = [];
-  const forLog = (): LadderAttempt[] => attempts.map(({ label, cls, status, chars, ms }) => ({ label, result: cls, status, chars, ms }));
+  const attempts: Array<{ label: string; cls: ContentClass | "fail"; status?: number; chars: number }> = [];
 
   // Steps 1 to 3 are the HTTP ladder with three user agents. We stop as soon as
   // one of them yields content that classifies as good.
@@ -299,14 +301,13 @@ async function runFetchLadder(url: string): Promise<LadderAnswer> {
     ["googlebot", FETCH_UAS.googlebot],
   ];
   for (const [label, ua] of httpLadder) {
-    const started = Date.now();
     const r = await rawFetch(url, ua);
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
-      attempts.push({ label, cls, status: r.status, chars: markdown.length, ms: Date.now() - started });
-      if (cls === "good") return { ok: true, html: r.body, markdown, fetchedUrl: url, via: null, attempts: forLog() };
+      attempts.push({ label, cls, status: r.status, chars: markdown.length });
+      if (cls === "good") return { ok: true, html: r.body, markdown, fetchedUrl: url, via: null };
     } else {
-      attempts.push({ label, cls: "fail", status: r.status, chars: 0, ms: Date.now() - started });
+      attempts.push({ label, cls: "fail", status: r.status, chars: 0 });
     }
   }
 
@@ -315,32 +316,30 @@ async function runFetchLadder(url: string): Promise<LadderAnswer> {
   // cannot capture, which are often paywalled.
   for (const archive of [["wayback", tryWayback] as const, ["archive.ph", tryArchiveIs] as const]) {
     const [archiveLabel, fn] = archive;
-    const started = Date.now();
     const r = await fn(url);
     if (r.ok && r.body) {
       const { cls, markdown } = classifyContent(r.body);
-      attempts.push({ label: archiveLabel, cls, status: r.status, chars: markdown.length, ms: Date.now() - started });
+      attempts.push({ label: archiveLabel, cls, status: r.status, chars: markdown.length });
       if (cls === "good") {
         // The requested URL is dead or blocked. We read the snapshot instead, so
         // the snapshot is the URL a note may cite, not the original.
-        return { ok: true, html: r.body, markdown, fetchedUrl: r.finalUrl ?? url, via: `${archiveLabel} snapshot`, attempts: forLog() };
+        return { ok: true, html: r.body, markdown, fetchedUrl: r.finalUrl ?? url, via: `${archiveLabel} snapshot` };
       }
     } else {
-      attempts.push({ label: archiveLabel, cls: "fail", status: r.status, chars: 0, ms: Date.now() - started });
+      attempts.push({ label: archiveLabel, cls: "fail", status: r.status, chars: 0 });
     }
   }
 
   // Step 6 renders the page in a real browser. It is slow, about 3 seconds plus
   // the wait for JavaScript to settle, so it only runs once every HTTP path and
   // archive path has failed.
-  const browserStarted = Date.now();
   const browser = await tryBrowserRender(url);
   if (browser.ok && browser.body) {
     const { cls, markdown } = classifyContent(browser.body);
-    attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length, ms: Date.now() - browserStarted });
-    if (cls === "good") return { ok: true, html: browser.body, markdown, fetchedUrl: url, via: "headless browser", attempts: forLog() };
+    attempts.push({ label: "browser", cls, status: browser.status, chars: markdown.length });
+    if (cls === "good") return { ok: true, html: browser.body, markdown, fetchedUrl: url, via: "headless browser" };
   } else {
-    attempts.push({ label: "browser", cls: "fail", status: browser.status, chars: 0, ms: Date.now() - browserStarted });
+    attempts.push({ label: "browser", cls: "fail", status: browser.status, chars: 0 });
   }
 
   // Nothing produced good content. We return the most informative diagnostic we
@@ -349,12 +348,12 @@ async function runFetchLadder(url: string): Promise<LadderAnswer> {
   const best = attempts.find((a) => a.cls === "wall" || a.cls === "thin");
   if (best) {
     const tag = best.cls === "wall" ? "login wall / anti-bot block" : "thin content";
-    return { ok: false, diagnostic: `${tag} (${best.label}, ${best.chars} chars)`, attempts: forLog() };
+    return { ok: false, diagnostic: `${tag} (${best.label}, ${best.chars} chars)` };
   }
   const last = attempts[attempts.length - 1];
   const failure = last?.status
     ? `HTTP ${last.status} (last attempt: ${last.label})`
     : `all ${attempts.length} attempts failed`;
-  return { ok: false, diagnostic: failure, attempts: forLog() };
+  return { ok: false, diagnostic: failure };
 }
 

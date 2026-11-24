@@ -15,19 +15,22 @@ export type NoteInfo = {
 
 /**
  * Submit a Community Note on a tweet. The request is signed with OAuth 1.0a.
+ * Outside test mode the note is public. A test-mode note is only scored by
+ * X's evaluator, which decides whether a new writer earns admission.
  * @param postId The ID of the tweet to annotate
  * @param info The info object for the note
  * @returns The API response
  */
 export async function submitNote(
   postId: string,
-  info: NoteInfo
+  info: NoteInfo,
+  testMode = false,
 ): Promise<SubmitNoteResponse> {
   const url = "https://api.x.com/2/notes";
   const data = {
     info,
     post_id: postId,
-    test_mode: false, // This is production mode, so the note is publicly visible.
+    test_mode: testMode,
   };
 
   const body = JSON.stringify(data);

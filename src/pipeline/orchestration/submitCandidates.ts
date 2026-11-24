@@ -21,7 +21,8 @@ import { SupabaseLogger } from "../../api/supabaseClient";
 import { submitNoteForTweet } from "./submitNoteForTweet";
 import type { Post } from "../../api/fetchEligiblePosts";
 import type { ProcessTweetResult } from "./processTweet";
-import { velocityPerHour, formatVelocity, isAboveVelocityFloor, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
+import { velocityPerHour, formatVelocity, REGULAR_VELOCITY_FLOOR_PER_HOUR } from "../utils/velocity";
+import { clearsFloor, formatViewsToCome, VIEWS_HORIZON_HOURS, VIEWS_TO_COME_FLOOR } from "../utils/viewsToCome";
 import { featuresFromPost, flagCount } from "../ranking/features";
 import { FLAG_CUTS_2026_08, SCORERS, type Scorer } from "../ranking/scorers";
 import { orderForSubmit, partitionByBar } from "../ranking/submitOrder";
@@ -61,14 +62,16 @@ const SUBMISSION_WINDOW_HOURS = 24;
 // their net helpful rate was +3.4%, against 16.1% and +7.3% for fresh ones. The
 // longer history from March to July agrees, with 6.7% rated and +1.5% net over
 // 310 notes.
-// The lag curve bends at 24 hours, which is why the cutoff sits there. The band
-// from 12 to 24 hours still supplies real helpful notes at +5.2% net, so we do
-// not cut earlier than that.
-// Curated-topic notes get 48 hours instead. Their claims move more slowly, their
-// velocity floor is far lower, and the submit reserve exists to protect exactly
-// those notes. Raise these constants to switch the cutoffs off.
-export const STALE_TWEET_CUTOFF_HOURS = 24;
-export const MISINFO_STALE_CUTOFF_HOURS = 48;
+// The lag curve bends at 24 hours, which is why the cutoff sat there.
+//
+// Since GOO-865 (2026-11-23, Jim's call) it sits at 48 hours for every note,
+// as it already did for curated-topic notes. Tweets are now picked by their
+// predicted views still to come (viewsToCome.ts), which shrink with age and
+// reach zero at 48 hours, so a post with little left falls below the views
+// floor on its own. The model is as accurate on posts past 24 hours as on
+// younger ones (typically within a factor of 1.2 to 1.6 from 25 to 46 hours),
+// and 10% of 25-hour-old posts clear the floor against 1% at 46 hours.
+export const STALE_TWEET_CUTOFF_HOURS = VIEWS_HORIZON_HOURS;
 
 /** The tweet's age in hours at `nowMs`. It reads post.created_at first. When that
  *  is missing it falls back to the timestamp encoded in the tweet id, which X
@@ -100,8 +103,7 @@ export function partitionByStaleCutoff(
   const staleCut: { candidate: Candidate; ageHours: number }[] = [];
   for (const c of candidates) {
     const age = tweetAgeHours(c.post, nowMs);
-    const cutoff = c.isMisinfo ? MISINFO_STALE_CUTOFF_HOURS : STALE_TWEET_CUTOFF_HOURS;
-    if (age !== null && age > cutoff) {
+    if (age !== null && age > STALE_TWEET_CUTOFF_HOURS) {
       staleCut.push({ candidate: c, ageHours: age });
     } else {
       kept.push(c);
@@ -156,6 +158,9 @@ export interface Candidate {
    *  through feed selection have none, and we derive their velocity from the
    *  post instead. */
   velocity?: number | null;
+  /** The predicted views still to come, frozen when the post was fetched
+   *  (viewsToCome.ts). Null or missing when the post was selected without one. */
+  viewsToCome?: number | null;
   /** The note rater's forecast. Null when the rater call failed. */
   rating?: NoteRating | null;
   /** Set when the candidate came out of the note queue: when it was written. */
@@ -163,10 +168,14 @@ export interface Candidate {
 }
 
 /**
- * Splits the candidates at the regular velocity floor. This is only a backstop,
- * because the regular feed already applies the same floor at selection. See
+ * Splits the candidates at the regular floor (clearsFloor in viewsToCome.ts): a
+ * candidate with a predicted views still to come answers to the views floor,
+ * one without to the velocity floor. This is only a backstop, because the
+ * regular feed already applies the same floor at selection. See
  * collectFastPosts for that. In practice this cut only bites candidates that
- * skipped selection, which today means the Pangram pre-pass.
+ * skipped selection, which today means the Pangram pre-pass. The name and the
+ * reason `below_velocity_floor` are older than the views floor and stay, because
+ * analyses read the reason.
  *
  * Misinfo candidates are never cut here. The topic path has its own floor and
  * enforces it at both of its selection points, the pre-pass work list and the
@@ -177,16 +186,16 @@ export interface Candidate {
  */
 export function partitionByVelocityFloor(candidates: Candidate[]): {
   kept: Candidate[];
-  floorCut: { candidate: Candidate; velocity: number }[];
+  floorCut: { candidate: Candidate; velocity: number | null }[];
 } {
   const kept: Candidate[] = [];
-  const floorCut: { candidate: Candidate; velocity: number }[] = [];
+  const floorCut: { candidate: Candidate; velocity: number | null }[] = [];
   for (const c of candidates) {
     const v = velocityOf(c);
-    if (v === null && !c.isMisinfo) {
+    if (v === null && c.viewsToCome == null && !c.isMisinfo) {
       console.warn(`[submit] velocity unknown for ${c.post.id} (missing metrics) — failing open`);
     }
-    if (!c.isMisinfo && v !== null && !isAboveVelocityFloor(v)) {
+    if (!c.isMisinfo && !clearsFloor(c.viewsToCome, v)) {
       floorCut.push({ candidate: c, velocity: v });
     } else {
       kept.push(c);
@@ -240,9 +249,9 @@ export async function submitCandidates(
     const { kept: fastEnough, floorCut } = partitionByVelocityFloor(candidates);
     if (floorCut.length) {
       console.log(
-        `[submit] velocity floor: cut ${floorCut.length} of ${candidates.length} candidate(s) below ` +
-          `${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} — ` +
-          floorCut.map((f) => `${f.candidate.post.id} vel=${formatVelocity(f.velocity)}`).join(", "),
+        `[submit] floor: cut ${floorCut.length} of ${candidates.length} candidate(s) below ` +
+          `${formatViewsToCome(VIEWS_TO_COME_FLOOR)} predicted views to come, or ${formatVelocity(REGULAR_VELOCITY_FLOOR_PER_HOUR)} without a prediction — ` +
+          floorCut.map((f) => `${f.candidate.post.id} to come=${formatViewsToCome(f.candidate.viewsToCome)} vel=${formatVelocity(f.velocity)}`).join(", "),
       );
     }
 
@@ -250,7 +259,7 @@ export async function submitCandidates(
     if (staleCut.length) {
       console.log(
         `[submit] stale cutoff: cut ${staleCut.length} candidate(s) past ` +
-          `${STALE_TWEET_CUTOFF_HOURS}h (${MISINFO_STALE_CUTOFF_HOURS}h misinfo) — ` +
+          `${STALE_TWEET_CUTOFF_HOURS}h — ` +
           staleCut.map((sc) => `${sc.candidate.post.id} age=${sc.ageHours.toFixed(1)}h`).join(", "),
       );
     }
@@ -261,7 +270,7 @@ export async function submitCandidates(
     const ranking = new Map<Candidate, { features: ReturnType<typeof featuresFromPost>; scores: Record<string, number>; flags: number }>();
     for (const c of candidates) {
       if (ranking.has(c)) continue;
-      const features = featuresFromPost(c.post, c.velocity, null, asOfMs);
+      const features = featuresFromPost(c.post, c.velocity, c.viewsToCome, null, asOfMs);
       const scores: Record<string, number> = Object.fromEntries(Object.values(SCORERS).map((s) => [s.name, s.scoreSubmit(features, c.tweetResult.evaluationScore ?? null)]));
       if (c.rating) scores.note_rater = raterPriority(c.rating);
       ranking.set(c, { features, scores, flags: flagCount(features, FLAG_CUTS_2026_08) });

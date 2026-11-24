@@ -13,18 +13,14 @@
  *   withdraw <draft id> <reason>
  *   usage                         Claude Code usage of the plan this machine is logged into
  *   examples                      regenerates the examples file from prod
- *   x-note <note.json>            { runId, note, reasoning }: queues a note on an X tweet for the next X run
+ *   x-note <note.json>            { runId, note, reasoning, sources? }: queues a note on an X tweet for the next X run
  *   x-no-note <run id> <reason>   records that an X tweet needs no note
  *   x-handle <creator slug> <handle | none> <evidence>
  *                                 records a creator's X account, or that they have none
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
- *   run                           the runner on ai-box (src/claude-notes/runner.ts)
- *   dispatch                      on the devbox: waits for jobs, starts them, prints their prompts and exits (src/claude-notes/dispatch.ts)
- *   dispatch-end <job key>        on the devbox: closes a job after its subagent returned, or prints its retry prompt
- *   dispatch-services             on the devbox: rebuilds the examples once a day, all the time */
+ *   run                           the runner on ai-box (src/claude-notes/runner/main.ts) */
 
 import { readFileSync, writeFileSync } from "fs";
-import { dispatch, dispatchEnd, dispatchServices } from "./dispatch";
 import { JUDGE_EXAMPLES_PATH } from "./judge";
 import { addDraft, answerMessage, judgeExamples, type NewDraft, postedSince, propose, unansweredMessages, withdraw } from "./store";
 import { readUsage } from "./usage";
@@ -60,15 +56,9 @@ async function main() {
     case "posted-since":
       return print(await postedSince(arg(0)));
     case "run":
-      return import("./runner");
+      return import("./runner/main");
     case "messages":
       return print(await unansweredMessages());
-    case "dispatch":
-      return dispatch();
-    case "dispatch-end":
-      return dispatchEnd(arg(0));
-    case "dispatch-services":
-      return dispatchServices();
     case "answer":
       return answer(arg(0));
     case "withdraw":
@@ -78,7 +68,7 @@ async function main() {
     case "examples":
       return import("./buildExamples");
     case "x-note": {
-      const note: { runId: string; note: string; reasoning: string } = readJson(arg(0));
+      const note: { runId: string; note: string; reasoning: string; sources?: NewDraft["sources"] } = readJson(arg(0));
       await saveXNote(note.runId, note);
       return console.log("Saved. The next X run rates the note and submits it if X has room.");
     }

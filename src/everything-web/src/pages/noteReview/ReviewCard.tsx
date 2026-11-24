@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addToLeaderboard } from "@cn/core/bestNotes";
+import { addToLeaderboard, setLeaderboardDecline } from "@cn/core/bestNotes";
 import {
   deleteDraftNote,
   rewriteDraft,
@@ -24,11 +24,13 @@ import { queryKeys } from "@cn/features/query/queryKeys";
 import { Button } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { DropdownMenu } from "@cn/ui/DropdownMenu";
+import { Modal } from "@cn/ui/Modal";
 import { Textarea } from "@cn/ui/Field";
 import { CheckIcon, TrashIcon } from "@cn/ui/icons";
 import { ClaimCard } from "../../components/ClaimCard";
+import { LeaderboardReorder } from "../bestNotes/BestNotesReorder";
 import { noteUrl } from "../../lib/routing";
-import { PostOnX } from "./PostOnX";
+import { PostOnX, SchedulePostOnX } from "./PostOnX";
 import { PERSON, ReviewerVotes } from "./ReviewerVotes";
 import { DISPLAY, REVIEW_FIELDS, type DisplayOption } from "./reviewFields";
 import { draftNoteId, refreshCreator, refreshDrafts, waitsForClaude, type ReviewView } from "./reviewQueries";
@@ -213,6 +215,7 @@ type Step =
   | { step: "delete" }
   | { step: "skip"; skip: boolean }
   | { step: "leaderboard" }
+  | { step: "declineLeaderboard"; on: boolean }
   | { step: "xMark"; mark: XMark | null }
   | { step: "fewShot"; on: boolean }
   | { step: "reviewNote"; text: string }
@@ -237,6 +240,8 @@ function useReviewStep(draft: ReviewDraft, view: ReviewView, onDone?: () => void
         await skipDraft(draft.id, step.skip);
       } else if (step.step === "leaderboard") {
         await addToLeaderboard(draft.noteId!);
+      } else if (step.step === "declineLeaderboard") {
+        await setLeaderboardDecline(draft.noteId!, step.on);
       } else if (step.step === "xMark") {
         await setXMark(draft.noteId!, step.mark);
       } else if (step.step === "fewShot") {
@@ -554,6 +559,19 @@ function XPostLine({ draft }: { draft: ReviewDraft }) {
   );
 }
 
+/** The whole leaderboard in drag mode, with the note just added highlighted
+ *  at the bottom, so the admin can move it to its place right away. */
+function LeaderboardModal({ noteId, onClose }: { noteId: string; onClose: () => void }) {
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <Modal title="Our leaderboard" widthClassName="max-w-3xl" onClose={onClose}>
+      <p className="text-sm text-fg-muted">Drag the note to its place.</p>
+      {error && <p className="text-sm text-negative">{error}</p>}
+      <LeaderboardReorder projectSlug={null} highlightId={noteId} onError={setError} />
+    </Modal>
+  );
+}
+
 function MarkButton({ on, label, onClick, disabled }: { on: boolean; label: string; onClick: () => void; disabled: boolean }) {
   return (
     <Button variant="secondary" aria-pressed={on} disabled={disabled} onClick={onClick} title={on ? `${label}. Click to take the mark off` : undefined} className={cn(on && "border-link text-link")}>
@@ -570,6 +588,7 @@ type Panel = "chat" | "improve" | "post";
 function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   const [open, setOpen] = useState<Panel | null>(draft.proposal ? "improve" : draft.messages.length > 0 ? "chat" : null);
   const [seenProposal, setSeenProposal] = useState(draft.proposal?.note);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const act = useReviewStep(draft, view);
   const shows = (option: DisplayOption) => view.display.includes(option);
   const toggle = (panel: Panel) => setOpen(open === panel ? null : panel);
@@ -589,9 +608,20 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        {live && shows(DISPLAY.postOnX.value) && draft.xMark !== "posted" && draft.xMark !== "scheduled" && panelButton("post", "Post on X")}
-        {live && shows(DISPLAY.markPosted.value) && <MarkButton on={draft.xMark === "posted"} label="Posted on X" disabled={act.isPending} onClick={() => markX("posted")} />}
-        {live && shows(DISPLAY.wontPost.value) && <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />}
+        {/* A note with an X mark shows only that mark, highlighted, whatever the Display menu says. */}
+        {live && !draft.xMark && <SchedulePostOnX draft={draft} view={view} onEdit={() => setOpen("post")} />}
+        {live && draft.xMark === "scheduled" && (
+          <span className="inline-flex items-center gap-1.5 rounded-control border border-link px-3 py-1.5 text-sm font-medium text-link">
+            <CheckIcon size={14} aria-hidden />
+            Scheduled on X
+          </span>
+        )}
+        {live && (draft.xMark === "posted" || (!draft.xMark && shows(DISPLAY.markPosted.value))) && (
+          <MarkButton on={draft.xMark === "posted"} label={draft.xMark === "posted" ? "Posted on X" : "Mark as posted"} disabled={act.isPending} onClick={() => markX("posted")} />
+        )}
+        {live && (draft.xMark === "wont_post" || (!draft.xMark && shows(DISPLAY.wontPost.value))) && (
+          <MarkButton on={draft.xMark === "wont_post"} label="We won't post this" disabled={act.isPending} onClick={() => markX("wont_post")} />
+        )}
         <XPostLine draft={draft} />
         {claude && shows(DISPLAY.chat.value) && panelButton("chat", "Chat with Claude")}
         {claude && live && shows(DISPLAY.improve.value) && panelButton("improve", draft.proposal ? "Improved version" : "Improve the note")}
@@ -602,12 +632,25 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
         )}
         {claude && shows(DISPLAY.fewShot.value) && <MarkButton on={draft.fewShot} label="Few-shot example" disabled={act.isPending} onClick={() => act.mutate({ step: "fewShot", on: !draft.fewShot })} />}
         {live && shows(DISPLAY.leaderboard.value) &&
-          (draft.onLeaderboard ? (
-            <span className="text-sm text-fg-muted">On the leaderboard</span>
+          (draft.leaderboard === "on" ? (
+            <span className="text-sm text-fg-muted">
+              On the leaderboard ·{" "}
+              <Button variant="link" onClick={() => setLeaderboardOpen(true)}>
+                Reorder
+              </Button>
+            </span>
           ) : (
-            <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" })}>
-              Add to leaderboard
-            </Button>
+            <>
+              <Button variant="secondary" disabled={act.isPending} onClick={() => act.mutate({ step: "leaderboard" }, { onSuccess: () => setLeaderboardOpen(true) })}>
+                Add to leaderboard
+              </Button>
+              <MarkButton
+                on={draft.leaderboard === "declined"}
+                label="Won't add to leaderboard"
+                disabled={act.isPending}
+                onClick={() => act.mutate({ step: "declineLeaderboard", on: draft.leaderboard !== "declined" })}
+              />
+            </>
           ))}
         {claude && (live || draft.status === "posting") && shows(DISPLAY.delete.value) && <DeleteButton draft={draft} view={view} />}
         <ErrorText error={act.error} />
@@ -615,6 +658,7 @@ function Tools({ draft, view }: { draft: ReviewDraft; view: ReviewView }) {
       {open === "chat" && claude && <Chat draft={draft} view={view} />}
       {open === "improve" && claude && live && <ImprovedVersion draft={draft} view={view} onClose={() => setOpen(null)} />}
       {open === "post" && live && <PostOnX draft={draft} view={view} onClose={() => setOpen(null)} />}
+      {leaderboardOpen && <LeaderboardModal noteId={draft.noteId!} onClose={() => setLeaderboardOpen(false)} />}
     </div>
   );
 }

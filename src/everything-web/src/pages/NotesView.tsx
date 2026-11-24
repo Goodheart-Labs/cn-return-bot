@@ -4,11 +4,12 @@ import { PageTitle } from "@cn/ui/typography";
 import { useProject } from "../lib/feedQueries";
 import type { Route } from "../lib/routing";
 import { AllNotesPage } from "./AllNotesPage";
+import { CorrectionsPage } from "./CorrectionsPage";
 import { LeaderboardPage } from "./LeaderboardPage";
 import { ProjectPage } from "./ProjectPage";
 import { ProjectsPage } from "./ProjectsPage";
 
-type NotesRoute = Extract<Route, { view: "notes" | "allNotes" | "leaderboard" }>;
+type NotesRoute = Extract<Route, { view: "notes" | "allNotes" | "leaderboard" | "corrections" }>;
 type ProjectRoute = Extract<Route, { view: "notes" }>;
 
 /** One project's page, once the project its link names has loaded. A link
@@ -35,6 +36,7 @@ export function NotesView({ route, navigate }: { route: NotesRoute; navigate: (n
     );
   }
   if (route.view === "allNotes") return <AllNotesPage navigate={navigate} />;
+  if (route.view === "corrections") return <CorrectionsPage navigate={navigate} />;
   if (!route.project) return <ProjectsPage navigate={navigate} />;
   return <ProjectRoutePage route={{ ...route, project: route.project }} navigate={navigate} />;
 }

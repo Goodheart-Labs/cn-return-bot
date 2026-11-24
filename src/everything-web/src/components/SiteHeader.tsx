@@ -3,7 +3,7 @@ import { buttonVariants } from "@cn/ui/Button";
 import { cn } from "@cn/ui/cn";
 import { focusRing } from "@cn/ui/focusRing";
 import { trackGetExtensionClick } from "../lib/extensionStores";
-import { HOME, INSTALL, MINISITES, NOTES, X_NOTEWRITER, type Route } from "../lib/routing";
+import { CORRECTIONS, HOME, INSTALL, MINISITES, NOTES, X_NOTEWRITER, type Route } from "../lib/routing";
 import { useIsAdmin } from "../lib/useIsAdmin";
 import { AdminMenu } from "./AdminMenu";
 import { AuthCorner } from "./AuthCorner";
@@ -14,7 +14,7 @@ const navLink = cn(
   focusRing,
 );
 
-/** The bar at the top of every page. The name and the five pages sit on the
+/** The bar at the top of every page. The name and the six pages sit on the
  *  left, signing in and getting the extension on the right. Getting the
  *  extension leads to the homepage's install section. Admins also get an
  *  Admin menu with the note review, the best notes and the dashboard. */
@@ -42,6 +42,9 @@ export function SiteHeader({ route, navigate, onSignIn }: { route: Route; naviga
           </RouteLink>
           <RouteLink to={{ view: "leaderboard" }} navigate={navigate} current={route.view === "leaderboard"} className={navLink}>
             Leaderboard
+          </RouteLink>
+          <RouteLink to={CORRECTIONS} navigate={navigate} current={route.view === "corrections"} className={navLink}>
+            Corrections
           </RouteLink>
           <RouteLink to={X_NOTEWRITER} navigate={navigate} current={route.view === "xNotewriter"} className={navLink}>
             X notewriter

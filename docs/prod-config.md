@@ -192,8 +192,8 @@ so the live list is recorded here (checked on 2026-10-01):
 
 | Job name | Timetable | What it does | Created by |
 |---|---|---|---|
-| `dispatch-create-notes` | `18,48 * * * *` | Starts the Create Notes Routine workflow twice an hour. | [migrations/047](../migrations/047_schedule_create_notes_dispatch.sql) |
-| `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. | [migrations/098](../migrations/098_feed_alarm.sql) |
+| `dispatch-create-notes` | removed | Started the Create Notes Routine workflow twice an hour until GOO-865, when the X note writer moved into cn-feed-views on the services box. | [migrations/047](../migrations/047_schedule_create_notes_dispatch.sql), removed by [migrations/198](../migrations/198_stop_create_notes_dispatch.sql) |
+| `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. Since 2026-11-19 it does so only while the notewriter `pipeline` takes feed posts, which it has not since 2026-10-21, so it starts nothing (GOO-791). | [migrations/098](../migrations/098_feed_alarm.sql), [migrations/185](../migrations/185_feed_run_only_for_pipeline.sql) |
 | `cleanup-cron-history` | `17 3 * * *` | Deletes pg_cron's own history older than 7 days. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `refresh-review-dashboard-base` | `0 * * * *` | Refreshes the review dashboard's cached table. | [migrations/080](../migrations/080_slow_review_dashboard_refresh.sql) |
 | `refresh-creator-visits` | `23 3 * * *` | Once a day, recounts every visited creator's visit numbers into `everything_creator_visits`, which the walk and the creator ranking read. Added on 2026-10-23. | [migrations/135](../migrations/135_creator_visits_daily.sql) |
@@ -244,9 +244,9 @@ hides it in logs. The names below were checked against the live repository on
 | X API for the notewriter account | `X_API_KEY`, `X_API_KEY_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET` | Create Notes Routine, Update Note Feedback and Writing Limit Probe. |
 | Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Create Notes Routine and Everything Priority Feeds. |
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
-| YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds. The proxy is also used by Create Notes Routine. |
+| YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds and Create Notes Routine read the API key and the proxy. Since 2026-11-19 no workflow reads `YOUTUBE_WEBSUB_SECRET`: cn-walk on the services machine subscribes the channels, with its own copy in `service.env` (GOO-791). |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
-| Slack | `SLACK_BOT_TOKEN`, the bot token of the Slack app "Claudy" (it starts `xoxb-`), the same token the devbox's standing jobs post with. Added on 2026-11-03 (GOO-695). | Everything Priority Feeds, which tells the Claude notes channel when the Claude note writer goes silent. |
+| Slack | `SLACK_BOT_TOKEN`, the bot token of the Slack app "Claudy" (it starts `xoxb-`), the same token the devbox's standing jobs post with. Added on 2026-11-03 (GOO-695). | No workflow since 2026-11-19. cn-walk on the services machine now tells the Claude notes channel when one of our notewriters goes silent, with its own copy in `service.env` (GOO-791). |
 
 The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
 limited to that probe's own table. When it is unset, the probe falls back to
@@ -345,7 +345,9 @@ Each subscription names the Edge Function's address above and carries
 `YOUTUBE_WEBSUB_SECRET`, which the hub uses to sign every notification. If
 that secret changes, existing subscriptions keep signing with the old value,
 and the function ignores their notifications. Each subscription is renewed 7
-days after it was made, the next time the walk reaches its channel.
+days after it was made, the next time the walk reaches its channel. Since
+2026-11-19 the walk is cn-walk on the services machine, which reads the
+secret from `service.env` (GOO-791).
 
 ## Hetzner: the services machine
 
@@ -360,6 +362,13 @@ Nothing finds the machine by name. Only the two repository secrets
 `CLAIM_CHECK_URL` (`http://95.217.155.79:8787`) and `EXTRACTION_URL`
 (`http://95.217.155.79:8788`) hold its address. So a move to another machine
 changes those two values and nothing else outside the machine.
+
+On 2026-11-19 (GOO-791) two lines were added to
+`/etc/cn-return-bot/service.env` for the new service cn-walk:
+`YOUTUBE_WEBSUB_SECRET`, the same value as the Edge Function's secret, and
+`SLACK_BOT_TOKEN`, Claudy's token, copied from the devbox's
+`~/dev/env/devbox/env`. cn-walk's unit file was installed by hand the same
+day, as every new unit must be.
 
 ## Residential proxy
 
@@ -379,8 +388,11 @@ requests fail.
 
 Jina Reader (r.jina.ai) is a paid service that fetches a page or an API answer
 with its own browsers. The page reader asks it for every page that the free
-fetch steps failed on, and for every API answer that a bot check kept closed,
-which is how the EA Forum is read (GOO-755, GOO-745). Its key is
+fetch steps failed on, and for every API answer that a bot check kept closed
+to our own browser too. Until GOO-832 (2026-11-20) that was how the EA Forum
+was read; since then the fetcher's own browser reads it, and no API we read
+needs Jina. Its balance ran out on 2026-11-19 at 21:42 UTC. Until someone
+tops it up or replaces the key, every read that needs Jina throws. Its key is
 `JINA_API_KEY`, in `/etc/cn-return-bot/service.env` on the services machine
 and in the local `.env` files. GitHub has no copy, because Actions never reads
 an outside page itself. Today's key will be replaced by one from an account
@@ -428,7 +440,7 @@ backup of it.
 
 ## X developer apps
 
-Two separate X apps exist, in X's developer portal.
+Three separate X apps exist, in X's developer portal.
 
 1. **The notewriter app.** It acts as the bot's notewriter account to read
    posts, submit notes and read their ratings. Its four credentials are the
@@ -436,6 +448,14 @@ Two separate X apps exist, in X's developer portal.
    `X_ACCESS_TOKEN_SECRET`, in GitHub and on the services machine. The code
    that signs requests with them is
    [src/api/getOAuthToken.ts](../src/api/getOAuthToken.ts).
+1. **The WSDM Cup notewriter app** (GOO-851, 2026-11-23). It acts as the
+   second notewriter account, which `cn-x-watch` writes for
+   ([src/x-watch/main.ts](../src/x-watch/main.ts)). Its four credentials are
+   `X_WSDM_API_KEY`, `X_WSDM_API_KEY_SECRET`, `X_WSDM_ACCESS_TOKEN` and
+   `X_WSDM_ACCESS_TOKEN_SECRET`, only in the services machine's
+   `service.env`. Its app is connected only to X's Community Notes package,
+   so X's ordinary endpoints such as `/2/users/me` refuse it with
+   `client-not-enrolled`.
 2. **The sign-in app.** It powers "Sign in with X" on the website and in the
    extension. Its key and secret are entered in Supabase under Authentication
    → Sign In / Providers → Twitter. Supabase's "Twitter" provider uses OAuth

@@ -3,21 +3,15 @@
  * public JSON API and its RSS feed:
  *   - substack.com/api/v1/user/<handle>/public_profile   → the publication subdomain
  *   - <sub>.substack.com/api/v1/archive?sort=new&limit=N → the latest posts
- *   - <sub>.substack.com/api/v1/archive?sort=top&limit=N → the most liked posts
  *   - <sub>.substack.com/feed                            → the latest posts with their bodies
  *
- * The RSS feed is what the walk reads, through the page reader's readListing,
- * because Substack refuses GitHub's machines. Substack's API refuses some
- * datacenter addresses, so the top-post refresh in GitHub Actions goes
- * through the residential proxy (fetchJsonViaResidentialProxy). Proxy traffic
- * is paid per gigabyte, which is fine at this volume: one archive call per
- * publication every 60 days. A single post is read by the page reader, which
- * asks Substack's post endpoint (src/pipeline/fetch/sites/substack.ts).
+ * The RSS feed is what cn-walk reads, through the page reader's readListing.
+ * A single post is read by the page reader, which asks Substack's post
+ * endpoint (src/pipeline/fetch/sites/substack.ts).
  */
 
 import { readListing } from "../../pipeline/fetch/readListing";
 import { decodeHtmlEntities } from "../../pipeline/utils/html";
-import { fetchJsonViaResidentialProxy } from "../../pipeline/utils/residentialProxy";
 
 async function fetchJson(url: string): Promise<any> {
   const res = await fetch(url);
@@ -42,6 +36,16 @@ async function fetchPublication(handle: string): Promise<{ subdomain: string; na
 // are filtered out afterwards.
 const ARCHIVE_FETCH_LIMIT = 20;
 
+/** The posts in an answer of the archive API. Substack answered with a bare
+ *  list of posts until November 2026, and with an object that holds them
+ *  under `posts` since then. Every archive read failed for two weeks before a
+ *  site check noticed (GOO-804). */
+function archivePosts(archive: unknown): any[] {
+  const posts = (archive as { posts?: unknown } | null)?.posts;
+  if (!Array.isArray(posts)) throw new Error(`The archive API answered without a list of posts: ${JSON.stringify(archive).slice(0, 200)}`);
+  return posts;
+}
+
 export interface ArchivePost {
   url: string;
   title: string;
@@ -52,7 +56,7 @@ export interface ArchivePost {
 /** Latest N free text posts of a publication ("https://thezvi.substack.com"), newest first. */
 export async function fetchArchivePosts(publicationUrl: string, n: number): Promise<ArchivePost[]> {
   const archive = await fetchJson(`${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=new&limit=${ARCHIVE_FETCH_LIMIT}`);
-  return (archive as any[])
+  return archivePosts(archive)
     .filter((p) => p.audience === "everyone" && p.type !== "podcast")
     .slice(0, n)
     .map((p) => ({ url: p.canonical_url as string, title: p.title as string, postDate: p.post_date as string }));
@@ -68,36 +72,6 @@ export async function fetchLatestFreePosts(
   if (!handle) throw new Error(`Not a substack profile URL: ${profileUrl}`);
   const publication = await fetchPublication(handle);
   return { publicationName: publication.name, posts: await fetchArchivePosts(`https://${publication.subdomain}.substack.com`, n) };
-}
-
-export interface TopArchivePost {
-  url: string;
-  title: string;
-  /** ISO timestamp of publication (the archive API's post_date). */
-  postDate: string;
-  likes: number;
-}
-
-/** A publication's n most liked free text posts of all time, most liked
- *  first. The archive API's "top" sort is the source listing, but its order
- *  is Substack's own blend, so the posts are re-sorted by their like counts:
- *  likes are the popularity signal we rank on, and the only one Substack
- *  makes public besides restacks. Paid posts are left out, because we could
- *  not read their bodies anyway. */
-export async function fetchTopArchivePosts(publicationUrl: string, n: number): Promise<TopArchivePost[]> {
-  const archive = await fetchJsonViaResidentialProxy(
-    `${publicationUrl.replace(/\/$/, "")}/api/v1/archive?sort=top&limit=${ARCHIVE_FETCH_LIMIT}`,
-  );
-  return (archive as any[])
-    .filter((p) => p.audience === "everyone" && p.type !== "podcast")
-    .map((p) => ({
-      url: p.canonical_url as string,
-      title: p.title as string,
-      postDate: p.post_date as string,
-      likes: Object.values((p.reactions ?? {}) as Record<string, number>).reduce((a, b) => a + b, 0),
-    }))
-    .sort((a, b) => b.likes - a.likes)
-    .slice(0, n);
 }
 
 export interface FeedPost {
@@ -140,9 +114,24 @@ export interface SubstackFeed {
  *  newest first, each with the full post HTML. Feed-reader traffic is the one
  *  kind Substack serves to a non-residential IP. */
 export async function fetchFeedPosts(publicationUrl: string): Promise<SubstackFeed> {
-  const listing = await readListing({ feedUrl: publicationUrl.replace(/\/$/, ""), limit: 0 });
+  const read = await readFeedIfChanged(publicationUrl, undefined);
+  if (read.kind !== "feed") throw new Error(`A request without an ETag for ${publicationUrl} got 304 Not Modified`);
+  return read.feed;
+}
+
+/** The feed, unless it has not changed since the answer with this ETag
+ *  (cn-walk, GOO-791). Most reads of a feed then move no body at all. */
+export async function readFeedIfChanged(
+  publicationUrl: string,
+  etag: string | undefined,
+): Promise<{ kind: "not_modified" } | { kind: "feed"; feed: SubstackFeed; etag: string | null }> {
+  const listing = await readListing({ feedUrl: publicationUrl.replace(/\/$/, ""), limit: 0, ...(etag && { etag }) });
+  if (listing.kind === "not_modified") return listing;
   if (listing.kind !== "substack") throw new Error(`Not a Substack publication: ${publicationUrl}`);
-  const { xml } = listing;
+  return { kind: "feed", feed: parseSubstackFeed(listing.xml), etag: listing.etag };
+}
+
+export function parseSubstackFeed(xml: string): SubstackFeed {
   // The channel's own title is the first <title> before any <item>. The items
   // carry <title> tags too, so the channel block is cut out first.
   const channelXml = xml.split("<item>")[0]!;

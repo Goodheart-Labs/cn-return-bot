@@ -36,6 +36,11 @@ export const UNREADABLE_VIDEO_LINES = {
 
 export type UnreadableVideoReason = keyof typeof UNREADABLE_VIDEO_LINES;
 
+/** The skip reason of a page the image screen stopped (GOO-815, migration
+ *  188). Nothing on it was checked and nothing ever will be. Extension
+ *  versions from before this read it as a failed request that will retry. */
+export const FLAGGED_SKIP_REASON = "image flagged";
+
 const isUnreadableVideoReason = (reason: string | null | undefined): reason is UnreadableVideoReason =>
   !!reason && Object.hasOwn(UNREADABLE_VIDEO_LINES, reason);
 
@@ -86,6 +91,7 @@ export type RequestProgress =
   | { kind: "done"; notes: number }
   | { kind: "failed" }
   | { kind: "unreadable"; reason: UnreadableVideoReason }
+  | { kind: "uncheckable" }
   | { kind: "unavailable" };
 
 /** Whether a state can still change. The watcher tears itself down on a
@@ -93,7 +99,9 @@ export type RequestProgress =
  *  state is deliberately not terminal: the item is still queued and will run
  *  once the budget resets, so a revisit should keep watching it. */
 export function progressIsTerminal(progress: RequestProgress): boolean {
-  return progress.kind === "done" || progress.kind === "failed" || progress.kind === "unreadable" || progress.kind === "unavailable";
+  return (
+    progress.kind === "done" || progress.kind === "failed" || progress.kind === "unreadable" || progress.kind === "uncheckable" || progress.kind === "unavailable"
+  );
 }
 
 /** A claim that has been through its check. A skipped claim never gets
@@ -148,6 +156,7 @@ export function deriveRequestProgress(
     return { kind: "extracting" };
   }
   if (item.status === "done") {
+    if (item.skip_reason === FLAGGED_SKIP_REASON) return { kind: "uncheckable" };
     if (request?.status === "error") return { kind: "failed" };
     if (isUnreadableVideoReason(item.skip_reason)) return { kind: "unreadable", reason: item.skip_reason };
     return { kind: "done", notes: claims.filter((c) => c.status === "note").length };
@@ -185,6 +194,8 @@ export function progressLines(progress: RequestProgress): string[] {
       return ["failed, will retry"];
     case "unreadable":
       return [UNREADABLE_VIDEO_LINES[progress.reason]];
+    case "uncheckable":
+      return ["failed, this page can't be checked"];
     case "unavailable":
       return ["live progress unavailable"];
   }

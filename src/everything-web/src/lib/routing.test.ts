@@ -16,6 +16,7 @@ const ROUTES: [string, Route][] = [
   ["/notes/zvi/item-1", { view: "notes", project: "zvi", item: "item-1", note: null }],
   ["/notes/zvi?note=n-1", { view: "notes", project: "zvi", item: null, note: "n-1" }],
   ["/leaderboard", { view: "leaderboard" }],
+  ["/corrections", { view: "corrections" }],
   ["/minisites", { view: "minisites", slug: null }],
   ["/minisites/new", { view: "newMinisite" }],
   ["/admin/notes", { view: "noteReview", source: "commonnotes" }],

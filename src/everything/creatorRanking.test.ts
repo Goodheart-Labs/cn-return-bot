@@ -13,7 +13,7 @@ mock.module("./db", dbMock);
 
 beforeEach(resetDbState);
 
-const { rankCreators } = await import("./creatorRanking");
+const { rankCreators, rankKnownCreators } = await import("./creatorRanking");
 
 const DAY_MS = 24 * 3600_000;
 const inDays = (days: number) => new Date(Date.now() + days * DAY_MS).toISOString();
@@ -22,7 +22,6 @@ const creator = (slug: string, overrides: Partial<(typeof dbState.creatorProject
   project_slug: slug,
   feed_url: `https://${slug}.substack.com`,
   priority_until: null,
-  top_posts_refreshed_at: null,
   ...overrides,
 });
 
@@ -149,20 +148,10 @@ describe("rankCreators, priority and projects", () => {
     expect(creators[0]!.prioritized).toBe(false);
   });
 
-  test("a creator we know keeps their top-posts stamp when walked on visits alone", async () => {
-    // Without this the stamp reads as null, the creator looks permanently
-    // overdue, and the walk re-fetches their top posts on every single run.
-    const stamp = inDays(-1);
-    dbState.creatorProjects = [creator("zvi", { top_posts_refreshed_at: stamp })];
-    dbState.creatorVisitScores = [visited("https://zvi.substack.com")];
-    expect((await rankCreators())[0]!.top_posts_refreshed_at).toBe(stamp);
-  });
-
   test("a creator we have never seen is walked under a slug derived from the url", async () => {
     dbState.creatorVisitScores = [visited("https://www.youtube.com/@SomeChannel")];
     const creators = await rankCreators();
     expect(creators.map((c) => c.project_slug)).toEqual(["somechannel"]);
-    expect(creators[0]!.top_posts_refreshed_at).toBeNull();
   });
 
   test("a trailing slash or different casing still matches a creator we know", async () => {
@@ -188,5 +177,27 @@ describe("rankCreators, priority and projects", () => {
   test("a visited feed URL of no known shape is skipped", async () => {
     dbState.creatorVisitScores = [visited("https://example.com/some-blog")];
     expect(await rankedSlugs()).toEqual([]);
+  });
+});
+
+describe("rankKnownCreators, the creators below the walk's bar", () => {
+  test("every project the walk leaves out is in the rest, highest score first, and no creator is in both", async () => {
+    dbState.creatorProjects = [creator("walked"), creator("onereader"), creator("nobody"), creator("onepost"), creator("held", { priority_until: inDays(2) })];
+    dbState.creatorVisitScores = [
+      ...typicalCreators(40),
+      visited("https://walked.substack.com"),
+      visited("https://onereader.substack.com", { perPost: 1, posts: 10 }),
+      visited("https://onepost.substack.com", { perPost: 30, posts: 1 }),
+      visited("https://noproject.substack.com", { perPost: 1, posts: 1 }),
+    ];
+    const { walked, rest } = await rankKnownCreators();
+    expect(walked.map((c) => c.project_slug)).toEqual(["held", "walked"]);
+    expect(rest.map((c) => c.project_slug)).toEqual(["onepost", "onereader", "nobody"]);
+    expect(rest.every((c) => !c.prioritized)).toBe(true);
+  });
+
+  test("a project whose feed is of no known shape is left out", async () => {
+    dbState.creatorProjects = [{ ...creator("odd"), feed_url: "https://example.com/some-blog" }];
+    expect((await rankKnownCreators()).rest).toEqual([]);
   });
 });

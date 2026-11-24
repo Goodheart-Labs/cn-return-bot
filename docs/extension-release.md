@@ -65,7 +65,13 @@ CWS_SERVICE_ACCOUNT_KEY_FILE=/home/jim/dev/env/cn-return-bot/cws-service-account
    first and save the draft (step 7 below). The Chrome listing has no API.
 3. Run `bun run release-ext all`.
 
-`all` runs steps 2, 4, 5, 6 and 8 below in that order. Before it uploads
+`all` runs steps 2, 5, 6 and 8 below in that order. Of step 4 it only
+replaces the Firefox screenshots, and only when the screenshot files changed
+since the last release tag, because AMO allows only a handful of listing
+changes per hour. Replacing four screenshots takes eight of them. When AMO
+throttles a request for up to 5 minutes, the script waits and tries again.
+When AMO asks for a longer wait, the script stops and prints when to run that
+step again. Before it uploads
 anything it checks that the new version is above the newest version in each
 store, live or in review, so a forgotten bump stops the release before it
 reaches either store. At the end it tags the commit as
