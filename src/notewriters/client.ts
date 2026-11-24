@@ -40,6 +40,9 @@ export type Post = {
 export type ListedPost = Pick<Post, "id" | "url" | "title" | "source" | "creator" | "published_at" | "requested"> & {
   creator_priority: boolean;
   creator_score: number;
+  /** Different readers who opened the post in the last 24 hours. The list
+   *  ranks a post by creator_score plus readers (GOO-868). */
+  readers: number;
   reservations: { notewriter: string; place: number; state: "open" | "done" | "skipped" }[];
 };
 

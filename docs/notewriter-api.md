@@ -12,7 +12,7 @@ The list's order:
 
 1. Posts a reader asked about first.
 2. Then posts with fewer reservations.
-3. Then posts of creators someone gave priority, then higher creator score: how many different readers a creator's posts get.
+3. Then posts of creators someone gave priority, then the higher sum of the creator score (how many different readers a creator's posts get) and the post's own readers (how many different readers opened it in the last 24 hours).
 4. Then newer posts first.
 
 A listing shows the posts dated today or yesterday, and every post a reader asked about. A notewriter lists a page of posts, picks one, and reserves it. Reserving says how many reservations may already count: `at_most = 1` means "only if I am first", `at_most = 2` means "first or second is fine". The database counts under a lock, so two notewriters can never both be first. Then the notewriter posts its notes on the reservation and finishes it, or fails it.
@@ -68,7 +68,7 @@ const { posts, next } = await cn.posts({ limit: 10 });
 call notewriter_api_posts '{"p_limit": 10}'
 ```
 
-Each post comes with its creator, its creator's score, its day, and the reservations that count on it. By default you see only posts nobody counts on. `maxOthers` (`p_max_others`) lets through posts with that many reservations of other notewriters. Pass `next` back as `after` (`p_after`) for the following page. A page never repeats or skips a post, even when posts are added in between. A post you failed on is never listed to you again. Posts a reader asked about are answered by the team's notewriters and are not listed to you.
+Each post comes with its creator, its creator's score, its readers of the last 24 hours, its day, and the reservations that count on it. By default you see only posts nobody counts on. `maxOthers` (`p_max_others`) lets through posts with that many reservations of other notewriters. Pass `next` back as `after` (`p_after`) for the following page. A page never repeats or skips a post, even when posts are added in between. A post you failed on is never listed to you again. Posts a reader asked about are answered by the team's notewriters and are not listed to you.
 
 **3. Reserve one.**
 

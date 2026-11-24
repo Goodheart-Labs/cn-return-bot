@@ -5,9 +5,9 @@
  * opened was checked only if the walk happened to reach it or someone pressed
  * "request notes". cn-walk takes each page without an item that enough
  * different readers opened in the last 7 days (everything_demanded_pages,
- * migration 183) and adds it with demanded_at set. In the list's order such a
- * page ranks like a post of a creator holding priority, whatever its
- * publication day, and it stays listed for 14 days from then (migration 184).
+ * migration 183) and adds it with demanded_at set. It stays listed through
+ * the next day from then, whatever its publication day, and ranks like any
+ * post, by its creator's rank plus its readers of the last 24 hours (GOO-868).
  *
  * A page is taken once. everything_demand_queued keeps it, so a page whose
  * check failed or was skipped is not added again. A page that could not be

@@ -773,6 +773,7 @@ export type Database = {
           list_date: string | null
           list_open: boolean
           list_rank: number
+          list_readers: number
           list_requested: boolean
           list_team_count: number
           priority: number
@@ -807,6 +808,7 @@ export type Database = {
           list_date?: string | null
           list_open?: boolean
           list_rank?: number
+          list_readers?: number
           list_requested?: boolean
           list_team_count?: number
           priority?: number
@@ -841,6 +843,7 @@ export type Database = {
           list_date?: string | null
           list_open?: boolean
           list_rank?: number
+          list_readers?: number
           list_requested?: boolean
           list_team_count?: number
           priority?: number
@@ -3941,6 +3944,7 @@ export type Database = {
           list_date: string | null
           list_open: boolean
           list_rank: number
+          list_readers: number
           list_requested: boolean
           list_team_count: number
           priority: number
@@ -4220,6 +4224,13 @@ export type Database = {
         }[]
       }
       everything_reader_cost_since: { Args: { since: string }; Returns: number }
+      everything_recent_page_readers: {
+        Args: never
+        Returns: {
+          page_url: string
+          readers: number
+        }[]
+      }
       everything_recent_posts: {
         Args: {
           last_posts: number
