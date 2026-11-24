@@ -9,7 +9,7 @@
  *      queued notes older than 12 hours, as the X run does,
  *   2. submits the notes Claude wrote (submit.ts),
  *   3. and, while the writing room allows it (room.ts), reads the account's
- *      small feed and hands each new post to the Claude note writer on ai-box.
+ *      feed and hands each new post to the Claude note writer on ai-box.
  * Claude draws the same four A/B tests as for the first account: the model,
  * the examples, Jim's taste sentences and the research nudge. The runner on
  * ai-box finds the post's pipeline_runs row, and the note Claude saves there
@@ -43,7 +43,6 @@ import { currentXAccount } from "../api/xAccount";
 import { claudeUnavailableReason } from "../claude-notes/xShare";
 import { CLAUDE_CODE_BOT, CLAUDE_TWEET_MAX_WAIT_MINUTES, handTweetToClaude } from "../pipeline/orchestration/claudeTweets";
 import { QUEUE_MAX_AGE_HOURS } from "../pipeline/orchestration/noteQueue";
-import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
 import { fetchClaimCheckHealth } from "../service/client";
 import { describeSummary, isAdmitted, summariseTestNotes } from "./admission";
@@ -64,8 +63,8 @@ const SILENCE_WARNING_MS = 60 * 60_000;
  *  between, is swept after this long, as in the X run. */
 const STUCK_RUN_MINUTES = 30;
 /** X's budget for the feed is 500 requests per 15 minutes per account, and
- *  only this daemon reads this account's feed. A walk of the small feed takes
- *  5 requests. This many are kept for the hourly admission check. */
+ *  only this daemon reads this account's feed. A walk of the feed takes 5
+ *  requests in test mode and 7 outside it. This many are kept for the hourly admission check. */
 const RATE_RESERVE = 10;
 
 const account = currentXAccount();
@@ -73,10 +72,12 @@ if (account === "stilt") throw new Error("cn-x-watch must not work for the first
 const logger = new SupabaseLogger();
 const tellSlack = (text: string) => postToSlack(NOTEWRITERS_SLACK_CHANNEL, `[cn-x-watch ${account}] ${text}`);
 
-/** Every post of the small feed, in test mode until X admits the account. */
-async function readSmallFeed(testMode: boolean): Promise<Post[]> {
+/** Every post of the account's feed, in test mode until X admits the account.
+ *  The request names no feed size, because X refuses one for the contest
+ *  outside test mode (isAdmitted). In test mode X serves the small feed. */
+async function readFeed(testMode: boolean): Promise<Post[]> {
   const posts: Post[] = [];
-  for await (const page of walkEligiblePages(buildPostSelection("small"), undefined, testMode)) {
+  for await (const page of walkEligiblePages(undefined, undefined, testMode)) {
     posts.push(...page.posts);
     if (!page.isLastPage && page.rateRemaining !== null && page.rateRemaining < RATE_RESERVE) {
       console.warn(`[x-watch] X said ${page.rateRemaining} feed requests are left; this tick reads no more of the feed`);
@@ -157,7 +158,7 @@ async function tick(watch: Watch): Promise<void> {
   const room = roomForChecks(state, await countOpenNotes(), new Date());
   if (room === 0) return;
   const testMode = state.kind === "testing";
-  const posts = await readSmallFeed(testMode);
+  const posts = await readFeed(testMode);
   const picked = pickNewPosts(posts, await handledTweetIds(posts.map((post) => post.id)), room);
   if (!picked.length) return;
   // A post handed over while Claude is unavailable would fail for good, so
@@ -197,7 +198,7 @@ async function dryRun(): Promise<void> {
   const openNotes = await countOpenNotes();
   const room = roomForChecks(state, openNotes, new Date());
   console.log(`[x-watch] state ${JSON.stringify(state)}, ${openNotes} open, room ${room}, admitted now: ${await isAdmitted()}`);
-  const posts = await readSmallFeed(state.kind === "testing");
+  const posts = await readFeed(state.kind === "testing");
   const picked = pickNewPosts(posts, await handledTweetIds(posts.map((post) => post.id)), room);
   console.log(`[x-watch] the feed has ${posts.length} posts; these ${picked.length} would go to Claude:`);
   for (const post of picked) console.log(`  https://x.com/i/status/${post.id} posted ${post.created_at}`);
