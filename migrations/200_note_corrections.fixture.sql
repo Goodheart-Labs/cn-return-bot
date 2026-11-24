@@ -1,12 +1,12 @@
--- A miniature of production for migration 197: the notes, claims and posts it
+-- A miniature of production for migration 200: the notes, claims and posts it
 -- reads, and an everything_is_admin() that reads a session setting instead of
 -- the sign-in token, so the verify file can act as an admin and as a reader.
 --
 --   sudo docker run -d --rm --name cn-migration-test -e POSTGRES_PASSWORD=test -p 55432:5432 postgres:15
 --   PSQL="psql -h 127.0.0.1 -p 55432 -U postgres -v ON_ERROR_STOP=1 -q"   (with PGPASSWORD=test)
---   $PSQL -f migrations/197_note_corrections.fixture.sql
---   $PSQL --single-transaction -f migrations/197_note_corrections.sql
---   $PSQL -f migrations/197_note_corrections.verify.sql
+--   $PSQL -f migrations/200_note_corrections.fixture.sql
+--   $PSQL --single-transaction -f migrations/200_note_corrections.sql
+--   $PSQL -f migrations/200_note_corrections.verify.sql
 create role anon nologin;
 create role authenticated nologin;
 create role service_role nologin bypassrls;

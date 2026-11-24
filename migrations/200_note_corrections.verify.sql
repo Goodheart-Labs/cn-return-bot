@@ -1,4 +1,4 @@
--- Checks for migration 197, run after it against 197_note_corrections.fixture.sql
+-- Checks for migration 200, run after it against 200_note_corrections.fixture.sql
 -- (the commands are at the top of the fixture). Every value should be true.
 create temp table result (name text, ok boolean);
 grant all on result to anon, authenticated, service_role;

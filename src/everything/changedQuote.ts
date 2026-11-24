@@ -1,5 +1,5 @@
 /* Whether a post still says the passage a note quotes, and what it says there
- * now (migration 197). The comparison is between two readings of the same
+ * now (migration 200). The comparison is between two readings of the same
  * post by the same reader: the text stored when the post was checked, and the
  * text as it reads today. */
 

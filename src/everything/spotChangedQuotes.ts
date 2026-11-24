@@ -1,7 +1,7 @@
 /**
  * Finds posts that changed where one of our notes quotes them, and records
  * what the post says there now in everything_claims.updated_quote (migrations
- * 056 and 197). The note's card then shows "the source has since been updated
+ * 056 and 200). The note's card then shows "the source has since been updated
  * and now reads", and the note is listed on commonnotes.net/corrections.
  *
  * It reads again every text post with a passage quoted by a visible note that
