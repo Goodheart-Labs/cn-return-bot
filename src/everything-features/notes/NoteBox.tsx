@@ -29,13 +29,15 @@ export const statusColorClass = (status: NoteStatus): string => STATUS[status].d
  *  the reader's key points and forecasts. */
 export const ratingQuestion = (thing: "note" | "key point" | "forecast") => `Is this ${thing} helpful?`;
 
-/** The status badge shown above a note. It is a filled circle followed by the
+/** The status badge of a note. It is a filled circle followed by the
  *  Community Notes copy for that status. A status that has been decided also
- *  draws a ✓ or a ✕ inside the circle. */
-export function StatusBadge({ status }: { status: NoteStatus }) {
-  const { label, dot } = STATUS[status];
+ *  draws a ✓ or a ✕ inside the circle. `footnote` is the quiet form under a
+ *  note's text: smaller, not bold, and it says whose ratings are missing. */
+export function StatusBadge({ status, footnote = false }: { status: NoteStatus; footnote?: boolean }) {
+  const { dot } = STATUS[status];
+  const label = footnote && status === "needs_ratings" ? "Needs more ratings from readers" : STATUS[status].label;
   return (
-    <div className="flex items-center gap-1.5 text-sm font-semibold text-fg-secondary">
+    <div className={footnote ? "flex items-center gap-1.5 text-xs text-fg-muted" : "flex items-center gap-1.5 text-sm font-semibold text-fg-secondary"}>
       {/* The size is given in em so the icon scales with the site's larger
           type scale. The circle fills the whole viewBox, and at a fractional
           pixel size its softened edge falls just outside the box. The svg
@@ -119,9 +121,11 @@ export function RatingPanel({ question, children }: { question: React.ReactNode;
   );
 }
 
-/** The note, laid out like a Community Note on X: the status line, the note
- *  text with its source links, and then a softly filled rating panel that asks
- *  the question beside the pills. `children` are the pills. `question`
+/** The note: its text with its source links, then a quiet line with the
+ *  status and the byline, and then a softly filled rating panel that asks the
+ *  question beside the pills. The status sits under the text, next to the
+ *  question it leads into, because above the text a reader took "Needs more
+ *  ratings" for the note's heading. `children` are the pills. `question`
  *  replaces the plain question, which is how the one-time voting hint joins
  *  the panel without covering the note. */
 export function NoteBox({ note, status, sourcesOpen, question, children }: {
@@ -137,16 +141,16 @@ export function NoteBox({ note, status, sourcesOpen, question, children }: {
   const byline = note.author_id ? `by ${note.author_name ?? "anonymous"}` : "Written by AI";
   return (
     <div>
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-        <StatusBadge status={status} />
-        <span className="text-xs text-fg-muted shrink-0">{byline}</span>
-      </div>
       <LinkifiedText
         className="text-sm text-fg whitespace-pre-wrap"
         linkClassName="text-link hover:underline break-all"
         text={noteText(note)}
       />
       {note.has_source_details && <SourceDetails open={!!sourcesOpen} noteId={note.id} />}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+        <StatusBadge status={status} footnote />
+        <span className="text-xs text-fg-muted shrink-0">{byline}</span>
+      </div>
       {children && <RatingPanel question={question ?? <span className="font-semibold">{ratingQuestion("note")}</span>}>{children}</RatingPanel>}
     </div>
   );
