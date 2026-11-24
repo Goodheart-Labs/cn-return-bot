@@ -4224,6 +4224,7 @@ export type Database = {
         }[]
       }
       everything_reader_cost_since: { Args: { since: string }; Returns: number }
+      everything_reader_weight: { Args: never; Returns: number }
       everything_recent_page_readers: {
         Args: never
         Returns: {

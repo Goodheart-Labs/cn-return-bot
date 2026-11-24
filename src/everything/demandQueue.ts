@@ -7,7 +7,7 @@
  * different readers opened in the last 7 days (everything_demanded_pages,
  * migration 183) and adds it with demanded_at set. It stays listed through
  * the next day from then, whatever its publication day, and ranks like any
- * post, by its creator's rank plus its readers of the last 24 hours (GOO-868).
+ * post, by its creator's rank plus 0.7 per reader of the last 24 hours (GOO-868).
  *
  * A page is taken once. everything_demand_queued keeps it, so a page whose
  * check failed or was skipped is not added again. A page that could not be
