@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 import { extensionStorage } from "./extensionStorage";
+import { fetchWithRetries } from "./retry";
 
 // The anon key is public by design, because it is baked into the static site and
 // into the extension. Migration 050 locks down what the anon role can actually
@@ -54,6 +55,15 @@ const sessionStorageAdapter = local
 // GoTrue's refresh-token reuse window absorbs that.
 const passthroughLock = <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>) => fn();
 
-export const supabase = createClient<Database>(url, anonKey, sessionStorageAdapter
-  ? { auth: { storage: sessionStorageAdapter, storageKey: EXTENSION_AUTH_KEY, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock } }
-  : undefined);
+// Every request goes through fetchWithRetries. A read that hits a network blip
+// or a server error is tried again a few times, while a write goes out once.
+// A select is a GET request and a database function call is a POST, so a
+// function call is never retried here, even one that only reads. The cast is
+// needed because Bun's type of fetch has a preconnect method that no browser's
+// fetch has.
+export const supabase = createClient<Database>(url, anonKey, {
+  global: { fetch: fetchWithRetries as typeof fetch },
+  ...(sessionStorageAdapter && {
+    auth: { storage: sessionStorageAdapter, storageKey: EXTENSION_AUTH_KEY, persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, lock: passthroughLock },
+  }),
+});

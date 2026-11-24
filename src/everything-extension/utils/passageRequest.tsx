@@ -14,11 +14,12 @@ import { createOverlayUi } from "./overlayUi";
  *  Registered once per content script, whatever else is mounted on the page. */
 export function listenForPassageRequests(ctx: ContentScriptContext): void {
   let close: (() => void) | null = null;
-  const listener = (message: unknown) => {
+  const listener = (message: unknown, _sender: unknown, sendResponse: (taken: boolean) => void) => {
     const { type, selection } = (message as { type?: string; selection?: string }) ?? {};
     if (type !== "cn-passage-request-ask" || !selection?.trim()) return;
     close?.();
     void mountPassageRequest(ctx, selection.trim()).then((teardown) => (close = teardown));
+    sendResponse(true);
   };
   browser.runtime.onMessage.addListener(listener);
   ctx.onInvalidated(() => {

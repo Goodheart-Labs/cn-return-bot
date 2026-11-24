@@ -16,10 +16,11 @@ export function showInfoCard(ctx: ContentScriptContext, headline: string): void 
  *  for example because the page is already checked. Registered once per
  *  content script, whatever else is mounted on the page. */
 export function listenForRequestInfo(ctx: ContentScriptContext): void {
-  const listener = (message: unknown) => {
+  const listener = (message: unknown, _sender: unknown, sendResponse: (taken: boolean) => void) => {
     const { type, headline } = (message as { type?: string; headline?: string }) ?? {};
     if (type !== "cn-request-info" || !headline) return;
     showInfoCard(ctx, headline);
+    sendResponse(true);
   };
   browser.runtime.onMessage.addListener(listener);
   ctx.onInvalidated(() => browser.runtime.onMessage.removeListener(listener));

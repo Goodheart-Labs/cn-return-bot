@@ -617,7 +617,10 @@ export function InlineNotesApp({ groups, item, container, inlineContainer, noteS
         jumpNext();
         sendResponse({ jumped: true });
       }
-      if (type === "cn-write-note" && selection?.trim()) setWriteSelection(selection.trim());
+      if (type === "cn-write-note" && selection?.trim()) {
+        setWriteSelection(selection.trim());
+        sendResponse(true);
+      }
     };
     browser.runtime.onMessage.addListener(listener);
     // The request progress card jumps through the same cursor, see utils/jumpBus.ts.
