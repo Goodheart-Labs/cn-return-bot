@@ -40,9 +40,10 @@ function findContainer(): Element {
 }
 
 /** Resolves `href` to an ingested item, anchors that item's claims and mounts the
- *  overlay. When the page has no ingested item we mount the write-anywhere shell
- *  instead. Either way the returned function tears down whatever was mounted. */
-async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageChanged: () => void): Promise<(() => void) | null> {
+ *  overlay. When the page has no ingested item, or its notes could not be
+ *  loaded, we mount the write-anywhere shell instead. Either way the returned
+ *  function tears down whatever was mounted. */
+async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageChanged: () => void): Promise<() => void> {
   const readerCanonical = await resolveReaderCanonical(href);
   const pageUrl = readerCanonical ? normalizePageUrl(readerCanonical) : normalizePageUrl(href, document);
   // We decide whether this page is one of ours from the locally cached coverage
@@ -56,15 +57,18 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
     recordPageVisit(pageUrl, null);
     return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
-  // A failed lookup mounts nothing. Treating an outage as an unchecked page
-  // would tell the reader we never checked a page we did, and offer to check
-  // it again.
+  // A lookup that still fails after its retries shows no notes. Treating an
+  // outage as an unchecked page would tell the reader we never checked a page
+  // we did, and offer to check it again. The write-anywhere shell still goes
+  // up, because it shows nothing until the reader asks to write a note. Its
+  // posting looks the page's item up again, and once the note is posted the
+  // full notes view takes over.
   let item;
   try {
     item = await fetchItemForUrl(pageUrl);
   } catch (err) {
-    console.warn(`[common-notes] ${pageUrl} → item lookup failed, mounting nothing:`, err);
-    return null;
+    console.warn(`[common-notes] ${pageUrl} → item lookup failed, showing no notes:`, err);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
   console.info(`[common-notes] ${pageUrl} → ${item ? `item "${item.title ?? item.id}"` : "no ingested item"}`);
   if (!item) {
@@ -76,13 +80,13 @@ async function mountForUrl(ctx: ContentScriptContext, href: string, onCoverageCh
   // works on any ingested page, and the cache observer below brings the new
   // note in.
   const notesQuery = itemNoteSetQuery(item.id);
-  // The same rule as the lookup: a failed notes fetch mounts nothing.
+  // The same rule as the lookup: a failed notes fetch shows no notes.
   let noteSet: NoteSet;
   try {
     noteSet = await queryClient.fetchQuery(notesQuery);
   } catch (err) {
-    console.warn(`[common-notes] ${pageUrl} → notes fetch failed, mounting nothing:`, err);
-    return null;
+    console.warn(`[common-notes] ${pageUrl} → notes fetch failed, showing no notes:`, err);
+    return mountWriteAnywhere(ctx, pageUrl, onCoverageChanged);
   }
   let display = await getNoteDisplay();
   // The extension's top of funnel: notes were actually displayed to a reader.
@@ -285,7 +289,7 @@ export async function mountInlineNotes(ctx: ContentScriptContext): Promise<void>
     // A newer navigation started while this one was still resolving, so we throw
     // the stale mount away. The same goes for a mount that finished after a newer
     // copy of the script retired this one. Nothing else would ever remove it.
-    if (mine !== seq || ctx.isInvalid) return teardown?.();
+    if (mine !== seq || ctx.isInvalid) return teardown();
     cleanup = teardown;
   };
   await remount(location.href);
