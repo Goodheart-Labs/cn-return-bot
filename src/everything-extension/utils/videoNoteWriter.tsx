@@ -76,8 +76,13 @@ export function installVideoNoteWriter(ctx: ContentScriptContext, onPosted: () =
     void ui.then((mounted) => mounted.mount());
   };
 
-  const listener = (message: unknown) => {
-    if ((message as { type?: string })?.type === "cn-write-note") openEditor();
+  // The answer tells the background whether an editor is open now. On a page
+  // without a playing video none opens, and the background shows its failure
+  // mark on the toolbar button.
+  const listener = (message: unknown, _sender: unknown, sendResponse: (taken: boolean) => void) => {
+    if ((message as { type?: string })?.type !== "cn-write-note") return;
+    openEditor();
+    sendResponse(editorOpen);
   };
   browser.runtime.onMessage.addListener(listener);
   ctx.onInvalidated(() => browser.runtime.onMessage.removeListener(listener));

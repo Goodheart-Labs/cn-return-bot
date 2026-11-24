@@ -3,6 +3,8 @@
  *  pipeline can import this file without pulling in the browser-only client
  *  setup in supabase.ts. */
 
+import { fetchWithRetries } from "./retry";
+
 // Query parameters that only record how the reader arrived, never which page
 // they see. Substack's logged-in reader adds lli=1 ("logged-in link") to every
 // post link it shows, for example on a profile's Posts tab, next to its utm_
@@ -175,7 +177,7 @@ export function sourceLinkLabel(url: string): string {
  *  cross-origin redirect nor read the response, and gets null instead. */
 export async function fetchReaderCanonical(href: string): Promise<string | null> {
   try {
-    const res = await fetch(href, { credentials: "omit" });
+    const res = await fetchWithRetries(href, { credentials: "omit" });
     if (new URL(res.url).hostname !== new URL(href).hostname) {
       void res.body?.cancel();
       return res.url;

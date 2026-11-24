@@ -70,7 +70,7 @@ export function WriteNoteOverlay({ item, pageForItem, anchor, children, onClose,
             onTextChange={setNote}
             placeholder="Write your correction"
             rows={4}
-            submitLabel="Post draft note"
+            submitLabel="Post note"
             onSubmit={submit}
             onCancel={onClose}
             pending={post.isPending}

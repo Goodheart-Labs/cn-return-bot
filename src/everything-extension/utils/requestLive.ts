@@ -81,9 +81,10 @@ export function listenForLiveRequests(ctx: ContentScriptContext): void {
     });
   };
 
-  const listener = (message: unknown) => {
+  const listener = (message: unknown, _sender: unknown, sendResponse: (taken: boolean) => void) => {
     const { type, pageUrl, token } = (message as { type?: string; pageUrl?: string; token?: string }) ?? {};
     if (type !== "cn-request-live" || !pageUrl || !token) return;
+    sendResponse(true);
     // The startup restore may already be showing this very request.
     if (pageUrl === shownPageUrl && card) return;
     // The sender saved the entry before messaging, so the stored one, which

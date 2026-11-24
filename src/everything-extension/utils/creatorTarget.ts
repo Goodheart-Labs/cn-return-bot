@@ -4,6 +4,7 @@
  *  separate question, answered by unlessPrioritized in prioritizedCreators.ts
  *  against the synced list. */
 import { youtubeWatchUrl } from "@cn/core/pageUrls";
+import { fetchWithRetries } from "@cn/core/retry";
 
 const YOUTUBE_OEMBED_URL = "https://www.youtube.com/oembed";
 
@@ -143,14 +144,10 @@ export async function forumPostAuthorTarget(pageUrl: string): Promise<CreatorTar
   const postId = isForumPostPage(pageUrl) ? new URL(pageUrl).pathname.match(/^\/posts\/(\w+)/)?.[1] : null;
   if (!origin || !postId) return null;
   try {
-    const res = await fetch(`${origin}/graphql`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "omit",
-      body: JSON.stringify({
-        query: `{ post(input: {selector: {_id: "${postId}"}}) { result { user { slug displayName } } } }`,
-      }),
-    });
+    // The query goes out as a GET request, which marks it as a read, so a
+    // failed attempt is tried again.
+    const query = `{ post(input: {selector: {_id: "${postId}"}}) { result { user { slug displayName } } } }`;
+    const res = await fetchWithRetries(`${origin}/graphql?query=${encodeURIComponent(query)}`, { credentials: "omit" });
     if (!res.ok) return null;
     const user = (await res.json())?.data?.post?.result?.user;
     if (!user?.slug) return null;
@@ -196,7 +193,7 @@ export function substackProfileHandle(pageUrl: string): string | null {
  *  failed. */
 export async function resolveProfileCreatorTarget(handle: string): Promise<CreatorTarget | null> {
   try {
-    const res = await fetch(`https://substack.com/api/v1/user/${handle}/public_profile`, { credentials: "omit" });
+    const res = await fetchWithRetries(`https://substack.com/api/v1/user/${handle}/public_profile`, { credentials: "omit" });
     if (!res.ok) return null;
     const profile = await res.json();
     const publication = profile.primaryPublication ?? profile.publicationUsers?.[0]?.publication;
@@ -234,7 +231,7 @@ export function youtubeChannelPath(pageUrl: string): string | null {
  *  the channel from the page itself (readWatchPageChannel). */
 export async function youtubeVideoChannelTarget(videoId: string): Promise<CreatorTarget | null> {
   try {
-    const res = await fetch(`${YOUTUBE_OEMBED_URL}?format=json&url=${encodeURIComponent(youtubeWatchUrl(videoId))}`, { credentials: "omit" });
+    const res = await fetchWithRetries(`${YOUTUBE_OEMBED_URL}?format=json&url=${encodeURIComponent(youtubeWatchUrl(videoId))}`, { credentials: "omit" });
     if (!res.ok) return null;
     const { author_url: channelUrl, author_name: channelName } = (await res.json()) as { author_url?: string; author_name?: string };
     return channelUrl ? youtubeChannelTarget(channelUrl, channelName ?? "") : null;

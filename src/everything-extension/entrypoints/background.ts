@@ -29,7 +29,11 @@ const WRITE_VIDEO_MENU_ID = "cn-write-video-note";
 const YOUTUBE_WATCH_PATTERNS = ["https://www.youtube.com/watch*"];
 const BADGE_FEEDBACK_MS = 3000;
 const INJECT_RETRY_DELAY_MS = 150;
-const INJECT_RETRY_ATTEMPTS = 10;
+// An injected script answers a write only once its notes view or its
+// write-anywhere shell is up. That takes the page's item lookup, which may
+// spend several seconds retrying a failed read.
+const INJECT_WAIT_MS = 15_000;
+const INJECT_RETRY_ATTEMPTS = INJECT_WAIT_MS / INJECT_RETRY_DELAY_MS;
 const SYNC_ALARM = "cn-sync-noted-sites";
 const SYNC_PERIOD_MINUTES = 5;
 const SYNC_STATE_KEY = "cn:notedSitesSyncState";
@@ -186,15 +190,19 @@ function flashBadge(tabId: number | undefined, text: string) {
   setTimeout(() => action?.setBadgeText({ text: "", tabId }).catch(() => {}), BADGE_FEEDBACK_MS);
 }
 
-/** Delivers a message to the tab's content script. On a page where no script
- *  runs yet, the click's activeTab grant lets us inject the generic one on
- *  demand; the script needs a moment to mount before its listener answers,
- *  which is why we retry. Returns false when nothing could be reached, which
- *  only happens on restricted pages such as chrome:// and the Web Store. */
+/** Delivers a message to the tab's content script and returns whether a part
+ *  of it took the message. Every listener for these messages answers true when
+ *  it acts. A script can run on the page and still have no part that takes
+ *  the message, for example a YouTube page without a video when the reader
+ *  asks to write a note. Then the answer is empty and we return false.
+ *  On a page where no script runs yet, the click's activeTab grant lets us
+ *  inject the generic one on demand. The script needs a moment to mount before
+ *  the right listener answers, which is why we send again until one does. We
+ *  also return false when nothing could be reached, which happens on
+ *  restricted pages such as chrome:// and the Web Store. */
 async function sendToTabWithInjection(tabId: number, message: unknown): Promise<boolean> {
   try {
-    await browser.tabs.sendMessage(tabId, message);
-    return true;
+    return (await browser.tabs.sendMessage(tabId, message)) === true;
   } catch {
     try {
       await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] });
@@ -203,12 +211,10 @@ async function sendToTabWithInjection(tabId: number, message: unknown): Promise<
     }
     for (let attempt = 0; attempt < INJECT_RETRY_ATTEMPTS; attempt++) {
       await new Promise((resolve) => setTimeout(resolve, INJECT_RETRY_DELAY_MS));
-      try {
-        await browser.tabs.sendMessage(tabId, message);
-        return true;
-      } catch {
-        // The listener is not up yet, so we try again.
-      }
+      // A rejection means no listener is up yet, and an empty answer means
+      // none of the listeners that are up took the message. Either way we
+      // send again.
+      if ((await browser.tabs.sendMessage(tabId, message).catch(() => null)) === true) return true;
     }
     return false;
   }
