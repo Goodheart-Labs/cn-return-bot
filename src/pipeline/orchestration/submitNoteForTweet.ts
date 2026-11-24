@@ -4,7 +4,7 @@
 
 import type { SupabaseLogger } from "../../api/supabaseClient";
 import type { Candidate } from "./submitCandidates";
-import { bumpWritingLimitFromSuccess } from "./writingLimit";
+import { bumpWritingLimitFromSuccess, resetWritingLimitStep } from "./writingLimit";
 import { isUncertainSubmissionError, type SubmissionAdmission, type SubmissionClaimOutcome, type SubmissionLane } from "../capacity/submissionReserve";
 
 export type SubmissionResult =
@@ -118,6 +118,11 @@ export async function submitNoteForTweet(
     await finishClaim("rejected", null, errorText);
 
     if (errorText.toLowerCase().includes("daily limit")) {
+      try {
+        await resetWritingLimitStep(logger);
+      } catch (limitErr) {
+        console.warn("[submit] Failed to reset the writing limit's probe step:", limitErr);
+      }
       return { status: "daily_limit" };
     }
 

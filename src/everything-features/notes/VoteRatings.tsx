@@ -47,10 +47,10 @@ const votePillVariants = cva(
 const VOTE_ICON_SIZE = 12;
 
 const VOTE_OPTIONS = [
-  { value: 1, label: "Yes", meaning: "Helpful", tone: "positive", icon: <CheckIcon size={VOTE_ICON_SIZE} aria-hidden /> },
-  { value: 0, label: "Somewhat", meaning: "Somewhat helpful", tone: "caution", icon: <WaveIcon size={VOTE_ICON_SIZE} aria-hidden /> },
-  { value: -1, label: "No", meaning: "Not helpful", tone: "negative", icon: <CloseIcon size={VOTE_ICON_SIZE} aria-hidden /> },
-] as const satisfies readonly { value: Vote; label: string; meaning: string; tone: string; icon: React.ReactNode }[];
+  { value: 1, label: "Yes", meaning: "Helpful", hint: "Accurate, and it matters here", tone: "positive", icon: <CheckIcon size={VOTE_ICON_SIZE} aria-hidden /> },
+  { value: 0, label: "Somewhat", meaning: "Somewhat helpful", hint: "Accurate, but a small point", tone: "caution", icon: <WaveIcon size={VOTE_ICON_SIZE} aria-hidden /> },
+  { value: -1, label: "No", meaning: "Not helpful", hint: "Wrong, misleading or not worth a note", tone: "negative", icon: <CloseIcon size={VOTE_ICON_SIZE} aria-hidden /> },
+] as const satisfies readonly { value: Vote; label: string; meaning: string; hint: string; tone: string; icon: React.ReactNode }[];
 
 /** The three rating pills under a note. Common Notes uses X's three-way rating
  *  scale, so a rating is helpful, somewhat helpful, or not helpful. A
@@ -79,11 +79,13 @@ export function VoteRatings({ helpful, somewhatHelpful, notHelpful, myVote, onVo
   const counts: Record<Vote, number> = { 1: helpful, 0: somewhatHelpful, [-1]: notHelpful };
   return (
     <span className="inline-flex flex-wrap items-center gap-1.5">
-      {VOTE_OPTIONS.map(({ value, label, meaning, tone, icon }) => (
+      {VOTE_OPTIONS.map(({ value, label, meaning, hint, tone, icon }) => (
         <button
           key={value}
           type="button"
-          title={compact ? meaning : undefined}
+          // The hint says what each answer is for. A note can be accurate and
+          // still too small to matter, and a reader asked which pill that is.
+          title={compact ? meaning : `${meaning}: ${hint.toLowerCase()}`}
           aria-pressed={myVote === value}
           // "Yes" and "No" alone would be ambiguous to a screen reader that
           // reaches the pills without the question, so the name says both.

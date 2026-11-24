@@ -111,7 +111,8 @@ describe("shared note submission admission", () => {
     expect(await submitNoteForTweet(candidate, logger)).toEqual({ status: "daily_limit" });
     expect(finishNoteSubmissionClaim.mock.calls[0]?.[1]).toBe("rejected");
     expect(finishNoteSubmissionClaim).toHaveBeenCalledWith("claim-id", "rejected", null, '{"detail":"daily limit exceeded"}');
-    expect(setPipelineState).not.toHaveBeenCalled();
+    // The database records the limit itself; the code only starts the probe's step over.
+    expect(setPipelineState.mock.calls).toEqual([["writing_limit_step", "1"]] as any);
   });
 
   test("an ineligible rejection releases capacity and expires the candidate", async () => {

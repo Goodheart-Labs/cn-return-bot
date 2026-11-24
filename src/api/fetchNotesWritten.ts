@@ -38,25 +38,37 @@ export type NoteScoringStatus = {
   }>;
 };
 
+/** How X's evaluator scored a test-mode note. Each outcome names an
+ *  evaluator, such as ClaimOpinion or UrlValidity, and its bucket, such as
+ *  high or low. Admission is decided on these (src/x-watch/admission.ts). */
+export type NoteTestResult = {
+  evaluation_outcome?: { evaluator_type: string; evaluator_score_bucket: string }[];
+};
+
 export type WrittenNote = {
   id: string;
   post_id: string;
   status?: NoteRatingStatus;
   info?: WrittenNoteInfo;
   scoring_status?: NoteScoringStatus;
+  test_result?: NoteTestResult;
 };
 
 const API_URL = "https://api.x.com/2/notes/search/notes_written";
 
-export async function fetchNotesWritten(): Promise<WrittenNote[]> {
+/** Every note the account wrote, newest first. In test mode these are its
+ *  test notes with their evaluator scores, and `maxNotes` stops the paging
+ *  early. */
+export async function fetchNotesWritten(options: { testMode?: boolean; maxNotes?: number } = {}): Promise<WrittenNote[]> {
+  const { testMode = false, maxNotes = Infinity } = options;
   const allNotes: WrittenNote[] = [];
   let nextToken: string | undefined;
 
-  while (true) {
+  while (allNotes.length < maxNotes) {
     const params = new URLSearchParams({
-      test_mode: "false",
+      test_mode: String(testMode),
       max_results: "100",
-      "note.fields": "id,info,status,scoring_status",
+      "note.fields": testMode ? "id,info,status,test_result" : "id,info,status,scoring_status",
     });
     if (nextToken) params.append("pagination_token", nextToken);
 
@@ -77,6 +89,7 @@ export async function fetchNotesWritten(): Promise<WrittenNote[]> {
           status: note.status,
           info: note.info,
           scoring_status: note.scoring_status,
+          test_result: note.test_result,
         });
       }
     }
@@ -85,5 +98,5 @@ export async function fetchNotesWritten(): Promise<WrittenNote[]> {
     if (!nextToken) break;
   }
 
-  return allNotes;
+  return allNotes.slice(0, maxNotes);
 }

@@ -23,6 +23,8 @@ import { fetchAllRows } from "../everything-core/paging";
 export const CLAUDE_RUN_TAGS = {
   commonNotes: "common-notes",
   x: "x",
+  /** The WSDM Cup account's tweets (GOO-851). The first account's are `x`. */
+  xWsdm: "x-wsdm",
   post: "post",
   tweet: "tweet",
   judge: "judge",

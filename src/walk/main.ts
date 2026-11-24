@@ -37,7 +37,7 @@
  * are always at least MIN_SECONDS_BETWEEN_SITE_READS apart.
  *
  * Every 5 minutes it also tidies the list (ends overdue reservations, closes
- * posts that turned 14 days old), refreshes stale creator pictures, tells
+ * posts too old for the list), refreshes stale creator pictures, tells
  * Slack when one of our own notewriters has not called for 30 minutes, adds
  * the pages several readers opened (demandQueue.ts), and puts posts the
  * intake service could not read back for another attempt (retries.ts).
@@ -239,7 +239,7 @@ async function retryUnreadPosts(): Promise<void> {
 
 async function tidy(): Promise<void> {
   const { expired, closed } = await tidyList();
-  if (expired || closed) console.log(`[walk] tidied the list: ${expired} reservations past their deadline ended, ${closed} posts turned 14 days old`);
+  if (expired || closed) console.log(`[walk] tidied the list: ${expired} reservations past their deadline ended, ${closed} posts left the list as too old`);
   await refreshStaleAvatars(AVATARS_PER_RUN);
   await watchNotewriterSilence();
   await queueDemandedPages();

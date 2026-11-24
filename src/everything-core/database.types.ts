@@ -2175,6 +2175,7 @@ export type Database = {
           retweets: number | null
           tier: string
           tweet_id: number
+          views_to_come: number | null
           xl_rank: number
         }
         Insert: {
@@ -2187,6 +2188,7 @@ export type Database = {
           retweets?: number | null
           tier: string
           tweet_id: number
+          views_to_come?: number | null
           xl_rank: number
         }
         Update: {
@@ -2199,6 +2201,7 @@ export type Database = {
           retweets?: number | null
           tier?: string
           tweet_id?: number
+          views_to_come?: number | null
           xl_rank?: number
         }
         Relationships: []
@@ -2289,6 +2292,51 @@ export type Database = {
           retweets?: number | null
           text?: string | null
           tweet_id?: string
+          video_duration_ms?: number | null
+        }
+        Relationships: []
+      }
+      feed_view_posts: {
+        Row: {
+          author_followers: number | null
+          author_id: string | null
+          author_tweet_count: number | null
+          author_verified_type: string | null
+          has_photo: boolean
+          has_video: boolean
+          lang: string | null
+          posted_at: string
+          referenced_type: string | null
+          text: string | null
+          tweet_id: number
+          video_duration_ms: number | null
+        }
+        Insert: {
+          author_followers?: number | null
+          author_id?: string | null
+          author_tweet_count?: number | null
+          author_verified_type?: string | null
+          has_photo: boolean
+          has_video: boolean
+          lang?: string | null
+          posted_at: string
+          referenced_type?: string | null
+          text?: string | null
+          tweet_id: number
+          video_duration_ms?: number | null
+        }
+        Update: {
+          author_followers?: number | null
+          author_id?: string | null
+          author_tweet_count?: number | null
+          author_verified_type?: string | null
+          has_photo?: boolean
+          has_video?: boolean
+          lang?: string | null
+          posted_at?: string
+          referenced_type?: string | null
+          text?: string | null
+          tweet_id?: number
           video_duration_ms?: number | null
         }
         Relationships: []
@@ -2520,6 +2568,7 @@ export type Database = {
           submitted_at: string | null
           tweet_id: string
           view_count: number | null
+          x_account: string
         }
         Insert: {
           cn_status?: string | null
@@ -2540,6 +2589,7 @@ export type Database = {
           submitted_at?: string | null
           tweet_id: string
           view_count?: number | null
+          x_account?: string
         }
         Update: {
           cn_status?: string | null
@@ -2560,6 +2610,7 @@ export type Database = {
           submitted_at?: string | null
           tweet_id?: string
           view_count?: number | null
+          x_account?: string
         }
         Relationships: []
       }
@@ -2698,6 +2749,7 @@ export type Database = {
           source_url: string | null
           tweet_id: string
           warnings: string[] | null
+          x_account: string
         }
         Insert: {
           ab_test_picks?: Json | null
@@ -2720,6 +2772,7 @@ export type Database = {
           source_url?: string | null
           tweet_id: string
           warnings?: string[] | null
+          x_account?: string
         }
         Update: {
           ab_test_picks?: Json | null
@@ -2742,6 +2795,7 @@ export type Database = {
           source_url?: string | null
           tweet_id?: string
           warnings?: string[] | null
+          x_account?: string
         }
         Relationships: [
           {
@@ -3498,6 +3552,14 @@ export type Database = {
         Returns: number
       }
       everything_claude_actor: { Args: { p_actor: string }; Returns: string }
+      everything_claude_costs_since: {
+        Args: { p_notewriter: string; p_since: string }
+        Returns: {
+          api_cost_usd: number
+          runs: number
+          tags: string[]
+        }[]
+      }
       everything_claude_delete_note: {
         Args: { p_actor?: string; p_draft: string }
         Returns: undefined

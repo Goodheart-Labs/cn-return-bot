@@ -15,8 +15,9 @@ import type { RankedCreator } from "../everything/creatorRanking";
 
 /** Posts published longer ago than this are not added. In the 30 days to
  *  2026-11-12, posts 14 or more days old gave 2.2 Helpful notes per 100 posts,
- *  younger ones 17. The list uses the same window (everything_list_days in
- *  migration 184). */
+ *  younger ones 17. The list itself keeps a post only for the day after its
+ *  date (everything_list_days, migration 199), so an older post added here
+ *  is stored and listed only once a reader asks about it. */
 export const MAX_POST_AGE_DAYS = 14;
 
 const DAY_MS = 24 * 3600_000;

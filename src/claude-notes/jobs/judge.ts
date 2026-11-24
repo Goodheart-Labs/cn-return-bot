@@ -43,7 +43,7 @@ export const judgeJob: JobKind<string> = {
   name: "judge",
   sessionPrefix: "cn-judge-",
   maxRunning: MAX_JUDGES_RUNNING,
-  tags: [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge],
+  tags: () => [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.judge],
   key: (draftId) => draftId,
 
   async waiting() {

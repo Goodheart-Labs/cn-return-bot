@@ -18,11 +18,10 @@ export type RecordedTier = Exclude<FeedSize, "xxl">;
 /** Smallest first. A walk reads them in this order. */
 export const RECORDED_TIERS: readonly RecordedTier[] = ["small", "large", "xl"];
 
-/** X allows 500 requests per 15 minutes on the feed, and the X run draws on
- *  the same budget. Its ladder of small, large and XL takes about 98 requests.
- *  Its Pangram and misinfo pre-passes would read the feed too, but both are
- *  switched off in runPipeline.ts. The walk stops when fewer than this many
- *  requests are left, so the X run always has room. */
+/** X allows 500 requests per 15 minutes on the feed. A walk takes about 98.
+ *  The walk stops when fewer than this many requests are left, so a run of the
+ *  old X run started by hand (runPipeline.ts), whose ladder takes about as
+ *  many, still has room. */
 export const RATE_RESERVE = 150;
 
 export type Reading = {

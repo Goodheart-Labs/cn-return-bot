@@ -113,7 +113,7 @@ export const postJob: JobKind<HeldPost> = {
   name: "post",
   sessionPrefix: "cn-post-",
   maxRunning: MAX_POSTS_RUNNING,
-  tags: [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.post],
+  tags: () => [CLAUDE_RUN_TAGS.commonNotes, CLAUDE_RUN_TAGS.post],
   key: (post) => post.item.id,
 
   /** Reserves posts, as many as are due and as slots allow. */

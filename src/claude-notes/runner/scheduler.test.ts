@@ -61,7 +61,7 @@ function fakeKind(options: { name?: string; waiting?: string[]; held?: string[];
     name: options.name ?? "post",
     sessionPrefix: `cn-${options.name ?? "post"}-`,
     maxRunning: options.maxRunning ?? 2,
-    tags: ["post"],
+    tags: () => ["post"],
     key: (work) => work,
     // Real kinds no longer offer work they closed.
     waiting: async () => (options.waiting ?? []).filter((work) => !closed.some((c) => c.work === work && c.outcome === "closed")),

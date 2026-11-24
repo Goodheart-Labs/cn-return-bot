@@ -7,14 +7,25 @@ export interface Scorer {
   scoreSubmit(f: RankFeatures, evalScore: number | null): number;
 }
 
-const logVelocity = (v: number | null) => (v === null ? 0 : Math.min(9, Math.log10(Math.max(v, 1))));
+// Predicted views still to come when the post has a prediction, velocity when
+// not. At admission all posts of a round are of one kind. At submission they
+// can mix, for example a queued note from before GOO-863 with fresh ones, so
+// the velocity_only arm's submit score compares unlike numbers then. With the
+// note queue on, the note rater orders submissions, so that score is only
+// logged.
+const logReach = (f: RankFeatures) => {
+  const v = f.viewsToCome ?? f.velocityPerHour;
+  return v === null ? 0 : Math.min(9, Math.log10(Math.max(v, 1)));
+};
 const clampEval = (e: number | null) => (e === null ? 0 : Math.max(-5, Math.min(5, e)));
 
-// Today's order: feed tier first (small before large before xl), velocity within a tier.
+// The ladder's order: feed tier first (small before large before xl), then
+// predicted views still to come within a tier. The name is from when it was
+// velocity, and it stays because it is the A/B test's arm name.
 export const velocityOnly: Scorer = {
   name: "velocity_only",
-  scoreAdmission: (f) => (3 - (f.tierRank ?? 3)) * 10 + logVelocity(f.velocityPerHour),
-  scoreSubmit: (f) => logVelocity(f.velocityPerHour),
+  scoreAdmission: (f) => (3 - (f.tierRank ?? 3)) * 10 + logReach(f),
+  scoreSubmit: (f) => logReach(f),
 };
 
 export const FLAG_CUTS_2026_08: FlagCuts = {
@@ -29,7 +40,7 @@ export function makeFlagsThenEval(name: string, cuts: FlagCuts): Scorer & { cuts
   return {
     name,
     cuts,
-    scoreAdmission: (f) => flagCount(f, cuts) * 10 + logVelocity(f.velocityPerHour),
+    scoreAdmission: (f) => flagCount(f, cuts) * 10 + logReach(f),
     scoreSubmit: (f, evalScore) => flagCount(f, cuts) * 10 + clampEval(evalScore),
   };
 }

@@ -192,7 +192,7 @@ so the live list is recorded here (checked on 2026-10-01):
 
 | Job name | Timetable | What it does | Created by |
 |---|---|---|---|
-| `dispatch-create-notes` | `18,48 * * * *` | Starts the Create Notes Routine workflow twice an hour. | [migrations/047](../migrations/047_schedule_create_notes_dispatch.sql) |
+| `dispatch-create-notes` | removed | Started the Create Notes Routine workflow twice an hour until GOO-865, when the X note writer moved into cn-feed-views on the services box. | [migrations/047](../migrations/047_schedule_create_notes_dispatch.sql), removed by [migrations/198](../migrations/198_stop_create_notes_dispatch.sql) |
 | `dispatch-everything-priority-feeds` | `* * * * *` | Every minute, starts the Everything Priority Feeds workflow if its alarm has come. Since 2026-11-19 it does so only while the notewriter `pipeline` takes feed posts, which it has not since 2026-10-21, so it starts nothing (GOO-791). | [migrations/098](../migrations/098_feed_alarm.sql), [migrations/185](../migrations/185_feed_run_only_for_pipeline.sql) |
 | `cleanup-cron-history` | `17 3 * * *` | Deletes pg_cron's own history older than 7 days. | [migrations/098](../migrations/098_feed_alarm.sql) |
 | `refresh-review-dashboard-base` | `0 * * * *` | Refreshes the review dashboard's cached table. | [migrations/080](../migrations/080_slow_review_dashboard_refresh.sql) |
@@ -440,7 +440,7 @@ backup of it.
 
 ## X developer apps
 
-Two separate X apps exist, in X's developer portal.
+Three separate X apps exist, in X's developer portal.
 
 1. **The notewriter app.** It acts as the bot's notewriter account to read
    posts, submit notes and read their ratings. Its four credentials are the
@@ -448,6 +448,14 @@ Two separate X apps exist, in X's developer portal.
    `X_ACCESS_TOKEN_SECRET`, in GitHub and on the services machine. The code
    that signs requests with them is
    [src/api/getOAuthToken.ts](../src/api/getOAuthToken.ts).
+1. **The WSDM Cup notewriter app** (GOO-851, 2026-11-23). It acts as the
+   second notewriter account, which `cn-x-watch` writes for
+   ([src/x-watch/main.ts](../src/x-watch/main.ts)). Its four credentials are
+   `X_WSDM_API_KEY`, `X_WSDM_API_KEY_SECRET`, `X_WSDM_ACCESS_TOKEN` and
+   `X_WSDM_ACCESS_TOKEN_SECRET`, only in the services machine's
+   `service.env`. Its app is connected only to X's Community Notes package,
+   so X's ordinary endpoints such as `/2/users/me` refuse it with
+   `client-not-enrolled`.
 2. **The sign-in app.** It powers "Sign in with X" on the website and in the
    extension. Its key and secret are entered in Supabase under Authentication
    → Sign In / Providers → Twitter. Supabase's "Twitter" provider uses OAuth

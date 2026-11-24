@@ -12,6 +12,10 @@ const NUMBERS_USED_TWICE_BEFORE_THIS_CHECK = new Set([
   // Two branches each took 128 on 2026-10-20 and both reached production
   // before anyone ran this check. Both are applied, so they keep their names.
   "128",
+  // The same happened to 195: 195_claude_costs_since (GOO-831) and
+  // 195_feed_view_posts (GOO-834) were both applied in production before
+  // they met on main on 2026-11-23.
+  "195",
 ]);
 
 /** A migration can come with helper files that share its number, such as
