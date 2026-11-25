@@ -7,7 +7,7 @@ import { currentXAccount } from "../api/xAccount";
 import type { WrittenNote } from "../api/fetchNotesWritten";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
 import type { FeedReading, ViewReading } from "../pipeline/utils/viewsToCome";
-import { SCORE_HISTORY_DAYS, type ScoreHistory } from "./pick";
+import { SCORE_HISTORY_DAYS, type ScoreHistory } from "../pipeline/utils/viewsThreshold";
 import { NEW_WRITER_DAILY_LIMIT, type WriterState } from "./room";
 
 /** What a test-mode note's run says instead of a note id. Test notes are not

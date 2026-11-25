@@ -8,9 +8,18 @@
  * rest of the weekly target that usagePacing.ts aims at. Each X account has a
  * share of its own (src/api/xAccount.ts). The WSDM Cup account got 30% on
  * 2026-11-23, on top of the first account's 30%. Since GOO-874 (2026-11-24)
- * the first account writes no notes, so on 2026-11-25 its share went to 0%
+ * the first account wrote no notes, so on 2026-11-25 its share went to 0%
  * (GOO-875). The WSDM Cup account keeps its 30%, and Common Notes gets the
  * rest.
+ *
+ * Since GOO-880 (2026-11-25) the first account writes notes again, but Jim
+ * wants it to use only what the WSDM Cup account does not need. So it has no
+ * share of its own. It may hand tweets to Claude only while the two accounts
+ * together have used less than the WSDM Cup account may use by now. The WSDM
+ * Cup account's own check counts only its own runs, so the first account never
+ * takes anything from it. Late in the week the WSDM Cup account may still use
+ * its whole share after the first account used some of it, and Common Notes
+ * then gets that much less.
  *
  * How much of the week an account used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every
@@ -34,11 +43,26 @@ import { currentXAccount, type XAccount } from "../api/xAccount";
 import { AI_BOX_NOTEWRITER } from "../notewriters/ids";
 import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type ClaudeRunTag, type UsageSnapshot } from "./usageShare";
 
-/** The tag on each account's Claude runs, and its share of the week in percent. */
-export const X_SHARES: Record<XAccount, { tag: ClaudeRunTag; percent: number }> = {
-  stilt: { tag: CLAUDE_RUN_TAGS.x, percent: 0 },
-  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, percent: 30 },
+/** The tag on each account's Claude runs, and its budget: either a share of
+ *  the week in percent, or what another account leaves of its share. */
+type XBudget = { tag: ClaudeRunTag } & ({ kind: "share"; percent: number } | { kind: "leftover"; of: XAccount });
+
+export const X_SHARES: Record<XAccount, XBudget> = {
+  stilt: { tag: CLAUDE_RUN_TAGS.x, kind: "leftover", of: "wsdm" },
+  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, kind: "share", percent: 30 },
 };
+
+/** The share of the week that the account's budget grows to by the reset. */
+function sharePercent(account: XAccount): number {
+  const budget = X_SHARES[account];
+  return budget.kind === "share" ? budget.percent : sharePercent(budget.of);
+}
+
+/** The accounts whose runs count against this account's budget. */
+function countedAccounts(account: XAccount): XAccount[] {
+  const budget = X_SHARES[account];
+  return budget.kind === "share" ? [account] : [account, ...countedAccounts(budget.of)];
+}
 const WEEK_MS = 7 * 24 * 3600_000;
 
 export type XShareSnapshot = UsageSnapshot & { now: Date };
@@ -58,12 +82,15 @@ export function computeXShare(snapshot: XShareSnapshot, account: XAccount): XSha
     return { kind: "runner_down", reason: `The note writer's plan is at ${latest.weekly}% of its week, where the runner starts no Claude` };
   }
   const weekElapsed = Math.min(1, Math.max(0, 1 - (latest.weeklyResetsAt.getTime() - now.getTime()) / WEEK_MS));
-  const { tag, percent } = X_SHARES[account];
-  return { kind: "measured", account, usedPercent: usageShare(snapshot, tag), allowedPercent: percent * weekElapsed };
+  const usedPercent = countedAccounts(account).reduce((sum, counted) => sum + usageShare(snapshot, X_SHARES[counted].tag), 0);
+  return { kind: "measured", account, usedPercent, allowedPercent: sharePercent(account) * weekElapsed };
 }
 
-const describeUse = (share: Extract<XShare, { kind: "measured" }>) =>
-  `X account ${share.account} has used ${share.usedPercent.toFixed(2)}% of the note writer's week and may use ${share.allowedPercent.toFixed(2)}% by now (${X_SHARES[share.account].percent}% by the reset)`;
+function describeUse(share: Extract<XShare, { kind: "measured" }>): string {
+  const counted = countedAccounts(share.account);
+  const who = counted.length === 1 ? `X account ${share.account} has` : `X accounts ${counted.join(" and ")} together have`;
+  return `${who} used ${share.usedPercent.toFixed(2)}% of the note writer's week and may use ${share.allowedPercent.toFixed(2)}% by now (${sharePercent(share.account)}% by the reset)`;
+}
 
 /** Why a tweet that draws Claude cannot go to Claude now, or null when it can. */
 export function xShareProblem(share: XShare): string | null {
