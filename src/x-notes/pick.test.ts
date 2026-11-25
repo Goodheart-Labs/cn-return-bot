@@ -20,7 +20,7 @@ function post(id: string, impressions: number, opts: { ageH?: number; sensitive?
 
 function walk(at: number, posts: [Post, RecordedTier][]): WalkResult {
   const readings: Reading[] = posts.map(([p, tier], i) => ({ post: p, observedAt: new Date(at), tier, xlRank: i + 1 }));
-  return { startedAt: new Date(at), finishedAt: new Date(at), stopReason: null, postsPerTier: { small: 0, large: 0, xl: 0 }, pages: 1, rateRemaining: 400, readings };
+  return { startedAt: new Date(at), finishedAt: new Date(at), stopReason: null, postsPerTier: { small: 0, large: 0, xl: 0 }, pages: 1, rateRemaining: 400, readings, xxlReadings: [], xxlPages: 0, xxlStop: "end of the feed" };
 }
 
 /** The views a post at 6 hours must gain in 10 minutes to be predicted `to come` views. */

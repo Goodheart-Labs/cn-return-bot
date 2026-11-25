@@ -5,20 +5,21 @@
  */
 
 import { isPossiblySensitive, type Post } from "../api/fetchEligiblePosts";
-import type { Reading } from "../feed-views/walk";
+import type { FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { isLongForm } from "../pipeline/pangram-monitoring/longFormFilter";
 import { SCORE_HISTORY_DAYS, type ScoreHistory } from "../pipeline/utils/viewsThreshold";
 
 const HISTORY_MS = SCORE_HISTORY_DAYS * 24 * 3_600_000;
 
-export type PangramCandidate = { post: Post; tier: Reading["tier"]; viewsToCome: number };
+export type PangramCandidate = { post: Post; tier: FeedSize; viewsToCome: number };
 
 /** A long-form post's first sighting with a positive score, and its best score. */
 export type BestScore = { firstSeenAt: number; best: number };
 
 /** The posts of a walk the pass could send to Pangram: long-form, not marked
- *  as possibly sensitive, and with a positive score. */
-export function longFormScored(readings: Reading[], scores: Map<string, number | null>): PangramCandidate[] {
+ *  as possibly sensitive, and with a positive score. Each post comes with the
+ *  smallest tier it was in, "xxl" for the posts only in XXL. */
+export function longFormScored(readings: { post: Post; tier: FeedSize }[], scores: Map<string, number | null>): PangramCandidate[] {
   return readings.flatMap(({ post, tier }) => {
     const viewsToCome = scores.get(post.id) ?? null;
     if (viewsToCome === null || viewsToCome <= 0 || !isLongForm(post) || isPossiblySensitive(post)) return [];

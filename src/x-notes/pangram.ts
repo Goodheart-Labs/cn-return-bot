@@ -3,6 +3,9 @@
  * AI-text detector. The first X account's writer (writer.ts) runs this pass
  * after every walk of the feed, before it picks posts for ordinary notes.
  *
+ * It looks at every post of the walk, XL and the part of XXL the walk read
+ * (src/feed-views/walk.ts). The ordinary notes look only at XL.
+ *
  * In July 2026 we wrote a fixed note, "According to Pangram this post is AI
  * generated", on every long-form post Pangram called AI. Raters found most of
  * those notes unhelpful: opinion posts, real news, official statements, jokes
@@ -134,7 +137,8 @@ export class PangramPass {
   async afterWalk(walk: WalkResult, scores: Map<string, number | null>, leftToOthers: ReadonlySet<string>): Promise<void> {
     const nowMs = walk.finishedAt.getTime();
     this.history ??= await readHistory(nowMs);
-    const scored = longFormScored(walk.readings, scores);
+    const xxlOnly = walk.xxlReadings.map(({ post }) => ({ post, tier: "xxl" as const }));
+    const scored = longFormScored([...walk.readings, ...xxlOnly], scores);
     await saveScores(addScores(this.history, scored, nowMs));
 
     const slots = PANGRAM_NOTES_PER_DAY - (await countRecentPangramNotes());

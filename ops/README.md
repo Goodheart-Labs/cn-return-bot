@@ -183,8 +183,10 @@ with the notewriter keys in service.env. It stores one reading of each XL
 post's views and other counts in `feed_tweet_views`, with the post's predicted
 views still to come (migrations 193 and 197), one row per walk of the feed in
 `feed_view_walks`, and the full row of each new post in `feed_tweets`. It
-keeps everything. A walk stops when fewer than 150 of X's 500 feed requests per
-15 minutes are left.
+keeps everything. Then it reads the XXL tier until the walk has made 250
+requests (GOO-880), so two walks in one 15-minute window stay within X's 500.
+The posts only in XXL are scored in memory for the Pangram pass and never
+stored.
 
 After each walk it runs the first X account's note writer (src/x-notes/,
 GOO-865, back since GOO-880). The writer submits the approved Pangram notes

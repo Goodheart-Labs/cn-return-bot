@@ -36,12 +36,12 @@ import { walkEligiblePages } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { currentXAccount } from "../api/xAccount";
 import { syncAbTests } from "../pipeline/ab-testing/syncAbTests";
-import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
+import { buildPostSelection, type FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
 import { formatViewsToCome, readingsOf, scoreReadings, type ViewReading } from "../pipeline/utils/viewsToCome";
 import { XNoteWriter } from "../x-notes/writer";
 import { lastCompleteWalkAt, saveWalk } from "./db";
-import { type RecordedTier, type WalkResult, walkFeed } from "./walk";
+import { type WalkResult, walkFeed } from "./walk";
 
 const WALK_INTERVAL_MS = 10 * 60_000;
 const SILENCE_WARNING_MS = 60 * 60_000;
@@ -54,13 +54,13 @@ const DRY_RUN_POSTS_SHOWN = 15;
 if (currentXAccount() !== "stilt") throw new Error("cn-feed-views reads the feed and writes the notes of the first account, stilt. Leave X_ACCOUNT unset.");
 const logger = new SupabaseLogger();
 const tellSlack = (text: string) => postToSlack(NOTEWRITERS_SLACK_CHANNEL, `[cn-feed-views] ${text}`);
-const readTier = (tier: RecordedTier) => walkEligiblePages(buildPostSelection(tier));
+const readTier = (tier: FeedSize) => walkEligiblePages(buildPostSelection(tier));
 
 function describeWalk(walk: WalkResult): string {
   const seconds = Math.round((walk.finishedAt.getTime() - walk.startedAt.getTime()) / 1000);
   const { small, large, xl } = walk.postsPerTier;
   const outcome = walk.stopReason === null ? "complete" : `stopped (${walk.stopReason})`;
-  return `[feed-views] walk ${outcome}: small ${small}, large ${large}, xl ${xl} posts, ${walk.pages} pages in ${seconds}s, ${walk.rateRemaining ?? "?"} requests left`;
+  return `[feed-views] walk ${outcome}: small ${small}, large ${large}, xl ${xl} posts, then ${walk.xxlReadings.length} more posts on ${walk.xxlPages} xxl pages (${walk.xxlStop}), ${walk.pages} pages in ${seconds}s, ${walk.rateRemaining ?? "?"} requests left`;
 }
 
 /** The readings of the stored walk before this one, for the first walk after a restart. */
@@ -134,12 +134,14 @@ async function runDaemon(): Promise<never> {
     let scores = new Map<string, number | null>();
     let failure: string | null;
     try {
-      scores = scoreReadings(walk.readings, before ?? (await storedEarlierReadings(walk)));
+      scores = scoreReadings([...walk.readings, ...walk.xxlReadings], before ?? (await storedEarlierReadings(walk)));
       failure = await storeWalk(walk, scores, storedPostIds);
     } catch (err) {
       failure = `could not read the walk before: ${err instanceof Error ? err.message : String(err)}`;
     }
-    before = readingsOf(walk.readings);
+    // The XXL readings are never stored, so after a restart the first walk
+    // gives the posts that are only in XXL no score.
+    before = readingsOf([...walk.readings, ...walk.xxlReadings]);
     const scored = [...scores.values()].filter((v) => v !== null).length;
     console.log(`${describeWalk(walk)}${failure ? `, NOT STORED: ${failure}` : `, ${walk.readings.length} readings stored, ${scored} scored`}`);
     await walks.record(walk.finishedAt, failure ?? walk.stopReason);
