@@ -16,8 +16,9 @@
  * rated unhelpful lower the account's writing limit.
  *
  * Each walk it
- *   1. keeps each long-form post's best predicted views still to come, in
- *      memory and in pangram_feed_scores (migration 204),
+ *   1. keeps each long-form post's best predicted views still to come in
+ *      memory, and in pangram_feed_scores (migration 204) when it is at least
+ *      half of the last threshold,
  *   2. stops when the last 24 hours already have PANGRAM_NOTES_PER_DAY
  *      Pangram notes, counting the ones still with the judge,
  *   3. sets a views threshold that lets through just enough long-form posts
@@ -66,6 +67,11 @@ const MIN_CHECKS_FOR_NOTE_RATE = 50;
 const STARTING_NOTE_RATE = 0.05;
 /** At most 150 Pangram checks a day for 3 notes. */
 const MIN_NOTE_RATE = 0.02;
+/** The threshold depends only on the few hundred best scores of the week, so
+ *  a score below this share of the last threshold is kept in memory but not
+ *  stored. That spares thousands of writes a walk, since most long-form posts
+ *  of XL and XXL score far below the threshold. */
+const STORED_SHARE_OF_THRESHOLD = 0.5;
 /** The Pangram outcomes that count toward the day's notes: with the judge,
  *  approved and waiting, or submitted. */
 const OUTCOMES_COUNTED_PER_DAY = ["in_progress", "candidate", "submitted"];
@@ -130,6 +136,7 @@ type Classified = Extract<PangramVerdict, { type: "classified" }>;
 export class PangramPass {
   private history: Map<string, BestScore> | null = null;
   private checked: Set<string> | null = null;
+  private lastThreshold: number | null = null;
 
   constructor(private readonly logger: SupabaseLogger) {}
 
@@ -139,7 +146,8 @@ export class PangramPass {
     this.history ??= await readHistory(nowMs);
     const xxlOnly = walk.xxlReadings.map(({ post }) => ({ post, tier: "xxl" as const }));
     const scored = longFormScored([...walk.readings, ...xxlOnly], scores);
-    await saveScores(addScores(this.history, scored, nowMs));
+    const storeFrom = (this.lastThreshold ?? 0) * STORED_SHARE_OF_THRESHOLD;
+    await saveScores(addScores(this.history, scored, nowMs).filter(([, { best }]) => best >= storeFrom));
 
     const slots = PANGRAM_NOTES_PER_DAY - (await countRecentPangramNotes());
     if (slots <= 0) {
@@ -150,6 +158,7 @@ export class PangramPass {
     const noteRate = await readNoteRate();
     const wantedPerDay = postsPerDay(PANGRAM_NOTES_PER_DAY, noteRate, MIN_NOTE_RATE);
     const threshold = viewsThreshold(history, wantedPerDay);
+    this.lastThreshold = threshold;
     console.log(
       `[pangram] threshold ${threshold === null ? "not set yet" : formatViewsToCome(threshold)} views to come: ` +
         `${history.bestScores.length} long-form posts in ${history.hours.toFixed(1)} hours, ` +

@@ -9,9 +9,14 @@
 -- Reading that history from feed_tweet_views took 33 seconds and 1.1 million
 -- buffer reads on 2026-11-25, far too much for every hour. So the daemon keeps
 -- one row per long-form post here and updates it only when a walk gives the
--- post a better prediction than before. About 580 long-form posts arrive a
--- day. A long-form post has more than 280 characters, the limit of a free
--- account, or is an X Article.
+-- post a better prediction than before. The threshold depends only on the best
+-- few hundred scores of the week, so a post is stored only once its score
+-- reaches half of the last threshold. The walk reads XL and part of XXL, so
+-- many thousands of long-form posts arrive a day, about 580 of them in XL. A
+-- long-form post has more than 280 characters, the limit of a free account, or
+-- is an X Article. The backfill below has only XL posts, because XXL readings
+-- were never stored, so for the first week the history undercounts arrivals
+-- and the threshold is a little low.
 --
 -- Only the service role writes and reads this table, so the anon and
 -- authenticated roles get nothing.
