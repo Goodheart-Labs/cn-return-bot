@@ -12,7 +12,7 @@ const costs = (xCostUsd: number, commonNotesCostUsd: number) => [
   { tags: ["common-notes", "post"], apiCostUsd: commonNotesCostUsd },
 ];
 
-/** Halfway through the week, so the WSDM Cup account may have used 30% by now. */
+/** Halfway through the week, so the WSDM Cup account may have used 15% by now. */
 function snapshot(overrides: Partial<XShareSnapshot> & { weekly?: number } = {}): XShareSnapshot {
   const { weekly = 40, ...rest } = overrides;
   return {
@@ -27,21 +27,21 @@ function snapshot(overrides: Partial<XShareSnapshot> & { weekly?: number } = {})
 describe("computeXShare", () => {
   test("splits the week's usage by the cost of the runs", () => {
     const share = computeXShare(snapshot(), "wsdm");
-    expect(share).toEqual({ kind: "measured", account: "wsdm", usedPercent: 4, allowedPercent: 30 });
+    expect(share).toEqual({ kind: "measured", account: "wsdm", usedPercent: 4, allowedPercent: 15 });
     expect(xShareProblem(share)).toBeNull();
   });
 
   test("splits only the usage that rose since costs were first recorded", () => {
-    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }), "wsdm")).toEqual({ kind: "measured", account: "wsdm", usedPercent: 1, allowedPercent: 30 });
+    expect(computeXShare(snapshot({ weeklyBeforeCosts: 30 }), "wsdm")).toEqual({ kind: "measured", account: "wsdm", usedPercent: 1, allowedPercent: 15 });
   });
 
   test("is unavailable once X used more than its allowance so far", () => {
-    expect(xShareProblem(computeXShare(snapshot({ runs: costs(80, 20) }), "wsdm"))).toContain("X account wsdm has used 32.00%");
+    expect(xShareProblem(computeXShare(snapshot({ runs: costs(40, 60) }), "wsdm"))).toContain("X account wsdm has used 16.00%");
   });
 
   test("counts each account's runs only against its own share", () => {
     const runs = [...costs(10, 80), { tags: ["x", "tweet"], apiCostUsd: 10 }];
-    expect(computeXShare(snapshot({ runs }), "wsdm")).toMatchObject({ usedPercent: 4, allowedPercent: 30 });
+    expect(computeXShare(snapshot({ runs }), "wsdm")).toMatchObject({ usedPercent: 4, allowedPercent: 15 });
     expect(computeXShare(snapshot({ runs }), "stilt")).toMatchObject({ usedPercent: 4 });
     expect(computeXShare(snapshot({ runs: costs(10, 90) }), "stilt")).toMatchObject({ usedPercent: 0 });
   });
