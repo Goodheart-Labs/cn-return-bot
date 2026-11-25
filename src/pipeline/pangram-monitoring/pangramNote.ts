@@ -5,7 +5,7 @@
  * There are two A/B variants, see PANGRAM_NOTE_TEST. The `plain` variant is the
  * verdict and the Pangram report link and nothing more. The `fp_context` variant
  * also reassures the reader about how rarely Pangram is wrong, and it backs that
- * up with two more sources. X requires every note to carry a source, and the
+ * up with one more source. X requires every note to carry a source, and the
  * report link is what serves as one here.
  */
 import { countSubmittedNoteLength, joinNoteWithSources } from "../utils/noteLength";
@@ -14,12 +14,14 @@ const NOTE_BODY_PLAIN = "According to Pangram this post is AI generated";
 const NOTE_BODY_FP =
   "According to Pangram this post is AI generated. Pangram has a false positive rate far below 1%";
 
-// These sources back up the false-positive claim the fp_context variant makes.
-// They are appended after the Pangram report link.
-const FALSE_POSITIVE_SOURCES = [
-  "http://chicagobooth.edu/review/do-ai-detectors-work-well-enough-trust",
-  "https://www.pangram.com/blog/all-about-false-positives-in-ai-detectors",
-];
+// The source for the false-positive claim the fp_context variant makes. It is
+// appended after the Pangram report link. Jim picked it on 2026-11-25 because
+// it sums up many studies. Until then the variant cited a Chicago Booth Review
+// article and Pangram's own blog. The part after # is a text fragment: browsers
+// that support it scroll to and highlight the passage on the studies. It ends
+// without the passage's full stop, because X would cut a trailing full stop
+// off the link.
+const FALSE_POSITIVE_SOURCES = ["https://benthams.substack.com/p/pangram-works-deal-with-it#:~:text=Other%20reviews%20find,various%20other%20studies"];
 
 // X caps a note at 280 characters and counts every URL as a single character.
 // Both variants sit well under that today. The check exists so a later change to
