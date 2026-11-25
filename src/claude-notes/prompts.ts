@@ -155,20 +155,27 @@ If you use subagents${withSourceDetails ? " for anything else" : ""}, ${subagent
 ${tweetInputSection(tweet.input)}`;
 }
 
-/** The Pangram judge (GOO-880): one post Pangram called AI-written, and
- *  whether the fixed Pangram note would be rated helpful on it. */
-export function pangramPrompt(params: { tweet: XTweet; runDir: string }): string {
-  const { tweet, runDir } = params;
+/** The Pangram judge (GOO-880): whether a post that Pangram called AI-written
+ *  should get a note that says so. The judge has no tools and answers in the
+ *  shape of PANGRAM_VERDICT_SCHEMA. The question is Jim's wording. */
+export function pangramPrompt(tweet: XTweet): string {
   return `Hi Claude, Pangram, an AI-text detector, says the post below was written by AI. We could add a Community Note to it on X that says "According to Pangram this post is AI generated", with a link to Pangram's report on the post. In your system prompt are all the notes like this that we wrote in July 2026, each with its post and how raters rated it. Most were rated not helpful.
 
-Please judge whether this note would very likely be rated helpful if it gets enough ratings. Community Notes shows a note only when raters who usually disagree with each other both rate it helpful. Research on the web if it helps, for example to check whether the quotes, events or people in the post are real.
-
-${NO_IMAGES} If the post can only be judged by looking at an image, answer false. Your run folder is ${runDir}; write every file there.
-
-Write ${runDir}/verdict.json as { "runId": "${tweet.runId}", "helpful": true or false, "reasoning": "<a few sentences on why>" } and run \`bun run claude-notes pangram-verdict ${runDir}/verdict.json\` from ${REPO}. Answer true only when you think the note is very likely to be rated helpful. Stop once the command has succeeded.
+Do you think this post should definitely get a Community Note saying that it is AI generated? There are many cases where viewers don't care or actively know that something is AI generated. So only give the judgement that this needs a "This is written by AI" Community Note if users don't think this is AI written and would be shocked if they found out that it was.
 
 ${tweetInputSection(tweet.input)}`;
 }
+
+/** The Pangram judge's answer. */
+export const PANGRAM_VERDICT_SCHEMA = {
+  type: "object",
+  properties: {
+    reasoning: { type: "string" },
+    should_get_this_is_ai_written_community_note: { type: "boolean" },
+  },
+  required: ["reasoning", "should_get_this_is_ai_written_community_note"],
+  additionalProperties: false,
+};
 
 export function messagePrompt(params: { text: string; from: string; draft: unknown; url: string; dir: string; runDir: string }): string {
   return `A reviewer asked about one of the Claude note writer's notes on commonnotes.net. Answer them.

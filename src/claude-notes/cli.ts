@@ -15,8 +15,6 @@
  *   examples                      regenerates the examples file from prod
  *   x-note <note.json>            { runId, note, reasoning, sources? }: queues a note on an X tweet for the next X run
  *   x-no-note <run id> <reason>   records that an X tweet needs no note
- *   pangram-verdict <verdict.json>
- *                                 { runId, helpful, reasoning }: the Pangram judge's answer (GOO-880)
  *   x-handle <creator slug> <handle | none> <evidence>
  *                                 records a creator's X account, or that they have none
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
@@ -27,7 +25,7 @@ import { JUDGE_EXAMPLES_PATH } from "./judge";
 import { addDraft, answerMessage, judgeExamples, type NewDraft, postedSince, propose, unansweredMessages, withdraw } from "./store";
 import { readUsage } from "./usage";
 import { saveXHandle } from "./xAccounts";
-import { declineXTweet, savePangramVerdict, saveXNote } from "./xTweets";
+import { declineXTweet, saveXNote } from "./xTweets";
 
 
 const [command, ...args] = process.argv.slice(2);
@@ -77,11 +75,6 @@ async function main() {
     case "x-no-note":
       await declineXTweet(arg(0), args.slice(1).join(" "));
       return console.log("Recorded that the tweet needs no note.");
-    case "pangram-verdict": {
-      const verdict: { runId: string; helpful: boolean; reasoning: string } = readJson(arg(0));
-      await savePangramVerdict(verdict.runId, verdict);
-      return console.log(verdict.helpful ? "Saved. The first account's writer submits the Pangram note when X has room." : "Recorded that the post gets no Pangram note.");
-    }
     case "x-handle": {
       const handle = arg(1);
       await saveXHandle(arg(0), handle === "none" ? null : handle, args.slice(2).join(" "));

@@ -4,7 +4,7 @@ import { readingsOf, scoreReadings } from "../pipeline/utils/viewsToCome";
 import type { Reading, RecordedTier, WalkResult } from "../feed-views/walk";
 import { flagsThenEval } from "../pipeline/ranking/scorers";
 import { effectiveHoursLeft, VIEWS_TO_COME_FLOOR } from "../pipeline/utils/viewsToCome";
-import { eligiblePosts, pickPosts } from "./pick";
+import { competitionPosts, eligiblePosts, pickPosts } from "./pick";
 
 const NOW = Date.parse("2026-11-23T12:00:00Z");
 const TEN_MINUTES = 10 * 60_000;
@@ -59,5 +59,20 @@ describe("scoring and picking a walk", () => {
 
   test("a ranking scorer orders across the tiers", () => {
     expect(pickPosts(eligible, new Set(), 3, flagsThenEval, NOW)[0]!.post.id).toBe("large-huge");
+  });
+});
+
+describe("competitionPosts", () => {
+  const at = Date.parse("2026-11-25T12:00:00Z");
+  const readings = ["above", "below", "oursAbove", "notInFeed", "unscored"].map((id, i) => ({ post: post(id, 1000), observedAt: new Date(at), tier: "xl" as const, xlRank: i + 1 }));
+  const ourScores = new Map<string, number | null>([["above", 10], ["below", 10], ["oursAbove", 60_000], ["notInFeed", 99_000], ["unscored", null]]);
+  const theirScores = new Map<string, number | null>([["above", 80_000], ["below", 20_000], ["oursAbove", 1000], ["unscored", null]]);
+
+  test("leaves the posts of the competition feed at its threshold or above to it", () => {
+    expect([...competitionPosts(readings, ourScores, { threshold: 50_000, scores: theirScores })].sort()).toEqual(["above", "oursAbove"]);
+  });
+
+  test("leaves every scored post of its feed to it while it has no threshold", () => {
+    expect([...competitionPosts(readings, ourScores, { threshold: null, scores: theirScores })].sort()).toEqual(["above", "below", "oursAbove"]);
   });
 });

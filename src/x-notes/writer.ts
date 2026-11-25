@@ -9,12 +9,13 @@
  *   2. submits the Pangram notes the judge approved, then the notes in the
  *      note queue, best first by the note rater, until X has no room
  *      (submitCandidates),
- *   3. runs the Pangram pass (pangram.ts), which sends long-form posts to
+ *   3. leaves out the posts the WSDM Cup account would take (competition.ts),
+ *   4. runs the Pangram pass (pangram.ts), which sends long-form posts to
  *      Pangram and the ones it calls AI to the Claude judge,
- *   4. works out how many more tweets to hand to Claude: enough to fill the
+ *   5. works out how many more tweets to hand to Claude: enough to fill the
  *      room the writing-limit estimate leaves (computeMaxPosts and
  *      writingLimit.ts), minus the tweets still with Claude,
- *   5. picks that many of the walk's posts (pick.ts) and hands each to the
+ *   6. picks that many of the walk's posts (pick.ts) and hands each to the
  *      Claude note writer on the runner. A finished note goes into the note
  *      queue, and the next round submits it.
  *
@@ -43,8 +44,9 @@ import { raterBar } from "../pipeline/score/raterBar";
 import { startOfUtcDay } from "../pipeline/utils/utcDay";
 import { formatViewsToCome } from "../pipeline/utils/viewsToCome";
 import { fetchClaimCheckHealth, queueIsStuck } from "../service/client";
+import { readCompetitionFeed } from "./competition";
 import { approvedPangramNotes, PangramPass } from "./pangram";
-import { eligiblePosts, pickPosts } from "./pick";
+import { competitionPosts, eligiblePosts, pickPosts } from "./pick";
 
 /** Tweets whose Claude input is built at once. The X run ran 10 checks. */
 const MAX_PARALLEL_CHECKS = 10;
@@ -77,20 +79,22 @@ export class XNoteWriter {
     // The Pangram pass goes first, so the ordinary notes do not take its
     // posts. A failure of the pass must not stop the ordinary notes, so it is
     // thrown again only at the end of the round.
-    const pangramFailure = await this.pangram.afterWalk(walk, scores).then(() => null, (err: unknown) => err);
-    await this.handOverTweets(walk, scores);
+    const competition = competitionPosts(walk.readings, scores, await readCompetitionFeed());
+    console.log(`[x-notes] ${competition.size} post(s) of the walk are left to the WSDM Cup account`);
+    const pangramFailure = await this.pangram.afterWalk(walk, scores, competition).then(() => null, (err: unknown) => err);
+    await this.handOverTweets(walk, scores, competition);
     if (pangramFailure) throw pangramFailure;
   }
 
   /** Picks the walk's best new posts and hands them to Claude. */
-  private async handOverTweets(walk: WalkResult, scores: Map<string, number | null>): Promise<void> {
+  private async handOverTweets(walk: WalkResult, scores: Map<string, number | null>, competition: Set<string>): Promise<void> {
     const budget = await this.checkBudget();
     if (budget === 0) return;
     const eligible = eligiblePosts(walk.readings, scores);
     const ids = eligible.map((s) => s.post.id);
     const [known, cooling] = await Promise.all([this.logger.getKnownTweetIds(ids), this.logger.getCooldownTweetIds(ids)]);
     const policy = pickRankingPolicy(undefined);
-    const picked = pickPosts(eligible, new Set([...known, ...cooling]), budget, activeScorer(policy), walk.finishedAt.getTime());
+    const picked = pickPosts(eligible, new Set([...known, ...cooling, ...competition]), budget, activeScorer(policy), walk.finishedAt.getTime());
     console.log(`[x-notes] ${eligible.length} post(s) clear the floor, ${known.size + cooling.size} of them handled before; checking ${picked.length} of a budget of ${budget} (policy ${policy})`);
     if (!picked.length) return;
 

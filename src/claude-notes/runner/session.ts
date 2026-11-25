@@ -57,8 +57,12 @@ export type ClaudeCommand = {
   appendSystemPromptFile?: string;
   /** Extra variables a writer's commands read, such as its run id. */
   env?: Record<string, string>;
-  isolated?: { jsonSchema: object; disallowedTools: string[] };
+  isolated?: { jsonSchema: object; tools: IsolatedTools };
 };
+
+/** The tools an isolated Claude has: Claude Code's default set without some
+ *  of them, or none at all, as for the Pangram judge (GOO-880). */
+export type IsolatedTools = { kind: "default_without"; disallowed: string[] } | { kind: "none" };
 
 /** The run folder of one job, the same for every try of it. */
 export function runFolder(kind: string, key: string): string {
@@ -103,16 +107,18 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
   ];
 }
 
-function isolatedScript(runDir: string, model: string, isolated: NonNullable<ClaudeCommand["isolated"]>): string[] {
+function isolatedScript(runDir: string, command: ClaudeCommand, isolated: NonNullable<ClaudeCommand["isolated"]>): string[] {
   writeFileSync(path.join(runDir, "schema.json"), JSON.stringify(isolated.jsonSchema));
   const kept = [
     ...ISOLATED_ENV_NAMES.map((name) => `${name}="$${name}"`),
     ...(CLAUDE_CONFIG_DIR ? [`CLAUDE_CONFIG_DIR=${quoted(CLAUDE_CONFIG_DIR)}`] : []),
   ];
   const flags = [
-    `--model ${model}`,
+    `--model ${command.model}`,
+    ...(command.effort ? [`--effort ${command.effort}`] : []),
+    ...(command.appendSystemPromptFile ? [`--append-system-prompt-file ${quoted(command.appendSystemPromptFile)}`] : []),
     "--permission-mode bypassPermissions --settings settings.json",
-    `--disallowedTools ${isolated.disallowedTools.map(quoted).join(" ")}`,
+    isolated.tools.kind === "none" ? `--tools ""` : `--disallowedTools ${isolated.tools.disallowed.map(quoted).join(" ")}`,
     `--output-format json --json-schema "$(cat schema.json)" --no-session-persistence`,
   ];
   return [`cd ${runDir}`, `env -i ${kept.join(" ")} "${CLAUDE_BIN}" -p "$(cat prompt.md)" ${flags.join(" ")} > output.json 2> stderr.txt`];
@@ -123,7 +129,7 @@ function isolatedScript(runDir: string, model: string, isolated: NonNullable<Cla
 export function startSession(session: string, runDir: string, prompt: string, command: ClaudeCommand) {
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   guardedSettingsFile(runDir, RUN_SETTINGS);
-  const lines = command.isolated ? isolatedScript(runDir, command.model, command.isolated) : writerScript(runDir, command);
+  const lines = command.isolated ? isolatedScript(runDir, command, command.isolated) : writerScript(runDir, command);
   writeFileSync(path.join(runDir, "run.sh"), [...lines, `echo $? > ${path.join(runDir, "exit-code")}`].join("\n"));
   const started = spawnSync("tmux", ["new-session", "-d", "-s", session, "bash", path.join(runDir, "run.sh")]);
   if (started.status !== 0) throw new Error(`tmux could not start ${session}: ${started.stderr}`);

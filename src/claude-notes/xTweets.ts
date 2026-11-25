@@ -150,13 +150,16 @@ export async function xTweetIsOpen(runId: string): Promise<boolean> {
   return data.outcome === "in_progress";
 }
 
+/** The Pangram judge's answer (PANGRAM_VERDICT_SCHEMA in prompts.ts). */
+export type PangramVerdict = { reasoning: string; should_get_this_is_ai_written_community_note: boolean };
+
 /** Saves the Pangram judge's verdict (GOO-880). On a yes, the row becomes the
  *  Pangram note in the wording its A/B pick names, and waits for the first
  *  account's writer to submit it (src/x-notes/writer.ts). */
-export async function savePangramVerdict(runId: string, verdict: { helpful: boolean; reasoning: string }) {
-  if (typeof verdict.helpful !== "boolean" || !verdict.reasoning?.trim()) throw new Error('The verdict needs "helpful" as true or false and a "reasoning".');
-  const claudeLog = { helpful: verdict.helpful, reasoning: verdict.reasoning, answeredAt: new Date().toISOString() };
-  if (!verdict.helpful) {
+export async function savePangramVerdict(runId: string, verdict: PangramVerdict) {
+  const shouldGetNote = verdict.should_get_this_is_ai_written_community_note;
+  const claudeLog = { should_get_this_is_ai_written_community_note: shouldGetNote, reasoning: verdict.reasoning, answeredAt: new Date().toISOString() };
+  if (!shouldGetNote) {
     await updateOpenRow(runId, [PANGRAM_BOT], claudeLog, { outcome: "rejected", outcome_reason: "pangram_judge_declined", final_stage: "pangram_judge" });
     return;
   }

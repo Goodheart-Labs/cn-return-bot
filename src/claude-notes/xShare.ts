@@ -13,13 +13,17 @@
  * rest.
  *
  * Since GOO-880 (2026-11-25) the first account writes notes again, but Jim
- * wants it to use only what the WSDM Cup account does not need. So it has no
- * share of its own. It may hand tweets to Claude only while the two accounts
- * together have used less than the WSDM Cup account may use by now. The WSDM
- * Cup account's own check counts only its own runs, so the first account never
- * takes anything from it. Late in the week the WSDM Cup account may still use
- * its whole share after the first account used some of it, and Common Notes
- * then gets that much less.
+ * wants it to use only what the WSDM Cup account does not need. Jim's rule:
+ * extrapolate the WSDM Cup account's use linearly to the end of the week, and
+ * give the first account the rest of the 30%. If the WSDM Cup account used u
+ * percent when a fraction f of the week has passed, it will use u / f by the
+ * reset, and the first account's share is 30 - u / f. Its allowance grows
+ * evenly like every other: by now it may use f * (30 - u / f) = 30 f - u.
+ * So the first account may hand tweets to Claude while its own use is below
+ * 30 f - u, which is the same as: while both accounts together have used less
+ * than the 30 f the WSDM Cup account may use by now. That is what the
+ * leftover budget computes. The WSDM Cup account's own check counts only its
+ * own runs, so the first account never takes anything from it.
  *
  * How much of the week an account used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every

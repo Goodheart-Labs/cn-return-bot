@@ -29,7 +29,7 @@ export const sweptAt = (tweet: XTweet) => Date.parse(tweet.createdAt) + CLAUDE_T
 /** Whether the tweet's images passed the image screen (GOO-815), or the host
  *  has no screen (GOO-822). A tweet they did not pass fails, and Slack hears of it. When the screen itself
  *  fails, the tweet fails too and the error goes on to the scheduler. */
-export async function passesScreen(tweet: XTweet): Promise<boolean> {
+async function passesScreen(tweet: XTweet): Promise<boolean> {
   let screen;
   try {
     screen = await screenImages(tweet.input);

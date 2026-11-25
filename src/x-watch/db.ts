@@ -23,7 +23,7 @@ const VIEWS_WRITE_CHUNK = 1000;
 const runs = () => getSupabaseClient().from("pipeline_runs");
 
 /** The account's own keys in pipeline_state, such as `wsdm:writing_limit`. */
-export const stateKey = (name: "admitted_at" | "writing_limit" | "limit_hit_at" | "test_note_allowance" | "test_notes_announced") => `${currentXAccount()}:${name}`;
+export const stateKey = (name: "admitted_at" | "writing_limit" | "limit_hit_at" | "test_note_allowance" | "test_notes_announced" | "views_threshold") => `${currentXAccount()}:${name}`;
 
 async function count(query: PromiseLike<{ count: number | null; error: { message: string } | null }>, label: string): Promise<number> {
   const { count: rows, error } = await query;

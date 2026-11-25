@@ -21,7 +21,8 @@
  *      for PANGRAM_NOTES_PER_DAY notes a day at the Pangram note rate
  *      (src/pipeline/utils/viewsThreshold.ts),
  *   4. sends each long-form post above the threshold to Pangram, best first,
- *      unless Pangram checked it before or the account handled it, and
+ *      unless Pangram checked it before, the account handled it, or the WSDM
+ *      Cup account would take it (competition.ts), and
  *   5. hands each post Pangram calls AI to the Claude judge on the runner,
  *      until the day's notes are used up.
  * Every Pangram verdict is recorded in pangram_monitoring_sightings, so no
@@ -129,7 +130,8 @@ export class PangramPass {
 
   constructor(private readonly logger: SupabaseLogger) {}
 
-  async afterWalk(walk: WalkResult, scores: Map<string, number | null>): Promise<void> {
+  /** `leftToOthers` are the posts the WSDM Cup account would take. */
+  async afterWalk(walk: WalkResult, scores: Map<string, number | null>, leftToOthers: ReadonlySet<string>): Promise<void> {
     const nowMs = walk.finishedAt.getTime();
     this.history ??= await readHistory(nowMs);
     const scored = longFormScored(walk.readings, scores);
@@ -152,7 +154,7 @@ export class PangramPass {
     if (threshold === null) return;
 
     this.checked ??= await readCheckedTweetIds();
-    const unchecked = pickForPangram(scored, this.checked, threshold, Infinity);
+    const unchecked = pickForPangram(scored.filter((s) => !leftToOthers.has(s.post.id)), this.checked, threshold, Infinity);
     if (!unchecked.length) return;
     const handled = await this.logger.getKnownTweetIds(unchecked.map((s) => s.post.id));
     const picked = pickForPangram(unchecked, handled, threshold, MAX_CHECKS_PER_WALK);

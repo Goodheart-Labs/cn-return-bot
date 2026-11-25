@@ -227,6 +227,9 @@ async function walkAndHandOver(watch: Watch): Promise<void> {
   await saveFeedWalk(walk, scores);
   const scored = scoredPosts(walk, scores);
   const threshold = await currentThreshold(state, await scoreHistory(watch));
+  // The first account's writer leaves the posts above this threshold to this
+  // account (src/x-notes/competition.ts).
+  await logger.setPipelineState(stateKey("views_threshold"), JSON.stringify(threshold.value));
   const room = roomForChecks(state, await countOpenNotes(), new Date());
   console.log(`[x-watch] walk: ${walk.readings.length} posts, ${scored.length} scored; ${describeThreshold(threshold)}; room ${room}`);
   if (threshold.value === null || room === 0) return;
