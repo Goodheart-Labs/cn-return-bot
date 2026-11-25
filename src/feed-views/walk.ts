@@ -8,8 +8,13 @@
  * Then the walk reads the XXL tier until it has made WALK_REQUEST_BUDGET
  * requests, for the Pangram pass (src/x-notes/pangram.ts). XXL is far bigger
  * than one walk can read: its first 120 pages held 11,670 posts on 2026-11-25,
- * and only about 16% of them were in XL. The posts that are only in XXL become
- * readings of their own, kept in memory and never stored.
+ * and only about 16% of them were in XL. X keeps XXL in the order posts
+ * entered it, newest first, and leaves the rest of the order alone (probed on
+ * 2026-11-25 with src/scripts_jim/2026_11_25_pangram_notes/xxlStability.ts).
+ * About 1,150 posts entered it per hour, so the pages one walk reads are the
+ * posts that entered in roughly the last 13 hours, and the next walk reads
+ * nearly all of them again. The posts that are only in XXL become readings of
+ * their own, kept in memory and never stored.
  *
  * This module touches no database, so its rules can be tested with a faked
  * feed. main.ts stores what it returns.
