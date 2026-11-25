@@ -8,9 +8,9 @@
  * rest of the weekly target that usagePacing.ts aims at. Each X account has a
  * share of its own (src/api/xAccount.ts). The WSDM Cup account got 30% on
  * 2026-11-23, on top of the first account's 30%. Since GOO-874 (2026-11-24)
- * the first account writes no notes, so on 2026-11-25 Jim gave its share to
- * the WSDM Cup account, which now has 60% (GOO-875). Common Notes gets what
- * it leaves.
+ * the first account writes no notes, so on 2026-11-25 its share went to 0%
+ * (GOO-875). The WSDM Cup account keeps its 30%, and Common Notes gets the
+ * rest.
  *
  * How much of the week an account used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every
@@ -37,7 +37,7 @@ import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type ClaudeRunTag, type
 /** The tag on each account's Claude runs, and its share of the week in percent. */
 export const X_SHARES: Record<XAccount, { tag: ClaudeRunTag; percent: number }> = {
   stilt: { tag: CLAUDE_RUN_TAGS.x, percent: 0 },
-  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, percent: 60 },
+  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, percent: 30 },
 };
 const WEEK_MS = 7 * 24 * 3600_000;
 
