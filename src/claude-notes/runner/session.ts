@@ -31,6 +31,14 @@ const SECRETS_NO_CLAUDE_NEEDS = [
   "ARACHNID_SHIELD_PASSWORD",
   "CN_NOTEWRITER_KEY",
 ];
+/** Claude Code prefers an API key in its environment over the subscription
+ *  login in its config folder, and is then billed per token. A box can pass
+ *  such a key on without anyone meaning to: Bun loads a checkout's .env file
+ *  into every script, and the devbox's holds ANTHROPIC_API_KEY. On 2026-11-25
+ *  a post writer on the devbox ran on that key. So every writer starts without
+ *  these variables, whatever the runner's environment holds. The isolated
+ *  Claude starts with an empty environment and never gets them. */
+const API_AUTH_VARIABLES = ["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"];
 /** The only variables an isolated Claude keeps. */
 const ISOLATED_ENV_NAMES = ["HOME", "PATH", "USER", "LANG"];
 
@@ -82,7 +90,7 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
     "set -a",
     `. ${ENV_FILE}`,
     "set +a",
-    `unset ${SECRETS_NO_CLAUDE_NEEDS.join(" ")}`,
+    `unset ${[...SECRETS_NO_CLAUDE_NEEDS, ...API_AUTH_VARIABLES].join(" ")}`,
     // A tmux session takes its environment from the tmux server, which may be
     // older than the runner, so the account's folder is set here.
     ...Object.entries(exports).map(([name, value]) => `export ${name}=${quoted(value)}`),
