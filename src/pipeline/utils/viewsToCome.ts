@@ -22,6 +22,7 @@
  * of 1.6 to 1.7 for posts 3 to 23 hours old, against 7 to 14 for velocity.
  */
 
+import type { Post } from "../../api/fetchEligiblePosts";
 import { formatCount } from "../orchestration/utils/tweetSorting";
 import { isAboveVelocityFloor } from "./velocity";
 
@@ -97,6 +98,33 @@ export function predictViewsToCome(postedAtMs: number, earlier: ViewReading | un
   if (hoursBetween <= 0) return null;
   const speedPerHour = Math.max(0, now.impressions - earlier.impressions) / hoursBetween;
   return speedPerHour * effectiveHoursLeft((now.observedAtMs - postedAtMs) / 3_600_000);
+}
+
+/** A post as one walk of a feed read it: cn-feed-views's walk of X's XL feed,
+ *  or cn-x-watch's walk of its account's feed. */
+export type FeedReading = { post: Post; observedAt: Date };
+
+/** Each reading of a walk as the earlier reading for the next walk. */
+export function readingsOf(readings: FeedReading[]): Map<string, ViewReading> {
+  const out = new Map<string, ViewReading>();
+  for (const { post, observedAt } of readings) {
+    const impressions = post.public_metrics?.impression_count;
+    if (impressions != null) out.set(post.id, { impressions, observedAtMs: observedAt.getTime() });
+  }
+  return out;
+}
+
+/** Each post's predicted views still to come, from its reading in the walk
+ *  before, about 10 minutes earlier. Null when the walk before did not read
+ *  the post or a count is missing. */
+export function scoreReadings(readings: FeedReading[], before: Map<string, ViewReading>): Map<string, number | null> {
+  const now = readingsOf(readings);
+  const scores = new Map<string, number | null>();
+  for (const { post } of readings) {
+    const reading = now.get(post.id);
+    scores.set(post.id, reading ? predictViewsToCome(Date.parse(post.created_at), before.get(post.id), reading) : null);
+  }
+  return scores;
 }
 
 /** Formats a prediction for logs, for example "120.0K". Unknown is "?". */

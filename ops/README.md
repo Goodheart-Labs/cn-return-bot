@@ -13,7 +13,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
-| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed, and writes and submits the first X account's notes (GOO-834, GOO-865) | none |
+| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed with the first X account's keys (GOO-834) | none |
 | `cn-x-watch` | every 30 seconds: the WSDM Cup notewriter account's feed watcher, which hands new small-feed posts to Claude and submits its notes (GOO-851) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
@@ -177,7 +177,7 @@ journalctl -u cn-site-checks -f
 
 ## The X feed daemon
 
-`cn-feed-views` (src/feed-views/main.ts, GOO-834, GOO-865) reads the small,
+`cn-feed-views` (src/feed-views/main.ts, GOO-834) reads the small,
 large and XL tiers of X's eligible-posts feed every 10 minutes, on the clock,
 with the notewriter keys in service.env. It stores one reading of each XL
 post's views and other counts in `feed_tweet_views`, with the post's predicted
@@ -186,15 +186,10 @@ views still to come (migrations 193 and 197), one row per walk of the feed in
 keeps everything. A walk stops when fewer than 150 of X's 500 feed requests per
 15 minutes are left.
 
-After each walk it runs the first X account's note writer (src/x-notes/): it
-submits the note queue and starts checks of the best new tweets on the
-claim-check service, or hands them to Claude on ai-box, at most 10 at once. It
-replaced the Create Notes Routine workflow on GitHub Actions. While a deploy
-waits for the services to go idle, autodeploy creates `/run/cn-autodeploy-drain`
-and the writer starts no new checks, so the services drain within a few
-minutes. When an hour passes without a stored walk, or without a round of the
-note writer that finished, or when 10 checks in a row fail, it tells Slack.
-Once, as root:
+From GOO-865 to GOO-874 it also ran the first X account's note writer after
+each walk. Since GOO-874 only the WSDM Cup account writes notes on X (see
+below), and this daemon only collects data. When an hour passes without a
+stored walk, it tells Slack. Once, as root:
 
 ```bash
 cp /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/
@@ -202,8 +197,8 @@ systemctl daemon-reload && systemctl enable --now cn-feed-views
 journalctl -u cn-feed-views -f      # a "walk complete" line every 10 minutes
 ```
 
-`bun run cn-feed-views --dry-run` makes one walk, prints the posts the note
-writer would check first, and writes nothing.
+`bun run cn-feed-views --dry-run` makes one walk, prints the best scored
+posts, and writes nothing.
 
 ## The WSDM Cup notewriter's feed watcher
 
@@ -218,9 +213,14 @@ X_WSDM_ACCESS_TOKEN=
 X_WSDM_ACCESS_TOKEN_SECRET=
 ```
 
-Every 30 seconds it sweeps the account's stale Claude tweets, submits the
-notes Claude wrote, and, while the writing limit has room, reads the account's
-small feed and hands each new post to the runner on ai-box. Until X admits the
+Every 30 seconds it sweeps the account's stale Claude tweets and submits the
+notes Claude wrote. Every 10 minutes it walks the account's whole feed, stores
+each post's view count and predicted views still to come in
+`x_watch_feed_views` (migration 203), and, while the writing limit has room,
+hands the best posts above a threshold to the runner on ai-box. The threshold
+lets through as many posts as fill the writing limit at Claude's note rate,
+judged by the posts that arrived in the feed over the last 7 days
+(src/x-watch/pick.ts, GOO-874). Until X admits the
 account it works in test mode: it writes only as many test notes as allowed,
 and checks hourly whether X admitted it. `bun run x-watch-allow-test-notes <n>`
 allows n more, and Slack hears when a batch is written and scored. The account has its own budget of 500 feed requests per

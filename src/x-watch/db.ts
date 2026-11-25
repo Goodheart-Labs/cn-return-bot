@@ -6,6 +6,8 @@ import { getSupabaseClient, type SupabaseLogger } from "../api/supabaseClient";
 import { currentXAccount } from "../api/xAccount";
 import type { WrittenNote } from "../api/fetchNotesWritten";
 import { fetchAllRows, fetchInBatches } from "../everything-core/paging";
+import type { FeedReading, ViewReading } from "../pipeline/utils/viewsToCome";
+import { SCORE_HISTORY_DAYS, type ScoreHistory } from "./pick";
 import { NEW_WRITER_DAILY_LIMIT, type WriterState } from "./room";
 
 /** What a test-mode note's run says instead of a note id. Test notes are not
@@ -13,6 +15,10 @@ import { NEW_WRITER_DAILY_LIMIT, type WriterState } from "./room";
 export const TEST_MODE_REASON = "test_mode";
 const QUEUED_REASON = "queued";
 const SUBMISSION_WINDOW_HOURS = 24;
+/** The note rate comes from this many of the account's last finished posts. */
+const RUNS_FOR_NOTE_RATE = 100;
+/** The rows are narrow, so a walk of about 700 posts is one request. */
+const VIEWS_WRITE_CHUNK = 1000;
 
 const runs = () => getSupabaseClient().from("pipeline_runs");
 
@@ -101,4 +107,74 @@ export async function storeNoteStatuses(written: WrittenNote[]): Promise<number>
 export async function markTestNoteSubmitted(runId: string): Promise<void> {
   const { error } = await runs().update({ outcome: "submitted", outcome_reason: TEST_MODE_REASON, final_stage: "submission" }).eq("id", runId);
   if (error) throw new Error(`Could not mark run ${runId} as a submitted test note: ${error.message}`);
+}
+
+/** One read of the whole feed. walkedAt is when it started, and every post
+ *  is in it once, in X's order. */
+export type FeedWalk = { walkedAt: Date; readings: FeedReading[] };
+
+/** Stores one reading of each post of the walk with its score (migration 203). */
+export async function saveFeedWalk(walk: FeedWalk, viewsToCome: Map<string, number | null>): Promise<void> {
+  const rows = walk.readings.map(({ post, observedAt }, i) => ({
+    x_account: currentXAccount(),
+    walked_at: walk.walkedAt.toISOString(),
+    tweet_id: post.id,
+    observed_at: observedAt.toISOString(),
+    impressions: post.public_metrics?.impression_count ?? null,
+    feed_rank: i + 1,
+    views_to_come: viewsToCome.get(post.id) ?? null,
+  }));
+  for (let i = 0; i < rows.length; i += VIEWS_WRITE_CHUNK) {
+    const { error } = await getSupabaseClient().from("x_watch_feed_views").insert(rows.slice(i, i + VIEWS_WRITE_CHUNK));
+    if (error) throw new Error(`Could not store the feed readings: ${error.message}`);
+  }
+}
+
+/** The readings of the account's newest stored walk that started between
+ *  `from` and `to`, for the first walk after a restart. Empty when there is
+ *  none. */
+export async function storedReadings(from: Date, to: Date): Promise<Map<string, ViewReading>> {
+  const views = () => getSupabaseClient().from("x_watch_feed_views");
+  const { data: walk, error } = await views()
+    .select("walked_at")
+    .eq("x_account", currentXAccount())
+    .gte("walked_at", from.toISOString())
+    .lte("walked_at", to.toISOString())
+    .order("walked_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`Could not find the walk before: ${error.message}`);
+  if (!walk) return new Map();
+  // tweet_id is a bigint, which JSON would round, so it is read as text.
+  const rows = await fetchAllRows<{ tweet_id: string; impressions: number | null; observed_at: string }>(
+    () => views().select("tweet_id::text, impressions, observed_at").eq("x_account", currentXAccount()).eq("walked_at", walk.walked_at),
+    "tweet_id",
+    { label: "x-watch.storedReadings" },
+  );
+  // A reading without a count is no reading, as in getRecordedViews.
+  return new Map(rows.filter((r) => r.impressions !== null).map((r) => [r.tweet_id, { impressions: Number(r.impressions), observedAtMs: Date.parse(r.observed_at) }]));
+}
+
+/** The posts that arrived in the account's feed over the last
+ *  SCORE_HISTORY_DAYS, with their best scores (migration 203). */
+export async function readScoreHistory(now: Date): Promise<ScoreHistory> {
+  const since = new Date(now.getTime() - SCORE_HISTORY_DAYS * 24 * 3_600_000);
+  const { data, error } = await getSupabaseClient().rpc("x_watch_best_scores", { p_account: currentXAccount(), p_since: since.toISOString() })
+    .single<{ history_from: string | null; best_scores: number[] }>();
+  if (error) throw new Error(`Could not read the score history: ${error.message}`);
+  const hours = data.history_from === null ? 0 : (now.getTime() - Date.parse(data.history_from)) / 3_600_000;
+  return { hours, bestScores: data.best_scores };
+}
+
+/** The share of the account's last finished posts on which Claude wrote a
+ *  note, whatever X did with it. 1 while there are none. */
+export async function readNoteRate(): Promise<number> {
+  const { data, error } = await runs()
+    .select("note_text")
+    .eq("x_account", currentXAccount())
+    .in("outcome", ["submitted", "rejected"])
+    .order("created_at", { ascending: false })
+    .limit(RUNS_FOR_NOTE_RATE);
+  if (error) throw new Error(`Could not read the note rate: ${error.message}`);
+  return data.length ? data.filter((row) => row.note_text !== null).length / data.length : 1;
 }

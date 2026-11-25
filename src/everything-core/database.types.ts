@@ -3419,6 +3419,36 @@ export type Database = {
         }
         Relationships: []
       }
+      x_watch_feed_views: {
+        Row: {
+          feed_rank: number
+          impressions: number | null
+          observed_at: string
+          tweet_id: number
+          views_to_come: number | null
+          walked_at: string
+          x_account: string
+        }
+        Insert: {
+          feed_rank: number
+          impressions?: number | null
+          observed_at: string
+          tweet_id: number
+          views_to_come?: number | null
+          walked_at: string
+          x_account: string
+        }
+        Update: {
+          feed_rank?: number
+          impressions?: number | null
+          observed_at?: string
+          tweet_id?: number
+          views_to_come?: number | null
+          walked_at?: string
+          x_account?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       everything_creator_visits: {
@@ -4731,6 +4761,10 @@ export type Database = {
         }
       }
       x_sync_ab_tests: { Args: { p_tests: Json }; Returns: undefined }
+      x_watch_best_scores: {
+        Args: { p_account: string; p_since: string }
+        Returns: { best_scores: number[]; history_from: string | null }[]
+      }
     }
     Enums: {
       [_ in never]: never
