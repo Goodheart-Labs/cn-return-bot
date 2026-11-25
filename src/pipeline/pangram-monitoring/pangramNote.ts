@@ -1,5 +1,6 @@
 /**
- * The fixed Community Note we submit when Pangram flags a post as AI-generated.
+ * The fixed Community Note we submit when Pangram flags a post as AI-generated
+ * and the Claude judge expects the note to be rated helpful (GOO-880).
  *
  * There are two A/B variants, see PANGRAM_NOTE_TEST. The `plain` variant is the
  * verdict and the Pangram report link and nothing more. The `fp_context` variant
@@ -24,6 +25,15 @@ const FALSE_POSITIVE_SOURCES = [
 // Both variants sit well under that today. The check exists so a later change to
 // the wording cannot quietly ship a note that is too long.
 const MAX_NOTE_LENGTH = 280;
+
+/** The outcome_reason of a Pangram note the judge approved, which waits for
+ *  the first account's writer to submit it (src/x-notes/writer.ts). */
+export const PANGRAM_APPROVED = "pangram_approved";
+/** X has no tag for AI-generated content. Missing context is the closest fit,
+ *  because the post does not disclose that it was written by an AI. */
+export const PANGRAM_MISLEADING_TAGS = ["missing_important_context"];
+/** The status the July 2026 pre-pass gave its notes, kept for the dashboards. */
+export const PANGRAM_NOTE_STATUS = "AI_GENERATED";
 
 export type PangramNoteVariant = "plain" | "fp_context";
 export type PangramNote = { noteText: string; sourceUrl: string };

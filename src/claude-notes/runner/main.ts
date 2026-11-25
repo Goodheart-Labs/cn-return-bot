@@ -20,6 +20,7 @@ import { judgeJob } from "../jobs/judge";
 import type { JobKind } from "../jobs/kind";
 import { postJob } from "../jobs/post";
 import { reviewAnswerJob } from "../jobs/reviewAnswer";
+import { pangramJob } from "../jobs/pangram";
 import { tweetJob } from "../jobs/tweet";
 import { xHandleJob } from "../jobs/xHandle";
 import { EXAMPLES_PATH, REPO } from "../prompts";
@@ -42,7 +43,7 @@ const RUNNER_STATE_FILE = path.join(RUNS_DIR, "runner-state");
 
 /** The kinds in the order their waiting work starts: the small and urgent
  *  first, posts last, since they take a slot for the longest. */
-const KINDS: JobKind<any>[] = POSTS_ONLY ? [postJob] : [reviewAnswerJob, tweetJob, judgeJob, xHandleJob, postJob];
+const KINDS: JobKind<any>[] = POSTS_ONLY ? [postJob] : [reviewAnswerJob, tweetJob, pangramJob, judgeJob, xHandleJob, postJob];
 
 const scheduler = createScheduler({
   kinds: KINDS,

@@ -1,11 +1,14 @@
-# The cn-feed-views service (GOO-834): every 10 minutes it reads the small,
-# large and XL tiers of X's eligible-posts feed with the first X account's keys
-# and stores one reading of each XL post's public counts with its predicted
-# views still to come (src/feed-views/main.ts). It calls only X's API and
-# Supabase, never a page a stranger chose, so it needs no cn-fetch. A new unit
+# The cn-feed-views service (GOO-834, GOO-880): every 10 minutes it reads the
+# small, large and XL tiers of X's eligible-posts feed with the first X
+# account's keys and stores one reading of each XL post's public counts with
+# its predicted views still to come (src/feed-views/main.ts). Then it writes
+# and submits the first account's Claude and Pangram notes (src/x-notes/). It
+# calls X's API, Supabase, Pangram, the claim-check service, which builds
+# Claude's input, and the note rater's model, never a page a stranger chose,
+# so it needs no cn-fetch. A new unit
 # is installed by hand once (ops/README.md); autodeploy restarts it after.
 [Unit]
-Description=X feed daemon: view recorder
+Description=X feed daemon: view recorder and note writer
 After=network-online.target
 Wants=network-online.target
 

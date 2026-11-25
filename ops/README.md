@@ -13,7 +13,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
-| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed with the first X account's keys (GOO-834) | none |
+| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed with the first X account's keys, and writes and submits that account's Claude and Pangram notes (GOO-834, GOO-880) | none |
 | `cn-x-watch` | every 30 seconds: the WSDM Cup notewriter account's feed watcher, which hands new small-feed posts to Claude and submits its notes (GOO-851) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
@@ -186,10 +186,14 @@ views still to come (migrations 193 and 197), one row per walk of the feed in
 keeps everything. A walk stops when fewer than 150 of X's 500 feed requests per
 15 minutes are left.
 
-From GOO-865 to GOO-874 it also ran the first X account's note writer after
-each walk. Since GOO-874 only the WSDM Cup account writes notes on X (see
-below), and this daemon only collects data. When an hour passes without a
-stored walk, it tells Slack. Once, as root:
+After each walk it runs the first X account's note writer (src/x-notes/,
+GOO-865, back since GOO-880). The writer submits the approved Pangram notes
+and the note queue, sends long-form posts above its Pangram threshold to
+Pangram, and hands the best new posts to the Claude note writer on the runner.
+It writes only Claude Code notes, never pipeline notes. The Pangram pass needs
+`PANGRAM_API_KEY` in service.env. When an hour passes without a stored walk,
+or without a round of the note writer that finished, it tells Slack. Once, as
+root:
 
 ```bash
 cp /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/

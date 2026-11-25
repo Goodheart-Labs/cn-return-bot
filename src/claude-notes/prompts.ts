@@ -19,6 +19,9 @@ export const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? path.join(REPO, "do
 /** Built once from the public Community Notes data, by the scripts in
  *  src/scripts_jim/2026_10_27_x_claude_examples/. */
 export const X_EXAMPLES_PATH = path.join(REPO, "docs/x-note-examples.md");
+/** Every Pangram note of July 2026 with its post and ratings, built once by
+ *  src/scripts_jim/2026_11_25_pangram_notes/buildExamples.ts (GOO-880). */
+export const PANGRAM_EXAMPLES_PATH = path.join(REPO, "docs/pangram-note-examples.md");
 
 /** Jim's sentences on what makes a good note, the variant with_thoughts of the
  *  taste tests. Without them the model learns only from the examples. */
@@ -148,6 +151,21 @@ ${NO_IMAGES_TWEET} Your run folder is ${runDir}; write every file there.
 If the post needs a note, write ${runDir}/note.json as { "runId": "${tweet.runId}", "note": "<the note, with the links to its sources>", "reasoning": "<a few sentences on why the post needs it>"${sourcesField} } and run \`bun run claude-notes x-note ${runDir}/note.json\` from ${REPO}. A note has at most ${X_NOTE_MAX_CHARS} characters, where each link counts as one, and needs at least one link.${withSourceDetails ? " Every link in the note must be one of the sources." : ""} If the post needs no note, run \`bun run claude-notes x-no-note ${tweet.runId} "<why>"\` from the same folder. Stop once one of the two has succeeded.
 ${withSourceDetails ? `\n${SOURCE_CHECK}\n` : ""}
 If you use subagents${withSourceDetails ? " for anything else" : ""}, ${subagentRule("submit the note", withExamples)}
+
+${tweetInputSection(tweet.input)}`;
+}
+
+/** The Pangram judge (GOO-880): one post Pangram called AI-written, and
+ *  whether the fixed Pangram note would be rated helpful on it. */
+export function pangramPrompt(params: { tweet: XTweet; runDir: string }): string {
+  const { tweet, runDir } = params;
+  return `Hi Claude, Pangram, an AI-text detector, says the post below was written by AI. We could add a Community Note to it on X that says "According to Pangram this post is AI generated", with a link to Pangram's report on the post. In your system prompt are all the notes like this that we wrote in July 2026, each with its post and how raters rated it. Most were rated not helpful.
+
+Please judge whether this note would very likely be rated helpful if it gets enough ratings. Community Notes shows a note only when raters who usually disagree with each other both rate it helpful. Research on the web if it helps, for example to check whether the quotes, events or people in the post are real.
+
+${NO_IMAGES} If the post can only be judged by looking at an image, answer false. Your run folder is ${runDir}; write every file there.
+
+Write ${runDir}/verdict.json as { "runId": "${tweet.runId}", "helpful": true or false, "reasoning": "<a few sentences on why>" } and run \`bun run claude-notes pangram-verdict ${runDir}/verdict.json\` from ${REPO}. Answer true only when you think the note is very likely to be rated helpful. Stop once the command has succeeded.
 
 ${tweetInputSection(tweet.input)}`;
 }
