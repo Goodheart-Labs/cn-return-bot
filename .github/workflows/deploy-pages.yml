@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -89,5 +89,17 @@ jobs:
         with:
           path: site
 
+      # Since 2026-11-19 this step often lists the artifact a second after
+      # the upload and finds none ("Found 0 artifact(s)"): 10 of 21 runs on
+      # 11-24 and 11-25. One more try after a wait; a second miss fails the run.
       - id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before the second try
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 45
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
