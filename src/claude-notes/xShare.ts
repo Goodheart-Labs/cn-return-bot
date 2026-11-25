@@ -7,8 +7,10 @@
  * 20% of the week on 2026-10-27 and 30% on 2026-11-19, and Common Notes the
  * rest of the weekly target that usagePacing.ts aims at. Each X account has a
  * share of its own (src/api/xAccount.ts). The WSDM Cup account got 30% on
- * 2026-11-23, on top of the first account's 30%, so Common Notes now gets what
- * both leave.
+ * 2026-11-23, on top of the first account's 30%. Since GOO-874 (2026-11-24)
+ * the first account writes no notes, so on 2026-11-25 Jim gave its share to
+ * the WSDM Cup account, which now has 60% (GOO-875). Common Notes gets what
+ * it leaves.
  *
  * How much of the week an account used so far is its tag's share of the plan's usage
  * (src/claude-notes/usageShare.ts), split by the API-equivalent cost of every
@@ -17,9 +19,9 @@
  * do not water the share down.
  *
  * X may not use its whole share at the start of the week. Its allowance grows
- * evenly from 0% at the weekly reset to 30% at the next one. Without that, the
- * tweets would use up the share in a few days, and X would get no Claude
- * notes for the rest of the week.
+ * evenly from 0% at the weekly reset to the whole share at the next one.
+ * Without that, the tweets would use up the share in a few days, and X would
+ * get no Claude notes for the rest of the week.
  *
  * The X run reads this once at its start. While X is over its allowance, or
  * the runner on the ai-box would not start a Claude, a tweet that draws Claude
@@ -34,8 +36,8 @@ import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type ClaudeRunTag, type
 
 /** The tag on each account's Claude runs, and its share of the week in percent. */
 export const X_SHARES: Record<XAccount, { tag: ClaudeRunTag; percent: number }> = {
-  stilt: { tag: CLAUDE_RUN_TAGS.x, percent: 30 },
-  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, percent: 30 },
+  stilt: { tag: CLAUDE_RUN_TAGS.x, percent: 0 },
+  wsdm: { tag: CLAUDE_RUN_TAGS.xWsdm, percent: 60 },
 };
 const WEEK_MS = 7 * 24 * 3600_000;
 
