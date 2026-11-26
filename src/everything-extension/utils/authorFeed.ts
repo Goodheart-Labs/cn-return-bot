@@ -95,15 +95,17 @@ async function forumPostAuthorFromTab(tabId: number | undefined): Promise<Creato
 }
 
 /** How a tab relates to creators: it has none, it has one whose priority window
- *  is already open, or it has one a reader could press. */
+ *  is already open, or it has one a reader could press. Both kinds with a
+ *  creator name it in the same field. A check request needs the creator in
+ *  both cases, and until 2026-11-26 the request read it only from a pressable
+ *  creator, so every page requested during a priority window was filed under
+ *  Around the web. */
 export type AuthorFeedStatus =
   | { kind: "none" }
-  | { kind: "prioritized"; feed: CreatorTarget }
-  | { kind: "pressable"; target: CreatorTarget };
+  | { kind: "prioritized" | "pressable"; creator: CreatorTarget };
 
 export async function authorFeedStatusForTab(tab: { id?: number; url?: string; title?: string }): Promise<AuthorFeedStatus> {
-  const feed = await authorFeedForTab(tab);
-  if (!feed) return { kind: "none" };
-  const target = await unlessPrioritized(feed);
-  return target ? { kind: "pressable", target } : { kind: "prioritized", feed };
+  const creator = await authorFeedForTab(tab);
+  if (!creator) return { kind: "none" };
+  return { kind: (await unlessPrioritized(creator)) ? "pressable" : "prioritized", creator };
 }

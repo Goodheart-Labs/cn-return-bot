@@ -8,7 +8,7 @@ import { canonicalizePageUrl } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
 import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
-import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } from "../utils/authorFeed";
+import { authorFeedForTab, TAB_CREATOR_MESSAGE_TYPE } from "../utils/authorFeed";
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, getCoveredPageUrls, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { mergeCoveredUrls, parseSyncState, planSync } from "../utils/notedSitesSync";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
@@ -242,9 +242,8 @@ async function showRequestInfo(tab: { id?: number }, headline: string) {
  *  passage. The menu click grants activeTab, so the page's canonical link and
  *  body text can be read even on a site the user never enabled; the pipeline
  *  fact-checks the page from that text. A restricted page falls back to the
- *  tab's url and title alone. A whole page that is already checked, or whose
- *  author we already follow, submits nothing and gets an explanatory card
- *  instead. */
+ *  tab's url and title alone. A whole page that is already checked submits
+ *  nothing and gets an explanatory card instead. */
 async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: string }, selection: string, steer: string | null = null) {
   const captured = tab.id != null ? await capturePageFromTab(tab.id) : null;
   const href = captured?.href ?? tab.url;
@@ -274,14 +273,14 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
       console.warn("[common-notes] item lookup failed, submitting the request anyway:", err);
     }
   }
-  const authorFeed = await authorFeedStatusForTab(tab);
+  const creator = await authorFeedForTab(tab);
   try {
     const token = await submitNoteRequest({
       pageUrl,
       pageTitle: captured?.title ?? tab.title ?? "",
       selection: passage,
       pageText: captured?.text,
-      creatorFeedUrl: authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null,
+      creatorFeedUrl: creator?.feedUrl ?? null,
       steer,
     });
     // This is only a local reminder. The request itself is already saved.

@@ -137,7 +137,10 @@ async function sendJumpToNote(tabId: number, scriptWasRegistered: boolean) {
 /** The "Check this page" button, shown on content pages we have not read in
  *  full. Requested pages are remembered in storage rather than in component state,
  *  so closing and reopening the popup cannot submit the same page twice. */
-function RequestNoteButton({ creatorFeedUrl, onLive }: {
+function RequestNoteButton({ pageUrl, creatorFeedUrl, onLive }: {
+  /** The page's own address. On a Substack reader page it is the post's
+   *  address, not the reader's, so the check lands on the post readers visit. */
+  pageUrl: string;
   /** The page's creator, so the pipeline files the page under their project. */
   creatorFeedUrl: string | null;
   onLive: (entry: LiveRequest) => void;
@@ -146,18 +149,15 @@ function RequestNoteButton({ creatorFeedUrl, onLive }: {
 
   useEffect(() => {
     (async () => {
-      const tab = await activeTab();
-      if (!tab?.url) return;
-      setPhase((await getRequestedPages()).includes(normalizePageUrl(tab.url)) ? "done" : "idle");
+      setPhase((await getRequestedPages()).includes(pageUrl) ? "done" : "idle");
     })();
-  }, []);
+  }, [pageUrl]);
 
   const request = async () => {
     setPhase("busy");
     try {
       const tab = await activeTab();
-      if (!tab?.url) throw new Error("no page");
-      const pageUrl = normalizePageUrl(tab.url);
+      if (!tab) throw new Error("no page");
       // Opening the popup granted activeTab, so we can read the page's body
       // text. The pipeline fact-checks the page from that text, because it
       // cannot fetch arbitrary pages itself. A page we may not inject into
@@ -339,12 +339,10 @@ function PrimaryAction({ state, counts, jumped, access }: {
   // custom-domain Substack is recognized through its author feed, so its
   // homepage and archive pages are held to the same post rule.
   const pageUrl = state.kind === "item" ? state.item.url : state.pageUrl;
-  const substackFeed =
-    (authorFeed.kind === "pressable" && authorFeed.target.feedType === "substack") ||
-    (authorFeed.kind === "prioritized" && authorFeed.feed.feedType === "substack");
+  const creator = authorFeed.kind === "none" ? null : authorFeed.creator;
+  const substackFeed = creator?.feedType === "substack";
   const postShaped = requestMakesSenseForUrl(pageUrl) && (!substackFeed || isSubstackPostPage(pageUrl));
   const requestable = postShaped && (state.kind === "no_item" || !isWholePageChecked(state.item));
-  const creatorFeedUrl = authorFeed.kind === "pressable" ? authorFeed.target.feedUrl : null;
 
   const noun = state.kind === "item" && extractYoutubeVideoId(state.item.url) ? "video" : "page";
   const statusLine = headline({
@@ -363,10 +361,10 @@ function PrimaryAction({ state, counts, jumped, access }: {
         <p className="text-sm font-medium text-fg">{statusLine}</p>
       )}
       {liveEntry && <LiveRequestLine entry={liveEntry} />}
-      {requestable && <RequestNoteButton creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />}
-      {authorFeed.kind === "prioritized" && <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>}
+      {requestable && <RequestNoteButton pageUrl={pageUrl} creatorFeedUrl={creator?.feedUrl ?? null} onLive={setLiveEntry} />}
+      {authorFeed.kind === "prioritized" && <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.creator.kind)}</p>}
       {/* The popup offers the press on covered pages too. */}
-      {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
+      {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.creator} />}
     </div>
   );
 }
