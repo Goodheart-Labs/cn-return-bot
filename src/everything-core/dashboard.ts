@@ -194,10 +194,10 @@ export interface ClaudeUsageRow {
   weekly_resets_at: string | null;
 }
 
-/** The notewriter whose plan the chart shows: the runner on the ai-box, on
- *  Jim's notewriter account (GOO-787). Its id is AI_BOX_NOTEWRITER in
+/** The notewriter whose plan the chart shows: the Claude note writer's
+ *  runner, on Jim's notewriter account (GOO-787). Its id is RUNNER_NOTEWRITER in
  *  src/notewriters/ids.ts, which this layer may not import. */
-const CHART_NOTEWRITER = "claude-ai-box";
+const CHART_NOTEWRITER = "claude-devbox";
 
 /** Every reading of the note writer's Claude plan since a time, oldest first.
  *  Only admins can read the table, through its row-level policy. */

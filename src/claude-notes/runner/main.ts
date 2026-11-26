@@ -1,5 +1,6 @@
-/* The Claude note writer's runner (GOO-580, GOO-787). It runs all the time on
- * Nathan's ai-box as a systemd service, under Nathan's user, and starts one
+/* The Claude note writer's runner (GOO-580, GOO-787). It runs all the time as
+ * a systemd service, on the devbox since 2026-11-25 (GOO-876) and on Nathan's
+ * ai-box before, and starts one
  * headless Claude per job: a Common Notes post, an X tweet the X run handed to
  * Claude, a note to judge, a creator whose X account nobody looked up, and a
  * reviewer's message. Since GOO-787 its Claudes run on Jim's notewriter

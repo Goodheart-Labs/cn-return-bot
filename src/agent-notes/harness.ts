@@ -1,6 +1,6 @@
 /* The agent note writer (GOO-682, GOO-734): one agent per Common Notes post
  * or X tweet, built with the OpenAI Agents SDK, on GPT-6.1 Terra or Sonnet 5.5
- * (model.ts). It gets the same task as the Claude note writer on ai-box and
+ * (model.ts). It gets the same task as the Claude note writer and
  * the same examples as its system prompt.
  *
  * The agent's tools are our web tools (webTools.ts: a Serper search, and

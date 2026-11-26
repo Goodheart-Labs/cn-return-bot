@@ -1,7 +1,7 @@
 /* The X tweets the Claude note writer checks (GOO-527), and the posts the
  * Pangram judge looks at (GOO-880). The whole flow is described in
  * src/pipeline/orchestration/claudeTweets.ts and src/x-notes/pangram.ts. These are the reads
- * and writes that the runner on ai-box and its Claudes make on the tweets'
+ * and writes that the runner and its Claudes make on the tweets'
  * pipeline_runs rows. Every write is guarded by the row's stage, so a Claude
  * that answers twice, or a retry after a note was saved, changes nothing. */
 

@@ -1,7 +1,7 @@
 /* The X note writers' shares of the Claude plan they run on (GOO-527,
  * GOO-617, GOO-851).
  *
- * The runner on the ai-box writes Common Notes and, since GOO-527, notes for
+ * The Claude note writer's runner writes Common Notes and, since GOO-527, notes for
  * some of the X bot's tweets. Since GOO-787 (2026-11-19) both are paid for by
  * Jim's notewriter account, a Claude plan used for nothing else. Jim gave X
  * 20% of the week on 2026-10-27 and 30% on 2026-11-19, and Common Notes the
@@ -37,14 +37,14 @@
  * get no Claude notes for the rest of the week.
  *
  * The X run reads this once at its start. While X is over its allowance, or
- * the runner on the ai-box would not start a Claude, a tweet that draws Claude
+ * the runner would not start a Claude, a tweet that draws Claude
  * fails like a tweet whose model provider is out of credits (Jim,
  * 2026-10-28). It is not moved to the pipeline. Common Notes needs no change: its pacing aims the plan's total at its target, and X's
  * usage is part of that total, so Common Notes gets whatever X leaves. */
 
 import { MAX_USAGE_READING_AGE_MS, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 import { currentXAccount, type XAccount } from "../api/xAccount";
-import { AI_BOX_NOTEWRITER } from "../notewriters/ids";
+import { RUNNER_NOTEWRITER } from "../notewriters/ids";
 import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type ClaudeRunTag, type UsageSnapshot } from "./usageShare";
 
 /** The tag on each account's Claude runs, and its budget: either a share of
@@ -73,14 +73,14 @@ export type XShareSnapshot = UsageSnapshot & { now: Date };
 
 export type XShare =
   | { kind: "measured"; account: XAccount; usedPercent: number; allowedPercent: number }
-  /** The runner on the ai-box would not start a Claude now. */
+  /** The runner would not start a Claude now. */
   | { kind: "runner_down"; reason: string };
 
 
 export function computeXShare(snapshot: XShareSnapshot, account: XAccount): XShare {
   const { latest, now } = snapshot;
   if (!latest || now.getTime() - latest.at.getTime() > MAX_USAGE_READING_AGE_MS) {
-    return { kind: "runner_down", reason: "The runner on ai-box has not reported the usage of its Claude plan in the last 30 minutes" };
+    return { kind: "runner_down", reason: "The Claude note writer's runner has not reported the usage of its Claude plan in the last 30 minutes" };
   }
   if (latest.weekly >= MAX_WEEKLY_USAGE_PERCENT) {
     return { kind: "runner_down", reason: `The note writer's plan is at ${latest.weekly}% of its week, where the runner starts no Claude` };
@@ -105,10 +105,9 @@ export function xShareProblem(share: XShare): string | null {
 /** Reads the share of this process's X account once, logs it, and says why
  *  it cannot send tweets to Claude, or null when it can. */
 export async function claudeUnavailableReason(): Promise<string | null> {
-  // The X run's Claude tweets go to the runner on the ai-box.
-  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(AI_BOX_NOTEWRITER)) }, currentXAccount());
+  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(RUNNER_NOTEWRITER)) }, currentXAccount());
   const problem = xShareProblem(share);
   if (problem) console.log(`[claude] ${problem}. Tweets that draw Claude fail in this run.`);
-  else if (share.kind === "measured") console.log(`[claude] ${describeUse(share)}. Tweets that draw Claude go to the ai-box.`);
+  else if (share.kind === "measured") console.log(`[claude] ${describeUse(share)}. Tweets that draw Claude go to the runner.`);
   return problem;
 }

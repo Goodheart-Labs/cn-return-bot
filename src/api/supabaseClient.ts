@@ -833,7 +833,7 @@ export class SupabaseLogger {
    * outcome-rate calculation.
    *
    * A tweet handed to the Claude Code note writer stays `in_progress` while it
-   * waits on the ai-box, which can take longer than a pipeline run. Such rows
+   * waits for the runner, which can take longer than a pipeline run. Such rows
    * get their own, longer limit.
    */
   async sweepStuckRuns(opts: { olderThanMinutes: number; claudeOlderThanMinutes: number }): Promise<number> {
@@ -863,8 +863,8 @@ export class SupabaseLogger {
       .lt("created_at", new Date(Date.now() - olderThanMinutes * 60_000).toISOString());
   }
 
-  /** Leaves a tweet's run open for the Claude Code note writer on the ai-box
-   *  (GOO-527). The runner there finds it by its final stage. */
+  /** Leaves a tweet's run open for the Claude Code note writer (GOO-527).
+   *  Its runner finds it by its final stage. */
   /** The tweets handed to the Claude note writer since `since` that it has not answered yet. */
   async countOpenClaudeTweets(since: Date): Promise<number> {
     return this.runExactCount(

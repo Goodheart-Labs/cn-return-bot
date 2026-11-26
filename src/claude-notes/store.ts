@@ -383,8 +383,7 @@ export async function claudeDraftsSince(itemId: string, since: string): Promise<
   return count ?? 0;
 }
 
-/** The notes Claude posted since a time, newest first, for the daily review
- *  on Nathan's ai-box. Withdrawn and rejected notes are not posted, so they
+/** The notes Claude posted since a time, newest first, for the daily review. Withdrawn and rejected notes are not posted, so they
  *  are left out. */
 export async function postedSince(since: string) {
   return fetchAllRows<{ id: string; note_id: string | null; created_at: string; passage: string; note: string; item: { url: string; title: string | null; project: { slug: string } | null } | null }>(

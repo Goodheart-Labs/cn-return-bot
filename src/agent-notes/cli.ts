@@ -82,7 +82,7 @@ async function itemIdFor(itemIdOrUrl: string): Promise<string> {
   return data.id;
 }
 
-/** A post's picks are drawn like the runner on ai-box draws them, unless
+/** A post's picks are drawn like the Claude note writer's runner draws them, unless
  *  --pick fixes them. */
 async function postJob(itemIdOrUrl: string): Promise<Job> {
   const item = await readItem(await itemIdFor(itemIdOrUrl));

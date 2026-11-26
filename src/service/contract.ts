@@ -109,7 +109,7 @@ export interface CheckTweetResponse {
   output: TweetComputeOutput;
 }
 
-/** A tweet that a Claude Code note writer on the ai-box will check (GOO-527).
+/** A tweet that the Claude Code note writer will check (GOO-527).
  *  The service only builds the input Claude reads, because describing a video
  *  needs the media tools and keys that live on the services box. */
 export interface TweetInputRequest {

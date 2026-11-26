@@ -1,5 +1,5 @@
-/* The X accounts of the creators (GOO-639, migration 154). The runner on
- * Nathan's ai-box starts a Claude for every creator that has a posted Claude note and whose X
+/* The X accounts of the creators (GOO-639, migration 154). The runner
+ * starts a Claude for every creator that has a posted Claude note and whose X
  * account nobody has looked up yet. That Claude searches the
  * web, asks Grok, which can search X itself, and saves what it found with
  * `bun run claude-notes x-handle`. The posting tool then names the creator by
