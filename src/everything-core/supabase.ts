@@ -37,9 +37,28 @@ const local = extensionStorage()?.local;
 const EXTENSION_AUTH_KEY = "sb-cn-extension-auth-token";
 const STORED_AUTH_KEY = `sb-${new URL(url).hostname.split(".")[0]}-auth-token`;
 const storedKey = (key: string) => key.replace(EXTENSION_AUTH_KEY, STORED_AUTH_KEY);
+// After the extension is reloaded or updated, a content script left running in
+// an open tab can no longer reach the extension's storage, and every read
+// throws "Extension context invalidated". supabase-js reads the session again
+// each time the tab becomes visible, and it logs that failure, which Chrome
+// then lists among the extension's errors. Such a script is orphaned and will
+// never work again, so it reads no session and stays quiet. Chrome takes the
+// extension's id away from an orphaned script, which is how we tell.
+const isOrphaned = () => {
+  const g = globalThis as { browser?: { runtime?: { id?: string } }; chrome?: { runtime?: { id?: string } } };
+  return !(g.browser?.runtime?.id ?? g.chrome?.runtime?.id);
+};
+async function readSession(area: NonNullable<typeof local>, key: string): Promise<string | null> {
+  try {
+    return ((await area.get(storedKey(key)))[storedKey(key)] as string | undefined) ?? null;
+  } catch (err) {
+    if (isOrphaned()) return null;
+    throw err;
+  }
+}
 const sessionStorageAdapter = local
   ? {
-      getItem: async (key: string) => ((await local.get(storedKey(key)))[storedKey(key)] as string | undefined) ?? null,
+      getItem: (key: string) => readSession(local, key),
       setItem: (key: string, value: string) => local.set({ [storedKey(key)]: value }),
       removeItem: (key: string) => local.remove(storedKey(key)),
     }
