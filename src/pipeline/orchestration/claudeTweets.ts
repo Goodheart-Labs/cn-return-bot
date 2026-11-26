@@ -31,6 +31,12 @@ import { pickVariantName } from "../ab-testing/abTests";
 import { CLAUDE_X_TESTS } from "../ab-testing/abTestsData";
 
 export const CLAUDE_CODE_BOT = "claude-code";
+/** The first account's Pangram notes (GOO-880, src/x-notes/pangram.ts). A
+ *  Claude judges each one, so its rows wait for the runner like a Claude
+ *  tweet's. The name dates from the Pangram pre-pass of July 2026. */
+export const PANGRAM_BOT = "pangram-monitoring";
+/** The bots whose rows wait at claude_waiting for a Claude on the runner. */
+export const CLAUDE_BOTS = [CLAUDE_CODE_BOT, PANGRAM_BOT] as const;
 /** The bot A/B variant of the pipeline itself. */
 export const PIPELINE_BOT = "simple-bot";
 export const CLAUDE_WAITING_STAGE = "claude_waiting";
@@ -69,7 +75,7 @@ export async function handTweetToClaude(params: {
   if (claudeUnavailable) return fail("claude_unavailable", claudeUnavailable);
   try {
     const { input } = await requestTweetInput({ priority: "x", post });
-    await logger.markRunWaitingForClaude(runId, { picks, logs: { ...logs, claude: { input } } });
+    await logger.markRunWaitingForClaude(runId, { bot: CLAUDE_CODE_BOT, picks, logs: { ...logs, claude: { input } } });
     console.log(`[claude] ${post.id} waits for a Claude`);
   } catch (err) {
     await fail("claude_input_failed", `Could not build the input for Claude: ${(err as Error).message ?? String(err)}`);

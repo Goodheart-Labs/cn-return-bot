@@ -242,7 +242,7 @@ hides it in logs. The names below were checked against the live repository on
 |---|---|---|
 | Database | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY` | Most workflows. The anon key is the public key built into the website and the extension. |
 | X API for the first notewriter account, `stilt` | `X_API_KEY`, `X_API_KEY_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET` | Update Note Feedback. X paused this account on 2026-11-25, so its calls answer 403. Until GOO-887 Create Notes Routine and Writing Limit Probe read them too. |
-| Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Everything Priority Feeds. No workflow reads `PANGRAM_API_KEY` since GOO-887 removed Create Notes Routine. |
+| Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Everything Priority Feeds. No workflow reads `PANGRAM_API_KEY` since GOO-887 removed Create Notes Routine. The first account's dormant Pangram pass in cn-feed-views reads its own copy from `service.env` on the services machine, which is there since GOO-880. |
 | The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | Everything Priority Feeds and Spot Changed Quotes call the services described in [ops/README.md](../ops/README.md). |
 | YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds reads the API key and the proxy. Since 2026-11-19 no workflow reads `YOUTUBE_WEBSUB_SECRET`: cn-walk on the services machine subscribes the channels, with its own copy in `service.env` (GOO-791). |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
@@ -269,14 +269,18 @@ the X run of the first account, which no workflow starts since GOO-887:
 ### GitHub Pages
 
 GitHub Pages is GitHub's static website hosting. Under Settings → Pages the
-source is "GitHub Actions" (checked on 2026-10-01), so the Deploy Pages
-workflow publishes the site. The site lives at
-`https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain. It
-holds the stats dashboard. Until 2026-10-23 it also held the Common Notes
-analytics dashboard at `/cn-return-bot/analytics/`, which moved to
-commonnotes.net/admin/dashboard (GOO-564). The Common Notes
-website used to have a copy at `/cn-return-bot/notes/`. That copy is gone, and
-its addresses now redirect to the same page on commonnotes.net.
+source is "GitHub Actions" (checked on 2026-10-01), so the GitHub Pages notice
+workflow ([.github/workflows/github-pages-notice.yml](../.github/workflows/github-pages-notice.yml))
+publishes the site. The site lives at
+`https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain.
+Since GOO-888 (2026-11-26) it is only the two files in `github-pages/`, which
+redirect every address to commonnotes.net/x-notewriter. Until then it held the
+stats dashboard, rebuilt from a database snapshot every 4 hours. Until
+2026-10-23 it also held the Common Notes analytics dashboard at
+`/cn-return-bot/analytics/`, which moved to commonnotes.net/admin/dashboard
+(GOO-564). The Common Notes website used to have a copy at
+`/cn-return-bot/notes/`. That copy is gone, and its addresses redirect to the
+same page on commonnotes.net instead.
 
 ## Cloudflare
 
@@ -293,7 +297,7 @@ the Cloudflare dashboard was not checked.
 
 Every merge to main deploys the website on this domain. So does a run of the
 "Deploy Pages" workflow started by hand in GitHub Actions with "Run workflow".
-The four-hourly run updates GitHub Pages alone. Until 2026-10-16 only a run
+Until 2026-10-16 only a run
 started by hand deployed the website. The step is in
 [.github/workflows/deploy-pages.yml](../.github/workflows/deploy-pages.yml),
 and it needs the two Cloudflare secrets above. The API token must be allowed

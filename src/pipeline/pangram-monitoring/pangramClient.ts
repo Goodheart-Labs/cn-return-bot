@@ -87,9 +87,12 @@ async function pollTask(taskId: string, headers: Record<string, string>): Promis
   return { type: "error", error: `poll timeout after ${POLL_TIMEOUT_MS}ms` };
 }
 
+/** Classifies one text. A failed request comes back as an error verdict, so
+ *  the post is tried again later. A missing API key throws, because then every
+ *  request would fail. */
 export async function classifyText(text: string): Promise<PangramVerdict> {
+  const headers = { "x-api-key": getApiKey(), "Content-Type": "application/json" };
   try {
-    const headers = { "x-api-key": getApiKey(), "Content-Type": "application/json" };
     const taskId = await submitTask(text, headers);
     return await pollTask(taskId, headers);
   } catch (err: any) {
