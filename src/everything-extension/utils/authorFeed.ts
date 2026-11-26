@@ -1,5 +1,6 @@
 import { browser } from "#imports";
 import { extractYoutubeVideoId } from "@cn/core/pageUrls";
+import { publicationInPreloads, substackReaderPostId } from "@cn/core/substack";
 import { unlessPrioritized } from "./prioritizedCreators";
 import {
   forumAuthorFromPageLink,
@@ -7,23 +8,27 @@ import {
   forumPostAuthorTarget,
   isForumPostPage,
   readForumPostAuthorFromPage,
-  readSubstackPublicationFromPage,
   readWatchPageChannel,
-  resolveProfileCreatorTarget,
-  substackCreatorTarget,
-  substackProfileHandle,
-  substackTargetFromPublication,
   youtubeChannelTarget,
   youtubeVideoChannelTarget,
   type CreatorTarget,
 } from "./creatorTarget";
+import {
+  readSubstackPreloads,
+  resolveProfileCreatorTarget,
+  substackCreatorTarget,
+  substackProfileHandle,
+  substackTargetFromPublication,
+} from "./substackCreator";
+import { fetchSubstackPostCreator } from "./substackPostCreator";
 
 /** A content script sends this to learn its own tab's creator. The background
  *  answers with the creator's feed URL, or null when the page has none. */
 export const TAB_CREATOR_MESSAGE_TYPE = "cn-tab-creator";
 
-/** The creator a tab belongs to: a Substack publication (from its subdomain or
- *  a profile page), a YouTube channel (from a channel page, or on a watch
+/** The creator a tab belongs to: a Substack publication (from its subdomain,
+ *  the post a reader-app address leads to, a profile page, or the page's own
+ *  data on a custom domain), a YouTube channel (from a channel page, or on a watch
  *  page asked of YouTube's oEmbed endpoint, or read out of the page when that
  *  does not answer), or a forum author (from their profile page, or on a post
  *  page asked of the site's own API, or read out of the page when the API does
@@ -35,6 +40,9 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
   if (!url) return null;
   const subdomainTarget = substackCreatorTarget(url);
   if (subdomainTarget) return subdomainTarget;
+  // A post in Substack's reader app belongs to its publication, which is not
+  // always the author's own: a guest post sits in someone else's.
+  if (substackReaderPostId(url)) return fetchSubstackPostCreator(url);
   const handle = substackProfileHandle(url);
   if (handle) return resolveProfileCreatorTarget(handle);
   const channelTarget = youtubeChannelTarget(url, (tab.title ?? "").replace(/ - YouTube$/, ""));
@@ -63,9 +71,9 @@ export async function authorFeedForTab(tab: { id?: number; url?: string; title?:
     try {
       const [result] = await browser.scripting.executeScript({
         target: { tabId: tab.id },
-        func: readSubstackPublicationFromPage,
+        func: readSubstackPreloads,
       });
-      const target = substackTargetFromPublication(result?.result ?? null);
+      const target = substackTargetFromPublication(publicationInPreloads(result?.result));
       if (target) return target;
     } catch {
       // A page we may not inject into offers no follow target.

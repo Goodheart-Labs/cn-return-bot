@@ -1,11 +1,7 @@
-import { normalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
-import {
-  readSubstackPublicationFromPage,
-  resolveProfileCreatorTarget,
-  substackCreatorTarget,
-  substackProfileHandle,
-  substackTargetFromPublication,
-} from "./creatorTarget";
+import { normalizePageUrl } from "@cn/core/pageUrls";
+import { substackReaderPostId } from "@cn/core/substack";
+import { resolveProfileCreatorTarget, substackProfileHandle } from "./substackCreator";
+import { substackPostCreator } from "./substackPostCreator";
 import type { MenuSite, MenuSubject } from "./menuRows";
 import { SUBSTACK_MENU_TRIGGER } from "./menuTriggers";
 import { isSubstackPostPage } from "./pageShape";
@@ -42,20 +38,15 @@ const POST_CARD_SELECTOR = ".post-preview, .reader2-post-container";
 // A post's own address ends in /p/<slug>, and the address of one of its
 // comments continues with /comment/<id>.
 const COMMENT_PATH = /\/comment\//;
-// The item's author is the profile behind their avatar, which Substack tags
-// with this parameter. The first profile link can be someone who only
-// restacked the post.
-const AUTHOR_LINK_SELECTOR = 'a[href*="utm_source=substack-feed-item"]';
 
 /** The open post. On substack.com's reader the address is not the post's own,
- *  so the background resolves it when the check starts, and the reader view
- *  gets no creator row. */
+ *  so the background resolves it when the check starts, and when the creator
+ *  row asks for the post's publication. */
 function openPostSubject(): MenuSubject | null {
   if (!isSubstackPostPage(location.href) && !substackReaderPostId(location.href)) return null;
   return {
     page: { url: normalizePageUrl(location.href, document), title: document.title, noun: "post", current: true },
-    creator: async () =>
-      substackCreatorTarget(location.href) ?? substackTargetFromPublication(readSubstackPublicationFromPage()),
+    creator: () => substackPostCreator(location.href),
   };
 }
 
@@ -92,19 +83,15 @@ function distinctPostLinks(item: Element): HTMLAnchorElement[] {
 
 /** A post item links to its own address on the publication's site. An item
  *  that links two different posts, such as a post quoting another, gets no
- *  rows, because we cannot tell which one the menu is about. A publication on
- *  its own domain is named by the author's profile link instead, which
- *  Substack's profile API turns into the publication. */
+ *  rows, because we cannot tell which one the menu is about. */
 function postItemSubject(item: Element): MenuSubject | null {
   const posts = distinctPostLinks(item);
   if (posts.length !== 1) return null;
   const post = posts[0]!;
-  const authorLink = item.querySelector<HTMLAnchorElement>(AUTHOR_LINK_SELECTOR);
-  const handle = authorLink ? substackProfileHandle(authorLink.href) : null;
   const pageUrl = normalizePageUrl(post.href);
   return {
     page: { url: pageUrl, title: postTitle(post), noun: "post", current: false },
-    creator: async () => substackCreatorTarget(pageUrl) ?? (handle ? resolveProfileCreatorTarget(handle) : null),
+    creator: () => substackPostCreator(pageUrl),
   };
 }
 

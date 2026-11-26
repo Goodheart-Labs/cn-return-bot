@@ -1,5 +1,5 @@
 import { browser, defineContentScript } from "#imports";
-import { readSubstackPublicationFromPage } from "../utils/creatorTarget";
+import { readSubstackPublicationFromPage } from "../utils/substackCreator";
 import { SUBSTACK_DOMAIN_MESSAGE_TYPE } from "../utils/genericScript";
 
 // A Substack newsletter on its own domain, such as jasmi.news, is matched by

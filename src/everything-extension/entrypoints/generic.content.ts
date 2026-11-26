@@ -6,7 +6,7 @@ import { initUiAnalytics } from "../utils/analytics";
 import { listenForLiveRequests } from "../utils/requestLive";
 import { installMenuRows } from "../utils/menuRows";
 import { substackMenuSite } from "../utils/substackMenuRows";
-import { readSubstackPublicationFromPage } from "../utils/creatorTarget";
+import { readSubstackPublicationFromPage } from "../utils/substackCreator";
 
 // The background's sync registers this script at runtime for every covered
 // hostname. It is also injected directly by the sync's pass over open tabs, by

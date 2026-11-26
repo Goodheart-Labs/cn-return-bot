@@ -5,7 +5,7 @@
  *  ranking, and the prioritize script all normalize through here. */
 
 import { parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
-import { substackSubdomainInPageHtml } from "../everything-core/pageUrls";
+import { publicationInPageHtml, substackFeedUrl, substackSubdomainOfUrl } from "../everything-core/substack";
 
 export type FeedType = "substack" | "youtube" | "lesswrong";
 
@@ -29,16 +29,16 @@ export function canonicalSubstackFeed(url: string): CanonicalFeed | null {
  *  belongs to, or null for any other page. A post on a custom domain, a
  *  YouTube video or a forum post does not name its creator in its URL. */
 export function substackFeedOfPage(pageUrl: string): CanonicalFeed | null {
-  const m = pageUrl.match(/^https:\/\/([\w-]+)\.substack\.com(?:[/?#]|$)/i);
-  return m ? canonicalSubstackFeed(`https://${m[1]}.substack.com`) : null;
+  const subdomain = substackSubdomainOfUrl(pageUrl);
+  return subdomain ? canonicalSubstackFeed(substackFeedUrl(subdomain)) : null;
 }
 
-/** The publication a Substack page belongs to, read from the page's HTML
- *  by substackSubdomainInPageHtml. This is how a post on a custom domain
- *  reveals its *.substack.com form. Null for a page that is not Substack. */
+/** The publication a Substack page belongs to, read from the page's HTML.
+ *  This is how a post on a custom domain reveals its *.substack.com form. Null
+ *  for a page that is not Substack. */
 export function substackFeedInPageHtml(html: string): CanonicalFeed | null {
-  const subdomain = substackSubdomainInPageHtml(html);
-  return subdomain ? canonicalSubstackFeed(`https://${subdomain}.substack.com`) : null;
+  const publication = publicationInPageHtml(html);
+  return publication ? canonicalSubstackFeed(substackFeedUrl(publication.subdomain)) : null;
 }
 
 /** The canonical feed for a YouTube channel URL (@handle or /channel/id), or

@@ -24,7 +24,8 @@
 
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
-import { extractYoutubeVideoId, fetchReaderCanonical, substackReaderPostId } from "../../everything-core/pageUrls";
+import { extractYoutubeVideoId } from "../../everything-core/pageUrls";
+import { fetchReaderCanonical, substackReaderPostId } from "../../everything-core/substack";
 import { WEB_PROJECT_SLUG } from "../../everything-core/projects";
 import { resolveProjectId } from "../../everything/db";
 import { canonicalLesswrongFeed, canonicalYoutubeFeed, substackFeedInPageHtml, substackFeedOfPage, type CanonicalFeed } from "../../everything/feedUrls";

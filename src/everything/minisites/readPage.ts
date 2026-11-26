@@ -20,6 +20,7 @@ import { askFetcher } from "../../service/client";
 import { MINISITE_PAGE_PATH, type MinisitePageRequest, type ReadPage } from "../../service/contract";
 import { isWebUrl } from "../../pipeline/utils/webUrl";
 import { canonicalFeed, canonicalSubstackFeed, substackFeedInPageHtml, substackFeedOfPage } from "../feedUrls";
+import { substackFeedUrl } from "../../everything-core/substack";
 import { htmlToReaderBlocks } from "./htmlToReaderText";
 
 /** What a read_page job writes into its result, and what
@@ -158,7 +159,7 @@ function isoDate(value: string | null | undefined): string | null {
 /** Exported for the tests, which feed it a saved answer. */
 export function pageFromSubstackPost(post: SubstackPost, url: string): MinisitePage {
   const publication = postPublication(post);
-  const feed = publication ? canonicalSubstackFeed(`https://${publication.subdomain}.substack.com`) : substackFeedOfPage(url);
+  const feed = publication ? canonicalSubstackFeed(substackFeedUrl(publication.subdomain)) : substackFeedOfPage(url);
   const authors = joinNames(post.publishedBylines.map((byline) => byline.name));
   const byline = [authors, publication?.name].filter(Boolean).join(" · ") || null;
   return buildPage({
