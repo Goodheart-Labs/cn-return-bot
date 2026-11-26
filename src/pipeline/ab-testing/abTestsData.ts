@@ -374,13 +374,17 @@ const CLAUDE_X_EXAMPLES_TEST: ABTest = {
 
 export const CLAUDE_X_TESTS = [CLAUDE_X_TASTE_TEST, CLAUDE_X_RESEARCH_NUDGE_TEST, CLAUDE_X_MODEL_TEST, CLAUDE_X_EXAMPLES_TEST];
 
-// The same taste test for the Claude note writer's Common Notes posts. The
-// runner on ai-box draws it when it takes a post and records the pick on the
-// post's everything_pipeline_runs row. Not in AB_TESTS, because no pipeline
-// run reads it.
+// The taste test for the Claude note writer's Common Notes posts, closed on
+// examples_only (2026-11-25): over 45 days it gave 0.127 publicly Helpful
+// notes a post against 0.088 for with_thoughts. The runner still draws it when
+// it takes a post and records the pick on the post's everything_pipeline_runs
+// row. Not in AB_TESTS, because no pipeline run reads it.
 export const CLAUDE_CN_TASTE_TEST: ABTest = {
   name: "claude_cn_taste",
-  variants: CLAUDE_X_TASTE_TEST.variants,
+  variants: [
+    { variant: { name: "examples_only", overrides: {} }, weight: 100 },
+    { variant: { name: "with_thoughts", overrides: {} }, weight: 0 },
+  ],
 };
 
 // Standalone Pangram wording experiment; sampled in generatePangramCandidates only.

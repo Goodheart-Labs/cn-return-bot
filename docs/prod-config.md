@@ -241,21 +241,22 @@ hides it in logs. The names below were checked against the live repository on
 | Purpose | Secrets | Used by |
 |---|---|---|
 | Database | `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY` | Most workflows. The anon key is the public key built into the website and the extension. |
-| X API for the notewriter account | `X_API_KEY`, `X_API_KEY_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET` | Create Notes Routine, Update Note Feedback and Writing Limit Probe. |
-| Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Create Notes Routine and Everything Priority Feeds. Since GOO-880 (2026-11-25) no workflow needs `PANGRAM_API_KEY`: the first account's Pangram pass in cn-feed-views reads its own copy from `service.env` on the services machine. |
-| The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | The two pipeline workflows call the services described in [ops/README.md](../ops/README.md). |
-| YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds and Create Notes Routine read the API key and the proxy. Since 2026-11-19 no workflow reads `YOUTUBE_WEBSUB_SECRET`: cn-walk on the services machine subscribes the channels, with its own copy in `service.env` (GOO-791). |
+| X API for the first notewriter account, `stilt` | `X_API_KEY`, `X_API_KEY_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET` | Update Note Feedback. X paused this account on 2026-11-25, so its calls answer 403. Until GOO-887 Create Notes Routine and Writing Limit Probe read them too. |
+| Language models and search | `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `SERPER_API_KEY`, `PANGRAM_API_KEY` | Everything Priority Feeds. No workflow reads `PANGRAM_API_KEY` since GOO-887 removed Create Notes Routine. The first account's dormant Pangram pass in cn-feed-views reads its own copy from `service.env` on the services machine, which is there since GOO-880. |
+| The services machine | `CLAIM_CHECK_URL`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET` | Everything Priority Feeds and Spot Changed Quotes call the services described in [ops/README.md](../ops/README.md). |
+| YouTube | `YOUTUBE_DATA_V3_API_KEY`, `YOUTUBE_WEBSUB_SECRET`, `YTDLP_PROXY_URL` | Everything Priority Feeds reads the API key and the proxy. Since 2026-11-19 no workflow reads `YOUTUBE_WEBSUB_SECRET`: cn-walk on the services machine subscribes the channels, with its own copy in `service.env` (GOO-791). |
 | Cloudflare Pages | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Deploy Pages, for commonnotes.net. |
 | Slack | `SLACK_BOT_TOKEN`, the bot token of the Slack app "Claudy" (it starts `xoxb-`), the same token the devbox's standing jobs post with. Added on 2026-11-03 (GOO-695). | No workflow since 2026-11-19. cn-walk on the services machine now tells the Claude notes channel when one of our notewriters goes silent, with its own copy in `service.env` (GOO-791). |
 
-The workflow `writing-limit-probe.yml` also reads `SUPABASE_PROBE_KEY`, a key
-limited to that probe's own table. When it is unset, the probe falls back to
-the service key.
+`SUPABASE_PROBE_KEY`, a key limited to the writing limit probe's own table,
+was read only by the Writing Limit Probe workflow, which GOO-887 removed on
+2026-11-26.
 
 ### Repository variables
 
 A repository variable is like a secret but readable in logs. No variable was
-set on 2026-10-01, so the code's defaults apply:
+set on 2026-10-01, so the code's defaults apply. The last four are read only by
+the X run of the first account, which no workflow starts since GOO-887:
 
 | Variable | Default when unset | Read in |
 |---|---|---|

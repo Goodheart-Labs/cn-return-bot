@@ -5,9 +5,10 @@
  *
  * The prediction is the post's speed now times the hours it has left at that
  * speed. The speed now comes from two readings of the post's view count about
- * 10 to 30 minutes apart. The first reading is the feed view recorder's
- * (cn-feed-views, src/feed-views/), which reads every post in X's XL feed every
- * 10 minutes. The second is the X run's own fetch.
+ * 10 to 30 minutes apart. For the X run, the first reading was the feed view
+ * recorder's (cn-feed-views), which read every post in X's XL feed every 10
+ * minutes until GOO-887 retired it, and the second is the run's own fetch.
+ * cn-x-watch takes both readings from its own walks.
  *
  * The hours left come from what the recorded view curves showed (GOO-834,
  * src/scripts_jim/2026_11_21_feed_views_model/, cliff_model.py and
@@ -100,8 +101,8 @@ export function predictViewsToCome(postedAtMs: number, earlier: ViewReading | un
   return speedPerHour * effectiveHoursLeft((now.observedAtMs - postedAtMs) / 3_600_000);
 }
 
-/** A post as one walk of a feed read it: cn-feed-views's walk of X's XL feed,
- *  or cn-x-watch's walk of its account's feed. */
+/** A post as one walk of a feed read it, such as cn-x-watch's walk of its
+ *  account's feed. */
 export type FeedReading = { post: Post; observedAt: Date };
 
 /** Each reading of a walk as the earlier reading for the next walk. */

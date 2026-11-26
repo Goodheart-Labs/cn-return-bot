@@ -35,7 +35,7 @@
  * from the database.
  *
  * The process works for the account named by X_ACCOUNT and refuses the first
- * account, whose keys cn-feed-views reads its feeds with. A failed tick does not crash the
+ * account, which X paused on 2026-11-25. A failed tick does not crash the
  * daemon. When an hour passes without a good tick, Slack hears it once, and
  * again when ticks succeed again.
  *
@@ -71,7 +71,7 @@ const TICK_MS = 30_000;
 /** The view prediction was fitted on readings 10 minutes apart (GOO-834). */
 const WALK_INTERVAL_MS = 10 * 60_000;
 /** After a restart, the walk before is the newest stored one that started
- *  this long before the new walk, as in cn-feed-views. */
+ *  this long before the new walk. */
 const EARLIER_WALK_MIN_GAP_MS = 5 * 60_000;
 const EARLIER_WALK_MAX_GAP_MS = 20 * 60_000;
 /** The score history is read again after this long. While it covers less than

@@ -14,9 +14,13 @@
 -- reaches half of the last threshold. The walk reads XL and part of XXL, so
 -- many thousands of long-form posts arrive a day, about 580 of them in XL. A
 -- long-form post has more than 280 characters, the limit of a free account, or
--- is an X Article. The backfill below has only XL posts, because XXL readings
--- were never stored, so for the first week the history undercounts arrivals
--- and the threshold is a little low.
+-- is an X Article.
+--
+-- The table starts empty. It was applied on 2026-11-26 while cn-feed-views
+-- was dormant, because X had paused the first account. A backfill from
+-- feed_tweet_views would be stale by the time the daemon runs again, and its
+-- gap of days without readings would make the history undercount how many
+-- posts arrive. So the pass sets no threshold for its first 3 hours.
 --
 -- Only the service role writes and reads this table, so the anon and
 -- authenticated roles get nothing.
@@ -33,20 +37,5 @@ create index pangram_feed_scores_first_seen on pangram_feed_scores (first_seen_a
 
 alter table pangram_feed_scores enable row level security;
 revoke all on pangram_feed_scores from anon, authenticated;
-
--- The last 7 days, read once from the readings, so the threshold is set from
--- the first walk on. This is the 33-second read from above, run only here.
-insert into pangram_feed_scores (tweet_id, first_seen_at, best_views_to_come)
-select ft.tweet_id, ft.first_seen_at, best.views_to_come
-from feed_tweets ft
-cross join lateral (
-  select max(v.views_to_come) as views_to_come
-  from feed_tweet_views v
-  where v.tweet_id = ft.tweet_id::bigint
-) best
-where ft.first_seen_at >= now() - interval '7 days'
-  and (length(ft.text) > 280 or ft.raw_tweet ? 'article')
-  and coalesce(ft.raw_tweet ->> 'possibly_sensitive', 'false') <> 'true'
-  and best.views_to_come > 0;
 
 notify pgrst, 'reload schema';

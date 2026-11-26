@@ -200,7 +200,9 @@ function postToTweetRow(post: Post) {
   };
 }
 
-/** One walk of the feed view recorder (cn-feed-views), as its start and end. */
+/** One stored walk of the feed view recorder, as its start and end. The
+ *  recorder, cn-feed-views, is dormant since GOO-887, so it stored no walks
+ *  after 2026-11-25. */
 export interface RecorderWalk {
   startedAt: string;
   finishedAt: string;
