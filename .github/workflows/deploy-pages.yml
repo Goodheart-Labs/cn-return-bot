@@ -1,29 +1,23 @@
 name: Deploy Pages
 
-# GitHub Pages gets the stats dashboard at /cn-return-bot/, and the cron
-# refresh renews its snapshot. The Common Notes analytics live on the
-# website's admin dashboard at commonnotes.net/admin/dashboard since GOO-564.
-#
-# The Common Notes website lives only on commonnotes.net. Every merge to main
-# builds it and deploys it to Cloudflare Pages, and so does a run started by
-# hand. The four-hourly run leaves it alone, because the code has not changed.
+# Builds the Common Notes website and deploys it to Cloudflare Pages, which
+# serves commonnotes.net. Every merge to main runs it, and so does a run
+# started by hand.
 #
 # A merge runs this workflow whatever it touched. A list of the website's
 # folders would miss the next shared folder someone adds, and the site would
 # then go stale without anyone noticing.
+#
+# GitHub Pages has its own workflow, github-pages-notice.yml. Until GOO-888
+# this one also published the stats dashboard there.
 
 on:
-  schedule:
-    # Refresh the stats snapshot every 4 hours.
-    - cron: "0 */4 * * *"
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -33,9 +27,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,24 +39,7 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Snapshot Supabase to stats-data.json
-        run: bun run build-stats-data
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-
-      - name: Build stats SPA
-        run: cd src/stats-dashboard && bunx vite build
-        env:
-          BASE_PATH: /cn-return-bot/
-
-      - name: Assemble site
-        run: |
-          mkdir -p site
-          cp -r src/stats-dashboard/dist/. site/
-
       - name: Build the Common Notes website
-        if: github.event_name != 'schedule'
         run: cd src/everything-web && bunx vite build
         env:
           VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -74,7 +48,6 @@ jobs:
       - name: Deploy commonnotes.net (Cloudflare Pages)
         # Until 2026-10-16 only a run started by hand deployed the site (Nathan,
         # 2026-07-10). Jim changed that, so merged work reaches readers at once.
-        if: github.event_name != 'schedule'
         # wrangler is not a dependency of the repo, so bunx downloads it here.
         # The exact version keeps a newly published release out of the step
         # that holds the Cloudflare token.
@@ -82,24 +55,3 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-      # Since 2026-11-19 this step often lists the artifact a second after
-      # the upload and finds none ("Found 0 artifact(s)"): 10 of 21 runs on
-      # 11-24 and 11-25. One more try after a wait; a second miss fails the run.
-      - id: deployment
-        uses: actions/deploy-pages@v4
-        continue-on-error: true
-
-      - name: Wait before the second try
-        if: steps.deployment.outcome == 'failure'
-        run: sleep 45
-
-      - id: deployment_retry
-        if: steps.deployment.outcome == 'failure'
-        uses: actions/deploy-pages@v4

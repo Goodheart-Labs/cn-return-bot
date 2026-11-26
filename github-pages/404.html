@@ -2,21 +2,26 @@
 <!-- GitHub Pages answers every address it has no file for with this page.
      The Common Notes website used to have a copy at /cn-return-bot/notes/.
      It now lives only on commonnotes.net, so links to the old copy go on to
-     the same page there. -->
+     the same page there. Every other address goes to
+     commonnotes.net/x-notewriter, where the old stats dashboard moved. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Page not found</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moved</title>
   <script>
     const OLD_WEBSITE_PATH = "/cn-return-bot/notes";
+    const NEW_STATS_PAGE = "https://commonnotes.net/x-notewriter";
     const { pathname, search, hash } = location;
     if (pathname === OLD_WEBSITE_PATH || pathname.startsWith(`${OLD_WEBSITE_PATH}/`)) {
       const page = pathname.slice(OLD_WEBSITE_PATH.length) || "/";
       location.replace(`https://commonnotes.net${page}${search}${hash}`);
+    } else {
+      location.replace(NEW_STATS_PAGE);
     }
   </script>
 </head>
-<body>
-  <p>Page not found.</p>
+<body style="font-family: system-ui, sans-serif; margin: 4rem 1rem; text-align: center;">
+  <p>Moved to <a href="https://commonnotes.net/x-notewriter">https://commonnotes.net/x-notewriter</a></p>
 </body>
 </html>
