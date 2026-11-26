@@ -210,8 +210,7 @@ export async function fetchEligiblePosts(
 
     // Every response reports how much of the endpoint's rate budget is left.
     // The budget is 500 requests per 15 minute window, and every fetch in a run
-    // draws on the same budget. So does the feed view recorder on the services
-    // box (src/feed-views/). We stop before making the request that would be
+    // draws on the same budget. We stop before making the request that would be
     // rejected with a 429, rather than reacting once it has failed.
     if (page.rateRemaining === 0) {
       console.warn(
