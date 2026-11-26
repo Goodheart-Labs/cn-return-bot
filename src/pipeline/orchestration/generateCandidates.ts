@@ -429,7 +429,7 @@ export async function processPosts(
       const bot = item.monitoring ? PIPELINE_BOT : pickVariantName(BOT_TEST, perPostPicks.bot);
       if (bot === CLAUDE_CODE_BOT) {
         if (!supabaseLogger || !pipelineRunId) {
-          console.warn(`[${label}] ${item.post.id} drew Claude, but without a run row the ai-box cannot find it. Skipping it.`);
+          console.warn(`[${label}] ${item.post.id} drew Claude, but without a run row the runner cannot find it. Skipping it.`);
           return;
         }
         const logs = nestDotKeys(Object.fromEntries(localLog));

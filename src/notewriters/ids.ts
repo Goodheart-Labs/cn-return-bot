@@ -1,6 +1,6 @@
 /** Our own notewriters (GOO-724). A Claude host names its notewriter in
- *  CN_NOTEWRITER: claude-hq-nathan on hq (GOO-791). The ai-box runner, Jim's
- *  notewriter on its own Claude account, leaves it unset and calls API v2 with
+ *  CN_NOTEWRITER: claude-hq-nathan on hq (GOO-791). The runner of Jim's
+ *  notewriter on its own Claude account, on the devbox since 2026-11-25, leaves it unset and calls API v2 with
  *  its own key (GOO-787). claude-devbox was the devbox's dispatcher, which
  *  GOO-787 removed. Until 2026-11-19 that dispatcher called itself
  *  claude-ai-box, so the posts claude-ai-box reserved in the week before the

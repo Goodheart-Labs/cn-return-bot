@@ -25,9 +25,9 @@ export interface ABTest {
   defaultVariant?: string;
 }
 
-// 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer on
-// Nathan's ai-box. The X run draws this test itself. While the X share of
-// Nathan's Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
+// 2026-10-27 (GOO-527): a third of the tweets go to a Claude Code note writer, then
+// on Nathan's ai-box. The X run draws this test itself. While the X share of
+// its Claude plan is used up, those tweets fail (src/claude-notes/xShare.ts).
 // On 2026-11-10 Jim stopped the Claude tweets, to save the plan's week for his own work,
 // and on 2026-11-14 he turned them back on at their old weight. On 2026-11-19 (GOO-787)
 // the note writer got a Claude account of its own, and Jim doubled the weight to 100, so
@@ -326,7 +326,7 @@ const PANGRAM_MONITORING_TEST: ABTest = {
 // tweets. with_thoughts adds Jim's sentences on what makes a good note to the
 // examples in the system prompt; on adds his nudge to research more. The X run
 // draws both for a tweet that drew claude-code (handTweetToClaude), and the
-// runner on ai-box builds the prompt from the picks. Since 2026-11-12 (GOO-734)
+// runner builds the prompt from the picks. Since 2026-11-12 (GOO-734)
 // the agent bots, which share Claude's tweet prompt, draw them too.
 const CLAUDE_PROMPT_BOTS = ["claude-code", "gpt61terra-agent", "sonnet55-agent"];
 
@@ -351,7 +351,7 @@ const CLAUDE_X_RESEARCH_NUDGE_TEST: ABTest = {
 // 2026-11-20 (GOO-838): which Claude writes the claude-code bot's tweets, and
 // whether its system prompt has the 100 example notes. Jim asked for Sonnet
 // and medium effort next to Opus at high effort, the only setup until then.
-// The runner on ai-box turns the picks into its command (src/claude-notes/tweetArms.ts).
+// The runner turns the picks into its command (src/claude-notes/tweetArms.ts).
 const CLAUDE_X_MODEL_TEST: ABTest = {
   name: "claude_x_model",
   prerequisites: { botId: ["claude-code"] },

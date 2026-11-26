@@ -206,7 +206,7 @@ Every 30 seconds it sweeps the account's stale Claude tweets and submits the
 notes Claude wrote. Every 10 minutes it walks the account's whole feed, stores
 each post's view count and predicted views still to come in
 `x_watch_feed_views` (migration 203), and, while the writing limit has room,
-hands the best posts above a threshold to the runner on ai-box. The threshold
+hands the best posts above a threshold to the Claude note writer. The threshold
 lets through as many posts as fill the writing limit at Claude's note rate,
 judged by the posts that arrived in the feed over the last 7 days
 (src/x-watch/pick.ts, GOO-874). Until X admits the

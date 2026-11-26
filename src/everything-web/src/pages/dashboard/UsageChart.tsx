@@ -22,7 +22,7 @@ const RANGES: readonly { id: RangeId; label: string; days: number }[] = [
   { id: "30", label: "Last 30 days", days: 30 },
 ];
 
-/** Above this share of the weekly limit the runner on ai-box starts no new
+/** Above this share of the weekly limit the runner starts no new
  *  post (MAX_WEEKLY_USAGE_PERCENT in src/everything/usagePacing.ts). */
 const RUNNER_STOPS_AT_PERCENT = 95;
 const FULL_PERCENT = 100;
@@ -119,8 +119,8 @@ function UsageLines({ points, width }: { points: Point[]; width: number }) {
 const toPoints = (rows: ClaudeUsageRow[]): Point[] => rows.map((row) => ({ date: new Date(row.at), weekly: row.weekly }));
 
 /** How much of the weekly limit the Claude note writer's plan has used, read
- *  every 5 minutes by the runner on Nathan's ai-box. Since GOO-787 that is
- *  Jim's notewriter account. The line climbs during
+ *  every 5 minutes by its runner. Since GOO-787 that is Jim's notewriter
+ *  account. The line climbs during
  *  the week and drops when the limit resets. */
 export function UsageChart() {
   const [rangeId, setRangeId] = useState<RangeId>("7");

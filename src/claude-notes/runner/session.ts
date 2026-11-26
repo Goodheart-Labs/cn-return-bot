@@ -11,7 +11,9 @@ import * as path from "path";
 import { guardedSettingsFile } from "../imageGuard";
 
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
+/** The Claude settings every unattended Claude of the runner starts with. They
+ *  keep it from reading the keys and from changing the checkouts. The default
+ *  is the ai-box's path, where Nathan's guard hook lived. */
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 const ENV_FILE = process.env.CN_ENV_FILE ?? "/etc/cn-notes/env";
 /** The config folder of the notewriter's Claude account, or undefined for the
@@ -42,7 +44,7 @@ const API_AUTH_VARIABLES = ["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"];
 /** The only variables an isolated Claude keeps. */
 const ISOLATED_ENV_NAMES = ["HOME", "PATH", "USER", "LANG"];
 
-/** On the main disk. /tmp on ai-box is a small tmpfs in memory with a quota per
+/** On the main disk. /tmp on the ai-box was a small tmpfs in memory with a quota per
  *  user, and a day of run folders is more than a gigabyte, which filled the
  *  quota on 2026-10-30 and crashed the runner. */
 export const RUNS_DIR = process.env.CN_RUNS_DIR ?? "/var/tmp/cn-notes";

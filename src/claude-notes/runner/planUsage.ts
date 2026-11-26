@@ -20,9 +20,9 @@ const USAGE_READ_EVERY_MS = 5 * 60_000;
  *  reading the runner starts nothing. */
 const USAGE_ALERT_AFTER_MS = 30 * 60_000;
 
-/** Nathan's pause switch. While it exists, the runner starts nothing. */
+/** The pause switch. While it exists, the runner starts nothing. */
 const PAUSE_FILE = process.env.CN_PAUSE_FILE ?? "/srv/ai-box/PAUSE";
-/** The deploy's freeze (ops/ai-box/deploy.sh). While this file exists the
+/** The deploy's freeze (cn-notes-runner/deploy.sh in the devbox repository). While this file exists the
  *  runner starts no Claude, and the work that comes in waits in the database.
  *  Once nothing is at work any more, the deploy updates the code, removes the
  *  file and restarts the runner, which then starts the waiting work. */
@@ -30,7 +30,7 @@ export const DRAIN_FILE = process.env.CN_DRAIN_FILE ?? "/var/lib/cn-notes-deploy
 /** A second runner on another Claude plan (CN_POSTS_ONLY=1, with its own
  *  CN_NOTEWRITER), such as hq's, writes Common Notes posts and nothing else.
  *  Its plan's readings stay out of the usage table, whose pacing and X share
- *  are the ai-box runner's. */
+ *  are claude-ai-box's. */
 export const POSTS_ONLY = process.env.CN_POSTS_ONLY === "1";
 
 let usage: UsageReading | null = null;
@@ -65,7 +65,7 @@ async function alertAboutUsage(err: unknown) {
     return problemCleared("usage", "The usage of the Claude plan can be read again.");
   }
   if (isUnauthorized(err)) {
-    return problemStarted("login", "The Claude login no longer works, even after a renewal, so the runner starts no Claude. Someone has to log in again (ops/ai-box/README.md).");
+    return problemStarted("login", "The Claude login no longer works, even after a renewal, so the runner starts no Claude. Someone has to log in again (src/claude-notes/runner/README.md).");
   }
   if (Date.now() - usageGoodAt > USAGE_ALERT_AFTER_MS) {
     await problemStarted("usage", `The runner has not read the usage of its Claude plan for 30 minutes, so it starts no Claude. The last error: ${(err as Error).message}`);
@@ -86,7 +86,7 @@ async function updatePace(weekly: number | null, paused: boolean): Promise<void>
     return;
   }
   // A second runner (CN_EVERY_MINUTES) asks for a feed post at a fixed
-  // interval, because the pacing below reads the ai-box's plan, not this one.
+  // interval, because the pacing below reads claude-ai-box's plan, not this one.
   // It takes reader requests only with CN_READER_REQUESTS=1.
   const fixedMinutes = Number(process.env.CN_EVERY_MINUTES) || (POSTS_ONLY ? 10 : 0);
   if (fixedMinutes > 0) {

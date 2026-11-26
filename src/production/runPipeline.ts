@@ -356,9 +356,9 @@ async function main() {
         (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    // A third of the tweets go to the Claude Code note writer on the ai-box.
-    // While the X share of Nathan's Claude plan has no room, those tweets fail.
-    // A local run writes to the local database, which the ai-box never reads,
+    // Some of the tweets go to the Claude Code note writer. While the X share
+    // of its Claude plan has no room, those tweets fail. A local run writes to
+    // the local database, which the runner never reads,
     // so it keeps every tweet with the pipeline.
     const claudeUnavailable = isLocal || !supabaseLogger ? null : await claudeUnavailableReason();
     const generatePicks = isLocal && !forcedPicks.bot ? { ...getForcedPicks(), bot: PIPELINE_BOT } : getForcedPicks();

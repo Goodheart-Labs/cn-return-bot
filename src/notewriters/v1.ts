@@ -1,5 +1,5 @@
 /* API v1 of the notewriters: the protocol of migration 168, which the Claude
- * runners on Nathan's ai-box and hq and the pipeline call. Since migration 184
+ * runner on Nathan's hq and the pipeline call. Since migration 184
  * (GOO-791) its six database functions sit on top of the reservations of API
  * v2 (client.ts), with the same names, arguments and answers. Two answers
  * changed: next_post never answers a break, because there are none, and

@@ -13,11 +13,11 @@
  * come, from its view count now and in the walk before, and stores each
  * reading with its score (migration 203). Then, while the writing room allows
  * it (room.ts), it hands the best posts whose score clears a threshold to the
- * Claude note writer on ai-box. The threshold follows the writing limit and
+ * Claude note writer. The threshold follows the writing limit and
  * how many posts arrived in the feed over the last 7 days (pick.ts).
  * Claude draws the same four A/B tests as for the first account: the model,
- * the examples, Jim's taste sentences and the research nudge. The runner on
- * ai-box finds the post's pipeline_runs row, and the note Claude saves there
+ * the examples, Jim's taste sentences and the research nudge. Its runner
+ * finds the post's pipeline_runs row, and the note Claude saves there
  * is submitted by the next tick. The account's share of the notewriter plan
  * is its own (src/claude-notes/xShare.ts). While it is used up, new posts
  * wait.

@@ -1,8 +1,8 @@
 /* The note judge (GOO-591). One headless Claude Code run reads one note of
  * the Claude note writer and predicts two things: the probability that the
  * note ends up rated helpful by human raters, and the probability that the
- * team adds it to its leaderboard of best notes. The runner on Nathan's ai-box
- * judges every note, and the review page shows both numbers.
+ * team adds it to its leaderboard of best notes. The runner judges every
+ * note, and the review page shows both numbers.
  *
  * The prompt is "prompt 1" of the experiment in
  * src/scripts_jim/2026_10_26_note_judge/, which Jim picked on 2026-10-27
