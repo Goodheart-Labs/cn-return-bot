@@ -1,9 +1,12 @@
 # The Claude note writer's runner (GOO-580, GOO-787, GOO-876)
 
-The runner writes Jim's Claude notes as the notewriter `claude-ai-box`. It runs
-on Jim's notewriter account, a Claude Code subscription used for nothing else
-(GOO-787, 2026-11-19). It runs on the devbox since 2026-11-25 (GOO-876). Until
-then it ran on Nathan's ai-box, which gave the notewriter its name. The same
+The runner writes Jim's Claude notes on Jim's notewriter account, a Claude
+Code subscription used for nothing else (GOO-787, 2026-11-19). It runs on the
+devbox since 2026-11-25 (GOO-876). Until then it ran on Nathan's ai-box as the
+notewriter `claude-ai-box`. On the devbox it reserves posts with the key of the
+notewriter `claude-devbox`, but it still records its Claude runs and its usage
+readings as `claude-ai-box`, because it leaves `CN_NOTEWRITER` unset
+(`src/notewriters/ids.ts`). The pacing and the X share read those rows. The same
 code runs on Nathan's hq as `claude-hq-nathan`, for posts only.
 
 A runner starts one headless Claude (`claude -p`) per job, each in its own
@@ -35,7 +38,7 @@ The devbox's unit files and scripts live in Jim's devbox repository, in
 |---|---|
 | `~/dev/repos/cn-return-bot--devbox-runner` | A checkout of main that only the deploy timer moves. It has no `.env` file on purpose: Bun would load it into every Claude, and the devbox one holds the paid API key, which Claude would use instead of the notewriter login. |
 | `~/.claude-cn-notewriter` | The config folder of Jim's notewriter account: its login in `.credentials.json` and Claude Code's own files. The unit points Claude Code here with `CLAUDE_CONFIG_DIR`. |
-| `~/.config/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `CN_NOTEWRITER_KEY` (the notewriter API v2 key of `claude-ai-box`, made with `bun run notewriter new-key claude-ai-box`), `SLACK_BOT_TOKEN` (the alerts), `XAI_API_KEY` (Grok, which the X handle lookups ask), `OPENAI_API_KEY`, and `ARACHNID_SHIELD_USERNAME` and `ARACHNID_SHIELD_PASSWORD` (the image screen). The runner removes all but the database keys from its Claudes' environment. |
+| `~/.config/cn-notes/env` | The secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `EXTRACTION_URL`, `SERVICE_AUTH_SECRET`, `CN_NOTEWRITER_KEY` (the notewriter API v2 key of `claude-devbox`, made with `bun run notewriter new-key claude-devbox`), `SLACK_BOT_TOKEN` (the alerts), `XAI_API_KEY` (Grok, which the X handle lookups ask), `OPENAI_API_KEY`, and `ARACHNID_SHIELD_USERNAME` and `ARACHNID_SHIELD_PASSWORD` (the image screen). The runner removes all but the database keys from its Claudes' environment. |
 | `/var/tmp/cn-notes-devbox/<kind>/<key>/` | One run folder per job, the same for every try: the prompt, the start script, Claude Code's output, stderr and the exit code, plus what the job keeps (a post's drafts and `report.json`, a tweet's `note.json`). The runner deletes folders older than 3 days. |
 | `~/.local/share/cn-notes/note-examples.md` | The examples file, rebuilt once a day by the runner. |
 | `~/.local/share/cn-notes/PAUSE` | The pause switch. While it exists, the runner starts nothing. |
