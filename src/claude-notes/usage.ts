@@ -2,9 +2,9 @@
  * the note writer can keep its share of the weekly limit in check. It asks the
  * same endpoint Claude Code's /usage screen reads, with the login Claude Code
  * keeps in its config folder, and appends every reading to a log so the trend
- * can be estimated. The config folder is CLAUDE_CONFIG_DIR when it is set: on
- * the ai-box that is the folder of Jim's notewriter account (GOO-787), so the
- * runner never uses Nathan's own login. */
+ * can be estimated. The config folder is CLAUDE_CONFIG_DIR when it is set: for
+ * the runner that is the folder of Jim's notewriter account (GOO-787), so the
+ * runner never uses the login of the machine's user. */
 
 import { appendFileSync, mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";

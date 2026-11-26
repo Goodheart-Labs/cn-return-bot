@@ -1,6 +1,6 @@
 /* What one Claude run used, read from Claude Code's output in its run folder
  * (GOO-837). The runner stores it on the run's everything_claude_runs row, so
- * the runs can be compared without their transcripts, which the ai-box keeps
+ * the runs can be compared without their transcripts, which Claude Code keeps
  * for 30 days only. */
 
 import { existsSync, readFileSync } from "fs";

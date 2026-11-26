@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { Post } from "../api/fetchEligiblePosts";
-import { readingsOf, scoreWalk } from "../feed-views/score";
+import { readingsOf, scoreReadings } from "../pipeline/utils/viewsToCome";
 import type { Reading, RecordedTier, WalkResult } from "../feed-views/walk";
 import { flagsThenEval } from "../pipeline/ranking/scorers";
 import { effectiveHoursLeft, VIEWS_TO_COME_FLOOR } from "../pipeline/utils/viewsToCome";
-import { eligiblePosts, pickPosts } from "./pick";
+import { competitionPosts, eligiblePosts, pickPosts } from "./pick";
 
 const NOW = Date.parse("2026-11-23T12:00:00Z");
 const TEN_MINUTES = 10 * 60_000;
@@ -20,7 +20,7 @@ function post(id: string, impressions: number, opts: { ageH?: number; sensitive?
 
 function walk(at: number, posts: [Post, RecordedTier][]): WalkResult {
   const readings: Reading[] = posts.map(([p, tier], i) => ({ post: p, observedAt: new Date(at), tier, xlRank: i + 1 }));
-  return { startedAt: new Date(at), finishedAt: new Date(at), stopReason: null, postsPerTier: { small: 0, large: 0, xl: 0 }, pages: 1, rateRemaining: 400, readings };
+  return { startedAt: new Date(at), finishedAt: new Date(at), stopReason: null, postsPerTier: { small: 0, large: 0, xl: 0 }, pages: 1, rateRemaining: 400, readings, xxlReadings: [], xxlPages: 0, xxlStop: "end of the feed" };
 }
 
 /** The views a post at 6 hours must gain in 10 minutes to be predicted `to come` views. */
@@ -39,7 +39,7 @@ describe("scoring and picking a walk", () => {
   ];
   const before = walk(NOW - TEN_MINUTES, posts.map(([id, tier, then, , opts]) => [post(id, then, opts), tier]));
   const now = walk(NOW, [...posts.map(([id, tier, , count, opts]) => [post(id, count, opts), tier] as [Post, RecordedTier]), [post("xl-new", 900_000), "xl"]]);
-  const scores = scoreWalk(now, readingsOf(before));
+  const scores = scoreReadings(now.readings, readingsOf(before.readings));
   const eligible = eligiblePosts(now.readings, scores);
 
   test("scores a post from its gain since the walk before, and only then", () => {
@@ -59,5 +59,20 @@ describe("scoring and picking a walk", () => {
 
   test("a ranking scorer orders across the tiers", () => {
     expect(pickPosts(eligible, new Set(), 3, flagsThenEval, NOW)[0]!.post.id).toBe("large-huge");
+  });
+});
+
+describe("competitionPosts", () => {
+  const at = Date.parse("2026-11-25T12:00:00Z");
+  const readings = ["above", "below", "oursAbove", "notInFeed", "unscored"].map((id, i) => ({ post: post(id, 1000), observedAt: new Date(at), tier: "xl" as const, xlRank: i + 1 }));
+  const ourScores = new Map<string, number | null>([["above", 10], ["below", 10], ["oursAbove", 60_000], ["notInFeed", 99_000], ["unscored", null]]);
+  const theirScores = new Map<string, number | null>([["above", 80_000], ["below", 20_000], ["oursAbove", 1000], ["unscored", null]]);
+
+  test("leaves the posts of the competition feed at its threshold or above to it", () => {
+    expect([...competitionPosts(readings, ourScores, { threshold: 50_000, scores: theirScores })].sort()).toEqual(["above", "oursAbove"]);
+  });
+
+  test("leaves every scored post of its feed to it while it has no threshold", () => {
+    expect([...competitionPosts(readings, ourScores, { threshold: null, scores: theirScores })].sort()).toEqual(["above", "below", "oursAbove"]);
   });
 });

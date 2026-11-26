@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { runABTests, withForcedPicks, resolvePicks, pickVariantName } from "./abTests";
-import { AB_TESTS, PANGRAM_NOTE_TEST } from "./abTestsData";
+import { AB_TESTS, CLAUDE_CN_TASTE_TEST, PANGRAM_NOTE_TEST } from "./abTestsData";
 
 // Every draw below pins the bot. A run that draws claude-code skips every test
 // that only the pipeline bot runs, so an unpinned draw would fail a third of
@@ -8,6 +8,12 @@ import { AB_TESTS, PANGRAM_NOTE_TEST } from "./abTestsData";
 import { buildAbTestSlots, matchesAbFilters } from "../../dashboard-shared/abFilters";
 
 describe("retired and standalone A/B picks", () => {
+  test("the Common Notes taste test is closed on examples_only", () => {
+    for (const draw of [0, 0.5, 0.999]) {
+      expect(pickVariantName(CLAUDE_CN_TASTE_TEST, undefined, () => draw)).toBe("examples_only");
+    }
+  });
+
   test("ordinary runs neither sample nor backfill a Pangram note label", () => {
     const { picks, config } = withForcedPicks({ bot: "simple-bot" }, () => runABTests(AB_TESTS));
     expect(picks.pangram_note).toBeUndefined();

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { effectiveHoursLeft, predictViewsToCome } from "./viewsToCome";
+import type { Post } from "../../api/fetchEligiblePosts";
+import { effectiveHoursLeft, predictViewsToCome, readingsOf, scoreReadings } from "./viewsToCome";
 
 const HOUR_MS = 3_600_000;
 
@@ -41,5 +42,33 @@ describe("predictViewsToCome", () => {
     const now = { impressions: 4_000, observedAtMs: 2 * HOUR_MS };
     expect(predictViewsToCome(posted, undefined, now)).toBeNull();
     expect(predictViewsToCome(posted, { impressions: 1, observedAtMs: 3 * HOUR_MS }, now)).toBeNull();
+  });
+});
+
+describe("scoreReadings", () => {
+  const NOW = Date.parse("2026-11-23T12:00:00Z");
+  const TEN_MINUTES = 10 * 60_000;
+  const post = (id: string, impressions: number | undefined, ageHours: number): Post => ({
+    id, author_id: "a", text: "", media: [],
+    created_at: new Date(NOW - ageHours * HOUR_MS).toISOString(),
+    public_metrics: impressions === undefined ? undefined : { impression_count: impressions },
+  } as unknown as Post);
+  const before = readingsOf([{ post: post("a", 100_000, 6), observedAt: new Date(NOW - TEN_MINUTES) }, { post: post("old", 100_000, 49), observedAt: new Date(NOW - TEN_MINUTES) }]);
+  const scores = scoreReadings([
+    { post: post("a", 101_000, 6), observedAt: new Date(NOW) },
+    { post: post("old", 200_000, 49), observedAt: new Date(NOW) },
+    { post: post("new", 900_000, 1), observedAt: new Date(NOW) },
+    { post: post("no-count", undefined, 6), observedAt: new Date(NOW) },
+  ], before);
+
+  test("scores a post from its gain since the walk before", () => {
+    // 1,000 views in 10 minutes are 6,000 an hour.
+    expect(scores.get("a")).toBeCloseTo(6000 * effectiveHoursLeft(6), 0);
+    expect(scores.get("old")).toBe(0);
+  });
+
+  test("gives no score without a reading before or a count now", () => {
+    expect(scores.get("new")).toBeNull();
+    expect(scores.get("no-count")).toBeNull();
   });
 });

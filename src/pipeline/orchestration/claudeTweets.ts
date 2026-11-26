@@ -5,7 +5,7 @@
  * checked by the pipeline. Instead the X run asks the claim-check service to
  * build the tweet's input (src/pipeline/input/claudeTweetInput.ts) and leaves
  * the tweet's pipeline_runs row open, at the final stage `claude_waiting`.
- * The runner on Nathan's ai-box (src/claude-notes/jobs/tweet.ts) finds the row and
+ * The Claude note writer's runner (src/claude-notes/jobs/tweet.ts) finds the row and
  * starts one Claude Opus for it. That Claude saves its note on the same row and
  * puts it in the note queue (noteQueue.ts). The X run that handed the tweet
  * over waits for its Claudes before it submits (waitForClaudeTweets), then
@@ -17,8 +17,8 @@
  *   claude_waiting   the X run built the input
  *   claude_running   the runner started a Claude on it
  * and ends as a queued candidate, as rejected with no_correction_needed, or as
- * failed. While the X share of Nathan's Claude plan is used up, or the runner
- * on the ai-box is down, a tweet that draws Claude fails at once with the
+ * failed. While the X share of the Claude plan is used up, or the runner
+ * is down, a tweet that draws Claude fails at once with the
  * reason claude_unavailable, like a tweet whose model provider is out of
  * credits. A row that is still open after CLAUDE_TWEET_MAX_WAIT_MINUTES is
  * swept as failed by the next X run.
@@ -31,6 +31,12 @@ import { pickVariantName } from "../ab-testing/abTests";
 import { CLAUDE_X_TESTS } from "../ab-testing/abTestsData";
 
 export const CLAUDE_CODE_BOT = "claude-code";
+/** The first account's Pangram notes (GOO-880, src/x-notes/pangram.ts). A
+ *  Claude judges each one, so its rows wait for the runner like a Claude
+ *  tweet's. The name dates from the Pangram pre-pass of July 2026. */
+export const PANGRAM_BOT = "pangram-monitoring";
+/** The bots whose rows wait at claude_waiting for a Claude on the runner. */
+export const CLAUDE_BOTS = [CLAUDE_CODE_BOT, PANGRAM_BOT] as const;
 /** The bot A/B variant of the pipeline itself. */
 export const PIPELINE_BOT = "simple-bot";
 export const CLAUDE_WAITING_STAGE = "claude_waiting";
@@ -47,12 +53,12 @@ export async function handTweetToClaude(params: {
   post: Post;
   picks: Record<string, string>;
   logs: Record<string, unknown>;
-  /** Set when the X share is used up or the ai-box runner is down. The tweet
+  /** Set when the X share is used up or the runner is down. The tweet
    *  then fails, as it would when a model provider is out of credits. */
   claudeUnavailable: string | null;
 }): Promise<void> {
   const { logger, runId, post, logs, claudeUnavailable } = params;
-  // The runner on ai-box builds the Claude's prompt from these picks.
+  // The runner builds the Claude's prompt from these picks.
   const picks = { ...params.picks, ...Object.fromEntries(CLAUDE_X_TESTS.map((test) => [test.name, pickVariantName(test, params.picks[test.name])])) };
   const fail = (reason: string, message: string) => {
     console.warn(`[claude] ${post.id} failed: ${message}`);
@@ -69,8 +75,8 @@ export async function handTweetToClaude(params: {
   if (claudeUnavailable) return fail("claude_unavailable", claudeUnavailable);
   try {
     const { input } = await requestTweetInput({ priority: "x", post });
-    await logger.markRunWaitingForClaude(runId, { picks, logs: { ...logs, claude: { input } } });
-    console.log(`[claude] ${post.id} waits for a Claude on the ai-box`);
+    await logger.markRunWaitingForClaude(runId, { bot: CLAUDE_CODE_BOT, picks, logs: { ...logs, claude: { input } } });
+    console.log(`[claude] ${post.id} waits for a Claude`);
   } catch (err) {
     await fail("claude_input_failed", `Could not build the input for Claude: ${(err as Error).message ?? String(err)}`);
   }

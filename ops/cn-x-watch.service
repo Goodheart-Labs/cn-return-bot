@@ -1,7 +1,7 @@
 # The cn-x-watch service (GOO-851): the feed watcher of the WSDM Cup notewriter
-# account. Every 30 seconds it reads the account's small feed, hands each new
-# post to the Claude note writer on ai-box while the account's writing limit
-# has room, and submits the notes Claude wrote (src/x-watch/main.ts). It calls
+# account. Every 10 minutes it walks the account's whole feed, hands the best
+# posts to the Claude note writer while the account's writing limit has
+# room, and submits the notes Claude wrote (src/x-watch/main.ts). It calls
 # X's API, Supabase and the claim-check service on this machine, never a page
 # a stranger chose, so it needs no cn-fetch. The account's keys are the
 # X_WSDM_* lines of service.env. A new unit is installed by hand once

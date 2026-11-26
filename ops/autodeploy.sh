@@ -32,7 +32,9 @@ SERVICE_USER="cnbot"
 # cn-feed-views for GOO-834 and cn-x-watch for GOO-851.
 # cn-site-checks runs once a night from its timer, which is installed by hand
 # too. A deploy during its run restarts it on the new code.
-UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-feed-views cn-x-watch)
+# cn-feed-views is left out while it is dormant. ops/README.md says how to
+# start it again.
+UNITS=(cn-claim-check cn-extraction cn-intake cn-fetch cn-walk cn-site-checks cn-x-watch)
 
 # When yt-dlp was last upgraded. The file's modification time is the record.
 YT_DLP_UPGRADE_STAMP="/var/lib/cn-autodeploy/yt-dlp-upgraded"
@@ -43,12 +45,6 @@ YT_DLP_UPGRADE_EVERY_MINUTES=1440
 # to make them when waiting a few minutes for the queue to drain avoids it. A
 # service that does not answer its health endpoint counts as idle, because the
 # update may be the fix for whatever is wrong with it.
-# While a deploy waits for the services to go idle, this file tells the X note
-# writer in cn-feed-views to start no new tweet checks (src/x-notes/writer.ts).
-# Without it the writer keeps the claim-check service busy around the clock,
-# and a deploy would wait forever.
-DRAIN_FILE=/run/cn-autodeploy-drain
-
 machine_is_idle() {
   local secret port health
   secret=$(grep -m1 '^SERVICE_AUTH_SECRET=' "$ENV_FILE" | cut -d= -f2-)
@@ -80,13 +76,10 @@ deploy_new_code() {
   # unless it is told to.
   here=$(sudo -u "$SERVICE_USER" git -C "$REPO_DIR" rev-parse HEAD)
   if [ "$here" = "$upstream" ]; then
-    rm -f "$DRAIN_FILE"
     return 0
   fi
   if ! machine_is_idle; then
-    # Created once, so its age tells the note writer how long new checks have been paused.
-    [ -e "$DRAIN_FILE" ] || touch "$DRAIN_FILE"
-    echo "deferring deploy of ${upstream:0:10}; new tweet checks are paused until the services are idle"
+    echo "deferring deploy of ${upstream:0:10} until the services are idle"
     return 0
   fi
 
@@ -113,7 +106,6 @@ deploy_new_code() {
   # try-restart, not restart: it restarts only units that are already running.
   # A unit someone stopped on purpose must not be switched back on by a deploy.
   systemctl try-restart "${UNITS[@]}"
-  rm -f "$DRAIN_FILE"
   echo "deployed ${upstream:0:10}"
 }
 

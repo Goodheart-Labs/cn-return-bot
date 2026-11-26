@@ -1,5 +1,5 @@
-/* The Claude note writer's command line (GOO-507). The runner on Nathan's
- * ai-box and the Claude agents it starts call it to read the queue, save
+/* The Claude note writer's command line (GOO-507). The runner and
+ * the Claude agents it starts call it to read the queue, save
  * drafts and answer reviewers. Posts come from the notewriter protocol
  * (src/notewriters/, `bun run notewriter`). Every
  * Common Notes write is logged in everything_claude_events. The two x- commands answer an X tweet (GOO-527)
@@ -18,7 +18,7 @@
  *   x-handle <creator slug> <handle | none> <evidence>
  *                                 records a creator's X account, or that they have none
  *   judge-examples                rebuilds src/claude-notes/judge-examples.json from the reviews
- *   run                           the runner on ai-box (src/claude-notes/runner/main.ts) */
+ *   run                           the runner (src/claude-notes/runner/main.ts) */
 
 import { readFileSync, writeFileSync } from "fs";
 import { JUDGE_EXAMPLES_PATH } from "./judge";

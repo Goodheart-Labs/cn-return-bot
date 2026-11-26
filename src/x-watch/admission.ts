@@ -18,14 +18,16 @@
 
 import { walkEligiblePages } from "../api/fetchEligiblePosts";
 import type { WrittenNote } from "../api/fetchNotesWritten";
-import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
 
 const NOT_ADMITTED_MESSAGE = "must earn admission";
 
-/** One page of one post outside test mode. */
+/** One page of one post outside test mode. The WSDM Cup account takes part in
+ *  X's contest, whose feed X serves only without a post_selection: outside test
+ *  mode X refuses one with a 400 (since 2026-11-23, when it admitted the
+ *  account). */
 export async function isAdmitted(): Promise<boolean> {
   try {
-    await walkEligiblePages(buildPostSelection("small"), 1, false).next();
+    await walkEligiblePages(undefined, 1, false).next();
     return true;
   } catch (err) {
     const response = (err as { response?: { status?: number; data?: unknown } }).response;

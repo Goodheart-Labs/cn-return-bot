@@ -1,6 +1,0 @@
-[Unit]
-Description=Deploy main to the Claude note writer's checkout when it is idle
-
-[Service]
-Type=oneshot
-ExecStart=/srv/cn-notes/ops/ai-box/deploy.sh

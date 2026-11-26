@@ -11,7 +11,9 @@ import * as path from "path";
 import { guardedSettingsFile } from "../imageGuard";
 
 const CLAUDE_BIN = process.env.CN_CLAUDE_BIN ?? path.join(homedir(), ".local/bin/claude");
-/** Nathan's guard hook, which every unattended Claude on the ai-box runs under. */
+/** The Claude settings every unattended Claude of the runner starts with. They
+ *  keep it from reading the keys and from changing the checkouts. The default
+ *  is the ai-box's path, where Nathan's guard hook lived. */
 const RUN_SETTINGS = process.env.CN_RUN_SETTINGS ?? "/srv/ai-box/run-settings.json";
 const ENV_FILE = process.env.CN_ENV_FILE ?? "/etc/cn-notes/env";
 /** The config folder of the notewriter's Claude account, or undefined for the
@@ -31,10 +33,18 @@ const SECRETS_NO_CLAUDE_NEEDS = [
   "ARACHNID_SHIELD_PASSWORD",
   "CN_NOTEWRITER_KEY",
 ];
+/** Claude Code prefers an API key in its environment over the subscription
+ *  login in its config folder, and is then billed per token. A box can pass
+ *  such a key on without anyone meaning to: Bun loads a checkout's .env file
+ *  into every script, and the devbox's holds ANTHROPIC_API_KEY. On 2026-11-25
+ *  a post writer on the devbox ran on that key. So every writer starts without
+ *  these variables, whatever the runner's environment holds. The isolated
+ *  Claude starts with an empty environment and never gets them. */
+const API_AUTH_VARIABLES = ["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"];
 /** The only variables an isolated Claude keeps. */
 const ISOLATED_ENV_NAMES = ["HOME", "PATH", "USER", "LANG"];
 
-/** On the main disk. /tmp on ai-box is a small tmpfs in memory with a quota per
+/** On the main disk. /tmp on the ai-box was a small tmpfs in memory with a quota per
  *  user, and a day of run folders is more than a gigabyte, which filled the
  *  quota on 2026-10-30 and crashed the runner. */
 export const RUNS_DIR = process.env.CN_RUNS_DIR ?? "/var/tmp/cn-notes";
@@ -49,8 +59,12 @@ export type ClaudeCommand = {
   appendSystemPromptFile?: string;
   /** Extra variables a writer's commands read, such as its run id. */
   env?: Record<string, string>;
-  isolated?: { jsonSchema: object; disallowedTools: string[] };
+  isolated?: { jsonSchema: object; tools: IsolatedTools };
 };
+
+/** The tools an isolated Claude has: Claude Code's default set without some
+ *  of them, or none at all, as for the Pangram judge (GOO-880). */
+export type IsolatedTools = { kind: "default_without"; disallowed: string[] } | { kind: "none" };
 
 /** The run folder of one job, the same for every try of it. */
 export function runFolder(kind: string, key: string): string {
@@ -82,7 +96,7 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
     "set -a",
     `. ${ENV_FILE}`,
     "set +a",
-    `unset ${SECRETS_NO_CLAUDE_NEEDS.join(" ")}`,
+    `unset ${[...SECRETS_NO_CLAUDE_NEEDS, ...API_AUTH_VARIABLES].join(" ")}`,
     // A tmux session takes its environment from the tmux server, which may be
     // older than the runner, so the account's folder is set here.
     ...Object.entries(exports).map(([name, value]) => `export ${name}=${quoted(value)}`),
@@ -95,16 +109,18 @@ function writerScript(runDir: string, command: ClaudeCommand): string[] {
   ];
 }
 
-function isolatedScript(runDir: string, model: string, isolated: NonNullable<ClaudeCommand["isolated"]>): string[] {
+function isolatedScript(runDir: string, command: ClaudeCommand, isolated: NonNullable<ClaudeCommand["isolated"]>): string[] {
   writeFileSync(path.join(runDir, "schema.json"), JSON.stringify(isolated.jsonSchema));
   const kept = [
     ...ISOLATED_ENV_NAMES.map((name) => `${name}="$${name}"`),
     ...(CLAUDE_CONFIG_DIR ? [`CLAUDE_CONFIG_DIR=${quoted(CLAUDE_CONFIG_DIR)}`] : []),
   ];
   const flags = [
-    `--model ${model}`,
+    `--model ${command.model}`,
+    ...(command.effort ? [`--effort ${command.effort}`] : []),
+    ...(command.appendSystemPromptFile ? [`--append-system-prompt-file ${quoted(command.appendSystemPromptFile)}`] : []),
     "--permission-mode bypassPermissions --settings settings.json",
-    `--disallowedTools ${isolated.disallowedTools.map(quoted).join(" ")}`,
+    isolated.tools.kind === "none" ? `--tools ""` : `--disallowedTools ${isolated.tools.disallowed.map(quoted).join(" ")}`,
     `--output-format json --json-schema "$(cat schema.json)" --no-session-persistence`,
   ];
   return [`cd ${runDir}`, `env -i ${kept.join(" ")} "${CLAUDE_BIN}" -p "$(cat prompt.md)" ${flags.join(" ")} > output.json 2> stderr.txt`];
@@ -115,7 +131,7 @@ function isolatedScript(runDir: string, model: string, isolated: NonNullable<Cla
 export function startSession(session: string, runDir: string, prompt: string, command: ClaudeCommand) {
   writeFileSync(path.join(runDir, "prompt.md"), prompt);
   guardedSettingsFile(runDir, RUN_SETTINGS);
-  const lines = command.isolated ? isolatedScript(runDir, command.model, command.isolated) : writerScript(runDir, command);
+  const lines = command.isolated ? isolatedScript(runDir, command, command.isolated) : writerScript(runDir, command);
   writeFileSync(path.join(runDir, "run.sh"), [...lines, `echo $? > ${path.join(runDir, "exit-code")}`].join("\n"));
   const started = spawnSync("tmux", ["new-session", "-d", "-s", session, "bash", path.join(runDir, "run.sh")]);
   if (started.status !== 0) throw new Error(`tmux could not start ${session}: ${started.stderr}`);

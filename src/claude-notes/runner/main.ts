@@ -1,5 +1,6 @@
-/* The Claude note writer's runner (GOO-580, GOO-787). It runs all the time on
- * Nathan's ai-box as a systemd service, under Nathan's user, and starts one
+/* The Claude note writer's runner (GOO-580, GOO-787). It runs all the time as
+ * a systemd service, on the devbox since 2026-11-25 (GOO-876) and on Nathan's
+ * ai-box before, and starts one
  * headless Claude per job: a Common Notes post, an X tweet the X run handed to
  * Claude, a note to judge, a creator whose X account nobody looked up, and a
  * reviewer's message. Since GOO-787 its Claudes run on Jim's notewriter
@@ -20,6 +21,7 @@ import { judgeJob } from "../jobs/judge";
 import type { JobKind } from "../jobs/kind";
 import { postJob } from "../jobs/post";
 import { reviewAnswerJob } from "../jobs/reviewAnswer";
+import { pangramJob } from "../jobs/pangram";
 import { tweetJob } from "../jobs/tweet";
 import { xHandleJob } from "../jobs/xHandle";
 import { EXAMPLES_PATH, REPO } from "../prompts";
@@ -42,7 +44,7 @@ const RUNNER_STATE_FILE = path.join(RUNS_DIR, "runner-state");
 
 /** The kinds in the order their waiting work starts: the small and urgent
  *  first, posts last, since they take a slot for the longest. */
-const KINDS: JobKind<any>[] = POSTS_ONLY ? [postJob] : [reviewAnswerJob, tweetJob, judgeJob, xHandleJob, postJob];
+const KINDS: JobKind<any>[] = POSTS_ONLY ? [postJob] : [reviewAnswerJob, tweetJob, pangramJob, judgeJob, xHandleJob, postJob];
 
 const scheduler = createScheduler({
   kinds: KINDS,

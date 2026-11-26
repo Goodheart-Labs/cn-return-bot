@@ -1,11 +1,11 @@
 /* Spaces the Claude note writer's feed posts so that the weekly usage of its
  * Claude plan reaches its target by the weekly reset (GOO-587).
  *
- * The Claude note writer runs on the ai-box and is paid for by a Claude
+ * The Claude note writer is paid for by a Claude
  * subscription, not by OpenRouter money. Since GOO-787 (2026-11-19) that is an
  * account of its own, which nothing else uses. Anthropic's usage endpoint says
  * how much of the plan's weekly limit is used, as a whole percent, and when
- * the week resets. The runner on ai-box (src/claude-notes/runner/main.ts)
+ * the week resets. Its runner (src/claude-notes/runner/main.ts)
  * reads it every 5 minutes and stores each reading in everything_claude_usage.
  * The runner turns the interval below into its pace, in whole minutes, and
  * reserves a feed post at most that often.
@@ -76,7 +76,7 @@ export const MIN_POSTS_FOR_USAGE_ESTIMATE = 5;
  *  weekly usage rose from 0% to 3% over 29 posts. */
 export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
 
-/** Above this share of the notewriter's weekly limit the runner on ai-box
+/** Above this share of the notewriter's weekly limit the runner
  *  starts no new Claude. The feed run already stops giving Claude feed posts at the
  *  target, so this stop holds back mainly reader requests, which Claude takes
  *  without pacing, and X tweets. Everything queued then waits for the weekly
@@ -87,7 +87,7 @@ export const DEFAULT_USAGE_PER_POST_PERCENT = 0.1;
 export const MAX_WEEKLY_USAGE_PERCENT = 95;
 
 /** The runner reads the usage every 5 minutes. A newest reading older than
- *  this means the runner on ai-box is down, so the X run hands it no tweet
+ *  this means the runner is down, so the X run hands it no tweet
  *  (src/claude-notes/xShare.ts). */
 export const MAX_USAGE_READING_AGE_MS = 30 * 60_000;
 

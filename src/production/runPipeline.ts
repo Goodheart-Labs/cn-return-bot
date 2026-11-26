@@ -68,7 +68,6 @@ if (isLocal) {
 import { SupabaseLogger } from "../api/supabaseClient";
 import { closeBrowser } from "../pipeline/utils/browserManager";
 import { generateCandidates, type TweetProcessedEvent } from "../pipeline/orchestration/generateCandidates";
-import { generatePangramCandidates } from "../pipeline/pangram-monitoring/generatePangramCandidates";
 import { generateMisinfoCandidates } from "../pipeline/misinfo-monitoring/generateMisinfoCandidates";
 import type { MisinfoTopicId } from "../pipeline/misinfo-monitoring/topicIds";
 import { submitCandidates, misinfoReserveRemaining, type Candidate, type SubmitOptions } from "../pipeline/orchestration/submitCandidates";
@@ -109,9 +108,6 @@ function writePipelineRowToCsv(output: OutputFolder, event: TweetProcessedEvent)
 const MAX_RUNTIME_MS = 27 * 60 * 1000;
 const MAX_POSTS_LOCAL = 5;
 const MAX_POSTS_FALLBACK = 5;
-
-// Flip to true to re-enable the XXL-feed Pangram AI-detection pre-pass.
-const PANGRAM_PIPELINE_ENABLED = false;
 
 // Activates the misinfo-monitoring pre-pass, and only for the topics listed
 // below. A live run writes real notes and submits them to X. Set this to false
@@ -278,26 +274,8 @@ async function main() {
       return onTweetProcessed?.(event);
     };
 
-    // The Pangram AI-detection pre-pass over the XXL feed runs first. If it
-    // fails we keep an empty candidate list and carry on. A crawl error or a
-    // missing Pangram key must never take down regular note-writing. Its
-    // candidates and the regular pipeline's candidates share one submit call
-    // under the daily cap.
-    let pangramCandidates: Candidate[] = [];
-    if (PANGRAM_PIPELINE_ENABLED) {
-      try {
-        pangramCandidates = await generatePangramCandidates(supabaseLogger, {
-          onTweetProcessed: trackPrePassProcessed,
-        });
-      } catch (err) {
-        console.warn("[pipeline] Pangram pre-pass failed; continuing with regular pipeline only:", err);
-      }
-    } else {
-      console.log("[pipeline] Pangram pre-pass disabled (PANGRAM_PIPELINE_ENABLED=false)");
-    }
-
-    // The misinfo-monitoring pre-pass runs next, scoped to
-    // MISINFO_ACTIVE_TOPIC_IDS. It fails soft exactly like the Pangram pre-pass.
+    // The misinfo-monitoring pre-pass runs first, scoped to
+    // MISINFO_ACTIVE_TOPIC_IDS. If it fails, the regular pipeline still runs.
     // A failure here must never take down regular note-writing. Its candidates
     // also share the single submit call and the daily cap.
     let misinfoCandidates: Candidate[] = [];
@@ -356,9 +334,9 @@ async function main() {
         (queueOn ? ` raterBar=${bar === null ? "off" : bar.toFixed(3)}` : scorer ? ` bar=${bar === null ? "off" : bar === -Infinity ? "admit-all" : bar === Infinity ? "reject-all" : bar.toFixed(2)}` : ""),
     );
 
-    // A third of the tweets go to the Claude Code note writer on the ai-box.
-    // While the X share of Nathan's Claude plan has no room, those tweets fail.
-    // A local run writes to the local database, which the ai-box never reads,
+    // Some of the tweets go to the Claude Code note writer. While the X share
+    // of its Claude plan has no room, those tweets fail. A local run writes to
+    // the local database, which the runner never reads,
     // so it keeps every tweet with the pipeline.
     const claudeUnavailable = isLocal || !supabaseLogger ? null : await claudeUnavailableReason();
     const generatePicks = isLocal && !forcedPicks.bot ? { ...getForcedPicks(), bot: PIPELINE_BOT } : getForcedPicks();
@@ -393,11 +371,10 @@ async function main() {
       ...misinfoCandidates.slice(0, misinfoReserve),
       ...regularCandidates,
       ...misinfoCandidates.slice(misinfoReserve),
-      ...pangramCandidates,
     ], queued);
     if (candidates.length > 0 && supabaseLogger) {
       const submitted = await submitCandidates(candidates, supabaseLogger, isLocal, { policy: rankingPolicy, scorer, window, bar, barState, queue: queueOn, exploreFirst });
-      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${pangramCandidates.length} pangram, ${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular, ${candidates.length - regularCandidates.length - misinfoCandidates.length - pangramCandidates.length} queued)`);
+      console.log(`[pipeline] Submitted ${submitted} of ${candidates.length} candidates (${misinfoCandidates.length} misinfo, ${regularCandidates.length} regular, ${candidates.length - regularCandidates.length - misinfoCandidates.length} queued)`);
     } else {
       console.log(`[pipeline] No candidates to submit`);
     }

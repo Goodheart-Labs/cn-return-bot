@@ -1,6 +1,7 @@
-/* The X tweets the Claude note writer checks (GOO-527). The whole flow is
- * described in src/pipeline/orchestration/claudeTweets.ts. These are the reads
- * and writes that the runner on ai-box and its Claudes make on the tweets'
+/* The X tweets the Claude note writer checks (GOO-527), and the posts the
+ * Pangram judge looks at (GOO-880). The whole flow is described in
+ * src/pipeline/orchestration/claudeTweets.ts and src/x-notes/pangram.ts. These are the reads
+ * and writes that the runner and its Claudes make on the tweets'
  * pipeline_runs rows. Every write is guarded by the row's stage, so a Claude
  * that answers twice, or a retry after a note was saved, changes nothing. */
 
@@ -8,7 +9,8 @@ import type { XAccount } from "../api/xAccount";
 import type { DraftSource } from "./store";
 import type { Json } from "../everything-core/database.types";
 import { fetchAllRows } from "../everything-core/paging";
-import { CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
+import { CLAUDE_BOTS, CLAUDE_CODE_BOT, CLAUDE_RUNNING_STAGE, CLAUDE_WAITING_STAGE, PANGRAM_BOT } from "../pipeline/orchestration/claudeTweets";
+import { buildPangramNote, PANGRAM_APPROVED, PANGRAM_NOTE_STATUS, type PangramNoteVariant } from "../pipeline/pangram-monitoring/pangramNote";
 import { countNoteLength } from "../pipeline/utils/noteLength";
 import { db } from "../serviceDb";
 
@@ -30,12 +32,15 @@ export interface XTweet {
   picks: Record<string, string>;
 }
 
-export async function openXTweets(): Promise<{ waiting: XTweet[]; running: XTweet[] }> {
+type ClaudeBot = (typeof CLAUDE_BOTS)[number];
+
+/** The open rows of one bot: the tweets for the note writer, or the posts for the Pangram judge. */
+export async function openXTweets(bot: ClaudeBot): Promise<{ waiting: XTweet[]; running: XTweet[] }> {
   const rows = await fetchAllRows<{ id: string; tweet_id: string; x_account: XAccount; created_at: string; final_stage: string; input: string; ab_test_picks: Record<string, string> }>(
     () => db()
       .from("pipeline_runs")
       .select("id, tweet_id, x_account, created_at, final_stage, input:logs->claude->>input, ab_test_picks")
-      .eq("bot_name", CLAUDE_CODE_BOT)
+      .eq("bot_name", bot)
       .eq("outcome", "in_progress")
       .in("final_stage", [CLAUDE_WAITING_STAGE, CLAUDE_RUNNING_STAGE]),
     "id",
@@ -54,23 +59,24 @@ async function readClaudeLog(runId: string): Promise<{ logs: Record<string, unkn
   return { logs, claude: (logs.claude ?? {}) as Record<string, unknown> };
 }
 
-/** Updates an open row and adds `claudeLog` to its logs.claude. Throws when the
- *  row is no longer open, so a Claude learns that its answer was not taken. */
-async function updateOpenRow(runId: string, claudeLog: Record<string, unknown>, columns: Record<string, unknown>) {
+/** Updates an open row of one of `bots` and adds `claudeLog` to its
+ *  logs.claude. Throws when the row is no longer open, so a Claude learns that
+ *  its answer was not taken. */
+async function updateOpenRow(runId: string, bots: readonly ClaudeBot[], claudeLog: Record<string, unknown>, columns: Record<string, unknown>) {
   const { logs, claude } = await readClaudeLog(runId);
   const { data, error } = await db()
     .from("pipeline_runs")
     .update({ ...columns, logs: { ...logs, claude: { ...claude, ...claudeLog } } as Json })
     .eq("id", runId)
-    .eq("bot_name", CLAUDE_CODE_BOT)
+    .in("bot_name", bots)
     .eq("outcome", "in_progress")
     .select("id");
   if (error) throw new Error(JSON.stringify(error));
-  if (!data.length) throw new Error(`Run ${runId} is not an open X tweet of the Claude note writer`);
+  if (!data.length) throw new Error(`Run ${runId} is not an open run of ${bots.join(" or ")}`);
 }
 
 export async function markXTweetRunning(runId: string, attempt: number) {
-  await updateOpenRow(runId, { startedAt: new Date().toISOString(), attempt }, { final_stage: CLAUDE_RUNNING_STAGE });
+  await updateOpenRow(runId, CLAUDE_BOTS, { startedAt: new Date().toISOString(), attempt }, { final_stage: CLAUDE_RUNNING_STAGE });
 }
 
 /** The X accounts whose notes must name their sources, each with a quote from
@@ -112,7 +118,7 @@ export async function saveXNote(runId: string, note: { note: string; reasoning: 
   const needsSources = ACCOUNTS_WITH_SOURCE_DETAILS.includes(await readXAccount(runId));
   const problems = [...xNoteProblems(text), ...(needsSources ? sourceProblems(text, note.sources) : [])];
   if (problems.length) throw new Error(`The note was not saved. ${problems.join(" ")}`);
-  await updateOpenRow(runId, { note: text, reasoning: note.reasoning, ...(note.sources && { sources: note.sources }), answeredAt: new Date().toISOString() }, {
+  await updateOpenRow(runId, [CLAUDE_CODE_BOT], { note: text, reasoning: note.reasoning, ...(note.sources && { sources: note.sources }), answeredAt: new Date().toISOString() }, {
     outcome: "candidate",
     outcome_reason: "queued",
     final_stage: "candidate",
@@ -123,7 +129,7 @@ export async function saveXNote(runId: string, note: { note: string; reasoning: 
 }
 
 export async function declineXTweet(runId: string, reason: string) {
-  await updateOpenRow(runId, { reason, answeredAt: new Date().toISOString() }, {
+  await updateOpenRow(runId, [CLAUDE_CODE_BOT], { reason, answeredAt: new Date().toISOString() }, {
     outcome: "rejected",
     outcome_reason: "no_correction_needed",
     final_stage: "note_writing",
@@ -135,11 +141,38 @@ export async function declineXTweet(runId: string, reason: string) {
 type XTweetFailure = "claude_no_answer" | "image_flagged" | "image_screen_failed";
 
 export async function failXTweet(runId: string, reason: string, outcomeReason: XTweetFailure = "claude_no_answer") {
-  await updateOpenRow(runId, { failure: reason }, { outcome: "failed", outcome_reason: outcomeReason, final_stage: "error", error_message: reason });
+  await updateOpenRow(runId, CLAUDE_BOTS, { failure: reason }, { outcome: "failed", outcome_reason: outcomeReason, final_stage: "error", error_message: reason });
 }
 
 export async function xTweetIsOpen(runId: string): Promise<boolean> {
   const { data, error } = await db().from("pipeline_runs").select("outcome").eq("id", runId).single();
   if (error) throw new Error(JSON.stringify(error));
   return data.outcome === "in_progress";
+}
+
+/** The Pangram judge's answer (PANGRAM_VERDICT_SCHEMA in prompts.ts). */
+export type PangramVerdict = { reasoning: string; should_get_this_is_ai_written_community_note: boolean };
+
+/** Saves the Pangram judge's verdict (GOO-880). On a yes, the row becomes the
+ *  Pangram note in the wording its A/B pick names, and waits for the first
+ *  account's writer to submit it (src/x-notes/writer.ts). */
+export async function savePangramVerdict(runId: string, verdict: PangramVerdict) {
+  const shouldGetNote = verdict.should_get_this_is_ai_written_community_note;
+  const claudeLog = { should_get_this_is_ai_written_community_note: shouldGetNote, reasoning: verdict.reasoning, answeredAt: new Date().toISOString() };
+  if (!shouldGetNote) {
+    await updateOpenRow(runId, [PANGRAM_BOT], claudeLog, { outcome: "rejected", outcome_reason: "pangram_judge_declined", final_stage: "pangram_judge" });
+    return;
+  }
+  const { data, error } = await db().from("pipeline_runs").select("ab_test_picks, report:logs->pangram->>dashboard_link").eq("id", runId).single<{ ab_test_picks: Record<string, string>; report: string | null }>();
+  if (error) throw new Error(JSON.stringify(error));
+  const note = buildPangramNote(data.report ?? "", data.ab_test_picks.pangram_note as PangramNoteVariant);
+  if (!note) throw new Error(`Run ${runId} has no Pangram report link, or its note would be too long`);
+  await updateOpenRow(runId, [PANGRAM_BOT], claudeLog, {
+    outcome: "candidate",
+    outcome_reason: PANGRAM_APPROVED,
+    final_stage: "candidate",
+    note_text: note.noteText,
+    source_url: note.sourceUrl,
+    note_status: PANGRAM_NOTE_STATUS,
+  });
 }

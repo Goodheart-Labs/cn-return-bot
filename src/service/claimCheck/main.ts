@@ -3,7 +3,7 @@
  * credentials for either: whether one claim, dressed as a post, needs a note;
  * and what the X pipeline makes of one tweet, under the X pipeline's own
  * configuration. A third route only builds a tweet's input for the Claude Code
- * note writer on the ai-box. Everything the caller must record afterwards travels back in
+ * note writer. Everything the caller must record afterwards travels back in
  * the response, so the ledger stays with whoever owns the data.
  *
  * All routes share the one queue, so a reader's claims, the X note writer's

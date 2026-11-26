@@ -5,9 +5,10 @@
  *
  * The prediction is the post's speed now times the hours it has left at that
  * speed. The speed now comes from two readings of the post's view count about
- * 10 to 30 minutes apart. The first reading is the feed view recorder's
- * (cn-feed-views, src/feed-views/), which reads every post in X's XL feed every
- * 10 minutes. The second is the X run's own fetch.
+ * 10 to 30 minutes apart. For the X run, the first reading was the feed view
+ * recorder's (cn-feed-views), which read every post in X's XL feed every 10
+ * minutes until GOO-887 retired it, and the second is the run's own fetch.
+ * cn-x-watch takes both readings from its own walks.
  *
  * The hours left come from what the recorded view curves showed (GOO-834,
  * src/scripts_jim/2026_11_21_feed_views_model/, cliff_model.py and
@@ -22,6 +23,7 @@
  * of 1.6 to 1.7 for posts 3 to 23 hours old, against 7 to 14 for velocity.
  */
 
+import type { Post } from "../../api/fetchEligiblePosts";
 import { formatCount } from "../orchestration/utils/tweetSorting";
 import { isAboveVelocityFloor } from "./velocity";
 
@@ -97,6 +99,33 @@ export function predictViewsToCome(postedAtMs: number, earlier: ViewReading | un
   if (hoursBetween <= 0) return null;
   const speedPerHour = Math.max(0, now.impressions - earlier.impressions) / hoursBetween;
   return speedPerHour * effectiveHoursLeft((now.observedAtMs - postedAtMs) / 3_600_000);
+}
+
+/** A post as one walk of a feed read it, such as cn-x-watch's walk of its
+ *  account's feed. */
+export type FeedReading = { post: Post; observedAt: Date };
+
+/** Each reading of a walk as the earlier reading for the next walk. */
+export function readingsOf(readings: FeedReading[]): Map<string, ViewReading> {
+  const out = new Map<string, ViewReading>();
+  for (const { post, observedAt } of readings) {
+    const impressions = post.public_metrics?.impression_count;
+    if (impressions != null) out.set(post.id, { impressions, observedAtMs: observedAt.getTime() });
+  }
+  return out;
+}
+
+/** Each post's predicted views still to come, from its reading in the walk
+ *  before, about 10 minutes earlier. Null when the walk before did not read
+ *  the post or a count is missing. */
+export function scoreReadings(readings: FeedReading[], before: Map<string, ViewReading>): Map<string, number | null> {
+  const now = readingsOf(readings);
+  const scores = new Map<string, number | null>();
+  for (const { post } of readings) {
+    const reading = now.get(post.id);
+    scores.set(post.id, reading ? predictViewsToCome(Date.parse(post.created_at), before.get(post.id), reading) : null);
+  }
+  return scores;
 }
 
 /** Formats a prediction for logs, for example "120.0K". Unknown is "?". */

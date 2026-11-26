@@ -23,6 +23,7 @@ import { featuresFromPost } from "../pipeline/ranking/features";
 import type { Scorer } from "../pipeline/ranking/scorers";
 import { velocityPerHour } from "../pipeline/utils/velocity";
 import { VIEWS_TO_COME_FLOOR } from "../pipeline/utils/viewsToCome";
+import type { CompetitionFeed } from "./competition";
 
 /** The posts of the walk that may be checked, before skipping the ones we
  *  already handled. */
@@ -43,4 +44,18 @@ export function pickPosts(eligible: SourcedPost[], skip: ReadonlySet<string>, bu
   const score = (s: SourcedPost) => scorer!.scoreAdmission(featuresFromPost(s.post, s.velocity, s.viewsToCome, tierRank(s), asOfMs));
   const byScorer = (a: SourcedPost, b: SourcedPost) => score(b) - score(a);
   return eligible.filter((s) => !skip.has(s.post.id)).sort(scorer ? byScorer : ladder).slice(0, budget);
+}
+
+/** The posts of the walk the competition writer would take: in its feed, with
+ *  a score at its threshold or above, by its own reading or by ours. While it
+ *  has no threshold yet, every scored post of its feed counts as its. */
+export function competitionPosts(readings: Reading[], scores: Map<string, number | null>, competition: CompetitionFeed): Set<string> {
+  const threshold = competition.threshold ?? 0;
+  const taken = new Set<string>();
+  for (const { post } of readings) {
+    if (!competition.scores.has(post.id)) continue;
+    const best = Math.max(competition.scores.get(post.id) ?? 0, scores.get(post.id) ?? 0);
+    if (best > 0 && best >= threshold) taken.add(post.id);
+  }
+  return taken;
 }

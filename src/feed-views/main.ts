@@ -1,16 +1,19 @@
 /**
- * cn-feed-views, the X feed daemon (GOO-834, GOO-865). A daemon on the
- * services box, kept alive by systemd (ops/cn-feed-views.service). Every 10
- * minutes, on the clock (:00, :10, ...), it walks the small, large and XL tiers
- * of X's eligible-posts feed (walk.ts), then
+ * cn-feed-views, the X feed daemon (GOO-834). A daemon on the services box,
+ * kept alive by systemd (ops/cn-feed-views.service). Every 10 minutes, on the
+ * clock (:00, :10, ...), it walks the small, large and XL tiers of X's
+ * eligible-posts feed with the first account's keys (walk.ts), then
  *   1. scores each XL post: its predicted views still to come, from the speed
- *      since the walk before (score.ts),
+ *      since the walk before (src/pipeline/utils/viewsToCome.ts),
  *   2. stores one reading of each XL post's public counts with its score in
  *      feed_tweet_views, one row about the walk in feed_view_walks, and the
  *      full row of each post it sees for the first time in feed_tweets (author,
  *      text, media, the raw X answer). Everything is kept for good,
  *   3. hands the walk to the X note writer of the first account (src/x-notes/),
- *      which submits queued notes and starts checks of the best new posts.
+ *      which submits queued notes, runs the Pangram pass, and hands the best
+ *      new posts to the Claude note writer on the runner.
+ * The writer ran here from GOO-865 on. GOO-874 stopped it, and GOO-880
+ * brought it back with Claude Code notes and Pangram notes only.
  *
  * The walk before is kept in memory. After a restart, the first walk reads it
  * from the database.
@@ -25,7 +28,7 @@
  * example by a deploy, can send the warning once more.
  *
  *   bun run src/feed-views/main.ts             the daemon
- *   bun run src/feed-views/main.ts --dry-run   one walk now: prints the scores and the posts the writer would pick first, writes nothing
+ *   bun run src/feed-views/main.ts --dry-run   one walk now: prints how many posts it scored and the best ones, writes nothing
  */
 
 import "dotenv/config";
@@ -33,14 +36,12 @@ import { walkEligiblePages } from "../api/fetchEligiblePosts";
 import { SupabaseLogger } from "../api/supabaseClient";
 import { currentXAccount } from "../api/xAccount";
 import { syncAbTests } from "../pipeline/ab-testing/syncAbTests";
-import { buildPostSelection } from "../pipeline/orchestration/utils/feedSizeStrategy";
+import { buildPostSelection, type FeedSize } from "../pipeline/orchestration/utils/feedSizeStrategy";
 import { NOTEWRITERS_SLACK_CHANNEL, postToSlack } from "../pipeline/utils/slack";
-import { formatViewsToCome, type ViewReading } from "../pipeline/utils/viewsToCome";
-import { eligiblePosts, pickPosts } from "../x-notes/pick";
+import { formatViewsToCome, readingsOf, scoreReadings, type ViewReading } from "../pipeline/utils/viewsToCome";
 import { XNoteWriter } from "../x-notes/writer";
 import { lastCompleteWalkAt, saveWalk } from "./db";
-import { readingsOf, scoreWalk } from "./score";
-import { type RecordedTier, type WalkResult, walkFeed } from "./walk";
+import { type WalkResult, walkFeed } from "./walk";
 
 const WALK_INTERVAL_MS = 10 * 60_000;
 const SILENCE_WARNING_MS = 60 * 60_000;
@@ -50,16 +51,16 @@ const EARLIER_WALK_MIN_GAP_MS = 5 * 60_000;
 const EARLIER_WALK_MAX_GAP_MS = 20 * 60_000;
 const DRY_RUN_POSTS_SHOWN = 15;
 
-if (currentXAccount() !== "stilt") throw new Error("cn-feed-views writes the notes of the first account, stilt. Leave X_ACCOUNT unset.");
+if (currentXAccount() !== "stilt") throw new Error("cn-feed-views reads the feed and writes the notes of the first account, stilt. Leave X_ACCOUNT unset.");
 const logger = new SupabaseLogger();
 const tellSlack = (text: string) => postToSlack(NOTEWRITERS_SLACK_CHANNEL, `[cn-feed-views] ${text}`);
-const readTier = (tier: RecordedTier) => walkEligiblePages(buildPostSelection(tier));
+const readTier = (tier: FeedSize) => walkEligiblePages(buildPostSelection(tier));
 
 function describeWalk(walk: WalkResult): string {
   const seconds = Math.round((walk.finishedAt.getTime() - walk.startedAt.getTime()) / 1000);
   const { small, large, xl } = walk.postsPerTier;
   const outcome = walk.stopReason === null ? "complete" : `stopped (${walk.stopReason})`;
-  return `[feed-views] walk ${outcome}: small ${small}, large ${large}, xl ${xl} posts, ${walk.pages} pages in ${seconds}s, ${walk.rateRemaining ?? "?"} requests left`;
+  return `[feed-views] walk ${outcome}: small ${small}, large ${large}, xl ${xl} posts, then ${walk.xxlReadings.length} more posts on ${walk.xxlPages} xxl pages (${walk.xxlStop}), ${walk.pages} pages in ${seconds}s, ${walk.rateRemaining ?? "?"} requests left`;
 }
 
 /** The readings of the stored walk before this one, for the first walk after a restart. */
@@ -133,12 +134,14 @@ async function runDaemon(): Promise<never> {
     let scores = new Map<string, number | null>();
     let failure: string | null;
     try {
-      scores = scoreWalk(walk, before ?? (await storedEarlierReadings(walk)));
+      scores = scoreReadings([...walk.readings, ...walk.xxlReadings], before ?? (await storedEarlierReadings(walk)));
       failure = await storeWalk(walk, scores, storedPostIds);
     } catch (err) {
       failure = `could not read the walk before: ${err instanceof Error ? err.message : String(err)}`;
     }
-    before = readingsOf(walk);
+    // The XXL readings are never stored, so after a restart the first walk
+    // gives the posts that are only in XXL no score.
+    before = readingsOf([...walk.readings, ...walk.xxlReadings]);
     const scored = [...scores.values()].filter((v) => v !== null).length;
     console.log(`${describeWalk(walk)}${failure ? `, NOT STORED: ${failure}` : `, ${walk.readings.length} readings stored, ${scored} scored`}`);
     await walks.record(walk.finishedAt, failure ?? walk.stopReason);
@@ -156,12 +159,14 @@ async function runDaemon(): Promise<never> {
 async function dryRun(): Promise<void> {
   const walk = await walkFeed(readTier);
   console.log(describeWalk(walk));
-  const scores = scoreWalk(walk, await storedEarlierReadings(walk));
-  const eligible = eligiblePosts(walk.readings, scores);
-  const first = pickPosts(eligible, new Set(), DRY_RUN_POSTS_SHOWN, null, walk.finishedAt.getTime());
-  console.log(`[feed-views] ${[...scores.values()].filter((v) => v !== null).length} of ${walk.readings.length} posts scored, ${eligible.length} clear the floor; the first in the writer's order:`);
-  for (const s of first) {
-    console.log(`[feed-views]   https://x.com/i/status/${s.post.id} ${s.feedSize} to come=${formatViewsToCome(s.viewsToCome)}`);
+  const scores = scoreReadings(walk.readings, await storedEarlierReadings(walk));
+  const best = walk.readings
+    .map((reading) => ({ ...reading, viewsToCome: scores.get(reading.post.id) ?? null }))
+    .filter((s) => s.viewsToCome !== null)
+    .sort((a, b) => b.viewsToCome! - a.viewsToCome!);
+  console.log(`[feed-views] ${best.length} of ${walk.readings.length} posts scored; the best:`);
+  for (const s of best.slice(0, DRY_RUN_POSTS_SHOWN)) {
+    console.log(`[feed-views]   https://x.com/i/status/${s.post.id} ${s.tier} to come=${formatViewsToCome(s.viewsToCome)}`);
   }
 }
 

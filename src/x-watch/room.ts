@@ -1,6 +1,7 @@
 /**
  * The rules of cn-x-watch that need no database or X (GOO-851): how many new
- * posts may get a Claude now, and which ones. main.ts feeds them what it read.
+ * posts may get a Claude now. Which ones is pick.ts. main.ts feeds them what
+ * it read.
  *
  * Until X admits the account, it writes test notes. X scores each one with its
  * evaluator and admits a writer whose last 50 test notes score well enough
@@ -21,8 +22,6 @@
  * the daily limit, the limit becomes the number of notes of the last 24 hours,
  * and nothing is submitted or checked for LIMIT_COOLDOWN_MS.
  */
-
-import { isPossiblySensitive, type Post } from "../api/fetchEligiblePosts";
 
 export const TEST_NOTES_FOR_ADMISSION = 50;
 export const NEW_WRITER_DAILY_LIMIT = 10;
@@ -53,14 +52,6 @@ export function roomForChecks(state: WriterState, openNotes: number, now: Date):
  *  counting that note. */
 export const limitAfterSuccess = (writingLimit: number, submittedLast24h: number) => Math.max(writingLimit, submittedLast24h + 1);
 
-/** The newest feed posts that this account never handled, at most `room`.
- *  Posts X marked as possibly sensitive are left out, as in the X run. A
- *  fresh post is worth the most, because its views are still to come. */
-export function pickNewPosts(posts: Post[], handledTweetIds: Set<string>, room: number): Post[] {
-  if (room <= 0) return [];
-  const unique = new Map(posts.map((post) => [post.id, post]));
-  return [...unique.values()]
-    .filter((post) => !handledTweetIds.has(post.id) && !isPossiblySensitive(post))
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))
-    .slice(0, room);
-}
+/** The notes a day the account may write: the estimate once admitted, and a
+ *  new writer's limit while it writes test notes. */
+export const dailyLimit = (state: WriterState) => (state.kind === "admitted" ? state.writingLimit : NEW_WRITER_DAILY_LIMIT);
