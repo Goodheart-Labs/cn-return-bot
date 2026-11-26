@@ -1,0 +1,56 @@
+name: GitHub Pages notice
+
+# https://goodheart-labs.github.io/cn-return-bot/ held the old stats dashboard
+# until GOO-888. Now it only says that the page moved to
+# commonnotes.net/x-notewriter. The two files in github-pages/ are the whole
+# site, so this runs only when they change, or when started by hand.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "github-pages/**"
+      - ".github/workflows/github-pages-notice.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: github-pages
+
+      # Since 2026-11-19 this step often lists the artifact a second after
+      # the upload and finds none ("Found 0 artifact(s)"). So it gets one more
+      # try after a wait, and a second miss fails the run.
+      - id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before the second try
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 45
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4

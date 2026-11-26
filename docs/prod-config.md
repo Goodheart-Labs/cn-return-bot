@@ -268,14 +268,18 @@ set on 2026-10-01, so the code's defaults apply:
 ### GitHub Pages
 
 GitHub Pages is GitHub's static website hosting. Under Settings → Pages the
-source is "GitHub Actions" (checked on 2026-10-01), so the Deploy Pages
-workflow publishes the site. The site lives at
-`https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain. It
-holds the stats dashboard. Until 2026-10-23 it also held the Common Notes
-analytics dashboard at `/cn-return-bot/analytics/`, which moved to
-commonnotes.net/admin/dashboard (GOO-564). The Common Notes
-website used to have a copy at `/cn-return-bot/notes/`. That copy is gone, and
-its addresses now redirect to the same page on commonnotes.net.
+source is "GitHub Actions" (checked on 2026-10-01), so the GitHub Pages notice
+workflow ([.github/workflows/github-pages-notice.yml](../.github/workflows/github-pages-notice.yml))
+publishes the site. The site lives at
+`https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain.
+Since GOO-888 (2026-11-26) it is only the two files in `github-pages/`, which
+say that the page moved to commonnotes.net/x-notewriter. Until then it held the
+stats dashboard, rebuilt from a database snapshot every 4 hours. Until
+2026-10-23 it also held the Common Notes analytics dashboard at
+`/cn-return-bot/analytics/`, which moved to commonnotes.net/admin/dashboard
+(GOO-564). The Common Notes website used to have a copy at
+`/cn-return-bot/notes/`. That copy is gone, and its addresses still redirect to
+the same page on commonnotes.net.
 
 ## Cloudflare
 
@@ -292,7 +296,7 @@ the Cloudflare dashboard was not checked.
 
 Every merge to main deploys the website on this domain. So does a run of the
 "Deploy Pages" workflow started by hand in GitHub Actions with "Run workflow".
-The four-hourly run updates GitHub Pages alone. Until 2026-10-16 only a run
+Until 2026-10-16 only a run
 started by hand deployed the website. The step is in
 [.github/workflows/deploy-pages.yml](../.github/workflows/deploy-pages.yml),
 and it needs the two Cloudflare secrets above. The API token must be allowed

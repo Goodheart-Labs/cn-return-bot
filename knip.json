@@ -8,8 +8,8 @@
     "src/scraper/*.ts",
     "src/scripts/*.ts",
     "src/reports/*.ts",
-    "src/stats-dashboard/src/main.tsx",
-    "src/stats-dashboard/vite.config.ts",
+    "src/review-dashboard/src/main.tsx",
+    "src/review-dashboard/vite.config.ts",
     "src/everything-web/src/main.tsx",
     "src/everything-extension/entrypoints/**/*.{ts,tsx}",
     "src/everything-extension/wxt.config.ts",
@@ -26,13 +26,10 @@
     "src/scripts_nathan/**",
     "src/scripts_rob/**",
     "src/pipeline/misinfo-monitoring/**",
-    "src/dashboard-shared/topicSets.ts",
-    "src/dashboard-shared/CompetingNoteCard.tsx",
     "src/everything-core/database.types.ts"
   ],
   "ignoreDependencies": [
     "@types/p-queue",
-    "react-json-view-lite",
     "exa-js",
     "@wxt-dev/module-react"
   ],
@@ -42,8 +39,5 @@
   "ignoreExportsUsedInFile": true,
   "exclude": [
     "types"
-  ],
-  "ignoreWorkspaces": [
-    "src/review-dashboard"
   ]
 }
