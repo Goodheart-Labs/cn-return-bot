@@ -24,13 +24,16 @@ import { VOTE_VALUES, type Vote } from "./votes";
  *  src/scripts_jim/2026_07_21_donation_decay/RESULTS.md
  */
 
-/** Jim raised this from 5 to 6.25 on 2026-07-21, which lifts every amount by
- *  25%. The tip is added on top rather than scaled, so changing this alone
- *  leaves the $0.25 floor where it is. */
-const DOLLARS_PER_SCORE_UNIT = 6.25;
+/** Jim raised this from 5 to 6.25 on 2026-07-21, which lifted every amount by
+ *  25%. On 2026-11-26 he lowered every new amount by a factor of 3, so this and
+ *  the tip below are both divided by 3. Dividing both keeps the shape of the
+ *  decay and makes every amount exactly a third of what it was before rounding
+ *  to cents. Donations minted earlier keep the amounts frozen in their rows. */
+const DOLLARS_PER_SCORE_UNIT = 6.25 / 3;
 /** The floor under every displayed amount, so voting on a fully converged note
- *  still pays for the click. The whole card decays towards this value. */
-const PARTICIPATION_TIP = 0.25;
+ *  still pays for the click. The whole card decays towards this value, which
+ *  shows as $0.08. */
+const PARTICIPATION_TIP = 0.25 / 3;
 
 export interface DonationPair {
   ifHelpful: number;
