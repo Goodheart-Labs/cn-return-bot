@@ -44,7 +44,7 @@
 
 import { MAX_USAGE_READING_AGE_MS, MAX_WEEKLY_USAGE_PERCENT } from "../everything/usagePacing";
 import { currentXAccount, type XAccount } from "../api/xAccount";
-import { AI_BOX_NOTEWRITER } from "../notewriters/ids";
+import { RUNNER_NOTEWRITER } from "../notewriters/ids";
 import { CLAUDE_RUN_TAGS, readUsageSnapshot, usageShare, type ClaudeRunTag, type UsageSnapshot } from "./usageShare";
 
 /** The tag on each account's Claude runs, and its budget: either a share of
@@ -105,7 +105,7 @@ export function xShareProblem(share: XShare): string | null {
 /** Reads the share of this process's X account once, logs it, and says why
  *  it cannot send tweets to Claude, or null when it can. */
 export async function claudeUnavailableReason(): Promise<string | null> {
-  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(AI_BOX_NOTEWRITER)) }, currentXAccount());
+  const share = computeXShare({ now: new Date(), ...(await readUsageSnapshot(RUNNER_NOTEWRITER)) }, currentXAccount());
   const problem = xShareProblem(share);
   if (problem) console.log(`[claude] ${problem}. Tweets that draw Claude fail in this run.`);
   else if (share.kind === "measured") console.log(`[claude] ${describeUse(share)}. Tweets that draw Claude go to the runner.`);

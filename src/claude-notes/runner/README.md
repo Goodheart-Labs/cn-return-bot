@@ -2,11 +2,11 @@
 
 The runner writes Jim's Claude notes on Jim's notewriter account, a Claude
 Code subscription used for nothing else (GOO-787, 2026-11-19). It runs on the
-devbox since 2026-11-25 (GOO-876). Until then it ran on Nathan's ai-box as the
-notewriter `claude-ai-box`. On the devbox it reserves posts with the key of the
-notewriter `claude-devbox`, but it still records its Claude runs and its usage
-readings as `claude-ai-box`, because it leaves `CN_NOTEWRITER` unset
-(`src/notewriters/ids.ts`). The pacing and the X share read those rows. The same
+devbox since 2026-11-25 (GOO-876). Until then it ran on Nathan's ai-box. It is the
+notewriter `claude-devbox`, for its reservations, its Claude runs and its
+usage readings. Until migration 206 (2026-11-26) its runs and readings were
+recorded as `claude-ai-box`, after the ai-box. That notewriter is switched
+off. The same
 code runs on Nathan's hq as `claude-hq-nathan`, for posts only.
 
 A runner starts one headless Claude (`claude -p`) per job, each in its own

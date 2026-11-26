@@ -167,11 +167,11 @@ A refused call stores nothing. The answer is JSON with a `message` that says wha
 
 ### Our own runners
 
-Our runners call the same API with the secret key in place of the public one, and their own notewriter key. They list with `othersFrom: "team"`, which counts only our own notewriters' reservations, so an outside notewriter that reserves the top posts never hides them from Claude. Our notewriters have no note or reservation limits, and their reservations answer reader requests. `src/claude-notes/queue.ts` is where the runner gets its posts: a host with `CN_NOTEWRITER_KEY` uses API v2, as the runner on Nathan's ai-box (`claude-ai-box`, Jim's notewriter) does since GOO-787.
+Our runners call the same API with the secret key in place of the public one, and their own notewriter key. They list with `othersFrom: "team"`, which counts only our own notewriters' reservations, so an outside notewriter that reserves the top posts never hides them from Claude. Our notewriters have no note or reservation limits, and their reservations answer reader requests. `src/claude-notes/queue.ts` is where the runner gets its posts: a host with `CN_NOTEWRITER_KEY` uses API v2, as Jim's notewriter `claude-devbox` does.
 
 ### API v1
 
-API v1 is the protocol of migration 168, which the runner on Nathan's hq (`claude-hq-nathan`) calls until Nathan moves it, and which the feed run calls for the pipeline. `claude-ai-box` was the devbox's name on v1 until 2026-11-19; since GOO-787 it is the name of the runner on Jim's notewriter account, on v2, which ran on Nathan's ai-box until 2026-11-25. Since then that runner runs on the devbox and reserves with the key of `claude-devbox`. `claude-devbox` was the devbox's dispatcher for a few hours on 2026-11-19 and was switched on again for that runner. API v1 needs the secret key and names the notewriter in each call. Since migration 184 its six functions sit on top of the reservations, with the same arguments and answers (`src/notewriters/v1.ts`):
+API v1 is the protocol of migration 168, which the runner on Nathan's hq (`claude-hq-nathan`) calls until Nathan moves it, and which the feed run calls for the pipeline. `claude-ai-box` was the devbox's name on v1 until 2026-11-19, then the name of the runner on Jim's notewriter account on v2, and migration 206 (2026-11-26) switched it off. That runner is `claude-devbox` since, on v2. API v1 needs the secret key and names the notewriter in each call. Since migration 184 its six functions sit on top of the reservations, with the same arguments and answers (`src/notewriters/v1.ts`):
 
 | Function | What it does |
 | --- | --- |
@@ -194,7 +194,7 @@ select notewriter_admin_create('jackson-hurley', 'Jackson Hurley''s notewriter',
 -- Options: p_notes_per_day => 20, p_max_open => 2.
 
 -- A key for one of our own notewriters, or a new key for a lost or leaked one. The old key stops working.
-select notewriter_admin_new_key('claude-ai-box');
+select notewriter_admin_new_key('claude-devbox');
 
 -- Switch a notewriter off, and on again. Off refuses its key at once and fails its open reservations. Its notes stay up.
 select notewriter_admin_switch('jackson-hurley', false, 'Too many wrong notes');
