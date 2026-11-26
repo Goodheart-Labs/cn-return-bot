@@ -5,6 +5,7 @@
  *  ranking, and the prioritize script all normalize through here. */
 
 import { parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
+import { substackSubdomainInPageHtml } from "../everything-core/pageUrls";
 
 export type FeedType = "substack" | "youtube" | "lesswrong";
 
@@ -32,16 +33,12 @@ export function substackFeedOfPage(pageUrl: string): CanonicalFeed | null {
   return m ? canonicalSubstackFeed(`https://${m[1]}.substack.com`) : null;
 }
 
-/** The publication a Substack page belongs to, read from the page's HTML.
- *  Every Substack page embeds its publication data, subdomain included, as
- *  escaped JSON. This is how a post on a custom domain reveals its
- *  *.substack.com form. Null for a page that is not Substack. The pattern
- *  takes the first subdomain in the HTML. Today that is the one in the
- *  page's preloads-json tag, which comes before any other. The extension
- *  reads the same tag's `pub` object in readSubstackPublicationFromPage. */
+/** The publication a Substack page belongs to, read from the page's HTML
+ *  by substackSubdomainInPageHtml. This is how a post on a custom domain
+ *  reveals its *.substack.com form. Null for a page that is not Substack. */
 export function substackFeedInPageHtml(html: string): CanonicalFeed | null {
-  const subdomain = html.match(/subdomain\\?":\\?"([\w-]+)\\?"/)?.[1];
-  return subdomain ? canonicalSubstackFeed(`https://${subdomain.toLowerCase()}.substack.com`) : null;
+  const subdomain = substackSubdomainInPageHtml(html);
+  return subdomain ? canonicalSubstackFeed(`https://${subdomain}.substack.com`) : null;
 }
 
 /** The canonical feed for a YouTube channel URL (@handle or /channel/id), or

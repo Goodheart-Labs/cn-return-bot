@@ -188,6 +188,40 @@ export async function fetchReaderCanonical(href: string): Promise<string | null>
   }
 }
 
+/** The *.substack.com subdomain of the publication a Substack page belongs
+ *  to, read from the page's HTML. Every Substack page embeds its data as JSON
+ *  in a `<script id="preloads-json">` tag, and that object's `pub` is the
+ *  publication. This is how a post on a custom domain such as jasmi.news
+ *  reveals its *.substack.com form. Null for a page that is not Substack. The
+ *  extension reads the same tag from the live page in
+ *  readSubstackPublicationFromPage. */
+export function substackSubdomainInPageHtml(html: string): string | null {
+  const preloads = html.match(/<script[^>]*\bid="preloads-json"[^>]*>([\s\S]*?)<\/script>/)?.[1];
+  if (!preloads) return null;
+  try {
+    const subdomain: unknown = JSON.parse(preloads)?.pub?.subdomain;
+    return typeof subdomain === "string" && /^[\w-]+$/.test(subdomain) ? subdomain.toLowerCase() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The creator's feed URL for a Substack post on a custom domain, read from
+ *  the post's page fetched without cookies. A reader who opens such a post in
+ *  Substack's reader app is on substack.com, and that page describes the
+ *  reader rather than the publication, so the post's own page is the only
+ *  place that names the creator. Extension callers must run this in the
+ *  background script, for the same CORS reason as fetchReaderCanonical. */
+export async function fetchSubstackFeedOfPage(pageUrl: string): Promise<string | null> {
+  try {
+    const res = await fetchWithRetries(pageUrl, { credentials: "omit" });
+    const subdomain = substackSubdomainInPageHtml(await res.text());
+    return subdomain ? `https://${subdomain}.substack.com` : null;
+  } catch {
+    return null;
+  }
+}
+
 export const COMMONNOTES_ORIGIN = "https://commonnotes.net";
 
 /** Builds a deep link to a single note on the public site. The extension's

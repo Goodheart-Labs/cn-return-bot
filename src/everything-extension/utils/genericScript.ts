@@ -6,6 +6,10 @@ import { browser } from "#imports";
 // user enables the site from there.
 export const GENERIC_SCRIPT_PREFIX = "cn-generic-";
 
+/** The custom-domain Substack detector (entrypoints/substack-domain.content.ts)
+ *  sends this when the page it runs on is a Substack publication. */
+export const SUBSTACK_DOMAIN_MESSAGE_TYPE = "cn-substack-domain";
+
 export const genericScriptId = (hostname: string) => `${GENERIC_SCRIPT_PREFIX}${hostname}`;
 export const hostnamePattern = (hostname: string) => `*://${hostname}/*`;
 

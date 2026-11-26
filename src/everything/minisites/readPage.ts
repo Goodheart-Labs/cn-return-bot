@@ -231,11 +231,6 @@ function absoluteImage(value: string | null, base: string): string | null {
   }
 }
 
-/** The subdomain pattern of substackFeedInPageHtml would also match a
- *  "subdomain" key in some other site's data, so it is only asked on a page
- *  that carries Substack's preloads blob. */
-const isSubstackPage = (html: string) => html.includes("window._preloads");
-
 /** Exported for the tests, which feed it a saved page. */
 export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage {
   const { document } = parseHTML(html);
@@ -262,6 +257,6 @@ export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage
     published_at: isoDate(meta.published ?? article.publishedTime),
     image_url: absoluteImage(meta.image, pageUrl),
     content: articleContent(htmlToReaderBlocks(article.content, pageUrl), [title, description, byline, author]),
-    creator_feed_url: isSubstackPage(html) ? substackFeedInPageHtml(html)?.feed_url ?? null : null,
+    creator_feed_url: substackFeedInPageHtml(html)?.feed_url ?? null,
   });
 }

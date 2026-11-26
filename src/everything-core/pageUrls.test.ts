@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { canonicalizePageUrl, substackReaderPostId } from "./pageUrls";
+import { canonicalizePageUrl, substackReaderPostId, substackSubdomainInPageHtml } from "./pageUrls";
 
 test("every Substack reader URL shape yields its post id", () => {
   for (const href of [
@@ -80,4 +80,22 @@ test("only BBC news and sport pages on the BBC's own hosts change host", () => {
 
 test("query parameters that select content are kept", () => {
   expect(canonicalizePageUrl("https://example.com/watch?v=abc&utm_source=x", null)).toBe("https://example.com/watch?v=abc");
+});
+
+// A trimmed copy of the scripts on jasmi.news/p/no-data-centers-in-my-backyard
+// as fetched on 2026-11-26. The publication's data sits in a JSON tag, and a
+// later part of it names other publications the page recommends.
+const JASMI_NEWS_POST_HTML = `<html><head>
+  <script type="application/json" id="preloads-json" nonce="n">{"isEU":true,"base_url":"https://jasmi.news","pub":{"id":6027,"name":"@jasmine’s substack","subdomain":"jasmine","custom_domain":"jasmi.news"},"recommendations":[{"subdomain":"other"}]}</script>
+  <script nonce="n">window._preloads        = JSON.parse(document.querySelector('script#preloads-json[type="application/json"]').textContent)</script>
+</head><body></body></html>`;
+
+test("a custom-domain Substack page names its *.substack.com publication", () => {
+  expect(substackSubdomainInPageHtml(JASMI_NEWS_POST_HTML)).toBe("jasmine");
+});
+
+test("a page without Substack's publication data names none", () => {
+  expect(substackSubdomainInPageHtml(`<script>var data = {"subdomain":"jasmine"}</script>`)).toBeNull();
+  expect(substackSubdomainInPageHtml(`<script type="application/json" id="preloads-json">not json</script>`)).toBeNull();
+  expect(substackSubdomainInPageHtml(`<script type="application/json" id="preloads-json">{"pub":null}</script>`)).toBeNull();
 });

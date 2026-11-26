@@ -3,7 +3,7 @@ import { browser } from "#imports";
 import { fetchCoveredPageUrls, fetchCoveredPageUrlsSince, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
 import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
-import { fetchReaderCanonical } from "@cn/core/pageUrls";
+import { fetchReaderCanonical, fetchSubstackFeedOfPage } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";
 import { canonicalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
@@ -13,10 +13,10 @@ import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } fr
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, getCoveredPageUrls, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { mergeCoveredUrls, parseSyncState, planSync } from "../utils/notedSitesSync";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
-import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
+import { GENERIC_SCRIPT_PREFIX, SUBSTACK_DOMAIN_MESSAGE_TYPE, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { saveLiveRequest } from "../utils/liveRequests";
 import { capturePageFromTab } from "../utils/pageCapture";
-import { VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
+import { SUBSTACK_FEED_MESSAGE_TYPE, VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
@@ -74,6 +74,14 @@ async function injectIntoOpenTabs(hostnames: string[]) {
       ? browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {})
       : undefined));
   }
+}
+
+/** Runs the generic content script in a tab on a custom-domain Substack that
+ *  the detector found. A host with a covered page already has the script
+ *  registered, and it runs there by itself. */
+async function injectIntoSubstackDomain(tabId: number, pageUrl: string) {
+  if ((await registeredGenericHostnames()).includes(new URL(pageUrl).hostname)) return;
+  await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] }).catch(() => {});
 }
 
 /** Registers the generic content script on every covered host that lacks it,
@@ -448,6 +456,17 @@ export default defineBackground(() => {
       // follow the cross-origin redirect nor read the response.
       fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === SUBSTACK_FEED_MESSAGE_TYPE) {
+      // A visit to a custom-domain post in Substack's reader app needs the
+      // creator, and only the post's own page names it. Like the reader
+      // canonical above, the fetch must run here.
+      fetchSubstackFeedOfPage((message as { pageUrl: string }).pageUrl).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === SUBSTACK_DOMAIN_MESSAGE_TYPE && sender.tab?.id != null && sender.url) {
+      void injectIntoSubstackDomain(sender.tab.id, sender.url);
+      return undefined; // The detector does not wait.
     }
     if ((message as { type?: string })?.type === TAB_CREATOR_MESSAGE_TYPE && sender.tab) {
       // The write-anywhere overlay asks which creator its page belongs to, so

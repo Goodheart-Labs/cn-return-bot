@@ -49,7 +49,8 @@ const WATCH_CHANNEL_POLL_MS = 500;
 const WATCH_CHANNEL_POLL_TRIES = 20;
 
 /** The creator's feed URL for the visited page: the Substack publication from
- *  the hostname or the page's preloads blob, the YouTube channel from
+ *  the hostname, the page's preloads blob or, for a post opened in Substack's
+ *  reader app, the post's own page, the YouTube channel from
  *  YouTube's oEmbed endpoint or, when that does not answer, from the watch
  *  page, the forum author from the site's own API or, when that does not
  *  answer, from the post's header. Null when the page has no followable
@@ -60,7 +61,13 @@ const WATCH_CHANNEL_POLL_TRIES = 20;
 async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string | null> {
   if (kind === "substack") {
     const target = substackCreatorTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
-    return target?.feedUrl ?? null;
+    if (target) return target.feedUrl;
+    // A post opened in Substack's reader app sits on substack.com, which names
+    // no creator, while its own address is on a custom domain such as
+    // jasmi.news. Only that page names the publication, so the background
+    // fetches it.
+    if (new URL(pageUrl).hostname === location.hostname) return null;
+    return (await browser.runtime.sendMessage({ type: SUBSTACK_FEED_MESSAGE_TYPE, pageUrl }).catch(() => null)) ?? null;
   }
   if (kind === "lesswrong" || kind === "eaforum") {
     const author = (await forumPostAuthorTarget(pageUrl)) ?? forumAuthorFromPageLink(readForumPostAuthorFromPage());
@@ -77,6 +84,10 @@ async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string
   }
   return null;
 }
+
+/** Asks the background for the creator's feed URL of a custom-domain
+ *  Substack post, read from the post's own page (fetchSubstackFeedOfPage). */
+export const SUBSTACK_FEED_MESSAGE_TYPE = "cn-substack-feed";
 
 /** What a content script sends the background once it has decided a page
  *  counts. The reader hash is added there, because the secret behind it is
