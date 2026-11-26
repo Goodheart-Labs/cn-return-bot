@@ -4,8 +4,7 @@ import { Menu, MenuItem } from "@cn/ui/Menu";
 import { useAutoDismiss } from "@cn/ui/useAutoDismiss";
 import { useOutsidePress } from "@cn/ui/useOutsidePress";
 import { useMutation } from "@tanstack/react-query";
-import { CHARITIES, rememberCharity, setDonationCharity, type CharityId } from "@cn/core/donations";
-import type { DonationPair } from "@cn/core/donationScoring";
+import { CHARITIES, rememberCharity, setDonationCharity, type CharityId, type DonationPair } from "@cn/core/donations";
 import type { NoteStatus } from "@cn/core/noteScore";
 
 const charityLabel = (id: CharityId) => CHARITIES.find((c) => c.id === id)!.label;

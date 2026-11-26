@@ -673,6 +673,7 @@ export type Database = {
           charity: string
           created_at: string
           id: string
+          priced_vote: number | null
           vote_id: string
         }
         Insert: {
@@ -682,6 +683,7 @@ export type Database = {
           charity: string
           created_at?: string
           id?: string
+          priced_vote?: number | null
           vote_id: string
         }
         Update: {
@@ -691,6 +693,7 @@ export type Database = {
           charity?: string
           created_at?: string
           id?: string
+          priced_vote?: number | null
           vote_id?: string
         }
         Relationships: [

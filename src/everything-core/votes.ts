@@ -4,11 +4,6 @@ import { supabase } from "./supabase";
 /** A rating on X's three-way scale: helpful, somewhat helpful, not helpful. */
 export type Vote = 1 | 0 | -1;
 
-/** Every vote value, in the order the rating pills draw them. Callers that
- *  walk all three values, such as scoring each option, use this instead of
- *  writing the literals out again. */
-export const VOTE_VALUES: readonly Vote[] = [1, 0, -1];
-
 /** Fetches the signed-in user's own votes on notes. Row level security returns
  *  only their rows. */
 export async function fetchMyVotes(): Promise<Map<string, Vote>> {

@@ -99,7 +99,7 @@ function useVoting<T extends { id: string }, R>({ votesKey, cast, clear, refresh
 export const useVoteOnNote = (): ((note: NoteRow, vote: Vote) => Promise<MintedDonation | null>) =>
   useVoting({
     votesKey: queryKeys.myVotes,
-    cast: (note: NoteRow, vote, previousVote, user) => castVoteWithDonation({ note, vote, previousVote, user, platform: currentPlatform() }),
+    cast: (note: NoteRow, vote, _previousVote, user) => castVoteWithDonation({ noteId: note.id, vote, user, platform: currentPlatform() }),
     clear: clearVote,
     refresh: async (client, note) => {
       const fresh = await fetchNote(note.id);
