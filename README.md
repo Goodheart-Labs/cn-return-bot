@@ -55,10 +55,11 @@ the extension, and the scraper.
 
 ## Production
 
-[src/production/runPipeline.ts](src/production/runPipeline.ts) generates and submits
-notes. The [Create Notes workflow](.github/workflows/create-notes-routine-dynamic.yml)
-is dispatched by Supabase cron. Running the production entry point can submit
-real notes; use the tryout script for development.
+Our notes on X go out from the WSDM Cup notewriter account, written by the
+`cn-x-watch` daemon on the services machine ([ops/README.md](ops/README.md)).
+[src/production/runPipeline.ts](src/production/runPipeline.ts) is the older X
+pipeline of the first account, which X paused on 2026-11-25. Run it only with
+`--local`; use the tryout script for development.
 
 Supabase migrations live in [migrations/](migrations/) and are applied separately.
 
