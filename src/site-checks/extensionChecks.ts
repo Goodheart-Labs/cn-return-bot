@@ -175,9 +175,9 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
     // so the newsletter's readers never count towards its creator.
     run: () =>
       withPage(context, pages.UNCOVERED_CUSTOM_DOMAIN_SUBSTACK_POST, async (page, lines) => {
-        const [line] = await waitForLog(page, lines, /→ (not in the covered list|no ingested item|item ")/);
-        must(!line!.includes('item "'), "the page has notes now, so it no longer tests the detector. Replace it in src/site-checks/pages.ts");
-        return line!.trim();
+        const [, found] = await waitForLog(page, lines, /→ (not in the covered list|no ingested item|item ")/);
+        must(found !== 'item "', "the page has notes now, so it no longer tests the detector. Replace it in src/site-checks/pages.ts");
+        return `the extension's script ran and found the page ${found}`;
       }),
   },
   anchoringCheck(context, "Substack", "newsletter on its own domain", pages.CUSTOM_DOMAIN_SUBSTACK_POST),
