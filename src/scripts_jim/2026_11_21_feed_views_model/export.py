@@ -72,5 +72,6 @@ def export_small_tables() -> None:
     pd.DataFrame(feed_tweets).to_parquet(DATA_DIR / "feed_tweets.parquet")
     print(f"walks: {len(walks)}, posts: {len(posts)}, feed_tweets profiles: {len(feed_tweets)}")
 
-export_hours()
-export_small_tables()
+if __name__ == "__main__":
+    export_hours()
+    export_small_tables()
