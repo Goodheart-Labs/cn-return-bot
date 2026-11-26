@@ -13,7 +13,6 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
-| `cn-feed-views` | every 10 minutes: records the view counts of every post in X's XL feed with the first X account's keys (GOO-834) | none |
 | `cn-x-watch` | every 30 seconds: the WSDM Cup notewriter account's feed watcher, which hands new small-feed posts to Claude and submits its notes (GOO-851) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
@@ -175,30 +174,20 @@ systemctl start --no-block cn-site-checks   # a first run now, to see it work
 journalctl -u cn-site-checks -f
 ```
 
-## The X feed daemon
+## The retired X feed daemon
 
-`cn-feed-views` (src/feed-views/main.ts, GOO-834) reads the small,
-large and XL tiers of X's eligible-posts feed every 10 minutes, on the clock,
-with the notewriter keys in service.env. It stores one reading of each XL
-post's views and other counts in `feed_tweet_views`, with the post's predicted
-views still to come (migrations 193 and 197), one row per walk of the feed in
-`feed_view_walks`, and the full row of each new post in `feed_tweets`. It
-keeps everything. A walk stops when fewer than 150 of X's 500 feed requests per
-15 minutes are left.
-
-From GOO-865 to GOO-874 it also ran the first X account's note writer after
-each walk. Since GOO-874 only the WSDM Cup account writes notes on X (see
-below), and this daemon only collects data. When an hour passes without a
-stored walk, it tells Slack. Once, as root:
+`cn-feed-views` (GOO-834) read the small, large and XL tiers of X's
+eligible-posts feed every 10 minutes with the first X account's keys, and
+stored the readings in `feed_tweet_views`, `feed_view_walks` and `feed_tweets`.
+From GOO-865 to GOO-874 it also wrote that account's notes. X paused the first
+account on 2026-11-25, and every walk failed with HTTP 403 from 19:20 UTC on.
+GOO-887 removed the daemon. The rows it stored stay. On the box it was switched
+off once, as root:
 
 ```bash
-cp /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/
-systemctl daemon-reload && systemctl enable --now cn-feed-views
-journalctl -u cn-feed-views -f      # a "walk complete" line every 10 minutes
+systemctl disable --now cn-feed-views
+rm /etc/systemd/system/cn-feed-views.service && systemctl daemon-reload
 ```
-
-`bun run cn-feed-views --dry-run` makes one walk, prints the best scored
-posts, and writes nothing.
 
 ## The WSDM Cup notewriter's feed watcher
 
@@ -224,7 +213,7 @@ judged by the posts that arrived in the feed over the last 7 days
 account it works in test mode: it writes only as many test notes as allowed,
 and checks hourly whether X admitted it. `bun run x-watch-allow-test-notes <n>`
 allows n more, and Slack hears when a batch is written and scored. The account has its own budget of 500 feed requests per
-15 minutes, so it shares nothing with the X run or cn-feed-views. When an hour
+15 minutes, so it shares nothing with the first account. When an hour
 passes without a good tick, it tells Slack. Once, as root:
 
 ```bash
@@ -276,10 +265,9 @@ downtime:
 1. Build the new machine with "First-time setup" above, but start only
    `cn-claim-check` and `cn-extraction`. `setup-vm.sh` enables intake, so run
    `systemctl disable cn-intake` right after it.
-2. Pause both pipeline workflows:
-   `gh workflow disable everything-priority-feeds.yml` and
-   `gh workflow disable create-notes-routine-dynamic.yml`. pg_cron's dispatches
-   fail while they are off, which is harmless.
+2. Pause the pipeline workflow:
+   `gh workflow disable everything-priority-feeds.yml`. pg_cron's dispatches
+   fail while it is off, which is harmless.
 3. Wait until no run is in progress and both services on the old machine show
    `inFlight` 0 and `waiting` 0 on `/health`, and intake is not working on a page.
 4. On the old machine, switch everything off. `disable` keeps a reboot from
