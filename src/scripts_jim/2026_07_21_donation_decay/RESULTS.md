@@ -17,6 +17,18 @@ Script: `decay.py`.
 > | p before | 0.35 | 0.58 | 0.75 | 0.86 | 0.92 | 0.96 | 0.98 | 0.99 | 0.995 | 0.998 |
 > | $ this vote | 3.08 | 2.36 | 1.63 | 1.07 | 0.71 | 0.50 | 0.38 | 0.32 | 0.28 | 0.27 |
 > | $ cumulative | 3.08 | 5.44 | 7.07 | 8.14 | 8.85 | 9.35 | 9.73 | 10.05 | 10.33 | 10.60 |
+>
+> **Lowered 2026-11-26 (GOO-890).** Jim lowered every new donation by a factor of
+> 3. Both b and the tip are divided by 3 (b = 6.25 / 3, tip = $0.25 / 3), so the
+> shape of the decay is unchanged and the floor shows as $0.08. Donations minted
+> before keep their frozen amounts. Since then the database prices every donation
+> (`everything_donation_pair`, migration 207), and the TypeScript port is gone. The
+> table above is the old one; the new one is:
+>
+> | vote | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+> |---|---|---|---|---|---|---|---|---|---|---|
+> | $ this vote | 1.03 | 0.79 | 0.54 | 0.36 | 0.24 | 0.17 | 0.13 | 0.11 | 0.09 | 0.09 |
+> | $ cumulative | 1.03 | 1.82 | 2.36 | 2.72 | 2.96 | 3.13 | 3.26 | 3.37 | 3.46 | 3.55 |
 
 ## The problem
 

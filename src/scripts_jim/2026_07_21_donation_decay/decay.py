@@ -334,8 +334,11 @@ CN_CRH_THRESHOLD = 0.40
 RECOMMENDED_PRIOR_STRENGTH = 5.0
 #: Dollars per unit of Brier score, as shipped. Raised 5 -> 6.25 (Jim,
 #: 2026-07-21) to lift every amount 25% -- the tip is additive, so scaling this
-#: alone leaves the $0.25 floor untouched.
-SHIPPED_DOLLARS_PER_SCORE_UNIT = 6.25
+#: alone leaves the $0.25 floor untouched. Lowered by a factor of 3 (Jim,
+#: 2026-11-26), together with the tip, so every new amount is a third.
+SHIPPED_DOLLARS_PER_SCORE_UNIT = 6.25 / 3
+#: The flat tip under every amount, as shipped. Divided by 3 on 2026-11-26.
+SHIPPED_PARTICIPATION_TIP = 0.25 / 3
 
 
 def shipped_scheme() -> "StakeScheme":
@@ -346,6 +349,7 @@ def shipped_scheme() -> "StakeScheme":
         ),
         b=SHIPPED_DOLLARS_PER_SCORE_UNIT,
         rule=brier_scores,
+        tip=SHIPPED_PARTICIPATION_TIP,
     )
 
 
