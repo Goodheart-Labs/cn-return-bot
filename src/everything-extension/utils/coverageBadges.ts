@@ -536,6 +536,12 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
       if (key) currentKeys.add(key);
     }
     pruneAndReseat(currentKeys);
+    // Until a reader page's own address is translated, the scan cannot tell
+    // the article's own title link from a link to another post. A badge placed
+    // now would land on the title and vanish again once the translation
+    // arrives. The translation schedules the scan that places the badges.
+    const awaitingOwnAddress = !showsPostAsCard && substackReaderPostId(location.href) !== null && keyFor(location.href) === null;
+    if (awaitingOwnAddress) return;
     const outcomes = { badged: 0, "no-surface": 0 };
     for (const anchor of document.querySelectorAll<HTMLAnchorElement>("a[href]")) {
       const outcome = placeBadge(anchor, currentKeys);
