@@ -274,13 +274,13 @@ workflow ([.github/workflows/github-pages-notice.yml](../.github/workflows/githu
 publishes the site. The site lives at
 `https://goodheart-labs.github.io/cn-return-bot/` and has no custom domain.
 Since GOO-888 (2026-11-26) it is only the two files in `github-pages/`, which
-say that the page moved to commonnotes.net/x-notewriter. Until then it held the
+redirect every address to commonnotes.net/x-notewriter. Until then it held the
 stats dashboard, rebuilt from a database snapshot every 4 hours. Until
 2026-10-23 it also held the Common Notes analytics dashboard at
 `/cn-return-bot/analytics/`, which moved to commonnotes.net/admin/dashboard
 (GOO-564). The Common Notes website used to have a copy at
-`/cn-return-bot/notes/`. That copy is gone, and its addresses still redirect to
-the same page on commonnotes.net.
+`/cn-return-bot/notes/`. That copy is gone, and its addresses redirect to the
+same page on commonnotes.net instead.
 
 ## Cloudflare
 
