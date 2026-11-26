@@ -39,15 +39,16 @@ describe("computeXShare", () => {
     expect(xShareProblem(computeXShare(snapshot({ runs: costs(40, 60) }), "wsdm"))).toContain("X account wsdm has used 16.00%");
   });
 
-  test("counts each account's runs only against its own share", () => {
+  test("counts only the WSDM Cup account's own runs against its share", () => {
     const runs = [...costs(10, 80), { tags: ["x", "tweet"], apiCostUsd: 10 }];
     expect(computeXShare(snapshot({ runs }), "wsdm")).toMatchObject({ usedPercent: 4, allowedPercent: 15 });
-    expect(computeXShare(snapshot({ runs }), "stilt")).toMatchObject({ usedPercent: 4 });
-    expect(computeXShare(snapshot({ runs: costs(10, 90) }), "stilt")).toMatchObject({ usedPercent: 0 });
   });
 
-  test("gives the first account no share, because it writes no notes", () => {
-    expect(xShareProblem(computeXShare(snapshot({ runs: costs(10, 90) }), "stilt"))).toContain("may use 0.00% by now");
+  test("lets the first account use only what the WSDM Cup account leaves of its share", () => {
+    const runs = [...costs(10, 80), { tags: ["x", "tweet"], apiCostUsd: 10 }];
+    expect(computeXShare(snapshot({ runs }), "stilt")).toMatchObject({ usedPercent: 8, allowedPercent: 15 });
+    // The WSDM Cup account used 16% of the 15% it may use by now, so the first account gets nothing.
+    expect(xShareProblem(computeXShare(snapshot({ runs: costs(40, 60) }), "stilt"))).toContain("X accounts stilt and wsdm together have used 16.00%");
   });
 
   test("lets X start right after the reset, before any run has a cost", () => {

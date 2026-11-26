@@ -19,6 +19,9 @@ export const EXAMPLES_PATH = process.env.CN_EXAMPLES_PATH ?? path.join(REPO, "do
 /** Built once from the public Community Notes data, by the scripts in
  *  src/scripts_jim/2026_10_27_x_claude_examples/. */
 export const X_EXAMPLES_PATH = path.join(REPO, "docs/x-note-examples.md");
+/** Every Pangram note of July 2026 with its post and ratings, built once by
+ *  src/scripts_jim/2026_11_25_pangram_notes/buildExamples.ts (GOO-880). */
+export const PANGRAM_EXAMPLES_PATH = path.join(REPO, "docs/pangram-note-examples.md");
 
 /** Jim's sentences on what makes a good note, the variant with_thoughts of the
  *  taste tests. Without them the model learns only from the examples. */
@@ -151,6 +154,28 @@ If you use subagents${withSourceDetails ? " for anything else" : ""}, ${subagent
 
 ${tweetInputSection(tweet.input)}`;
 }
+
+/** The Pangram judge (GOO-880): whether a post that Pangram called AI-written
+ *  should get a note that says so. The judge has no tools and answers in the
+ *  shape of PANGRAM_VERDICT_SCHEMA. The question is Jim's wording. */
+export function pangramPrompt(tweet: XTweet): string {
+  return `Hi Claude, Pangram, an AI-text detector, says the post below was written by AI. We could add a Community Note to it on X that says "According to Pangram this post is AI generated", with a link to Pangram's report on the post. In your system prompt are all the notes like this that we wrote in July 2026, each with its post and how raters rated it. Most were rated not helpful.
+
+Do you think this post should definitely get a Community Note saying that it is AI generated? There are many cases where viewers don't care or actively know that something is AI generated. So only give the judgement that this needs a "This is written by AI" Community Note if users don't think this is AI written and would be shocked if they found out that it was.
+
+${tweetInputSection(tweet.input)}`;
+}
+
+/** The Pangram judge's answer. */
+export const PANGRAM_VERDICT_SCHEMA = {
+  type: "object",
+  properties: {
+    reasoning: { type: "string" },
+    should_get_this_is_ai_written_community_note: { type: "boolean" },
+  },
+  required: ["reasoning", "should_get_this_is_ai_written_community_note"],
+  additionalProperties: false,
+};
 
 export function messagePrompt(params: { text: string; from: string; draft: unknown; url: string; dir: string; runDir: string }): string {
   return `A reviewer asked about one of the Claude note writer's notes on commonnotes.net. Answer them.
