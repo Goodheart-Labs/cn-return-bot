@@ -60,7 +60,8 @@ import {
   countOpenNotes, type FeedWalk, handledTweetIds, queuedNotes, readNoteRate, readScoreHistory, readWriterState, saveFeedWalk, stateKey, storedReadings,
   storeNoteStatuses,
 } from "./db";
-import { pickPosts, postsPerDay, type ScoreHistory, type ScoredPost, viewsThreshold } from "./pick";
+import { MIN_NOTE_RATE, pickPosts, type ScoredPost } from "./pick";
+import { postsPerDay, type ScoreHistory, viewsThreshold } from "../pipeline/utils/viewsThreshold";
 import { dailyLimit, inLimitCooldown, limitAfterSuccess, roomForChecks, TEST_NOTES_FOR_ADMISSION, type WriterState } from "./room";
 import { submitQueuedNote } from "./submit";
 
@@ -135,7 +136,7 @@ type Threshold = { value: number | null; history: ScoreHistory; noteRate: number
 
 async function currentThreshold(state: WriterState, history: ScoreHistory): Promise<Threshold> {
   const noteRate = await readNoteRate();
-  const wantedPerDay = postsPerDay(dailyLimit(state), noteRate);
+  const wantedPerDay = postsPerDay(dailyLimit(state), noteRate, MIN_NOTE_RATE);
   return { value: viewsThreshold(history, wantedPerDay), history, noteRate, wantedPerDay };
 }
 
@@ -226,6 +227,9 @@ async function walkAndHandOver(watch: Watch): Promise<void> {
   await saveFeedWalk(walk, scores);
   const scored = scoredPosts(walk, scores);
   const threshold = await currentThreshold(state, await scoreHistory(watch));
+  // The first account's writer leaves the posts above this threshold to this
+  // account (src/x-notes/competition.ts).
+  await logger.setPipelineState(stateKey("views_threshold"), JSON.stringify(threshold.value));
   const room = roomForChecks(state, await countOpenNotes(), new Date());
   console.log(`[x-watch] walk: ${walk.readings.length} posts, ${scored.length} scored; ${describeThreshold(threshold)}; room ${room}`);
   if (threshold.value === null || room === 0) return;

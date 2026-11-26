@@ -63,7 +63,7 @@ export const judgeJob: JobKind<string> = {
     writeFileSync(judgedNoteFile(runDir), JSON.stringify(note));
     return {
       prompt: judgePrompt(note, examples.filter((e) => e.draftId !== draftId)),
-      command: { model: JUDGE_MODEL, isolated: { jsonSchema: JUDGE_SCHEMA, disallowedTools: BLOCKED_TOOLS } },
+      command: { model: JUDGE_MODEL, isolated: { jsonSchema: JUDGE_SCHEMA, tools: { kind: "default_without", disallowed: BLOCKED_TOOLS } } },
     };
   },
 

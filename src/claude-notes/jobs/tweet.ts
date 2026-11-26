@@ -24,7 +24,7 @@ const MAX_TWEETS_RUNNING = 6;
 const MIN_TIME_TO_START_MS = 20 * 60_000;
 
 /** A tweet's Claude must stop before the X run sweeps the tweet as failed. */
-const sweptAt = (tweet: XTweet) => Date.parse(tweet.createdAt) + CLAUDE_TWEET_MAX_WAIT_MINUTES * 60_000;
+export const sweptAt = (tweet: XTweet) => Date.parse(tweet.createdAt) + CLAUDE_TWEET_MAX_WAIT_MINUTES * 60_000;
 
 /** Whether the tweet's images passed the image screen (GOO-815), or the host
  *  has no screen (GOO-822). A tweet they did not pass fails, and Slack hears of it. When the screen itself
@@ -53,11 +53,11 @@ export const tweetJob: JobKind<XTweet> = {
   /** X tweets are not part of Claude's pace, because the X run already decided
    *  that they go to Claude. */
   async waiting() {
-    return (await openXTweets()).waiting.filter((tweet) => sweptAt(tweet) - STOP_BEFORE_DEADLINE_MS - Date.now() >= MIN_TIME_TO_START_MS);
+    return (await openXTweets(CLAUDE_CODE_BOT)).waiting.filter((tweet) => sweptAt(tweet) - STOP_BEFORE_DEADLINE_MS - Date.now() >= MIN_TIME_TO_START_MS);
   },
 
   async held() {
-    return (await openXTweets()).running;
+    return (await openXTweets(CLAUDE_CODE_BOT)).running;
   },
 
   async prepare(tweet, runDir, attempt) {

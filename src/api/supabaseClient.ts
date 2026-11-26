@@ -14,7 +14,7 @@ import type { QueuedRun, QueuedTweetRow } from "../pipeline/orchestration/noteQu
 // "candidate" rows (older code, local tools, runs cut off before submit) are
 // never loaded or expired.
 const QUEUED_REASON = "queued";
-import { CLAUDE_CODE_BOT, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
+import { CLAUDE_BOTS, CLAUDE_CODE_BOT, CLAUDE_WAITING_STAGE } from "../pipeline/orchestration/claudeTweets";
 import { parseSubmissionAdmission, parseSubmissionCapacity, type SubmissionAdmission, type SubmissionCapacity, type SubmissionClaimOutcome, type SubmissionLane } from "../pipeline/capacity/submissionReserve";
 
 // How often an --incremental scrape may scroll past a note without capturing it
@@ -201,8 +201,8 @@ function postToTweetRow(post: Post) {
 }
 
 /** One stored walk of the feed view recorder, as its start and end. The
- *  recorder, cn-feed-views, was retired in GOO-887, so no walks after
- *  2026-11-25 exist. */
+ *  recorder, cn-feed-views, is dormant since GOO-887, so it stored no walks
+ *  after 2026-11-25. */
 export interface RecorderWalk {
   startedAt: string;
   finishedAt: string;
@@ -838,8 +838,8 @@ export class SupabaseLogger {
    */
   async sweepStuckRuns(opts: { olderThanMinutes: number; claudeOlderThanMinutes: number }): Promise<number> {
     const results = await Promise.all([
-      this.sweepOlderThan(opts.olderThanMinutes).or(`bot_name.is.null,bot_name.neq.${CLAUDE_CODE_BOT}`).select("id"),
-      this.sweepOlderThan(opts.claudeOlderThanMinutes).eq("bot_name", CLAUDE_CODE_BOT).select("id"),
+      this.sweepOlderThan(opts.olderThanMinutes).or(`bot_name.is.null,bot_name.not.in.(${CLAUDE_BOTS.join(",")})`).select("id"),
+      this.sweepOlderThan(opts.claudeOlderThanMinutes).in("bot_name", CLAUDE_BOTS).select("id"),
     ]);
     for (const { error } of results) {
       if (!error) continue;
@@ -881,10 +881,10 @@ export class SupabaseLogger {
     );
   }
 
-  async markRunWaitingForClaude(runId: string, data: { picks: Record<string, string>; logs: Record<string, unknown> }): Promise<void> {
+  async markRunWaitingForClaude(runId: string, data: { bot: (typeof CLAUDE_BOTS)[number]; picks: Record<string, string>; logs: Record<string, unknown> }): Promise<void> {
     const { error } = await this.client
       .from("pipeline_runs")
-      .update({ bot_name: CLAUDE_CODE_BOT, ab_test_picks: data.picks, logs: data.logs, final_stage: CLAUDE_WAITING_STAGE })
+      .update({ bot_name: data.bot, ab_test_picks: data.picks, logs: data.logs, final_stage: CLAUDE_WAITING_STAGE })
       .eq("id", runId);
     if (error) throw error;
   }

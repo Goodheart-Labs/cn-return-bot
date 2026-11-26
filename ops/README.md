@@ -13,6 +13,7 @@ server `ubuntu-8gb-hel1-1` at `95.217.155.79`, reached from the devbox with
 | `cn-fetch` | fetches outside pages, API answers and images for the other three, in a sandbox | Unix socket `/run/cn-fetch/fetch.sock` |
 | `cn-pot-provider` | a Docker container that hands out YouTube PO tokens | 127.0.0.1:4416 |
 | `cn-site-checks` | once a night from its timer: tests our site readers and the extension against the live sites (GOO-804) | none |
+| `cn-feed-views` | dormant, not installed (GOO-887). Running, every 10 minutes it records the view counts of every post in X's XL feed with the first X account's keys, and writes and submits that account's Claude and Pangram notes (GOO-834, GOO-880) | none |
 | `cn-x-watch` | every 30 seconds: the WSDM Cup notewriter account's feed watcher, which hands new small-feed posts to Claude and submits its notes (GOO-851) | none |
 
 The first two are pure functions behind HTTP and hold no database credentials.
@@ -174,15 +175,51 @@ systemctl start --no-block cn-site-checks   # a first run now, to see it work
 journalctl -u cn-site-checks -f
 ```
 
-## The retired X feed daemon
+## The dormant X feed daemon
 
-`cn-feed-views` (GOO-834) read the small, large and XL tiers of X's
-eligible-posts feed every 10 minutes with the first X account's keys, and
-stored the readings in `feed_tweet_views`, `feed_view_walks` and `feed_tweets`.
-From GOO-865 to GOO-874 it also wrote that account's notes. X paused the first
-account on 2026-11-25, and every walk failed with HTTP 403 from 19:20 UTC on.
-GOO-887 removed the daemon. The rows it stored stay. On the box it was switched
-off once, as root:
+`cn-feed-views` (src/feed-views/main.ts, GOO-834) is dormant. X paused the
+first X account on 2026-11-25, and every walk failed with HTTP 403 from 19:20
+UTC on. GOO-887 removed the daemon, and GOO-880 brought its code back with the
+first account's rebuilt note writer, so that it can start again. It is not in
+autodeploy's `UNITS` and its unit file is not installed, so nothing calls X
+with the first account's keys.
+
+Running, it reads the small, large and XL tiers of X's eligible-posts feed
+every 10 minutes, on the clock, with the first account's keys in service.env.
+It stores one reading of each XL post's views and other counts in
+`feed_tweet_views`, with the post's predicted views still to come (migrations
+193 and 197), one row per walk of the feed in `feed_view_walks`, and the full
+row of each new post in `feed_tweets`. It keeps everything. Then it reads the
+XXL tier until the walk has made 250 requests (GOO-880), so two walks in one
+15-minute window stay within X's 500. The posts only in XXL are scored in
+memory for the Pangram pass and never stored.
+
+After each walk it runs the first X account's note writer (src/x-notes/,
+GOO-865, GOO-880). The writer submits the approved Pangram notes and the note
+queue, sends long-form posts above its Pangram threshold to Pangram, and hands
+the best new posts to the Claude note writer on the runner. It writes only
+Claude Code notes, never pipeline notes. The Pangram pass needs
+`PANGRAM_API_KEY` in service.env, which is there. When an hour passes without
+a stored walk, or without a round of the note writer that finished, it tells
+Slack.
+
+To start it again:
+
+1. Check that X lifted the pause. While the account is paused, every walk
+   fails with HTTP 403.
+2. Add `cn-feed-views` back to `UNITS` in ops/autodeploy.sh and merge that.
+3. Install the unit once, as root:
+
+```bash
+install -m 644 /opt/cn-return-bot/ops/cn-feed-views.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now cn-feed-views
+```
+
+The Pangram pass sets no threshold, and so checks nothing, until it has 3
+hours of scores in `pangram_feed_scores`. Until then it stores every
+long-form post's score.
+
+When X paused the account, the daemon was switched off as root with:
 
 ```bash
 systemctl disable --now cn-feed-views

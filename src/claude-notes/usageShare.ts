@@ -27,6 +27,8 @@ export const CLAUDE_RUN_TAGS = {
   xWsdm: "x-wsdm",
   post: "post",
   tweet: "tweet",
+  /** The Pangram judge's runs (GOO-880). They also carry their account's tag. */
+  pangram: "pangram",
   judge: "judge",
   reviewAnswer: "review-answer",
   xAccount: "x-account",
