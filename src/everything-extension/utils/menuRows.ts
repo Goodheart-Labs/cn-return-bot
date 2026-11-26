@@ -91,8 +91,8 @@ const FAILURE_HEADLINE = "Could not start the check. Please try again.";
 
 /** The rows for one page. A row is left out when it would ask for work we
  *  already do: a page we read in full, a page the reader already asked for,
- *  or any page of a creator whose week of checking is running. These are the
- *  popup's rules. */
+ *  or the press for a creator whose week of checking is running. These are
+ *  the popup's rules. */
 async function rowsFor(subject: MenuSubject): Promise<MenuRow[]> {
   const [checked, requested, creator] = await Promise.all([
     getWholePageCheckedUrls(),
@@ -100,10 +100,9 @@ async function rowsFor(subject: MenuSubject): Promise<MenuRow[]> {
     subject.creator().catch(() => null),
   ]);
   const pressable = await unlessPrioritized(creator);
-  const creatorPrioritized = !!creator && !pressable;
   const { page } = subject;
   const rows: MenuRow[] = [];
-  if (page && !creatorPrioritized && !pageIsCovered(page.url, checked ?? []) && !pageIsCovered(page.url, requested)) {
+  if (page && !pageIsCovered(page.url, checked ?? []) && !pageIsCovered(page.url, requested)) {
     rows.push({ label: `Check this ${page.noun}`, run: () => checkPage(page, creator) });
   }
   if (subject.writeRow) rows.push(subject.writeRow);

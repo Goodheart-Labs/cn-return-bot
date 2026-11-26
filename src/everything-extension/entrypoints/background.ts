@@ -275,11 +275,6 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
     }
   }
   const authorFeed = await authorFeedStatusForTab(tab);
-  if (!passage && authorFeed.kind === "prioritized") {
-    const what = authorFeed.feed.kind === "youtuber" ? "video from this youtuber" : "post from this author";
-    await showRequestInfo(tab, `We are already checking every new ${what} this week.`);
-    return;
-  }
   try {
     const token = await submitNoteRequest({
       pageUrl,
