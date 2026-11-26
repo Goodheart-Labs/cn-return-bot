@@ -1,8 +1,9 @@
 name: GitHub Pages notice
 
 # https://goodheart-labs.github.io/cn-return-bot/ held the old stats dashboard
-# until GOO-888. Now it only redirects to commonnotes.net/x-notewriter. The two files in github-pages/ are the whole
-# site, so this runs only when they change, or when started by hand.
+# until GOO-888. Now it only redirects to commonnotes.net/x-notewriter. The
+# two files in github-pages/ are the whole site, so this runs only when they
+# change, or when started by hand.
 
 on:
   push:
