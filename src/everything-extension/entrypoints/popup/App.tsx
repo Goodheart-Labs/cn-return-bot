@@ -363,15 +363,8 @@ function PrimaryAction({ state, counts, jumped, access }: {
         <p className="text-sm font-medium text-fg">{statusLine}</p>
       )}
       {liveEntry && <LiveRequestLine entry={liveEntry} />}
-      {requestable &&
-        (authorFeed.kind === "prioritized" ? (
-          // A page by a creator whose week is already running needs no press.
-          // Every new post gets checked on its own, so the button would only
-          // submit noise.
-          <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>
-        ) : (
-          <RequestNoteButton creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />
-        ))}
+      {requestable && <RequestNoteButton creatorFeedUrl={creatorFeedUrl} onLive={setLiveEntry} />}
+      {authorFeed.kind === "prioritized" && <p className="text-sm text-fg-secondary">{priorityActiveLabel(authorFeed.feed.kind)}</p>}
       {/* The popup offers the press on covered pages too. */}
       {authorFeed.kind === "pressable" && <PriorityButton target={authorFeed.target} />}
     </div>
