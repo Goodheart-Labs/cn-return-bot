@@ -1,6 +1,6 @@
 
 /** Works out which creator the current page belongs to, so a reader can ask us
- *  to check their new posts. Whether that creator is already prioritised is a
+ *  to check their new posts. Substack's creators live in substackCreator.ts. Whether that creator is already prioritised is a
  *  separate question, answered by unlessPrioritized in prioritizedCreators.ts
  *  against the synced list. */
 import { youtubeWatchUrl } from "@cn/core/pageUrls";
@@ -31,62 +31,6 @@ export const priorityActiveLabel = (kind: CreatorTarget["kind"]) =>
   kind === "youtuber"
     ? "We're checking this youtuber's new videos this week."
     : "We're checking this author's new posts this week.";
-
-/** A Substack publication on its own subdomain. A publication on a custom
- *  domain gives null here, because the *.substack.com form the pipeline needs
- *  (the RSS relay accepts nothing else) is not derivable from the page URL.
- *  For those, readSubstackPublicationFromPage reads it out of the page. */
-export function substackCreatorTarget(pageUrl: string): CreatorTarget | null {
-  const m = new URL(pageUrl).hostname.match(/^([\w-]+)\.substack\.com$/);
-  if (!m || m[1] === "www") return null;
-  return { feedType: "substack", feedUrl: `https://${m[1]}.substack.com`, kind: "author", title: m[1]! };
-}
-
-/** Reads the publication's identity out of a Substack page itself, which is
- *  how a newsletter on a custom domain becomes followable. Every Substack
- *  page embeds its data as JSON in `<script type="application/json"
- *  id="preloads-json">`, and the text of that tag is visible to a content
- *  script even though the page's own JavaScript variables are not. The
- *  object's `pub` is the publication the page belongs to, and its subdomain
- *  is the *.substack.com form the follow pipeline needs. Null on any page
- *  that is not Substack.
- *
- *  Until about 2026-10-16 Substack put this data into an inline script that
- *  assigned `window._preloads`, as an escaped string. It then moved it into
- *  the JSON tag, and newsletters on their own domain stopped being recognised
- *  for a month (GOO-774).
- *
- *  On substack.com itself the answer is always null. Those pages are the
- *  reader's own feed, inbox and profiles, so the blob describes the reader
- *  rather than one creator. Its first subdomain can be the logged-in reader's
- *  own publication. It can also be a post opened earlier, because Substack
- *  switches pages there without reloading them. The popup used to offer that
- *  stranger's posts on the home page (GOO-394). A profile page on
- *  substack.com names its creator in the address instead.
- *
- *  This also runs inside the page via executeScript for the popup, so it must
- *  stay self-contained: the serialized function has no imports over there. */
-export function readSubstackPublicationFromPage(): { subdomain: string; name: string } | null {
-  if (/^(www\.)?substack\.com$/.test(location.hostname)) return null;
-  const preloads = document.querySelector('script#preloads-json[type="application/json"]')?.textContent;
-  if (!preloads) return null;
-  let pub: { subdomain?: unknown; name?: unknown } | undefined;
-  try {
-    pub = JSON.parse(preloads)?.pub;
-  } catch {
-    // Some other site's tag with the same id is not a Substack publication.
-    return null;
-  }
-  if (typeof pub?.subdomain !== "string" || !/^[\w-]+$/.test(pub.subdomain)) return null;
-  const name = typeof pub.name === "string" ? pub.name.trim() : "";
-  return { subdomain: pub.subdomain, name: name || pub.subdomain };
-}
-
-/** The follow target for a publication read out of a page. */
-export function substackTargetFromPublication(pub: { subdomain: string; name: string } | null): CreatorTarget | null {
-  if (!pub) return null;
-  return { feedType: "substack", feedUrl: `https://${pub.subdomain}.substack.com`, kind: "author", title: pub.name };
-}
 
 /** LessWrong, the Alignment Forum and the EA Forum all run ForumMagnum, the
  *  same forum codebase. One feed type covers all three; the host in the feed
@@ -172,42 +116,6 @@ export function readForumPostAuthorFromPage(): { href: string; name: string } | 
 /** The creator target for an author link read out of a post page. */
 export function forumAuthorFromPageLink(link: { href: string; name: string } | null): CreatorTarget | null {
   return link ? forumAuthorTarget(link.href, link.name) : null;
-}
-
-/** The handle of a Substack profile page such as substack.com/@thezvi, or null
- *  when the URL is not a profile. */
-export function substackProfileHandle(pageUrl: string): string | null {
-  try {
-    const url = new URL(pageUrl);
-    if (!/^(www\.)?substack\.com$/.test(url.hostname)) return null;
-    return url.pathname.match(/^\/@([\w.-]+)(\/|$)/)?.[1] ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/** Resolves a profile handle to the author's publication through Substack's
- *  public profile API. This works for custom-domain newsletters too, because
- *  the API knows their *.substack.com form, which is not derivable from their
- *  page URLs. Null when the author has no publication or the API call
- *  failed. */
-export async function resolveProfileCreatorTarget(handle: string): Promise<CreatorTarget | null> {
-  try {
-    const res = await fetchWithRetries(`https://substack.com/api/v1/user/${handle}/public_profile`, { credentials: "omit" });
-    if (!res.ok) return null;
-    const profile = await res.json();
-    const publication = profile.primaryPublication ?? profile.publicationUsers?.[0]?.publication;
-    const subdomain = publication?.subdomain;
-    if (!subdomain) return null;
-    return {
-      feedType: "substack",
-      feedUrl: `https://${subdomain}.substack.com`,
-      kind: "author",
-      title: publication.name ?? subdomain,
-    };
-  } catch {
-    return null;
-  }
 }
 
 /** The channel path of a YouTube channel page such as youtube.com/@veritasium

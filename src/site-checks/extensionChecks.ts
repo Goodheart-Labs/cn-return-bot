@@ -7,21 +7,16 @@
  *  plain API calls run here directly. */
 import type { BrowserContext, Locator, Page } from "playwright";
 import { openPage, waitForBadges } from "../everything-extension/scripts/browser";
-import {
-  forumPostAuthorTarget,
-  readForumPostAuthorFromPage,
-  readSubstackPublicationFromPage,
-  readWatchPageChannel,
-  resolveProfileCreatorTarget,
-  youtubeVideoChannelTarget,
-} from "../everything-extension/utils/creatorTarget";
+import { forumPostAuthorTarget, readForumPostAuthorFromPage, readWatchPageChannel, youtubeVideoChannelTarget } from "../everything-extension/utils/creatorTarget";
+import { readSubstackPreloads, resolveProfileCreatorTarget } from "../everything-extension/utils/substackCreator";
 import {
   SUBSTACK_MENU_TRIGGER,
   YOUTUBE_CARD,
   YOUTUBE_MENU_TRIGGER,
   YOUTUBE_WATCH_MENU_TRIGGER,
 } from "../everything-extension/utils/menuTriggers";
-import { extractYoutubeVideoId, fetchReaderCanonical } from "../everything-core/pageUrls";
+import { extractYoutubeVideoId } from "../everything-core/pageUrls";
+import { fetchPagePublication, fetchReaderCanonical, publicationInPreloads } from "../everything-core/substack";
 import { CannotRunError, must, type SiteCheck } from "./siteCheck";
 import * as pages from "./pages";
 
@@ -161,15 +156,28 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
   {
     site: "Substack",
     name: "A newsletter on its own domain is recognised as a Substack publication",
-    code: "readSubstackPublicationFromPage (src/everything-extension/utils/creatorTarget.ts)",
+    code: "readSubstackPreloads (src/everything-extension/utils/substackCreator.ts) and publicationInPreloads (src/everything-core/substack.ts)",
     run: () =>
       withPage(context, pages.CUSTOM_DOMAIN_SUBSTACK_POST, async (page) => {
-        const publication = await page.evaluate(readSubstackPublicationFromPage);
+        const publication = publicationInPreloads(await page.evaluate(readSubstackPreloads));
         must(
           publication?.subdomain === pages.CUSTOM_DOMAIN_SUBSTACK.subdomain,
           `the page reader found the publication ${publication?.subdomain ?? "none"}`,
         );
         return `${publication.subdomain}, "${publication.name}"`;
+      }),
+  },
+  {
+    site: "Substack",
+    name: "The extension runs on a newsletter on its own domain that has no notes",
+    code: "the detector in src/everything-extension/entrypoints/substack-domain.content.ts and injectIntoSubstackDomain (background.ts)",
+    // Without its script on the page, the extension records no visit there,
+    // so the newsletter's readers never count towards its creator.
+    run: () =>
+      withPage(context, pages.UNCOVERED_CUSTOM_DOMAIN_SUBSTACK_POST, async (page, lines) => {
+        const [, found] = await waitForLog(page, lines, /→ (not in the covered list|no ingested item|item ")/);
+        must(found !== 'item "', "the page has notes now, so it no longer tests the detector. Replace it in src/site-checks/pages.ts");
+        return `the extension's script ran and found the page ${found}`;
       }),
   },
   anchoringCheck(context, "Substack", "newsletter on its own domain", pages.CUSTOM_DOMAIN_SUBSTACK_POST),
@@ -205,12 +213,16 @@ export const extensionChecks = (context: BrowserContext): SiteCheck[] => [
   },
   {
     site: "Substack",
-    name: "A post link in Substack's reader app leads to the post's own address",
-    code: "fetchReaderCanonical (src/everything-core/pageUrls.ts)",
+    name: "A post link in Substack's reader app leads to the post's own address and its publication",
+    code: "fetchReaderCanonical and fetchPagePublication (src/everything-core/substack.ts), as fetchSubstackPostCreator chains them",
+    // A visit to a post read in the reader app counts for its creator only
+    // when both steps work.
     run: async () => {
       const canonical = await fetchReaderCanonical(pages.SUBSTACK_READER_LINK);
       must(canonical === pages.CUSTOM_DOMAIN_SUBSTACK_POST, `the reader link led to ${canonical ?? "nothing"}`);
-      return canonical;
+      const publication = await fetchPagePublication(canonical);
+      must(publication?.subdomain === pages.CUSTOM_DOMAIN_SUBSTACK.subdomain, `the post's page named the publication ${publication?.subdomain ?? "none"}`);
+      return `${canonical}, ${publication.subdomain}`;
     },
   },
   badgeCheck(context, "YouTube", "a channel's videos page", pages.YOUTUBE_CHANNEL_VIDEOS),

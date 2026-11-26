@@ -5,6 +5,7 @@
  *  ranking, and the prioritize script all normalize through here. */
 
 import { parseAuthorFeedUrl } from "../pipeline/fetch/sites/forum";
+import { publicationInPageHtml, substackFeedUrl, substackSubdomainOfUrl } from "../everything-core/substack";
 
 export type FeedType = "substack" | "youtube" | "lesswrong";
 
@@ -28,20 +29,16 @@ export function canonicalSubstackFeed(url: string): CanonicalFeed | null {
  *  belongs to, or null for any other page. A post on a custom domain, a
  *  YouTube video or a forum post does not name its creator in its URL. */
 export function substackFeedOfPage(pageUrl: string): CanonicalFeed | null {
-  const m = pageUrl.match(/^https:\/\/([\w-]+)\.substack\.com(?:[/?#]|$)/i);
-  return m ? canonicalSubstackFeed(`https://${m[1]}.substack.com`) : null;
+  const subdomain = substackSubdomainOfUrl(pageUrl);
+  return subdomain ? canonicalSubstackFeed(substackFeedUrl(subdomain)) : null;
 }
 
 /** The publication a Substack page belongs to, read from the page's HTML.
- *  Every Substack page embeds its publication data, subdomain included, as
- *  escaped JSON. This is how a post on a custom domain reveals its
- *  *.substack.com form. Null for a page that is not Substack. The pattern
- *  takes the first subdomain in the HTML. Today that is the one in the
- *  page's preloads-json tag, which comes before any other. The extension
- *  reads the same tag's `pub` object in readSubstackPublicationFromPage. */
+ *  This is how a post on a custom domain reveals its *.substack.com form. Null
+ *  for a page that is not Substack. */
 export function substackFeedInPageHtml(html: string): CanonicalFeed | null {
-  const subdomain = html.match(/subdomain\\?":\\?"([\w-]+)\\?"/)?.[1];
-  return subdomain ? canonicalSubstackFeed(`https://${subdomain.toLowerCase()}.substack.com`) : null;
+  const publication = publicationInPageHtml(html);
+  return publication ? canonicalSubstackFeed(substackFeedUrl(publication.subdomain)) : null;
 }
 
 /** The canonical feed for a YouTube channel URL (@handle or /channel/id), or

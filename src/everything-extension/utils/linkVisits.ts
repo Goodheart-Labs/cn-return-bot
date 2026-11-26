@@ -10,14 +10,12 @@ import {
   forumPostAuthorTarget,
   isForumPostPage,
   readForumPostAuthorFromPage,
-  readSubstackPublicationFromPage,
   readWatchPageChannel,
-  substackCreatorTarget,
-  substackTargetFromPublication,
   youtubeChannelTarget,
   youtubeVideoChannelTarget,
 } from "./creatorTarget";
 import { getSettings, getWelcomeSeen, type VisitSiteKind } from "./settings";
+import { substackPostCreator } from "./substackPostCreator";
 import { visitReaderHash } from "./visitReader";
 
 // Visits are recorded on Substack, YouTube, the LessWrong / Alignment Forum
@@ -48,8 +46,8 @@ const forumVisitKind = (pageUrl: string): VisitSiteKind => (forumOrigin(pageUrl)
 const WATCH_CHANNEL_POLL_MS = 500;
 const WATCH_CHANNEL_POLL_TRIES = 20;
 
-/** The creator's feed URL for the visited page: the Substack publication from
- *  the hostname or the page's preloads blob, the YouTube channel from
+/** The creator's feed URL for the visited page: the Substack publication
+ *  (substackPostCreator), the YouTube channel from
  *  YouTube's oEmbed endpoint or, when that does not answer, from the watch
  *  page, the forum author from the site's own API or, when that does not
  *  answer, from the post's header. Null when the page has no followable
@@ -58,10 +56,7 @@ const WATCH_CHANNEL_POLL_TRIES = 20;
  *  creator is not derivable on the server from a watch URL or a custom-domain
  *  post URL. */
 async function pageFeedUrl(kind: VisitSiteKind, pageUrl: string): Promise<string | null> {
-  if (kind === "substack") {
-    const target = substackCreatorTarget(pageUrl) ?? substackTargetFromPublication(readSubstackPublicationFromPage());
-    return target?.feedUrl ?? null;
-  }
+  if (kind === "substack") return (await substackPostCreator(pageUrl))?.feedUrl ?? null;
   if (kind === "lesswrong" || kind === "eaforum") {
     const author = (await forumPostAuthorTarget(pageUrl)) ?? forumAuthorFromPageLink(readForumPostAuthorFromPage());
     return author?.feedUrl ?? null;

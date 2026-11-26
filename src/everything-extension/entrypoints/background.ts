@@ -3,9 +3,8 @@ import { browser } from "#imports";
 import { fetchCoveredPageUrls, fetchCoveredPageUrlsSince, fetchItemForUrl, fetchNotedPageCounts } from "@cn/core/items";
 import { isWholePageChecked } from "@cn/core/wholePageChecked";
 import { fetchPrioritizedCreatorUrls } from "@cn/core/creators";
-import { fetchReaderCanonical } from "@cn/core/pageUrls";
 import { submitNoteRequest } from "@cn/core/noteRequests";
-import { canonicalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
+import { canonicalizePageUrl } from "@cn/core/pageUrls";
 import { signInWithTwitterInPopup } from "@cn/core/auth";
 import { track } from "@cn/core/analytics";
 import { initBackgroundAnalytics, trackDailyActivity } from "../utils/analytics";
@@ -13,10 +12,12 @@ import { authorFeedForTab, authorFeedStatusForTab, TAB_CREATOR_MESSAGE_TYPE } fr
 import { CHECKED_PAGE_URLS_KEY, COVERED_PAGE_URLS_KEY, getCoveredPageUrls, NOTED_PAGE_STATUS_COUNTS_KEY } from "../utils/coveredPages";
 import { mergeCoveredUrls, parseSyncState, planSync } from "../utils/notedSitesSync";
 import { PRIORITIZED_CREATOR_URLS_KEY } from "../utils/prioritizedCreators";
-import { GENERIC_SCRIPT_PREFIX, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
+import { GENERIC_SCRIPT_PREFIX, SUBSTACK_DOMAIN_MESSAGE_TYPE, hostnamePattern, registerGenericScripts, genericScriptId } from "../utils/genericScript";
 import { saveLiveRequest } from "../utils/liveRequests";
 import { capturePageFromTab } from "../utils/pageCapture";
 import { VISIT_MESSAGE_TYPE, writeVisit, type VisitMessage } from "../utils/linkVisits";
+import { READER_CANONICAL_MESSAGE_TYPE, readerCanonical } from "../utils/readerCanonical";
+import { fetchSubstackPostCreator, SUBSTACK_CREATOR_MESSAGE_TYPE } from "../utils/substackPostCreator";
 import { addRequestedPage, getSettingsOnboardingDone, getWelcomeSeen, markWelcomeSeen } from "../utils/settings";
 import { STATIC_SITE_HOSTNAME } from "../utils/staticSites";
 
@@ -74,6 +75,14 @@ async function injectIntoOpenTabs(hostnames: string[]) {
       ? browser.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content-scripts/generic.js"] }).catch(() => {})
       : undefined));
   }
+}
+
+/** Runs the generic content script in a tab on a custom-domain Substack that
+ *  the detector found. A host with a covered page already has the script
+ *  registered, and it runs there by itself. */
+async function injectIntoSubstackDomain(tabId: number, pageUrl: string) {
+  if ((await registeredGenericHostnames()).includes(new URL(pageUrl).hostname)) return;
+  await browser.scripting.executeScript({ target: { tabId }, files: ["/content-scripts/generic.js"] }).catch(() => {});
 }
 
 /** Registers the generic content script on every covered host that lacks it,
@@ -242,10 +251,8 @@ async function requestNoteOnSelection(tab: { id?: number; url?: string; title?: 
   if (!href) return;
   // A Substack reader page hides the publication's own post URL behind a
   // fetch, the same way the notes flow resolves it.
-  const readerCanonical = substackReaderPostId(href) ? await fetchReaderCanonical(href) : null;
-  const pageUrl = readerCanonical
-    ? canonicalizePageUrl(readerCanonical, null)
-    : canonicalizePageUrl(href, captured?.canonical ?? null);
+  const postUrl = await readerCanonical(href);
+  const pageUrl = postUrl ? canonicalizePageUrl(postUrl, null) : canonicalizePageUrl(href, captured?.canonical ?? null);
   // A request on selected words is always sent: a whole-page check can find no
   // claim in a passage, or rate it true and skip it, so the passage is checked
   // on its own.
@@ -440,14 +447,26 @@ export default defineBackground(() => {
       ).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
     }
-    if ((message as { type?: string })?.type === "cn-reader-canonical") {
+    if ((message as { type?: string })?.type === READER_CANONICAL_MESSAGE_TYPE) {
       // Resolves a Substack reader URL to the publication's own post URL. The
       // notes mount and the coverage badges both use this. The fetch has to run
-      // here in the background, where our *.substack.com host permission
-      // applies; a content script's fetch is bound by CORS and may neither
-      // follow the cross-origin redirect nor read the response.
-      fetchReaderCanonical((message as { href: string }).href).then(sendResponse);
+      // here in the background, where our host permission applies; a content
+      // script's fetch is bound by CORS and may neither follow the
+      // cross-origin redirect nor read the response.
+      readerCanonical((message as { href: string }).href).then(sendResponse);
       return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === SUBSTACK_CREATOR_MESSAGE_TYPE) {
+      // A content script asks for the publication of a Substack post that is
+      // not on its own page, for example a custom-domain post opened in
+      // Substack's reader app. For the same reason as above, the fetch runs
+      // here.
+      fetchSubstackPostCreator((message as { postUrl: string }).postUrl).then(sendResponse);
+      return true; // Keep the message channel open for the async reply.
+    }
+    if ((message as { type?: string })?.type === SUBSTACK_DOMAIN_MESSAGE_TYPE && sender.tab?.id != null && sender.url) {
+      void injectIntoSubstackDomain(sender.tab.id, sender.url);
+      return undefined; // The detector does not wait.
     }
     if ((message as { type?: string })?.type === TAB_CREATOR_MESSAGE_TYPE && sender.tab) {
       // The write-anywhere overlay asks which creator its page belongs to, so

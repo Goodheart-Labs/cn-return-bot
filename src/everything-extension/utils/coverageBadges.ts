@@ -3,14 +3,17 @@ import { MARKER_DARK, MARKER_GLYPH_SIZE, MARKER_HOVER_SCALE, MARKER_LIGHT, MARKE
 import type { ContentScriptContext } from "#imports";
 import type { BadgeMark } from "../components/BadgeCard";
 import { mountBadgeCard, type BadgeCardHandle } from "./mountBadgeCard";
-import { extractYoutubeVideoId, normalizePageUrl, substackReaderPostId } from "@cn/core/pageUrls";
+import { extractYoutubeVideoId, normalizePageUrl } from "@cn/core/pageUrls";
+import { substackReaderPostId } from "@cn/core/substack";
 import { NOTE_STACK_GLYPH_PATH } from "@cn/ui/icons";
 import { getNotedPageStatusCounts, getWholePageCheckedUrls, trimSlash } from "./coveredPages";
 import { isPageDark } from "./pageTheme";
 import type { NoteStatus } from "@cn/core/noteScore";
 import { getNoteDisplay, getSettings, onNoteDisplayChanged } from "./settings";
 import { STATIC_SITE_HOSTNAME } from "./staticSites";
-import { forumOrigin, readSubstackPublicationFromPage } from "./creatorTarget";
+import { forumOrigin } from "./creatorTarget";
+import { READER_CANONICALS_KEY, resolveReaderCanonical } from "./readerCanonical";
+import { readSubstackPublicationFromPage } from "./substackCreator";
 
 // The badges that mark noted posts in a listing, for example on a Substack
 // publication's front page or a YouTube channel's videos tab. Every listing
@@ -56,13 +59,11 @@ function pageKey(href: string): string | null {
 }
 
 // Substack's reader links a post as substack.com/home/post/p-<id>,
-// /inbox/post/<id> or /@author/p-<id>. The database only knows the publication's own post URL, so
-// such a link cannot be matched directly. The background resolves each post id
-// to that URL once, from the redirect a logged-out fetch gets or from the
-// canonical embedded in the fetched page, and the mapping is kept in storage
-// so a post the reader's feed showed once never needs resolving again.
-const READER_CANONICALS_KEY = "cn:readerPostCanonicals";
-const READER_CANONICALS_MAX = 2000;
+// /inbox/post/<id> or /@author/p-<id>. The database only knows the
+// publication's own post URL, so such a link cannot be matched directly. The
+// background resolves each post id to that URL once and keeps the answer in
+// storage (readerCanonical.ts), so a post the reader's feed showed once never
+// needs resolving again.
 
 /** A small circle pinned to a card's upper corner. It uses the same surface as
  *  the in-article passage badge: a white circle with a border and the blue
@@ -410,28 +411,17 @@ export async function mountCoverageBadges(ctx: ContentScriptContext): Promise<((
   );
   const readerResolving = new Set<string>();
 
-  const persistReaderCanonicals = () => {
-    // Insertion order is oldest first, so trimming from the front drops the
-    // posts the reader has not seen for the longest.
-    const entries = [...readerCanonicals.entries()].slice(-READER_CANONICALS_MAX);
-    void browser.storage.local.set({ [READER_CANONICALS_KEY]: Object.fromEntries(entries) }).catch(() => {});
-  };
-
   /** Asks the background to resolve one reader post link. Each post id is
    *  tried once per mount; a resolved id triggers a rescan so the link gets
    *  its badge without any user action. */
   const resolveReaderLink = (href: string, postId: string) => {
     if (readerResolving.has(postId)) return;
     readerResolving.add(postId);
-    void browser.runtime
-      .sendMessage({ type: "cn-reader-canonical", href })
-      .then((url) => {
-        if (typeof url !== "string" || !url) return;
-        readerCanonicals.set(postId, url);
-        persistReaderCanonicals();
-        scheduleScan();
-      })
-      .catch(() => {});
+    void resolveReaderCanonical(href).then((url) => {
+      if (!url) return;
+      readerCanonicals.set(postId, url);
+      scheduleScan();
+    });
   };
 
   /** The lookup key of a link, with reader-style post links translated to the

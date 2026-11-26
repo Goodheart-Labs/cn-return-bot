@@ -20,6 +20,7 @@ import { askFetcher } from "../../service/client";
 import { MINISITE_PAGE_PATH, type MinisitePageRequest, type ReadPage } from "../../service/contract";
 import { isWebUrl } from "../../pipeline/utils/webUrl";
 import { canonicalFeed, canonicalSubstackFeed, substackFeedInPageHtml, substackFeedOfPage } from "../feedUrls";
+import { substackFeedUrl } from "../../everything-core/substack";
 import { htmlToReaderBlocks } from "./htmlToReaderText";
 
 /** What a read_page job writes into its result, and what
@@ -158,7 +159,7 @@ function isoDate(value: string | null | undefined): string | null {
 /** Exported for the tests, which feed it a saved answer. */
 export function pageFromSubstackPost(post: SubstackPost, url: string): MinisitePage {
   const publication = postPublication(post);
-  const feed = publication ? canonicalSubstackFeed(`https://${publication.subdomain}.substack.com`) : substackFeedOfPage(url);
+  const feed = publication ? canonicalSubstackFeed(substackFeedUrl(publication.subdomain)) : substackFeedOfPage(url);
   const authors = joinNames(post.publishedBylines.map((byline) => byline.name));
   const byline = [authors, publication?.name].filter(Boolean).join(" · ") || null;
   return buildPage({
@@ -231,11 +232,6 @@ function absoluteImage(value: string | null, base: string): string | null {
   }
 }
 
-/** The subdomain pattern of substackFeedInPageHtml would also match a
- *  "subdomain" key in some other site's data, so it is only asked on a page
- *  that carries Substack's preloads blob. */
-const isSubstackPage = (html: string) => html.includes("window._preloads");
-
 /** Exported for the tests, which feed it a saved page. */
 export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage {
   const { document } = parseHTML(html);
@@ -262,6 +258,6 @@ export function pageFromArticleHtml(html: string, pageUrl: string): MinisitePage
     published_at: isoDate(meta.published ?? article.publishedTime),
     image_url: absoluteImage(meta.image, pageUrl),
     content: articleContent(htmlToReaderBlocks(article.content, pageUrl), [title, description, byline, author]),
-    creator_feed_url: isSubstackPage(html) ? substackFeedInPageHtml(html)?.feed_url ?? null : null,
+    creator_feed_url: substackFeedInPageHtml(html)?.feed_url ?? null,
   });
 }

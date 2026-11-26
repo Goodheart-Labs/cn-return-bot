@@ -9,6 +9,12 @@ export const CUSTOM_DOMAIN_SUBSTACK_POST = "https://www.astralcodexten.com/p/obs
 export const SUBSTACK_READER_LINK = "https://substack.com/home/post/p-52041324";
 export const CUSTOM_DOMAIN_SUBSTACK_ARCHIVE = "https://www.astralcodexten.com/archive";
 export const CUSTOM_DOMAIN_SUBSTACK = { subdomain: "astralcodexten", feedUrl: "https://astralcodexten.substack.com" };
+/** A post on a newsletter's own domain that Common Notes has never read, by
+ *  a creator nobody asked us to follow (checked on 2026-11-26). The extension
+ *  only runs there because the page is a Substack page. If we ever read one of
+ *  The New Critic's posts, its domain gets the extension's script for that
+ *  reason, and the check needs another page. */
+export const UNCOVERED_CUSTOM_DOMAIN_SUBSTACK_POST = "https://www.thenewcritic.com/p/big-time-college-football";
 
 /** A post with 19 notes on Don't Worry About the Vase, on *.substack.com. */
 export const SUBSTACK_POST = "https://thezvi.substack.com/p/childhood-and-education-22-voice";
