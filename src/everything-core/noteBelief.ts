@@ -1,6 +1,5 @@
 import { regularizedIncompleteBeta } from "./incompleteBeta";
 import type { NoteRow } from "./types";
-import type { Vote } from "./votes";
 
 /** How likely is a note to end up rated helpful?
  *
@@ -11,8 +10,9 @@ import type { Vote } from "./votes";
  *  uncertainty that is left cannot be reduced any further. That is why a late vote
  *  carries so little information.
  *
- *  This lives in its own module because three unrelated things need it now. They are
- *  pricing a donation, settling one, and ranking the feed.
+ *  This lives in its own module because the note's badge and the settling of its
+ *  donations both need it. The database has a copy, which ranks the feed and prices
+ *  each donation (migrations 141 and 207).
  *
  *  The derivation is in src/scripts_jim/2026_07_21_donation_decay/RESULTS.md.
  */
@@ -50,12 +50,6 @@ export function probabilityHelpful(tally: VoteTally): number {
   const b = PRIOR_B + tally.notHelpful;
   return 1 - regularizedIncompleteBeta(a, b, CRH_THRESHOLD);
 }
-
-export const withVote = (tally: VoteTally, vote: Vote): VoteTally => ({
-  helpful: tally.helpful + (vote === 1 ? 1 : 0),
-  somewhatHelpful: tally.somewhatHelpful + (vote === 0 ? 1 : 0),
-  notHelpful: tally.notHelpful + (vote === -1 ? 1 : 0),
-});
 
 /** The columns the tally is computed from. Callers that never hold a full
  *  NoteRow, such as the noted-page counts sync, can select just these. */

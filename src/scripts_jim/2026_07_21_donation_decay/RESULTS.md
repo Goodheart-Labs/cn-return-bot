@@ -21,7 +21,9 @@ Script: `decay.py`.
 > **Lowered 2026-11-26 (GOO-890).** Jim lowered every new donation by a factor of
 > 3. Both b and the tip are divided by 3 (b = 6.25 / 3, tip = $0.25 / 3), so the
 > shape of the decay is unchanged and the floor shows as $0.08. Donations minted
-> before keep their frozen amounts. The table above is the old one; the new one is:
+> before keep their frozen amounts. Since then the database prices every donation
+> (`everything_donation_pair`, migration 207), and the TypeScript port is gone. The
+> table above is the old one; the new one is:
 >
 > | vote | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 > |---|---|---|---|---|---|---|---|---|---|---|
