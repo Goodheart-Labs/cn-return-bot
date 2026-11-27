@@ -26,12 +26,15 @@ const COLUMNS: readonly Column[] = [
     explanation: "When the latest check of the post ended. A post can be checked again later, so this can be long after its first check.",
   },
   {
-    label: "Readers per post",
+    label: "Readers",
+    align: "right",
+    explanation: "The different people who opened this post with the extension, since its first visit. Hover a number to see every visit, which also counts people coming back.",
+  },
+  {
+    label: "Author's average",
     align: "right",
     explanation: `The average number of different people per post, over the author's ${LAST_POSTS_PER_CREATOR} most recently visited posts, however long ago those visits were. The walk ranks authors on it, after adding a few imagined posts that the creator ranking explains. A post in a project without a feed, such as Around the web, has no value here.`,
   },
-  { label: "Claims", align: "right", explanation: "The claims the pipeline extracted from the post." },
-  { label: "Checked", align: "right", explanation: "The claims that went through a fact-check. Only claims rated uncertain or worse are checked." },
   { label: "Notes", align: "right", explanation: "The notes the pipeline wrote on the post." },
 ];
 
@@ -55,7 +58,7 @@ function PostCell({ post }: { post: RecentPostRow }) {
 }
 
 /** The posts the pipeline finished most recently, newest first, with how much
- *  their author is read and what the pipeline got out of them. */
+ *  they and their author are read and how many notes they got. */
 export function RecentPosts() {
   const list = usePagedList({
     queryKey: queryKeys.dashboardRecentPosts,
@@ -79,9 +82,10 @@ export function RecentPosts() {
             <td className={cn(CELL, "whitespace-nowrap text-fg-secondary")} title={new Date(post.processed_at).toLocaleString()}>
               {timeAgo(post.processed_at)}
             </td>
+            <td className={NUMBER_CELL} title={post.visits === 1 ? "1 visit" : `${post.visits} visits`}>
+              {post.readers}
+            </td>
             <td className={NUMBER_CELL}>{post.author_visitors_per_post === null ? "—" : post.author_visitors_per_post.toFixed(2)}</td>
-            <td className={NUMBER_CELL}>{post.claims_extracted}</td>
-            <td className={NUMBER_CELL}>{post.claims_checked}</td>
             <td className={NUMBER_CELL}>{post.notes}</td>
           </tr>
         ))}

@@ -4275,15 +4275,15 @@ export type Database = {
         Returns: {
           author_visitors_per_post: number
           checked_scope: string
-          claims_checked: number
-          claims_extracted: number
           id: string
           notes: number
           processed_at: string
           project: string
           published_at: string
+          readers: number
           title: string
           url: string
+          visits: number
         }[]
       }
       everything_request_status: {
