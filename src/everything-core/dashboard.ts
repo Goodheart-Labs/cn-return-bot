@@ -104,7 +104,7 @@ export function fetchMetricSeries(granularity: Granularity): Promise<MetricSerie
   return rpcAllRows<MetricSeriesRow>("everything_metric_series", { granularity });
 }
 
-// --- The recently checked posts (migrations 095 to 141) ---
+// --- The recently checked posts (migrations 095 to 141 and 209) ---
 
 export interface RecentPostRow {
   id: string;
@@ -121,8 +121,11 @@ export interface RecentPostRow {
    *  LAST_POSTS_PER_CREATOR most recently visited posts. Null when the post's
    *  project has no feed, or nobody visited the author. */
   author_visitors_per_post: number | null;
-  claims_extracted: number;
-  claims_checked: number;
+  /** The different people who ever opened the post. */
+  readers: number;
+  /** Every recorded opening of the post, including repeat visits and visits
+   *  whose creator the extension could not name, which carry no reader. */
+  visits: number;
   notes: number;
 }
 
